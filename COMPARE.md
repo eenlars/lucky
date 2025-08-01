@@ -1,7 +1,3 @@
-Here are the original 10 tables, now with **LangChain** fully populated based on the detailed assessment:
-
----
-
 ## Table 1 – Overview & Scope
 
 | Criteria                                                      | Lucky                       | Autogen                                           | CrewAI                                | **LangChain**                                                                                                           | Agno                                                                                                                         | CAMEL                                                                                                                                           | OpenAI Agents |
