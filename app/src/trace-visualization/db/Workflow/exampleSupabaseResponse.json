@@ -1,0 +1,174 @@
+[
+  {
+    "Node": {
+      "tools": ["proxy"],
+      "extras": {},
+      "node_id": "get-proxy",
+      "version": 1,
+      "llm_model": "gpt-4.1-nano",
+      "parent_id": null,
+      "wf_version_id": "15f7dc53",
+      "created_at": "2025-05-06T13:21:52.259787+00:00",
+      "updated_at": "2025-05-06T13:21:52.259787+00:00",
+      "description": "Get Proxy Agent – gets a proxy from the proxy list",
+      "system_prompt": "Get Proxy Agent – gets a proxy from the proxy list"
+    },
+    "extras": {
+      "message_id": "ce82b6ec"
+    },
+    "inputs": [
+      {
+        "seq": 0,
+        "role": "delegation",
+        "msg_id": "ce82b6ec",
+        "payload": {
+          "kind": "delegation",
+          "prompt": "find a fish tales store and find an address of the business.\nKeep it very short but verifiable."
+        },
+        "reply_to": null,
+        "wf_inv_id": "06053fb5",
+        "created_at": "2025-05-06T14:00:12.891+00:00",
+        "to_node_id": "get-proxy",
+        "from_node_id": "start",
+        "origin_inv_id": null,
+        "target_inv_id": "58236ff8"
+      }
+    ],
+    "output": "Please specify your location or city so I can find a nearby Fish Tales store and its address.",
+    "status": "completed",
+    "node_id": "get-proxy",
+    "outputs": [
+      {
+        "seq": 0,
+        "role": "delegation",
+        "msg_id": "171e4f98",
+        "payload": {
+          "kind": "delegation",
+          "prompt": "\nthe ultimate goal is: find a fish tales store and find an address of the business.\nKeep it very short but verifiable.\nthe agent before you has just figured out the following:\nPlease specify your location or city so I can find a nearby Fish Tales store and its address.\nyour job is to get closer to the ultimate goal, never make up new information.\n"
+        },
+        "reply_to": null,
+        "wf_inv_id": "06053fb5",
+        "created_at": "2025-05-06T14:00:14.416+00:00",
+        "to_node_id": "google-maps-scraper",
+        "from_node_id": "get-proxy",
+        "origin_inv_id": "58236ff8",
+        "target_inv_id": "75df530a"
+      }
+    ],
+    "end_time": "2025-05-06T14:00:14.273+00:00",
+    "metadata": {},
+    "usd_cost": 0.000027,
+    "wf_inv_id": "06053fb5",
+    "start_time": "2025-05-06T14:00:12.891+00:00",
+    "node_inv_id": "58236ff8"
+  },
+  {
+    "Node": {
+      "tools": ["searchGoogleMaps"],
+      "extras": {},
+      "node_id": "google-maps-scraper",
+      "version": 1,
+      "llm_model": "gpt-4.1-nano",
+      "parent_id": null,
+      "wf_version_id": "15f7dc53",
+      "created_at": "2025-05-06T13:21:52.180919+00:00",
+      "updated_at": "2025-05-06T13:21:52.180919+00:00",
+      "description": "Google Maps Agent – finds the business in the area",
+      "system_prompt": "Google Maps Agent – finds the business in the area"
+    },
+    "extras": {
+      "message_id": "171e4f98"
+    },
+    "inputs": [
+      {
+        "seq": 0,
+        "role": "delegation",
+        "msg_id": "171e4f98",
+        "payload": {
+          "kind": "delegation",
+          "prompt": "\nthe ultimate goal is: find a fish tales store and find an address of the business.\nKeep it very short but verifiable.\nthe agent before you has just figured out the following:\nPlease specify your location or city so I can find a nearby Fish Tales store and its address.\nyour job is to get closer to the ultimate goal, never make up new information.\n"
+        },
+        "reply_to": null,
+        "wf_inv_id": "06053fb5",
+        "created_at": "2025-05-06T14:00:14.416+00:00",
+        "to_node_id": "google-maps-scraper",
+        "from_node_id": "get-proxy",
+        "origin_inv_id": "58236ff8",
+        "target_inv_id": "75df530a"
+      }
+    ],
+    "output": "{\"0\":[{\"storeName\":\"Fish Tales\",\"stars\":null,\"numberOfReviews\":20,\"googleUrl\":\"https://www.google.com/maps/place/Fish+Tales/@52.3845913,4.8592959,17z/data=!3m1!4b1!4m6!3m5!1s0x47c5e32481e2f8bd:0x162a400cbd2c9420!8m2!3d52.3845913!4d4.8592959!16s%2Fg%2F11b6dtfc_d?entry=ttu&g_ep=EgoyMDI1MDQzMC4xIKXMDSoASAFQAw%3D%3D\",\"bizWebsite\":\"https://www.fish-tales.com/nl/\",\"address\":\"Adres: Nieuwpoortkade 2a, 1055 PK Amsterdam\",\"category\":\"Groothandel in vis en zeevruchten\",\"status\":\"Geopend\",\"phone\":\"Telefoon: 020 606 0701\"}]}",
+    "status": "completed",
+    "node_id": "google-maps-scraper",
+    "outputs": [
+      {
+        "seq": 0,
+        "role": "delegation",
+        "msg_id": "e7587e74",
+        "payload": {
+          "kind": "delegation",
+          "prompt": "\nthe ultimate goal is: find a fish tales store and find an address of the business.\nKeep it very short but verifiable.\nthe agent before you has just figured out the following:\n{\"0\":[{\"storeName\":\"Fish Tales\",\"stars\":null,\"numberOfReviews\":20,\"googleUrl\":\"https://www.google.com/maps/place/Fish+Tales/@52.3845913,4.8592959,17z/data=!3m1!4b1!4m6!3m5!1s0x47c5e32481e2f8bd:0x162a400cbd2c9420!8m2!3d52.3845913!4d4.8592959!16s%2Fg%2F11b6dtfc_d?entry=ttu&g_ep=EgoyMDI1MDQzMC4xIKXMDSoASAFQAw%3D%3D\",\"bizWebsite\":\"https://www.fish-tales.com/nl/\",\"address\":\"Adres: Nieuwpoortkade 2a, 1055 PK Amsterdam\",\"category\":\"Groothandel in vis en zeevruchten\",\"status\":\"Geopend\",\"phone\":\"Telefoon: 020 606 0701\"}]}\nyour job is to get closer to the ultimate goal, never make up new information.\n"
+        },
+        "reply_to": null,
+        "wf_inv_id": "06053fb5",
+        "created_at": "2025-05-06T14:00:22.557+00:00",
+        "to_node_id": "file-saver",
+        "from_node_id": "google-maps-scraper",
+        "origin_inv_id": "75df530a",
+        "target_inv_id": "2e8d1c5a"
+      }
+    ],
+    "end_time": "2025-05-06T14:00:22.348+00:00",
+    "metadata": {},
+    "usd_cost": 0.000034,
+    "wf_inv_id": "06053fb5",
+    "start_time": "2025-05-06T14:00:14.416+00:00",
+    "node_inv_id": "75df530a"
+  },
+  {
+    "Node": {
+      "tools": ["filesystem"],
+      "extras": {},
+      "node_id": "file-saver",
+      "version": 1,
+      "llm_model": "gpt-4.1-nano",
+      "parent_id": null,
+      "wf_version_id": "15f7dc53",
+      "created_at": "2025-05-06T13:21:52.249469+00:00",
+      "updated_at": "2025-05-06T13:21:52.249469+00:00",
+      "description": "File Saver Agent – writes results to output3a3e8818.txt. \n      the folder you have access to is  /Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/logging_folder",
+      "system_prompt": "File Saver Agent – writes results to output3a3e8818.txt. \n      the folder you have access to is  /Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/logging_folder"
+    },
+    "extras": {
+      "message_id": "e7587e74"
+    },
+    "inputs": [
+      {
+        "seq": 0,
+        "role": "delegation",
+        "msg_id": "e7587e74",
+        "payload": {
+          "kind": "delegation",
+          "prompt": "\nthe ultimate goal is: find a fish tales store and find an address of the business.\nKeep it very short but verifiable.\nthe agent before you has just figured out the following:\n{\"0\":[{\"storeName\":\"Fish Tales\",\"stars\":null,\"numberOfReviews\":20,\"googleUrl\":\"https://www.google.com/maps/place/Fish+Tales/@52.3845913,4.8592959,17z/data=!3m1!4b1!4m6!3m5!1s0x47c5e32481e2f8bd:0x162a400cbd2c9420!8m2!3d52.3845913!4d4.8592959!16s%2Fg%2F11b6dtfc_d?entry=ttu&g_ep=EgoyMDI1MDQzMC4xIKXMDSoASAFQAw%3D%3D\",\"bizWebsite\":\"https://www.fish-tales.com/nl/\",\"address\":\"Adres: Nieuwpoortkade 2a, 1055 PK Amsterdam\",\"category\":\"Groothandel in vis en zeevruchten\",\"status\":\"Geopend\",\"phone\":\"Telefoon: 020 606 0701\"}]}\nyour job is to get closer to the ultimate goal, never make up new information.\n"
+        },
+        "reply_to": null,
+        "wf_inv_id": "06053fb5",
+        "created_at": "2025-05-06T14:00:22.557+00:00",
+        "to_node_id": "file-saver",
+        "from_node_id": "google-maps-scraper",
+        "origin_inv_id": "75df530a",
+        "target_inv_id": "2e8d1c5a"
+      }
+    ],
+    "output": "{\"0\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: Access denied - path outside allowed directories: /Users/here/CODE_FOLDER/main-projects/thesis/together/app/output8e218e31.txt not in /Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/logging_folder\"}],\"isError\":true}}",
+    "status": "completed",
+    "node_id": "file-saver",
+    "outputs": [],
+    "end_time": "2025-05-06T14:00:23.263+00:00",
+    "metadata": {},
+    "usd_cost": 0.000181,
+    "wf_inv_id": "06053fb5",
+    "start_time": "2025-05-06T14:00:22.557+00:00",
+    "node_inv_id": "2e8d1c5a"
+  }
+]

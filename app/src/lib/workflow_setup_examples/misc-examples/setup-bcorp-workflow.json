@@ -1,0 +1,95 @@
+{
+  "entryNodeId": "read-csv-data",
+  "nodes": [
+    {
+      "nodeId": "read-csv-data",
+      "description": "read the initial csv file with company data and prepare for processing",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvReader"],
+      "systemPrompt": "read the csv file to understand the structure and extract company information. focus on company names, domains, and any existing website information that will be needed for bcorp data extraction.",
+      "handOffs": ["extract-bcorp-data"],
+      "memory": {}
+    },
+    {
+      "nodeId": "extract-bcorp-data",
+      "description": "for each company, extract bcorp data including countries where they operate",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvReader"],
+      "systemPrompt": "for each company in the csv data, extract their bcorp profile data focusing on the 'operates in' countries information. use the bcorp extractor tool to get this data from their bcorp profile pages. handle cases where companies may not have bcorp profiles gracefully.",
+      "handOffs": ["enrich-csv-data"],
+      "memory": {}
+    },
+    {
+      "nodeId": "enrich-csv-data",
+      "description": "enrich the csv with a new column countries_active containing the extracted country data",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvWriter", "csvReader"],
+      "systemPrompt": "create a new csv file that includes all original data plus a new column 'countries_active' containing the array of countries where each company operates. this should be formatted as a string array representation.",
+      "handOffs": ["filter-netherlands-companies"],
+      "memory": {}
+    },
+    {
+      "nodeId": "filter-netherlands-companies",
+      "description": "filter companies that operate in netherlands",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvReader"],
+      "systemPrompt": "use the advanced csv filtering capabilities to filter the enriched csv data to only include companies whose countries_active contains 'netherlands', 'the netherlands', or similar variants. be flexible with matching to catch different spellings and formats. create a filtered dataset for further processing.",
+      "handOffs": ["evaluate-physical-stores"],
+      "memory": {}
+    },
+    {
+      "nodeId": "evaluate-physical-stores",
+      "description": "planning phase to determine if companies meet criteria for having physical stores",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["url-to-markdown", "browserAutomation"],
+      "systemPrompt": "for each filtered company, analyze whether they meet the criteria of selling items in physical stores. use their website and any available information to make this determination. companies that clearly only operate online should be rejected. output a decision for each company with reasoning.",
+      "handOffs": ["google-scrape-stores"],
+      "memory": {}
+    },
+    {
+      "nodeId": "google-scrape-stores",
+      "description": "use google maps to find all store locations for qualified companies",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["searchGoogleMaps"],
+      "systemPrompt": "for companies that meet the physical store criteria, use google maps search to find all their store locations in netherlands. search using queries like '{company_name} netherlands' and '{company_name} store netherlands'. collect comprehensive store location data.",
+      "handOffs": ["handle-high-results"],
+      "memory": {}
+    },
+    {
+      "nodeId": "handle-high-results",
+      "description": "handle cases where google search returns more than 120 results",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["searchGoogleMaps"],
+      "systemPrompt": "if the previous search returned more than 120 results for a company, break down the search by specific regions/cities within netherlands. search for major dutch cities like amsterdam, rotterdam, the hague, utrecht, eindhoven, etc. separately to get more precise results.",
+      "handOffs": ["verify-locations"],
+      "memory": {}
+    },
+    {
+      "nodeId": "verify-locations",
+      "description": "verify each location with latitude and longitude using mapbox",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["verifyLocation"],
+      "systemPrompt": "for each store location found, use mapbox to verify the location with accurate latitude and longitude coordinates. this ensures the location data is precise and reliable for the final dataset.",
+      "handOffs": ["save-and-deduplicate"],
+      "memory": {}
+    },
+    {
+      "nodeId": "save-and-deduplicate",
+      "description": "save results to csv and remove duplicates",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvWriter", "saveFile"],
+      "systemPrompt": "compile all verified store location data into a final csv file. remove duplicate entries based on store name, address, and coordinates. ensure the final dataset is clean and contains all relevant information including company details, store locations, and verification data.",
+      "handOffs": ["end"],
+      "memory": {}
+    }
+  ]
+}

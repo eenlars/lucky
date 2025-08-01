@@ -1,0 +1,41 @@
+{
+  "entryNodeId": "initialize-processing",
+  "nodes": [
+    {
+      "nodeId": "initialize-processing",
+      "description": "read csv and set up for individual company processing",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvReader"],
+      "systemPrompt": "read the csv file and extract the first company that hasn't been processed yet. set up the data structure for processing individual companies. if all companies have been processed, proceed to final aggregation.",
+      "handOffs": ["process-single-company", "final-aggregation"],
+      "memory": {}
+    },
+    {
+      "nodeId": "process-single-company",
+      "description": "comprehensive processing pipeline for a single company",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": [
+        "url-to-markdown",
+        "browserAutomation",
+        "searchGoogleMaps",
+        "verifyLocation",
+        "saveFile"
+      ],
+      "systemPrompt": "process a single company through the entire pipeline: 1) extract bcorp data to get countries_active, 2) check if operates in netherlands, 3) if yes, evaluate if has physical stores using website analysis, 4) if qualifies, search google maps for store locations, 5) if >120 results, search by regions, 6) verify locations with mapbox, 7) save individual company results. maintain detailed logs of decisions and results.",
+      "handOffs": ["initialize-processing"],
+      "memory": {}
+    },
+    {
+      "nodeId": "final-aggregation",
+      "description": "aggregate all individual company results into final dataset",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["csvWriter", "csvReader"],
+      "systemPrompt": "collect all individual company processing results, deduplicate store locations, create comprehensive final csv with enriched data including company info, countries_active, store locations, verification status, and processing metadata. ensure data quality and completeness.",
+      "handOffs": ["end"],
+      "memory": {}
+    }
+  ]
+}

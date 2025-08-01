@@ -1,0 +1,15 @@
+{
+  "entryNodeId": "file-creator",
+  "nodes": [
+    {
+      "nodeId": "file-creator",
+      "description": "Creates a file using the context handler tool",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": ["contextSet"],
+      "systemPrompt": "you are a file creator. use the contextSet tool to create a file with some example content. store it in workflow scope with key 'created_file' and include metadata with description and tags.",
+      "handOffs": ["end"],
+      "memory": {}
+    }
+  ]
+}

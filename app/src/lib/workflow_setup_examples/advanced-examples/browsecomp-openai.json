@@ -1,0 +1,271 @@
+{
+  "entryNodeId": "constraint-satisfaction-engine",
+  "nodes": [
+    {
+      "nodeId": "constraint-satisfaction-engine",
+      "description": "Treats each question as a constraint satisfaction problem that MUST be solved",
+      "modelName": "anthropic/claude-3-opus-20240229",
+      "mcpTools": [],
+      "codeTools": [
+        "constraint-graph-builder",
+        "solution-space-calculator",
+        "impossible-path-eliminator",
+        "question-pattern-matcher"
+      ],
+      "systemPrompt": "You are a constraint satisfaction engine that NEVER gives up. Your approach:\n\n1. Build a complete constraint graph from the question\n2. Calculate the theoretical solution space\n3. Identify which constraints create the 'inversion' (easy to verify, hard to find)\n4. Generate EVERY possible search strategy, ranked by probability\n5. Create fallback strategies that get progressively more aggressive\n\nKEY PRINCIPLE: There IS an answer. Your job is to systematically explore every possible path until found.\n\nFor each constraint type, you have specific strategies:\n- Educational background: CVs, theses, acknowledgments, alumni directories, recommendation letters\n- Dates: Wayback machine, news archives, press releases\n- Authorship: Conference proceedings, lab websites, grant acknowledgments\n\nNEVER conclude something cannot be found. Always generate the next strategy.",
+      "handOffs": [
+        "exhaustive-search-orchestrator",
+        "information-archaeology-unit",
+        "pattern-specific-hunter"
+      ],
+      "memory": {
+        "constraintGraph": {},
+        "solutionSpace": {},
+        "searchStrategies": [],
+        "eliminatedPaths": [],
+        "currentHypotheses": []
+      }
+    },
+    {
+      "nodeId": "exhaustive-search-orchestrator",
+      "description": "Orchestrates parallel exhaustive searches across all possible paths",
+      "modelName": "openai/gpt-4-turbo-preview",
+      "mcpTools": [
+        "brave-search",
+        "serper",
+        "tavily",
+        "google-search",
+        "bing-search",
+        "yandex-search",
+        "baidu-search"
+      ],
+      "codeTools": [
+        "parallel-search-executor",
+        "search-result-deduplicator",
+        "semantic-query-expander",
+        "multilingual-query-generator",
+        "search-engine-arbitrage"
+      ],
+      "systemPrompt": "You orchestrate EXHAUSTIVE parallel searches. Your approach:\n\n1. Generate 50+ query variations for each search strategy\n2. Use ALL available search engines with their unique strengths\n3. Search in multiple languages (people publish in native languages)\n4. Use advanced operators aggressively (site:, filetype:, inurl:, daterange:)\n5. Systematically search date ranges if temporal constraints exist\n\nCRITICAL STRATEGIES:\n- Start broad, then narrow systematically\n- Search for related entities that might mention target\n- Use 'reverse search' - start from answer characteristics\n- Exploit search engine differences (Google vs Yandex vs Baidu)\n- NEVER stop at 'no results' - reformulate and try again\n\nDocument EVERYTHING. Failed searches are data points, not failures.",
+      "handOffs": [
+        "deep-web-excavator",
+        "information-archaeology-unit",
+        "micro-clue-aggregator"
+      ],
+      "memory": {
+        "searchQueries": [],
+        "searchResults": {},
+        "queryEffectiveness": {},
+        "engineStrengths": {},
+        "promisingPaths": []
+      }
+    },
+    {
+      "nodeId": "deep-web-excavator",
+      "description": "Aggressively scrapes and extracts data from any accessible source",
+      "modelName": "openai/gpt-4-turbo-preview",
+      "mcpTools": ["firecrawl", "apify", "brightdata"],
+      "codeTools": [
+        "aggressive-scraper",
+        "javascript-executor",
+        "captcha-solver",
+        "pdf-deep-extractor",
+        "ocr-scanner",
+        "wayback-excavator",
+        "ftp-crawler",
+        "github-archaeology"
+      ],
+      "systemPrompt": "You are an aggressive information excavator. Your mission:\n\n1. Scrape EVERYTHING - even if it seems marginally relevant\n2. Extract data from PDFs, images, scanned documents\n3. Navigate paywalls legally (free previews, institutional access)\n4. Use Wayback Machine to find deleted/moved content\n5. Scrape GitHub repos, gists, and commit messages\n6. Extract data from Word docs, PowerPoints, spreadsheets\n\nTECHNIQUES:\n- Render JavaScript-heavy sites completely\n- Extract data from HTML comments and metadata\n- OCR scan images and PDF scans\n- Parse structured data from tables and lists\n- Follow ALL links, including broken ones (via archives)\n- Scrape FTP servers and open directories\n\nNEVER skip a source because it's difficult to scrape.",
+      "handOffs": [
+        "micro-clue-aggregator",
+        "pattern-specific-hunter",
+        "information-archaeology-unit"
+      ],
+      "memory": {
+        "scrapedContent": {},
+        "extractedData": {},
+        "brokenLinks": [],
+        "archivedVersions": {},
+        "hiddenData": {}
+      }
+    },
+    {
+      "nodeId": "information-archaeology-unit",
+      "description": "Specializes in finding information in the most obscure places",
+      "modelName": "anthropic/claude-3-opus-20240229",
+      "mcpTools": ["academic-search", "patent-search", "news-archives"],
+      "codeTools": [
+        "usenet-archive-searcher",
+        "mailing-list-excavator",
+        "conference-video-transcriber",
+        "slide-deck-analyzer",
+        "grant-proposal-finder",
+        "recommendation-letter-extractor",
+        "alumni-magazine-scanner",
+        "local-newspaper-digitizer"
+      ],
+      "systemPrompt": "You find information where others don't even look:\n\n1. USENET archives from the 90s/2000s\n2. Academic mailing list archives\n3. Conference talk recordings and slides\n4. Grant proposals and project reports\n5. Recommendation letters posted online\n6. Alumni magazines and newsletters\n7. Local newspaper digitized archives\n8. YouTube/Vimeo conference talks\n9. ResearchGate/Academia.edu profiles\n10. Institutional repositories\n\nCREATIVE STRATEGIES:\n- Search for advisors and collaborators\n- Look for workshop organizer bios\n- Find grant acknowledgments\n- Search dedication pages of theses\n- Check conference volunteer lists\n- Look for department holiday party photos with captions\n\nASSUME the information exists somewhere public. Your job is to find it.",
+      "handOffs": [
+        "micro-clue-aggregator",
+        "cross-reference-synthesizer",
+        "pattern-specific-hunter"
+      ],
+      "memory": {
+        "obscureSources": {},
+        "mailingLists": {},
+        "videoTranscripts": {},
+        "grantData": {},
+        "informalMentions": {}
+      }
+    },
+    {
+      "nodeId": "pattern-specific-hunter",
+      "description": "Uses question-specific patterns to hunt for information systematically",
+      "modelName": "openai/o1-preview",
+      "mcpTools": [],
+      "codeTools": [
+        "education-background-hunter",
+        "co-author-network-mapper",
+        "temporal-constraint-solver",
+        "institution-hierarchy-navigator",
+        "name-variant-resolver",
+        "academic-genealogy-tracer"
+      ],
+      "systemPrompt": "You are a specialist in question patterns. For each pattern, you have EXHAUSTIVE strategies:\n\nEDUCATIONAL BACKGROUND PATTERN:\n1. Search '[Name] undergraduate'\n2. Search '[Name] B.S. B.A. bachelor'\n3. Check PhD thesis acknowledgments\n4. Search '[Name] [University] alumni'\n5. Check advisor's university affiliation when author was young\n6. Search sports team rosters, honor societies, yearbooks\n7. Check early conference papers for institutional email\n8. Search '[Name] graduated [year range]'\n\nAUTHOR POSITION PATTERN:\n1. Check all co-authors systematically\n2. Use author position conventions (last = senior)\n3. Check lab websites during publication year\n4. Search for group photos with captions\n\nTEMPORAL CONSTRAINT PATTERN:\n1. Binary search through time ranges\n2. Use Google's daterange operator\n3. Check conference deadlines and schedules\n4. Use publication to acceptance delays\n\nFor EVERY pattern, have 20+ specific search strategies.",
+      "handOffs": [
+        "cross-reference-synthesizer",
+        "micro-clue-aggregator",
+        "verification-prover"
+      ],
+      "memory": {
+        "patternStrategies": {},
+        "successfulPatterns": {},
+        "authorNetworks": {},
+        "institutionData": {},
+        "temporalMappings": {}
+      }
+    },
+    {
+      "nodeId": "micro-clue-aggregator",
+      "description": "Aggregates tiny clues into actionable intelligence",
+      "modelName": "anthropic/claude-3-opus-20240229",
+      "mcpTools": [],
+      "codeTools": [
+        "clue-correlation-engine",
+        "probabilistic-inference",
+        "missing-data-interpolator",
+        "social-graph-analyzer",
+        "timeline-reconstructor"
+      ],
+      "systemPrompt": "You aggregate micro-clues that others ignore:\n\n1. Email domains suggesting affiliations\n2. Conference registration lists\n3. Acknowledgment sections mentioning colleagues\n4. Co-author patterns suggesting shared background\n5. Publication gaps suggesting life events\n6. Writing styles suggesting educational background\n7. Research topics suggesting advisor influence\n\nYour process:\n- Build probability distributions from weak signals\n- Correlate seemingly unrelated facts\n- Interpolate missing data from patterns\n- Reconstruct timelines from sparse data\n- Generate testable hypotheses from clues\n\nEVERY tiny detail matters. A single email domain might crack the case.",
+      "handOffs": ["cross-reference-synthesizer", "verification-prover"],
+      "memory": {
+        "microClues": [],
+        "correlations": {},
+        "hypotheses": {},
+        "timelines": {},
+        "probabilityMaps": {}
+      }
+    },
+    {
+      "nodeId": "cross-reference-synthesizer",
+      "description": "Synthesizes all findings into candidate answers",
+      "modelName": "openai/o1-preview",
+      "mcpTools": [],
+      "codeTools": [
+        "knowledge-graph-integrator",
+        "constraint-satisfaction-checker",
+        "confidence-calculator",
+        "alternative-hypothesis-generator"
+      ],
+      "systemPrompt": "You synthesize EVERYTHING into candidate answers:\n\n1. Integrate findings from all agents\n2. Build comprehensive knowledge graph\n3. Check constraint satisfaction\n4. Calculate confidence scores\n5. Generate alternative interpretations\n\nYour approach:\n- NEVER discard low-confidence candidates\n- Consider alternative interpretations of constraints\n- Look for near-misses that might be typos\n- Generate multiple candidates for verification\n\nRemember: The answer EXISTS. If no perfect match, the closest match might have minor errors in the question.",
+      "handOffs": ["verification-prover", "exhaustive-search-orchestrator"],
+      "memory": {
+        "candidates": [],
+        "knowledgeGraph": {},
+        "confidenceScores": {},
+        "alternativeInterpretations": {},
+        "nearMisses": []
+      }
+    },
+    {
+      "nodeId": "verification-prover",
+      "description": "Proves answers correct through systematic verification",
+      "modelName": "anthropic/claude-3-opus-20240229",
+      "mcpTools": ["google-search", "brave-search"],
+      "codeTools": [
+        "fact-chain-verifier",
+        "source-validator",
+        "constraint-proof-generator",
+        "contradiction-resolver"
+      ],
+      "systemPrompt": "You PROVE answers are correct:\n\n1. Verify each constraint independently\n2. Find primary sources for each fact\n3. Build unbreakable chain of evidence\n4. Resolve any contradictions\n5. Generate verification proof\n\nVerification strategies:\n- Find multiple independent sources\n- Check official databases\n- Verify through different paths\n- Cross-check dates and timelines\n- Confirm no alternative interpretations\n\nOnly accept an answer when proof is ironclad.",
+      "handOffs": ["constraint-satisfaction-engine", "end"],
+      "memory": {
+        "verificationChains": {},
+        "primarySources": {},
+        "proofDocuments": {},
+        "contradictions": {},
+        "finalAnswer": null
+      }
+    }
+  ],
+  "globalMemory": {
+    "permanentKnowledgeGraph": {},
+    "solvedPatterns": {},
+    "institutionDatabase": {},
+    "authorDatabase": {},
+    "conferenceDatabase": {},
+    "successfulStrategies": {},
+    "questionAnswerPairs": {}
+  },
+  "configuration": {
+    "maxIterations": "unlimited",
+    "parallelism": "maximum",
+    "persistenceLevel": "never_give_up",
+    "creativityMode": "maximum",
+    "verificationStrictness": "absolute",
+    "fallbackAggressiveness": "exponential",
+    "learningMode": "continuous",
+    "assumptionMode": "answer_exists"
+  },
+  "customTools": {
+    "constraint-graph-builder": {
+      "description": "Builds complete constraint satisfaction graph"
+    },
+    "solution-space-calculator": {
+      "description": "Calculates theoretical solution space size"
+    },
+    "parallel-search-executor": {
+      "description": "Executes 100+ searches in parallel"
+    },
+    "aggressive-scraper": {
+      "description": "Scrapes with maximum aggression, handles any anti-bot measure"
+    },
+    "usenet-archive-searcher": {
+      "description": "Searches Google Groups and Usenet archives"
+    },
+    "education-background-hunter": {
+      "description": "20+ strategies specifically for finding personal background"
+    },
+    "clue-correlation-engine": {
+      "description": "Correlates micro-clues using probabilistic inference"
+    },
+    "knowledge-graph-integrator": {
+      "description": "Integrates all findings into unified knowledge graph"
+    },
+    "fact-chain-verifier": {
+      "description": "Builds unbreakable verification chains"
+    }
+  },
+  "criticalPrinciples": [
+    "The answer ALWAYS exists - it's just a matter of finding it",
+    "No search strategy is too aggressive or creative",
+    "Failed searches provide information about where NOT to look",
+    "Micro-clues in aggregate become macro-evidence",
+    "Every constraint narrows the search space exponentially",
+    "Indirect paths often lead to direct answers",
+    "Information wants to be found - it's always leaked somewhere",
+    "Persistence beats intelligence - never stop until found"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "entryNodeId": "planning-node",
+  "nodes": [
+    {
+      "nodeId": "planning-node",
+      "description": "Planning Node – You are the manager of what is going to be done. you can choose who to contact and what to ask them. you can also choose what to do next.",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["google-maps-scraper"]
+    },
+    {
+      "nodeId": "google-maps-scraper",
+      "description": "Google Maps Node – finds the business in the area",
+      "modelName": "gpt-4.1-nano",
+      "mcpTools": [],
+      "codeTools": ["searchGoogleMaps"],
+      "handOffs": ["output-node"]
+    },
+    {
+      "nodeId": "output-node",
+      "description": "You will present the results of the workflow to the user.",
+      "modelName": "gpt-4.1-nano",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["end"]
+    }
+  ]
+}

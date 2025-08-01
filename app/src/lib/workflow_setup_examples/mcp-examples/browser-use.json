@@ -1,0 +1,13 @@
+{
+  "entryNodeId": "browser-use",
+  "nodes": [
+    {
+      "nodeId": "browser-use",
+      "description": "Browser Use Node – uses the browser to find the business in the area",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": ["browserUse"],
+      "codeTools": [],
+      "handOffs": ["end"]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "entryNodeId": "find",
+  "nodes": [
+    {
+      "nodeId": "find",
+      "description": "can find locations and verify them",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["searchGoogleMaps"],
+      "handOffs": ["save-locations"],
+      "memory": {},
+      "systemPrompt": "first look up the location data on google maps"
+    },
+    {
+      "nodeId": "save-locations",
+      "description": "can save locations",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataManager"],
+      "handOffs": ["verify"],
+      "memory": {},
+      "systemPrompt": "save the locations"
+    },
+    {
+      "nodeId": "verify",
+      "description": "can verify locations",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataInfo", "verifyLocation"],
+      "handOffs": ["remove-invalid"],
+      "memory": {},
+      "systemPrompt": "verify the location data"
+    },
+    {
+      "nodeId": "remove-invalid",
+      "description": "can remove invalid locations",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataManager"],
+      "handOffs": ["return-result"],
+      "memory": {},
+      "systemPrompt": "remove the invalid locations"
+    },
+    {
+      "nodeId": "return-result",
+      "description": "can return a summary of the location data",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataInfo"],
+      "handOffs": ["end"],
+      "memory": {},
+      "systemPrompt": "return the location data in a small, concise format"
+    }
+  ]
+}

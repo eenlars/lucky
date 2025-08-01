@@ -1,0 +1,61 @@
+{
+  "entryNodeId": "planning-node",
+  "nodes": [
+    {
+      "nodeId": "planning-node",
+      "description": "High-level coordinator that decides which step runs next and passes interim results along.",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["homepage-fetcher"]
+    },
+    {
+      "nodeId": "homepage-fetcher",
+      "description": "Fetch https://www.rituals.com/nl-nl and return raw HTML for downstream checks.",
+      "modelName": "gpt-4.1",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["country-checker"]
+    },
+    {
+      "nodeId": "country-checker",
+      "description": "Verify that the country selector shows “Nederland” and that the “Winkels” tab is active; fails fast if either is false.",
+      "modelName": "gpt-4.1",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["stores-post-fetcher"]
+    },
+    {
+      "nodeId": "stores-post-fetcher",
+      "description": "Issue the first POST to /Stores-FilterStores with nextPageToken = 0 and collect the HTML of the store list returned.",
+      "modelName": "gpt-4.1",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["pagination-fetcher"]
+    },
+    {
+      "nodeId": "pagination-fetcher",
+      "description": "Repeatedly click “meer winkels” (POST with nextPageToken ≥ 5) until no more stores are returned; streams every response’s HTML forward.",
+      "modelName": "gpt-4.1",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["html-collector"]
+    },
+    {
+      "nodeId": "html-collector",
+      "description": "Aggregate all HTML fragments from previous steps and alphabetically sort them by store name (or any other key requested).",
+      "modelName": "gpt-4.1-large",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["file-manager"]
+    },
+    {
+      "nodeId": "file-manager",
+      "description": "Persist the sorted HTML blobs (and later the parsed locations) to durable storage for downstream consumers.",
+      "modelName": "gpt-4.1",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": ["end"]
+    }
+  ]
+}

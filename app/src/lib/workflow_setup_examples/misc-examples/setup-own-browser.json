@@ -1,0 +1,13 @@
+{
+  "entryNodeId": "browser-automation",
+  "nodes": [
+    {
+      "nodeId": "browser-automation",
+      "description": "Browser Automation Node – uses the browser to find the business in the area",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": ["browserAutomation"],
+      "codeTools": [],
+      "handOffs": ["end"]
+    }
+  ]
+}

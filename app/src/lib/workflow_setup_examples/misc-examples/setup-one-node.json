@@ -1,0 +1,20 @@
+{
+  "entryNodeId": "location-node",
+  "nodes": [
+    {
+      "nodeId": "location-node",
+      "description": "can find locations and verify them",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [
+        "searchGoogleMaps",
+        "verifyLocation",
+        "locationDataManager",
+        "locationDataInfo"
+      ],
+      "handOffs": ["end"],
+      "memory": {},
+      "systemPrompt": "first look up the location data on google maps. you save them with the locationDataManager tool. then you verify if the locations are correct, and are also in the area that was asked with the verifyLocation tool. if the locations are not correct, you need to remove them with the locationDataManager tool. then you call the locationDataInfo tool to get a summary of the location data."
+    }
+  ]
+}
