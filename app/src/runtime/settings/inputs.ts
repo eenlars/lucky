@@ -200,4 +200,4 @@ const QUESTIONS = {
 } satisfies Record<string, EvaluationInput>
 
 export { QUESTIONS }
-export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.tonys
+export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.ritualsHard

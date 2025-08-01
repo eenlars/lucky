@@ -87,9 +87,8 @@ if not good, you need to give examples why it's not good.
 
   // Ensure we have valid values with fallbacks
   const accuracy = Math.max(1, Math.min(100, response.data.accuracy || 1))
-  const novelty = Math.max(1, Math.min(100, response.data.novelty || 1))
 
-  const effectiveScore = accuracy * 0.7 + novelty * 0.3
+  const effectiveScore = accuracy
 
   const normalizedTime = normalizeTime(totalTime)
   const normalizedCost = normalizeCost(response.usdCost)
@@ -114,7 +113,7 @@ if not good, you need to give examples why it's not good.
       totalCostUsd: totalCost + response.usdCost,
       totalTimeSeconds: totalTime / 1000,
       accuracy: Math.round(accuracy),
-      novelty: Math.round(novelty),
+      novelty: 1,
     },
     response.usdCost
   )

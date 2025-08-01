@@ -80,7 +80,7 @@ export const TOOL_CONFIG = {
     "todoWrite",
     "todoRead",
     "urlToMarkdown",
-    "browserUse",
+    // "browserUse",
     "serpAPI",
     "playwright",
     "browserAutomation",
