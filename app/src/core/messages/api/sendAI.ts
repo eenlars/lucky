@@ -48,7 +48,7 @@ import {
 import { SpendingTracker } from "@/core/utils/spending/SpendingTracker"
 import { lgg } from "@/logger"
 import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
+import type { ModelName } from "@/core/workflow/schema/workflow.types"
 
 /* -------------------------------------------------------------------------- */
 /*                               Public types                                 */

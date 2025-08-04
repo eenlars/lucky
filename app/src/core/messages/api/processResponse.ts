@@ -16,9 +16,9 @@ import {
   type VercelUsage,
 } from "@/core/utils/spending/calculatePricing"
 import { R, type RS } from "@/core/utils/types"
+import type { ModelName } from "@/core/workflow/schema/workflow.types"
 import { lgg } from "@/logger"
 import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
 import type { GenerateTextResult, ToolSet } from "ai"
 export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is called.
 

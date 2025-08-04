@@ -4,9 +4,9 @@ import { supabase } from "@/core/utils/clients/supabase/client"
 import type { Json, TablesInsert } from "@/core/utils/clients/supabase/types"
 import { llmify } from "@/core/utils/common/llmify"
 import { JSONN } from "@/core/utils/file-types/json/jsonParse"
+import type { ModelName } from "@/core/workflow/schema/workflow.types"
 import { lgg } from "@/logger"
 import { CONFIG } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
 
 type SaveNodeInvocationOpts = {
   nodeId: string

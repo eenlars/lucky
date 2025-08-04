@@ -1,6 +1,6 @@
 import { isNir } from "@/core/utils/common/isNir"
-import type { TokenUsage } from "@/runtime/settings/models"
-import { pricing, type ModelName } from "@/runtime/settings/models"
+import type { ModelName } from "@/core/workflow/schema/workflow.types"
+import { pricing, type TokenUsage } from "@/runtime/settings/models"
 
 export type VercelUsage = {
   promptTokens: number
