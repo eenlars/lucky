@@ -52,7 +52,6 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
       ],
       opts: {
         tools: { searchGoogleMaps: searchGoogleMapsTool },
-        toolStrategy: "v2",
         toolChoice: { type: "tool", toolName: "searchGoogleMaps" },
         maxSteps: 1,
       },
@@ -75,7 +74,6 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
         ],
         opts: {
           tools: { searchGoogleMaps: searchGoogleMapsTool },
-          toolStrategy: "v2",
           toolChoice: { type: "tool", toolName: "searchGoogleMaps" },
           maxSteps: 1,
         },

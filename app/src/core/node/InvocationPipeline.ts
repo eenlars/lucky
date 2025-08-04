@@ -296,7 +296,6 @@ export class InvocationPipeline {
       mode: "tool",
       opts: {
         tools: this.tools,
-        toolStrategy: "none",
         toolChoice: this.toolChoice ?? "auto",
         saveOutputs: this.saveOutputs,
         maxSteps: this.toolChoice === "required" ? 1 : undefined,

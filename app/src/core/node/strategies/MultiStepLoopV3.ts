@@ -193,7 +193,6 @@ export async function runMultiStepLoopV3Helper(
       ],
       opts: {
         tools: { [selected]: tools[selected] },
-        toolStrategy: "v3",
         toolChoice: { type: "tool", toolName: selected },
         maxSteps: 1,
         // if the tool input is incorrect, it should not repair.

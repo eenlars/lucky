@@ -115,7 +115,6 @@ export interface ToolRequest extends RequestBase {
   opts: RequestBase["opts"] & {
     tools: ToolSet
     toolChoice?: ToolChoice<ToolSet>
-    toolStrategy: "v2" | "v3" | "none"
     repair?: boolean
   }
 }
