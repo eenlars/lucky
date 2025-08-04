@@ -1,0 +1,17 @@
+{
+  "name": "@together/core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "zod": "^3.22.4",
+    "openai": "^4.28.4",
+    "@anthropic-ai/sdk": "^0.17.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.5"
+  }
+}

@@ -1,0 +1,74 @@
+import { Messages } from "@/messages"
+import { WorkflowEvolutionPrompts } from "@/prompts/improveWorkflow.p"
+import { type CodeToolName } from "@/tools/tool.types"
+import { guard } from "@/workflow/schema/errorMessages"
+import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { WorkflowConfigSchema } from "@workflow/schema/workflowSchema"
+
+export interface UnifiedImprovementParams {
+  config: WorkflowConfig
+  fitness: FitnessOfWorkflow
+  feedback: string
+}
+
+export interface UnifiedImprovementResult {
+  improvedConfig: WorkflowConfig | null
+  cost: number
+}
+
+/**
+ * Unified workflow improvement following the flow:
+ * 1. Convert old_schema_full_json to simple schema
+ * 2. Call analyzeWorkflowBottlenecks
+ * 3. LLM judge outputs new_schema_full_json or null
+ */
+//todo-leak :: Unified improvement function receives fitness parameter during improvement
+export async function improveWorkflowUnified(
+  params: UnifiedImprovementParams
+): Promise<UnifiedImprovementResult> {
+  const { config, fitness, feedback } = params
+  let totalCost = 0
+
+  let improvedConfig: WorkflowConfig | null = null
+
+  guard(fitness, "Fitness not set")
+  guard(feedback, "Feedback not set")
+
+  // step 4: llm judge with full json input/output
+  const { data, success, error, usdCost } = await Messages.sendAI({
+    // watch out: this is without the easyModelNames option!
+    messages: WorkflowEvolutionPrompts.createJudgePrompt(
+      config,
+      fitness,
+      feedback
+    ),
+    model: MODELS.reasoning,
+    mode: "structured",
+    schema: WorkflowConfigSchema,
+    output: "object",
+    opts: {
+      reasoning: true,
+    },
+  })
+
+  improvedConfig = data as WorkflowConfig | null
+
+  if (improvedConfig) {
+    // add the default tools to the config
+    const defaultTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
+    improvedConfig.nodes.forEach((node) => {
+      node.codeTools = [...new Set([...node.codeTools, ...defaultTools])]
+    })
+  }
+
+  if (!success) throw new Error(`Failed to get workflow improvements: ${error}`)
+
+  totalCost += usdCost
+
+  return {
+    improvedConfig,
+    cost: totalCost,
+  }
+}
