@@ -1,0 +1,76 @@
+[
+  {
+    "name": "Patagonia Amsterdam",
+    "address": "Singel 465",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3671137,
+      "longitude": 4.8919129
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJiyzrJoIJxkcRgqHNsZZpBsg",
+        "address": "Singel 465",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 299 0701",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://eu.patagonia.com/nl/en/stores/nl/amsterdam/singel-465/store_amsterdam.html",
+        "storeName": "Patagonia Amsterdam",
+        "ratingText": "4,9 sterren 52 reviews",
+        "stars": "4,9 sterren 52 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://eu.patagonia.com/nl/en/stores/nl/amsterdam/singel-465/store_amsterdam.html",
+      "stars": "4,9 sterren 52 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:20:21.137Z"
+    },
+    "domain": "patagonia.com"
+  },
+  {
+    "name": "Patagonia",
+    "address": "Jollemanhof 11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.377167,
+      "longitude": 4.920386
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUxGYZagJxkcRYKK9jQSX7R0",
+        "address": "Jollemanhof 11",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "phone": "020 797 9333",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://eu.patagonia.com/",
+        "storeName": "Patagonia",
+        "ratingText": "4,0 sterren 50 reviews",
+        "stars": "4,0 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://eu.patagonia.com/",
+      "stars": "4,0 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:20:21.137Z"
+    },
+    "domain": "patagonia.com"
+  }
+]

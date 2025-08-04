@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Tony's Chocolonely Super Store",
+    "address": "Oudebrugsteeg 15, 1012 JN Amsterdam",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "postcode": "1012 JN",
+    "coordinates": null,
+    "opening_times": {
+      "monday": "10:00-19:00",
+      "tuesday": "10:00-19:00",
+      "wednesday": "10:00-19:00",
+      "thursday": "10:00-19:00",
+      "friday": "10:00-19:00",
+      "saturday": "10:00-19:00",
+      "sunday": "10:00-19:00"
+    },
+    "owner_imgs": [
+      "https://lh3.googleusercontent.com/gps-cs-s/AC9h4np_PElc662cwJj9-RC4kIf7CLwNMW8Xz8Vjrxjs_AOzP9VBmA3vPQe33cTlU5d7U1ap4UbcGR0gkyxHOS_BBHxb0tqpe8hkwllaKrL0_dAy6we2f1BCIYHd8hpVrNR-n1wjYxI62A=w408-h544-k-no"
+    ],
+    "metadata": {
+      "original_data": {
+        "storeName": "Tony's Chocolonely Super Store",
+        "stars": "4,3",
+        "numberOfReviews": 3.63,
+        "googleUrl": "https://www.google.com/maps/search/Tony's+Chocolonely+retail+stores+Netherlands",
+        "bizWebsite": "https://tonyschocolonely.com/nl/en/visit-us/tonys-super-store",
+        "address": "Adres: Oudebrugsteeg 15, 1012 JN Amsterdam",
+        "category": "Chocolaterie",
+        "status": "Gesloten",
+        "phone": "Telefoon: 020 205 1200",
+        "mainImage": "https://lh3.googleusercontent.com/gps-cs-s/AC9h4np_PElc662cwJj9-RC4kIf7CLwNMW8Xz8Vjrxjs_AOzP9VBmA3vPQe33cTlU5d7U1ap4UbcGR0gkyxHOS_BBHxb0tqpe8hkwllaKrL0_dAy6we2f1BCIYHd8hpVrNR-n1wjYxI62A=w408-h544-k-no",
+        "hours": {
+          "monday": "10:00-19:00",
+          "tuesday": "10:00-19:00",
+          "wednesday": "10:00-19:00",
+          "thursday": "10:00-19:00",
+          "friday": "10:00-19:00",
+          "saturday": "10:00-19:00",
+          "sunday": "10:00-19:00"
+        }
+      },
+      "category": "Chocolaterie",
+      "status": "Gesloten",
+      "googleUrl": "https://www.google.com/maps/search/Tony's+Chocolonely+retail+stores+Netherlands",
+      "bizWebsite": "https://tonyschocolonely.com/nl/en/visit-us/tonys-super-store",
+      "stars": "4,3",
+      "numberOfReviews": 3.63,
+      "scrapedAt": "2025-07-20T03:20:47.751Z"
+    },
+    "domain": "tonyschocolonely.com"
+  }
+]
