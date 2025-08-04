@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
@@ -20,20 +21,21 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/core/*": ["./src/core/*"],
+      "@/core/*": ["@together/core/*", "./src/core/*"],
+      "@packages/core/*": ["../packages/core/src/*"],
       "@/types/*": ["./src/types/*"],
       "@/logger": ["./src/core/utils/logging/Logger.ts"],
       "@/benchmarks/*": ["./src/core/workflow/ingestion/benchmarks/*"],
-      "@workflow/*": ["./src/core/workflow/*"],
-      "@node/*": ["./src/core/node/*"],
-      "@messages/*": ["./src/core/messages/*"],
+      "@workflow/*": ["../packages/core/src/workflow/*", "./src/core/workflow/*"],
+      "@node/*": ["../packages/core/src/node/*", "./src/core/node/*"],
+      "@messages/*": ["../packages/core/src/messages/*", "./src/core/messages/*"],
       "@memories/*": ["./src/core/memories/*"],
-      "@tools/*": ["./src/core/tools/*"],
-      "@prompts/*": ["./src/core/prompts/*"],
-      "@validation/*": ["./src/core/utils/validation/*"],
-      "@improvement/*": ["./src/core/improvement/*"],
-      "@behavioral/*": ["./src/core/improvement/behavioral/*"],
-      "@gp/*": ["./src/core/improvement/gp/*"]
+      "@tools/*": ["../packages/core/src/tools/*", "./src/core/tools/*"],
+      "@prompts/*": ["../packages/core/src/prompts/*", "./src/core/prompts/*"],
+      "@validation/*": ["../packages/core/src/utils/validation/*", "./src/core/utils/validation/*"],
+      "@improvement/*": ["../packages/core/src/improvement/*", "./src/core/improvement/*"],
+      "@behavioral/*": ["../packages/core/src/improvement/behavioral/*", "./src/core/improvement/behavioral/*"],
+      "@gp/*": ["../packages/core/src/improvement/gp/*", "./src/core/improvement/gp/*"]
     },
     "allowSyntheticDefaultImports": true
   },
