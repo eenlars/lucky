@@ -20,7 +20,7 @@
       "@/types/*": ["./src/types/*"],
       "@/logger": ["./src/utils/logging/Logger.ts"],
       "@/benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
-      "@/runtime/*": ["../../examples/runtime/*"],
+      "@/runtime/*": ["../../example/*"],
       "@workflow/*": ["./src/workflow/*"],
       "@node/*": ["./src/node/*"],
       "@messages/*": ["./src/messages/*"],

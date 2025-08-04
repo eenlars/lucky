@@ -2,8 +2,8 @@
  * Evolution configuration validation for genetic programming
  */
 
-import type { EvolutionSettings } from "./evolution-types"
 import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
+import type { EvolutionSettings } from "./evolution-types"
 
 /**
  * Validation errors for evolution configuration
@@ -173,14 +173,12 @@ export function _createDefaultGPConfig(
 export function validateEvolutionSettings(
   settings: FlowEvolutionConfig
 ): boolean
-export function validateEvolutionSettings(
-  settings: EvolutionSettings
-): boolean
+export function validateEvolutionSettings(settings: EvolutionSettings): boolean
 export function validateEvolutionSettings(
   settings: FlowEvolutionConfig | EvolutionSettings
 ): boolean {
   // Handle FlowEvolutionConfig
-  if ('GP' in settings) {
+  if ("GP" in settings) {
     const evolutionSettings = settings.GP
     if (evolutionSettings.populationSize <= 0) return false
     if (evolutionSettings.maxCostUSD <= 0) return false
@@ -190,13 +188,16 @@ export function validateEvolutionSettings(
       evolutionSettings.crossoverRate > 1
     )
       return false
-    if (evolutionSettings.mutationRate < 0 || evolutionSettings.mutationRate > 1)
+    if (
+      evolutionSettings.mutationRate < 0 ||
+      evolutionSettings.mutationRate > 1
+    )
       return false
     if (evolutionSettings.offspringCount < 0) return false
     if (evolutionSettings.numberOfParentsCreatingOffspring <= 0) return false
     return true
   }
-  
+
   // Handle EvolutionSettings directly
   const evolutionSettings = settings
   if (evolutionSettings.populationSize <= 0) return false

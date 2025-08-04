@@ -1,6 +1,8 @@
 // EvolutionEngine.ts
 
 import { Population } from "@/core/improvement/gp/Population"
+import type { EvolutionSettings } from "@/core/improvement/gp/resources/evolution-types"
+import { evolutionSettingsToString } from "@/core/improvement/gp/resources/evolution-types"
 import type { FlowEvolutionMode } from "@/core/types"
 import { isNir } from "@/core/utils/common/isNir"
 import { parallelLimit } from "@/core/utils/common/parallelLimit"
@@ -8,13 +10,10 @@ import { lgg } from "@/core/utils/logging/Logger"
 import type { EvaluationInput } from "@/core/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@/core/workflow/schema/errorMessages"
 import { CONFIG } from "@/runtime/settings/constants"
-import type { EvolutionSettings } from "@/core/improvement/gp/resources/evolution-types"
-import { evolutionSettingsToString } from "@/core/improvement/gp/resources/evolution-types"
 import {
-  createDefaultEvolutionSettings,
   createEvolutionSettingsWithConfig,
+  validateEvolutionSettings,
 } from "@/runtime/settings/evolution"
-import { validateGPConfig } from "@/core/improvement/gp/resources/validation"
 import { failureTracker } from "@gp/resources/tracker"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -41,7 +40,7 @@ export class EvolutionEngine {
     restartRunId?: string
   ) {
     // Validate configuration early to catch issues before evolution starts
-    validateGPConfig(evolutionSettings)
+    validateEvolutionSettings(evolutionSettings)
 
     this.verificationCache = new VerificationCache()
     this.runService = new RunService(

@@ -22,7 +22,9 @@ export class Population {
   private evaluationInput: EvaluationInput | null = null
   private problemAnalysis: string = ""
   private _baseWorkflow: WorkflowConfig | undefined = undefined
-  static verbose = getConfig().logging.override.GP
+  static get verbose() {
+    return getConfig().logging.override.GP
+  }
 
   constructor(
     private config: FlowEvolutionConfig,

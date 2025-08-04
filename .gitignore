@@ -79,3 +79,22 @@ downloads/*
 mcp/*
 
 **/research-experiments/*
+
+# Cache directories
+.cache/
+**/.cache/
+
+# Build output directories
+dist/
+lib/
+**/dist/
+**/lib/
+
+# Local config files
+*.local
+
+# Turborepo
+.turbo/
+
+# NPM pack output
+*.tgz
