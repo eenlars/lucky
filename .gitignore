@@ -76,6 +76,6 @@ downloads/*
 !downloads/.gitkeep
 
 # MCP folder
-mcp/
+mcp/*
 
 **/research-experiments/*
