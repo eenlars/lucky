@@ -1,0 +1,11 @@
+{
+    "name": "lucky-example",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "bun run main.ts",
+        "build": "bun build main.ts --outdir dist",
+        "typecheck": "bun tsc --noEmit"
+    }
+}

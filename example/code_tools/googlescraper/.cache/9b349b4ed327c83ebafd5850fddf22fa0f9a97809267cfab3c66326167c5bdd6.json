@@ -1,0 +1,32 @@
+[
+  {
+    "name": "B Lab Europe",
+    "address": "Mauritskade 63, 1092 AD Amsterdam",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "postcode": "1092 AD",
+    "coordinates": null,
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "storeName": "B Lab Europe",
+        "stars": "5,0",
+        "numberOfReviews": 5,
+        "googleUrl": "https://www.google.com/maps/search/B-Corporation+B2C+stores+Netherlands",
+        "bizWebsite": "http://bcorporation.eu/",
+        "address": "Adres: Mauritskade 63, 1092 AD Amsterdam",
+        "category": "Non-profitorganisatie",
+        "hours": null
+      },
+      "category": "Non-profitorganisatie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/search/B-Corporation+B2C+stores+Netherlands",
+      "bizWebsite": "http://bcorporation.eu/",
+      "stars": "5,0",
+      "numberOfReviews": 5,
+      "scrapedAt": "2025-07-20T09:45:12.766Z"
+    },
+    "domain": "bcorporation.eu"
+  }
+]

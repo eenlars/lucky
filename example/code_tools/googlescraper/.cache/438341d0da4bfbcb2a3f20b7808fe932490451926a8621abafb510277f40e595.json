@@ -1,0 +1,361 @@
+[
+  {
+    "name": "FOUR Amsterdam",
+    "address": "Van Baerlestraat 9-11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3598357,
+      "longitude": 4.8775848
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJn6KzP7s5ZUERgdjInA0arao",
+        "address": "Van Baerlestraat 9-11",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 679 2244",
+        "googleUrl": "https://www.google.com/maps/place/FOUR+Amsterdam/data=!4m7!3m6!1s0x416539bb3fb3a29f:0xaaad1a0d9cc8d881!8m2!3d52.3598357!4d4.8775848!16s%2Fg%2F11b727rkjd!19sChIJn6KzP7s5ZUERgdjInA0arao?authuser=0&hl=nl&rclk=1",
+        "storeName": "FOUR Amsterdam",
+        "ratingText": "4,1 sterren 631 reviews",
+        "stars": "4,1 sterren 631 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/FOUR+Amsterdam/data=!4m7!3m6!1s0x416539bb3fb3a29f:0xaaad1a0d9cc8d881!8m2!3d52.3598357!4d4.8775848!16s%2Fg%2F11b727rkjd!19sChIJn6KzP7s5ZUERgdjInA0arao?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 631 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "CYBEX Flagship Store Amsterdam",
+    "address": "Pieter Cornelisz Hooftstraat 136",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3597209,
+      "longitude": 4.8781562
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJqxuYApkJxkcRdlNrBxjPLY8",
+        "address": "Pieter Cornelisz Hooftstraat 136",
+        "category": "Babywinkel",
+        "status": "",
+        "phone": "06 29147935",
+        "googleUrl": "https://www.google.com/maps/place/CYBEX+Flagship+Store+Amsterdam/data=!4m7!3m6!1s0x47c6099902981bab:0x8f2dcf18076b5376!8m2!3d52.3597209!4d4.8781562!16s%2Fg%2F11pzy86623!19sChIJqxuYApkJxkcRdlNrBxjPLY8?authuser=0&hl=nl&rclk=1",
+        "storeName": "CYBEX Flagship Store Amsterdam",
+        "ratingText": "4,8 sterren 153 reviews",
+        "stars": "4,8 sterren 153 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Babywinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/CYBEX+Flagship+Store+Amsterdam/data=!4m7!3m6!1s0x47c6099902981bab:0x8f2dcf18076b5376!8m2!3d52.3597209!4d4.8781562!16s%2Fg%2F11pzy86623!19sChIJqxuYApkJxkcRdlNrBxjPLY8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 153 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Tuesday Netherlands B.V.",
+    "address": "Cornelis Schuytstraat 74",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3526484,
+      "longitude": 4.8727506
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ6czP8_sJxkcRaWeKl9e0IXI",
+        "address": "Cornelis Schuytstraat 74",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+        "storeName": "Tuesday Netherlands B.V.",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "HERMÈS Amsterdam",
+    "address": "Pieter Cornelisz Hooftstraat 94",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3601658,
+      "longitude": 4.8798876
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC7QNhuUJxkcReAh82M1Ngl4",
+        "address": "Pieter Cornelisz Hooftstraat 94",
+        "category": "Lederwarenwinkel",
+        "status": "",
+        "phone": "020 305 7050",
+        "googleUrl": "https://www.google.com/maps/place/HERM%C3%88S+Amsterdam/data=!4m7!3m6!1s0x47c609e5860db40b:0x5e824dcdd87c0878!8m2!3d52.3601658!4d4.8798876!16s%2Fg%2F1td29jd5!19sChIJC7QNhuUJxkcReAh82M1Ngl4?authuser=0&hl=nl&rclk=1",
+        "storeName": "HERMÈS Amsterdam",
+        "ratingText": "3,0 sterren 365 reviews",
+        "stars": "3,0 sterren 365 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Lederwarenwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/HERM%C3%88S+Amsterdam/data=!4m7!3m6!1s0x47c609e5860db40b:0x5e824dcdd87c0878!8m2!3d52.3601658!4d4.8798876!16s%2Fg%2F1td29jd5!19sChIJC7QNhuUJxkcReAh82M1Ngl4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,0 sterren 365 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Stone Island",
+    "address": "Pieter Cornelisz Hooftstraat 37",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3606009,
+      "longitude": 4.8824392
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJOVd1Pe8JxkcREehvWMAjuag",
+        "address": "Pieter Cornelisz Hooftstraat 37",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 229 4980",
+        "googleUrl": "https://www.google.com/maps/place/Stone+Island/data=!4m7!3m6!1s0x47c609ef3d755739:0xa8b923c0586fe811!8m2!3d52.3606009!4d4.8824392!16s%2Fg%2F11byp5z0cy!19sChIJOVd1Pe8JxkcREehvWMAjuag?authuser=0&hl=nl&rclk=1",
+        "storeName": "Stone Island",
+        "ratingText": "4,2 sterren 193 reviews",
+        "stars": "4,2 sterren 193 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Stone+Island/data=!4m7!3m6!1s0x47c609ef3d755739:0xa8b923c0586fe811!8m2!3d52.3606009!4d4.8824392!16s%2Fg%2F11byp5z0cy!19sChIJOVd1Pe8JxkcREehvWMAjuag?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 193 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "DIOR Amsterdam PC Hooftstraat",
+    "address": "Pieter Cornelisz Hooftstraat 100",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3601401,
+      "longitude": 4.8796906
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJuZ3KiOUJxkcR7y1x2SnXNRg",
+        "address": "Pieter Cornelisz Hooftstraat 100",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 670 9987",
+        "googleUrl": "https://www.google.com/maps/place/DIOR+Amsterdam+PC+Hooftstraat/data=!4m7!3m6!1s0x47c609e588ca9db9:0x1835d729d9712def!8m2!3d52.3601401!4d4.8796906!16s%2Fg%2F11b6dh1sf6!19sChIJuZ3KiOUJxkcR7y1x2SnXNRg?authuser=0&hl=nl&rclk=1",
+        "storeName": "DIOR Amsterdam PC Hooftstraat",
+        "ratingText": "3,8 sterren 184 reviews",
+        "stars": "3,8 sterren 184 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/DIOR+Amsterdam+PC+Hooftstraat/data=!4m7!3m6!1s0x47c609e588ca9db9:0x1835d729d9712def!8m2!3d52.3601401!4d4.8796906!16s%2Fg%2F11b6dh1sf6!19sChIJuZ3KiOUJxkcR7y1x2SnXNRg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,8 sterren 184 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "ZARA Home",
+    "address": "Van Baerlestraat 25",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.359051,
+      "longitude": 4.878166
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ_1tBC-UJxkcRp0wmXN9ZPFs",
+        "address": "Van Baerlestraat 25",
+        "category": "Woonwinkel",
+        "status": "",
+        "phone": "020 305 0520",
+        "googleUrl": "https://www.google.com/maps/place/ZARA+Home/data=!4m7!3m6!1s0x47c609e50b415bff:0x5b3c59df5c264ca7!8m2!3d52.359051!4d4.878166!16s%2Fg%2F1ptw0tdq0!19sChIJ_1tBC-UJxkcRp0wmXN9ZPFs?authuser=0&hl=nl&rclk=1",
+        "storeName": "ZARA Home",
+        "ratingText": "3,6 sterren 481 reviews",
+        "stars": "3,6 sterren 481 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Woonwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/ZARA+Home/data=!4m7!3m6!1s0x47c609e50b415bff:0x5b3c59df5c264ca7!8m2!3d52.359051!4d4.878166!16s%2Fg%2F1ptw0tdq0!19sChIJ_1tBC-UJxkcRp0wmXN9ZPFs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,6 sterren 481 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "MONCLER Amsterdam",
+    "address": "Pieter Cornelisz Hooftstraat 90-92",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3602414,
+      "longitude": 4.8800536
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJK0mGYu8JxkcRj1OkJnN-n0c",
+        "address": "Pieter Cornelisz Hooftstraat 90-92",
+        "category": "Boetiek",
+        "status": "",
+        "phone": "020 490 4790",
+        "googleUrl": "https://www.google.com/maps/place/MONCLER+Amsterdam/data=!4m7!3m6!1s0x47c609ef6286492b:0x479f7e7326a4538f!8m2!3d52.3602414!4d4.8800536!16s%2Fg%2F12ht6yrf2!19sChIJK0mGYu8JxkcRj1OkJnN-n0c?authuser=0&hl=nl&rclk=1",
+        "storeName": "MONCLER Amsterdam",
+        "ratingText": "3,9 sterren 94 reviews",
+        "stars": "3,9 sterren 94 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Boetiek",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/MONCLER+Amsterdam/data=!4m7!3m6!1s0x47c609ef6286492b:0x479f7e7326a4538f!8m2!3d52.3602414!4d4.8800536!16s%2Fg%2F12ht6yrf2!19sChIJK0mGYu8JxkcRj1OkJnN-n0c?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 94 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Chanel",
+    "address": "Pieter Cornelisz Hooftstraat 68",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3604542,
+      "longitude": 4.8810991
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJMfFGaO8JxkcRErywQuM6vQg",
+        "address": "Pieter Cornelisz Hooftstraat 68",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 305 3777",
+        "googleUrl": "https://www.google.com/maps/place/Chanel/data=!4m7!3m6!1s0x47c609ef6846f131:0x8bd3ae342b0bc12!8m2!3d52.3604542!4d4.8810991!16s%2Fg%2F11cs3k91q3!19sChIJMfFGaO8JxkcRErywQuM6vQg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Chanel",
+        "ratingText": "3,2 sterren 492 reviews",
+        "stars": "3,2 sterren 492 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Chanel/data=!4m7!3m6!1s0x47c609ef6846f131:0x8bd3ae342b0bc12!8m2!3d52.3604542!4d4.8810991!16s%2Fg%2F11cs3k91q3!19sChIJMfFGaO8JxkcRErywQuM6vQg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,2 sterren 492 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "100% Holland",
+    "address": "Dam 19",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3724193,
+      "longitude": 4.893681
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-bqANscJxkcR1hZWfJtage4",
+        "address": "Dam 19",
+        "category": "Souvenirwinkel",
+        "status": "",
+        "phone": "020 620 3432",
+        "googleUrl": "https://www.google.com/maps/place/100%25+Holland/data=!4m7!3m6!1s0x47c609c73680baf9:0xee815a9b7c5616d6!8m2!3d52.3724193!4d4.893681!16s%2Fg%2F11gx_nd9h4!19sChIJ-bqANscJxkcR1hZWfJtage4?authuser=0&hl=nl&rclk=1",
+        "storeName": "100% Holland",
+        "ratingText": "3,4 sterren 50 reviews",
+        "stars": "3,4 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Souvenirwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/100%25+Holland/data=!4m7!3m6!1s0x47c609c73680baf9:0xee815a9b7c5616d6!8m2!3d52.3724193!4d4.893681!16s%2Fg%2F11gx_nd9h4!19sChIJ-bqANscJxkcR1hZWfJtage4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,4 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:18:06.722Z"
+    },
+    "domain": null
+  }
+]

@@ -1,0 +1,358 @@
+[
+  {
+    "name": "Sustainable Fashion Gift Card",
+    "address": "Piet Mondriaanstraat 113",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.365767,
+      "longitude": 4.8397841
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ9RyMdujjxUcRdE-SpMjtStE",
+        "address": "Piet Mondriaanstraat 113",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "phone": "06 48610644",
+        "googleUrl": "https://www.google.com/maps/place/Sustainable+Fashion+Gift+Card/data=!4m7!3m6!1s0x47c5e3e8768c1cf5:0xd14aedc8a4924f74!8m2!3d52.365767!4d4.8397841!16s%2Fg%2F11ql_4zts3!19sChIJ9RyMdujjxUcRdE-SpMjtStE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Sustainable Fashion Gift Card",
+        "ratingText": "5,0 sterren 14 reviews",
+        "stars": "5,0 sterren 14 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Sustainable+Fashion+Gift+Card/data=!4m7!3m6!1s0x47c5e3e8768c1cf5:0xd14aedc8a4924f74!8m2!3d52.365767!4d4.8397841!16s%2Fg%2F11ql_4zts3!19sChIJ9RyMdujjxUcRdE-SpMjtStE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 14 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Verse",
+    "address": "Gerard Doustraat 84h",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3556161,
+      "longitude": 4.8918778
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ15mEr_IJxkcR35Y8lCZT8nU",
+        "address": "Gerard Doustraat 84h",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "06 52001410",
+        "googleUrl": "https://www.google.com/maps/place/Verse/data=!4m7!3m6!1s0x47c609f2af8499d7:0x75f25326943c96df!8m2!3d52.3556161!4d4.8918778!16s%2Fg%2F1q62b6m31!19sChIJ15mEr_IJxkcR35Y8lCZT8nU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Verse",
+        "ratingText": "3,9 sterren 45 reviews",
+        "stars": "3,9 sterren 45 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Verse/data=!4m7!3m6!1s0x47c609f2af8499d7:0x75f25326943c96df!8m2!3d52.3556161!4d4.8918778!16s%2Fg%2F1q62b6m31!19sChIJ15mEr_IJxkcR35Y8lCZT8nU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 45 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "BrandMission",
+    "address": "Haarlemmerstraat 36",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.379987,
+      "longitude": 4.8931408
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJA7JZvNEJxkcRrZZUZPKlh-U",
+        "address": "Haarlemmerstraat 36",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 770 8761",
+        "googleUrl": "https://www.google.com/maps/place/BrandMission/data=!4m7!3m6!1s0x47c609d1bc59b203:0xe587a5f2645496ad!8m2!3d52.379987!4d4.8931408!16s%2Fg%2F11h1g6k8ql!19sChIJA7JZvNEJxkcRrZZUZPKlh-U?authuser=0&hl=nl&rclk=1",
+        "storeName": "BrandMission",
+        "ratingText": "4,8 sterren 30 reviews",
+        "stars": "4,8 sterren 30 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/BrandMission/data=!4m7!3m6!1s0x47c609d1bc59b203:0xe587a5f2645496ad!8m2!3d52.379987!4d4.8931408!16s%2Fg%2F11h1g6k8ql!19sChIJA7JZvNEJxkcRrZZUZPKlh-U?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 30 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Het Faire Oosten",
+    "address": "Waldenlaan 208",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3569067,
+      "longitude": 4.9304453
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ07skTHAJxkcRspuSGjbZLp8",
+        "address": "Waldenlaan 208",
+        "category": "Warenhuis",
+        "status": "",
+        "phone": "020 261 0423",
+        "googleUrl": "https://www.google.com/maps/place/Het+Faire+Oosten/data=!4m7!3m6!1s0x47c609704c24bbd3:0x9f2ed9361a929bb2!8m2!3d52.3569067!4d4.9304453!16s%2Fg%2F11bwn8plpk!19sChIJ07skTHAJxkcRspuSGjbZLp8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Het Faire Oosten",
+        "ratingText": "4,2 sterren 245 reviews",
+        "stars": "4,2 sterren 245 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Het+Faire+Oosten/data=!4m7!3m6!1s0x47c609704c24bbd3:0x9f2ed9361a929bb2!8m2!3d52.3569067!4d4.9304453!16s%2Fg%2F11bwn8plpk!19sChIJ07skTHAJxkcRspuSGjbZLp8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 245 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Circle of Trust",
+    "address": "Ferdinand Bolstraat 47",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3553221,
+      "longitude": 4.8906147
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJF-b6lvIJxkcRK9FQATmqNOo",
+        "address": "Ferdinand Bolstraat 47",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 675 7946",
+        "googleUrl": "https://www.google.com/maps/place/Circle+of+Trust/data=!4m7!3m6!1s0x47c609f296fae617:0xea34aa390150d12b!8m2!3d52.3553221!4d4.8906147!16s%2Fg%2F11b75pwbdz!19sChIJF-b6lvIJxkcRK9FQATmqNOo?authuser=0&hl=nl&rclk=1",
+        "storeName": "Circle of Trust",
+        "ratingText": "4,3 sterren 44 reviews",
+        "stars": "4,3 sterren 44 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Circle+of+Trust/data=!4m7!3m6!1s0x47c609f296fae617:0xea34aa390150d12b!8m2!3d52.3553221!4d4.8906147!16s%2Fg%2F11b75pwbdz!19sChIJF-b6lvIJxkcRK9FQATmqNOo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 44 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Hugs.Amsterdam",
+    "address": "Nieuwe Hoogstraat 19A",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.370807,
+      "longitude": 4.8998743
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUT6l750JxkcR2s2WBIAiUzs",
+        "address": "Nieuwe Hoogstraat 19A",
+        "category": "Boetiek",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Hugs.Amsterdam/data=!4m7!3m6!1s0x47c6099defa53e51:0x3b5322800496cdda!8m2!3d52.370807!4d4.8998743!16s%2Fg%2F11rxv0r5j5!19sChIJUT6l750JxkcR2s2WBIAiUzs?authuser=0&hl=nl&rclk=1",
+        "storeName": "Hugs.Amsterdam",
+        "ratingText": "4,9 sterren 39 reviews",
+        "stars": "4,9 sterren 39 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Boetiek",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Hugs.Amsterdam/data=!4m7!3m6!1s0x47c6099defa53e51:0x3b5322800496cdda!8m2!3d52.370807!4d4.8998743!16s%2Fg%2F11rxv0r5j5!19sChIJUT6l750JxkcR2s2WBIAiUzs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 39 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Eco-Logisch",
+    "address": "Isarweg 10",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3933285,
+      "longitude": 4.8294404
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ9dEAUnnixUcReW_nr949uI8",
+        "address": "Isarweg 10",
+        "category": "Warenhuis",
+        "status": "",
+        "phone": "020 682 3707",
+        "googleUrl": "https://www.google.com/maps/place/Eco-Logisch/data=!4m7!3m6!1s0x47c5e2795200d1f5:0x8fb83ddeafe76f79!8m2!3d52.3933285!4d4.8294404!16s%2Fg%2F1tdydt_4!19sChIJ9dEAUnnixUcReW_nr949uI8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Eco-Logisch",
+        "ratingText": "4,3 sterren 105 reviews",
+        "stars": "4,3 sterren 105 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Eco-Logisch/data=!4m7!3m6!1s0x47c5e2795200d1f5:0x8fb83ddeafe76f79!8m2!3d52.3933285!4d4.8294404!16s%2Fg%2F1tdydt_4!19sChIJ9dEAUnnixUcReW_nr949uI8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 105 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "MIISHA Eco Shop (ONLINE ONLY)",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.1909763,
+      "longitude": 5.2795551
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJu4bTshIJxkcRt1sn2K5bebg",
+        "address": "",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/MIISHA+Eco+Shop+%28ONLINE+ONLY%29/data=!4m7!3m6!1s0x47c60912b2d386bb:0xb8795baed8275bb7!8m2!3d52.1909763!4d5.2795551!16s%2Fg%2F11h1kcnn8q!19sChIJu4bTshIJxkcRt1sn2K5bebg?authuser=0&hl=nl&rclk=1",
+        "storeName": "MIISHA Eco Shop (ONLINE ONLY)",
+        "ratingText": "4,8 sterren 60 reviews",
+        "stars": "4,8 sterren 60 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/MIISHA+Eco+Shop+%28ONLINE+ONLY%29/data=!4m7!3m6!1s0x47c60912b2d386bb:0xb8795baed8275bb7!8m2!3d52.1909763!4d5.2795551!16s%2Fg%2F11h1kcnn8q!19sChIJu4bTshIJxkcRt1sn2K5bebg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 60 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Zo Zero",
+    "address": "Overschiestraat 188 B",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3443665,
+      "longitude": 4.835911
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC7xTPETjxUcRj2tXrw9K4tU",
+        "address": "Overschiestraat 188 B",
+        "category": "E-commerceservice",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Zo+Zero/data=!4m7!3m6!1s0x47c5e3443c53bc0b:0xd5e24a0faf576b8f!8m2!3d52.3443665!4d4.835911!16s%2Fg%2F11h3nncfyq!19sChIJC7xTPETjxUcRj2tXrw9K4tU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Zo Zero",
+        "ratingText": "3,8 sterren 34 reviews",
+        "stars": "3,8 sterren 34 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "E-commerceservice",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Zo+Zero/data=!4m7!3m6!1s0x47c5e3443c53bc0b:0xd5e24a0faf576b8f!8m2!3d52.3443665!4d4.835911!16s%2Fg%2F11h3nncfyq!19sChIJC7xTPETjxUcRj2tXrw9K4tU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,8 sterren 34 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Shop Like You Give a Damn",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 42.16936,
+      "longitude": -79.19775
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZXDU_c4JxkcRhcdOUJ-GmEU",
+        "address": "",
+        "category": "Warenhuis",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Shop+Like+You+Give+a+Damn/data=!4m7!3m6!1s0x47c609cefdd47065:0x4598869f504ec785!8m2!3d42.16936!4d-79.19775!16s%2Fg%2F11gdqh1syj!19sChIJZXDU_c4JxkcRhcdOUJ-GmEU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Shop Like You Give a Damn",
+        "ratingText": "4,8 sterren 50 reviews",
+        "stars": "4,8 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Shop+Like+You+Give+a+Damn/data=!4m7!3m6!1s0x47c609cefdd47065:0x4598869f504ec785!8m2!3d42.16936!4d-79.19775!16s%2Fg%2F11gdqh1syj!19sChIJZXDU_c4JxkcRhcdOUJ-GmEU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:50:55.637Z"
+    },
+    "domain": null
+  }
+]

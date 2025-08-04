@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Grooblue - B Corp",
+    "address": "Vinkenstraat 149, 1013 JP Amsterdam",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "postcode": "1013 JP",
+    "coordinates": null,
+    "opening_times": {
+      "monday": "09:00-17:00",
+      "tuesday": "09:00-17:00",
+      "wednesday": "09:00-17:00",
+      "thursday": "09:00-17:00",
+      "friday": "09:00-17:00",
+      "saturday": "Gesloten",
+      "sunday": "Gesloten"
+    },
+    "owner_imgs": [
+      "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=AWqpIzRnvIElBWK0IfvRWg&cb_client=search.gws-prod.gps&w=408&h=240&yaw=237.25812&pitch=0&thumbfov=100"
+    ],
+    "metadata": {
+      "original_data": {
+        "storeName": "Grooblue - B Corp",
+        "stars": null,
+        "numberOfReviews": 4.4,
+        "googleUrl": "https://www.google.com/maps/search/Grooblue+-+B+Corp+Amsterdam",
+        "bizWebsite": "https://www.grooblue.com/",
+        "address": "Adres: Vinkenstraat 149, 1013 JP Amsterdam",
+        "category": "Hoofdkantoor",
+        "status": "Gesloten",
+        "mainImage": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=AWqpIzRnvIElBWK0IfvRWg&cb_client=search.gws-prod.gps&w=408&h=240&yaw=237.25812&pitch=0&thumbfov=100",
+        "hours": {
+          "monday": "09:00-17:00",
+          "tuesday": "09:00-17:00",
+          "wednesday": "09:00-17:00",
+          "thursday": "09:00-17:00",
+          "friday": "09:00-17:00",
+          "saturday": "Gesloten",
+          "sunday": "Gesloten"
+        }
+      },
+      "category": "Hoofdkantoor",
+      "status": "Gesloten",
+      "googleUrl": "https://www.google.com/maps/search/Grooblue+-+B+Corp+Amsterdam",
+      "bizWebsite": "https://www.grooblue.com/",
+      "stars": null,
+      "numberOfReviews": 4.4,
+      "scrapedAt": "2025-07-18T02:15:01.482Z"
+    },
+    "domain": "grooblue.com"
+  }
+]

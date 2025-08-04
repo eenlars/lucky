@@ -1,0 +1,73 @@
+[
+  {
+    "name": "Zo Zero",
+    "address": "Overschiestraat 188 B",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3443665,
+      "longitude": 4.835911
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC7xTPETjxUcRj2tXrw9K4tU",
+        "address": "Overschiestraat 188 B",
+        "category": "E-commerceservice",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Zo+Zero/data=!4m7!3m6!1s0x47c5e3443c53bc0b:0xd5e24a0faf576b8f!8m2!3d52.3443665!4d4.835911!16s%2Fg%2F11h3nncfyq!19sChIJC7xTPETjxUcRj2tXrw9K4tU?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.zozero.nl/",
+        "storeName": "Zo Zero",
+        "ratingText": "3,8 sterren 34 reviews",
+        "stars": "3,8 sterren 34 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "E-commerceservice",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Zo+Zero/data=!4m7!3m6!1s0x47c5e3443c53bc0b:0xd5e24a0faf576b8f!8m2!3d52.3443665!4d4.835911!16s%2Fg%2F11h3nncfyq!19sChIJC7xTPETjxUcRj2tXrw9K4tU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.zozero.nl/",
+      "stars": "3,8 sterren 34 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-19T17:36:49.398Z"
+    },
+    "domain": "zozero.nl"
+  },
+  {
+    "name": "BB Development",
+    "address": "Reijnier Vinkeleskade 56",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3519459,
+      "longitude": 4.8773348
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ0WuYGfoJxkcRCVLxtmI2e9o",
+        "address": "Reijnier Vinkeleskade 56",
+        "category": "Winkel",
+        "status": "",
+        "phone": "020 422 0030",
+        "googleUrl": "https://www.google.com/maps/place/BB+Development/data=!4m7!3m6!1s0x47c609fa19986bd1:0xda7b3662b6f15209!8m2!3d52.3519459!4d4.8773348!16s%2Fg%2F1tdfxxzq!19sChIJ0WuYGfoJxkcRCVLxtmI2e9o?authuser=0&hl=nl&rclk=1",
+        "storeName": "BB Development",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/BB+Development/data=!4m7!3m6!1s0x47c609fa19986bd1:0xda7b3662b6f15209!8m2!3d52.3519459!4d4.8773348!16s%2Fg%2F1tdfxxzq!19sChIJ0WuYGfoJxkcRCVLxtmI2e9o?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-19T17:36:49.398Z"
+    },
+    "domain": null
+  }
+]

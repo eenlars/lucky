@@ -1,0 +1,106 @@
+[
+  {
+    "name": "your brands 2 BV",
+    "address": "Leidsestraat 47",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3655633,
+      "longitude": 4.8859214
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJrTte5JMJxkcRPPiPnwNAbmo",
+        "address": "Leidsestraat 47",
+        "category": "Elektronicawinkel",
+        "status": "",
+        "phone": "06 13001900",
+        "googleUrl": "https://www.google.com/maps/place/your+brands+2+BV/data=!4m7!3m6!1s0x47c60993e45e3bad:0x6a6e40039f8ff83c!8m2!3d52.3655633!4d4.8859214!16s%2Fg%2F11jyptj06k!19sChIJrTte5JMJxkcRPPiPnwNAbmo?authuser=0&hl=nl&rclk=1",
+        "storeName": "your brands 2 BV",
+        "ratingText": "2,4 sterren 16 reviews",
+        "stars": "2,4 sterren 16 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Elektronicawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/your+brands+2+BV/data=!4m7!3m6!1s0x47c60993e45e3bad:0x6a6e40039f8ff83c!8m2!3d52.3655633!4d4.8859214!16s%2Fg%2F11jyptj06k!19sChIJrTte5JMJxkcRPPiPnwNAbmo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "2,4 sterren 16 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:12.377Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "B2c Europe Netherlands B.v.",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3431517,
+      "longitude": 4.9062118
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ1yZETygKxkcRBCm1RYgzgcA",
+        "address": "",
+        "category": "Rijnstraat 160",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/B2c+Europe+Netherlands+B.v./data=!4m7!3m6!1s0x47c60a284f4426d7:0xc081338845b52904!8m2!3d52.3431517!4d4.9062118!16s%2Fg%2F11j2yqnqhz!19sChIJ1yZETygKxkcRBCm1RYgzgcA?authuser=0&hl=nl&rclk=1",
+        "storeName": "B2c Europe Netherlands B.v.",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Rijnstraat 160",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/B2c+Europe+Netherlands+B.v./data=!4m7!3m6!1s0x47c60a284f4426d7:0xc081338845b52904!8m2!3d52.3431517!4d4.9062118!16s%2Fg%2F11j2yqnqhz!19sChIJ1yZETygKxkcRBCm1RYgzgcA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:12.377Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "B2C E-commerce",
+    "address": "Oranje Nassaulaan",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3548201,
+      "longitude": 4.8634599
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ6zq8k-bjxUcRIEHiqRvmo28",
+        "address": "Oranje Nassaulaan",
+        "category": "Internetmarketing",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/B2C+E-commerce/data=!4m7!3m6!1s0x47c5e3e693bc3aeb:0x6fa3e61ba9e24120!8m2!3d52.3548201!4d4.8634599!16s%2Fg%2F11t47c_cbn!19sChIJ6zq8k-bjxUcRIEHiqRvmo28?authuser=0&hl=nl&rclk=1",
+        "storeName": "B2C E-commerce",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Internetmarketing",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/B2C+E-commerce/data=!4m7!3m6!1s0x47c5e3e693bc3aeb:0x6fa3e61ba9e24120!8m2!3d52.3548201!4d4.8634599!16s%2Fg%2F11t47c_cbn!19sChIJ6zq8k-bjxUcRIEHiqRvmo28?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:12.377Z"
+    },
+    "domain": null
+  }
+]
