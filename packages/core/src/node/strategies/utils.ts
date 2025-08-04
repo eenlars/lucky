@@ -1,7 +1,7 @@
 import type { NodeLog } from "@/messages/api/processResponse"
 import { truncater } from "@/utils/common/llmify"
 import { lgg } from "@/utils/logging/Logger"
-import type { ModelName } from "@/runtime/settings/models"
+import type { ModelName } from "@/utils/models/models"
 import type { CoreMessage, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../InvocationPipeline"
 

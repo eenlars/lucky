@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 // Simple cultural evolution test on random SWE-bench evaluation
 
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
 import { lgg } from "@/logger"
 import { CONFIG, PATHS } from "@/runtime/settings/constants"
+import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
 import {
   loadSingleWorkflow,
@@ -32,16 +32,14 @@ async function runCulturalTest() {
   } as any
 
   lgg.log(`🎲 Testing SWE-bench ID: ${randomId}`)
-  lgg.log(
-    `🧬 Running ${CONFIG.evolution.culturalIterations} cultural iterations`
-  )
+  lgg.log(`🧬 Running ${CONFIG.evolution.generationAmount} cultural iterations`)
 
   const evaluator = new AggregatedEvaluator()
   let workflowPath = PATHS.setupFile
   const results = []
 
-  for (let i = 1; i <= CONFIG.evolution.culturalIterations; i++) {
-    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.culturalIterations}`)
+  for (let i = 1; i <= CONFIG.evolution.generationAmount; i++) {
+    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.generationAmount}`)
 
     const setup = await loadSingleWorkflow(workflowPath)
     const workflow = Workflow.create({

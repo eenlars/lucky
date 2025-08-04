@@ -9,12 +9,11 @@
  * - Updates EvolutionRun.end_time & status on termination
  */
 
-import type {
-  CulturalConfig,
-  EvolutionSettings,
-} from "@/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import type { FlowEvolutionMode } from "@/types"
+import type {
+  FlowEvolutionConfig,
+  FlowEvolutionMode,
+} from "@/interfaces/runtimeConfig"
 import { supabase } from "@/utils/clients/supabase/client"
 import type {
   Tables,
@@ -116,7 +115,7 @@ export class RunService {
    */
   async createRun(
     inputText: string,
-    config: EvolutionSettings | CulturalConfig,
+    config: FlowEvolutionConfig,
     continueRunId?: string
   ): Promise<void> {
     if (continueRunId) {
@@ -135,10 +134,10 @@ export class RunService {
     }
     return RunService.withRetry(async () => {
       let notes = ""
-      if (config.mode === "cultural") {
-        notes = `Cultural Evolution Run - Iter: ${config.iterations}`
+      if (this.evolutionMode === "cultural") {
+        notes = `Cultural Evolution Run - Iter: ${config.generationAmount}`
       } else {
-        notes = `GP Evolution Run - Pop: ${config.populationSize}, Gen: ${config.generations}`
+        notes = `GP Evolution Run - Pop: ${config.GP.populationSize}, Gen: ${config.GP.generations}, Mode: ${this.evolutionMode} - ${config.initialPopulationMethod}`
       }
       const runData: TablesInsert<"EvolutionRun"> = {
         goal_text: inputText,

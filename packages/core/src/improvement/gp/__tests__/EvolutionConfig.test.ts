@@ -1,9 +1,6 @@
 // tests for evolution config
 import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
-import {
-  createEvolutionSettingsWithConfig,
-  EVOLUTION_CONFIG,
-} from "@/runtime/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
 import { describe, expect, it } from "vitest"
 
 describe("EvolutionSettings", () => {
@@ -12,7 +9,6 @@ describe("EvolutionSettings", () => {
       const config = createEvolutionSettingsWithConfig()
 
       expect(config.populationSize).toBeGreaterThan(0)
-      expect(config.generations).toBeGreaterThan(0)
       expect(config.maxCostUSD).toBeGreaterThan(0)
       expect(config.eliteSize).toBeGreaterThanOrEqual(0)
       expect(config.tournamentSize).toBeGreaterThan(0)
@@ -28,7 +24,6 @@ describe("EvolutionSettings", () => {
     it("should apply overrides correctly", () => {
       const overrides: Partial<EvolutionSettings> = {
         populationSize: 20,
-        generations: 10,
         maxCostUSD: 5.0,
         crossoverRate: 0.6,
         eliteSize: 1,
@@ -37,7 +32,6 @@ describe("EvolutionSettings", () => {
       const config = createEvolutionSettingsWithConfig(overrides)
 
       expect(config.populationSize).toBe(20)
-      expect(config.generations).toBe(10)
       expect(config.maxCostUSD).toBe(5.0)
       expect(config.crossoverRate).toBe(0.6)
       expect(config.eliteSize).toBe(1)
@@ -54,7 +48,6 @@ describe("EvolutionSettings", () => {
       const config = createEvolutionSettingsWithConfig(overrides)
 
       expect(config.populationSize).toBe(15)
-      expect(config.generations).toBeGreaterThan(0) // should have default
       expect(config.maxCostUSD).toBeGreaterThan(0) // should have default
     })
 
@@ -79,7 +72,6 @@ describe("EvolutionSettings", () => {
     it("should handle edge case overrides", () => {
       const edgeOverrides: Partial<EvolutionSettings> = {
         populationSize: 4,
-        generations: 1,
         maxCostUSD: 0.01,
         crossoverRate: 0,
         tournamentSize: 2,
@@ -90,7 +82,6 @@ describe("EvolutionSettings", () => {
       const config = createEvolutionSettingsWithConfig(edgeOverrides)
 
       expect(config.populationSize).toBe(4)
-      expect(config.generations).toBe(1)
       expect(config.maxCostUSD).toBe(0.01)
       expect(config.crossoverRate).toBe(0)
     })
@@ -103,7 +94,6 @@ describe("EvolutionSettings", () => {
       const requiredProps = [
         "mode",
         "populationSize",
-        "generations",
         "maxCostUSD",
         "eliteSize",
         "tournamentSize",

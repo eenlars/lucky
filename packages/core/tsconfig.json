@@ -20,14 +20,7 @@
       "@/types/*": ["./src/types/*"],
       "@/logger": ["./src/utils/logging/Logger.ts"],
       "@/benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
-      "@/runtime/settings/constants": ["./src/runtime/settings/constants.ts"],
-      "@/runtime/settings/constants.client": ["./src/runtime/settings/constants.client.ts"],  
-      "@/runtime/settings/models": ["./src/runtime/settings/models.ts"],
-      "@/runtime/settings/inputs": ["./src/runtime/settings/inputs.ts"],
-      "@/runtime/schemas/location.types": ["./src/runtime/schemas/location.types.ts"],
-      "@/runtime/code_tools/file-saver/save": ["./src/runtime/code_tools/file-saver/save.ts"],
-      "@/runtime/code_tools/todo-manager/tool-todo-write": ["./src/runtime/code_tools/todo-manager/tool-todo-write.ts"],
-      "@/runtime/code_tools/todo-manager/tool-todo-read": ["./src/runtime/code_tools/todo-manager/tool-todo-read.ts"],
+      "@/runtime/*": ["../../examples/runtime/*"],
       "@workflow/*": ["./src/workflow/*"],
       "@node/*": ["./src/node/*"],
       "@messages/*": ["./src/messages/*"],
@@ -37,7 +30,8 @@
       "@validation/*": ["./src/utils/validation/*"],
       "@improvement/*": ["./src/improvement/*"],
       "@behavioral/*": ["./src/improvement/behavioral/*"],
-      "@gp/*": ["./src/improvement/gp/*"]
+      "@gp/*": ["./src/improvement/gp/*"],
+      "@env": ["./env.mjs"]
     },
     "allowSyntheticDefaultImports": true
   },

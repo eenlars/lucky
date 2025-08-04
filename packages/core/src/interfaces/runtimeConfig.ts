@@ -1,3 +1,6 @@
+import type { ModelRuntimeConfig } from "@/config"
+import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+
 export type FlowCoordinationType = "sequential" | "hierarchical"
 export type FlowEvolutionMode = "cultural" | "GP"
 
@@ -20,6 +23,14 @@ export type FlowPathsConfig = {
     }
     readonly error: string
   }
+}
+
+export type FlowEvolutionConfig = {
+  readonly mode: FlowEvolutionMode
+  readonly generationAmount: number
+  readonly initialPopulationMethod: "random" | "baseWorkflow" | "prepared"
+  readonly initialPopulationFile: string | null
+  readonly GP: EvolutionSettings
 }
 
 export type FlowRuntimeConfig = {
@@ -54,7 +65,7 @@ export type FlowRuntimeConfig = {
   }
   readonly models: {
     readonly inactive: Set<string>
-    readonly provider: FullFlowRuntimeConfig["MODELS"]["provider"]
+    readonly provider: ModelRuntimeConfig["provider"]
   }
   readonly improvement: {
     readonly fitness: {
@@ -88,17 +99,7 @@ export type FlowRuntimeConfig = {
     readonly maxFilesPerWorkflow: number
     readonly enforceFileLimit: boolean
   }
-  readonly evolution: {
-    readonly culturalIterations: number
-    readonly GP: {
-      readonly generations: number
-      readonly populationSize: number
-      readonly verbose: boolean
-      readonly initialPopulationMethod: "random" | "baseWorkflow" | "prepared"
-      readonly initialPopulationFile: string | null
-      readonly maximumTimeMinutes: number
-    }
-  }
+  readonly evolution: FlowEvolutionConfig
   readonly ingestion: {
     readonly taskLimit: number
   }
@@ -117,8 +118,5 @@ export type FlowRuntimeConfig = {
 export type FullFlowRuntimeConfig = {
   CONFIG: FlowRuntimeConfig
   PATHS: FlowPathsConfig
-  MODELS: {
-    inactive: Set<string>
-    provider: "openai" | "openrouter" | "groq"
-  }
+  MODELS: ModelRuntimeConfig
 }

@@ -3,9 +3,9 @@
  * Simple Genome implementation for prompt evolution
  */
 
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
 import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
 import { CONFIG } from "@/runtime/settings/constants"
-import type { FlowEvolutionMode } from "@/types"
 import { isNir } from "@/utils/common/isNir"
 import { truncater } from "@/utils/common/llmify"
 import { genShortId } from "@/utils/common/utils"
@@ -155,7 +155,7 @@ export class Genome extends Workflow {
         )
       }
 
-      if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
+      if (CONFIG.evolution.initialPopulationMethod === "baseWorkflow") {
         if (!baseWorkflow) {
           return R.error(
             "Base workflow required for baseWorkflow initialization method",

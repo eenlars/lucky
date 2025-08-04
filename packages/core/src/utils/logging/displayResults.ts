@@ -1,4 +1,4 @@
-import type { FlowEvolutionMode } from "@/types"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
 import { lgg } from "@/logger"
 
 type CulturalResult = {

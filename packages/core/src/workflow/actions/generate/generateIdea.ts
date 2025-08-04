@@ -1,10 +1,10 @@
 import { sendAI } from "@/messages/api/sendAI"
 import { toolsExplanations } from "@/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@/prompts/generationRules"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
 import { MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
+import { lgg } from "@/utils/logging/Logger"
+import type { ModelName } from "@/utils/models/models"
+import { R, type RS } from "@/utils/types"
 import { ALL_ACTIVE_TOOL_NAMES } from "@tools/tool.types"
 import { z } from "zod"
 

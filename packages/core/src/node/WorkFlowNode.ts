@@ -7,8 +7,8 @@ import type { InvocationSummary } from "@/messages/summaries"
 import { WorkflowMessage } from "@/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@/tools/toolFactory"
 import { genShortId } from "@/utils/common/utils"
+import type { ModelName } from "@/utils/models/models"
 import { NodePersistenceManager } from "@/utils/persistence/node/nodePersistence"
-import type { ModelName } from "@/runtime/settings/models"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   WorkflowConfig,

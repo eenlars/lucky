@@ -2,14 +2,6 @@
  * Evolution configuration types and utilities
  */
 
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-
-export interface CulturalConfig {
-  mode: "cultural"
-  iterations: number
-  question: EvaluationInput
-}
-
 export interface _MutationParams {
   mutationInstructions: string
 }
@@ -18,11 +10,9 @@ export interface _MutationParams {
  * Comprehensive evolution configuration with optional advanced features
  */
 export interface EvolutionSettings {
-  mode: "GP"
-  // Core parameters
   populationSize: number
-  generations: number
-
+  verbose: boolean
+  maximumTimeMinutes: number
   // Selection parameters
   tournamentSize: number
   eliteSize: number // Number of best to keep
@@ -46,13 +36,11 @@ export interface EvolutionSettings {
   noveltyWeight?: number // Weight for novelty vs performance (0-1)
   immigrantRate?: number // immigrants per N generations
   immigrantInterval?: number // how often to add immigrants
+  generations?: number // Number of generations to evolve
 }
 
 export function evolutionSettingsToString(settings: EvolutionSettings): string {
   return `
-  Mode: ${settings.mode}
-  Population: ${settings.populationSize}
-    Generations: ${settings.generations}
   Crossover rate: ${settings.crossoverRate}
   Mutation rate: ${settings.mutationRate}
   Parents: ${settings.numberOfParentsCreatingOffspring}

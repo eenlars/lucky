@@ -3,11 +3,13 @@ import { prepareProblem } from "@/improvement/behavioral/prepare/workflow/prepar
 import type { EvolutionContext } from "@/improvement/gp/resources/types"
 import { zodToJson } from "@/messages/utils/zodToJson"
 import { WorkFlowNode } from "@/node/WorkFlowNode"
+import { CONFIG } from "@/runtime/settings/constants"
 import type { WorkflowFile } from "@/tools/context/contextStore.types"
 import type { ToolExecutionContext } from "@/tools/toolFactory"
 import { supabase } from "@/utils/clients/supabase/client"
 import { genShortId } from "@/utils/common/utils"
 import { lgg } from "@/utils/logging/Logger"
+import type { ModelName } from "@/utils/models/models"
 import { persistWorkflow } from "@/utils/persistence/file/resultPersistence"
 import {
   createContextStore,
@@ -41,8 +43,6 @@ import {
   type RunResult,
 } from "@/workflow/runner/runAllInputs"
 import { ensure, guard, throwIf } from "@/workflow/schema/errorMessages"
-import { CONFIG } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
 import { improveNodesCulturallyImpl } from "@behavioral/judge/mainImprovement"
 import { INACTIVE_TOOLS } from "@tools/tool.types"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"

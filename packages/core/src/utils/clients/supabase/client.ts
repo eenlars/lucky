@@ -1,5 +1,5 @@
 import type { Database } from "@/utils/clients/supabase/types"
-import { envi } from "@/env.mjs"
+import { envi } from "@env"
 import { createClient } from "@supabase/supabase-js"
 
 // create Supabase client for server-side usage

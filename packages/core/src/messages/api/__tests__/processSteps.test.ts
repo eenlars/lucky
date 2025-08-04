@@ -1,5 +1,4 @@
-import { MODELS } from "@/runtime/settings/constants.client"
-import type { ModelName } from "@/runtime/settings/models"
+import { MODELS, type ModelName } from "@/utils/models/models"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"
 

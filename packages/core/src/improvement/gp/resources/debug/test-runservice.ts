@@ -3,8 +3,9 @@
  * This demonstrates the write-time protocol implementation
  */
 
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
+import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
 import { lgg } from "@/utils/logging/Logger"
-import { createEvolutionSettingsWithConfig } from "../../../../../runtime/settings/evolution"
 import { RunService } from "../../RunService"
 
 async function testRunService() {
@@ -12,9 +13,16 @@ async function testRunService() {
 
   const config = createEvolutionSettingsWithConfig({
     populationSize: 5,
-    generations: 3,
     maxCostUSD: 10,
   })
+
+  const flowConfig: FlowEvolutionConfig = {
+    mode: "GP",
+    generationAmount: 3,
+    initialPopulationMethod: "random",
+    initialPopulationFile: "initial_population.json",
+    GP: config,
+  }
 
   const runService = new RunService(true) // verbose mode
 
@@ -23,7 +31,7 @@ async function testRunService() {
     lgg.log("1. Creating evolution run...")
     await runService.createRun(
       "Test goal: optimize workflow for data extraction",
-      config
+      flowConfig
     )
     lgg.log(`✓ Created run: ${runService.getRunId()}`)
 

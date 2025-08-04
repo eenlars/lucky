@@ -1,6 +1,6 @@
 import { isNir } from "@/utils/common/isNir"
-import type { TokenUsage } from "@/runtime/settings/models"
-import { pricing, type ModelName } from "@/runtime/settings/models"
+import type { TokenUsage } from "@/utils/models/models"
+import { pricing, type ModelName } from "@/utils/models/models"
 
 export type VercelUsage = {
   promptTokens: number

@@ -2,14 +2,14 @@ import { z } from "zod"
 
 import { agentDescriptionsWithTools } from "@/node/schemas/agentWithTools"
 import { MemorySchemaOptional } from "@/node/schemas/memorySchema"
+import type { ModelName } from "@/utils/models/models"
+import { MODELS } from "@/utils/models/models"
 import { ACTIVE_MODEL_NAMES } from "@/utils/spending/pricing"
 import { withDescriptions } from "@/utils/zod/withDescriptions"
 import type {
-  ModelName,
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,

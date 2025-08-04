@@ -1,3 +1,4 @@
+// DO NOT CHANGE ANYTHING IN THIS FILE OR ANY TYPE WITHOUT CONSENT
 /* ---------- PRICING TYPES ---------- */
 export type ModelPricing = {
   input: number
@@ -38,7 +39,7 @@ export const providers = {
       active: true,
     },
   },
-  
+
   // OpenRouter API (different model names)
   openrouter: {
     "google/gemini-2.5-flash-lite": {
@@ -114,8 +115,8 @@ export const providers = {
       active: false,
     },
   },
-  
-  // Groq API  
+
+  // Groq API
   groq: {
     "llama-3.1-70b-versatile": {
       input: 0.5,
@@ -127,20 +128,38 @@ export const providers = {
     },
   },
 } as const satisfies Record<Provider, Record<string, ModelPricing>>
-
+// DO NOT CHANGE THIS OR ANY TYPE WITHOUT CONSENT
 // Generate flat pricing object for backward compatibility
 export const pricing = Object.fromEntries(
   Object.entries(providers).flatMap(([provider, models]) =>
     Object.entries(models).map(([model, config]) => {
       // For openrouter, the model name already includes the provider prefix
       // For openai and groq, we need to add the provider prefix
-      const modelName = provider === 'openrouter' ? model : `${provider}/${model}`
+      const modelName =
+        provider === "openrouter" ? model : `${provider}/${model}`
       return [modelName, config]
     })
   )
 ) as Record<string, ModelPricing>
 
-export type ModelName = keyof typeof pricing
+/* ───────── TYPE-SAFE MODEL SELECTION ───────── */
+
+import { CURRENT_PROVIDER } from "./config"
+
+// Keep only "active: true" model keys as strings
+type ActiveKeys<T extends Record<string, { active: boolean }>> = Extract<
+  {
+    [K in keyof T]: T[K]["active"] extends true ? K : never
+  }[keyof T],
+  string
+>
+
+// Only allow active models from the current provider
+export type AllowedModelName = ActiveKeys<
+  (typeof providers)[typeof CURRENT_PROVIDER]
+>
+
+export type ModelName = keyof (typeof providers)[typeof CURRENT_PROVIDER]
 
 export interface TokenUsage {
   inputTokens: number
@@ -148,20 +167,19 @@ export interface TokenUsage {
   cachedInputTokens?: number
 }
 
-/* ---------- MODELS ---------- */
-export const MODELS = {
-  summary: "google/gemini-2.5-flash-lite", // OpenRouter model
-  nano: "openai/gpt-4.1-nano", // Direct OpenAI model
-  // free: "qwen/qwq-32b:free", // OpenRouter model
-  low: "openai/gpt-4.1-mini", // Direct OpenAI model
-  medium: "openai/gpt-4.1-mini", // Direct OpenAI model
-  high: "google/gemini-2.5-pro-preview", // OpenRouter model
+/* ---------- MODELS - compile-time guarded ---------- */
+export const DEFAULT_MODELS = {
+  summary: "google/gemini-2.5-flash-lite",
+  nano: "google/gemini-2.5-flash-lite",
+  low: "google/gemini-2.5-flash-lite",
+  medium: "google/gemini-2.5-pro-preview",
+  high: "google/gemini-2.5-pro-preview",
   /** Default when a task declares no preference */
-  default: "openai/gpt-4.1-mini", // Direct OpenAI model
-  fitness: "openai/gpt-4.1-mini", // Direct OpenAI model
-  reasoning: "openai/gpt-4.1-mini", // Direct OpenAI model
-  fallbackOpenRouter: "switchpoint/router", // OpenRouter model
-} as const satisfies Record<string, ModelName>
+  default: "google/gemini-2.5-flash-lite",
+  fitness: "google/gemini-2.5-pro-preview",
+  reasoning: "anthropic/claude-sonnet-4",
+  fallback: "switchpoint/router",
+} as const satisfies Record<string, AllowedModelName>
 
 // Get all active models from provider structure
 const getActiveModels = (): ModelName[] => {
@@ -170,7 +188,7 @@ const getActiveModels = (): ModelName[] => {
     .map(([modelName]) => modelName as ModelName)
 }
 
-// Get all inactive models from provider structure  
+// Get all inactive models from provider structure
 const getInactiveModels = (): ModelName[] => {
   return Object.entries(pricing)
     .filter(([_, config]) => !config.active)
@@ -187,9 +205,12 @@ export function isActiveModel(model: ModelName): model is ActiveModelName {
 
 // Model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openrouter" as Provider | "openrouter" | "groq",
+  provider: CURRENT_PROVIDER,
   activeModels: getActiveModels(),
   inactiveModels: getInactiveModels(),
   // Backward compatibility
   inactive: new Set(getInactiveModels()),
 } as const
+
+// Export MODELS for backward compatibility
+export const MODELS = DEFAULT_MODELS

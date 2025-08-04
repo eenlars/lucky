@@ -4,7 +4,6 @@ import type { Json, TablesInsert } from "@/utils/clients/supabase/types"
 import { isNir } from "@/utils/common/isNir"
 import { isJSON, JSONN } from "@/utils/file-types/json/jsonParse"
 import { lgg } from "@/utils/logging/Logger"
-import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 export const saveNodeVersionToDB = async ({
@@ -33,14 +32,14 @@ export const saveNodeVersionToDB = async ({
 
   let memory: Json | undefined
   if (!isNir(config.memory) && isJSON(config.memory)) {
-    memory = safeJSON(config.memory) as Json
+    memory = JSONN.extract(config.memory) as Json
   }
 
   const insertable: TablesInsert<"NodeVersion"> = {
     node_id: config.nodeId,
     wf_version_id: workflowVersionId,
     version: nextVersion,
-    llm_model: normalizeModelName(config.modelName),
+    llm_model: config.modelName,
     system_prompt: config.systemPrompt,
     tools: [...config.mcpTools, ...config.codeTools],
     extras: {},

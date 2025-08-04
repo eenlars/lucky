@@ -1,0 +1,12 @@
+{
+    "name": "runtime",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "dev": "next dev"
+    },
+    "dependencies": {
+        "@together/core": "workspace:*",
+        "@together/shared": "workspace:*"
+    }
+}

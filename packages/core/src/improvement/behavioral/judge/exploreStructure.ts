@@ -1,4 +1,4 @@
-import type { CoreContext } from "../../../interfaces"
+import { getModels } from "@/config"
 import { sendAI } from "@/messages/api/sendAI"
 import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@/utils/types"
@@ -13,7 +13,6 @@ export interface StructureExplorationResult {
 }
 
 export async function exploreStructure(
-  context: CoreContext,
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow
@@ -64,7 +63,7 @@ Evaluate if implementing this structural pattern would improve the workflow:
 Return your analysis with a clear recommendation.`
 
   const response = await sendAI({
-    model: context.runtime.models.MODELS.reasoning,
+    model: getModels().reasoning,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },

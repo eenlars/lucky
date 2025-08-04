@@ -1,6 +1,6 @@
 import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { MODELS } from "@/runtime/settings/constants"
 import { TOOLS } from "@/runtime/settings/tools"
+import { MODELS, type ModelName } from "@/utils/models/models"
 import { Genome } from "@gp/Genome"
 import {
   getActiveTools,
@@ -53,9 +53,9 @@ export const createDummyGenome = (
   const secondNodeId = "process-node"
   const thirdNodeId = "end-node"
 
-  const randomModel1 = getRandomElement(Object.values(MODELS))
-  const randomModel2 = getRandomElement(Object.values(MODELS))
-  const randomModel3 = getRandomElement(Object.values(MODELS))
+  const randomModel1: ModelName = getRandomElement(Object.values(MODELS))
+  const randomModel2: ModelName = getRandomElement(Object.values(MODELS))
+  const randomModel3: ModelName = getRandomElement(Object.values(MODELS))
 
   const activeMcpTools = Object.keys(getActiveTools(TOOLS.mcp)) as MCPToolName[]
   const activeCodeTools = Object.keys(

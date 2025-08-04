@@ -2,7 +2,7 @@
  * mutation types and configuration for genetic programming
  */
 
-import type { FlowEvolutionMode } from "@/types"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { Genome } from "../../Genome"
 

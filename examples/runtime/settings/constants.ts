@@ -4,7 +4,11 @@
  * For client-side code, use constants.client.ts
  */
 
-import type { FlowPathsConfig, FlowRuntimeConfig } from "@/core/types"
+import type {
+  FlowEvolutionConfig,
+  FlowPathsConfig,
+  FlowRuntimeConfig,
+} from "@/interfaces/runtimeConfig"
 import path from "path"
 import { fileURLToPath } from "url"
 
@@ -22,7 +26,7 @@ const RUNTIME = path.join("src", "runtime")
 const LOGGING_FOLDER = path.join("src", "runtime", "logging_folder")
 const MEMORY_ROOT = path.join(LOGGING_FOLDER, "memory")
 
-export const PATHS = {
+export const PATHS: FlowPathsConfig = {
   root: ROOT,
   app: path.join(ROOT, "app"),
   runtime: RUNTIME,
@@ -39,21 +43,25 @@ export const PATHS = {
   },
 } as const satisfies FlowPathsConfig
 
+const EVOLUTION_CONFIG: FlowEvolutionConfig = {
+  mode: "GP",
+  generationAmount: 3,
+  initialPopulationFile: path.join(
+    ROOT,
+    "src",
+    "runtime",
+    "setup",
+    "setupfile.json"
+  ),
+  initialPopulationMethod: "baseWorkflow",
+  GP: {
+    ...CLIENT_CONFIG.evolution.GP,
+  },
+}
+
 /* ---------- CONFIG ---------- */
 // Extend client config with server-specific paths
 export const CONFIG = {
   ...CLIENT_CONFIG,
-  evolution: {
-    ...CLIENT_CONFIG.evolution,
-    GP: {
-      ...CLIENT_CONFIG.evolution.GP,
-      initialPopulationFile: path.join(
-        ROOT,
-        "src",
-        "runtime",
-        "setup",
-        "setupfile.json"
-      ),
-    },
-  },
-} as const satisfies FlowRuntimeConfig
+  evolution: EVOLUTION_CONFIG,
+} as const satisfies Partial<FlowRuntimeConfig>

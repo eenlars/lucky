@@ -1,4 +1,4 @@
-import type { FlowEvolutionMode } from "@/types"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
 
 export interface ParsedArgs {
   mode?: FlowEvolutionMode
@@ -46,7 +46,7 @@ function parseBoolean(value: string): boolean {
   )
 }
 
-const VALID_MODES = ["cultural", "GP", "genetic"] as const
+const VALID_MODES = ["cultural", "GP"] as const
 const VALID_IMPROVEMENT_TYPES = ["judge", "unified"] as const
 
 export function parseCliArguments(args: string[]): ParsedArgs {

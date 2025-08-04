@@ -1,7 +1,7 @@
+import { getModelsConfig } from "@/config"
 import { processStepsV2 } from "@/messages/api/stepProcessor"
 import { llmGuard } from "@/utils/common/llmGuard"
 import { lgg } from "@/utils/logging/Logger"
-import { MODELS } from "@/runtime/settings/constants.client"
 import { openai } from "@ai-sdk/openai"
 import { generateText } from "ai"
 import { describe, expect, it } from "vitest"
@@ -221,7 +221,7 @@ describe("browser functionality tests", () => {
     // Process steps using processStepsV2
     const processedSteps = processStepsV2(
       stateResult.steps || [],
-      MODELS.default
+      getModelsConfig().models.default
     )
 
     const stateResults = processedSteps?.outputs.filter(

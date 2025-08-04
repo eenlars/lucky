@@ -1,8 +1,8 @@
 import { sendAI } from "@/messages/api/sendAI"
 import { processStepsV2 } from "@/messages/api/stepProcessor"
-import { isNir } from "@/utils/common/isNir"
 import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
+import { isNir } from "@/utils/common/isNir"
+import type { ModelName } from "@/utils/models/models"
 import type {
   CoreMessage,
   LanguageModel,

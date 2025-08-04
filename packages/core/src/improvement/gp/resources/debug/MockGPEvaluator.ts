@@ -1,6 +1,6 @@
-import { Genome } from "@gp/Genome"
+import { getConfig } from "@/config"
 import { lgg } from "@/utils/logging/Logger"
-import { getConfig } from "@/interfaces/models"
+import { Genome } from "@gp/Genome"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
 
 /**

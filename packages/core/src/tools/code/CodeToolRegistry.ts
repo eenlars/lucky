@@ -1,4 +1,6 @@
 import { lgg } from "@/logger"
+import { getModelConfig } from "@/config"
+import type { CoreContext } from "@/interfaces"
 import type { CodeToolName } from "@tools/tool.types"
 import { toAITool, type ToolExecutionContext } from "@tools/toolFactory"
 import type { Tool } from "ai"
@@ -117,7 +119,12 @@ export class CodeToolRegistry {
     const contextualTools: Record<string, Tool> = {}
     for (const [name, toolDef] of this.tools) {
       // todo-typesafety: unsafe 'as any' assertion - violates CLAUDE.md "we hate as"
-      contextualTools[name] = toAITool(toolDef as any, toolExecutionContext)
+      const coreContext: CoreContext = { logger: lgg }
+      contextualTools[name] = toAITool(
+        toolDef as any,
+        toolExecutionContext,
+        coreContext
+      )
     }
     return contextualTools
   }
@@ -141,7 +148,8 @@ export class CodeToolRegistry {
       const toolDef = this.tools.get(name)
       if (toolDef) {
         // todo-typesafety: unsafe 'as any' assertion - violates CLAUDE.md "we hate as"
-        result[name] = toAITool(toolDef as any, toolExecutionContext)
+        const coreContext: CoreContext = { logger: lgg }
+        result[name] = toAITool(toolDef as any, toolExecutionContext, coreContext)
       }
     }
     return result

@@ -2,12 +2,12 @@ import { Population } from "@/improvement/gp/Population"
 import { Select } from "@/improvement/gp/Select"
 import {
   createMockEvaluationInputGeneric,
-  createMockEvolutionSettings,
+  createMockEvolutionConfig,
   createMockGenome,
   createMockWorkflowConfig,
   createMockWorkflowScore,
 } from "@/utils/__tests__/setup/coreMocks"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants
@@ -165,19 +165,21 @@ const { RunService } = await import("../RunService")
 
 describe("Population", () => {
   let population: Population
-  let config: EvolutionSettings
+  let config: FlowEvolutionConfig
 
   beforeEach(() => {
     // Reset all mocks
     vi.clearAllMocks()
 
-    config = createMockEvolutionSettings({
+    config = createMockEvolutionConfig({
       populationSize: 10,
       generations: 5,
       eliteSize: 2,
       tournamentSize: 3,
       numberOfParentsCreatingOffspring: 10,
       offspringCount: 10,
+    }, {
+      mode: "GP" as const,
     })
     const runService = new RunService()
     population = new Population(config, runService)
@@ -201,9 +203,9 @@ describe("Population", () => {
         "dummy-problem-analysis"
       )
 
-      expect(population.size()).toBe(config.populationSize)
+      expect(population.size()).toBe(config.GP.populationSize)
       expect(population.getGenerationId()).toBe("test-gen-id")
-      expect(population.getGenomes()).toHaveLength(config.populationSize)
+      expect(population.getGenomes()).toHaveLength(config.GP.populationSize)
     })
 
     it("should initialize with base workflow", async () => {
@@ -216,8 +218,8 @@ describe("Population", () => {
         "dummy-problem-analysis"
       )
 
-      expect(population.size()).toBe(config.populationSize)
-      expect(population.getGenomes()).toHaveLength(config.populationSize)
+      expect(population.size()).toBe(config.GP.populationSize)
+      expect(population.getGenomes()).toHaveLength(config.GP.populationSize)
     })
 
     it("should create genomes in parallel for performance", async () => {
@@ -232,7 +234,7 @@ describe("Population", () => {
 
       const endTime = Date.now()
       expect(endTime - startTime).toBeLessThan(1000) // should be fast in verbose mode
-      expect(population.size()).toBe(config.populationSize)
+      expect(population.size()).toBe(config.GP.populationSize)
     })
 
     it("should handle initialization errors gracefully", async () => {
@@ -267,7 +269,7 @@ describe("Population", () => {
           problemAnalysis: "dummy-problem-analysis",
         })
 
-        expect(genomes.size()).toBe(config.populationSize)
+        expect(genomes.size()).toBe(config.GP.populationSize)
       })
 
       it("should respect size limit when smaller than populationSize", async () => {
@@ -286,7 +288,7 @@ describe("Population", () => {
           problemAnalysis: "dummy-problem-analysis",
         })
 
-        expect(genomes.size()).toBe(config.populationSize)
+        expect(genomes.size()).toBe(config.GP.populationSize)
       })
 
       it("should work with base workflow", async () => {
@@ -306,7 +308,7 @@ describe("Population", () => {
           problemAnalysis: "dummy-problem-analysis",
         })
 
-        expect(genomes.size()).toBe(config.populationSize)
+        expect(genomes.size()).toBe(config.GP.populationSize)
       })
     })
   })
@@ -358,10 +360,10 @@ describe("Population", () => {
       it("should select default number of parents", () => {
         const parents = Select.selectRandomParents(
           population,
-          config.numberOfParentsCreatingOffspring
+          config.GP.numberOfParentsCreatingOffspring
         )
 
-        expect(parents.length).toBe(config.numberOfParentsCreatingOffspring)
+        expect(parents.length).toBe(config.GP.numberOfParentsCreatingOffspring)
         expect(parents.every((p) => population.getGenomes().includes(p))).toBe(
           true
         )
@@ -647,7 +649,7 @@ describe("Population", () => {
           const removed = population.removeGenome("non-existent-id")
 
           expect(removed).toBe(false)
-          expect(population.size()).toBe(config.populationSize)
+          expect(population.size()).toBe(config.GP.populationSize)
         })
       })
 
@@ -664,7 +666,7 @@ describe("Population", () => {
 
     describe("Edge Cases", () => {
       it("should handle very small population sizes", async () => {
-        const smallConfig = createMockEvolutionSettings({ populationSize: 1 })
+        const smallConfig = createMockEvolutionConfig({ populationSize: 1 }, { mode: "GP" as const })
         const smallPopulation = new Population(smallConfig, new RunService())
         const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -680,7 +682,7 @@ describe("Population", () => {
       })
 
       it("should handle zero population size gracefully", () => {
-        const zeroConfig = createMockEvolutionSettings({ populationSize: 0 })
+        const zeroConfig = createMockEvolutionConfig({ populationSize: 0 }, { mode: "GP" as const })
         const zeroPopulation = new Population(zeroConfig, new RunService())
 
         expect(zeroPopulation.size()).toBe(0)
@@ -706,7 +708,7 @@ describe("Population", () => {
 
     describe("Performance", () => {
       it("should initialize large populations efficiently", async () => {
-        const largeConfig = createMockEvolutionSettings({ populationSize: 50 })
+        const largeConfig = createMockEvolutionConfig({ populationSize: 50 }, { mode: "GP" as const })
         const largePopulation = new Population(largeConfig, new RunService())
         const evaluationInput = createMockEvaluationInputGeneric()
 

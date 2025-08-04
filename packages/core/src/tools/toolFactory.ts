@@ -1,8 +1,9 @@
+import type { CoreContext } from "@/interfaces"
+import { TOOLS } from "@/runtime/settings/tools"
 import { validateAndCorrectWithSchema } from "@/tools/constraintValidation"
 import type { WorkflowFile } from "@/tools/context/contextStore.types"
 import { R, type RS } from "@/utils/types"
 import type { ExpectedOutputSchema } from "@/workflow/ingestion/ingestion.types"
-import { TOOLS } from "@/runtime/settings/tools"
 import type { CodeToolName } from "@tools/tool.types"
 import { tool, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
@@ -80,7 +81,8 @@ export function defineTool<
  */
 export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
   toolDef: ReturnType<typeof defineTool<ParamsSchema, TResult>>,
-  toolExecutionContext: ToolExecutionContext
+  toolExecutionContext: ToolExecutionContext,
+  coreContext: CoreContext
 ): Tool {
   return tool({
     description: toolDef.description,
@@ -92,6 +94,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
         corrected,
         warnings,
       } = validateAndCorrectWithSchema(
+        coreContext,
         toolDef.name,
         params,
         toolDef.parameters // Use the tool's Zod schema as single source of truth

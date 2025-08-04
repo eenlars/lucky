@@ -11,12 +11,12 @@ import type { ZodSchema } from "zod"
  * This acts as a safety net for when AI models ignore JSON schema constraints.
  */
 export function validateAndCorrectWithSchema<T>(
-  context: CoreContext,
+  coreContext: CoreContext,
   toolName: string,
   params: Record<string, any>,
   schema: ZodSchema<T>
 ): { params: Record<string, any>; corrected: boolean; warnings: string[] } {
-  const { logger } = context
+  const { logger } = coreContext
   const validationResult = schema.safeParse(params)
 
   if (validationResult.success) {

@@ -4,9 +4,9 @@ import { defineTool } from "@/core/tools/toolFactory"
 import { JSONN } from "@/core/utils/file-types/json/jsonParse"
 import { lgg } from "@/core/utils/logging/Logger"
 import { MODELS } from "@/runtime/settings/constants"
+import { llmify } from "@/utils/common/llmify"
 import Tools, { CodeToolResult } from "@tools/code/output.types"
 import { z } from "zod"
-import { llmify } from "../../../core/utils/common/llmify"
 /**
  * Simple tool for handling LLM requests with expected output validation
  * Takes a prompt and expected output schema, validates the LLM response against it

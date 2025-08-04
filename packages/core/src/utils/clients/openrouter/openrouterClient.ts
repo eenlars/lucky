@@ -1,4 +1,4 @@
-import { envi } from "@/env.mjs"
+import { envi } from "@env"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 const openrouter = createOpenRouter({

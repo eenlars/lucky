@@ -3,11 +3,12 @@
  */
 
 import { improveWorkflowUnified } from "@/improvement/behavioral/judge/improveWorkflow"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
+import { CONFIG } from "@/runtime/settings/constants"
 import { truncater } from "@/utils/common/llmify"
 import { lgg } from "@/utils/logging/Logger"
 import { R, type RS } from "@/utils/types"
 import { validateAndRepairWorkflow } from "@/utils/validation/validateWorkflow"
-import { CONFIG } from "@/runtime/settings/constants"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import { failureTracker } from "@gp/resources/tracker"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -24,7 +25,6 @@ import { NodeOperations } from "./nodeOperations"
 import { PromptMutation } from "./promptMutation"
 import { StructureMutation } from "./structureMutation"
 import { ToolMutation } from "./toolMutation"
-import type { FlowEvolutionMode } from "@/types"
 
 export class MutationCoordinator {
   private static readonly modelMutation = new ModelMutation()

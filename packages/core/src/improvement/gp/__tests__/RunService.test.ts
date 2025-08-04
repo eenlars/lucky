@@ -1,6 +1,7 @@
 // tests for RunService - database persistence for evolution runs
 import {
   createMockEvolutionSettings,
+  createMockFlowEvolutionConfig,
   createMockGenome,
   mockRuntimeConstantsForGP,
   setupCoreTest,
@@ -127,7 +128,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       const runId = await service.createRun("test goal", config)
 
@@ -140,7 +141,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService(true)
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await service.createRun("test goal", config)
 
@@ -153,7 +154,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       // start a run first
       await service.createRun("test goal", config)
@@ -170,7 +171,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
       const mockGenome = await createMockGenome()
 
       // setup run and generation
@@ -229,7 +230,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
       const mockGenome = await createMockGenome()
 
       await service.createRun("test goal", config)
@@ -264,7 +265,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await service.createRun("test goal", config)
 
@@ -277,7 +278,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await service.createRun("test goal", config)
 
@@ -302,7 +303,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await service.createRun("test goal", config)
 
@@ -341,7 +342,7 @@ describe("RunService", () => {
       })
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await expect(service.createRun("test goal", config)).rejects.toThrow(
         "network error"
@@ -369,7 +370,7 @@ describe("RunService", () => {
       })
 
       const service = new RunService(true)
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await expect(service.createRun("test goal", config)).rejects.toThrow()
       expect(mockLggError).toHaveBeenCalled()
@@ -381,7 +382,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       expect(service.getRunId()).toBeUndefined()
       expect(service.getCurrentGenerationId()).toBeUndefined()
@@ -397,7 +398,7 @@ describe("RunService", () => {
       const { RunService } = await import("@/core/improvement/gp/RunService")
 
       const service = new RunService()
-      const config = createMockEvolutionSettings()
+      const config = createMockFlowEvolutionConfig()
 
       await service.createRun("test goal", config)
       expect(service.getRunId()).toBe("test-run-id")

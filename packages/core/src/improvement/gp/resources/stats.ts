@@ -1,6 +1,5 @@
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
 import { lgg } from "@/utils/logging/Logger"
-import { CONFIG } from "@/runtime/settings/constants"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
 import type { Genome } from "../Genome"
 import type { Population } from "../Population"
 import type { RunService } from "../RunService"
@@ -16,7 +15,7 @@ export class StatsTracker {
   private stats: PopulationStats[] = []
 
   constructor(
-    private config: EvolutionSettings,
+    private config: FlowEvolutionConfig,
     private runService: RunService,
     private population: Population
   ) {
@@ -110,30 +109,36 @@ export class StatsTracker {
    */
   shouldStop(): boolean {
     // Cost limit check
-    if (this.totalCost >= this.config.maxCostUSD) {
+    if (
+      this.config.GP.maxCostUSD &&
+      this.totalCost >= this.config.GP.maxCostUSD
+    ) {
       lgg.info(
-        `[StatsTracker] Reached cost limit of $${this.config.maxCostUSD}; stopping evolution.`
+        `[StatsTracker] Reached cost limit of $${this.config.GP.maxCostUSD}; stopping evolution.`
       )
       return true
     }
 
     // Time limit check
     const elapsedMinutes = this.getElapsedMinutes()
-    if (elapsedMinutes > CONFIG.evolution.GP.maximumTimeMinutes) {
+    if (
+      this.config.GP.maximumTimeMinutes &&
+      elapsedMinutes > this.config.GP.maximumTimeMinutes
+    ) {
       lgg.info(
-        `[StatsTracker] Reached time limit of ${CONFIG.evolution.GP.maximumTimeMinutes} minutes; stopping evolution.`
+        `[StatsTracker] Reached time limit of ${this.config.GP.maximumTimeMinutes} minutes; stopping evolution.`
       )
       return true
     }
 
     // Evaluation rate limit check
     if (
-      typeof this.config.maxEvaluationsPerHour === "number" &&
-      this.config.maxEvaluationsPerHour > 0
+      typeof this.config.GP.maxEvaluationsPerHour === "number" &&
+      this.config.GP.maxEvaluationsPerHour > 0
     ) {
-      if (this.evaluationCount >= this.config.maxEvaluationsPerHour) {
+      if (this.evaluationCount >= this.config.GP.maxEvaluationsPerHour) {
         lgg.info(
-          `[StatsTracker] Reached max evaluations per hour (${this.config.maxEvaluationsPerHour}); stopping evolution.`
+          `[StatsTracker] Reached max evaluations per hour (${this.config.GP.maxEvaluationsPerHour}); stopping evolution.`
         )
         return true
       }
@@ -202,7 +207,7 @@ export class StatsTracker {
    * Check if evolution was interrupted (didn't complete all generations)
    */
   wasInterrupted(): boolean {
-    return this.stats.length < this.config.generations
+    return this.stats.length < this.config.generationAmount
   }
 
   /**

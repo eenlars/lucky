@@ -170,7 +170,7 @@ describe("EvolutionEngine", () => {
     evaluationInput = createMockEvaluationInput()
     evaluator = createMockEvaluator()
 
-    engine = new EvolutionEngine(config, "GP")
+    engine = new EvolutionEngine("GP")
   })
 
   describe("Constructor", () => {
@@ -364,7 +364,7 @@ describe("EvolutionEngine", () => {
         // Test that validation catches invalid config at construction time
         expect(() => {
           const badConfig = { ...config, populationSize: 0 }
-          new EvolutionEngine(badConfig, "GP")
+          new EvolutionEngine("GP")
         }).toThrow()
       })
     })
@@ -372,7 +372,7 @@ describe("EvolutionEngine", () => {
     describe("Stopping Criteria", () => {
       it("should stop when cost limit reached", async () => {
         const costLimitConfig = { ...config, maxCostUSD: 0.1 }
-        const costEngine = new EvolutionEngine(costLimitConfig, "GP")
+        const costEngine = new EvolutionEngine("GP")
 
         const result = await costEngine.evolve({
           evaluationInput,
@@ -389,7 +389,7 @@ describe("EvolutionEngine", () => {
       it("should stop on convergence", async () => {
         // configure for quick convergence testing
         const convergeConfig = { ...config, generations: 10 }
-        const convergeEngine = new EvolutionEngine(convergeConfig, "GP")
+        const convergeEngine = new EvolutionEngine("GP")
 
         // mock evaluator to return consistent fitness
         vi.mocked(evaluator.evaluate).mockResolvedValue({
@@ -533,7 +533,7 @@ describe("EvolutionEngine", () => {
   describe("Performance", () => {
     it("should handle rate limiting", async () => {
       const rateLimitConfig = { ...config, maxEvaluationsPerHour: 1 }
-      const rateLimitEngine = new EvolutionEngine(rateLimitConfig, "GP")
+      const rateLimitEngine = new EvolutionEngine("GP")
 
       const startTime = Date.now()
       await rateLimitEngine.evolve({

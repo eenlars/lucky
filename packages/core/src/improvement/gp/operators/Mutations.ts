@@ -3,7 +3,7 @@
  * Legacy mutations file - kept for backward compatibility
  */
 
-import type { FlowEvolutionMode } from "@/types"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
 import type { RS } from "@/utils/types"
 import type { Genome } from "../Genome"
 import { MutationCoordinator } from "./mutations/index"

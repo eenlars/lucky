@@ -3,7 +3,7 @@ import { truncater } from "@/utils/common/llmify"
 import { JSONN } from "@/utils/file-types/json/jsonParse"
 import { lgg } from "@/utils/logging/Logger"
 import { R, type RS } from "@/utils/types"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { getConfig, getModels } from "@/config"
 import type { CoreMessage } from "ai"
 import { z } from "zod"
 
@@ -12,7 +12,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
   response: string,
   schema: T
 ): Promise<RS<z.infer<T>>> => {
-  if (CONFIG.logging.override.API) {
+  if (getConfig().logging.override.API) {
     lgg.log(
       `⚠️  [repairAIRequest] we need to repair this response: ${truncater(
         JSON.stringify(response, null, 2),
@@ -34,7 +34,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
   ]
   const result = await Messages.sendAI({
     messages,
-    model: MODELS.nano,
+    model: getModels().nano,
     mode: "text", // avoid circular dependency with structured mode
     retries: 1, // limit retries for repair
   })

@@ -1,10 +1,10 @@
+import { CONFIG } from "@/runtime/settings/constants"
 import { truncater } from "@/utils/common/llmify"
 import { CSVLoader } from "@/utils/file-types/csv/CSVLoader"
 import { JSONN } from "@/utils/file-types/json/jsonParse"
 import { lgg } from "@/utils/logging/Logger"
 import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
 import { guard } from "@/workflow/schema/errorMessages"
-import { CONFIG } from "@/runtime/settings/constants"
 import { GAIALoader } from "./benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "./benchmarks/swe/SWEBenchLoader"
 import type { WorkflowIO } from "./ingestion.types"
@@ -164,7 +164,9 @@ export class IngestionLayer {
   /**
    * parse evaluation string to extract column reference
    */
-  private static parseEvaluation(evaluation: string | undefined): string | null {
+  private static parseEvaluation(
+    evaluation: string | undefined
+  ): string | null {
     if (!evaluation) {
       return null
     }

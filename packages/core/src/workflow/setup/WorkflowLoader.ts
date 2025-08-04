@@ -1,9 +1,10 @@
-import { supabase } from "@/utils/clients/supabase/client"
-import { isNir } from "@/utils/common/isNir"
-import { mkdirIfMissing } from "@/utils/common/files"
-import { isValidToolInformation } from "@/utils/validation/workflow/toolInformation"
+import { getPaths } from "@/config"
 import { lgg } from "@/logger"
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
+import { CONFIG } from "@/runtime/settings/constants"
+import { supabase } from "@/utils/clients/supabase/client"
+import { mkdirIfMissing } from "@/utils/common/files"
+import { isNir } from "@/utils/common/isNir"
+import { isValidToolInformation } from "@/utils/validation/workflow/toolInformation"
 import type { CodeToolName } from "@tools/tool.types"
 import type {
   WorkflowConfig,
@@ -66,7 +67,7 @@ export class WorkflowConfigHandler {
     const path = await import("path")
     const fs = await import("fs")
 
-    const setupFolderPath = path.dirname(path.resolve(PATHS.setupFile))
+    const setupFolderPath = path.dirname(path.resolve(getPaths().setupFile))
     try {
       if (!fs.existsSync(setupFolderPath)) {
         fs.mkdirSync(setupFolderPath, { recursive: true })
@@ -164,7 +165,7 @@ export class WorkflowConfigHandler {
    * Load single workflow configuration from setupfile.json
    */
   async loadSingleWorkflow(
-    filePath: string = PATHS.setupFile
+    filePath: string = getPaths().setupFile
   ): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
       throw new Error(
@@ -389,8 +390,8 @@ export class WorkflowConfigHandler {
       const fs = await import("fs")
 
       const fileContent = fs.readFileSync(
-        path.join(PATHS.runtime, filename),
-        "utf-8"
+        path.join(getPaths().runtime, filename),
+        "utf-8" // TODO: use utf-8 encoding
       )
 
       if (!fileContent.trim()) {
@@ -463,7 +464,7 @@ export class WorkflowConfigHandler {
 
     const path = await import("path")
     const setupFolderPath = await this.ensureSetupFolder()
-    const backupDir = path.join(PATHS.node.logging, "backups")
+    const backupDir = path.join(getPaths().node.logging, "backups")
     mkdirIfMissing(backupDir)
 
     const stamp = new Date().toISOString().replace(/[:.]/g, "-")

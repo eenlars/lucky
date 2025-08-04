@@ -37,15 +37,11 @@ import { z, ZodTypeAny, type Schema } from "zod"
 
 import pTimeout, { TimeoutError } from "p-timeout"
 
-import {
-  getConfig,
-  getModelConfig,
-  getModels,
-  type ModelName,
-} from "@/interfaces/models"
+import { getConfig, getModelsConfig } from "@/config"
 import { runWithStallGuard } from "@/messages/api/stallGuard"
 import { groqProvider } from "@/utils/clients/groq/groqClient"
 import { lgg } from "@/utils/logging/Logger"
+import { DEFAULT_MODELS, type ModelName } from "@/utils/models/models"
 import { saveResultOutput } from "@/utils/persistence/saveResult"
 import { calculateUsageCost } from "@/utils/spending/calculatePricing"
 import { getPricingLevel, openaiModelsByLevel } from "@/utils/spending/pricing"
@@ -147,7 +143,10 @@ const hitTimestamps: number[] = []
 function rateLimit(): string | null {
   const config = getConfig()
   const now = Date.now()
-  while (hitTimestamps.length && now - hitTimestamps[0] > config.limits.rateWindowMs)
+  while (
+    hitTimestamps.length &&
+    now - hitTimestamps[0] > config.limits.rateWindowMs
+  )
     hitTimestamps.shift()
   if (hitTimestamps.length >= config.limits.maxRequestsPerWindow) {
     return `sendAI: Rate limit exceeded: ${config.limits.maxRequestsPerWindow} req / ${config.limits.rateWindowMs} ms`
@@ -184,21 +183,19 @@ function getModelTimeoutCount(model: ModelName): number {
   ).length
 }
 function shouldUseModelFallback(model: ModelName): boolean {
-  const models = getModels()
-  return (
-    getModelTimeoutCount(model) >= 10 && model !== models.fallbackOpenRouter
-  )
+  const models = getModelsConfig()
+  return getModelTimeoutCount(model) >= 10 && model !== models.models.fallback
 }
 function getFallbackModel(model: ModelName): ModelName {
-  const config = getModelConfig()
-  const models = getModels()
+  const models = getModelsConfig()
+  const config = getModelsConfig()
   switch (config.provider) {
     case "openai":
-      return "openai/gpt-4.1-nano"
+      return models.models.default
     case "groq":
       return "moonshotai/kimi-k2-instruct"
     case "openrouter":
-      return models.fallbackOpenRouter
+      return models.models.fallback
     default:
       throw new Error(`Unknown provider: ${config.provider}`)
   }
@@ -220,7 +217,7 @@ function cleanupOldTimeouts(model?: ModelName): void {
 /* ----------------------------- Model helpers ------------------------------ */
 
 export function normalizeModelName(model: ModelName): ModelName {
-  const config = getModelConfig()
+  const config = getModelsConfig()
   if (config.provider === "openai") {
     const level = getPricingLevel(model)
     return level ? openaiModelsByLevel[level] : openaiModelsByLevel.low
@@ -232,7 +229,7 @@ export function normalizeModelName(model: ModelName): ModelName {
 }
 
 function toOpenaiModelName(model: ModelName): string {
-  const config = getModelConfig()
+  const config = getModelsConfig()
   if (config.provider !== "openai") {
     throw new Error(`Only for openai models!: ${model}`)
   }
@@ -249,7 +246,7 @@ function providerOpts(
   if (model.includes("openai")) {
     return { ...base, reasoning: { effort: "high" } }
   }
-  const config = getModelConfig()
+  const config = getModelsConfig()
   if (model.includes("anthropic") && config.provider === "openrouter") {
     return { ...base, reasoning: { max_tokens: 2_000 } }
   }
@@ -257,7 +254,7 @@ function providerOpts(
 }
 
 function getProvider(model: ModelName, reasoning?: boolean): LanguageModelV1 {
-  const config = getModelConfig()
+  const config = getModelsConfig()
   if (model.includes("openai") && config.provider === "openai") {
     return openai(toOpenaiModelName(model), providerOpts(model, reasoning))
   }
@@ -276,7 +273,7 @@ async function execText(
 ): Promise<TResponse<{ text: string; reasoning?: string }>> {
   const {
     messages,
-    model: wanted = getModels().default,
+    model: wanted = DEFAULT_MODELS.default,
     retries = 2,
     opts = {},
   } = req
@@ -348,7 +345,7 @@ async function execTool(
   req: ToolRequest
 ): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
-  const requestedModel = modelIn ?? getModels().default
+  const requestedModel = modelIn ?? getModelsConfig().models.default
 
   try {
     const model = shouldUseModelFallback(requestedModel)
@@ -417,7 +414,7 @@ async function execStructured<S extends ZodTypeAny>(
 ): Promise<TResponse<z.infer<S>>> {
   const { messages, model: modelIn, retries = 2, schema, opts = {} } = req
 
-  const requestedModel = modelIn ?? getModels().default
+  const requestedModel = modelIn ?? getModelsConfig().models.default
   const model = shouldUseModelFallback(requestedModel)
     ? getFallbackModel(requestedModel)
     : requestedModel
@@ -532,7 +529,7 @@ async function _sendAIInternal(
   }
 
   /* ---- normalize model ---- */
-  req.model = normalizeModelName(req.model ?? getModels().default)
+  req.model = normalizeModelName(req.model ?? getModelsConfig().models.default)
 
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {

@@ -1,5 +1,8 @@
+import type { ModelName } from "@/utils/models/models"
 import type { ToolsInformation } from "@/utils/validation/workflow/toolInformation"
 import type { CodeToolName, MCPToolName } from "@tools/tool.types"
+
+export type { ModelName }
 
 export interface WorkflowNodeConfig {
   nodeId: string
@@ -25,8 +28,6 @@ export type WorkflowConfig = {
   memory?: Record<string, string> | null
   toolsInformation?: ToolsInformation
 }
-
-export type ModelName = keyof typeof pricing
 
 export const isWorkflowConfig = (config: unknown): config is WorkflowConfig => {
   if (typeof config !== "object" || config === null) return false

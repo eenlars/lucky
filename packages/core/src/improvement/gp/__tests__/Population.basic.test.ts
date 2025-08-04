@@ -127,36 +127,36 @@ vi.mock("@/core/utils/clients/supabase/client", () => ({
 
 import { Population } from "@/improvement/gp/Population"
 import { Select } from "@/improvement/gp/Select"
-import { createMockEvolutionSettings } from "@/utils/__tests__/setup/coreMocks"
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
+import { createMockEvolutionConfig } from "@/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
 
 describe("Population Basic Tests", () => {
   let population: Population
-  let config: EvolutionSettings
+  let config: FlowEvolutionConfig
   let mockRunService: any
 
   beforeEach(() => {
     vi.clearAllMocks()
-    config = createMockEvolutionSettings({
-      mode: "GP",
-      populationSize: 5,
-      generations: 3,
-      maxCostUSD: 1.0,
-      dbPath: ":memory:",
-      eliteSize: 1,
-      tournamentSize: 2,
-      crossoverRate: 0.7,
-      maxEvaluationsPerHour: 100,
-      mu_parents_to_keep: 5,
-      lambda_offspring_to_produce: 5,
-      rho_parent_amount: 2,
-      evaluationDataset: "test",
-      baselineComparison: false,
-      mutationParams: {
-        mutationInstructions: "test",
+    config = createMockEvolutionConfig(
+      {
+        populationSize: 5,
+        generations: 3,
+        maxCostUSD: 1.0,
+        eliteSize: 1,
+        tournamentSize: 2,
+        crossoverRate: 0.7,
+        maxEvaluationsPerHour: 100,
+        evaluationDataset: "test",
+        baselineComparison: false,
+        mutationParams: {
+          mutationInstructions: "test",
+        },
       },
-    })
+      {
+        mode: "GP" as const,
+      }
+    )
 
     mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -195,8 +195,8 @@ describe("Population Basic Tests", () => {
         "dummy-problem-analysis"
       )
 
-      expect(population.size()).toBe(config.populationSize)
-      expect(population.getGenomes()).toHaveLength(config.populationSize)
+      expect(population.size()).toBe(config.GP.populationSize)
+      expect(population.getGenomes()).toHaveLength(config.GP.populationSize)
     })
 
     it("should set population", () => {

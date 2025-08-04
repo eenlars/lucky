@@ -1,3 +1,4 @@
+import { getModels } from "@/config"
 import { sendAI } from "@/messages/api/sendAI"
 import { spliceNode2 } from "@/node/splice"
 import { WorkflowEvolutionPrompts } from "@/prompts/improveWorkflow.p"
@@ -6,7 +7,6 @@ import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fit
 import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
 import { WorkflowNodeConfigSchema } from "@/workflow/schema/workflowSchema"
 import { Workflow } from "@/workflow/Workflow"
-import { MODELS } from "@/runtime/settings/constants"
 import z from "zod"
 
 export async function judge(
@@ -21,7 +21,7 @@ export async function judge(
   )
 
   const response = await sendAI({
-    model: MODELS.reasoning,
+    model: getModels().reasoning,
     messages: prompt,
     mode: "structured",
     schema: z.object({

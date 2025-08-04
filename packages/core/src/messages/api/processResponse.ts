@@ -1,24 +1,21 @@
+import { lgg } from "@/logger"
 import {
   isVercelTextResponse,
   type ProcessedResponse,
 } from "@/messages/api/processResponse.types"
 import { sendAI } from "@/messages/api/sendAI"
 import { processStepsV2 } from "@/messages/api/stepProcessor"
-import {
-  formatSummary,
-  type InvocationSummary,
-} from "@/messages/summaries"
+import { formatSummary, type InvocationSummary } from "@/messages/summaries"
+import { getConfig, getModels } from "@/config"
 import { isNir } from "@/utils/common/isNir"
 import { truncater } from "@/utils/common/llmify"
 import { JSONN } from "@/utils/file-types/json/jsonParse"
+import type { ModelName } from "@/utils/models/models"
 import {
   calculateUsageCost,
   type VercelUsage,
 } from "@/utils/spending/calculatePricing"
 import { R, type RS } from "@/utils/types"
-import { lgg } from "@/logger"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
 import type { GenerateTextResult, ToolSet } from "ai"
 export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is called.
 
@@ -104,7 +101,7 @@ export const generateSummary = async (content: string): Promise<RS<string>> => {
           )}, maximum 150 characters.`,
         },
       ],
-      model: MODELS.summary,
+      model: getModels().summary,
       mode: "text",
     })
     return R.success(result.data?.text ?? "", result.usdCost ?? 0)
@@ -273,7 +270,7 @@ export const getResponseContent = (
       truncater(JSON.stringify(response), 100)
     )
 
-  if (CONFIG.logging.override.Tools && response.type === "tool") {
+  if (getConfig().logging.override.Tools && response.type === "tool") {
     lgg.log("🔍 Tool response:", JSONN.show(response))
   }
 
@@ -321,7 +318,7 @@ export const getFinalOutputNodeInvocation = (
   if (
     lastOutput.type === "terminate" &&
     lastOutput.summary &&
-    CONFIG.workflow.handoffContent === "summary"
+    getConfig().workflow.handoffContent === "summary"
   ) {
     return lastOutput.summary
   }
@@ -329,7 +326,7 @@ export const getFinalOutputNodeInvocation = (
   // based on settings in constants, return summary or full output
   // text have no summary, so we don't return it.
   if (
-    CONFIG.workflow.handoffContent === "summary" &&
+    getConfig().workflow.handoffContent === "summary" &&
     lastOutput.type !== "text" &&
     lastOutput.summary
   ) {
@@ -380,7 +377,7 @@ export const getResponseInformation = (
       },
     }
 
-  if (CONFIG.logging.override.Tools && response.type === "tool") {
+  if (getConfig().logging.override.Tools && response.type === "tool") {
     lgg.log("🔍 Tool response:", JSONN.show(response))
   }
 

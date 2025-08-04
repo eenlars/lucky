@@ -4,12 +4,12 @@ import { z } from "zod"
 import { repairAIRequest } from "@/messages/api/repairAIRequest"
 import { sendAI } from "@/messages/api/sendAI"
 import { zodToJson } from "@/messages/utils/zodToJson"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/runtime/settings/models"
+import { getConfig, getModels } from "@/config"
 import { isNir } from "@/utils/common/isNir"
 import { llmify, truncater } from "@/utils/common/llmify"
 import { JSONN } from "@/utils/file-types/json/jsonParse"
 import { lgg } from "@/utils/logging/Logger"
+import type { ModelName } from "@/utils/models/models"
 import { R, type RS } from "@/utils/types"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
@@ -86,7 +86,7 @@ output:
   const { success, data, error } = schema.safeParse(extractedJson)
   if (!success) {
     if (opts?.repair) {
-      if (CONFIG.logging.override.API) {
+      if (getConfig().logging.override.API) {
         lgg.warn(
           "repairing",
           error.message,
@@ -131,7 +131,7 @@ export const quickSummary = async (input: string): Promise<string> => {
           content: `Give a small and concise summary about this data: ${JSON.stringify(input)}`,
         },
       ],
-      model: MODELS.summary,
+      model: getModels().summary,
     })
     if (!isNir(data?.text)) return data.text
     return ""
@@ -155,7 +155,7 @@ export const quickSummaryNull = async (
           content: `Give a small and concise summary about this data: ${JSON.stringify(input)}`,
         },
       ],
-      model: MODELS.summary,
+      model: getModels().summary,
       retries,
     })
     if (!isNir(data?.text)) return data.text

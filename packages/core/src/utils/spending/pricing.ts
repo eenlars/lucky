@@ -1,4 +1,10 @@
-import { pricing, type ModelName, type ActiveModelName, isActiveModel, MODEL_CONFIG } from "@/runtime/settings/models"
+import {
+  isActiveModel,
+  MODEL_CONFIG,
+  pricing,
+  type ActiveModelName,
+  type ModelName,
+} from "@/utils/models/models"
 
 // Get active models from new provider structure
 const getActiveModels = (): ReadonlyArray<ActiveModelName> => {

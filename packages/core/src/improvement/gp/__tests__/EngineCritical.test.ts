@@ -217,7 +217,7 @@ describe("Engine Critical", () => {
     config.generations = 1 // Just test the initial generation creation logic
     config.populationSize = 2 // Keep small for faster test execution
 
-    const engine = new EvolutionEngine(config, "GP")
+    const engine = new EvolutionEngine("GP")
 
     // Run evolve
     const result = await engine.evolve({

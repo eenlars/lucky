@@ -4,14 +4,14 @@
  */
 
 import { Mutations } from "@/improvement/gp/operators/Mutations"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
 import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+import type { EvolutionContext } from "@/improvement/gp/resources/types"
+import { CONFIG } from "@/runtime/settings/constants"
 import { isNir } from "@/utils/common/isNir"
 import { truncater } from "@/utils/common/llmify"
 import { parallelLimit } from "@/utils/common/parallelLimit"
 import { lgg } from "@/utils/logging/Logger"
 import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@/runtime/settings/constants"
 import { Genome } from "@gp/Genome"
 import {
   createDummyGenome,

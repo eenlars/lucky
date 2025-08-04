@@ -1,0 +1,27 @@
+{
+  "extends": "../../packages/core/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../../packages/core/src/*"],
+      "@/core/*": ["../../packages/core/src/*"],
+      "@/types/*": ["../../packages/core/src/types/*"],
+      "@/logger": ["../../packages/core/src/utils/logging/Logger.ts"],
+      "@/benchmarks/*": ["../../packages/core/src/workflow/ingestion/benchmarks/*"],
+      "@/runtime/*": ["./*"],
+      "@workflow/*": ["../../packages/core/src/workflow/*"],
+      "@node/*": ["../../packages/core/src/node/*"],
+      "@messages/*": ["../../packages/core/src/messages/*"],
+      "@memories/*": ["../../packages/core/src/memories/*"],
+      "@tools/*": ["../../packages/core/src/tools/*"],
+      "@prompts/*": ["../../packages/core/src/prompts/*"],
+      "@validation/*": ["../../packages/core/src/utils/validation/*"],
+      "@improvement/*": ["../../packages/core/src/improvement/*"],
+      "@behavioral/*": ["../../packages/core/src/improvement/behavioral/*"],
+      "@gp/*": ["../../packages/core/src/improvement/gp/*"],
+      "@env": ["../../packages/core/env.mjs"],
+      "@settings/*": ["./settings/*"],
+      "@schemas/*": ["./schemas/*"]
+    }
+  }
+}

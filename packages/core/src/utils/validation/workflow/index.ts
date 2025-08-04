@@ -1,4 +1,6 @@
+import { getModelConfig } from "@/config"
 import { isNir } from "@/utils/common/isNir"
+import { pricing } from "@/utils/models/models"
 import {
   everyNodeIsConnectedToStartNode,
   startNodeIsConnectedToEndNode,
@@ -18,8 +20,6 @@ import type {
 import { verifyNoCycles } from "@/utils/validation/workflow/verifyDirectedGrapht"
 import { verifyHierarchicalStructure } from "@/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@/utils/validation/workflow/verifyOneNode"
-import { CONFIG } from "@/runtime/settings/constants"
-import { pricing } from "@/runtime/settings/models"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 // verify that each node has a modelname that exists
@@ -59,7 +59,7 @@ export const verifyModelsAreActive = async (
 ): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (node.modelName && CONFIG.models.inactive.has(node.modelName)) {
+    if (node.modelName && getModelConfig().inactive.has(node.modelName)) {
       errors.push(
         `Node '${node.nodeId}' uses inactive model: ${node.modelName}`
       )

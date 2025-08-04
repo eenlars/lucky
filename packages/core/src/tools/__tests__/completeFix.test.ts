@@ -4,6 +4,7 @@
 
 import { sendAI } from "@/messages/api/sendAI"
 import { validateAndCorrectWithSchema } from "@/tools/constraintValidation"
+import { mockLogger } from "@/utils/__tests__/setup/coreMocks"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -18,6 +19,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
 
     // Test the schema-based constraint validation layer directly
     const result = validateAndCorrectWithSchema(
+      {
+        logger: mockLogger(),
+      },
       "searchGoogleMaps",
       {
         query: "coffee shops",
@@ -40,6 +44,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     })
 
     const result = validateAndCorrectWithSchema(
+      {
+        logger: mockLogger(),
+      },
       "searchGoogleMaps",
       {
         query: "coffee shops",
@@ -126,6 +133,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
 
     const invalidParams = { query: "coffee shops", maxResultCount: 50 }
     const correction = validateAndCorrectWithSchema(
+      {
+        logger: mockLogger(),
+      },
       "searchGoogleMaps",
       invalidParams,
       schema

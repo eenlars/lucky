@@ -1,8 +1,8 @@
+import { getModels } from "@/config"
+import { lgg } from "@/logger"
 import { sendAI } from "@/messages/api/sendAI"
 import type { RS } from "@/utils/types"
 import type { VerificationResult } from "@/utils/validation/workflow/verify.types"
-import { lgg } from "@/logger"
-import { MODELS } from "@/runtime/settings/constants"
 import { WorkflowRepairPrompts } from "@workflow/actions/repair/repairWorkflow.p"
 import type {
   WorkflowConfig,
@@ -44,7 +44,7 @@ export async function repairWorkflow(
       config,
       verificationSummary
     ),
-    model: MODELS.medium,
+    model: getModels().medium,
     mode: "structured",
     schema: WorkflowRepairPrompts.expectedOutput,
   })

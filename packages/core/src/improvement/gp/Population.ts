@@ -1,21 +1,19 @@
 // population management for genetic programming evolution
 // handles population-level operations, statistics, and diversity metrics
 
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+import { getConfig } from "@/config"
 import type { EvolutionContext } from "@/improvement/gp/resources/types"
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
 import { isNir } from "@/utils/common/isNir"
 import { lgg } from "@/utils/logging/Logger"
 import type { RS } from "@/utils/types"
 import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
 import { guard } from "@/workflow/schema/errorMessages"
-import { CONFIG } from "@/runtime/settings/constants"
 import { EvolutionUtils } from "@gp/resources/utils"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 import { RunService } from "./RunService"
-
-const initialPopulationMethod = CONFIG.evolution.GP.initialPopulationMethod
 
 export class Population {
   private genomes: Genome[] = []
@@ -24,15 +22,15 @@ export class Population {
   private evaluationInput: EvaluationInput | null = null
   private problemAnalysis: string = ""
   private _baseWorkflow: WorkflowConfig | undefined = undefined
-  static verbose = CONFIG.logging.override.GP
+  static verbose = getConfig().logging.override.GP
 
   constructor(
-    private config: EvolutionSettings,
+    private config: FlowEvolutionConfig,
     runService: RunService
   ) {
     lgg.info(`[Population] Configuration validated successfully:`)
     lgg.info(
-      `  Population: ${config.populationSize}, Generations: ${config.generations}`
+      `  Population: ${config.GP.populationSize}, Generations: ${config.generationAmount}`
     )
     this.runService = runService
   }
@@ -51,7 +49,12 @@ export class Population {
     this.problemAnalysis = problemAnalysis
 
     // needs work: code duplication between random and baseWorkflow cases
-    switch (initialPopulationMethod as "random" | "baseWorkflow" | "prepared") {
+    switch (
+      this.config.initialPopulationMethod as
+        | "random"
+        | "baseWorkflow"
+        | "prepared"
+    ) {
       case "random":
         const population1 = await this.initializePopulationHelper({
           config: this.config,
@@ -375,7 +378,7 @@ export class Population {
     for (let i = 0; i < count; i++) {
       try {
         const genomePromise =
-          initialPopulationMethod === "prepared"
+          this.config.initialPopulationMethod === "prepared"
             ? Genome.createPrepared({
                 evaluationInput: this.evaluationInput,
                 baseWorkflow: this._baseWorkflow,
@@ -394,7 +397,7 @@ export class Population {
         genomePromises.push(genomePromise)
       } catch (e) {
         lgg.error(
-          `Failed to create ${initialPopulationMethod === "prepared" ? "prepared" : "random"} genome for replenishment`,
+          `Failed to create ${this.config.initialPopulationMethod === "prepared" ? "prepared" : "random"} genome for replenishment`,
           e
         )
       }
@@ -424,7 +427,7 @@ export class Population {
     _evolutionContext,
     problemAnalysis,
   }: {
-    config: EvolutionSettings
+    config: FlowEvolutionConfig
     evaluationInput: EvaluationInput
     runId: string
     _baseWorkflow: WorkflowConfig | undefined
@@ -433,7 +436,7 @@ export class Population {
   }): Promise<Population> {
     const genomePromises: Promise<RS<Genome>>[] = []
 
-    for (let i = 0; i < config.populationSize; i++) {
+    for (let i = 0; i < config.GP.populationSize; i++) {
       try {
         const genomePromise = Genome.createRandom({
           evaluationInput,
@@ -464,7 +467,7 @@ export class Population {
     population.setPopulation(genomes)
 
     lgg.info(
-      `Population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`
+      `Population initialized: ${genomes.length}/${config.GP.populationSize} genomes created successfully`
     )
 
     if (failures.length > 0) {
@@ -474,9 +477,9 @@ export class Population {
       )
 
       // needs work: hardcoded threshold 0.5 should be configurable
-      if (genomes.length < config.populationSize * 0.5) {
+      if (genomes.length < config.GP.populationSize * 0.5) {
         lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.populationSize} genomes created successfully`
+          `Critical: Only ${genomes.length} out of ${config.GP.populationSize} genomes created successfully`
         )
       }
     }
@@ -491,7 +494,7 @@ export class Population {
     _evolutionContext,
     problemAnalysis,
   }: {
-    config: EvolutionSettings
+    config: FlowEvolutionConfig
     evaluationInput: EvaluationInput
     runId: string
     _baseWorkflow: WorkflowConfig | undefined
@@ -500,7 +503,7 @@ export class Population {
   }): Promise<Population> {
     const genomePromises: Promise<RS<Genome>>[] = []
 
-    for (let i = 0; i < config.populationSize; i++) {
+    for (let i = 0; i < config.GP.populationSize; i++) {
       try {
         const genomePromise = Genome.createPrepared({
           evaluationInput,
@@ -530,7 +533,7 @@ export class Population {
     population.setPopulation(genomes)
 
     lgg.info(
-      `Prepared population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`
+      `Prepared population initialized: ${genomes.length}/${config.GP.populationSize} genomes created successfully`
     )
 
     if (failures.length > 0) {
@@ -539,9 +542,9 @@ export class Population {
         failures.map((f) => f.error)
       )
 
-      if (genomes.length < config.populationSize * 0.5) {
+      if (genomes.length < config.GP.populationSize * 0.5) {
         lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.populationSize} prepared genomes created successfully`
+          `Critical: Only ${genomes.length} out of ${config.GP.populationSize} prepared genomes created successfully`
         )
       }
     }

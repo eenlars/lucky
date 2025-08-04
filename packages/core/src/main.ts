@@ -1,8 +1,10 @@
 // src/core/main.ts
 
+import { getConfig, getEvolutionConfig, getPaths } from "@/config"
 import { prepareProblem } from "@/improvement/behavioral/prepare/workflow/prepareMain"
 import { EvolutionEngine } from "@/improvement/gp/evolutionengine"
-import type { CulturalConfig } from "@/improvement/gp/resources/evolution-types"
+import { lgg } from "@/logger"
+import { SELECTED_QUESTION } from "@/runtime/settings/inputs"
 import {
   ArgumentParsingError,
   parseCliArguments,
@@ -10,9 +12,6 @@ import {
 import { displayResults } from "@/utils/logging/displayResults"
 import { SpendingTracker } from "@/utils/spending/SpendingTracker"
 import { guard } from "@/workflow/schema/errorMessages"
-import { lgg } from "@/logger"
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
-import { SELECTED_QUESTION } from "@/runtime/settings/inputs"
 import { GenomeEvaluationResults, WorkflowGenome } from "@gp/resources/gp.types"
 import { RunService } from "@gp/RunService"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
@@ -24,7 +23,6 @@ import {
 } from "@workflow/setup/WorkflowLoader"
 import { Workflow } from "@workflow/Workflow"
 import chalk from "chalk"
-
 // Parse command line arguments
 const args = process.argv.slice(2)
 let parsedArgs: ReturnType<typeof parseCliArguments>
@@ -60,17 +58,12 @@ const mode = EVOLUTION_MODE
 
 // Updated destructuring without mode, with CLI overrides
 const {
-  evolution: {
-    GP: {
-      generations: configGenerations,
-      populationSize: configPopulationSize,
-    },
-    culturalIterations: CULTURAL_EVOLUTION_ITERATIONS,
-  },
-} = CONFIG
+  GP: { populationSize: configPopulationSize },
+  generationAmount: CULTURAL_EVOLUTION_ITERATIONS,
+} = getEvolutionConfig()
 
-const GP_GENERATIONS = cliGenerations ?? configGenerations
-const GP_POPULATION_SIZE = cliPopulationSize ?? configPopulationSize
+const GP_GENERATIONS = cliGenerations ?? CULTURAL_EVOLUTION_ITERATIONS
+const GP_POPULATION_SIZE = cliPopulationSize ?? configPopulationSize ?? 10
 
 type CulturalResult = {
   results: Array<{
@@ -132,24 +125,20 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
    * ------------------------------------------------------------------ */
   if (mode === "cultural") {
     const runService = new RunService(true, mode)
-
-    // create cultural evolution config
-    const culturalConfig: CulturalConfig = {
-      mode: "cultural" as const,
-      iterations: CULTURAL_EVOLUTION_ITERATIONS,
-      question: SELECTED_QUESTION,
-    }
+    const config = getEvolutionConfig()
 
     // create evolution run in database
-    await runService.createRun(SELECTED_QUESTION.goal, culturalConfig)
+    await runService.createRun(SELECTED_QUESTION.goal, config)
 
     // initialize spending tracker
-    if (CONFIG.limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
-      lgg.log(`spending limit: $${CONFIG.limits.maxCostUsdPerRun}`)
+    if (getConfig().limits.enableSpendingLimits) {
+      SpendingTracker.getInstance().initialize(
+        getConfig().limits.maxCostUsdPerRun
+      )
+      lgg.log(`spending limit: $${getConfig().limits.maxCostUsdPerRun}`)
     }
 
-    let setup = await loadSingleWorkflow(cliSetupFile ?? PATHS.setupFile)
+    let setup = await loadSingleWorkflow(cliSetupFile ?? getPaths().setupFile)
     guard(setup, "Setup not found")
 
     let totalCost = 0
@@ -245,7 +234,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
           lastSuccessfulConfig = newConfig
 
           // Save updated configuration after each successful iteration
-          const targetFile = cliSetupFile ?? PATHS.setupFile
+          const targetFile = cliSetupFile ?? getPaths().setupFile
           await persistWorkflow(
             newConfig,
             targetFile,
@@ -313,7 +302,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
 
     // Always save final configuration to setupfile after cultural evolution run
     if (lastSuccessfulConfig) {
-      const targetFile = cliSetupFile ?? PATHS.setupFile
+      const targetFile = cliSetupFile ?? getPaths().setupFile
       await persistWorkflow(
         lastSuccessfulConfig,
         targetFile,
@@ -338,17 +327,17 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
   )
 
   // initialize spending tracker for GP
-  if (CONFIG.limits.enableSpendingLimits) {
-    SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
-    lgg.log(`spending limit: $${CONFIG.limits.maxCostUsdPerRun}`)
+  if (getConfig().limits.enableSpendingLimits) {
+    SpendingTracker.getInstance().initialize(
+      getConfig().limits.maxCostUsdPerRun
+    )
+    lgg.log(`spending limit: $${getConfig().limits.maxCostUsdPerRun}`)
   }
 
   // create evolution config for aggregated evaluation
   const evolutionSettings = EvolutionEngine.createDefaultConfig({
-    populationSize: GP_POPULATION_SIZE,
-    generations: GP_GENERATIONS,
     offspringCount: Math.floor(GP_POPULATION_SIZE * 0.8),
-    maxCostUSD: CONFIG.limits.maxCostUsdPerRun,
+    maxCostUSD: getConfig().limits.maxCostUsdPerRun,
     maxEvaluationsPerHour: 500,
     noveltyWeight: 0.5,
     immigrantRate: 3,
@@ -363,7 +352,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
   // the genomes have not been reset after running this.
   const evaluator = new GPEvaluatorAdapter(workflowIO, newGoal, problemAnalysis)
 
-  const evolutionEngine = new EvolutionEngine(evolutionSettings, "cultural")
+  const evolutionEngine = new EvolutionEngine(mode)
 
   lgg.log("evolving workflow to handle all cases optimally", {
     workflowCasesCount:
@@ -371,7 +360,6 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
         ? (SELECTED_QUESTION.evaluation?.length ?? 0)
         : 1,
     populationSize: GP_POPULATION_SIZE,
-    generations: GP_GENERATIONS,
   })
 
   let evolutionResult
@@ -380,9 +368,9 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
       evaluationInput: SELECTED_QUESTION,
       evaluator,
       _baseWorkflow:
-        CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow"
+        getEvolutionConfig().initialPopulationMethod === "baseWorkflow"
           ? await loadSingleWorkflow(
-              cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
+              cliSetupFile ?? getEvolutionConfig().initialPopulationFile ?? ""
             )
           : undefined,
       problemAnalysis,

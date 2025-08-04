@@ -1,7 +1,6 @@
 import type { NodeLogs } from "@/messages/api/processResponse"
 import type { LocationData } from "@/runtime/schemas/location.types"
-import { MODELS } from "@/runtime/settings/constants.client"
-import type { ModelName } from "@/runtime/settings/models"
+import { MODELS, type ModelName } from "@/utils/models/models"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"
 import responseMultiple from "./resources/toolResponseMultipleSteps.json"

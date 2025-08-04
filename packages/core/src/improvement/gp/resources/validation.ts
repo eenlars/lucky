@@ -2,7 +2,8 @@
  * Evolution configuration validation for genetic programming
  */
 
-import type { EvolutionSettings, _MutationParams } from "./evolution-types"
+import type { EvolutionSettings } from "./evolution-types"
+import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
 
 /**
  * Validation errors for evolution configuration
@@ -17,7 +18,7 @@ export class EvolutionSettingsValidationError extends Error {
 /**
  * Validate evolution configuration for genetic programming
  */
-export function validateEvolutionSettings(config: EvolutionSettings): void {
+export function validateGPConfig(config: EvolutionSettings): void {
   const errors: string[] = []
 
   // Core GP Requirements
@@ -69,10 +70,6 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
     )
   }
 
-  if (config.generations <= 0) {
-    errors.push(`Generations (${config.generations}) must be greater than 0.`)
-  }
-
   // GP-Specific Logic
   if (config.crossoverRate > 0 && config.numberOfParentsCreatingOffspring < 2) {
     errors.push(
@@ -120,17 +117,16 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
 /**
  * Create default evolution configuration using constants from runtime/constants.ts
  */
-export function _createDefaultEvolutionSettings(
+export function _createDefaultGPConfig(
   overrides?: Partial<EvolutionSettings>
 ): EvolutionSettings {
   // Default values when no config is provided
   const defaultPopulationSize = 4
-  const defaultGenerations = 3
   const config: EvolutionSettings = {
-    mode: "GP",
     // Core parameters
     populationSize: defaultPopulationSize,
-    generations: defaultGenerations,
+    verbose: false,
+    maximumTimeMinutes: 10,
 
     // Selection parameters (dynamic based on population size)
     tournamentSize: Math.max(
@@ -165,7 +161,55 @@ export function _createDefaultEvolutionSettings(
   } as const
 
   // Validate the configuration before returning
-  validateEvolutionSettings(config)
+  validateGPConfig(config)
 
   return config
+}
+
+/**
+ * Validate FlowEvolutionConfig settings - simple boolean validation
+ * This provides basic validation for runtime configuration
+ */
+export function validateEvolutionSettings(
+  settings: FlowEvolutionConfig
+): boolean
+export function validateEvolutionSettings(
+  settings: EvolutionSettings
+): boolean
+export function validateEvolutionSettings(
+  settings: FlowEvolutionConfig | EvolutionSettings
+): boolean {
+  // Handle FlowEvolutionConfig
+  if ('GP' in settings) {
+    const evolutionSettings = settings.GP
+    if (evolutionSettings.populationSize <= 0) return false
+    if (evolutionSettings.maxCostUSD <= 0) return false
+    if (evolutionSettings.tournamentSize <= 0) return false
+    if (
+      evolutionSettings.crossoverRate < 0 ||
+      evolutionSettings.crossoverRate > 1
+    )
+      return false
+    if (evolutionSettings.mutationRate < 0 || evolutionSettings.mutationRate > 1)
+      return false
+    if (evolutionSettings.offspringCount < 0) return false
+    if (evolutionSettings.numberOfParentsCreatingOffspring <= 0) return false
+    return true
+  }
+  
+  // Handle EvolutionSettings directly
+  const evolutionSettings = settings
+  if (evolutionSettings.populationSize <= 0) return false
+  if (evolutionSettings.maxCostUSD <= 0) return false
+  if (evolutionSettings.tournamentSize <= 0) return false
+  if (
+    evolutionSettings.crossoverRate < 0 ||
+    evolutionSettings.crossoverRate > 1
+  )
+    return false
+  if (evolutionSettings.mutationRate < 0 || evolutionSettings.mutationRate > 1)
+    return false
+  if (evolutionSettings.offspringCount < 0) return false
+  if (evolutionSettings.numberOfParentsCreatingOffspring <= 0) return false
+  return true
 }

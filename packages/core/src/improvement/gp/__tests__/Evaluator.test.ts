@@ -1,16 +1,14 @@
-// tests for Evaluator - fitness evaluation for genetic programming
+import { getModelsConfig } from "@/config"
 import { codeToolAutoDiscovery } from "@/tools/code/AutoDiscovery"
 import {
   createMockGenome,
   createMockWorkflowConfig,
   createMockWorkflowIO,
   createMockWorkflowScore,
-  mockRuntimeConstantsForGP,
   setupCoreTest,
 } from "@/utils/__tests__/setup/coreMocks"
 import { Workflow } from "@/workflow/Workflow"
 import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock external dependencies
@@ -64,7 +62,7 @@ describe("Engine Critical", () => {
         nodes: [
           {
             nodeId: "node1",
-            modelName: MODELS.default,
+            modelName: getModelsConfig().models.default,
             systemPrompt: "Mock system prompt",
             description: "Mock description",
             mcpTools: [],
@@ -81,7 +79,6 @@ describe("Engine Critical", () => {
 describe("Evaluator", () => {
   beforeEach(() => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
 
     // setup default successful workflow execution
     const mockWorkflow = {

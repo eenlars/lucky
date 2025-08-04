@@ -3,13 +3,14 @@
  * This file contains only the constants that don't require Node.js modules.
  */
 
-import type { FlowCoordinationType, FlowRuntimeConfig } from "@/core/types"
-import { LoggingTypes } from "@/runtime/settings/logging"
-import { EVOLUTION_CONFIG } from "./evolution"
-import { MODEL_CONFIG } from "./models"
+import type { FlowCoordinationType, FlowRuntimeConfig } from "@/index"
+import { EVOLUTION_CONFIG } from "@/runtime/settings/evolution"
+import { LoggingTypes } from "./logging"
+import { MODELS, MODEL_CONFIG } from "./models"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
 
-export { MODELS } from "./models"
+// Re-export for convenience
+export { MODELS }
 
 export const CONFIG = {
   coordinationType: "sequential" as FlowCoordinationType,
@@ -89,10 +90,4 @@ export const CONFIG = {
     enableStallGuard: true,
     enableParallelLimit: true,
   },
-} as const satisfies Omit<FlowRuntimeConfig, "evolution"> & {
-  evolution: Omit<FlowRuntimeConfig["evolution"], "GP"> & {
-    GP: Omit<FlowRuntimeConfig["evolution"]["GP"], "initialPopulationFile"> & {
-      initialPopulationFile: string
-    }
-  }
-}
+} as const satisfies FlowRuntimeConfig

@@ -2,7 +2,7 @@
  * ModelRegistry implementation for runtime model management
  */
 
-import type { ModelRegistry as IModelRegistry } from "./interfaces"
+import { getModelConfig } from "@/config"
 import {
   type ActiveModelName,
   MODELS,
@@ -11,9 +11,9 @@ import {
   isActiveModel,
   pricing,
   providers,
-} from "./settings/models"
+} from "@/utils/models/models"
 
-export class ModelRegistry implements IModelRegistry {
+export class ModelRegistry {
   private activeModels: Set<ActiveModelName>
   private providerModels: Map<Provider, ModelName[]>
 
@@ -66,26 +66,15 @@ export class ModelRegistry implements IModelRegistry {
       return model
     }
 
-    // Try to find an active model from the same provider
-    let provider: Provider | undefined
-
-    // Determine provider from model name
-    if (model.startsWith("openai/")) {
-      provider = "openai"
-    } else if (model.startsWith("groq/")) {
-      provider = "groq"
-    } else if (model.includes("/")) {
-      // Assume it's an OpenRouter model (e.g., "google/gemini-2.5-flash-lite")
-      provider = "openrouter"
+    const provider = getModelConfig().provider
+    if (!provider) {
+      throw new Error(`No provider found for model: ${model}`)
     }
+    const providerModels = this.getModelsForProvider(provider)
+    const activeFromProvider = providerModels.find((m) => this.isActive(m))
 
-    if (provider) {
-      const providerModels = this.getModelsForProvider(provider)
-      const activeFromProvider = providerModels.find((m) => this.isActive(m))
-
-      if (activeFromProvider && this.isActive(activeFromProvider)) {
-        return activeFromProvider
-      }
+    if (activeFromProvider && this.isActive(activeFromProvider)) {
+      return activeFromProvider
     }
 
     // Fallback to a default active model
@@ -140,7 +129,7 @@ export class ModelRegistry implements IModelRegistry {
     name: ModelName
     provider: Provider
     active: boolean
-    pricing: ReturnType<typeof this.getModelPricing>
+    pricing: ReturnType<ModelRegistry["getModelPricing"]>
     info: string
   } {
     const config = pricing[model]

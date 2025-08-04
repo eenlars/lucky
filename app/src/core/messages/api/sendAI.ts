@@ -46,9 +46,9 @@ import {
   openaiModelsByLevel,
 } from "@/core/utils/spending/pricing"
 import { SpendingTracker } from "@/core/utils/spending/SpendingTracker"
+import type { ModelName } from "@/core/workflow/schema/workflow.types"
 import { lgg } from "@/logger"
 import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import type { ModelName } from "@/core/workflow/schema/workflow.types"
 
 /* -------------------------------------------------------------------------- */
 /*                               Public types                                 */
@@ -182,9 +182,7 @@ function getModelTimeoutCount(model: ModelName): number {
   ).length
 }
 function shouldUseModelFallback(model: ModelName): boolean {
-  return (
-    getModelTimeoutCount(model) >= 10 && model !== MODELS.fallbackOpenRouter
-  )
+  return getModelTimeoutCount(model) >= 10 && model !== MODELS.fallback
 }
 function getFallbackModel(model: ModelName): ModelName {
   switch (CONFIG.models.provider) {
@@ -193,7 +191,7 @@ function getFallbackModel(model: ModelName): ModelName {
     case "groq":
       return "moonshotai/kimi-k2-instruct" as any
     case "openrouter":
-      return MODELS.fallbackOpenRouter
+      return MODELS.fallback
     default:
       throw new Error(`Unknown provider: ${CONFIG.models.provider}`)
   }

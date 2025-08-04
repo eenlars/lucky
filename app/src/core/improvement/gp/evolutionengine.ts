@@ -13,8 +13,8 @@ import { evolutionSettingsToString } from "@/core/improvement/gp/resources/evolu
 import {
   createDefaultEvolutionSettings,
   createEvolutionSettingsWithConfig,
-  validateEvolutionSettings,
 } from "@/runtime/settings/evolution"
+import { validateGPConfig } from "@/core/improvement/gp/resources/validation"
 import { failureTracker } from "@gp/resources/tracker"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -41,7 +41,7 @@ export class EvolutionEngine {
     restartRunId?: string
   ) {
     // Validate configuration early to catch issues before evolution starts
-    validateEvolutionSettings(evolutionSettings)
+    validateGPConfig(evolutionSettings)
 
     this.verificationCache = new VerificationCache()
     this.runService = new RunService(

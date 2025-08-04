@@ -1,20 +1,18 @@
 // EvolutionEngine.ts
 
+import { getEvolutionConfig } from "@/config"
 import { Population } from "@/improvement/gp/Population"
-import type { FlowEvolutionMode } from "@/types"
+import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+import { evolutionSettingsToString } from "@/improvement/gp/resources/evolution-types"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
+import { CONFIG } from "@/runtime/settings/constants"
+import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
+import { validateGPConfig } from "@/improvement/gp/resources/validation"
 import { isNir } from "@/utils/common/isNir"
 import { parallelLimit } from "@/utils/common/parallelLimit"
 import { lgg } from "@/utils/logging/Logger"
 import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@/workflow/schema/errorMessages"
-import { CONFIG } from "@/runtime/settings/constants"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
-import { evolutionSettingsToString } from "@/improvement/gp/resources/evolution-types"
-import {
-  createDefaultEvolutionSettings,
-  createEvolutionSettingsWithConfig,
-  validateEvolutionSettings,
-} from "@/runtime/settings/evolution"
 import { failureTracker } from "@gp/resources/tracker"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -36,12 +34,13 @@ export class EvolutionEngine {
   static verbose = CONFIG.logging.override.GP
 
   constructor(
-    private evolutionSettings: EvolutionSettings,
     private evolutionMode: FlowEvolutionMode,
     restartRunId?: string
   ) {
+    const fullEvolutionConfig = getEvolutionConfig()
+    const evolutionSettings = fullEvolutionConfig.GP
     // Validate configuration early to catch issues before evolution starts
-    validateEvolutionSettings(evolutionSettings)
+    validateGPConfig(evolutionSettings)
 
     this.verificationCache = new VerificationCache()
     this.runService = new RunService(
@@ -49,14 +48,14 @@ export class EvolutionEngine {
       this.evolutionMode,
       restartRunId
     )
-    this.population = new Population(this.evolutionSettings, this.runService)
+    this.population = new Population(fullEvolutionConfig, this.runService)
     this.statsTracker = new StatsTracker(
-      this.evolutionSettings,
+      fullEvolutionConfig,
       this.runService,
       this.population
     )
 
-    lgg.info(evolutionSettingsToString(this.evolutionSettings))
+    lgg.info(evolutionSettingsToString(evolutionSettings))
   }
 
   // needs work: improve comment specificity
@@ -82,7 +81,7 @@ export class EvolutionEngine {
     // Create evolution run in database
     await this.runService.createRun(
       evaluationInput.goal,
-      this.evolutionSettings,
+      getEvolutionConfig(),
       continueRunId
     )
 
@@ -113,7 +112,7 @@ export class EvolutionEngine {
 
       for (
         let gen = this.population.getGenerationNumber();
-        gen < this.evolutionSettings.generations - 1;
+        gen < getEvolutionConfig().generationAmount - 1;
         gen++
       ) {
         if (this.statsTracker.shouldStop()) break
@@ -129,7 +128,7 @@ export class EvolutionEngine {
         // It also reselects the genomes that have proven successful in the last generation.
         await Select.createNextGeneration({
           population: this.population,
-          config: this.evolutionSettings,
+          config: getEvolutionConfig().GP,
           verificationCache: this.verificationCache,
           evaluationInput,
           _evolutionContext: this.runService.getEvolutionContext(),

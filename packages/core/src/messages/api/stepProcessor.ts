@@ -1,11 +1,11 @@
 import type { NodeLogs } from "@/messages/api/processResponse"
 import { isNir } from "@/utils/common/isNir"
 import { asArray } from "@/utils/common/utils"
+import type { ModelName } from "@/utils/models/models"
 import {
   calculateUsageCost,
   type VercelUsage,
 } from "@/utils/spending/calculatePricing"
-import type { ModelName } from "@/runtime/settings/models"
 import type { StepResult, ToolCallPart, ToolResult, ToolSet } from "ai"
 
 const normaliseCalls = <T extends ToolSet>(step: StepResult<T>) =>

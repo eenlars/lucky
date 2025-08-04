@@ -24,7 +24,7 @@ describe("MCP Integration Tests", () => {
             "Search for recent news about artificial intelligence breakthroughs in 2024. Use tavily search.",
         },
       ],
-      model: "openai/gpt-4.1-nano",
+      model: "google/gemini-2.5-flash-lite",
       opts: {
         tools,
         maxSteps: 5,
@@ -56,7 +56,7 @@ describe("MCP Integration Tests", () => {
         }
         expect(
           response.data.steps.some(
-            (step) => step.toolCalls && step.toolCalls.length > 0
+            (step: any) => step.toolCalls && step.toolCalls.length > 0
           )
         ).toBe(true)
       } else {

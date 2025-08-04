@@ -1,5 +1,5 @@
 import { sendAI } from "@/messages/api/sendAI"
-import { MODELS } from "@/runtime/settings/constants.client"
+import { MODELS } from "@/utils/models/models"
 import { generateText } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"

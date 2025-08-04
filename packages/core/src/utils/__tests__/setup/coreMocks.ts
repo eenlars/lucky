@@ -1,15 +1,17 @@
 // core test utilities and mocks - consolidated mock file
+import { getModelsConfig } from "@/config"
 import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
 import type {
   GenomeEvaluationResults,
   WorkflowGenome,
 } from "@/improvement/gp/resources/gp.types"
-import type { WorkflowFile } from "@/tools/context/contextStore.types"
 import type {
-  FlowPathsConfig,
-  FlowRuntimeConfig,
+  FlowEvolutionConfig,
+  FlowEvolutionMode,
   FullFlowRuntimeConfig,
-} from "@/types"
+} from "@/interfaces/runtimeConfig"
+import type { CONFIG } from "@/runtime/settings/constants"
+import type { WorkflowFile } from "@/tools/context/contextStore.types"
 import type { RS } from "@/utils/types"
 import type {
   EvaluationCSV,
@@ -17,8 +19,6 @@ import type {
   EvaluationText,
   WorkflowIO,
 } from "@/workflow/ingestion/ingestion.types"
-import type { CONFIG } from "@/runtime/settings/constants"
-import { MODELS } from "@/runtime/settings/constants.client"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -151,10 +151,10 @@ export const createMockCliArgs = (overrides = {}): string[] => [
 export const createMockEvolutionSettings = (
   overrides = {}
 ): EvolutionSettings => ({
-  mode: "GP",
+  verbose: false,
+  maximumTimeMinutes: 10,
   mutationRate: 0.1,
   populationSize: 5,
-  generations: 3,
   maxCostUSD: 1.0,
   eliteSize: 1,
   tournamentSize: 2,
@@ -168,6 +168,18 @@ export const createMockEvolutionSettings = (
   evaluationDataset: "test",
   baselineComparison: false,
   ...overrides,
+})
+
+export const createMockFlowEvolutionConfig = (
+  evolutionSettingsOverrides = {},
+  configOverrides = {}
+): FlowEvolutionConfig => ({
+  mode: "GP" as FlowEvolutionMode,
+  generationAmount: 5,
+  initialPopulationMethod: "random" as const,
+  initialPopulationFile: null,
+  GP: createMockEvolutionSettings(evolutionSettingsOverrides),
+  ...configOverrides,
 })
 
 export const createMockEvaluationInput = (): EvaluationInput => ({
@@ -342,7 +354,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getModelsConfig().models.default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -352,7 +364,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getModelsConfig().models.default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -627,7 +639,8 @@ export const mockFailedAIResponse = <T>(error: string): RS<T> => ({
 // ====== RUNTIME CONFIGURATION FACTORIES ======
 
 export const createMockFullFlowRuntimeConfig = (
-  toolOverrides: Partial<typeof CONFIG.tools> = {}
+  toolOverrides: Partial<typeof CONFIG.tools> = {},
+  modelOverrides: Partial<typeof CONFIG.models> = {}
 ): FullFlowRuntimeConfig => ({
   CONFIG: {
     models: {
@@ -696,15 +709,15 @@ export const createMockFullFlowRuntimeConfig = (
       },
     },
     evolution: {
-      culturalIterations: 3,
-      GP: {
+      generationAmount: 3,
+      mode: "GP",
+      initialPopulationMethod: "random",
+      initialPopulationFile: "",
+      GP: createMockEvolutionSettings({
         populationSize: 4,
-        generations: 3,
         verbose: false,
-        initialPopulationMethod: "random",
-        initialPopulationFile: null,
         maximumTimeMinutes: 10,
-      },
+      }),
     },
     context: {
       maxFilesPerWorkflow: 10,
@@ -724,144 +737,20 @@ export const createMockFullFlowRuntimeConfig = (
       enableParallelLimit: false,
     },
   },
-  PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
-    node: {
-      logging: "/test/node/logging",
-      memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
-      },
-      error: "/test/node/error",
-    },
-  },
   MODELS: {
-    inactive: new Set(),
-    provider: "openai",
-  },
-})
-
-// ====== RUNTIME CONSTANTS MOCKING ======
-
-export const mockRuntimeConstants = (
-  overrides: {
-    CONFIG?: Partial<FlowRuntimeConfig>
-    PATHS?: Partial<FlowPathsConfig>
-    MODELS?: Partial<Record<string, string>>
-    [key: string]: unknown
-  } = {}
-) => {
-  // This function does nothing since vi.mock needs to be called at top level
-  // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstants called but runtime constants need to be mocked at top level"
-  )
-}
-
-// Create a comprehensive mock config for tests
-export const createMockRuntimeConstants = () => ({
-  CONFIG: {
-    coordinationType: "sequential" as const,
-    newNodeProbability: 0.7,
-    logging: {
-      level: "info" as const,
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-      },
-    },
-    workflow: {
-      maxNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full" as const,
-      prepareProblem: true,
-      prepareProblemMethod: "ai" as const,
-      prepareProblemWorkflowVersionId: "test-version-id",
-    },
-    tools: {
-      inactive: new Set(),
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      defaultTools: new Set(),
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-    },
+    provider: "openai" as const,
+    inactive: new Set<string>(),
     models: {
-      provider: "openai" as const,
-      inactive: new Set(),
+      summary: "google/gemini-2.5-flash-lite",
+      low: "google/gemini-2.5-flash-lite",
+      fallback: "google/gemini-2.5-flash-lite",
+      nano: "google/gemini-2.5-flash-lite",
+      medium: "google/gemini-2.5-pro-preview",
+      high: "anthropic/claude-sonnet-4",
+      default: "google/gemini-2.5-flash-lite",
+      fitness: "google/gemini-2.5-flash-lite",
+      reasoning: "anthropic/claude-sonnet-4",
     },
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: { score: 0.7, time: 0.2, cost: 0.1 },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 4,
-        useSummariesForImprovement: true,
-        improvementType: "judge" as const,
-        operatorsWithFeedback: true,
-      },
-    },
-    verification: {
-      allowCycles: true,
-      enableOutputValidation: false,
-    },
-    context: {
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
-    evolution: {
-      culturalIterations: 50,
-      GP: {
-        generations: 40,
-        populationSize: 10,
-        verbose: false,
-        initialPopulationMethod: "prepared" as const,
-        initialPopulationFile: "",
-        maximumTimeMinutes: 700,
-      },
-    },
-    limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      rateWindowMs: 10000,
-      maxRequestsPerWindow: 300,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-    },
-  },
-  MODELS: {
-    summary: "google/gemini-2.0-flash-001",
-    nano: "google/gemini-2.0-flash-001",
-    free: "qwen/qwq-32b:free",
-    free2: "deepseek/deepseek-r1-0528:free",
-    low: "openai/gpt-4.1-nano",
-    medium: "openai/gpt-4.1-mini",
-    high: "anthropic/claude-sonnet-4",
-    default: "openai/gpt-4.1-mini",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "anthropic/claude-sonnet-4",
-    fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {
     root: "/test/root",
@@ -880,100 +769,6 @@ export const createMockRuntimeConstants = () => ({
     },
   },
 })
-
-// ====== SPECIALIZED MOCK HELPERS ======
-
-export const mockRuntimeConstantsForGP = (
-  overrides: {
-    verbose?: boolean
-    populationSize?: number
-    generations?: number
-    [key: string]: unknown
-  } = {}
-) => {
-  return {
-    PATHS: {
-      codeTools: "/mock/code/tools/path",
-      setupFile: "/mock/setup/file/path",
-      node: {
-        logging: "/mock/logging/path",
-      },
-    },
-    CONFIG: {
-      evolution: {
-        GP: {
-          verbose: overrides.verbose ?? false,
-          populationSize: overrides.populationSize ?? 5,
-          generations: overrides.generations ?? 3,
-          maxCostUSD: 1.0,
-          eliteSize: 1,
-          tournamentSize: 2,
-          crossoverRate: 0.7,
-          maxEvaluationsPerHour: 100,
-          mu_parents_to_keep: 5,
-          lambda_offspring_to_produce: 5,
-          rho_parent_amount: 2,
-          evaluationDataset: "test",
-          baselineComparison: false,
-          mutationParams: {
-            mutationInstructions: "test",
-          },
-        },
-      },
-      improvement: {
-        flags: {
-          maxRetriesForWorkflowRepair: 3,
-        },
-      },
-      logging: { level: "info", override: { GP: true } },
-      models: {
-        inactive: new Set(["openai/gpt-4.1"]),
-      },
-      tools: {
-        enable: { mcp: false, code: true },
-      },
-      limits: {
-        enableParallelLimit: false,
-      },
-      workflow: {
-        parallelExecution: false,
-      },
-      verification: {
-        allowCycles: false,
-      },
-      coordinationType: "sequential",
-      newNodeProbability: 0.7,
-      ...overrides,
-    },
-  }
-}
-
-export const mockRuntimeConstantsForCultural = (
-  overrides: {
-    culturalIterations?: number
-    [key: string]: unknown
-  } = {}
-) => {
-  // This function does nothing since vi.mock needs to be called at top level
-  // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstantsForCultural called but runtime constants need to be mocked at top level"
-  )
-}
-
-export const mockRuntimeConstantsForDatabase = (
-  overrides: {
-    enableSpendingLimits?: boolean
-    maxCostUsdPerRun?: number
-    [key: string]: unknown
-  } = {}
-) => {
-  // This function does nothing since vi.mock needs to be called at top level
-  // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstantsForDatabase called but runtime constants need to be mocked at top level"
-  )
-}
 
 // ====== INDIVIDUAL MOCK HELPERS ======
 
@@ -1217,6 +1012,50 @@ export const setupGPTestMocks = (
   return { runService, verificationCache, logger, genome, population }
 }
 
+// ====== RUNTIME CONSTANTS MOCKING ======
+
+export const mockRuntimeConstantsForGP = (
+  overrides?: Partial<FullFlowRuntimeConfig>
+) => {
+  const config = createMockFullFlowRuntimeConfig()
+  const mergedConfig = overrides ? { ...config, ...overrides } : config
+
+  vi.mock("@/runtime/settings/constants.client", () => ({
+    CONFIG: mergedConfig.CONFIG,
+    MODELS: mergedConfig.MODELS,
+  }))
+
+  vi.mock("@/interfaces/runtimeConfig", () => ({
+    CONFIG: mergedConfig.CONFIG,
+    MODELS: mergedConfig.MODELS,
+    PATHS: mergedConfig.PATHS,
+  }))
+}
+
+export const mockRuntimeConstantsForDatabase = (
+  overrides?: Partial<FullFlowRuntimeConfig>
+) => {
+  const config = createMockFullFlowRuntimeConfig()
+  const mergedConfig = overrides ? { ...config, ...overrides } : config
+
+  vi.mock("@/runtime/settings/constants.client", () => ({
+    CONFIG: mergedConfig.CONFIG,
+    MODELS: mergedConfig.MODELS,
+  }))
+}
+
+export const mockRuntimeConstants = (
+  overrides?: Partial<FullFlowRuntimeConfig>
+) => {
+  const config = createMockFullFlowRuntimeConfig()
+  const mergedConfig = overrides ? { ...config, ...overrides } : config
+
+  vi.mock("@/runtime/settings/constants.client", () => ({
+    CONFIG: mergedConfig.CONFIG,
+    MODELS: mergedConfig.MODELS,
+  }))
+}
+
 export const setupDatabaseTestMocks = (
   runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForDatabase>[0]
 ) => {
@@ -1237,7 +1076,7 @@ export const setupToolTestMocks = (
 // ====== LEGACY COMPATIBILITY ALIASES ======
 
 // maintain backward compatibility with existing tests
-export const createMockEvolutionConfig = createMockEvolutionSettings
+export const createMockEvolutionConfig = createMockFlowEvolutionConfig
 export const resetAllMocks = resetCoreMocks
 export const setupDefaultMocks = setupCoreMocks
 export const setupGPTest = setupCoreTest

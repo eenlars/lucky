@@ -1,8 +1,10 @@
-import type { CoreContext } from './interfaces'
-import type { EvaluationInput } from '@workflow/ingestion/ingestion.types'
+import { EvolutionEngine } from "@/improvement/gp/evolutionengine"
+import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { CoreContext } from "./interfaces"
 
 export interface EvolutionOptions {
-  mode?: 'cultural' | 'genetic'
+  mode?: FlowEvolutionMode
 }
 
 export async function runEvolution(
@@ -10,19 +12,21 @@ export async function runEvolution(
   input: EvaluationInput,
   options: EvolutionOptions = {}
 ) {
-  const { logger, runtime } = context
-  const mode = options.mode || runtime.CONFIG.evolution.mode
-  
+  const { logger } = context
+  if (!options.mode) {
+    throw new Error("Mode is required")
+  }
+  const mode = options.mode
+
   logger.info(`Starting evolution in ${mode} mode`)
-  
-  if (mode === 'cultural') {
+
+  if (mode === "cultural") {
     // Import and run cultural evolution
-    const { default: culturalMain } = await import('./main')
+    const { default: culturalMain } = await import("./main")
     return await culturalMain()
   } else {
-    // Import and run genetic programming
-    const { EvolutionEngine } = await import('@improvement/gp/evolutionengine')
-    const engine = new EvolutionEngine()
-    return await engine.run(input)
+    // TODO: Implement proper GP evolution with required parameters
+    // The evolve method requires evaluator, _baseWorkflow, and problemAnalysis
+    throw new Error("GP evolution not fully implemented in runEvolution. Use main.ts for complete GP evolution.")
   }
 }

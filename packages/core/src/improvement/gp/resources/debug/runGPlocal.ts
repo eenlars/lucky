@@ -23,7 +23,7 @@ const runEvolution = async () => {
     },
   })
 
-  const engine = new EvolutionEngine(config, "GP")
+  const engine = new EvolutionEngine("GP")
 
   // mock evaluator for testing
   const mockEvaluator: EvolutionEvaluator = {
