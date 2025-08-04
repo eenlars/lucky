@@ -1,0 +1,721 @@
+[
+  {
+    "name": "Coffeeshop SuperFly Hoofddorp",
+    "address": "Kruisweg 1043",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.307172,
+      "longitude": 4.6905497
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ90UmQKznxUcRgskGcK7xwfo",
+        "address": "Kruisweg 1043",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 555 6945",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+SuperFly+Hoofddorp/data=!4m7!3m6!1s0x47c5e7ac402645f7:0xfac1f1ae7006c982!8m2!3d52.307172!4d4.6905497!16s%2Fg%2F1tdxk1f8!19sChIJ90UmQKznxUcRgskGcK7xwfo?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop SuperFly Hoofddorp",
+        "ratingText": "4,6 sterren 1.343 reviews",
+        "stars": "4,6 sterren 1.343 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+SuperFly+Hoofddorp/data=!4m7!3m6!1s0x47c5e7ac402645f7:0xfac1f1ae7006c982!8m2!3d52.307172!4d4.6905497!16s%2Fg%2F1tdxk1f8!19sChIJ90UmQKznxUcRgskGcK7xwfo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 1.343 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop De Groene Gaper",
+    "address": "Graftermeerstraat 10",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3119215,
+      "longitude": 4.6947089
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJvykfwVTmxUcRKNd56IGAm4s",
+        "address": "Graftermeerstraat 10",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 563 2928",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+De+Groene+Gaper/data=!4m7!3m6!1s0x47c5e654c11f29bf:0x8b9b8081e879d728!8m2!3d52.3119215!4d4.6947089!16s%2Fg%2F11b8z1h8yc!19sChIJvykfwVTmxUcRKNd56IGAm4s?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop De Groene Gaper",
+        "ratingText": "4,5 sterren 669 reviews",
+        "stars": "4,5 sterren 669 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+De+Groene+Gaper/data=!4m7!3m6!1s0x47c5e654c11f29bf:0x8b9b8081e879d728!8m2!3d52.3119215!4d4.6947089!16s%2Fg%2F11b8z1h8yc!19sChIJvykfwVTmxUcRKNd56IGAm4s?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 669 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Happy Days",
+    "address": "Heereweg 153",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2617654,
+      "longitude": 4.5558239
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJlQkeYRLCxUcRLmHTZbDy66E",
+        "address": "Heereweg 153",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "0252 429 594",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Happy+Days/data=!4m7!3m6!1s0x47c5c212611e0995:0xa1ebf2b065d3612e!8m2!3d52.2617654!4d4.5558239!16s%2Fg%2F1tlc77qs!19sChIJlQkeYRLCxUcRLmHTZbDy66E?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Happy Days",
+        "ratingText": "4,2 sterren 461 reviews",
+        "stars": "4,2 sterren 461 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Happy+Days/data=!4m7!3m6!1s0x47c5c212611e0995:0xa1ebf2b065d3612e!8m2!3d52.2617654!4d4.5558239!16s%2Fg%2F1tlc77qs!19sChIJlQkeYRLCxUcRLmHTZbDy66E?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 461 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Del Mondo",
+    "address": "Händelplein 183",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2708617,
+      "longitude": 4.6196125
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ58WBrq7CxUcRfSIUcKFYlfQ",
+        "address": "Händelplein 183",
+        "category": "Delicatessenwinkel",
+        "status": "",
+        "phone": "0252 785 080",
+        "googleUrl": "https://www.google.com/maps/place/Del+Mondo/data=!4m7!3m6!1s0x47c5c2aeae81c5e7:0xf49558a17014227d!8m2!3d52.2708617!4d4.6196125!16s%2Fg%2F1tf64ntl!19sChIJ58WBrq7CxUcRfSIUcKFYlfQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "Del Mondo",
+        "ratingText": "4,5 sterren 116 reviews",
+        "stars": "4,5 sterren 116 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Delicatessenwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Del+Mondo/data=!4m7!3m6!1s0x47c5c2aeae81c5e7:0xf49558a17014227d!8m2!3d52.2708617!4d4.6196125!16s%2Fg%2F1tf64ntl!19sChIJ58WBrq7CxUcRfSIUcKFYlfQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 116 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Koffie&Co",
+    "address": "Graan voor Visch 18035",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2987675,
+      "longitude": 4.6873828
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJmS8FKRfnxUcRBnDcIdjwucU",
+        "address": "Graan voor Visch 18035",
+        "category": "Koffiestand",
+        "status": "",
+        "phone": "06 11439951",
+        "googleUrl": "https://www.google.com/maps/place/Koffie%26Co/data=!4m7!3m6!1s0x47c5e71729052f99:0xc5b9f0d821dc7006!8m2!3d52.2987675!4d4.6873828!16s%2Fg%2F11nmtgjt_x!19sChIJmS8FKRfnxUcRBnDcIdjwucU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Koffie&Co",
+        "ratingText": "4,5 sterren 2 reviews",
+        "stars": "4,5 sterren 2 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Koffiestand",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Koffie%26Co/data=!4m7!3m6!1s0x47c5e71729052f99:0xc5b9f0d821dc7006!8m2!3d52.2987675!4d4.6873828!16s%2Fg%2F11nmtgjt_x!19sChIJmS8FKRfnxUcRBnDcIdjwucU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 2 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Regine",
+    "address": "Gedempte Oude Gracht 28",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3815296,
+      "longitude": 4.6318116
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ0XFasxTvxUcRNBatn3Owpmg",
+        "address": "Gedempte Oude Gracht 28",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 542 4246",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Regine/data=!4m7!3m6!1s0x47c5ef14b35a71d1:0x68a6b0739fad1634!8m2!3d52.3815296!4d4.6318116!16s%2Fg%2F1tdlgh0m!19sChIJ0XFasxTvxUcRNBatn3Owpmg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Regine",
+        "ratingText": "4,5 sterren 517 reviews",
+        "stars": "4,5 sterren 517 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Regine/data=!4m7!3m6!1s0x47c5ef14b35a71d1:0x68a6b0739fad1634!8m2!3d52.3815296!4d4.6318116!16s%2Fg%2F1tdlgh0m!19sChIJ0XFasxTvxUcRNBatn3Owpmg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 517 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Haarlem",
+    "address": "Doelstraat 29",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3777855,
+      "longitude": 4.6307071
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJswbwUBXvxUcRKcShmWa2m-8",
+        "address": "Doelstraat 29",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 576 5895",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Haarlem/data=!4m7!3m6!1s0x47c5ef1550f006b3:0xef9bb66699a1c429!8m2!3d52.3777855!4d4.6307071!16s%2Fg%2F11c0vxgfyf!19sChIJswbwUBXvxUcRKcShmWa2m-8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Haarlem",
+        "ratingText": "4,6 sterren 225 reviews",
+        "stars": "4,6 sterren 225 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Haarlem/data=!4m7!3m6!1s0x47c5ef1550f006b3:0xef9bb66699a1c429!8m2!3d52.3777855!4d4.6307071!16s%2Fg%2F11c0vxgfyf!19sChIJswbwUBXvxUcRKcShmWa2m-8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 225 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Maximillian",
+    "address": "Gedempte Oude Gracht 123",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3782079,
+      "longitude": 4.6357641
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJS3uYbmrvxUcRFKtIdQP9S_8",
+        "address": "Gedempte Oude Gracht 123",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 532 6200",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Maximillian/data=!4m7!3m6!1s0x47c5ef6a6e987b4b:0xff4bfd037548ab14!8m2!3d52.3782079!4d4.6357641!16s%2Fg%2F1tcxcd52!19sChIJS3uYbmrvxUcRFKtIdQP9S_8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Maximillian",
+        "ratingText": "4,7 sterren 252 reviews",
+        "stars": "4,7 sterren 252 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Maximillian/data=!4m7!3m6!1s0x47c5ef6a6e987b4b:0xff4bfd037548ab14!8m2!3d52.3782079!4d4.6357641!16s%2Fg%2F1tcxcd52!19sChIJS3uYbmrvxUcRFKtIdQP9S_8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 252 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Empire",
+    "address": "Krocht 8",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3828578,
+      "longitude": 4.6347256
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ3QXHhGzvxUcRq-4wZA3VBIE",
+        "address": "Krocht 8",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 531 4453",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Empire/data=!4m7!3m6!1s0x47c5ef6c84c705dd:0x8104d50d6430eeab!8m2!3d52.3828578!4d4.6347256!16s%2Fg%2F1tdcqqj4!19sChIJ3QXHhGzvxUcRq-4wZA3VBIE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Empire",
+        "ratingText": "4,5 sterren 429 reviews",
+        "stars": "4,5 sterren 429 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Empire/data=!4m7!3m6!1s0x47c5ef6c84c705dd:0x8104d50d6430eeab!8m2!3d52.3828578!4d4.6347256!16s%2Fg%2F1tdcqqj4!19sChIJ3QXHhGzvxUcRq-4wZA3VBIE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 429 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Birdy",
+    "address": "Schoterweg 19",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3914342,
+      "longitude": 4.6405253
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJLbADYXHvxUcRffL-DLjUghc",
+        "address": "Schoterweg 19",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 525 3822",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Birdy/data=!4m7!3m6!1s0x47c5ef716103b02d:0x1782d4b80cfef27d!8m2!3d52.3914342!4d4.6405253!16s%2Fg%2F1w6r7gkq!19sChIJLbADYXHvxUcRffL-DLjUghc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Birdy",
+        "ratingText": "4,7 sterren 432 reviews",
+        "stars": "4,7 sterren 432 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Birdy/data=!4m7!3m6!1s0x47c5ef716103b02d:0x1782d4b80cfef27d!8m2!3d52.3914342!4d4.6405253!16s%2Fg%2F1w6r7gkq!19sChIJLbADYXHvxUcRffL-DLjUghc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 432 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop The Greengrocers Haarlem",
+    "address": "Lange Veerstraat 47",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3798942,
+      "longitude": 4.6377383
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJG3xa0mvvxUcRqosZzGgI9iU",
+        "address": "Lange Veerstraat 47",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "06 43070879",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+The+Greengrocers+Haarlem/data=!4m7!3m6!1s0x47c5ef6bd25a7c1b:0x25f60868cc198baa!8m2!3d52.3798942!4d4.6377383!16s%2Fg%2F1thlm87j!19sChIJG3xa0mvvxUcRqosZzGgI9iU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop The Greengrocers Haarlem",
+        "ratingText": "4,7 sterren 454 reviews",
+        "stars": "4,7 sterren 454 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+The+Greengrocers+Haarlem/data=!4m7!3m6!1s0x47c5ef6bd25a7c1b:0x25f60868cc198baa!8m2!3d52.3798942!4d4.6377383!16s%2Fg%2F1thlm87j!19sChIJG3xa0mvvxUcRqosZzGgI9iU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 454 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop The Border",
+    "address": "Amstelveenseweg 1160",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3220073,
+      "longitude": 4.8571268
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC9bcG9_hxUcRQjHbw7ghC-s",
+        "address": "Amstelveenseweg 1160",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "020 642 0681",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+The+Border/data=!4m7!3m6!1s0x47c5e1df1bdcd60b:0xeb0b21b8c3db3142!8m2!3d52.3220073!4d4.8571268!16s%2Fg%2F1vvyx83t!19sChIJC9bcG9_hxUcRQjHbw7ghC-s?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop The Border",
+        "ratingText": "4,3 sterren 1.133 reviews",
+        "stars": "4,3 sterren 1.133 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+The+Border/data=!4m7!3m6!1s0x47c5e1df1bdcd60b:0xeb0b21b8c3db3142!8m2!3d52.3220073!4d4.8571268!16s%2Fg%2F1vvyx83t!19sChIJC9bcG9_hxUcRQjHbw7ghC-s?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 1.133 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Relax | Amsterdam Zuid",
+    "address": "Vechtstraat 9HS",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3484609,
+      "longitude": 4.9056009
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJb1EJO4YJxkcRMmO44WPAZLc",
+        "address": "Vechtstraat 9HS",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "020 238 4177",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Relax+%7C+Amsterdam+Zuid/data=!4m7!3m6!1s0x47c609863b09516f:0xb764c063e1b86332!8m2!3d52.3484609!4d4.9056009!16s%2Fg%2F11gf9qkhql!19sChIJb1EJO4YJxkcRMmO44WPAZLc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Relax | Amsterdam Zuid",
+        "ratingText": "4,8 sterren 809 reviews",
+        "stars": "4,8 sterren 809 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Relax+%7C+Amsterdam+Zuid/data=!4m7!3m6!1s0x47c609863b09516f:0xb764c063e1b86332!8m2!3d52.3484609!4d4.9056009!16s%2Fg%2F11gf9qkhql!19sChIJb1EJO4YJxkcRMmO44WPAZLc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 809 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop \"De Kade\"",
+    "address": "Stadionkade 107",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.343483,
+      "longitude": 4.8642756
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJFdxxhAAKxkcRCQB4teu2dYQ",
+        "address": "Stadionkade 107",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "06 23305276",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+%22De+Kade%22/data=!4m7!3m6!1s0x47c60a008471dc15:0x8475b6ebb5780009!8m2!3d52.343483!4d4.8642756!16s%2Fg%2F1tw1d0mq!19sChIJFdxxhAAKxkcRCQB4teu2dYQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop \"De Kade\"",
+        "ratingText": "4,7 sterren 1.115 reviews",
+        "stars": "4,7 sterren 1.115 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+%22De+Kade%22/data=!4m7!3m6!1s0x47c60a008471dc15:0x8475b6ebb5780009!8m2!3d52.343483!4d4.8642756!16s%2Fg%2F1tw1d0mq!19sChIJFdxxhAAKxkcRCQB4teu2dYQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 1.115 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop DNA",
+    "address": "Achillesstraat 104",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3450034,
+      "longitude": 4.8642286
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJNaLAdQAKxkcR_YLSXFz50fc",
+        "address": "Achillesstraat 104",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "020 664 8279",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+DNA/data=!4m7!3m6!1s0x47c60a0075c0a235:0xf7d1f95c5cd282fd!8m2!3d52.3450034!4d4.8642286!16s%2Fg%2F1tfc5tcf!19sChIJNaLAdQAKxkcR_YLSXFz50fc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop DNA",
+        "ratingText": "4,6 sterren 1.090 reviews",
+        "stars": "4,6 sterren 1.090 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+DNA/data=!4m7!3m6!1s0x47c60a0075c0a235:0xf7d1f95c5cd282fd!8m2!3d52.3450034!4d4.8642286!16s%2Fg%2F1tfc5tcf!19sChIJNaLAdQAKxkcR_YLSXFz50fc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 1.090 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Coffeeshop Takeaway De Kruidenier",
+    "address": "Nassaulaan 54",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3837941,
+      "longitude": 4.6333685
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJyZtHuGzvxUcRklmCUu2Q11Y",
+        "address": "Nassaulaan 54",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 785 1549",
+        "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Takeaway+De+Kruidenier/data=!4m7!3m6!1s0x47c5ef6cb8479bc9:0x56d790ed52825992!8m2!3d52.3837941!4d4.6333685!16s%2Fg%2F1tfqq48_!19sChIJyZtHuGzvxUcRklmCUu2Q11Y?authuser=0&hl=nl&rclk=1",
+        "storeName": "Coffeeshop Takeaway De Kruidenier",
+        "ratingText": "4,2 sterren 243 reviews",
+        "stars": "4,2 sterren 243 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Coffeeshop+Takeaway+De+Kruidenier/data=!4m7!3m6!1s0x47c5ef6cb8479bc9:0x56d790ed52825992!8m2!3d52.3837941!4d4.6333685!16s%2Fg%2F1tfqq48_!19sChIJyZtHuGzvxUcRklmCUu2Q11Y?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 243 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "COFFEESHOP DREAMLAND",
+    "address": "Brouwersplein 44",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.381365,
+      "longitude": 4.6216918
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJVwgCHBfvxUcRgvYbECrScD8",
+        "address": "Brouwersplein 44",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "06 44307323",
+        "googleUrl": "https://www.google.com/maps/place/COFFEESHOP+DREAMLAND/data=!4m7!3m6!1s0x47c5ef171c020857:0x3f70d22a101bf682!8m2!3d52.381365!4d4.6216918!16s%2Fg%2F1td_xsvw!19sChIJVwgCHBfvxUcRgvYbECrScD8?authuser=0&hl=nl&rclk=1",
+        "storeName": "COFFEESHOP DREAMLAND",
+        "ratingText": "4,0 sterren 101 reviews",
+        "stars": "4,0 sterren 101 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/COFFEESHOP+DREAMLAND/data=!4m7!3m6!1s0x47c5ef171c020857:0x3f70d22a101bf682!8m2!3d52.381365!4d4.6216918!16s%2Fg%2F1td_xsvw!19sChIJVwgCHBfvxUcRgvYbECrScD8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,0 sterren 101 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Sensemillia CoffeeShop",
+    "address": "Meer en Vaart 177B",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3602041,
+      "longitude": 4.8079096
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJv726-s3jxUcRxaKrYdV5HiM",
+        "address": "Meer en Vaart 177B",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "020 619 8846",
+        "googleUrl": "https://www.google.com/maps/place/Sensemillia+CoffeeShop/data=!4m7!3m6!1s0x47c5e3cdfababdbf:0x231e79d561aba2c5!8m2!3d52.3602041!4d4.8079096!16s%2Fg%2F11cmtb2y0y!19sChIJv726-s3jxUcRxaKrYdV5HiM?authuser=0&hl=nl&rclk=1",
+        "storeName": "Sensemillia CoffeeShop",
+        "ratingText": "4,4 sterren 1.070 reviews",
+        "stars": "4,4 sterren 1.070 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Sensemillia+CoffeeShop/data=!4m7!3m6!1s0x47c5e3cdfababdbf:0x231e79d561aba2c5!8m2!3d52.3602041!4d4.8079096!16s%2Fg%2F11cmtb2y0y!19sChIJv726-s3jxUcRxaKrYdV5HiM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,4 sterren 1.070 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Yanks Coffee Shop",
+    "address": "Dorpsplein 2",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.372605,
+      "longitude": 4.5275711
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJV47_8BLsxUcRKTPPLd_MDAc",
+        "address": "Dorpsplein 2",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "phone": "023 571 9299",
+        "googleUrl": "https://www.google.com/maps/place/Yanks+Coffee+Shop/data=!4m7!3m6!1s0x47c5ec12f0ff8e57:0x70cccdf2dcf3329!8m2!3d52.372605!4d4.5275711!16s%2Fg%2F1tycvvpk!19sChIJV47_8BLsxUcRKTPPLd_MDAc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Yanks Coffee Shop",
+        "ratingText": "4,8 sterren 2.985 reviews",
+        "stars": "4,8 sterren 2.985 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Yanks+Coffee+Shop/data=!4m7!3m6!1s0x47c5ec12f0ff8e57:0x70cccdf2dcf3329!8m2!3d52.372605!4d4.5275711!16s%2Fg%2F1tycvvpk!19sChIJV47_8BLsxUcRKTPPLd_MDAc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 2.985 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Hunter's Coffeeshop Zandvoort",
+    "address": "Stationsstraat 9-11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3748343,
+      "longitude": 4.5295016
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJLUUZlxPsxUcRwRZWlUoOgAs",
+        "address": "Stationsstraat 9-11",
+        "category": "Cannabiswinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Hunter%27s+Coffeeshop+Zandvoort/data=!4m7!3m6!1s0x47c5ec139719452d:0xb800e4a955616c1!8m2!3d52.3748343!4d4.5295016!16s%2Fg%2F11f1m93lzn!19sChIJLUUZlxPsxUcRwRZWlUoOgAs?authuser=0&hl=nl&rclk=1",
+        "storeName": "Hunter's Coffeeshop Zandvoort",
+        "ratingText": "4,5 sterren 740 reviews",
+        "stars": "4,5 sterren 740 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cannabiswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Hunter%27s+Coffeeshop+Zandvoort/data=!4m7!3m6!1s0x47c5ec139719452d:0xb800e4a955616c1!8m2!3d52.3748343!4d4.5295016!16s%2Fg%2F11f1m93lzn!19sChIJLUUZlxPsxUcRwRZWlUoOgAs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 740 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-29T16:54:41.219Z"
+    },
+    "domain": null
+  }
+]

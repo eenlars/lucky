@@ -1,0 +1,111 @@
+[
+  {
+    "name": "Ben & Jerry's",
+    "address": "Grotekerksbuurt 31b",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 51.8139734,
+      "longitude": 4.6624501
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC9eiiAMyxEcR24YR0Io0als",
+        "address": "Grotekerksbuurt 31b",
+        "category": "IJs",
+        "status": "",
+        "phone": "085 303 5510",
+        "googleUrl": "https://www.google.com/maps/place/Ben+%26+Jerry%27s/data=!4m7!3m6!1s0x47c4320388a2d70b:0x5b6a348ad01186db!8m2!3d51.8139734!4d4.6624501!16s%2Fg%2F11gg6dkr_7!19sChIJC9eiiAMyxEcR24YR0Io0als?authuser=0&hl=nl&rclk=1",
+        "storeName": "Ben & Jerry's",
+        "ratingText": "4,3 sterren 12 reviews",
+        "stars": "4,3 sterren 12 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "IJs",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Ben+%26+Jerry%27s/data=!4m7!3m6!1s0x47c4320388a2d70b:0x5b6a348ad01186db!8m2!3d51.8139734!4d4.6624501!16s%2Fg%2F11gg6dkr_7!19sChIJC9eiiAMyxEcR24YR0Io0als?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 12 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:20:44.860Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Scoopshop Ben & Jerry's Amsterdam",
+    "address": "Stationsplein 15",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.37857,
+      "longitude": 4.9000887
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJNUWFbbcJxkcRe51S1DwKCOw",
+        "address": "Stationsplein 15",
+        "category": "IJs",
+        "status": "",
+        "phone": "06 12345678",
+        "googleUrl": "https://www.google.com/maps/place/Scoopshop+Ben+%26+Jerry%27s+Amsterdam/data=!4m7!3m6!1s0x47c609b76d854535:0xec080a3cd4529d7b!8m2!3d52.37857!4d4.9000887!16s%2Fg%2F1tfc5t9y!19sChIJNUWFbbcJxkcRe51S1DwKCOw?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.benjerry.nl/",
+        "storeName": "Scoopshop Ben & Jerry's Amsterdam",
+        "ratingText": "3,5 sterren 13 reviews",
+        "stars": "3,5 sterren 13 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "IJs",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Scoopshop+Ben+%26+Jerry%27s+Amsterdam/data=!4m7!3m6!1s0x47c609b76d854535:0xec080a3cd4529d7b!8m2!3d52.37857!4d4.9000887!16s%2Fg%2F1tfc5t9y!19sChIJNUWFbbcJxkcRe51S1DwKCOw?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.benjerry.nl/",
+      "stars": "3,5 sterren 13 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:20:44.860Z"
+    },
+    "domain": "benjerry.nl"
+  },
+  {
+    "name": "Ben & Jerry's",
+    "address": "Witte de Withstraat 39, Unit A",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 51.9158397,
+      "longitude": 4.4776204
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJJUNzG4YzxEcRkSlHvG-RSVE",
+        "address": "Witte de Withstraat 39, Unit A",
+        "category": "IJs",
+        "status": "",
+        "phone": "010 844 6287",
+        "googleUrl": "https://www.google.com/maps/place/Ben+%26+Jerry%27s/data=!4m7!3m6!1s0x47c433861b734325:0x5149916fbc472991!8m2!3d51.9158397!4d4.4776204!16s%2Fg%2F11ghlk5sv5!19sChIJJUNzG4YzxEcRkSlHvG-RSVE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Ben & Jerry's",
+        "ratingText": "4,3 sterren 273 reviews",
+        "stars": "4,3 sterren 273 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "IJs",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Ben+%26+Jerry%27s/data=!4m7!3m6!1s0x47c433861b734325:0x5149916fbc472991!8m2!3d51.9158397!4d4.4776204!16s%2Fg%2F11ghlk5sv5!19sChIJJUNzG4YzxEcRkSlHvG-RSVE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 273 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:20:44.861Z"
+    },
+    "domain": null
+  }
+]

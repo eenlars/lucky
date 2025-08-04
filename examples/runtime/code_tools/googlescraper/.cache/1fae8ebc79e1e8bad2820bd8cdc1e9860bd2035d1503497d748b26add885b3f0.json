@@ -1,0 +1,372 @@
+[
+  {
+    "name": "Albert Heijn",
+    "address": "Van Baerlestraat 33 a",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3572222,
+      "longitude": 4.8797222
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ959o-O8JxkcRDFJcaLW-TaM",
+        "address": "Van Baerlestraat 33 a",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 662 0416",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609eff8689ff7:0xa34dbeb5685c520c!8m2!3d52.3572222!4d4.8797222!16s%2Fg%2F1tz94yv5!19sChIJ959o-O8JxkcRDFJcaLW-TaM?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1391",
+        "storeName": "Albert Heijn",
+        "ratingText": "4,3 sterren 2.972 reviews",
+        "stars": "4,3 sterren 2.972 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609eff8689ff7:0xa34dbeb5685c520c!8m2!3d52.3572222!4d4.8797222!16s%2Fg%2F1tz94yv5!19sChIJ959o-O8JxkcRDFJcaLW-TaM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1391",
+      "stars": "4,3 sterren 2.972 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Leidseplein 31A",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3633839,
+      "longitude": 4.882068
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ288dje4JxkcRFxI-SCj6Z0o",
+        "address": "Leidseplein 31A",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 246 1248",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609ee8d1dcfdb:0x4a67fa28483e1217!8m2!3d52.3633839!4d4.882068!16s%2Fg%2F11h90dgyqm!19sChIJ288dje4JxkcRFxI-SCj6Z0o?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/2217",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,5 sterren 270 reviews",
+        "stars": "3,5 sterren 270 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609ee8d1dcfdb:0x4a67fa28483e1217!8m2!3d52.3633839!4d4.882068!16s%2Fg%2F11h90dgyqm!19sChIJ288dje4JxkcRFxI-SCj6Z0o?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/2217",
+      "stars": "3,5 sterren 270 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Overtoom 116 H",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3627906,
+      "longitude": 4.8745395
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJnxoQpeYJxkcRptNI2DE8Z-w",
+        "address": "Overtoom 116 H",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 612 0333",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609e6a5101a9f:0xec673c31d848d3a6!8m2!3d52.3627906!4d4.8745395!16s%2Fg%2F1tcxtfp5!19sChIJnxoQpeYJxkcRptNI2DE8Z-w?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1460",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,9 sterren 1.193 reviews",
+        "stars": "3,9 sterren 1.193 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609e6a5101a9f:0xec673c31d848d3a6!8m2!3d52.3627906!4d4.8745395!16s%2Fg%2F1tcxtfp5!19sChIJnxoQpeYJxkcRptNI2DE8Z-w?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1460",
+      "stars": "3,9 sterren 1.193 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Gerrit van der Veenstraat 57",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3488059,
+      "longitude": 4.8779043
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJH3uS0_kJxkcRboZ6AN_F5Ps",
+        "address": "Gerrit van der Veenstraat 57",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 679 1840",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609f9d3927b1f:0xfbe4c5df007a866e!8m2!3d52.3488059!4d4.8779043!16s%2Fg%2F1tjgzkjx!19sChIJH3uS0_kJxkcRboZ6AN_F5Ps?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1363",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,7 sterren 647 reviews",
+        "stars": "3,7 sterren 647 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609f9d3927b1f:0xfbe4c5df007a866e!8m2!3d52.3488059!4d4.8779043!16s%2Fg%2F1tjgzkjx!19sChIJH3uS0_kJxkcRboZ6AN_F5Ps?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1363",
+      "stars": "3,7 sterren 647 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Vijzelstraat 113",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3627778,
+      "longitude": 4.8922222
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJW9Y5a-sJxkcRlo6YvTNWkZ8",
+        "address": "Vijzelstraat 113",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 625 9405",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609eb6b39d65b:0x9f915633bd988e96!8m2!3d52.3627778!4d4.8922222!16s%2Fg%2F1td3qpk5!19sChIJW9Y5a-sJxkcRlo6YvTNWkZ8?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1112",
+        "storeName": "Albert Heijn",
+        "ratingText": "4,1 sterren 1.107 reviews",
+        "stars": "4,1 sterren 1.107 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609eb6b39d65b:0x9f915633bd988e96!8m2!3d52.3627778!4d4.8922222!16s%2Fg%2F1td3qpk5!19sChIJW9Y5a-sJxkcRlo6YvTNWkZ8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1112",
+      "stars": "4,1 sterren 1.107 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Cornelis Troostplein 11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3510859,
+      "longitude": 4.8919829
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ_TgVq4wJxkcR3nYpn8FtwT4",
+        "address": "Cornelis Troostplein 11",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 664 6559",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6098cab1538fd:0x3ec16dc19f2976de!8m2!3d52.3510859!4d4.8919829!16s%2Fg%2F1tdb_vn0!19sChIJ_TgVq4wJxkcR3nYpn8FtwT4?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1562",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,8 sterren 972 reviews",
+        "stars": "3,8 sterren 972 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6098cab1538fd:0x3ec16dc19f2976de!8m2!3d52.3510859!4d4.8919829!16s%2Fg%2F1tdb_vn0!19sChIJ_TgVq4wJxkcR3nYpn8FtwT4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1562",
+      "stars": "3,8 sterren 972 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Stadhouderskade 101",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3573565,
+      "longitude": 4.8970553
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ9bQ48JIJxkcRWbWv35rAnDU",
+        "address": "Stadhouderskade 101",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 675 2888",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c60992f038b4f5:0x359cc09adfafb559!8m2!3d52.3573565!4d4.8970553!16s%2Fg%2F1tczjp4_!19sChIJ9bQ48JIJxkcRWbWv35rAnDU?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1594",
+        "storeName": "Albert Heijn",
+        "ratingText": "4,1 sterren 900 reviews",
+        "stars": "4,1 sterren 900 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c60992f038b4f5:0x359cc09adfafb559!8m2!3d52.3573565!4d4.8970553!16s%2Fg%2F1tczjp4_!19sChIJ9bQ48JIJxkcRWbWv35rAnDU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1594",
+      "stars": "4,1 sterren 900 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Kinkerstraat 89",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3666126,
+      "longitude": 4.8704683
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZ9LVZ-AJxkcRb4eDDGKM6V4",
+        "address": "Kinkerstraat 89",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 618 0088",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609e067d5d267:0x5ee98c620c83876f!8m2!3d52.3666126!4d4.8704683!16s%2Fg%2F1ptxmrnn5!19sChIJZ9LVZ-AJxkcRb4eDDGKM6V4?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/1497",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,9 sterren 839 reviews",
+        "stars": "3,9 sterren 839 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c609e067d5d267:0x5ee98c620c83876f!8m2!3d52.3666126!4d4.8704683!16s%2Fg%2F1ptxmrnn5!19sChIJZ9LVZ-AJxkcRb4eDDGKM6V4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/1497",
+      "stars": "3,9 sterren 839 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Van Woustraat 150",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3527727,
+      "longitude": 4.9025811
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ51H5Bo8JxkcR2gNGwVDHl9o",
+        "address": "Van Woustraat 150",
+        "category": "Kruidenier",
+        "status": "",
+        "phone": "020 673 7818",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6098f06f951e7:0xda97c750c14603da!8m2!3d52.3527727!4d4.9025811!16s%2Fg%2F11rc1srr0b!19sChIJ51H5Bo8JxkcR2gNGwVDHl9o?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/albert-heijn/amsterdam/van-woustraat/1420",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,6 sterren 94 reviews",
+        "stars": "3,6 sterren 94 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kruidenier",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6098f06f951e7:0xda97c750c14603da!8m2!3d52.3527727!4d4.9025811!16s%2Fg%2F11rc1srr0b!19sChIJ51H5Bo8JxkcR2gNGwVDHl9o?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/albert-heijn/amsterdam/van-woustraat/1420",
+      "stars": "3,6 sterren 94 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Eerste Jan Steenstraat 53",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3539757,
+      "longitude": 4.8895758
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJMU-keAAJxkcRuyYNyhpVicE",
+        "address": "Eerste Jan Steenstraat 53",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "020 723 9606",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6090078a44f31:0xc189551aca0d26bb!8m2!3d52.3539757!4d4.8895758!16s%2Fg%2F11wtkx97t6!19sChIJMU-keAAJxkcRuyYNyhpVicE?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.ah.nl/winkel/2314",
+        "storeName": "Albert Heijn",
+        "ratingText": "3,5 sterren 25 reviews",
+        "stars": "3,5 sterren 25 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6090078a44f31:0xc189551aca0d26bb!8m2!3d52.3539757!4d4.8895758!16s%2Fg%2F11wtkx97t6!19sChIJMU-keAAJxkcRuyYNyhpVicE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.ah.nl/winkel/2314",
+      "stars": "3,5 sterren 25 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:49.398Z"
+    },
+    "domain": "ah.nl"
+  }
+]

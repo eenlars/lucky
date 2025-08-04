@@ -1,0 +1,359 @@
+[
+  {
+    "name": "Store for Brands",
+    "address": "Overhoeksplein 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3838619,
+      "longitude": 4.9021708
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJOwZaAcEJxkcRFFrUIMNamKc",
+        "address": "Overhoeksplein 1",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Store+for+Brands/data=!4m7!3m6!1s0x47c609c1015a063b:0xa7985ac320d45a14!8m2!3d52.3838619!4d4.9021708!16s%2Fg%2F1w8w96gs!19sChIJOwZaAcEJxkcRFFrUIMNamKc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Store for Brands",
+        "ratingText": "3,7 sterren 3 reviews",
+        "stars": "3,7 sterren 3 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Store+for+Brands/data=!4m7!3m6!1s0x47c609c1015a063b:0xa7985ac320d45a14!8m2!3d52.3838619!4d4.9021708!16s%2Fg%2F1w8w96gs!19sChIJOwZaAcEJxkcRFFrUIMNamKc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,7 sterren 3 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Chanel",
+    "address": "Pieter Cornelisz Hooftstraat 68",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3604542,
+      "longitude": 4.8810991
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJMfFGaO8JxkcRErywQuM6vQg",
+        "address": "Pieter Cornelisz Hooftstraat 68",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 305 3777",
+        "googleUrl": "https://www.google.com/maps/place/Chanel/data=!4m7!3m6!1s0x47c609ef6846f131:0x8bd3ae342b0bc12!8m2!3d52.3604542!4d4.8810991!16s%2Fg%2F11cs3k91q3!19sChIJMfFGaO8JxkcRErywQuM6vQg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Chanel",
+        "ratingText": "3,2 sterren 492 reviews",
+        "stars": "3,2 sterren 492 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Chanel/data=!4m7!3m6!1s0x47c609ef6846f131:0x8bd3ae342b0bc12!8m2!3d52.3604542!4d4.8810991!16s%2Fg%2F11cs3k91q3!19sChIJMfFGaO8JxkcRErywQuM6vQg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,2 sterren 492 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Tuesday Netherlands B.V.",
+    "address": "Cornelis Schuytstraat 74",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3526484,
+      "longitude": 4.8727506
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ6czP8_sJxkcRaWeKl9e0IXI",
+        "address": "Cornelis Schuytstraat 74",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+        "storeName": "Tuesday Netherlands B.V.",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "NO LABEL Amsterdam",
+    "address": "Willemsparkweg 66",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.35734,
+      "longitude": 4.8749972
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJN47ZzuQJxkcR6Le_iX62umo",
+        "address": "Willemsparkweg 66",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 846 5591",
+        "googleUrl": "https://www.google.com/maps/place/NO+LABEL+Amsterdam/data=!4m7!3m6!1s0x47c609e4ced98e37:0x6abab67e89bfb7e8!8m2!3d52.35734!4d4.8749972!16s%2Fg%2F11c2k0p_qj!19sChIJN47ZzuQJxkcR6Le_iX62umo?authuser=0&hl=nl&rclk=1",
+        "storeName": "NO LABEL Amsterdam",
+        "ratingText": "4,0 sterren 94 reviews",
+        "stars": "4,0 sterren 94 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/NO+LABEL+Amsterdam/data=!4m7!3m6!1s0x47c609e4ced98e37:0x6abab67e89bfb7e8!8m2!3d52.35734!4d4.8749972!16s%2Fg%2F11c2k0p_qj!19sChIJN47ZzuQJxkcR6Le_iX62umo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,0 sterren 94 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Just Retail BV",
+    "address": "Leidsestraat 24",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.366411,
+      "longitude": 4.8872487
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZQXaiugJxkcR-XBqjw8Gitk",
+        "address": "Leidsestraat 24",
+        "category": "Winkel voor leren jassen",
+        "status": "",
+        "phone": "020 320 6916",
+        "googleUrl": "https://www.google.com/maps/place/Just+Retail+BV/data=!4m7!3m6!1s0x47c609e88ada0565:0xd98a060f8f6a70f9!8m2!3d52.366411!4d4.8872487!16s%2Fg%2F1tl8jxnw!19sChIJZQXaiugJxkcR-XBqjw8Gitk?authuser=0&hl=nl&rclk=1",
+        "storeName": "Just Retail BV",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor leren jassen",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Just+Retail+BV/data=!4m7!3m6!1s0x47c609e88ada0565:0xd98a060f8f6a70f9!8m2!3d52.366411!4d4.8872487!16s%2Fg%2F1tl8jxnw!19sChIJZQXaiugJxkcR-XBqjw8Gitk?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "your brands 2 BV",
+    "address": "Leidsestraat 47",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3655633,
+      "longitude": 4.8859214
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJrTte5JMJxkcRPPiPnwNAbmo",
+        "address": "Leidsestraat 47",
+        "category": "Elektronicawinkel",
+        "status": "",
+        "phone": "06 13001900",
+        "googleUrl": "https://www.google.com/maps/place/your+brands+2+BV/data=!4m7!3m6!1s0x47c60993e45e3bad:0x6a6e40039f8ff83c!8m2!3d52.3655633!4d4.8859214!16s%2Fg%2F11jyptj06k!19sChIJrTte5JMJxkcRPPiPnwNAbmo?authuser=0&hl=nl&rclk=1",
+        "storeName": "your brands 2 BV",
+        "ratingText": "2,4 sterren 16 reviews",
+        "stars": "2,4 sterren 16 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Elektronicawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/your+brands+2+BV/data=!4m7!3m6!1s0x47c60993e45e3bad:0x6a6e40039f8ff83c!8m2!3d52.3655633!4d4.8859214!16s%2Fg%2F11jyptj06k!19sChIJrTte5JMJxkcRPPiPnwNAbmo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "2,4 sterren 16 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Just Retail B.V.",
+    "address": "Ookmeerweg 406",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3608782,
+      "longitude": 4.782857
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ32pfl-jjxUcR3qF1WW43lXU",
+        "address": "Ookmeerweg 406",
+        "category": "Winkel",
+        "status": "",
+        "phone": "020 820 1766",
+        "googleUrl": "https://www.google.com/maps/place/Just+Retail+B.V./data=!4m7!3m6!1s0x47c5e3e8975f6adf:0x7595376e5975a1de!8m2!3d52.3608782!4d4.782857!16s%2Fg%2F1ptx7kb9v!19sChIJ32pfl-jjxUcR3qF1WW43lXU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Just Retail B.V.",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Just+Retail+B.V./data=!4m7!3m6!1s0x47c5e3e8975f6adf:0x7595376e5975a1de!8m2!3d52.3608782!4d4.782857!16s%2Fg%2F1ptx7kb9v!19sChIJ32pfl-jjxUcR3qF1WW43lXU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Property Of...",
+    "address": "Utrechtsestraat 18a",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.365352,
+      "longitude": 4.897584
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ1_NldZUJxkcRFJD4gWX940o",
+        "address": "Utrechtsestraat 18a",
+        "category": "Tassenwinkel",
+        "status": "",
+        "phone": "020 845 5372",
+        "googleUrl": "https://www.google.com/maps/place/Property+Of.../data=!4m7!3m6!1s0x47c609957565f3d7:0x4ae3fd6581f89014!8m2!3d52.365352!4d4.897584!16s%2Fg%2F11f03ykj60!19sChIJ1_NldZUJxkcRFJD4gWX940o?authuser=0&hl=nl&rclk=1",
+        "storeName": "Property Of...",
+        "ratingText": "4,5 sterren 88 reviews",
+        "stars": "4,5 sterren 88 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Tassenwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Property+Of.../data=!4m7!3m6!1s0x47c609957565f3d7:0x4ae3fd6581f89014!8m2!3d52.365352!4d4.897584!16s%2Fg%2F11f03ykj60!19sChIJ1_NldZUJxkcRFJD4gWX940o?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 88 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "C.P. Company",
+    "address": "Leidsestraat 23",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3661775,
+      "longitude": 4.8871973
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJi3SfGGkJxkcROrkIpaVR3fY",
+        "address": "Leidsestraat 23",
+        "category": "Herenmode",
+        "status": "",
+        "phone": "020 239 0328",
+        "googleUrl": "https://www.google.com/maps/place/C.P.+Company/data=!4m7!3m6!1s0x47c60969189f748b:0xf6dd51a5a508b93a!8m2!3d52.3661775!4d4.8871973!16s%2Fg%2F11jpr2dj72!19sChIJi3SfGGkJxkcROrkIpaVR3fY?authuser=0&hl=nl&rclk=1",
+        "storeName": "C.P. Company",
+        "ratingText": "4,7 sterren 40 reviews",
+        "stars": "4,7 sterren 40 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Herenmode",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/C.P.+Company/data=!4m7!3m6!1s0x47c60969189f748b:0xf6dd51a5a508b93a!8m2!3d52.3661775!4d4.8871973!16s%2Fg%2F11jpr2dj72!19sChIJi3SfGGkJxkcROrkIpaVR3fY?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 40 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "World of Mies",
+    "address": "Hannie Dankbaarpassage 6",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3669338,
+      "longitude": 4.8696296
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJp2WlGb0JxkcR7_KPOHmM9ug",
+        "address": "Hannie Dankbaarpassage 6",
+        "category": "Babywinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/World+of+Mies/data=!4m7!3m6!1s0x47c609bd19a565a7:0xe8f68c79388ff2ef!8m2!3d52.3669338!4d4.8696296!16s%2Fg%2F11hzn4r71t!19sChIJp2WlGb0JxkcR7_KPOHmM9ug?authuser=0&hl=nl&rclk=1",
+        "storeName": "World of Mies",
+        "ratingText": "5,0 sterren 19 reviews",
+        "stars": "5,0 sterren 19 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Babywinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/World+of+Mies/data=!4m7!3m6!1s0x47c609bd19a565a7:0xe8f68c79388ff2ef!8m2!3d52.3669338!4d4.8696296!16s%2Fg%2F11hzn4r71t!19sChIJp2WlGb0JxkcR7_KPOHmM9ug?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 19 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T10:40:36.164Z"
+    },
+    "domain": null
+  }
+]

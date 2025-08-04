@@ -169,3 +169,20 @@ export function _createDefaultEvolutionSettings(
 
   return config
 }
+
+/**
+ * Simple boolean validation for evolution settings (backward compatibility)
+ */
+export function validateEvolutionSettingsSimple(
+  settings: EvolutionSettings
+): boolean {
+  if (settings.populationSize <= 0) return false
+  if (settings.generations <= 0) return false
+  if (settings.maxCostUSD <= 0) return false
+  if (settings.tournamentSize <= 0) return false
+  if (settings.crossoverRate < 0 || settings.crossoverRate > 1) return false
+  if (settings.mutationRate < 0 || settings.mutationRate > 1) return false
+  if (settings.offspringCount < 0) return false
+  if (settings.numberOfParentsCreatingOffspring <= 0) return false
+  return true
+}

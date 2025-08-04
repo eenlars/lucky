@@ -1,0 +1,78 @@
+{
+  "entryNodeId": "orchestrator",
+  "nodes": [
+    {
+      "nodeId": "orchestrator",
+      "description": "Main orchestrator that coordinates the entire store location discovery workflow",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [],
+      "systemPrompt": "You are the workflow orchestrator. Your job is to:\n1. First check feasibility of finding physical stores\n2. If feasible, coordinate the search and verification process\n3. Monitor progress and ensure quality\n4. Present final results\n\nAnalyze each step's output and decide the next action. Always provide clear reasoning for your decisions.",
+      "handOffs": [
+        "feasibility-checker",
+        "location-finder",
+        "data-processor",
+        "quality-assurance",
+        "results-presenter"
+      ],
+      "memory": {
+        "workflow_status": "initialized",
+        "company_domain": "debontekoe.nl"
+      }
+    },
+    {
+      "nodeId": "feasibility-checker",
+      "description": "Analyzes whether the company likely has physical store locations",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [],
+      "systemPrompt": "Analyze if the company (domain: debontekoe.nl) likely has physical store locations. Consider:\n- Industry type (retail, service, online-only)\n- Common knowledge about the business\n- Whether physical locations make sense for this company\n\nProvide a clear YES/NO answer with reasoning.",
+      "handOffs": ["orchestrator"],
+      "memory": {}
+    },
+    {
+      "nodeId": "location-finder",
+      "description": "Searches for and stores physical store locations",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["searchGoogleMaps", "locationDataManager"],
+      "systemPrompt": "Search for store locations for the company (domain: debontekoe.nl):\n1. Use searchGoogleMaps with the domain name to find locations (max 50)\n2. Store all found locations using locationDataManager\n3. Report back with the number of locations found\n\nBe thorough but efficient.",
+      "handOffs": ["orchestrator"],
+      "memory": {}
+    },
+    {
+      "nodeId": "data-processor",
+      "description": "Verifies and formats location data",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [
+        "verifyLocation",
+        "locationDataInfo",
+        "locationDataManager"
+      ],
+      "systemPrompt": "Process the location data:\n1. Retrieve current data using locationDataInfo\n2. Verify coordinates for each location using verifyLocation\n3. Clean up any incomplete or duplicate entries\n4. Update the data using locationDataManager\n\nEnsure all addresses are complete and properly formatted.",
+      "handOffs": ["orchestrator"],
+      "memory": {}
+    },
+    {
+      "nodeId": "quality-assurance",
+      "description": "Performs final quality check on the data",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataManager", "expectedOutputHandler"],
+      "systemPrompt": "Perform quality assurance:\n1. Retrieve all location data using locationDataManager\n2. Check for completeness and accuracy\n3. Verify all required fields are present\n4. Use expectedOutputHandler to validate the final dataset\n\nReport any issues found or confirm data quality.",
+      "handOffs": ["orchestrator"],
+      "memory": {}
+    },
+    {
+      "nodeId": "results-presenter",
+      "description": "Presents the final results in a clear format",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": ["locationDataManager", "expectedOutputHandler"],
+      "systemPrompt": "Present the final results:\n1. Retrieve all verified store locations using locationDataManager\n2. Format the data in a clear, readable way\n3. Include summary statistics (total stores, cities covered, etc.)\n4. Highlight any notable findings\n\nMake the output user-friendly and informative.",
+      "handOffs": ["orchestrator"],
+      "memory": {}
+    }
+  ]
+}

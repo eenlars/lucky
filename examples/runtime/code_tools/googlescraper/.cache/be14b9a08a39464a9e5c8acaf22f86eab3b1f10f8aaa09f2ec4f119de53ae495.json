@@ -1,0 +1,150 @@
+[
+  {
+    "name": "Bever",
+    "address": "51-53 Overtoom",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3629,
+      "longitude": 4.876721
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ8b2-eVkJxkcRDrZBA_s1iAE",
+        "address": "51-53 Overtoom",
+        "category": "Winkel voor buitensport",
+        "status": "",
+        "phone": "085 888 5088",
+        "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c6095979bebdf1:0x18835fb0341b60e!8m2!3d52.3629!4d4.876721!16s%2Fg%2F11p64qvdb7!19sChIJ8b2-eVkJxkcRDrZBA_s1iAE?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "/aclk?sa=L&ai=DChcSEwi7hO2Lt8qOAxUJlYMHHZGjARMYABACGgJlZg&co=1&gclid=EAIaIQobChMIu4Tti7fKjgMVCZWDBx2RowETEBAYASAAEgIGsvD_BwE&sig=AOD64_1YgOsKdJOHXTs1A6nMM6xbfnOeLQ&adurl&q&ctype=99",
+        "storeName": "Bever",
+        "ratingText": "4,2 sterren 149 reviews",
+        "stars": "4,2 sterren 149 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor buitensport",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c6095979bebdf1:0x18835fb0341b60e!8m2!3d52.3629!4d4.876721!16s%2Fg%2F11p64qvdb7!19sChIJ8b2-eVkJxkcRDrZBA_s1iAE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "/aclk?sa=L&ai=DChcSEwi7hO2Lt8qOAxUJlYMHHZGjARMYABACGgJlZg&co=1&gclid=EAIaIQobChMIu4Tti7fKjgMVCZWDBx2RowETEBAYASAAEgIGsvD_BwE&sig=AOD64_1YgOsKdJOHXTs1A6nMM6xbfnOeLQ&adurl&q&ctype=99",
+      "stars": "4,2 sterren 149 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:52:07.393Z"
+    },
+    "domain": ""
+  },
+  {
+    "name": "Patagonia Amsterdam",
+    "address": "465 Singel",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.367114,
+      "longitude": 4.891913
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJiyzrJoIJxkcRgqHNsZZpBsg",
+        "address": "465 Singel",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 299 0701",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.367114!4d4.891913!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "/aclk?sa=L&ai=DChcSEwi7hO2Lt8qOAxUJlYMHHZGjARMYABAHGgJlZg&co=1&gclid=EAIaIQobChMIu4Tti7fKjgMVCZWDBx2RowETEBAYAiAAEgKyKfD_BwE&sig=AOD64_2f_JAShUZ7DCIDYRIS6M0FQzI6Lw&adurl&q&ctype=99",
+        "storeName": "Patagonia Amsterdam",
+        "ratingText": "4,9 sterren 51 reviews",
+        "stars": "4,9 sterren 51 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.367114!4d4.891913!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "/aclk?sa=L&ai=DChcSEwi7hO2Lt8qOAxUJlYMHHZGjARMYABAHGgJlZg&co=1&gclid=EAIaIQobChMIu4Tti7fKjgMVCZWDBx2RowETEBAYAiAAEgKyKfD_BwE&sig=AOD64_2f_JAShUZ7DCIDYRIS6M0FQzI6Lw&adurl&q&ctype=99",
+      "stars": "4,9 sterren 51 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:52:07.393Z"
+    },
+    "domain": ""
+  },
+  {
+    "name": "Patagonia Amsterdam",
+    "address": "Singel 465",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3671137,
+      "longitude": 4.8919129
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJiyzrJoIJxkcRgqHNsZZpBsg",
+        "address": "Singel 465",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 299 0701",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://eu.patagonia.com/nl/en/stores/nl/amsterdam/singel-465/store_amsterdam.html",
+        "storeName": "Patagonia Amsterdam",
+        "ratingText": "4,9 sterren 52 reviews",
+        "stars": "4,9 sterren 52 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://eu.patagonia.com/nl/en/stores/nl/amsterdam/singel-465/store_amsterdam.html",
+      "stars": "4,9 sterren 52 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:52:07.393Z"
+    },
+    "domain": "patagonia.com"
+  },
+  {
+    "name": "Patagonia",
+    "address": "Jollemanhof 11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.377167,
+      "longitude": 4.920386
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUxGYZagJxkcRYKK9jQSX7R0",
+        "address": "Jollemanhof 11",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "phone": "020 797 9333",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://eu.patagonia.com/",
+        "storeName": "Patagonia",
+        "ratingText": "4,0 sterren 50 reviews",
+        "stars": "4,0 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://eu.patagonia.com/",
+      "stars": "4,0 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:52:07.393Z"
+    },
+    "domain": "patagonia.com"
+  }
+]

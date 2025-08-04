@@ -1,0 +1,732 @@
+[
+  {
+    "name": "WhatsNext",
+    "address": "Duifjessteeg 4",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3708129,
+      "longitude": 4.8919015
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJYVA7lv8JxkcR84hif8jpByg",
+        "address": "Duifjessteeg 4",
+        "category": "Diepvriesproductenwinkel",
+        "status": "",
+        "phone": "06 13996300",
+        "googleUrl": "https://www.google.com/maps/place/WhatsNext/data=!4m7!3m6!1s0x47c609ff963b5061:0x2807e9c87f6288f3!8m2!3d52.3708129!4d4.8919015!16s%2Fg%2F11ts0pj61h!19sChIJYVA7lv8JxkcR84hif8jpByg?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://whatsnextbusiness7.wixsite.com/firstdog",
+        "storeName": "WhatsNext",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Diepvriesproductenwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/WhatsNext/data=!4m7!3m6!1s0x47c609ff963b5061:0x2807e9c87f6288f3!8m2!3d52.3708129!4d4.8919015!16s%2Fg%2F11ts0pj61h!19sChIJYVA7lv8JxkcR84hif8jpByg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://whatsnextbusiness7.wixsite.com/firstdog",
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "wixsite.com"
+  },
+  {
+    "name": "OfficeNext",
+    "address": "Slego 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3942176,
+      "longitude": 4.7872955
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJSRU17rnjxUcR2zKnoj_vuR0",
+        "address": "Slego 1",
+        "category": "Internetwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/OfficeNext/data=!4m7!3m6!1s0x47c5e3b9ee351549:0x1db9ef3fa2a732db!8m2!3d52.3942176!4d4.7872955!16s%2Fg%2F11wpj8wyd8!19sChIJSRU17rnjxUcR2zKnoj_vuR0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://officenext.nl/",
+        "storeName": "OfficeNext",
+        "ratingText": "4,8 sterren 17 reviews",
+        "stars": "4,8 sterren 17 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Internetwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/OfficeNext/data=!4m7!3m6!1s0x47c5e3b9ee351549:0x1db9ef3fa2a732db!8m2!3d52.3942176!4d4.7872955!16s%2Fg%2F11wpj8wyd8!19sChIJSRU17rnjxUcR2zKnoj_vuR0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://officenext.nl/",
+      "stars": "4,8 sterren 17 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "officenext.nl"
+  },
+  {
+    "name": "NEXT Amsterdam - Corporate Innovation",
+    "address": "Postjesweg 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3644154,
+      "longitude": 4.8589472
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJK69AQQzixUcRF379jvQiSzQ",
+        "address": "Postjesweg 1",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/NEXT+Amsterdam+-+Corporate+Innovation/data=!4m7!3m6!1s0x47c5e20c4140af2b:0x344b22f48efd7e17!8m2!3d52.3644154!4d4.8589472!16s%2Fg%2F11f0_ccv26!19sChIJK69AQQzixUcRF379jvQiSzQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "NEXT Amsterdam - Corporate Innovation",
+        "ratingText": "5,0 sterren 4 reviews",
+        "stars": "5,0 sterren 4 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/NEXT+Amsterdam+-+Corporate+Innovation/data=!4m7!3m6!1s0x47c5e20c4140af2b:0x344b22f48efd7e17!8m2!3d52.3644154!4d4.8589472!16s%2Fg%2F11f0_ccv26!19sChIJK69AQQzixUcRF379jvQiSzQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 4 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "French Connection",
+    "address": "Cornelis Schuytstraat 36",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.354735,
+      "longitude": 4.871274
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ7x1MjvwJxkcRGYb8_sS4Ir8",
+        "address": "Cornelis Schuytstraat 36",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 662 6643",
+        "googleUrl": "https://www.google.com/maps/place/French+Connection/data=!4m7!3m6!1s0x47c609fc8e4c1def:0xbf22b8c4fefc8619!8m2!3d52.354735!4d4.871274!16s%2Fg%2F1v0ljzqj!19sChIJ7x1MjvwJxkcRGYb8_sS4Ir8?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.frenchconnection.com/?utm_source=googlemybusiness&utm_medium=organic&utm_campaign=Google%20My%20Business&utm_content=Amsterdam",
+        "storeName": "French Connection",
+        "ratingText": "4,2 sterren 16 reviews",
+        "stars": "4,2 sterren 16 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/French+Connection/data=!4m7!3m6!1s0x47c609fc8e4c1def:0xbf22b8c4fefc8619!8m2!3d52.354735!4d4.871274!16s%2Fg%2F1v0ljzqj!19sChIJ7x1MjvwJxkcRGYb8_sS4Ir8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.frenchconnection.com/?utm_source=googlemybusiness&utm_medium=organic&utm_campaign=Google%20My%20Business&utm_content=Amsterdam",
+      "stars": "4,2 sterren 16 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "frenchconnection.com"
+  },
+  {
+    "name": "Concrete Store Amsterdam",
+    "address": "Spuistraat 250",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3707472,
+      "longitude": 4.8889883
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ7-PUYMEJxkcR5byBRq70-TQ",
+        "address": "Spuistraat 250",
+        "category": "Herenmode",
+        "status": "",
+        "phone": "020 625 2225",
+        "googleUrl": "https://www.google.com/maps/place/Concrete+Store+Amsterdam/data=!4m7!3m6!1s0x47c609c160d4e3ef:0x34f9f4ae4681bce5!8m2!3d52.3707472!4d4.8889883!16s%2Fg%2F1tfllmst!19sChIJ7-PUYMEJxkcR5byBRq70-TQ?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.concrete.nl/",
+        "storeName": "Concrete Store Amsterdam",
+        "ratingText": "4,6 sterren 137 reviews",
+        "stars": "4,6 sterren 137 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Herenmode",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Concrete+Store+Amsterdam/data=!4m7!3m6!1s0x47c609c160d4e3ef:0x34f9f4ae4681bce5!8m2!3d52.3707472!4d4.8889883!16s%2Fg%2F1tfllmst!19sChIJ7-PUYMEJxkcR5byBRq70-TQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.concrete.nl/",
+      "stars": "4,6 sterren 137 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "concrete.nl"
+  },
+  {
+    "name": "NextGear",
+    "address": "Herengracht 160",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3744607,
+      "longitude": 4.8872284
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJtfpKicQJxkcR9zJ7PDn1Rt4",
+        "address": "Herengracht 160",
+        "category": "Webdesign",
+        "status": "",
+        "phone": "020 788 1300",
+        "googleUrl": "https://www.google.com/maps/place/NextGear/data=!4m7!3m6!1s0x47c609c4894afab5:0xde46f5393c7b32f7!8m2!3d52.3744607!4d4.8872284!16s%2Fg%2F1tfph__s!19sChIJtfpKicQJxkcR9zJ7PDn1Rt4?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://nextgear.nl/",
+        "storeName": "NextGear",
+        "ratingText": "4,8 sterren 10 reviews",
+        "stars": "4,8 sterren 10 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Webdesign",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/NextGear/data=!4m7!3m6!1s0x47c609c4894afab5:0xde46f5393c7b32f7!8m2!3d52.3744607!4d4.8872284!16s%2Fg%2F1tfph__s!19sChIJtfpKicQJxkcR9zJ7PDn1Rt4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://nextgear.nl/",
+      "stars": "4,8 sterren 10 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "nextgear.nl"
+  },
+  {
+    "name": "Next2Company",
+    "address": "John M. Keynesplein 12-46",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3412233,
+      "longitude": 4.8230955
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ5yseLSZAxkcRC89eYJpSTjk",
+        "address": "John M. Keynesplein 12-46",
+        "category": "Consultant",
+        "status": "",
+        "phone": "085 040 3303",
+        "googleUrl": "https://www.google.com/maps/place/Next2Company/data=!4m7!3m6!1s0x47c640262d1e2be7:0x394e529a605ecf0b!8m2!3d52.3412233!4d4.8230955!16s%2Fg%2F11ck8kwp1v!19sChIJ5yseLSZAxkcRC89eYJpSTjk?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.next2company.com/",
+        "storeName": "Next2Company",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Consultant",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Next2Company/data=!4m7!3m6!1s0x47c640262d1e2be7:0x394e529a605ecf0b!8m2!3d52.3412233!4d4.8230955!16s%2Fg%2F11ck8kwp1v!19sChIJ5yseLSZAxkcRC89eYJpSTjk?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.next2company.com/",
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "next2company.com"
+  },
+  {
+    "name": "Catwalk Junkie Brand Store",
+    "address": "Prinsengracht 419",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3709652,
+      "longitude": 4.8831563
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJDaMiOcMJxkcRM4e710Wsm9w",
+        "address": "Prinsengracht 419",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 846 6575",
+        "googleUrl": "https://www.google.com/maps/place/Catwalk+Junkie+Brand+Store/data=!4m7!3m6!1s0x47c609c33922a30d:0xdc9bac45d7bb8733!8m2!3d52.3709652!4d4.8831563!16s%2Fg%2F11c5rqj_pp!19sChIJDaMiOcMJxkcRM4e710Wsm9w?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.catwalkjunkie.com/",
+        "storeName": "Catwalk Junkie Brand Store",
+        "ratingText": "4,8 sterren 50 reviews",
+        "stars": "4,8 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Catwalk+Junkie+Brand+Store/data=!4m7!3m6!1s0x47c609c33922a30d:0xdc9bac45d7bb8733!8m2!3d52.3709652!4d4.8831563!16s%2Fg%2F11c5rqj_pp!19sChIJDaMiOcMJxkcRM4e710Wsm9w?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.catwalkjunkie.com/",
+      "stars": "4,8 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "catwalkjunkie.com"
+  },
+  {
+    "name": "C.P. Company",
+    "address": "Leidsestraat 23",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3661775,
+      "longitude": 4.8871973
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJi3SfGGkJxkcROrkIpaVR3fY",
+        "address": "Leidsestraat 23",
+        "category": "Herenmode",
+        "status": "",
+        "phone": "020 239 0328",
+        "googleUrl": "https://www.google.com/maps/place/C.P.+Company/data=!4m7!3m6!1s0x47c60969189f748b:0xf6dd51a5a508b93a!8m2!3d52.3661775!4d4.8871973!16s%2Fg%2F11jpr2dj72!19sChIJi3SfGGkJxkcROrkIpaVR3fY?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.cpcompany.com/",
+        "storeName": "C.P. Company",
+        "ratingText": "4,7 sterren 40 reviews",
+        "stars": "4,7 sterren 40 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Herenmode",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/C.P.+Company/data=!4m7!3m6!1s0x47c60969189f748b:0xf6dd51a5a508b93a!8m2!3d52.3661775!4d4.8871973!16s%2Fg%2F11jpr2dj72!19sChIJi3SfGGkJxkcROrkIpaVR3fY?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.cpcompany.com/",
+      "stars": "4,7 sterren 40 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "cpcompany.com"
+  },
+  {
+    "name": "NOBODY HAS TO KNOW // studio + showroom + private shopping",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3696081,
+      "longitude": 4.8780633
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-XAz8ukJxkcRUaTMmWMm_WA",
+        "address": "",
+        "category": "Modeontwerper",
+        "status": "",
+        "phone": "Lijnbaansgracht 173",
+        "googleUrl": "https://www.google.com/maps/place/NOBODY+HAS+TO+KNOW+%2F%2F+studio+%2B+showroom+%2B+private+shopping/data=!4m7!3m6!1s0x47c609e9f23370f9:0x60fd266399cca451!8m2!3d52.3696081!4d4.8780633!16s%2Fg%2F11cnndf36b!19sChIJ-XAz8ukJxkcRUaTMmWMm_WA?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.nobodyhastoknow.nl/",
+        "storeName": "NOBODY HAS TO KNOW // studio + showroom + private shopping",
+        "ratingText": "4,3 sterren 12 reviews",
+        "stars": "4,3 sterren 12 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Modeontwerper",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/NOBODY+HAS+TO+KNOW+%2F%2F+studio+%2B+showroom+%2B+private+shopping/data=!4m7!3m6!1s0x47c609e9f23370f9:0x60fd266399cca451!8m2!3d52.3696081!4d4.8780633!16s%2Fg%2F11cnndf36b!19sChIJ-XAz8ukJxkcRUaTMmWMm_WA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.nobodyhastoknow.nl/",
+      "stars": "4,3 sterren 12 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "nobodyhastoknow.nl"
+  },
+  {
+    "name": "The Next Label B.V.",
+    "address": "Anthony Fokkerweg 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3450549,
+      "longitude": 4.846295
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJAbFtDG_hxUcR891GDEjegN8",
+        "address": "Anthony Fokkerweg 1",
+        "category": "Recruiter",
+        "status": "",
+        "phone": "020 226 2162",
+        "googleUrl": "https://www.google.com/maps/place/The+Next+Label+B.V./data=!4m7!3m6!1s0x47c5e16f0c6db101:0xdf80de480c46ddf3!8m2!3d52.3450549!4d4.846295!16s%2Fg%2F11fvqglp3l!19sChIJAbFtDG_hxUcR891GDEjegN8?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.thenextlabel.nl/?utm_source=google&utm_medium=organic&utm_campaign=google_my_business",
+        "storeName": "The Next Label B.V.",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Recruiter",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/The+Next+Label+B.V./data=!4m7!3m6!1s0x47c5e16f0c6db101:0xdf80de480c46ddf3!8m2!3d52.3450549!4d4.846295!16s%2Fg%2F11fvqglp3l!19sChIJAbFtDG_hxUcR891GDEjegN8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.thenextlabel.nl/?utm_source=google&utm_medium=organic&utm_campaign=google_my_business",
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "thenextlabel.nl"
+  },
+  {
+    "name": "Your Next Agency",
+    "address": "Prins Hendrikkade 21e",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3785277,
+      "longitude": 4.8961802
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJPbMUjJAJxkcR3NWF4ARJXuw",
+        "address": "Prins Hendrikkade 21e",
+        "category": "Softwarebedrijf",
+        "status": "",
+        "phone": "020 211 7146",
+        "googleUrl": "https://www.google.com/maps/place/Your+Next+Agency/data=!4m7!3m6!1s0x47c609908c14b33d:0xec5e4904e085d5dc!8m2!3d52.3785277!4d4.8961802!16s%2Fg%2F11j22yb2q9!19sChIJPbMUjJAJxkcR3NWF4ARJXuw?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://yournextagency.com/",
+        "storeName": "Your Next Agency",
+        "ratingText": "5,0 sterren 5 reviews",
+        "stars": "5,0 sterren 5 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Softwarebedrijf",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Your+Next+Agency/data=!4m7!3m6!1s0x47c609908c14b33d:0xec5e4904e085d5dc!8m2!3d52.3785277!4d4.8961802!16s%2Fg%2F11j22yb2q9!19sChIJPbMUjJAJxkcR3NWF4ARJXuw?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://yournextagency.com/",
+      "stars": "5,0 sterren 5 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "yournextagency.com"
+  },
+  {
+    "name": "NextName B.V.",
+    "address": "Markerkant 13 18",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3842208,
+      "longitude": 5.2138175
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJMc2BJiMXxkcRAXb1lAnDsTs",
+        "address": "Markerkant 13 18",
+        "category": "Webhostingbedrijf",
+        "status": "",
+        "phone": "036 785 1370",
+        "googleUrl": "https://www.google.com/maps/place/NextName+B.V./data=!4m7!3m6!1s0x47c617232681cd31:0x3bb1c30994f57601!8m2!3d52.3842208!4d5.2138175!16s%2Fg%2F11g7_5c87w!19sChIJMc2BJiMXxkcRAXb1lAnDsTs?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.nextname.nl/",
+        "storeName": "NextName B.V.",
+        "ratingText": "4,8 sterren 12 reviews",
+        "stars": "4,8 sterren 12 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Webhostingbedrijf",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/NextName+B.V./data=!4m7!3m6!1s0x47c617232681cd31:0x3bb1c30994f57601!8m2!3d52.3842208!4d5.2138175!16s%2Fg%2F11g7_5c87w!19sChIJMc2BJiMXxkcRAXb1lAnDsTs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.nextname.nl/",
+      "stars": "4,8 sterren 12 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "nextname.nl"
+  },
+  {
+    "name": "ITnext: App Ontwikkelaar Amsterdam",
+    "address": "Herengracht 142",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.375199,
+      "longitude": 4.8877808
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZSQdesYJxkcRcsldcSq3D08",
+        "address": "Herengracht 142",
+        "category": "Softwarebedrijf",
+        "status": "",
+        "phone": "050 313 1743",
+        "googleUrl": "https://www.google.com/maps/place/ITnext:+App+Ontwikkelaar+Amsterdam/data=!4m7!3m6!1s0x47c609c67a1d2465:0x4f0fb72a715dc972!8m2!3d52.375199!4d4.8877808!16s%2Fg%2F1v42d_hc!19sChIJZSQdesYJxkcRcsldcSq3D08?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.itnext.nl/",
+        "storeName": "ITnext: App Ontwikkelaar Amsterdam",
+        "ratingText": "5,0 sterren 4 reviews",
+        "stars": "5,0 sterren 4 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Softwarebedrijf",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/ITnext:+App+Ontwikkelaar+Amsterdam/data=!4m7!3m6!1s0x47c609c67a1d2465:0x4f0fb72a715dc972!8m2!3d52.375199!4d4.8877808!16s%2Fg%2F1v42d_hc!19sChIJZSQdesYJxkcRcsldcSq3D08?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.itnext.nl/",
+      "stars": "5,0 sterren 4 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "itnext.nl"
+  },
+  {
+    "name": "BasicNext",
+    "address": "Singel 250",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.372971,
+      "longitude": 4.8881573
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJpXtKbgoJxkcRqXmsa7MAHi0",
+        "address": "Singel 250",
+        "category": "Bedrijf om zakelijk te netwerken",
+        "status": "",
+        "phone": "06 30815556",
+        "googleUrl": "https://www.google.com/maps/place/BasicNext/data=!4m7!3m6!1s0x47c6090a6e4a7ba5:0x2d1e00b36bac79a9!8m2!3d52.372971!4d4.8881573!16s%2Fg%2F11sx4bzlrw!19sChIJpXtKbgoJxkcRqXmsa7MAHi0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://basicnext.net/home.html",
+        "storeName": "BasicNext",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Bedrijf om zakelijk te netwerken",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/BasicNext/data=!4m7!3m6!1s0x47c6090a6e4a7ba5:0x2d1e00b36bac79a9!8m2!3d52.372971!4d4.8881573!16s%2Fg%2F11sx4bzlrw!19sChIJpXtKbgoJxkcRqXmsa7MAHi0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://basicnext.net/home.html",
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "basicnext.net"
+  },
+  {
+    "name": "Closed Women's & Men's Store Amsterdam",
+    "address": "Van Baerlestraat 15",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3596609,
+      "longitude": 4.8777082
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJhyfE-CoJxkcR2iusFITyb_I",
+        "address": "Van Baerlestraat 15",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 240 2510",
+        "googleUrl": "https://www.google.com/maps/place/Closed+Women%27s+%26+Men%27s+Store+Amsterdam/data=!4m7!3m6!1s0x47c6092af8c42787:0xf26ff28414ac2bda!8m2!3d52.3596609!4d4.8777082!16s%2Fg%2F11vy3b50gy!19sChIJhyfE-CoJxkcR2iusFITyb_I?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://nl.closed.com/",
+        "storeName": "Closed Women's & Men's Store Amsterdam",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Closed+Women%27s+%26+Men%27s+Store+Amsterdam/data=!4m7!3m6!1s0x47c6092af8c42787:0xf26ff28414ac2bda!8m2!3d52.3596609!4d4.8777082!16s%2Fg%2F11vy3b50gy!19sChIJhyfE-CoJxkcR2iusFITyb_I?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://nl.closed.com/",
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "closed.com"
+  },
+  {
+    "name": "BrandMission",
+    "address": "Haarlemmerstraat 36",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.379987,
+      "longitude": 4.8931408
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJA7JZvNEJxkcRrZZUZPKlh-U",
+        "address": "Haarlemmerstraat 36",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 770 8761",
+        "googleUrl": "https://www.google.com/maps/place/BrandMission/data=!4m7!3m6!1s0x47c609d1bc59b203:0xe587a5f2645496ad!8m2!3d52.379987!4d4.8931408!16s%2Fg%2F11h1g6k8ql!19sChIJA7JZvNEJxkcRrZZUZPKlh-U?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.brandmission.nl/",
+        "storeName": "BrandMission",
+        "ratingText": "4,8 sterren 30 reviews",
+        "stars": "4,8 sterren 30 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/BrandMission/data=!4m7!3m6!1s0x47c609d1bc59b203:0xe587a5f2645496ad!8m2!3d52.379987!4d4.8931408!16s%2Fg%2F11h1g6k8ql!19sChIJA7JZvNEJxkcRrZZUZPKlh-U?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.brandmission.nl/",
+      "stars": "4,8 sterren 30 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "brandmission.nl"
+  },
+  {
+    "name": "Store for Brands",
+    "address": "Overhoeksplein 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3838619,
+      "longitude": 4.9021708
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJOwZaAcEJxkcRFFrUIMNamKc",
+        "address": "Overhoeksplein 1",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Store+for+Brands/data=!4m7!3m6!1s0x47c609c1015a063b:0xa7985ac320d45a14!8m2!3d52.3838619!4d4.9021708!16s%2Fg%2F1w8w96gs!19sChIJOwZaAcEJxkcRFFrUIMNamKc?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.storeforbrands.com/",
+        "storeName": "Store for Brands",
+        "ratingText": "3,7 sterren 3 reviews",
+        "stars": "3,7 sterren 3 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Store+for+Brands/data=!4m7!3m6!1s0x47c609c1015a063b:0xa7985ac320d45a14!8m2!3d52.3838619!4d4.9021708!16s%2Fg%2F1w8w96gs!19sChIJOwZaAcEJxkcRFFrUIMNamKc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.storeforbrands.com/",
+      "stars": "3,7 sterren 3 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "storeforbrands.com"
+  },
+  {
+    "name": "N.e.x.t. Company B.V.",
+    "address": "Nieuwegracht 1a",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.17935,
+      "longitude": 5.267349
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJz603nEhAxkcRhc_8W3QZRnU",
+        "address": "Nieuwegracht 1a",
+        "category": "Uitgever",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/N.e.x.t.+Company+B.V./data=!4m7!3m6!1s0x47c640489c37adcf:0x754619745bfccf85!8m2!3d52.17935!4d5.267349!16s%2Fg%2F1ts2zgvb!19sChIJz603nEhAxkcRhc_8W3QZRnU?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.nextcompany.nl/",
+        "storeName": "N.e.x.t. Company B.V.",
+        "ratingText": "2,4 sterren 9 reviews",
+        "stars": "2,4 sterren 9 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Uitgever",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/N.e.x.t.+Company+B.V./data=!4m7!3m6!1s0x47c640489c37adcf:0x754619745bfccf85!8m2!3d52.17935!4d5.267349!16s%2Fg%2F1ts2zgvb!19sChIJz603nEhAxkcRhc_8W3QZRnU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.nextcompany.nl/",
+      "stars": "2,4 sterren 9 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "nextcompany.nl"
+  },
+  {
+    "name": "Nexttrade BV (Partijhandel, Stocklots, Restposten)",
+    "address": "Lionstraat 8",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 51.6345839,
+      "longitude": 5.9353964
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJFZnQ-awTx0cRliVc5rrGG7w",
+        "address": "Lionstraat 8",
+        "category": "Groothandelaar",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Nexttrade+BV+%28Partijhandel,+Stocklots,+Restposten%29/data=!4m7!3m6!1s0x47c713acf9d09915:0xbc1bc6bae65c2596!8m2!3d51.6345839!4d5.9353964!16s%2Fg%2F11dd_nwsng!19sChIJFZnQ-awTx0cRliVc5rrGG7w?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://nexttrade.nl/",
+        "storeName": "Nexttrade BV (Partijhandel, Stocklots, Restposten)",
+        "ratingText": "5,0 sterren 4 reviews",
+        "stars": "5,0 sterren 4 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Groothandelaar",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Nexttrade+BV+%28Partijhandel,+Stocklots,+Restposten%29/data=!4m7!3m6!1s0x47c713acf9d09915:0xbc1bc6bae65c2596!8m2!3d51.6345839!4d5.9353964!16s%2Fg%2F11dd_nwsng!19sChIJFZnQ-awTx0cRliVc5rrGG7w?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://nexttrade.nl/",
+      "stars": "5,0 sterren 4 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:51:19.684Z"
+    },
+    "domain": "nexttrade.nl"
+  }
+]

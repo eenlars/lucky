@@ -1,0 +1,76 @@
+[
+  {
+    "name": "B Lab Europe",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3626842,
+      "longitude": 4.92062
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJkeZ_8gQJxkcRnby-eT7QS3I",
+        "address": "",
+        "category": "Non-profitorganisatie",
+        "status": "",
+        "phone": "Mauritskade 63",
+        "googleUrl": "https://www.google.com/maps/place/B+Lab+Europe/data=!4m7!3m6!1s0x47c60904f27fe691:0x724bd03e79bebc9d!8m2!3d52.3626842!4d4.92062!16s%2Fg%2F11f9ztckf2!19sChIJkeZ_8gQJxkcRnby-eT7QS3I?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://bcorporation.eu/",
+        "storeName": "B Lab Europe",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Non-profitorganisatie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/B+Lab+Europe/data=!4m7!3m6!1s0x47c60904f27fe691:0x724bd03e79bebc9d!8m2!3d52.3626842!4d4.92062!16s%2Fg%2F11f9ztckf2!19sChIJkeZ_8gQJxkcRnby-eT7QS3I?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://bcorporation.eu/",
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:30.230Z"
+    },
+    "domain": "bcorporation.eu"
+  },
+  {
+    "name": "Bang & Olufsen",
+    "address": "Van Baerlestraat 116",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.355397,
+      "longitude": 4.880175
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJpS-oE_AJxkcRUFToVgsOnu4",
+        "address": "Van Baerlestraat 116",
+        "category": "Elektronicawinkel",
+        "status": "",
+        "phone": "020 233 2012",
+        "googleUrl": "https://www.google.com/maps/place/Bang+%26+Olufsen/data=!4m7!3m6!1s0x47c609f013a82fa5:0xee9e0e0b56e85450!8m2!3d52.355397!4d4.880175!16s%2Fg%2F11c5zlx5h7!19sChIJpS-oE_AJxkcRUFToVgsOnu4?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://stores.bang-olufsen.com/nl/nederland/amsterdam/van-baerlestraat-116?y_source=1_MTExOTk2NTUtNzE1LWxvY2F0aW9uLndlYnNpdGU%3D",
+        "storeName": "Bang & Olufsen",
+        "ratingText": "4,8 sterren 29 reviews",
+        "stars": "4,8 sterren 29 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Elektronicawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Bang+%26+Olufsen/data=!4m7!3m6!1s0x47c609f013a82fa5:0xee9e0e0b56e85450!8m2!3d52.355397!4d4.880175!16s%2Fg%2F11c5zlx5h7!19sChIJpS-oE_AJxkcRUFToVgsOnu4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://stores.bang-olufsen.com/nl/nederland/amsterdam/van-baerlestraat-116?y_source=1_MTExOTk2NTUtNzE1LWxvY2F0aW9uLndlYnNpdGU%3D",
+      "stars": "4,8 sterren 29 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:30.230Z"
+    },
+    "domain": "bang-olufsen.com"
+  }
+]

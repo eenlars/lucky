@@ -1,0 +1,718 @@
+[
+  {
+    "name": "Tekst-Shop.nl",
+    "address": "Noordhavenpoort 8",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2759981,
+      "longitude": 4.6202458
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJS1vE7nPDxUcRNUApmN8hUS8",
+        "address": "Noordhavenpoort 8",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Tekst-Shop.nl/data=!4m7!3m6!1s0x47c5c373eec45b4b:0x2f5121df98294035!8m2!3d52.2759981!4d4.6202458!16s%2Fg%2F11h_y28fy7!19sChIJS1vE7nPDxUcRNUApmN8hUS8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Tekst-Shop.nl",
+        "ratingText": "4,9 sterren 102 reviews",
+        "stars": "4,9 sterren 102 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tekst-Shop.nl/data=!4m7!3m6!1s0x47c5c373eec45b4b:0x2f5121df98294035!8m2!3d52.2759981!4d4.6202458!16s%2Fg%2F11h_y28fy7!19sChIJS1vE7nPDxUcRNUApmN8hUS8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 102 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "AllesCats.com",
+    "address": "Stadhouderspoort 52",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2796742,
+      "longitude": 4.6192258
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ4_NypRnoxUcRzg6RSKIqj9g",
+        "address": "Stadhouderspoort 52",
+        "category": "Speelgoedwinkel",
+        "status": "",
+        "phone": "06 26112864",
+        "googleUrl": "https://www.google.com/maps/place/AllesCats.com/data=!4m7!3m6!1s0x47c5e819a572f3e3:0xd88f2aa248910ece!8m2!3d52.2796742!4d4.6192258!16s%2Fg%2F11c2jkdh2k!19sChIJ4_NypRnoxUcRzg6RSKIqj9g?authuser=0&hl=nl&rclk=1",
+        "storeName": "AllesCats.com",
+        "ratingText": "5,0 sterren 10 reviews",
+        "stars": "5,0 sterren 10 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Speelgoedwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/AllesCats.com/data=!4m7!3m6!1s0x47c5e819a572f3e3:0xd88f2aa248910ece!8m2!3d52.2796742!4d4.6192258!16s%2Fg%2F11c2jkdh2k!19sChIJ4_NypRnoxUcRzg6RSKIqj9g?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 10 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Nerma",
+    "address": "Zuiderpoort 90",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2782318,
+      "longitude": 4.6237873
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJnQK1uhvoxUcRBL14iNv-ozU",
+        "address": "Zuiderpoort 90",
+        "category": "Cosmeticawinkel",
+        "status": "",
+        "phone": "06 12146754",
+        "googleUrl": "https://www.google.com/maps/place/Nerma/data=!4m7!3m6!1s0x47c5e81bbab5029d:0x35a3fedb8878bd04!8m2!3d52.2782318!4d4.6237873!16s%2Fg%2F11fn1lvwjk!19sChIJnQK1uhvoxUcRBL14iNv-ozU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Nerma",
+        "ratingText": "5,0 sterren 7 reviews",
+        "stars": "5,0 sterren 7 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cosmeticawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Nerma/data=!4m7!3m6!1s0x47c5e81bbab5029d:0x35a3fedb8878bd04!8m2!3d52.2782318!4d4.6237873!16s%2Fg%2F11fn1lvwjk!19sChIJnQK1uhvoxUcRBL14iNv-ozU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 7 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Action Nieuw-Vennep",
+    "address": "De Symfonie 17",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.264802,
+      "longitude": 4.632834
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJyXZP_ajnxUcRH4Z8Eg23jiE",
+        "address": "De Symfonie 17",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "0228 545 750",
+        "googleUrl": "https://www.google.com/maps/place/Action+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5e7a8fd4f76c9:0x218eb70d127c861f!8m2!3d52.264802!4d4.632834!16s%2Fg%2F1wn32w32!19sChIJyXZP_ajnxUcRH4Z8Eg23jiE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Action Nieuw-Vennep",
+        "ratingText": "4,2 sterren 367 reviews",
+        "stars": "4,2 sterren 367 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Action+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5e7a8fd4f76c9:0x218eb70d127c861f!8m2!3d52.264802!4d4.632834!16s%2Fg%2F1wn32w32!19sChIJyXZP_ajnxUcRH4Z8Eg23jiE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 367 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Praxis Bouwmarkt Nieuw Vennep",
+    "address": "Bergsmastraat 2",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.270646,
+      "longitude": 4.625047
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJudpa96fCxUcRvMfsuBFY1Pc",
+        "address": "Bergsmastraat 2",
+        "category": "Bouwmarkt",
+        "status": "",
+        "phone": "0252 680 400",
+        "googleUrl": "https://www.google.com/maps/place/Praxis+Bouwmarkt+Nieuw+Vennep/data=!4m7!3m6!1s0x47c5c2a7f75adab9:0xf7d45811b8ecc7bc!8m2!3d52.270646!4d4.625047!16s%2Fg%2F1tdwtwfs!19sChIJudpa96fCxUcRvMfsuBFY1Pc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Praxis Bouwmarkt Nieuw Vennep",
+        "ratingText": "4,1 sterren 715 reviews",
+        "stars": "4,1 sterren 715 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Bouwmarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Praxis+Bouwmarkt+Nieuw+Vennep/data=!4m7!3m6!1s0x47c5c2a7f75adab9:0xf7d45811b8ecc7bc!8m2!3d52.270646!4d4.625047!16s%2Fg%2F1tdwtwfs!19sChIJudpa96fCxUcRvMfsuBFY1Pc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 715 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Match Made in Motion",
+    "address": "Nabuccosingel",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2738717,
+      "longitude": 4.6217303
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJza9-rAzpxUcR8LmpyQg-IJw",
+        "address": "Nabuccosingel",
+        "category": "Fitnesswinkel",
+        "status": "",
+        "phone": "06 27446852",
+        "googleUrl": "https://www.google.com/maps/place/Match+Made+in+Motion/data=!4m7!3m6!1s0x47c5e90cac7eafcd:0x9c203e08c9a9b9f0!8m2!3d52.2738717!4d4.6217303!16s%2Fg%2F11xh0081q3!19sChIJza9-rAzpxUcR8LmpyQg-IJw?authuser=0&hl=nl&rclk=1",
+        "storeName": "Match Made in Motion",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Fitnesswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Match+Made+in+Motion/data=!4m7!3m6!1s0x47c5e90cac7eafcd:0x9c203e08c9a9b9f0!8m2!3d52.2738717!4d4.6217303!16s%2Fg%2F11xh0081q3!19sChIJza9-rAzpxUcR8LmpyQg-IJw?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "HEMA",
+    "address": "De Symfonie 63",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2640069,
+      "longitude": 4.6325899
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZYF0HazCxUcR25vMDKU-WBQ",
+        "address": "De Symfonie 63",
+        "category": "Warenhuis",
+        "status": "",
+        "phone": "0252 624 396",
+        "googleUrl": "https://www.google.com/maps/place/HEMA/data=!4m7!3m6!1s0x47c5c2ac1d748165:0x14583ea50ccc9bdb!8m2!3d52.2640069!4d4.6325899!16s%2Fg%2F1tctdsqt!19sChIJZYF0HazCxUcR25vMDKU-WBQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "HEMA",
+        "ratingText": "3,9 sterren 167 reviews",
+        "stars": "3,9 sterren 167 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/HEMA/data=!4m7!3m6!1s0x47c5c2ac1d748165:0x14583ea50ccc9bdb!8m2!3d52.2640069!4d4.6325899!16s%2Fg%2F1tctdsqt!19sChIJZYF0HazCxUcR25vMDKU-WBQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 167 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Etos Nieuw Vennep - Handelplein 15",
+    "address": "Händelplein 15",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2712218,
+      "longitude": 4.619732
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJe4AfAh7oxUcReVHuNwSvfOc",
+        "address": "Händelplein 15",
+        "category": "Drogisterij",
+        "status": "",
+        "phone": "0252 234 194",
+        "googleUrl": "https://www.google.com/maps/place/Etos+Nieuw+Vennep+-+Handelplein+15/data=!4m7!3m6!1s0x47c5e81e021f807b:0xe77caf0437ee5179!8m2!3d52.2712218!4d4.619732!16s%2Fg%2F1td8y9h9!19sChIJe4AfAh7oxUcReVHuNwSvfOc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Etos Nieuw Vennep - Handelplein 15",
+        "ratingText": "4,1 sterren 15 reviews",
+        "stars": "4,1 sterren 15 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Drogisterij",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Etos+Nieuw+Vennep+-+Handelplein+15/data=!4m7!3m6!1s0x47c5e81e021f807b:0xe77caf0437ee5179!8m2!3d52.2712218!4d4.619732!16s%2Fg%2F1td8y9h9!19sChIJe4AfAh7oxUcReVHuNwSvfOc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 15 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Mood4BBQshop",
+    "address": "Hugo de Vriesstraat 7",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2725499,
+      "longitude": 4.6268044
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJHdQ4CofnxUcRYt1ZFhB4COs",
+        "address": "Hugo de Vriesstraat 7",
+        "category": "Kookwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Mood4BBQshop/data=!4m7!3m6!1s0x47c5e7870a38d41d:0xeb0878101659dd62!8m2!3d52.2725499!4d4.6268044!16s%2Fg%2F11j8slt9nz!19sChIJHdQ4CofnxUcRYt1ZFhB4COs?authuser=0&hl=nl&rclk=1",
+        "storeName": "Mood4BBQshop",
+        "ratingText": "4,7 sterren 6 reviews",
+        "stars": "4,7 sterren 6 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kookwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Mood4BBQshop/data=!4m7!3m6!1s0x47c5e7870a38d41d:0xeb0878101659dd62!8m2!3d52.2725499!4d4.6268044!16s%2Fg%2F11j8slt9nz!19sChIJHdQ4CofnxUcRYt1ZFhB4COs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 6 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Action Hoofddorp",
+    "address": "Meeuwenstraat 45-51",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.306223,
+      "longitude": 4.637946
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-9WBwXvoxUcRvolFLV8ZkK0",
+        "address": "Meeuwenstraat 45-51",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "0228 545 750",
+        "googleUrl": "https://www.google.com/maps/place/Action+Hoofddorp/data=!4m7!3m6!1s0x47c5e87bc181d5fb:0xad90195f2d4589be!8m2!3d52.306223!4d4.637946!16s%2Fg%2F11dxdgdy7z!19sChIJ-9WBwXvoxUcRvolFLV8ZkK0?authuser=0&hl=nl&rclk=1",
+        "storeName": "Action Hoofddorp",
+        "ratingText": "4,2 sterren 597 reviews",
+        "stars": "4,2 sterren 597 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Action+Hoofddorp/data=!4m7!3m6!1s0x47c5e87bc181d5fb:0xad90195f2d4589be!8m2!3d52.306223!4d4.637946!16s%2Fg%2F11dxdgdy7z!19sChIJ-9WBwXvoxUcRvolFLV8ZkK0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 597 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Kiekebooo kraamkado",
+    "address": "Laan van Gildestein 57",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.27243,
+      "longitude": 4.611975
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJfb1Yb57CxUcR_deE0QKGQVM",
+        "address": "Laan van Gildestein 57",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "phone": "085 201 1275",
+        "googleUrl": "https://www.google.com/maps/place/Kiekebooo+kraamkado/data=!4m7!3m6!1s0x47c5c29e6f58bd7d:0x53418602d184d7fd!8m2!3d52.27243!4d4.611975!16s%2Fg%2F1td715b9!19sChIJfb1Yb57CxUcR_deE0QKGQVM?authuser=0&hl=nl&rclk=1",
+        "storeName": "Kiekebooo kraamkado",
+        "ratingText": "5,0 sterren 17 reviews",
+        "stars": "5,0 sterren 17 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Kiekebooo+kraamkado/data=!4m7!3m6!1s0x47c5c29e6f58bd7d:0x53418602d184d7fd!8m2!3d52.27243!4d4.611975!16s%2Fg%2F1td715b9!19sChIJfb1Yb57CxUcR_deE0QKGQVM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 17 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Kringloopwinkel Zwaan",
+    "address": "Staringstraat 32",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2720844,
+      "longitude": 4.6287198
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJyZocwALoxUcRNKm25jnAIwY",
+        "address": "Staringstraat 32",
+        "category": "Kringloopwinkel",
+        "status": "",
+        "phone": "0252 349 030",
+        "googleUrl": "https://www.google.com/maps/place/Kringloopwinkel+Zwaan/data=!4m7!3m6!1s0x47c5e802c01c9ac9:0x623c039e6b6a934!8m2!3d52.2720844!4d4.6287198!16s%2Fg%2F11c4bddfhv!19sChIJyZocwALoxUcRNKm25jnAIwY?authuser=0&hl=nl&rclk=1",
+        "storeName": "Kringloopwinkel Zwaan",
+        "ratingText": "3,8 sterren 166 reviews",
+        "stars": "3,8 sterren 166 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kringloopwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Kringloopwinkel+Zwaan/data=!4m7!3m6!1s0x47c5e802c01c9ac9:0x623c039e6b6a934!8m2!3d52.2720844!4d4.6287198!16s%2Fg%2F11c4bddfhv!19sChIJyZocwALoxUcRNKm25jnAIwY?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,8 sterren 166 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Meijer het Woonhuijs",
+    "address": "Venneperweg 571",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2677308,
+      "longitude": 4.6289193
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJX3XD-6jCxUcRg-J2jLAqrhM",
+        "address": "Venneperweg 571",
+        "category": "Speelgoedwinkel",
+        "status": "",
+        "phone": "06 21206091",
+        "googleUrl": "https://www.google.com/maps/place/Meijer+het+Woonhuijs/data=!4m7!3m6!1s0x47c5c2a8fbc3755f:0x13ae2ab08c76e283!8m2!3d52.2677308!4d4.6289193!16s%2Fg%2F1v3_1w4v!19sChIJX3XD-6jCxUcRg-J2jLAqrhM?authuser=0&hl=nl&rclk=1",
+        "storeName": "Meijer het Woonhuijs",
+        "ratingText": "4,8 sterren 9 reviews",
+        "stars": "4,8 sterren 9 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Speelgoedwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Meijer+het+Woonhuijs/data=!4m7!3m6!1s0x47c5c2a8fbc3755f:0x13ae2ab08c76e283!8m2!3d52.2677308!4d4.6289193!16s%2Fg%2F1v3_1w4v!19sChIJX3XD-6jCxUcRg-J2jLAqrhM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,8 sterren 9 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "RareCards",
+    "address": "Splinterstraat 2",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.302903,
+      "longitude": 4.6319741
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJWyYJoQvpxUcR_wbI6UsMNUM",
+        "address": "Splinterstraat 2",
+        "category": "Speelgoedwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/RareCards/data=!4m7!3m6!1s0x47c5e90ba109265b:0x43350c4be9c806ff!8m2!3d52.302903!4d4.6319741!16s%2Fg%2F11x0zfhnky!19sChIJWyYJoQvpxUcR_wbI6UsMNUM?authuser=0&hl=nl&rclk=1",
+        "storeName": "RareCards",
+        "ratingText": "4,9 sterren 67 reviews",
+        "stars": "4,9 sterren 67 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Speelgoedwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/RareCards/data=!4m7!3m6!1s0x47c5e90ba109265b:0x43350c4be9c806ff!8m2!3d52.302903!4d4.6319741!16s%2Fg%2F11x0zfhnky!19sChIJWyYJoQvpxUcR_wbI6UsMNUM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 67 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Primark",
+    "address": "Marktplein 254",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3036911,
+      "longitude": 4.6941706
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUwVGc6nnxUcRF-PyQ-TNu2s",
+        "address": "Marktplein 254",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "023 557 3111",
+        "googleUrl": "https://www.google.com/maps/place/Primark/data=!4m7!3m6!1s0x47c5e7a973460553:0x6bbbcde443f2e317!8m2!3d52.3036911!4d4.6941706!16s%2Fg%2F1tw_mf75!19sChIJUwVGc6nnxUcRF-PyQ-TNu2s?authuser=0&hl=nl&rclk=1",
+        "storeName": "Primark",
+        "ratingText": "3,9 sterren 3.464 reviews",
+        "stars": "3,9 sterren 3.464 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Primark/data=!4m7!3m6!1s0x47c5e7a973460553:0x6bbbcde443f2e317!8m2!3d52.3036911!4d4.6941706!16s%2Fg%2F1tw_mf75!19sChIJUwVGc6nnxUcRF-PyQ-TNu2s?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 3.464 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Quiosk Nieuw-Vennep | Tamoil",
+    "address": "Pesetaweg 14",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.253254,
+      "longitude": 4.6269809
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJjfdhPQ_DxUcRvIQYKpgwoUU",
+        "address": "Pesetaweg 14",
+        "category": "Winkel",
+        "status": "",
+        "phone": "030 737 0809",
+        "googleUrl": "https://www.google.com/maps/place/Quiosk+Nieuw-Vennep+%7C+Tamoil/data=!4m7!3m6!1s0x47c5c30f3d61f78d:0x45a130982a1884bc!8m2!3d52.253254!4d4.6269809!16s%2Fg%2F11v9ktnjmm!19sChIJjfdhPQ_DxUcRvIQYKpgwoUU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Quiosk Nieuw-Vennep | Tamoil",
+        "ratingText": "4,0 sterren 1 reviews",
+        "stars": "4,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Quiosk+Nieuw-Vennep+%7C+Tamoil/data=!4m7!3m6!1s0x47c5c30f3d61f78d:0x45a130982a1884bc!8m2!3d52.253254!4d4.6269809!16s%2Fg%2F11v9ktnjmm!19sChIJjfdhPQ_DxUcRvIQYKpgwoUU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "The Stone Nieuw-Vennep",
+    "address": "De Symfonie 75",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.264534,
+      "longitude": 4.632343
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJO48RHazCxUcR9YRSD4dtYZQ",
+        "address": "De Symfonie 75",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "0252 688 628",
+        "googleUrl": "https://www.google.com/maps/place/The+Stone+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5c2ac1d118f3b:0x94616d870f5284f5!8m2!3d52.264534!4d4.632343!16s%2Fg%2F1tgn8t87!19sChIJO48RHazCxUcR9YRSD4dtYZQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "The Stone Nieuw-Vennep",
+        "ratingText": "4,1 sterren 29 reviews",
+        "stars": "4,1 sterren 29 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/The+Stone+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5c2ac1d118f3b:0x94616d870f5284f5!8m2!3d52.264534!4d4.632343!16s%2Fg%2F1tgn8t87!19sChIJO48RHazCxUcR9YRSD4dtYZQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 29 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "terStal Nieuw-Vennep",
+    "address": "Händelplein 17",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2711735,
+      "longitude": 4.6196359
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJY7OIAR7oxUcRX2HpktK3z5Y",
+        "address": "Händelplein 17",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "0252 234 798",
+        "googleUrl": "https://www.google.com/maps/place/terStal+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5e81e0188b363:0x96cfb7d292e9615f!8m2!3d52.2711735!4d4.6196359!16s%2Fg%2F11b6z4r489!19sChIJY7OIAR7oxUcRX2HpktK3z5Y?authuser=0&hl=nl&rclk=1",
+        "storeName": "terStal Nieuw-Vennep",
+        "ratingText": "3,8 sterren 37 reviews",
+        "stars": "3,8 sterren 37 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/terStal+Nieuw-Vennep/data=!4m7!3m6!1s0x47c5e81e0188b363:0x96cfb7d292e9615f!8m2!3d52.2711735!4d4.6196359!16s%2Fg%2F11b6z4r489!19sChIJY7OIAR7oxUcRX2HpktK3z5Y?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,8 sterren 37 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Janosik Markt",
+    "address": "Venneperhof 9",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.26426,
+      "longitude": 4.63109
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJQUeroq7CxUcRVybHhKfR9tQ",
+        "address": "Venneperhof 9",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "06 23148781",
+        "googleUrl": "https://www.google.com/maps/place/Janosik+Markt/data=!4m7!3m6!1s0x47c5c2aea2ab4741:0xd4f6d1a784c72657!8m2!3d52.26426!4d4.63109!16s%2Fg%2F11f10fb13j!19sChIJQUeroq7CxUcRVybHhKfR9tQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "Janosik Markt",
+        "ratingText": "4,4 sterren 112 reviews",
+        "stars": "4,4 sterren 112 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Janosik+Markt/data=!4m7!3m6!1s0x47c5c2aea2ab4741:0xd4f6d1a784c72657!8m2!3d52.26426!4d4.63109!16s%2Fg%2F11f10fb13j!19sChIJQUeroq7CxUcRVybHhKfR9tQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,4 sterren 112 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Albert Heijn",
+    "address": "Händelplein 185",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2707599,
+      "longitude": 4.6197587
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ78mfVqfCxUcRSboSDZe_FuA",
+        "address": "Händelplein 185",
+        "category": "Supermarkt",
+        "status": "",
+        "phone": "0252 622 111",
+        "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c5c2a7569fc9ef:0xe016bf970d12ba49!8m2!3d52.2707599!4d4.6197587!16s%2Fg%2F1tj9sjh_!19sChIJ78mfVqfCxUcRSboSDZe_FuA?authuser=0&hl=nl&rclk=1",
+        "storeName": "Albert Heijn",
+        "ratingText": "4,1 sterren 915 reviews",
+        "stars": "4,1 sterren 915 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Supermarkt",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c5c2a7569fc9ef:0xe016bf970d12ba49!8m2!3d52.2707599!4d4.6197587!16s%2Fg%2F1tj9sjh_!19sChIJ78mfVqfCxUcRSboSDZe_FuA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 915 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:25:58.271Z"
+    },
+    "domain": null
+  }
+]

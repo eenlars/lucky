@@ -78,7 +78,7 @@ export const MODELS = {
   default: "openai/gpt-4.1-mini",
   fitness: "openai/gpt-4.1-mini",
   reasoning: "openai/gpt-4.1-mini",
-  fallbackOpenRouter: "switchpoint/router",
+  fallback: "switchpoint/router",
 } as const satisfies Record<string, ModelName>
 
 // model runtime configuration

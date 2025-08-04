@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
@@ -33,7 +34,8 @@
       "@validation/*": ["./src/core/utils/validation/*"],
       "@improvement/*": ["./src/core/improvement/*"],
       "@behavioral/*": ["./src/core/improvement/behavioral/*"],
-      "@gp/*": ["./src/core/improvement/gp/*"]
+      "@gp/*": ["./src/core/improvement/gp/*"],
+      "@/runtime/*": ["./src/runtime/*"]
     },
     "allowSyntheticDefaultImports": true
   },

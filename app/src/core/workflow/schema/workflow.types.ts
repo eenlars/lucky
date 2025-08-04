@@ -1,5 +1,5 @@
 import type { ToolsInformation } from "@/core/utils/validation/workflow/toolInformation"
-import { pricing } from "@/runtime/settings/models"
+import type { pricing } from "@/runtime/settings/models"
 import type { CodeToolName, MCPToolName } from "@tools/tool.types"
 
 export interface WorkflowNodeConfig {

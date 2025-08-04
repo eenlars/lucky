@@ -1,4 +1,5 @@
 import type { EvolutionSettings } from "@/core/improvement/gp/resources/evolution-types"
+import { validateEvolutionSettingsSimple } from "@/core/improvement/gp/resources/validation"
 
 // evolution runtime configuration
 export const EVOLUTION_CONFIG = {
@@ -44,17 +45,9 @@ export function createEvolutionSettingsWithConfig(
   return { ...defaults, ...overrides }
 }
 
-// Validate evolution settings
+// Export alias for backward compatibility
 export function validateEvolutionSettings(
   settings: EvolutionSettings
 ): boolean {
-  if (settings.populationSize <= 0) return false
-  if (settings.generations <= 0) return false
-  if (settings.maxCostUSD <= 0) return false
-  if (settings.tournamentSize <= 0) return false
-  if (settings.crossoverRate < 0 || settings.crossoverRate > 1) return false
-  if (settings.mutationRate < 0 || settings.mutationRate > 1) return false
-  if (settings.offspringCount < 0) return false
-  if (settings.numberOfParentsCreatingOffspring <= 0) return false
-  return true
+  return validateEvolutionSettingsSimple(settings)
 }

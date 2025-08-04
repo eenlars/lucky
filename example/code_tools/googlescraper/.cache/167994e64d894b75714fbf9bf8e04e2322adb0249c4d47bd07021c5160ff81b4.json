@@ -1,0 +1,109 @@
+[
+  {
+    "name": "阿姆斯特丹佐库酒店",
+    "address": "105 Weesperstraat",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.363792,
+      "longitude": 4.906733
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJg7ICg5cJxkcRCIT2umWTRe0",
+        "address": "105 Weesperstraat",
+        "category": "Hotel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/%E9%98%BF%E5%A7%86%E6%96%AF%E7%89%B9%E4%B8%B9%E4%BD%90%E5%BA%93%E9%85%92%E5%BA%97/data=!4m7!3m6!1s0x47c609978302b283:0xed459365baf68408!8m2!3d52.363792!4d4.906733!16s%2Fg%2F11cls_0rq6!19sChIJg7ICg5cJxkcRCIT2umWTRe0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "/aclk?sa=L&ai=DChcSEwiFksn5qsWOAxXGk4MHHY8SA7gYABAAGgJlZg&co=1&gclid=EAIaIQobChMIhZLJ-arFjgMVxpODBx2PEgO4EBAYASAAEgLPnPD_BwE&sig=AOD64_1CUAMkTPKKN-NVdZ4WvAmj2GVSkA&adurl&q&ctype=99",
+        "storeName": "阿姆斯特丹佐库酒店",
+        "ratingText": "4,7 sterren 2.786 reviews",
+        "stars": "4,7 sterren 2.786 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hotel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/%E9%98%BF%E5%A7%86%E6%96%AF%E7%89%B9%E4%B8%B9%E4%BD%90%E5%BA%93%E9%85%92%E5%BA%97/data=!4m7!3m6!1s0x47c609978302b283:0xed459365baf68408!8m2!3d52.363792!4d4.906733!16s%2Fg%2F11cls_0rq6!19sChIJg7ICg5cJxkcRCIT2umWTRe0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "/aclk?sa=L&ai=DChcSEwiFksn5qsWOAxXGk4MHHY8SA7gYABAAGgJlZg&co=1&gclid=EAIaIQobChMIhZLJ-arFjgMVxpODBx2PEgO4EBAYASAAEgLPnPD_BwE&sig=AOD64_1CUAMkTPKKN-NVdZ4WvAmj2GVSkA&adurl&q&ctype=99",
+      "stars": "4,7 sterren 2.786 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-18T02:14:22.408Z"
+    },
+    "domain": ""
+  },
+  {
+    "name": "Volkshotel",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3538409,
+      "longitude": 4.911496
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJFVeMnoQJxkcRXJh3rOeqmzM",
+        "address": "",
+        "category": "Hotel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Volkshotel/data=!4m10!3m9!1s0x47c609849e8c5715:0x339baae7ac77985c!5m2!4m1!1i2!8m2!3d52.3538409!4d4.911496!16s%2Fg%2F11cn8y2xj0!19sChIJFVeMnoQJxkcRXJh3rOeqmzM?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.volkshotel.nl/",
+        "storeName": "Volkshotel",
+        "ratingText": "4,5 sterren 4.644 reviews",
+        "stars": "4,5 sterren 4.644 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hotel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Volkshotel/data=!4m10!3m9!1s0x47c609849e8c5715:0x339baae7ac77985c!5m2!4m1!1i2!8m2!3d52.3538409!4d4.911496!16s%2Fg%2F11cn8y2xj0!19sChIJFVeMnoQJxkcRXJh3rOeqmzM?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.volkshotel.nl/",
+      "stars": "4,5 sterren 4.644 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-18T02:14:22.408Z"
+    },
+    "domain": "volkshotel.nl"
+  },
+  {
+    "name": "Grooblue - B Corp",
+    "address": "Vinkenstraat 149",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3832679,
+      "longitude": 4.8849406
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJufpMECkJxkcRdhhpajiwpW0",
+        "address": "Vinkenstraat 149",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Grooblue+-+B+Corp/data=!4m7!3m6!1s0x47c60929104cfab9:0x6da5b0386a691876!8m2!3d52.3832679!4d4.8849406!16s%2Fg%2F11m5_qc4jn!19sChIJufpMECkJxkcRdhhpajiwpW0?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.grooblue.com/",
+        "storeName": "Grooblue - B Corp",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Grooblue+-+B+Corp/data=!4m7!3m6!1s0x47c60929104cfab9:0x6da5b0386a691876!8m2!3d52.3832679!4d4.8849406!16s%2Fg%2F11m5_qc4jn!19sChIJufpMECkJxkcRdhhpajiwpW0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.grooblue.com/",
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-18T02:14:22.408Z"
+    },
+    "domain": "grooblue.com"
+  }
+]

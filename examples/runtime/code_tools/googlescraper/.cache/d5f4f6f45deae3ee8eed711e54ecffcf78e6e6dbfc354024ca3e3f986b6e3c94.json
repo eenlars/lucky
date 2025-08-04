@@ -1,0 +1,36 @@
+[
+  {
+    "name": "FOUR Amsterdam",
+    "address": "Van Baerlestraat 9-11, 1071 AM Amsterdam",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "postcode": "1071 AM",
+    "coordinates": null,
+    "opening_times": null,
+    "owner_imgs": [
+      "https://lh3.googleusercontent.com/p/AF1QipPGtTSGwc1WayJB9HSgPEAGNBn6oTwYvZJUvPeQ=w408-h365-k-no"
+    ],
+    "metadata": {
+      "original_data": {
+        "storeName": "FOUR Amsterdam",
+        "stars": "4,1",
+        "numberOfReviews": 631,
+        "googleUrl": "https://www.google.com/maps/search/FOUR+Amsterdam+Van+Baerlestraat+9-11",
+        "bizWebsite": "http://www.fouramsterdam.com/",
+        "address": "Adres: Van Baerlestraat 9-11, 1071 AM Amsterdam",
+        "category": "Kledingwinkel",
+        "phone": "Telefoon: 020 679 2244",
+        "mainImage": "https://lh3.googleusercontent.com/p/AF1QipPGtTSGwc1WayJB9HSgPEAGNBn6oTwYvZJUvPeQ=w408-h365-k-no",
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/search/FOUR+Amsterdam+Van+Baerlestraat+9-11",
+      "bizWebsite": "http://www.fouramsterdam.com/",
+      "stars": "4,1",
+      "numberOfReviews": 631,
+      "scrapedAt": "2025-07-20T03:25:13.402Z"
+    },
+    "domain": "fouramsterdam.com"
+  }
+]

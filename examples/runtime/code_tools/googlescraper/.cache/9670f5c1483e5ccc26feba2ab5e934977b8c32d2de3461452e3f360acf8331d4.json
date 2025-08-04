@@ -1,0 +1,39 @@
+[
+  {
+    "name": "bol",
+    "address": "Papendorpseweg 100",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.0656429,
+      "longitude": 5.0906651
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJc_F1sJhvxkcRQ8-CSzB-bOk",
+        "address": "Papendorpseweg 100",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "phone": "030 310 4995",
+        "googleUrl": "https://www.google.com/maps/place/bol/data=!4m7!3m6!1s0x47c66f98b075f173:0xe96c7e304b82cf43!8m2!3d52.0656429!4d5.0906651!16s%2Fg%2F1yj4k3hxn!19sChIJc_F1sJhvxkcRQ8-CSzB-bOk?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.bol.com/",
+        "storeName": "bol",
+        "ratingText": "3,1 sterren 782 reviews",
+        "stars": "3,1 sterren 782 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/bol/data=!4m7!3m6!1s0x47c66f98b075f173:0xe96c7e304b82cf43!8m2!3d52.0656429!4d5.0906651!16s%2Fg%2F1yj4k3hxn!19sChIJc_F1sJhvxkcRQ8-CSzB-bOk?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.bol.com/",
+      "stars": "3,1 sterren 782 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:53:57.116Z"
+    },
+    "domain": "bol.com"
+  }
+]

@@ -1,0 +1,369 @@
+[
+  {
+    "name": "Amsterdam Office Space",
+    "address": "449A Herengracht",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.36661,
+      "longitude": 4.889088
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJa6qOZPLjxUcRBIroddkr8Mo",
+        "address": "449A Herengracht",
+        "category": "Verhuurbedrijf voor kantoorruimte",
+        "status": "",
+        "phone": "020 261 9637",
+        "googleUrl": "https://www.google.com/maps/place/Amsterdam+Office+Space/data=!4m7!3m6!1s0x47c5e3f2648eaa6b:0xcaf02bd975e88a04!8m2!3d52.36661!4d4.889088!16s%2Fg%2F11fqxwjkq8!19sChIJa6qOZPLjxUcRBIroddkr8Mo?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "/aclk?sa=L&ai=DChcSEwi-2OiWwsqOAxUskIMHHXpPHNkYABAAGgJlZg&co=1&gclid=EAIaIQobChMIvtjolsLKjgMVLJCDBx16TxzZEBAYASAAEgIdyPD_BwE&sig=AOD64_1G5gM-7VU91ajTO_3REsOZO30WlQ&adurl&q&ctype=99",
+        "storeName": "Amsterdam Office Space",
+        "ratingText": "5,0 sterren 8 reviews",
+        "stars": "5,0 sterren 8 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Verhuurbedrijf voor kantoorruimte",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Amsterdam+Office+Space/data=!4m7!3m6!1s0x47c5e3f2648eaa6b:0xcaf02bd975e88a04!8m2!3d52.36661!4d4.889088!16s%2Fg%2F11fqxwjkq8!19sChIJa6qOZPLjxUcRBIroddkr8Mo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "/aclk?sa=L&ai=DChcSEwi-2OiWwsqOAxUskIMHHXpPHNkYABAAGgJlZg&co=1&gclid=EAIaIQobChMIvtjolsLKjgMVLJCDBx16TxzZEBAYASAAEgIdyPD_BwE&sig=AOD64_1G5gM-7VU91ajTO_3REsOZO30WlQ&adurl&q&ctype=99",
+      "stars": "5,0 sterren 8 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": ""
+  },
+  {
+    "name": "CompanyNL",
+    "address": "Kleine-Gartmanplantsoen 21",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3632446,
+      "longitude": 4.883996
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJYzrLeMMJxkcRXMAoFJBWiUs",
+        "address": "Kleine-Gartmanplantsoen 21",
+        "category": "Ondernemingsregistratiebureau",
+        "status": "",
+        "phone": "088 838 7601",
+        "googleUrl": "https://www.google.com/maps/place/CompanyNL/data=!4m7!3m6!1s0x47c609c378cb3a63:0x4b8956901428c05c!8m2!3d52.3632446!4d4.883996!16s%2Fg%2F11fxxthllj!19sChIJYzrLeMMJxkcRXMAoFJBWiUs?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.companynl.com/",
+        "storeName": "CompanyNL",
+        "ratingText": "4,8 sterren 16 reviews",
+        "stars": "4,8 sterren 16 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Ondernemingsregistratiebureau",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/CompanyNL/data=!4m7!3m6!1s0x47c609c378cb3a63:0x4b8956901428c05c!8m2!3d52.3632446!4d4.883996!16s%2Fg%2F11fxxthllj!19sChIJYzrLeMMJxkcRXMAoFJBWiUs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.companynl.com/",
+      "stars": "4,8 sterren 16 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "companynl.com"
+  },
+  {
+    "name": "Physical Studio",
+    "address": "Nieuwe Looiersstraat 33-35",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3607147,
+      "longitude": 4.8932374
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJl1EHuZQJxkcRx2DgwlY1HDE",
+        "address": "Nieuwe Looiersstraat 33-35",
+        "category": "Fysiotherapiepraktijk",
+        "status": "",
+        "phone": "020 782 8282",
+        "googleUrl": "https://www.google.com/maps/place/Physical+Studio/data=!4m7!3m6!1s0x47c60994b9075197:0x311c3556c2e060c7!8m2!3d52.3607147!4d4.8932374!16s%2Fg%2F11f_4336sc!19sChIJl1EHuZQJxkcRx2DgwlY1HDE?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.physicalstudio.com/",
+        "storeName": "Physical Studio",
+        "ratingText": "5,0 sterren 407 reviews",
+        "stars": "5,0 sterren 407 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Fysiotherapiepraktijk",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Physical+Studio/data=!4m7!3m6!1s0x47c60994b9075197:0x311c3556c2e060c7!8m2!3d52.3607147!4d4.8932374!16s%2Fg%2F11f_4336sc!19sChIJl1EHuZQJxkcRx2DgwlY1HDE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.physicalstudio.com/",
+      "stars": "5,0 sterren 407 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "physicalstudio.com"
+  },
+  {
+    "name": "The Physio Company",
+    "address": "The Body Studio Zuid, Heemstedestraat 12-14",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3517655,
+      "longitude": 4.8487929
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ73hFLw_hxUcR7uWxqliSv9M",
+        "address": "The Body Studio Zuid, Heemstedestraat 12-14",
+        "category": "Fysiotherapiepraktijk",
+        "status": "",
+        "phone": "06 44840090",
+        "googleUrl": "https://www.google.com/maps/place/The+Physio+Company/data=!4m7!3m6!1s0x47c5e10f2f4578ef:0xd3bf9258aab1e5ee!8m2!3d52.3517655!4d4.8487929!16s%2Fg%2F11lc_67b07!19sChIJ73hFLw_hxUcR7uWxqliSv9M?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://physiocompany.nl/",
+        "storeName": "The Physio Company",
+        "ratingText": "5,0 sterren 77 reviews",
+        "stars": "5,0 sterren 77 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Fysiotherapiepraktijk",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/The+Physio+Company/data=!4m7!3m6!1s0x47c5e10f2f4578ef:0xd3bf9258aab1e5ee!8m2!3d52.3517655!4d4.8487929!16s%2Fg%2F11lc_67b07!19sChIJ73hFLw_hxUcR7uWxqliSv9M?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://physiocompany.nl/",
+      "stars": "5,0 sterren 77 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "physiocompany.nl"
+  },
+  {
+    "name": "Movement Pacq",
+    "address": "Eduard van Beinumstraat 110",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3397308,
+      "longitude": 4.8704361
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ36Yx7RULxkcRm9f90jOReto",
+        "address": "Eduard van Beinumstraat 110",
+        "category": "Fysiotherapiepraktijk",
+        "status": "",
+        "phone": "020 261 4401",
+        "googleUrl": "https://www.google.com/maps/place/Movement+Pacq/data=!4m7!3m6!1s0x47c60b15ed31a6df:0xda7a9133d2fdd79b!8m2!3d52.3397308!4d4.8704361!16s%2Fg%2F11vby7gsb7!19sChIJ36Yx7RULxkcRm9f90jOReto?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.pacq.io/",
+        "storeName": "Movement Pacq",
+        "ratingText": "5,0 sterren 8 reviews",
+        "stars": "5,0 sterren 8 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Fysiotherapiepraktijk",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Movement+Pacq/data=!4m7!3m6!1s0x47c60b15ed31a6df:0xda7a9133d2fdd79b!8m2!3d52.3397308!4d4.8704361!16s%2Fg%2F11vby7gsb7!19sChIJ36Yx7RULxkcRm9f90jOReto?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.pacq.io/",
+      "stars": "5,0 sterren 8 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "pacq.io"
+  },
+  {
+    "name": "Kinetic Chain Therapy",
+    "address": "AOC Building, Wg-Plein 451",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3643884,
+      "longitude": 4.8711627
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ84_V0ewJxkcReRY8afwDNFA",
+        "address": "AOC Building, Wg-Plein 451",
+        "category": "Fysiotherapiepraktijk",
+        "status": "",
+        "phone": "06 81358073",
+        "googleUrl": "https://www.google.com/maps/place/Kinetic+Chain+Therapy/data=!4m7!3m6!1s0x47c609ecd1d58ff3:0x503403fc693c1679!8m2!3d52.3643884!4d4.8711627!16s%2Fg%2F11gy7n6ysn!19sChIJ84_V0ewJxkcReRY8afwDNFA?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://kineticchaintherapy.nl/",
+        "storeName": "Kinetic Chain Therapy",
+        "ratingText": "5,0 sterren 50 reviews",
+        "stars": "5,0 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Fysiotherapiepraktijk",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Kinetic+Chain+Therapy/data=!4m7!3m6!1s0x47c609ecd1d58ff3:0x503403fc693c1679!8m2!3d52.3643884!4d4.8711627!16s%2Fg%2F11gy7n6ysn!19sChIJ84_V0ewJxkcReRY8afwDNFA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://kineticchaintherapy.nl/",
+      "stars": "5,0 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "kineticchaintherapy.nl"
+  },
+  {
+    "name": "HPTC | Health & Performance Training Club",
+    "address": "Albert Cuypstraat 220H",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3561738,
+      "longitude": 4.8965648
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJk_IQhiMJxkcRUZn-g4TBs-g",
+        "address": "Albert Cuypstraat 220H",
+        "category": "Personal trainer",
+        "status": "",
+        "phone": "06 13380613",
+        "googleUrl": "https://www.google.com/maps/place/HPTC+%7C+Health+%26+Performance+Training+Club/data=!4m7!3m6!1s0x47c609238610f293:0xe8b3c18483fe9951!8m2!3d52.3561738!4d4.8965648!16s%2Fg%2F11ty12n7gl!19sChIJk_IQhiMJxkcRUZn-g4TBs-g?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.hptc.amsterdam/",
+        "storeName": "HPTC | Health & Performance Training Club",
+        "ratingText": "5,0 sterren 28 reviews",
+        "stars": "5,0 sterren 28 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Personal trainer",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/HPTC+%7C+Health+%26+Performance+Training+Club/data=!4m7!3m6!1s0x47c609238610f293:0xe8b3c18483fe9951!8m2!3d52.3561738!4d4.8965648!16s%2Fg%2F11ty12n7gl!19sChIJk_IQhiMJxkcRUZn-g4TBs-g?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.hptc.amsterdam/",
+      "stars": "5,0 sterren 28 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "hptc.amsterdam"
+  },
+  {
+    "name": "Mindspace Dam",
+    "address": "Nieuwezijds Voorburgwal 162",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3744346,
+      "longitude": 4.8909668
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJZcx4wEgJxkcRTawWhCmbbc8",
+        "address": "Nieuwezijds Voorburgwal 162",
+        "category": "Gedeelde werkplek",
+        "status": "",
+        "phone": "020 225 1031",
+        "googleUrl": "https://www.google.com/maps/place/Mindspace+Dam/data=!4m7!3m6!1s0x47c60948c078cc65:0xcf6d9b298416ac4d!8m2!3d52.3744346!4d4.8909668!16s%2Fg%2F11gx_ytjw3!19sChIJZcx4wEgJxkcRTawWhCmbbc8?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.mindspace.me/l/dam/?utm_source=google&utm_medium=organic&utm_campaign=gmb&utm_content=dam_amsterdam",
+        "storeName": "Mindspace Dam",
+        "ratingText": "4,6 sterren 67 reviews",
+        "stars": "4,6 sterren 67 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Gedeelde werkplek",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Mindspace+Dam/data=!4m7!3m6!1s0x47c60948c078cc65:0xcf6d9b298416ac4d!8m2!3d52.3744346!4d4.8909668!16s%2Fg%2F11gx_ytjw3!19sChIJZcx4wEgJxkcRTawWhCmbbc8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.mindspace.me/l/dam/?utm_source=google&utm_medium=organic&utm_campaign=gmb&utm_content=dam_amsterdam",
+      "stars": "4,6 sterren 67 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "mindspace.me"
+  },
+  {
+    "name": "Core Company B.V.",
+    "address": "Herengracht 332-A",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3694961,
+      "longitude": 4.8864327
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJJ6evS8IJxkcRDAiejrmgfIE",
+        "address": "Herengracht 332-A",
+        "category": "Psychotherapeut",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Core+Company+B.V./data=!4m7!3m6!1s0x47c609c24bafa727:0x817ca0b98e9e080c!8m2!3d52.3694961!4d4.8864327!16s%2Fg%2F1tgc8qly!19sChIJJ6evS8IJxkcRDAiejrmgfIE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Core Company B.V.",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Psychotherapeut",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Core+Company+B.V./data=!4m7!3m6!1s0x47c609c24bafa727:0x817ca0b98e9e080c!8m2!3d52.3694961!4d4.8864327!16s%2Fg%2F1tgc8qly!19sChIJJ6evS8IJxkcRDAiejrmgfIE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Company.info B.V.",
+    "address": "Abram Dudok van Heelstraat 2",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3335203,
+      "longitude": 4.9209557
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJMcBGHhbixUcR4snf7owws6E",
+        "address": "Abram Dudok van Heelstraat 2",
+        "category": "Softwarebedrijf",
+        "status": "",
+        "phone": "020 240 0400",
+        "googleUrl": "https://www.google.com/maps/place/Company.info+B.V./data=!4m7!3m6!1s0x47c5e2161e46c031:0xa1b3308ceedfc9e2!8m2!3d52.3335203!4d4.9209557!16s%2Fg%2F1tgcr1n7!19sChIJMcBGHhbixUcR4snf7owws6E?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://companyinfo.nl/",
+        "storeName": "Company.info B.V.",
+        "ratingText": "3,7 sterren 27 reviews",
+        "stars": "3,7 sterren 27 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Softwarebedrijf",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Company.info+B.V./data=!4m7!3m6!1s0x47c5e2161e46c031:0xa1b3308ceedfc9e2!8m2!3d52.3335203!4d4.9209557!16s%2Fg%2F1tgcr1n7!19sChIJMcBGHhbixUcR4snf7owws6E?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://companyinfo.nl/",
+      "stars": "3,7 sterren 27 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:41:42.156Z"
+    },
+    "domain": "companyinfo.nl"
+  }
+]

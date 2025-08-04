@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Natura Flooring GmbH & Co. KG",
+    "address": "Brauckstraße 38, 58454 Witten, Duitsland",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": null,
+    "opening_times": {
+      "monday": "07:00-16:00",
+      "tuesday": "07:00-16:00",
+      "wednesday": "07:00-16:00",
+      "thursday": "07:00-16:00",
+      "friday": "07:00-16:00",
+      "saturday": "Gesloten",
+      "sunday": "Gesloten"
+    },
+    "owner_imgs": [
+      "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nreBiwvXMfmvqkNDPnLffz3BvjgnKxfqyz-PbHFlcx1Vh_YX-Q5NcQKLUrocrioICePvR_7PUo7wPvZCaaJ1pWNvP4SIu1ucJnmwIAxpRNfwJZOkVNUiI2ZX7kBJJ0jx--ZPsOK=w408-h725-k-no"
+    ],
+    "metadata": {
+      "original_data": {
+        "storeName": "Natura Flooring GmbH & Co. KG",
+        "stars": "4,3",
+        "numberOfReviews": 34,
+        "googleUrl": "https://www.google.com/maps/search/Natura+&Co",
+        "bizWebsite": "http://natura-flooring.de/",
+        "address": "Adres: Brauckstraße 38, 58454 Witten, Duitsland",
+        "category": "Vloerenwinkel",
+        "status": "Gesloten",
+        "phone": "Telefoon: +49 2302 185120",
+        "mainImage": "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nreBiwvXMfmvqkNDPnLffz3BvjgnKxfqyz-PbHFlcx1Vh_YX-Q5NcQKLUrocrioICePvR_7PUo7wPvZCaaJ1pWNvP4SIu1ucJnmwIAxpRNfwJZOkVNUiI2ZX7kBJJ0jx--ZPsOK=w408-h725-k-no",
+        "hours": {
+          "monday": "07:00-16:00",
+          "tuesday": "07:00-16:00",
+          "wednesday": "07:00-16:00",
+          "thursday": "07:00-16:00",
+          "friday": "07:00-16:00",
+          "saturday": "Gesloten",
+          "sunday": "Gesloten"
+        }
+      },
+      "category": "Vloerenwinkel",
+      "status": "Gesloten",
+      "googleUrl": "https://www.google.com/maps/search/Natura+&Co",
+      "bizWebsite": "http://natura-flooring.de/",
+      "stars": "4,3",
+      "numberOfReviews": 34,
+      "scrapedAt": "2025-07-31T01:27:51.330Z"
+    },
+    "domain": "natura-flooring.de"
+  }
+]

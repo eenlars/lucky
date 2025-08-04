@@ -13,16 +13,6 @@ export interface NodeGroup {
   invocations: NodeInvocationExtended[]
 }
 
-export const safeJSON = (data: unknown, maxLength = 100) => {
-  if (JSONN.isJSON(data)) {
-    return (
-      JSONN.extract(data, false) ??
-      `not possible to parse this json: ${JSON.stringify(data).slice(0, maxLength)}`
-    )
-  }
-  return String(data).slice(0, maxLength)
-}
-
 export const wrapLegacyPayload = (data: unknown) => {
   if (typeof data === "object" && data !== null) {
     return data as Record<string, unknown>
@@ -33,6 +23,16 @@ export const wrapLegacyPayload = (data: unknown) => {
   }
 
   return { kind: "text", content: String(data) }
+}
+
+export const safeJSON = (data: unknown, maxLength = 100) => {
+  if (JSONN.isJSON(data)) {
+    return (
+      JSONN.extract(data, false) ??
+      `not possible to parse this json: ${JSON.stringify(data).slice(0, maxLength)}`
+    )
+  }
+  return String(data).slice(0, maxLength)
 }
 
 export const groupInvocationsByNode = (

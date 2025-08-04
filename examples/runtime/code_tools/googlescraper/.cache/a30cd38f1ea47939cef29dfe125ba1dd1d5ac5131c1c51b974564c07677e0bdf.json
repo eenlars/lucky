@@ -1,0 +1,362 @@
+[
+  {
+    "name": "Patagonia Amsterdam",
+    "address": "465 Singel",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.367114,
+      "longitude": 4.891913
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJiyzrJoIJxkcRgqHNsZZpBsg",
+        "address": "465 Singel",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 299 0701",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.367114!4d4.891913!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Patagonia Amsterdam",
+        "ratingText": "4,9 sterren 51 reviews",
+        "stars": "4,9 sterren 51 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.367114!4d4.891913!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 51 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Bever",
+    "address": "132-134 Gelderlandplein",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.331753,
+      "longitude": 4.878145
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJfy5uoREKxkcRN1KtEboSGO0",
+        "address": "132-134 Gelderlandplein",
+        "category": "Winkel voor buitensport",
+        "status": "",
+        "phone": "085 888 5088",
+        "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c60a11a16e2e7f:0xed1812ba11ad5237!8m2!3d52.331753!4d4.878145!16s%2Fg%2F11ck9r9r28!19sChIJfy5uoREKxkcRN1KtEboSGO0?authuser=0&hl=nl&rclk=1",
+        "storeName": "Bever",
+        "ratingText": "4,2 sterren 680 reviews",
+        "stars": "4,2 sterren 680 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor buitensport",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c60a11a16e2e7f:0xed1812ba11ad5237!8m2!3d52.331753!4d4.878145!16s%2Fg%2F11ck9r9r28!19sChIJfy5uoREKxkcRN1KtEboSGO0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 680 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Patagonia Amsterdam",
+    "address": "Singel 465",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3671137,
+      "longitude": 4.8919129
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJiyzrJoIJxkcRgqHNsZZpBsg",
+        "address": "Singel 465",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 299 0701",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Patagonia Amsterdam",
+        "ratingText": "4,9 sterren 52 reviews",
+        "stars": "4,9 sterren 52 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia+Amsterdam/data=!4m7!3m6!1s0x47c6098226eb2c8b:0xc8066996b1cda182!8m2!3d52.3671137!4d4.8919129!16s%2Fg%2F11vchjjf42!19sChIJiyzrJoIJxkcRgqHNsZZpBsg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 52 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Patagonia",
+    "address": "Jollemanhof 11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.377167,
+      "longitude": 4.920386
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUxGYZagJxkcRYKK9jQSX7R0",
+        "address": "Jollemanhof 11",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "phone": "020 797 9333",
+        "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+        "storeName": "Patagonia",
+        "ratingText": "4,0 sterren 50 reviews",
+        "stars": "4,0 sterren 50 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonia/data=!4m7!3m6!1s0x47c609a865981153:0x1ded97048dbda260!8m2!3d52.377167!4d4.920386!16s%2Fg%2F11c0xqnmxs!19sChIJUxGYZagJxkcRYKK9jQSX7R0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,0 sterren 50 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Behind The Pines",
+    "address": "Ceintuurbaan 248",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.352388,
+      "longitude": 4.88973
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ8RMAE_MJxkcRN7zzXbO58-A",
+        "address": "Ceintuurbaan 248",
+        "category": "Sportwinkel",
+        "status": "",
+        "phone": "020 337 6718",
+        "googleUrl": "https://www.google.com/maps/place/Behind+The+Pines/data=!4m7!3m6!1s0x47c609f3130013f1:0xe0f3b9b35df3bc37!8m2!3d52.352388!4d4.88973!16s%2Fg%2F11gcdqxk72!19sChIJ8RMAE_MJxkcRN7zzXbO58-A?authuser=0&hl=nl&rclk=1",
+        "storeName": "Behind The Pines",
+        "ratingText": "4,9 sterren 300 reviews",
+        "stars": "4,9 sterren 300 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Sportwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Behind+The+Pines/data=!4m7!3m6!1s0x47c609f3130013f1:0xe0f3b9b35df3bc37!8m2!3d52.352388!4d4.88973!16s%2Fg%2F11gcdqxk72!19sChIJ8RMAE_MJxkcRN7zzXbO58-A?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 300 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Carl Denig",
+    "address": "Weteringschans 113-115",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3605267,
+      "longitude": 4.8885148
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJj3Esa-wJxkcRqG0rQMUNrtc",
+        "address": "Weteringschans 113-115",
+        "category": "Winkel voor buitensport",
+        "status": "",
+        "phone": "020 626 2436",
+        "googleUrl": "https://www.google.com/maps/place/Carl+Denig/data=!4m7!3m6!1s0x47c609ec6b2c718f:0xd7ae0dc5402b6da8!8m2!3d52.3605267!4d4.8885148!16s%2Fg%2F1thw5y8z!19sChIJj3Esa-wJxkcRqG0rQMUNrtc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Carl Denig",
+        "ratingText": "4,4 sterren 410 reviews",
+        "stars": "4,4 sterren 410 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor buitensport",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Carl+Denig/data=!4m7!3m6!1s0x47c609ec6b2c718f:0xd7ae0dc5402b6da8!8m2!3d52.3605267!4d4.8885148!16s%2Fg%2F1thw5y8z!19sChIJj3Esa-wJxkcRqG0rQMUNrtc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,4 sterren 410 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Patagonias Stadshart",
+    "address": "Binnenhof 77F",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3020005,
+      "longitude": 4.8623486
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJM6dkZzQLxkcRswSTRI4FCeY",
+        "address": "Binnenhof 77F",
+        "category": "IJs",
+        "status": "",
+        "phone": "020 358 4370",
+        "googleUrl": "https://www.google.com/maps/place/Patagonias+Stadshart/data=!4m7!3m6!1s0x47c60b346764a733:0xe609058e449304b3!8m2!3d52.3020005!4d4.8623486!16s%2Fg%2F11jclc7_q7!19sChIJM6dkZzQLxkcRswSTRI4FCeY?authuser=0&hl=nl&rclk=1",
+        "storeName": "Patagonias Stadshart",
+        "ratingText": "4,4 sterren 39 reviews",
+        "stars": "4,4 sterren 39 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "IJs",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonias+Stadshart/data=!4m7!3m6!1s0x47c60b346764a733:0xe609058e449304b3!8m2!3d52.3020005!4d4.8623486!16s%2Fg%2F11jclc7_q7!19sChIJM6dkZzQLxkcRswSTRI4FCeY?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,4 sterren 39 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Patagonias",
+    "address": "Johannes Calvijnlaan 12",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2960471,
+      "longitude": 4.8627207
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJnXS5u5oKxkcRaEpMNmJctTg",
+        "address": "Johannes Calvijnlaan 12",
+        "category": "IJs",
+        "status": "",
+        "phone": "020 640 0422",
+        "googleUrl": "https://www.google.com/maps/place/Patagonias/data=!4m7!3m6!1s0x47c60a9abbb9749d:0x38b55c62364c4a68!8m2!3d52.2960471!4d4.8627207!16s%2Fg%2F1tgqhmbm!19sChIJnXS5u5oKxkcRaEpMNmJctTg?authuser=0&hl=nl&rclk=1",
+        "storeName": "Patagonias",
+        "ratingText": "4,5 sterren 490 reviews",
+        "stars": "4,5 sterren 490 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "IJs",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Patagonias/data=!4m7!3m6!1s0x47c60a9abbb9749d:0x38b55c62364c4a68!8m2!3d52.2960471!4d4.8627207!16s%2Fg%2F1tgqhmbm!19sChIJnXS5u5oKxkcRaEpMNmJctTg?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 490 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Bever",
+    "address": "Overtoom 51-53",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3629001,
+      "longitude": 4.8767206
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ8b2-eVkJxkcRDrZBA_s1iAE",
+        "address": "Overtoom 51-53",
+        "category": "Winkel voor buitensport",
+        "status": "",
+        "phone": "085 888 5088",
+        "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c6095979bebdf1:0x18835fb0341b60e!8m2!3d52.3629001!4d4.8767206!16s%2Fg%2F11p64qvdb7!19sChIJ8b2-eVkJxkcRDrZBA_s1iAE?authuser=0&hl=nl&rclk=1",
+        "storeName": "Bever",
+        "ratingText": "4,2 sterren 149 reviews",
+        "stars": "4,2 sterren 149 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor buitensport",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c6095979bebdf1:0x18835fb0341b60e!8m2!3d52.3629001!4d4.8767206!16s%2Fg%2F11p64qvdb7!19sChIJ8b2-eVkJxkcRDrZBA_s1iAE?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 149 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Bever",
+    "address": "Stadhouderskade 4",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3633333,
+      "longitude": 4.8788889
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ88eMP-YJxkcRRiHHCqAMxOs",
+        "address": "Stadhouderskade 4",
+        "category": "Winkel voor buitensport",
+        "status": "",
+        "phone": "085 888 5088",
+        "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c609e63f8cc7f3:0xebc40ca00ac72146!8m2!3d52.3633333!4d4.8788889!16s%2Fg%2F1xtf0s57!19sChIJ88eMP-YJxkcRRiHHCqAMxOs?authuser=0&hl=nl&rclk=1",
+        "storeName": "Bever",
+        "ratingText": "4,3 sterren 969 reviews",
+        "stars": "4,3 sterren 969 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel voor buitensport",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Bever/data=!4m7!3m6!1s0x47c609e63f8cc7f3:0xebc40ca00ac72146!8m2!3d52.3633333!4d4.8788889!16s%2Fg%2F1xtf0s57!19sChIJ88eMP-YJxkcRRiHHCqAMxOs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 969 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T02:54:52.816Z"
+    },
+    "domain": null
+  }
+]
