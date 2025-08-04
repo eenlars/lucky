@@ -89,7 +89,7 @@ export const TOOL_CONFIG = {
     // "expectedOutputHandler",
     "proxy",
     "filesystem",
-    "googleScholar",
+    // "googleScholar",
     "csvReader",
     "csvInfo",
     "csvWriter",

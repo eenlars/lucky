@@ -33,8 +33,10 @@ export async function runMultiStepLoopV2Helper(
     getTotalCost,
   } = context
 
-  const userMessage = extractPromptFromPayload(ctx.workflowMessageIncoming.payload)
-  
+  const userMessage = extractPromptFromPayload(
+    ctx.workflowMessageIncoming.payload
+  )
+
   const currentMessages: CoreMessage[] = [
     {
       role: "system",
@@ -182,7 +184,6 @@ export async function runMultiStepLoopV2Helper(
       ],
       opts: {
         tools: { [selected]: tools[selected] },
-        toolStrategy: "v2",
         toolChoice: { type: "tool", toolName: selected },
         maxSteps: 1,
         // if the tool input is incorrect, it should not repair.

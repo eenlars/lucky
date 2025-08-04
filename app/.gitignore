@@ -44,3 +44,6 @@ next-env.d.ts
 /src/lib/scraping/exports/
 /src/research-experiments/*
 /docs/pseudocode*.md
+
+# local MCP configuration
+**/mcp-config.json
