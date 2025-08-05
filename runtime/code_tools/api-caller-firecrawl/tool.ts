@@ -9,13 +9,15 @@ const app = new FirecrawlApp({
 /**
  * Simple file saver tool using the new defineTool approach
  */
+const firecrawlSchema = z.object({
+  url: z.string(),
+  prompt: z.string(),
+  schema: z.any().nullish(),
+})
+
 const firecrawlTool = defineTool({
   name: "firecrawlAPI",
-  params: z.object({
-    url: z.string(),
-    prompt: z.string(),
-    schema: z.any().nullish(),
-  }),
+  params: firecrawlSchema,
   async execute(params) {
     const options: ExtractParams = {
       prompt:
