@@ -67,6 +67,11 @@ export default defineConfig(({ mode }) => {
             return true
           }
 
+          // External packages that should not be bundled
+          if (["source-map-support", "import-fresh", "cosmiconfig", "puppeteer"].includes(id)) {
+            return true
+          }
+
           // Allow internal module imports (@core, @shared only - NOT @runtime since that's this module)
           if (id.startsWith("@core/") || id.startsWith("@shared/")) {
             return true
