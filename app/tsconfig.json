@@ -18,22 +18,12 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/core/*": ["./src/core/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/logger": ["./src/core/utils/logging/Logger.ts"],
-      "@/benchmarks/*": ["./src/core/workflow/ingestion/benchmarks/*"],
-      "@workflow/*": ["./src/core/workflow/*"],
-      "@node/*": ["./src/core/node/*"],
-      "@messages/*": ["./src/core/messages/*"],
-      "@memories/*": ["./src/core/memories/*"],
-      "@tools/*": ["./src/core/tools/*"],
-      "@prompts/*": ["./src/core/prompts/*"],
-      "@validation/*": ["./src/core/utils/validation/*"],
-      "@improvement/*": ["./src/core/improvement/*"],
-      "@behavioral/*": ["./src/core/improvement/behavioral/*"],
-      "@gp/*": ["./src/core/improvement/gp/*"]
+      "@shared/*": ["../shared/src/*"],
+      "@core/*": ["../core/src/*"],
+      "@runtime/*": ["../runtime/*"]
     },
     "allowSyntheticDefaultImports": true
   },

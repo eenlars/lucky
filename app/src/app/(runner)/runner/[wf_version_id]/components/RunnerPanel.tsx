@@ -1,6 +1,6 @@
 "use client"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
+import type { Tables } from "@core/utils/clients/supabase/types"
 
 interface RunnerPanelProps {
   results: any

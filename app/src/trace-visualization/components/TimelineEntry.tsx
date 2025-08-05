@@ -1,7 +1,5 @@
 "use client"
 
-import type { NodeLogs } from "@/core/messages/api/processResponse"
-import { isNir } from "@/core/utils/common/isNir"
 import {
   Dialog,
   DialogContent,
@@ -10,18 +8,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
-import { TOOLS } from "@/runtime/settings/tools"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import type { NodeLogs } from "@core/messages/api/processResponse"
+import { isNir } from "@core/utils/common/isNir"
+import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import rehypeHighlight from "rehype-highlight"
+import remarkGfm from "remark-gfm"
 import { STATUS_TO_COLOR, formatCost } from "./constants"
 import { ToolCallsDisplay } from "./ToolCallsDisplay"
 

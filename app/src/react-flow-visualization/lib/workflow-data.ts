@@ -7,7 +7,7 @@ import {
   type AppNode,
   type WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes"
-import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 /**
  * transform the nodes from the setup config to the nodes for the visualizer

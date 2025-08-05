@@ -4,9 +4,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { use, useEffect, useState } from "react"
 
-import { JSONN } from "@/core/utils/file-types/json/jsonParse"
 import { fullWorkflow } from "@/trace-visualization/db/Workflow/fullWorkflow"
-import { isWorkflowConfig } from "@workflow/schema/workflow.types"
+import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { StructureMiniMap } from "./StructureMiniMap"
 
 export default function WorkflowStructurePage({

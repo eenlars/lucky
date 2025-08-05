@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react"
 
-import { MODELS } from "@/runtime/settings/constants.client"
+import { MODELS } from "@runtime/settings/constants.client"
 import {
   type WorkflowConfig,
   toWorkflowConfig,
-} from "@workflow/schema/workflow.types"
+} from "@core/workflow/schema/workflow.types"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig

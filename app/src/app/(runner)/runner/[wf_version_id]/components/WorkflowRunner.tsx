@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
 import Link from "next/link"
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { loadFromDSL } from "@/core/workflow/setup/WorkflowLoader"
+import { useCallback, useEffect, useState } from "react"
 import RunnerPanel from "./RunnerPanel"
 
 // API functions to replace server actions

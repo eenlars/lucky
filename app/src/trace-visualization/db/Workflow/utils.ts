@@ -1,5 +1,5 @@
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { JSONN } from "@/core/utils/file-types/json/jsonParse"
+import { Tables } from "@shared/types/database.types"
+import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { nanoid } from "nanoid"
 
 export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {

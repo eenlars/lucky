@@ -1,18 +1,18 @@
 "use client"
 
 import { formalizeWorkflowAction } from "@/app/actions/formalizeWorkflow"
-import { createWorkflowPrompt } from "@/core/prompts/createWorkflow"
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { genShortId } from "@/core/utils/common/utils"
+import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ensureWorkflowExists,
   saveWorkflowVersion,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import { genShortId } from "@core/utils/common/utils"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-import { useAppStore } from "@/react-flow-visualization/store"
 import SyntaxHighlightedEditor from "../[wf_version_id]/components/SyntaxHighlightedEditor"
 
 interface JSONEditorProps {

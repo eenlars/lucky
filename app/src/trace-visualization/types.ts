@@ -1,4 +1,4 @@
-import type { Tables } from "@/core/utils/clients/supabase/types"
+import type { Tables } from "@core/utils/clients/supabase/types"
 import type { NodeInvocationExtended } from "./db/Workflow/fullWorkflow"
 
 export interface FullTraceEntry {

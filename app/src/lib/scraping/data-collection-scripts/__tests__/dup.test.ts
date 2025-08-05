@@ -1,4 +1,4 @@
-import type { GoogleMapsBusiness } from "@/runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import { beforeEach, describe, expect, it } from "vitest"
 import { deduplicateBusinesses } from "../utils"
 

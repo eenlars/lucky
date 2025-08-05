@@ -1,8 +1,8 @@
 "use server"
 
-import type { EvaluationText } from "@/core/workflow/ingestion/ingestion.types"
-import { invokeWorkflow } from "@/core/workflow/runner/invokeWorkflow"
-import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import type { EvaluationText } from "@core/workflow/ingestion/ingestion.types"
+import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 export async function runWorkflowFromDSL(
   dslConfig: WorkflowConfig,

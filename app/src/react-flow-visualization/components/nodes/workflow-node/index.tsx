@@ -1,26 +1,10 @@
 "use client"
 
-import { Edit, Play, Plus } from "lucide-react"
+import { Edit, Play } from "lucide-react"
 import { useCallback, useState } from "react"
 
-import {
-  ACTIVE_CODE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
-  ACTIVE_TOOLS_WITH_DESCRIPTION,
-  type CodeToolName,
-  type MCPToolName,
-} from "@/core/tools/tool.types"
 import { BaseNode } from "@/react-flow-visualization/components/base-node"
-import {
-  NodeHeader,
-  NodeHeaderAction,
-  NodeHeaderActions,
-  NodeHeaderDeleteAction,
-  NodeHeaderIcon,
-  NodeHeaderLabel,
-  NodeHeaderTitle,
-} from "@/react-flow-visualization/components/node-header"
+import { NodeHeaderDeleteAction } from "@/react-flow-visualization/components/node-header"
 import { NodeStatusIndicator } from "@/react-flow-visualization/components/node-status-indicator"
 import {
   NODE_SIZE,
@@ -28,13 +12,13 @@ import {
 } from "@/react-flow-visualization/components/nodes/"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import { Input } from "@/react-flow-visualization/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-flow-visualization/components/ui/popover"
 import { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
 import { useAppStore } from "@/react-flow-visualization/store"
+import {
+  ACTIVE_MCP_TOOL_NAMES,
+  type CodeToolName,
+  type MCPToolName,
+} from "@core/tools/tool.types"
 
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.

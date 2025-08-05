@@ -2,8 +2,8 @@ import {
   extractCoordinates,
   transformLocationData,
   type GoogleScraperBusinessExtended,
-} from "@/runtime/code_tools/googlescraper/convert"
-import type { GoogleMapsBusiness } from "@/runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+} from "@runtime/code_tools/googlescraper/convert"
+import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import { readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
 import { toDomain } from "../utils"

@@ -1,4 +1,4 @@
-import { supabase } from "@/core/utils/clients/supabase/client"
+import { supabase } from "@core/utils/clients/supabase/client"
 
 interface NewerFitnessData {
   data: {

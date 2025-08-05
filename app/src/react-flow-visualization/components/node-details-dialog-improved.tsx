@@ -1,11 +1,5 @@
 "use client"
 
-import {
-  ACTIVE_CODE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES,
-  type CodeToolName,
-  type MCPToolName,
-} from "@/core/tools/tool.types"
 import { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
 import { Badge } from "@/react-flow-visualization/components/ui/badge"
 import { Button } from "@/react-flow-visualization/components/ui/button"
@@ -19,16 +13,14 @@ import {
 import { EditableSection } from "@/react-flow-visualization/components/ui/editable-section"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import { Input } from "@/react-flow-visualization/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/react-flow-visualization/components/ui/select"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
 import { ToolManager } from "@/react-flow-visualization/components/ui/tool-manager"
-import { ModelName, pricing } from "@/runtime/settings/models"
+import {
+  ACTIVE_CODE_TOOL_NAMES,
+  ACTIVE_MCP_TOOL_NAMES,
+  type CodeToolName,
+  type MCPToolName,
+} from "@core/tools/tool.types"
 import { Plus, Trash2 } from "lucide-react"
 import React, { useState } from "react"
 

@@ -1,8 +1,8 @@
 "use client"
 
-import type { NodeLogs } from "@/core/messages/api/processResponse"
-import { isNir } from "@/core/utils/common/isNir"
 import { Card } from "@/ui/card"
+import type { NodeLogs } from "@core/messages/api/processResponse"
+import { isNir } from "@core/utils/common/isNir"
 import {
   AlertCircle,
   BookOpen,

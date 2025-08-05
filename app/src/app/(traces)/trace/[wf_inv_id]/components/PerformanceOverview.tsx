@@ -1,7 +1,7 @@
 "use client"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { JSONN } from "@/core/utils/file-types/json/jsonParse"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"

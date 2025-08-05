@@ -1,4 +1,4 @@
-import type { AllToolNames } from "@tools/tool.types"
+import type { AllToolNames } from "@core/tools/tool.types"
 import { Node } from "reactflow"
 
 export type NodeData = {

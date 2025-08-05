@@ -1,9 +1,9 @@
 "use server"
 
-import { genShortId } from "@/core/utils/common/utils"
-import type { EvaluationText } from "@/core/workflow/ingestion/ingestion.types"
-import { invokeWorkflow } from "@/core/workflow/runner/invokeWorkflow"
-import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { genShortId } from "@core/utils/common/utils"
+import type { EvaluationText } from "@core/workflow/ingestion/ingestion.types"
+import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 interface AsyncWorkflowExecution {
   invocationId: string

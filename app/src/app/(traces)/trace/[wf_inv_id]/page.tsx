@@ -3,8 +3,6 @@
 import Link from "next/link"
 import { use, useEffect, useState } from "react"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import type { WorkflowConfig } from "@/core/workflow/schema/workflow.types"
 import { Timeline } from "@/trace-visualization/components/Timeline"
 import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
 import {
@@ -12,6 +10,8 @@ import {
   nodeInvocations,
 } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import PerformanceOverview from "./components/PerformanceOverview"
 
 const SUPABASE_TABLES = {
