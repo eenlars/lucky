@@ -1,4 +1,5 @@
 {
+  "installCommand": "bun install && cd ../core && bun install && cd ../shared && bun install && bun run build",
   "crons": [
     {
       "path": "/api/cron/cleanup",
