@@ -46,4 +46,4 @@ next-env.d.ts
 /docs/pseudocode*.md
 
 # local MCP configuration
-**/mcp-config.json
+**/mcp-secret.json

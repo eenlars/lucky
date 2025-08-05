@@ -26,7 +26,7 @@ interface MCPConfig {
 
 function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   try {
-    const configPath = path.join(PATHS.runtime, "mcp-config.json")
+    const configPath = path.join(PATHS.runtime, "mcp-secret.json")
     if (!fs.existsSync(configPath)) {
       return {}
     }
@@ -36,7 +36,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 
     if (!config.mcpServers || typeof config.mcpServers !== "object") {
       console.warn(
-        "Invalid mcp-config.json: missing or invalid 'mcpServers' field"
+        "Invalid mcp-secret.json: missing or invalid 'mcpServers' field"
       )
       return {}
     }
@@ -76,7 +76,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 
     return validatedServers
   } catch (error) {
-    console.error("Failed to load mcp-config.json:", error)
+    console.error("Failed to load mcp-secret.json:", error)
     return {}
   }
 }

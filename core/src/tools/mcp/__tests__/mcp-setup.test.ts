@@ -53,7 +53,7 @@ describe("browserUse MCP", () => {
 describe("External MCP Configuration", () => {
   it("should load googleScholar MCP from external config", async () => {
     // This test verifies that external MCP configs work
-    // Since we have mcp-config.json with googleScholar configured,
+    // Since we have mcp-secret.json with googleScholar configured,
     // it should load the tools successfully
 
     const tools = await setupMCPForNode(
@@ -77,7 +77,7 @@ describe("External MCP Configuration", () => {
 
   it("should load tavily MCP from external config (not built-in)", async () => {
     // This test verifies that built-in MCPs can be moved to external config
-    // Tavily is now defined in mcp-config.json instead of being built-in
+    // Tavily is now defined in mcp-secret.json instead of being built-in
 
     const tools = await setupMCPForNode(["tavily"], "test-tavily-external")
 
