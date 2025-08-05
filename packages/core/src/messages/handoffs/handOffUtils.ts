@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import type { Payload } from "@messages/MessagePayload"
 import type { WorkflowMessage } from "@messages/WorkflowMessage"
 import { llmify } from "@utils/common/llmify"

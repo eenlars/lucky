@@ -8,13 +8,14 @@ import {
 } from "@utils/cli/argumentParser"
 import {
   getEvolutionConfig,
+  getInputsConfig,
   getPaths,
   getSettings,
 } from "@utils/config/runtimeConfig"
 import { displayResults } from "@utils/logging/displayResults"
 import { SpendingTracker } from "@utils/spending/SpendingTracker"
 import { guard } from "@workflow/schema/errorMessages"
-import { SELECTED_QUESTION } from "@example/settings/inputs"
+import { DEFAULT_EVALUATION_INPUT as SELECTED_QUESTION } from "@workflow/ingestion/defaultInput"
 import { GenomeEvaluationResults, WorkflowGenome } from "@gp/resources/gp.types"
 import { RunService } from "@gp/RunService"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
@@ -132,7 +133,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     const config = getEvolutionConfig()
 
     // create evolution run in database
-    await runService.createRun(SELECTED_QUESTION.goal, config)
+    await runService.createRun(getInputsConfig().selected.goal, config)
 
     // initialize spending tracker
     if (getSettings().limits.enableSpendingLimits) {

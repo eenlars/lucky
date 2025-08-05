@@ -1,9 +1,11 @@
 import type { EvolutionContext } from "@improvement/gp/resources/types"
 import { MODELS, type ModelName } from "@utils/models/models"
-import { TOOLS } from "@example/settings/tools"
+// For now, we'll get the tools from the active tools instead of importing from settings
+// This avoids the circular dependency while still getting the actual tool names
 import { Genome } from "@gp/Genome"
 import {
-  getActiveTools,
+  ACTIVE_MCP_TOOL_NAMES,
+  ACTIVE_CODE_TOOL_NAMES,
   type CodeToolName,
   type MCPToolName,
 } from "@tools/tool.types"
@@ -57,10 +59,9 @@ export const createDummyGenome = (
   const randomModel2: ModelName = getRandomElement(Object.values(MODELS))
   const randomModel3: ModelName = getRandomElement(Object.values(MODELS))
 
-  const activeMcpTools = Object.keys(getActiveTools(TOOLS.mcp)) as MCPToolName[]
-  const activeCodeTools = Object.keys(
-    getActiveTools(TOOLS.code)
-  ) as CodeToolName[]
+  // Get active tools from the tool types exports instead of importing TOOLS directly
+  const activeMcpTools = ACTIVE_MCP_TOOL_NAMES
+  const activeCodeTools = ACTIVE_CODE_TOOL_NAMES
 
   const randomMcpTools1 = getRandomSubset<MCPToolName>(
     activeMcpTools,

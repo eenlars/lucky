@@ -1,24 +1,15 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "lib",
     "baseUrl": ".",
     "paths": {
       "@types/*": ["./src/types/*"],
       "@logger": ["./src/utils/logging/Logger.ts"],
       "@benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
-      "@example/*": ["../../example/*"],
       "@workflow/*": ["./src/workflow/*"],
       "@node/*": ["./src/node/*"],
       "@messages/*": ["./src/messages/*"],
@@ -32,14 +23,17 @@
       "@settings/*": ["./src/settings/*"],
       "@utils/*": ["./src/utils/*"],
       "@env": ["./env.mjs"],
-      "@/*": ["./src/*"]
-    },
-    "allowSyntheticDefaultImports": true
+      "@/*": ["./src/*"],
+      "@example/*": ["../../example/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.js"
+    "src/**/*.js",
+    "src/**/*.json",
+    "src/**/*.mjs",
+    "env.mjs"
   ],
   "exclude": ["node_modules"]
 }

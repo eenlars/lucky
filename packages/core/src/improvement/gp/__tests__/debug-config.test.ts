@@ -1,6 +1,6 @@
 // debug test to see actual config values
-import { createEvolutionSettingsWithConfig } from "@example/settings/evolution"
 import { describe, expect, it } from "vitest"
+import { createEvolutionSettingsWithConfig } from "@improvement/gp/resources/evolutionSettings"
 
 describe("Debug Config", () => {
   it("should show actual config values", () => {

@@ -9,6 +9,6 @@
         "gp": "node scripts/run-gp.js",
         "cult": "rm -rf ../packages/core/src/runtime/logging_folder && tsx --env-file=.env ../packages/core/src/main.ts --mode=cultural",
         "clean": "tsx --env-file=.env ../packages/core/scripts/cleanup.ts",
-        "typecheck": "bun tsc --noEmit --skipLibCheck --project ."
+        "typecheck": "bun tsc -b ."
     }
 }

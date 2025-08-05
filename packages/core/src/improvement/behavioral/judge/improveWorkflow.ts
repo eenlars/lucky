@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import { type CodeToolName } from "@tools/tool.types"
 import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import { guard } from "@workflow/schema/errorMessages"

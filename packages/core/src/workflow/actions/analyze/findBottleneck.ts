@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import { MemorySchemaOptional } from "@node/schemas/memorySchema"
 import { llmify } from "@utils/common/llmify"
 import type { ModelName } from "@utils/models/models"

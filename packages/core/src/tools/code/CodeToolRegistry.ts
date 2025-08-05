@@ -72,8 +72,9 @@ export class CodeToolRegistry {
     if (this.initialized) return
 
     try {
-      // Import all tools from static registry
-      const { ALL_TOOLS } = await import("@example/code_tools/registry")
+      // Import all tools from external registry via bridge
+      const { loadExternalTools } = await import("./externalRegistry")
+      const ALL_TOOLS = await loadExternalTools()
 
       // Register each tool
       for (const tool of ALL_TOOLS) {

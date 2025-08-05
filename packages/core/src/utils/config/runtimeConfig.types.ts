@@ -1,9 +1,5 @@
 import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
-import type {
-  TOOL_CONFIG,
-  TOOL_IMPROVEMENT_CONFIG,
-  TOOLS,
-} from "@example/settings/tools"
+// FIXME: circular dependency - import type { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG, TOOLS } from "@example/settings/tools"
 import type { AllToolNames } from "@tools/tool.types"
 import type { LuckyProvider } from "@utils/models/models.types"
 import type { EvolutionSettings } from "../../improvement/gp/resources/evolution-types"

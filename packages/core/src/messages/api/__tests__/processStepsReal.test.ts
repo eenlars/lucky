@@ -1,6 +1,6 @@
 import type { NodeLogs } from "@messages/api/processResponse"
 import { type ModelName } from "@utils/models/models"
-import type { LocationData } from "@example/code_tools/mapbox/mapboxUse"
+import type { LocationData } from "../../../types/location.types"
 import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"

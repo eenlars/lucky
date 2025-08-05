@@ -4,7 +4,7 @@
  */
 
 import { lgg } from "@utils/logging/Logger"
-import { createEvolutionSettingsWithConfig } from "@example/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@improvement/gp/resources/evolutionSettings"
 import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
 import { RunService } from "../../RunService"
 

@@ -1,5 +1,4 @@
-// import type { getToolsConfig } from "@core/index" // Not exported
-import type { AllToolNames } from "@core/tools/tool.types"
+import type { AllToolNames } from "../../packages/core/src/tools/tool.types"
 
 type ToolsConfig = {
   experimentalMultiStepLoopMaxRounds: number

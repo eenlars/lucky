@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import { truncater } from "@utils/common/llmify"
 import { getLogging, getModels } from "@utils/config/runtimeConfig"
 import { JSONN } from "@utils/file-types/json/jsonParse"

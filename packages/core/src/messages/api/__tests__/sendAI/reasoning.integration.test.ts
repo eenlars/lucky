@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 

@@ -1,6 +1,6 @@
 // tests for evolution config
 import type { EvolutionSettings } from "@improvement/gp/resources/evolution-types"
-import { createEvolutionSettingsWithConfig } from "@example/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@improvement/gp/resources/evolutionSettings"
 import { describe, expect, it } from "vitest"
 
 describe("EvolutionSettings", () => {

@@ -1,4 +1,4 @@
-import { Messages } from "@messages"
+import { Messages } from "@messages/index"
 import {
   isErrorProcessed,
   isTextProcessed,

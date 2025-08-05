@@ -46,9 +46,7 @@ function normalizeAndFilterTools(toolNames: string[]): AllToolNames[] {
   return toolNames
     .map((name) => name?.toString().trim()) // normalize: convert to string and trim
     .filter((name): name is string => Boolean(name)) // remove empty/null/undefined
-    .filter((name): name is AllToolNames =>
-      activeToolsSet.has(name as AllToolNames)
-    )
+    .filter((name) => activeToolsSet.has(name))
     .filter((name, index, arr) => arr.indexOf(name) === index) // remove duplicates
 }
 

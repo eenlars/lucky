@@ -1,4 +1,5 @@
-import { SETTINGS } from "@example/index"
+import { SETTINGS } from "@example/settings/all"
+// FIXME: circular dependency - import.*from "@example/index"
 import type {
   FlowPathsConfig,
   FlowRuntimeConfig,

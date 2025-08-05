@@ -57,7 +57,7 @@ class FileLogger {
     if (typeof window !== "undefined") {
       return
     } else {
-      const { saveInLoc } = await import("@example/code_tools/file-saver/save")
+      const { saveInLoc } = await import("@utils/file/fileOperations")
       saveInLoc(fileName, args)
     }
   }
