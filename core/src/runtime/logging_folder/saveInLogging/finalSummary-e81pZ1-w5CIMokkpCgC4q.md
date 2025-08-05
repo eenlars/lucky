@@ -1,0 +1,1 @@
+"The tool execution returned the text 'Hello, this is a test prompt.' This indicates a successful text generation operation."
