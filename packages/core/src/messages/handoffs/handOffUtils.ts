@@ -1,10 +1,10 @@
-import { Messages } from "@/messages"
-import type { Payload } from "@/messages/MessagePayload"
-import type { WorkflowMessage } from "@/messages/WorkflowMessage"
-import { llmify } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { Messages } from "@messages"
+import type { Payload } from "@messages/MessagePayload"
+import type { WorkflowMessage } from "@messages/WorkflowMessage"
+import { llmify } from "@utils/common/llmify"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import { getLogging, getModels } from "@utils/config/runtimeConfig"
 import z from "zod"
 
 /** Single place to call the LLM so both modes stay identical. */
@@ -28,7 +28,7 @@ export async function callModelHandoff({
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(prompt) },
     ],
-    model: MODELS.nano,
+    model: getModels().nano,
     mode: "structured",
     schema: createHandoffSchema(handOffs),
   })
@@ -105,10 +105,7 @@ export function buildResultHandoff({
     }
   }
 
-  lgg.onlyIf(
-    CONFIG.logging.override.Messaging,
-    `handoff: ${JSONN.show(data.reason)}`
-  )
+  lgg.onlyIf(getLogging().Messaging, `handoff: ${JSONN.show(data.reason)}`)
 
   // End workflow on “end”
   if (data.handoff === "end") {

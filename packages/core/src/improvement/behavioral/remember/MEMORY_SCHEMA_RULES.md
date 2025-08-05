@@ -12,7 +12,7 @@ To prevent the "memory Required" error that occurred in `makeLearning.ts`, follo
 import {
   MemoryResponseSchema,
   MemorySchemaOptional,
-} from "@/core/node/schemas/memorySchema"
+} from "@node/schemas/memorySchema"
 ```
 
 **DON'T:** Create new memory schemas inline
@@ -72,7 +72,7 @@ import type {
   Memory,
   MemoryOptional,
   MemoryResponse,
-} from "@/core/node/schemas/memorySchema"
+} from "@node/schemas/memorySchema"
 ```
 
 ## Error Prevention Checklist

@@ -1,6 +1,5 @@
-import { lgg } from "@/logger"
-import { getModelConfig } from "@/config"
-import type { CoreContext } from "@/interfaces"
+import type { CoreContext } from "@utils/config/logger"
+import { lgg } from "@logger"
 import type { CodeToolName } from "@tools/tool.types"
 import { toAITool, type ToolExecutionContext } from "@tools/toolFactory"
 import type { Tool } from "ai"
@@ -74,7 +73,7 @@ export class CodeToolRegistry {
 
     try {
       // Import all tools from static registry
-      const { ALL_TOOLS } = await import("@/runtime/code_tools/registry")
+      const { ALL_TOOLS } = await import("@example/code_tools/registry")
 
       // Register each tool
       for (const tool of ALL_TOOLS) {
@@ -149,7 +148,11 @@ export class CodeToolRegistry {
       if (toolDef) {
         // todo-typesafety: unsafe 'as any' assertion - violates CLAUDE.md "we hate as"
         const coreContext: CoreContext = { logger: lgg }
-        result[name] = toAITool(toolDef as any, toolExecutionContext, coreContext)
+        result[name] = toAITool(
+          toolDef as any,
+          toolExecutionContext,
+          coreContext
+        )
       }
     }
     return result

@@ -1,4 +1,4 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@logger"
 
 // this will mostly be read by the llm, so it should be a short string
 const emptyContent = "empty content - this should not happen and is a bug!"

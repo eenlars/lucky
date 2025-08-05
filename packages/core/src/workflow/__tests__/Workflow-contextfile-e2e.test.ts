@@ -1,12 +1,12 @@
-import { buildMessages } from "@/messages/create/buildMessages"
-import { WorkflowMessage } from "@/messages/WorkflowMessage"
+import { buildMessages } from "@messages/create/buildMessages"
+import { WorkflowMessage } from "@messages/WorkflowMessage"
 import {
   createMockEvaluationInput,
   createMockWorkflowFile,
-} from "@/utils/__tests__/setup/coreMocks"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants.client"
+} from "@utils/__tests__/setup/coreMocks"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { Workflow } from "../Workflow"
 
@@ -19,7 +19,7 @@ describe("ContextFile End-to-End Integration", () => {
           nodeId: "test-node",
           description: "Test node that should receive contextFile info",
           systemPrompt: "You are a test agent",
-          modelName: MODELS.default,
+          modelName: getModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -44,7 +44,7 @@ describe("ContextFile End-to-End Integration", () => {
     })
 
     // Verify the contextFile is accessible
-    expect(workflow.getConfig().contextFile).toBe("fishcontext")
+    expect(workflow.getWFConfig().contextFile).toBe("fishcontext")
   })
 
   it("should build messages with contextFile information", () => {

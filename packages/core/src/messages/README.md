@@ -5,8 +5,8 @@ Type-safe message creation, processing, and routing system for workflow node com
 ## Quick Start
 
 ```typescript
-import { WorkflowMessage } from "@/core/messages/WorkflowMessage"
-import { sendAI } from "@/core/messages/api/sendAI"
+import { WorkflowMessage } from "@messages/WorkflowMessage"
+import { sendAI } from "@messages/api/sendAI"
 
 // Create workflow message
 const message = new WorkflowMessage({

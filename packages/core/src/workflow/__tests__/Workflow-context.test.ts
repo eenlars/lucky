@@ -1,7 +1,7 @@
-import { createMockEvaluationInput } from "@/utils/__tests__/setup/coreMocks"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants.client"
+import { createMockEvaluationInput } from "@utils/__tests__/setup/coreMocks"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { Workflow } from "../Workflow"
 
@@ -12,7 +12,7 @@ describe("Workflow ContextStore Integration", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["test-node2"],
@@ -22,7 +22,7 @@ describe("Workflow ContextStore Integration", () => {
         nodeId: "test-node2",
         description: "Test node 2",
         systemPrompt: "Test system prompt 2",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: [],

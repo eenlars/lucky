@@ -1,4 +1,4 @@
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 // we have one start node, and in some way, every node needs to be connected to the start node

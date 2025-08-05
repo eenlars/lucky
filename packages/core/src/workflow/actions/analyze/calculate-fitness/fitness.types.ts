@@ -1,5 +1,5 @@
-import type { NodeLogs } from "@/messages/api/processResponse"
-import type { ExpectedOutputSchema } from "@/workflow/ingestion/ingestion.types"
+import type { NodeLogs } from "@messages/api/processResponse"
+import type { ExpectedOutputSchema } from "@workflow/ingestion/ingestion.types"
 import { z } from "zod"
 
 export interface FitnessOfWorkflow {

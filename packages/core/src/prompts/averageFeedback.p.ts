@@ -1,7 +1,7 @@
-import { truncater } from "@/utils/common/llmify"
+import { truncater } from "@utils/common/llmify"
 
 const averageFeedback = (feedbacksString: string) => `
-You are an expert feedback analyst tasked with identifying patterns across multiple workflow paths.
+You are an expert feedback analyst tasked with identifying patterns across multiple workflow getPaths().
 
 <context>
 We have a workflow orchestrator handling diverse edge cases. Your goal is to analyze feedback from various execution paths to help us merge them into a unified workflow.

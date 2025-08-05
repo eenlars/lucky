@@ -1,9 +1,9 @@
-import type { NodeLog } from "@/messages/api/processResponse"
-import { sendAI } from "@/messages/api/sendAI"
-import { MemoryResponseSchema } from "@/node/schemas/memorySchema"
-import { llmify } from "@/utils/common/llmify"
-import { lgg } from "@/logger"
-import { MODELS } from "@/runtime/settings/constants"
+import type { NodeLog } from "@messages/api/processResponse"
+import { sendAI } from "@messages/api/sendAI"
+import { MemoryResponseSchema } from "@node/schemas/memorySchema"
+import { llmify } from "@utils/common/llmify"
+import { lgg } from "@logger"
+import { getModels } from "@utils/config/runtimeConfig"
 import { isNir } from "../utils/common/isNir"
 
 export const makeLearning = async ({
@@ -82,7 +82,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
 
   try {
     const memoryResponse = await sendAI({
-      model: MODELS.nano,
+      model: getModels().nano,
       messages: [{ role: "user", content: memoryPrompt }],
       mode: "structured",
       schema: MemoryResponseSchema,

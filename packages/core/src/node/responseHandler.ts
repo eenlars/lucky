@@ -3,18 +3,18 @@
 import {
   getResponseContent,
   type NodeLogs,
-} from "@/messages/api/processResponse"
-import { type ProcessedResponse } from "@/messages/api/processResponse.types"
-import { chooseHandoff } from "@/messages/handoffs/main"
-import { formatSummary } from "@/messages/summaries"
+} from "@messages/api/processResponse"
+import { type ProcessedResponse } from "@messages/api/processResponse.types"
+import { chooseHandoff } from "@messages/handoffs/main"
+import { formatSummary } from "@messages/summaries"
 // todo-circulardep: responseHandler imports from InvocationPipeline which imports back from responseHandler
-import type { NodeInvocationCallContext } from "@/node/InvocationPipeline"
-import type { NodeInvocationResult } from "@/node/WorkFlowNode"
-import { truncater } from "@/utils/common/llmify"
-import { saveNodeInvocationToDB } from "@/utils/persistence/node/saveNodeInvocation"
-import { validateAndDecide } from "@/utils/validation/message"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
+import type { NodeInvocationCallContext } from "@node/InvocationPipeline"
+import type { NodeInvocationResult } from "@node/WorkFlowNode"
+import { truncater } from "@utils/common/llmify"
+import { saveNodeInvocationToDB } from "@utils/persistence/node/saveNodeInvocation"
+import { validateAndDecide } from "@utils/validation/message"
+import { lgg } from "@logger"
+import { getSettings, getLogging } from "@utils/config/runtimeConfig"
 
 /**
  * Handles successful response processing.
@@ -43,12 +43,12 @@ export async function handleSuccess(
   // Debug logging for tool calls
   if (response.toolUsage) {
     lgg.onlyIf(
-      CONFIG.logging.override.Tools,
+      getLogging().Tools,
       `[handleSuccess] Tool calls found: ${response.toolUsage.outputs.length} outputs`
     )
   } else {
     lgg.onlyIf(
-      CONFIG.logging.override.Tools,
+      getLogging().Tools,
       `[handleSuccess] No tool calls found for response type: ${response.type}`
     )
   }
@@ -103,7 +103,9 @@ export async function handleSuccess(
     nextIds = context.handOffs
     replyMessage = {
       kind:
-        CONFIG.coordinationType === "sequential" ? "sequential" : "delegation",
+        getSettings().coordinationType === "sequential"
+          ? "sequential"
+          : "delegation",
       prompt: finalNodeInvocationOutput,
       context: "",
     }
@@ -119,7 +121,7 @@ export async function handleSuccess(
       workflowMessage: context.workflowMessageIncoming,
       handOffs: context.handOffs,
       content:
-        CONFIG.workflow.handoffContent === "full"
+        getSettings().workflow.handoffContent === "full"
           ? finalNodeInvocationOutput
           : truncater(finalNodeInvocationOutput, 500),
       toolUsage: toolUsage ?? undefined,

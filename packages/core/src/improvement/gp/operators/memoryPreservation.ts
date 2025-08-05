@@ -2,13 +2,13 @@
  * memory preservation utilities for genetic operations
  */
 
-import { lgg } from "@/utils/logging/Logger"
-import { CONFIG } from "@/runtime/settings/constants"
+import { lgg } from "@utils/logging/Logger"
+import { getLogging } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { Genome } from "../Genome"
 
 export class MemoryPreservation {
-  private static verbose = CONFIG.logging.override.GP
+  private static verbose = getLogging().GP
 
   /**
    * preserve parent memories in crossover offspring

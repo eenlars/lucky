@@ -87,7 +87,7 @@ async function runGAIAExample() {
 // 5. The benchmark has 466 total questions across 3 difficulty levels
 
 // to run with authentication:
-// HF_TOKEN=your_token_here bun run flow
+// HF_TOKEN=your_token_here bun run cult
 
 if (require.main === module) {
   runGAIAExample()

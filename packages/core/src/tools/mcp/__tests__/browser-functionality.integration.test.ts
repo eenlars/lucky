@@ -1,11 +1,11 @@
-import { getModelsConfig } from "@/config"
-import { processStepsV2 } from "@/messages/api/stepProcessor"
-import { llmGuard } from "@/utils/common/llmGuard"
-import { lgg } from "@/utils/logging/Logger"
+import { processStepsV2 } from "@messages/api/stepProcessor"
+import { llmGuard } from "@utils/common/llmGuard"
+import { lgg } from "@utils/logging/Logger"
 import { openai } from "@ai-sdk/openai"
 import { generateText } from "ai"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
+import { getModels } from "@utils/config/runtimeConfig"
 
 describe("browser functionality tests", () => {
   it("should extract headlines from nos.nl", async () => {
@@ -221,7 +221,7 @@ describe("browser functionality tests", () => {
     // Process steps using processStepsV2
     const processedSteps = processStepsV2(
       stateResult.steps || [],
-      getModelsConfig().models.default
+      getModels().default
     )
 
     const stateResults = processedSteps?.outputs.filter(

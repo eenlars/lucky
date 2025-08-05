@@ -1,9 +1,9 @@
-import { getConfig, getModels } from "@/config"
+import { getSettings } from "@utils/config/runtimeConfig"
 import Bottleneck from "bottleneck"
 
 export const limiter = new Bottleneck({
-  maxConcurrent: getConfig().limits.maxConcurrentAIRequests,
-  reservoir: getConfig().limits.maxRequestsPerWindow,
-  reservoirRefreshInterval: getConfig().limits.rateWindowMs,
-  reservoirRefreshAmount: getConfig().limits.maxRequestsPerWindow,
+  maxConcurrent: getSettings().limits.maxConcurrentAIRequests,
+  reservoir: getSettings().limits.maxRequestsPerWindow,
+  reservoirRefreshInterval: getSettings().limits.rateWindowMs,
+  reservoirRefreshAmount: getSettings().limits.maxRequestsPerWindow,
 })

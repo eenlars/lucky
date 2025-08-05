@@ -1,15 +1,15 @@
-import type { NodeLog } from "@/messages/api/processResponse"
-import { sendAI } from "@/messages/api/sendAI"
-import { zodToJson } from "@/messages/utils/zodToJson"
-import { toolUsageToString, type StrategyResult } from "@/node/strategies/utils"
-import { CONFIG } from "@/runtime/settings/constants"
-import { isNir } from "@/utils/common/isNir"
-import { lgg } from "@/utils/logging/Logger"
-import type { ModelName } from "@/utils/models/models"
+import type { NodeLog } from "@messages/api/processResponse"
+import { sendAI } from "@messages/api/sendAI"
+import { zodToJson } from "@messages/utils/zodToJson"
+import { toolUsageToString, type StrategyResult } from "@node/strategies/utils"
+import { isNir } from "@utils/common/isNir"
+import { getLogging, getSettings } from "@utils/config/runtimeConfig"
+import { lgg } from "@utils/logging/Logger"
+import type { ModelName } from "@utils/models/models"
 import type { CoreMessage, ToolSet } from "ai"
 import { z } from "zod"
 
-const verbose = CONFIG.logging.override.Tools
+const verbose = getLogging().Tools
 const verboseOverride = false
 
 // TODO-later: if we want to invoke other nodes from this node, this can be part of the strategy.
@@ -61,7 +61,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
 
   const toolKeys = Object.keys(tools) as (keyof T)[]
 
-  const argsEnabled = CONFIG.tools.showParameterSchemas
+  const argsEnabled = getSettings().tools.showParameterSchemas
   const fullToolListWithArgs = toolKeys
     .map((key) => {
       const tool = tools[key]

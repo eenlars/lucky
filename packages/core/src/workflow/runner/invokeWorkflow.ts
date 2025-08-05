@@ -1,23 +1,23 @@
 // app/src/core/invocation/invokeWorkflow.ts
 
-import { isNir } from "@/utils/common/isNir"
-import { genShortId } from "@/utils/common/utils"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { SpendingTracker } from "@/utils/spending/SpendingTracker"
-import { R, type RS } from "@/utils/types"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
+import { isNir } from "@utils/common/isNir"
+import { genShortId } from "@utils/common/utils"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { SpendingTracker } from "@utils/spending/SpendingTracker"
+import { R, type RS } from "@utils/types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import {
   needsEvaluation,
   type EvaluationInput,
-} from "@/workflow/ingestion/ingestion.types"
-import type { RunResult } from "@/workflow/runner/runAllInputs"
+} from "@workflow/ingestion/ingestion.types"
+import type { RunResult } from "@workflow/runner/runAllInputs"
 import {
   loadFromDatabase,
   loadFromDSL,
   loadFromFile,
-} from "@/workflow/setup/WorkflowLoader"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
+} from "@workflow/setup/WorkflowLoader"
+import { lgg } from "@logger"
+import { getSettings } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Workflow } from "@workflow/Workflow"
 
@@ -68,8 +68,10 @@ export async function invokeWorkflow(
     }
 
     // Initialize spending tracker if enabled
-    if (CONFIG.limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
+    if (getSettings().limits.enableSpendingLimits) {
+      SpendingTracker.getInstance().initialize(
+        getSettings().limits.maxCostUsdPerRun
+      )
     }
 
     // Create workflow
@@ -124,7 +126,7 @@ export async function invokeWorkflow(
       // Save workflow to file if it was loaded from file and has memory updates
       if ("filename" in input && input.filename) {
         const hasMemoryUpdates = workflow
-          .getConfig()
+          .getWFConfig()
           .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
 
         if (hasMemoryUpdates) {
@@ -147,7 +149,7 @@ export async function invokeWorkflow(
     // Save workflow to file if it was loaded from file and has memory updates
     if ("filename" in input && input.filename) {
       const hasMemoryUpdates = workflow
-        .getConfig()
+        .getWFConfig()
         .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
 
       if (hasMemoryUpdates) {

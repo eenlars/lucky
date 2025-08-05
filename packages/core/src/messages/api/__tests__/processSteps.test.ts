@@ -1,9 +1,10 @@
-import { MODELS, type ModelName } from "@/utils/models/models"
+import { getModels } from "@utils/config/runtimeConfig"
+import { type ModelName } from "@utils/models/models"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"
 
 describe("processStepsV2", () => {
-  const testModel: ModelName = MODELS.default
+  const testModel: ModelName = getModels().default
 
   describe("invalid inputs", () => {
     it("should return empty result for non-array input", () => {

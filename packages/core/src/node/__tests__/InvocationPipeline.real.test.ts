@@ -1,4 +1,4 @@
-import { MODELS } from "@/runtime/settings/constants.client"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 
 describe("InvocationPipeline Real Integration", () => {
@@ -68,9 +68,9 @@ describe("InvocationPipeline Real Integration", () => {
       createWorkflowInvocation,
       createWorkflowVersion,
       ensureWorkflowExists,
-    } = await import("@/core/utils/persistence/workflow/registerWorkflow")
+    } = await import("@/utils/persistence/workflow/registerWorkflow")
     const { saveNodeVersionToDB } = await import(
-      "@/core/utils/persistence/node/saveNode"
+      "@/utils/persistence/node/saveNode"
     )
 
     const workflowId = "real-pipeline-workflow"
@@ -92,7 +92,7 @@ describe("InvocationPipeline Real Integration", () => {
     await saveNodeVersionToDB({
       config: {
         nodeId,
-        modelName: MODELS.default,
+        modelName: getModels().default,
         systemPrompt:
           "use todo write first, and then return the output of todo read",
         mcpTools: [],
@@ -107,10 +107,13 @@ describe("InvocationPipeline Real Integration", () => {
 
   it("should use real InvocationPipeline with system prompt and real tools", async () => {
     // Import dynamically to avoid circular dependencies
-    const { WorkflowMessage } = await import("@/core/messages/WorkflowMessage")
+    const { buildSimpleMessage } = await import(
+      "@/messages/create/buildSimpleMessage"
+    )
+    const { WorkflowMessage } = await import("@/messages/WorkflowMessage")
     const { InvocationPipeline } = await import("../InvocationPipeline")
     const { ToolManager } = await import("../toolManager")
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@/messages/api/sendAI")
 
     const workflowInvocationId = `real-pipeline-test-${Date.now()}`
     const workflowVersionId = "real-pipeline-v1"
@@ -144,7 +147,7 @@ describe("InvocationPipeline Real Integration", () => {
       replyMessage: null,
       workflowVersionId,
       mainWorkflowGoal: "Test real InvocationPipeline with todo workflow",
-      model: MODELS.default,
+      model: getModels().default,
       workflowFiles: [],
       expectedOutputType: undefined,
       workflowId: "real-pipeline-workflow",
@@ -162,7 +165,7 @@ describe("InvocationPipeline Real Integration", () => {
     const pipeline = new InvocationPipeline(
       context,
       toolManager,
-      MODELS.default
+      getModels().default
     )
 
     // Execute the REAL pipeline - this will make actual LLM calls
@@ -202,7 +205,7 @@ describe("InvocationPipeline Real Integration", () => {
 
     // Verify the response contains todo information (should be output of todoRead)
     const verification = await sendAI({
-      model: MODELS.default,
+      model: getModels().default,
       mode: "text",
       messages: [
         {
@@ -237,14 +240,17 @@ describe("InvocationPipeline Real Integration", () => {
   }, 120000) // 2 minute timeout for real LLM execution
 
   it("should work with experimental multi-step loop using real tools", async () => {
-    const { WorkflowMessage } = await import("@/core/messages/WorkflowMessage")
+    const { buildSimpleMessage } = await import(
+      "@/messages/create/buildSimpleMessage"
+    )
+    const { WorkflowMessage } = await import("@/messages/WorkflowMessage")
     const { InvocationPipeline } = await import("../InvocationPipeline")
     const { ToolManager } = await import("../toolManager")
-    const { CONFIG } = await import("@/runtime/settings/constants")
+    const { getSettings } = await import("@utils/config/runtimeConfig")
 
-    const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+    const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-    Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+    Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
       value: true,
       writable: true,
     })
@@ -281,7 +287,7 @@ describe("InvocationPipeline Real Integration", () => {
         replyMessage: null,
         workflowVersionId,
         mainWorkflowGoal: "Test real multi-step InvocationPipeline",
-        model: MODELS.default,
+        model: getModels().default,
         workflowFiles: [],
         expectedOutputType: undefined,
         workflowId: "real-multi-pipeline-workflow",
@@ -297,7 +303,7 @@ describe("InvocationPipeline Real Integration", () => {
       const pipeline = new InvocationPipeline(
         context,
         toolManager,
-        MODELS.default
+        getModels().default
       )
 
       await pipeline.prepare()
@@ -344,7 +350,7 @@ describe("InvocationPipeline Real Integration", () => {
         cost: testResult.cost,
       })
     } finally {
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: originalMultiStep,
         writable: true,
       })
@@ -353,7 +359,7 @@ describe("InvocationPipeline Real Integration", () => {
 
   // Test with all available models from pricing.types.ts (except kimi)
   const testModels = [
-    MODELS.default,
+    getModels().default,
     "openai/gpt-4.1-mini",
     "openai/gpt-4.1",
     "google/gemini-2.5-flash-lite",
@@ -369,12 +375,13 @@ describe("InvocationPipeline Real Integration", () => {
 
   testModels.forEach((modelName) => {
     it(`should work with model ${modelName}`, async () => {
-      const { WorkflowMessage } = await import(
-        "@/core/messages/WorkflowMessage"
+      const { buildSimpleMessage } = await import(
+        "@/messages/create/buildSimpleMessage"
       )
+      const { WorkflowMessage } = await import("@/messages/WorkflowMessage")
       const { InvocationPipeline } = await import("../InvocationPipeline")
       const { ToolManager } = await import("../toolManager")
-      const { sendAI } = await import("@/core/messages/api/sendAI")
+      const { sendAI } = await import("@/messages/api/sendAI")
 
       const workflowInvocationId = `model-test-${modelName.replace(/\W/g, "-")}-${Date.now()}`
       const workflowVersionId = `model-test-${modelName.replace(/\W/g, "-")}-v1`

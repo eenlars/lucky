@@ -1,11 +1,11 @@
-import { selectToolStrategyV2 } from "@/tools/any/selectToolStrategyV2"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { selectToolStrategyV2 } from "@tools/any/selectToolStrategyV2"
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import { tool } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 // Mock sendAI to control the response
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
     data: {
@@ -40,11 +40,11 @@ describe("Parameter Schema Visibility Fix", () => {
     vi.clearAllMocks()
   })
 
-  it("should include parameter schemas when CONFIG.tools.showParameterSchemas is true", async () => {
+  it("should include parameter schemas when getSettings().tools.showParameterSchemas is true", async () => {
     // Verify config is set correctly
-    expect(CONFIG.tools.showParameterSchemas).toBe(true)
+    expect(getSettings().tools.showParameterSchemas).toBe(true)
 
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     await selectToolStrategyV2(
       mockTools,
@@ -52,7 +52,7 @@ describe("Parameter Schema Visibility Fix", () => {
       [],
       3,
       "Test system message",
-      MODELS.default
+      getModels().default
     )
 
     // Verify sendAI was called
@@ -70,7 +70,7 @@ describe("Parameter Schema Visibility Fix", () => {
   })
 
   it("should show parameter constraints including max value limits", async () => {
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     await selectToolStrategyV2(
       mockTools,
@@ -78,7 +78,7 @@ describe("Parameter Schema Visibility Fix", () => {
       [],
       3,
       "Test system message",
-      MODELS.default
+      getModels().default
     )
 
     const firstCall = (sendAI as any).mock.calls[0][0]

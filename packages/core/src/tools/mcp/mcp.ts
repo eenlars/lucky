@@ -1,5 +1,5 @@
-import { PATHS } from "@/runtime/settings/constants"
 import type { MCPToolName } from "@tools/tool.types"
+import { getPaths } from "@utils/config/runtimeConfig"
 import { experimental_createMCPClient, type ToolSet } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
 import fs from "fs"
@@ -26,7 +26,7 @@ interface MCPConfig {
 
 function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   try {
-    const configPath = path.join(PATHS.runtime, "mcp-config.json")
+    const configPath = path.join(getPaths().runtime, "mcp-config.json")
     if (!fs.existsSync(configPath)) {
       return {}
     }
@@ -36,7 +36,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 
     if (!config.mcpServers || typeof config.mcpServers !== "object") {
       console.warn(
-        "Invalid mcp-config.json: missing or invalid 'mcpServers' field"
+        "Invalid mcp-getSettings().json: missing or invalid 'mcpServers' field"
       )
       return {}
     }

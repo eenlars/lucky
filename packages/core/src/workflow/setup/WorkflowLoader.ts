@@ -1,10 +1,9 @@
-import { getPaths } from "@/config"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
-import { supabase } from "@/utils/clients/supabase/client"
-import { mkdirIfMissing } from "@/utils/common/files"
-import { isNir } from "@/utils/common/isNir"
-import { isValidToolInformation } from "@/utils/validation/workflow/toolInformation"
+import { supabase } from "@utils/clients/supabase/client"
+import { mkdirIfMissing } from "@utils/common/files"
+import { isNir } from "@utils/common/isNir"
+import { getLogging, getPaths, getSettings } from "@utils/config/runtimeConfig"
+import { isValidToolInformation } from "@utils/validation/workflow/toolInformation"
+import { lgg } from "@logger"
 import type { CodeToolName } from "@tools/tool.types"
 import type {
   WorkflowConfig,
@@ -52,7 +51,7 @@ class DatabaseError extends WorkflowConfigError {
  */
 export class WorkflowConfigHandler {
   private static instance: WorkflowConfigHandler | null = null
-  private verbose: boolean = CONFIG.logging.override.Setup
+  private verbose: boolean = getLogging().Setup
 
   private constructor() {}
 
@@ -234,9 +233,9 @@ export class WorkflowConfigHandler {
       }
 
       // Apply default tools from CONFIG if any are specified
-      if (CONFIG.tools.defaultTools.size > 0) {
+      if (getSettings().tools.defaultTools.size > 0) {
         const defaultCodeTools = Array.from(
-          CONFIG.tools.defaultTools
+          getSettings().tools.defaultTools
         ) as CodeToolName[]
 
         workflowConfig.nodes = workflowConfig.nodes.map((node) => {
@@ -261,7 +260,7 @@ export class WorkflowConfigHandler {
           this.verbose,
           "[WorkflowConfigHandler] Applied default tools",
           {
-            defaultTools: CONFIG.tools.defaultTools,
+            defaultTools: getSettings().tools.defaultTools,
             nodesTooLCount: workflowConfig.nodes?.map((n) => ({
               nodeId: n.nodeId,
               toolCount: n.codeTools.length,

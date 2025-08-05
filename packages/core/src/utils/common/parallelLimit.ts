@@ -1,6 +1,6 @@
-import { CONFIG } from "@/runtime/settings/constants"
+import { getSettings } from "@utils/config/runtimeConfig"
 
-const ENABLED = CONFIG.limits.enableParallelLimit
+const ENABLED = getSettings().limits.enableParallelLimit
 
 /**
  * Run async tasks in parallel with a concurrency limit.
@@ -18,7 +18,7 @@ export async function parallelLimit<T, R>(
     return Promise.all(items.map((item) => fn(item)))
   }
 
-  const limit = overrideLimit ?? CONFIG.limits.maxConcurrentWorkflows
+  const limit = overrideLimit ?? getSettings().limits.maxConcurrentWorkflows
   const ret: R[] = []
   let idx = 0
   const pool: Promise<void>[] = []

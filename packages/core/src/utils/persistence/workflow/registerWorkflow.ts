@@ -1,12 +1,12 @@
-import { supabase } from "@/utils/clients/supabase/client"
+import { supabase } from "@utils/clients/supabase/client"
 import type {
   Json,
   TablesInsert,
   TablesUpdate,
-} from "@/utils/clients/supabase/types"
-import type { WorkflowIO } from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { lgg } from "@/logger"
+} from "@utils/clients/supabase/types"
+import type { WorkflowIO } from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { lgg } from "@logger"
 
 /**
  * Auxiliary function to ensure the main workflow exists in the database

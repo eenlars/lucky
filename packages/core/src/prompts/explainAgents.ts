@@ -1,4 +1,4 @@
-import { llmify } from "@/utils/common/llmify"
+import { llmify } from "@utils/common/llmify"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 export function explainAgents(

@@ -1,16 +1,16 @@
-import type { TResponse } from "@/messages/api/sendAI"
-import { MODELS } from "@/runtime/settings/constants"
+import type { TResponse } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it, vi } from "vitest"
 import { makeLearning } from "../../prompts/makeLearning"
 
 // Mock the sendAI function
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: vi.fn(),
 }))
 
 describe("makeLearning Integration Test", () => {
   it("should handle AI response that returns memory directly (not wrapped)", async () => {
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     // Mock AI response that returns memory directly (the format AI naturally uses)
     const mockResponse: TResponse<{ text: string }> = {
@@ -39,7 +39,7 @@ describe("makeLearning Integration Test", () => {
 
     // Verify the schema was called correctly
     expect(sendAI).toHaveBeenCalledWith({
-      model: MODELS.nano,
+      model: getModels().nano,
       messages: expect.any(Array),
       mode: "structured",
       schema: expect.any(Object),
@@ -47,7 +47,7 @@ describe("makeLearning Integration Test", () => {
   })
 
   it("should handle empty memory response", async () => {
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     // Mock AI response with empty memory
     const mockResponse: TResponse<{ text: string }> = {
@@ -73,7 +73,7 @@ describe("makeLearning Integration Test", () => {
   })
 
   it("should handle AI errors gracefully", async () => {
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     // Mock AI error response
     const mockResponse: TResponse<{ physical_stores: string }> = {

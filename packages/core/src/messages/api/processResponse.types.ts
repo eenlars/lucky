@@ -1,5 +1,5 @@
-import type { NodeLogs } from "@/messages/api/processResponse"
-import { isNir } from "@/utils/common/isNir"
+import type { NodeLogs } from "@messages/api/processResponse"
+import { isNir } from "@utils/common/isNir"
 
 // this is the language of how nodes interact with each other.
 

@@ -1,9 +1,9 @@
 // /core/node/generate/from-text.ts
 
-import { sendAI } from "@/messages/api/sendAI"
-import { buildSimpleMessage } from "@/messages/create/buildSimpleMessage"
-import { AgentDescriptionsWithToolsSchema } from "@/node/schemas/agentWithTools"
-import { MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { buildSimpleMessage } from "@messages/create/buildSimpleMessage"
+import { AgentDescriptionsWithToolsSchema } from "@node/schemas/agentWithTools"
+import { getModels } from "@utils/config/runtimeConfig"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 // this generates a workflow node from a text prompt
@@ -28,7 +28,7 @@ export async function generateAgentFromText(
 
   const response = await sendAI({
     messages,
-    model: MODELS.default,
+    model: getModels().default,
     mode: "structured",
     schema: AgentDescriptionsWithToolsSchema,
   })

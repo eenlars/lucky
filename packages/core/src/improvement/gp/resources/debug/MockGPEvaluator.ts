@@ -1,7 +1,7 @@
-import { getConfig } from "@/config"
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
 import { Genome } from "@gp/Genome"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
+import { getEvolutionConfig } from "@utils/config/runtimeConfig"
 
 /**
  * Mock evaluator for debugging purposes.
@@ -9,7 +9,7 @@ import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvalua
  */
 export class MockGPEvaluator implements EvolutionEvaluator {
   async evaluate(genome: Genome): ReturnType<EvolutionEvaluator["evaluate"]> {
-    if (!getConfig().evolution.GP.verbose) {
+    if (!getEvolutionConfig().GP.verbose) {
       throw new Error("The mock evaluator should only be used in verbose mode")
     }
     lgg.log(

@@ -2,9 +2,8 @@
  * tool mutation operations
  */
 
-import { sendAI } from "@/messages/api/sendAI"
-import { lgg } from "@/utils/logging/Logger"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { lgg } from "@utils/logging/Logger"
 import { EvolutionUtils } from "@gp/resources/utils"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
@@ -12,12 +11,14 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@tools/tool.types"
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import z from "zod"
 import type { Genome } from "../../Genome"
 import type { MutationOperator } from "./mutation.types"
 
-const OPERATORS_WITH_FEEDBACK = CONFIG.improvement.flags.operatorsWithFeedback
+const OPERATORS_WITH_FEEDBACK =
+  getSettings().improvement.flags.operatorsWithFeedback
 
 export class ToolMutation implements MutationOperator {
   async execute(
@@ -52,7 +53,7 @@ export class ToolMutation implements MutationOperator {
 
       // instructions = sendAi () : text ->
       const instructions = await sendAI({
-        model: MODELS.nano,
+        model: getModels().nano,
         messages: [
           {
             role: "user",

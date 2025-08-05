@@ -1,20 +1,20 @@
-import { quickSummaryNull } from "@/messages/api/genObject"
+import { quickSummaryNull } from "@messages/api/genObject"
 import {
   getFinalOutputNodeInvocation,
   processVercelResponse,
-} from "@/messages/api/processResponse"
+} from "@messages/api/processResponse"
 import {
   isErrorProcessed,
   isTextProcessed,
   isToolProcessed,
   type ProcessedResponse,
-} from "@/messages/api/processResponse.types"
-import { sendAI } from "@/messages/api/sendAI"
-import { makeLearning } from "@/prompts/makeLearning"
-import { selectToolStrategyV3 } from "@/tools/any/selectToolStrategyV3"
-import { truncater } from "@/utils/common/llmify"
-import { lgg } from "@/logger"
-import { MODELS } from "@/runtime/settings/constants"
+} from "@messages/api/processResponse.types"
+import { sendAI } from "@messages/api/sendAI"
+import { selectToolStrategyV3 } from "@tools/any/selectToolStrategyV3"
+import { truncater } from "@utils/common/llmify"
+import { lgg } from "@logger"
+import { makeLearning } from "@prompts/makeLearning"
+import { getModels } from "@utils/config/runtimeConfig"
 import type { CoreMessage } from "ai"
 import { llmify } from "../../utils/common/llmify"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
@@ -182,7 +182,7 @@ export async function runMultiStepLoopV3Helper(
       error,
       usdCost,
     } = await sendAI({
-      model: MODELS.medium,
+      model: getModels().medium,
       mode: "tool",
       messages: [
         ...currentMessages,
@@ -224,7 +224,7 @@ export async function runMultiStepLoopV3Helper(
 
     const processed = await processVercelResponse({
       response: toolUseResponse,
-      model: MODELS.medium,
+      model: getModels().medium,
       nodeId: ctx.nodeId,
     })
 

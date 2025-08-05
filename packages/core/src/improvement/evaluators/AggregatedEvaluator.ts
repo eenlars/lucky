@@ -1,9 +1,9 @@
 // evaluator that runs workflow once with all questions combined
 
-import type { WorkflowEvaluationResult } from "@/improvement/evaluators/WorkflowEvaluator"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
-import { guard } from "@/workflow/schema/errorMessages"
+import type { WorkflowEvaluationResult } from "@improvement/evaluators/WorkflowEvaluator"
+import { lgg } from "@logger"
+import { R, type RS } from "@utils/types"
+import { guard } from "@workflow/schema/errorMessages"
 import { Workflow } from "@workflow/Workflow"
 import { WorkflowEvaluator } from "./WorkflowEvaluator"
 
@@ -23,27 +23,27 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
     lgg.log(`[AggregatedEvaluator] Workflow has ${workflow.nodes.length} nodes`)
     lgg.log(`[AggregatedEvaluator] Entry node ID: ${workflow.getEntryNodeId()}`)
 
-    const { success, error, data, usdCost } = await workflow.runAndEvaluate()
+    const data = await workflow.runAndEvaluate()
 
-    if (!success) {
+    if (!data.success) {
       lgg.error(
-        `[AggregatedEvaluator] Workflow runAndEvaluate failed for ${workflow.getWorkflowVersionId()}: ${error}`
+        `[AggregatedEvaluator] Workflow runAndEvaluate failed for ${workflow.getWorkflowVersionId()}: ${data.error}`
       )
-      return R.error(`Failed to evaluate workflow: ${error}`, 0)
+      return R.error(`Failed to evaluate workflow: ${data.error}`, 0)
     }
 
     lgg.log(
       `[AggregatedEvaluator] Workflow runAndEvaluate succeeded for ${workflow.getWorkflowVersionId()}`
     )
 
-    const { results, averageFitness, averageFeedback } = data
+    const { results, averageFitness, averageFeedback } = data.data
     const totalTime = Date.now() - startTime
 
     lgg.log("[AggregatedEvaluator] Workflow execution complete", {
       workflowLink: workflow.getLink(workflow.getWorkflowInvocationId()),
-      cost: usdCost,
+      cost: data.usdCost,
       time: totalTime / 1000,
-      resultsLength: data.results.length,
+      resultsLength: results.length,
       fitness: averageFitness,
     })
 
@@ -67,10 +67,10 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
         },
         feedback: averageFeedback,
         transcript: combinedTranscript,
-        cost: usdCost ?? 0,
+        cost: data.usdCost ?? 0,
         summaries: combinedSummaries,
       },
-      usdCost: usdCost ?? 0,
+      usdCost: data.usdCost,
     }
   }
 }

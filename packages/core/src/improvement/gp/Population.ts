@@ -1,14 +1,14 @@
 // population management for genetic programming evolution
 // handles population-level operations, statistics, and diversity metrics
 
-import { getConfig } from "@/config"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
-import { isNir } from "@/utils/common/isNir"
-import { lgg } from "@/utils/logging/Logger"
-import type { RS } from "@/utils/types"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { guard } from "@/workflow/schema/errorMessages"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { isNir } from "@utils/common/isNir"
+import { getEvolutionConfig, getLogging } from "@utils/config/runtimeConfig"
+import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
+import { lgg } from "@utils/logging/Logger"
+import type { RS } from "@utils/types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import { guard } from "@workflow/schema/errorMessages"
 import { EvolutionUtils } from "@gp/resources/utils"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Genome } from "./Genome"
@@ -23,7 +23,7 @@ export class Population {
   private problemAnalysis: string = ""
   private _baseWorkflow: WorkflowConfig | undefined = undefined
   static get verbose() {
-    return getConfig().logging.override.GP
+    return getLogging().GP
   }
 
   constructor(
@@ -32,7 +32,7 @@ export class Population {
   ) {
     lgg.info(`[Population] Configuration validated successfully:`)
     lgg.info(
-      `  Population: ${config.GP.populationSize}, Generations: ${config.generationAmount}`
+      `  Population: ${getEvolutionConfig().GP.populationSize}, Generations: ${getEvolutionConfig().generationAmount}`
     )
     this.runService = runService
   }
@@ -52,7 +52,7 @@ export class Population {
 
     // needs work: code duplication between random and baseWorkflow cases
     switch (
-      this.config.initialPopulationMethod as
+      getEvolutionConfig().initialPopulationMethod as
         | "random"
         | "baseWorkflow"
         | "prepared"
@@ -380,7 +380,7 @@ export class Population {
     for (let i = 0; i < count; i++) {
       try {
         const genomePromise =
-          this.config.initialPopulationMethod === "prepared"
+          getEvolutionConfig().initialPopulationMethod === "prepared"
             ? Genome.createPrepared({
                 evaluationInput: this.evaluationInput,
                 baseWorkflow: this._baseWorkflow,
@@ -399,7 +399,7 @@ export class Population {
         genomePromises.push(genomePromise)
       } catch (e) {
         lgg.error(
-          `Failed to create ${this.config.initialPopulationMethod === "prepared" ? "prepared" : "random"} genome for replenishment`,
+          `Failed to create ${getEvolutionConfig().initialPopulationMethod === "prepared" ? "prepared" : "random"} genome for replenishment`,
           e
         )
       }
@@ -438,7 +438,7 @@ export class Population {
   }): Promise<Population> {
     const genomePromises: Promise<RS<Genome>>[] = []
 
-    for (let i = 0; i < config.GP.populationSize; i++) {
+    for (let i = 0; i < getEvolutionConfig().GP.populationSize; i++) {
       try {
         const genomePromise = Genome.createRandom({
           evaluationInput,
@@ -469,7 +469,7 @@ export class Population {
     population.setPopulation(genomes)
 
     lgg.info(
-      `Population initialized: ${genomes.length}/${config.GP.populationSize} genomes created successfully`
+      `Population initialized: ${genomes.length}/${getEvolutionConfig().GP.populationSize} genomes created successfully`
     )
 
     if (failures.length > 0) {
@@ -479,9 +479,9 @@ export class Population {
       )
 
       // needs work: hardcoded threshold 0.5 should be configurable
-      if (genomes.length < config.GP.populationSize * 0.5) {
+      if (genomes.length < getEvolutionConfig().GP.populationSize * 0.5) {
         lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.GP.populationSize} genomes created successfully`
+          `Critical: Only ${genomes.length} out of ${getEvolutionConfig().GP.populationSize} genomes created successfully`
         )
       }
     }
@@ -505,7 +505,7 @@ export class Population {
   }): Promise<Population> {
     const genomePromises: Promise<RS<Genome>>[] = []
 
-    for (let i = 0; i < config.GP.populationSize; i++) {
+    for (let i = 0; i < getEvolutionConfig().GP.populationSize; i++) {
       try {
         const genomePromise = Genome.createPrepared({
           evaluationInput,
@@ -535,7 +535,7 @@ export class Population {
     population.setPopulation(genomes)
 
     lgg.info(
-      `Prepared population initialized: ${genomes.length}/${config.GP.populationSize} genomes created successfully`
+      `Prepared population initialized: ${genomes.length}/${getEvolutionConfig().GP.populationSize} genomes created successfully`
     )
 
     if (failures.length > 0) {
@@ -544,9 +544,9 @@ export class Population {
         failures.map((f) => f.error)
       )
 
-      if (genomes.length < config.GP.populationSize * 0.5) {
+      if (genomes.length < getEvolutionConfig().GP.populationSize * 0.5) {
         lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.GP.populationSize} prepared genomes created successfully`
+          `Critical: Only ${genomes.length} out of ${getEvolutionConfig().GP.populationSize} prepared genomes created successfully`
         )
       }
     }

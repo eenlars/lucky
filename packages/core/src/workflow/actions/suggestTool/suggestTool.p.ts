@@ -1,5 +1,5 @@
-import { toolsExplanations } from "@/prompts/explainTools"
-import { llmify } from "@/utils/common/llmify"
+import { llmify } from "@utils/common/llmify"
+import { toolsExplanations } from "@prompts/explainTools"
 import type { CoreMessage } from "ai"
 import z from "zod"
 

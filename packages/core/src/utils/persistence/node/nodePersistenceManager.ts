@@ -1,6 +1,6 @@
 // src/core/node/persistence/nodePersistence.ts
 
-import { saveNodeVersionToDB } from "@/utils/persistence/node/saveNode"
+import { saveNodeVersionToDB } from "@utils/persistence/node/saveNode"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 /**

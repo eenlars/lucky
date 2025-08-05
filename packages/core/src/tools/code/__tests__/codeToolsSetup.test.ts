@@ -1,6 +1,6 @@
-import { setupCodeToolsForNode } from "@/tools/code/codeToolsSetup"
-import type { CodeToolName } from "@/tools/tool.types"
-import type { ToolExecutionContext } from "@/tools/toolFactory"
+import { setupCodeToolsForNode } from "@tools/code/codeToolsSetup"
+import type { CodeToolName } from "@tools/tool.types"
+import type { ToolExecutionContext } from "@tools/toolFactory"
 import { describe, expect, it } from "vitest"
 
 describe("setupCodeToolsForNode", () => {

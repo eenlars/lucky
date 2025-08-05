@@ -1,9 +1,9 @@
 // tests for mutation operations
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     evolution: {
       GP: {
@@ -53,7 +53,7 @@ vi.mock("@/runtime/settings/constants", () => ({
 }))
 
 // mock external dependencies
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: vi.fn(),
     warn: vi.fn(),
@@ -63,32 +63,32 @@ vi.mock("@/core/utils/logging/Logger", () => ({
 
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
-vi.mock("@/core/workflow/actions/generate/formalizeWorkflow", () => ({
+vi.mock("@workflow/actions/generate/formalizeWorkflow", () => ({
   formalizeWorkflow: vi.fn(),
 }))
 
-vi.mock("@/core/improvement/GP/resources/wrappers", () => ({
+vi.mock("@improvement/GP/resources/wrappers", () => ({
   workflowConfigToGenome: vi.fn(),
 }))
 
-vi.mock("@/core/utils/common/isNir", () => ({
+vi.mock("@utils/common/isNir", () => ({
   isNir: vi.fn(),
 }))
 
-vi.mock("@/core/improvement/GP/resources/debug/dummyGenome", () => ({
+vi.mock("@improvement/GP/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi.fn(),
 }))
 
-import { Genome } from "@/improvement/gp/Genome"
-import { Mutations } from "@/improvement/gp/operators/Mutations"
-import { createDummyGenome } from "@/improvement/gp/resources/debug/dummyGenome"
-import { workflowConfigToGenome } from "@/improvement/gp/resources/wrappers"
-import { isNir } from "@/utils/common/isNir"
-import type { RS } from "@/utils/types"
-import { formalizeWorkflow } from "@/workflow/actions/generate/formalizeWorkflow"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants.client"
+import { Genome } from "@improvement/gp/Genome"
+import { Mutations } from "@improvement/gp/operators/Mutations"
+import { createDummyGenome } from "@improvement/gp/resources/debug/dummyGenome"
+import { workflowConfigToGenome } from "@improvement/gp/resources/wrappers"
+import { isNir } from "@utils/common/isNir"
+import type { RS } from "@utils/types"
+import { formalizeWorkflow } from "@workflow/actions/generate/formalizeWorkflow"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import type { WorkflowGenome } from "../resources/gp.types"
 
 describe("Mutations", () => {
@@ -103,7 +103,7 @@ describe("Mutations", () => {
           nodeId: `node-${id}`,
           description: `description ${id}`,
           systemPrompt: `prompt ${id}`,
-          modelName: MODELS.default,
+          modelName: getModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -153,7 +153,7 @@ describe("Mutations", () => {
             nodeId: "mutated-node",
             description: "mutated prompt",
             systemPrompt: "mutated prompt",
-            modelName: MODELS.default,
+            modelName: getModels().default,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -188,7 +188,7 @@ describe("Mutations", () => {
 
   describe("mutateWorkflowGenome", () => {
     it("should perform mutation in verbose mode", async () => {
-      // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - CONFIG.limits is undefined
+      // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - getSettings().limits is undefined
       const options = createMockOptions()
 
       // Mock createDummyGenome since verbose mode uses it
@@ -206,7 +206,7 @@ describe("Mutations", () => {
     })
 
     it("should perform LLM-based mutation in non-verbose mode", async () => {
-      // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - CONFIG.limits is undefined
+      // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - getSettings().limits is undefined
       const options = createMockOptions()
 
       const result = await Mutations.mutateWorkflowGenome({

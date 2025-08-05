@@ -1,8 +1,8 @@
-import { Messages } from "@/messages"
-import { WorkflowEvolutionPrompts } from "@/prompts/improveWorkflow.p"
-import { type CodeToolName } from "@/tools/tool.types"
-import { guard } from "@/workflow/schema/errorMessages"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { Messages } from "@messages"
+import { type CodeToolName } from "@tools/tool.types"
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
+import { guard } from "@workflow/schema/errorMessages"
+import { WorkflowEvolutionPrompts } from "@prompts/improveWorkflow.p"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@workflow/schema/workflowSchema"
@@ -44,7 +44,7 @@ export async function improveWorkflowUnified(
       fitness,
       feedback
     ),
-    model: MODELS.reasoning,
+    model: getModels().reasoning,
     mode: "structured",
     schema: WorkflowConfigSchema,
     output: "object",
@@ -57,7 +57,9 @@ export async function improveWorkflowUnified(
 
   if (improvedConfig) {
     // add the default tools to the config
-    const defaultTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
+    const defaultTools = Array.from(
+      getSettings().tools.defaultTools
+    ) as CodeToolName[]
     improvedConfig.nodes.forEach((node) => {
       node.codeTools = [...new Set([...node.codeTools, ...defaultTools])]
     })

@@ -1,8 +1,8 @@
-import { getModels } from "@/config"
-import { lgg } from "@/logger"
-import { sendAI } from "@/messages/api/sendAI"
-import type { RS } from "@/utils/types"
-import type { VerificationResult } from "@/utils/validation/workflow/verify.types"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
+import type { RS } from "@utils/types"
+import type { VerificationResult } from "@utils/validation/workflow/verify.types"
+import { lgg } from "@logger"
 import { WorkflowRepairPrompts } from "@workflow/actions/repair/repairWorkflow.p"
 import type {
   WorkflowConfig,

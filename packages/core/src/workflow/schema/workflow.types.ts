@@ -1,5 +1,5 @@
-import type { ModelName } from "@/utils/models/models"
-import type { ToolsInformation } from "@/utils/validation/workflow/toolInformation"
+import type { ModelName } from "@utils/models/models"
+import type { ToolsInformation } from "@utils/validation/workflow/toolInformation"
 import type { CodeToolName, MCPToolName } from "@tools/tool.types"
 
 export type { ModelName }

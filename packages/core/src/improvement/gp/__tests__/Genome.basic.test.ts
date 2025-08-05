@@ -3,12 +3,11 @@ import {
   createMockEvaluationInputGeneric,
   setupCoreTest,
   setupGPTestMocks,
-} from "@/utils/__tests__/setup/coreMocks"
-import { MODELS } from "@/runtime/settings/constants.client"
+} from "@utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     evolution: {
       GP: {
@@ -64,7 +63,7 @@ vi.mock("@/runtime/settings/constants", () => ({
 setupGPTestMocks()
 
 // Mock validation config directly
-vi.mock("@/core/validation/message/validationConfig", () => ({
+vi.mock("@validation/message/validationConfig", () => ({
   DEFAULT_VALIDATION_CONFIG: {
     enabled: false,
     thresholds: {
@@ -81,7 +80,7 @@ vi.mock("@/core/validation/message/validationConfig", () => ({
 }))
 
 // mock external dependencies at the top level
-vi.mock("@/core/messages", () => ({
+vi.mock("@messages", () => ({
   Messages: {
     sendAIRequest: vi.fn().mockResolvedValue({
       success: true,
@@ -102,30 +101,27 @@ vi.mock("@/core/messages", () => ({
   },
 }))
 
-vi.mock(
-  "@/core/workflow/actions/generate/convert-simple-to-full/converter",
-  () => ({
-    convertSimpleToFull: vi.fn().mockResolvedValue({
-      config: {
-        nodes: [
-          {
-            id: "node1",
-            systemPrompt: "test",
-            userPrompt: "test",
-            expectedOutput: "test",
-            tools: [],
-            handoffRules: {},
-          },
-        ],
-        entryNodeId: "node1",
-      },
-      usdCost: 0.01,
-    }),
-  })
-)
+vi.mock("@workflow/actions/generate/convert-simple-to-full/converter", () => ({
+  convertSimpleToFull: vi.fn().mockResolvedValue({
+    config: {
+      nodes: [
+        {
+          id: "node1",
+          systemPrompt: "test",
+          userPrompt: "test",
+          expectedOutput: "test",
+          tools: [],
+          handoffRules: {},
+        },
+      ],
+      entryNodeId: "node1",
+    },
+    usdCost: 0.01,
+  }),
+}))
 
 vi.mock(
-  "@/core/workflow/actions/generate/gen-full-workflow/generateWorkflow",
+  "@workflow/actions/generate/gen-full-workflow/generateWorkflow",
   () => ({
     generateSingleVariation: vi.fn().mockResolvedValue({
       workflow: {
@@ -146,18 +142,18 @@ vi.mock(
   })
 )
 
-vi.mock("@/core/workflow/setup/verify", () => ({
+vi.mock("@workflow/setup/verify", () => ({
   verifyWorkflowConfig: vi.fn(),
   verifyWorkflowConfigStrict: vi.fn().mockResolvedValue(true),
 }))
 
-vi.mock("@/core/persistence/workflow/registerWorkflow", () => ({
+vi.mock("@persistence/workflow/registerWorkflow", () => ({
   registerWorkflowInDatabase: vi.fn().mockResolvedValue({
     workflowInvocationId: "test-invocation-id",
   }),
 }))
 
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: vi.fn(),
     info: vi.fn(),
@@ -167,7 +163,7 @@ vi.mock("@/core/utils/logging/Logger", () => ({
   },
 }))
 
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     models: {
       inactive: new Set(["openai/gpt-4.1"]),
@@ -218,18 +214,18 @@ const evolutionContext = {
   generationNumber: 0,
 }
 
-vi.mock("@/core/improvement/GP/resources/debug/dummyGenome", () => ({
+vi.mock("@improvement/GP/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi
     .fn()
     .mockImplementation(async (parentWorkflowVersionIds) => {
-      const { Genome } = await import("@/core/improvement/gp/Genome")
+      const { Genome } = await import("@improvement/gp/Genome")
       const genomeData: WorkflowGenome = {
         nodes: [
           {
             nodeId: "dummy-node",
             description: "dummy",
             systemPrompt: "dummy",
-            modelName: MODELS.default,
+            modelName: getModels().default,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -252,7 +248,7 @@ vi.mock("@/core/improvement/GP/resources/debug/dummyGenome", () => ({
 }))
 
 // Mock database operations
-vi.mock("@/core/persistence/workflow/registerWorkflow", () => ({
+vi.mock("@persistence/workflow/registerWorkflow", () => ({
   registerWorkflowInDatabase: vi.fn().mockResolvedValue({
     workflowVersionId: "test-version-id",
     workflowInvocationId: "test-invocation-id",
@@ -263,7 +259,7 @@ vi.mock("@/core/persistence/workflow/registerWorkflow", () => ({
 }))
 
 // Mock supabase client to avoid real database calls
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockResolvedValue({ error: null }),
@@ -274,8 +270,9 @@ vi.mock("@/core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { Genome } from "@/improvement/gp/Genome"
-import type { WorkflowGenome } from "@/improvement/gp/resources/gp.types"
+import { Genome } from "@improvement/gp/Genome"
+import type { WorkflowGenome } from "@improvement/gp/resources/gp.types"
+import { getModels } from "@utils/config/runtimeConfig"
 
 describe("Genome Basic Tests", () => {
   beforeEach(() => {
@@ -288,7 +285,7 @@ describe("Genome Basic Tests", () => {
         nodeId: "test-node",
         description: "test description",
         systemPrompt: "test system prompt",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: [],

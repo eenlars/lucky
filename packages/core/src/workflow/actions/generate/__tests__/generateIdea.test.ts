@@ -1,19 +1,19 @@
+import { mockRuntimeConstants } from "@utils/__tests__/setup/runtimeConstantsMock"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { mockRuntimeConstants } from "@/utils/__tests__/setup/runtimeConstantsMock"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => mockRuntimeConstants())
+vi.mock("@example/settings/constants", () => mockRuntimeConstants())
 
 // Create mock instances directly
 const mockSendAIRequest = vi.fn()
 const mockToolsExplanations = vi.fn()
 
 // mock external dependencies using vi.mock
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: mockSendAIRequest,
 }))
 
-vi.mock("@/core/prompts/explainTools", () => ({
+vi.mock("@prompts/explainTools", () => ({
   toolsExplanations: mockToolsExplanations,
 }))
 
@@ -29,7 +29,7 @@ vi.mock("@tools/tool.types", () => ({
 
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
-vi.mock("@/core/prompts/generationRules", () => ({
+vi.mock("@prompts/generationRules", () => ({
   WORKFLOW_GENERATION_RULES: "<rules>mocked rules</rules>",
 }))
 

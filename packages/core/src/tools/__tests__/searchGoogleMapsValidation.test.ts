@@ -1,11 +1,11 @@
-import { getModelsConfig } from "@/config"
-import { sendAI } from "@/messages/api/sendAI"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 // Mock the sendAI function to avoid API calls
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: vi.fn(),
 }))
 
@@ -42,7 +42,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
 
     // Test Case 1: Valid parameter (should work)
     const validCall = await sendAI({
-      model: getModelsConfig().models.default,
+      model: getModels().default,
       mode: "tool",
       messages: [
         {
@@ -64,7 +64,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
     // We'll directly test the validation by trying to create a tool call with invalid args
     try {
       await sendAI({
-        model: getModelsConfig().models.default,
+        model: getModels().default,
         mode: "tool",
         messages: [
           {
@@ -90,13 +90,13 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
   })
 
   it("should demonstrate that AI models now see parameter schemas", async () => {
-    // This test verifies that our CONFIG.tools.showParameterSchemas = true
+    // This test verifies that our getSettings().tools.showParameterSchemas = true
     // setting is working by checking the zodToJson conversion
     const schema = z.object({
       maxResultCount: z.number().max(20).default(10),
     })
 
-    const { zodToJson } = await import("@/core/messages/utils/zodToJson")
+    const { zodToJson } = await import("@/messages/utils/zodToJson")
     const jsonSchema = zodToJson(schema)
 
     console.log("Generated JSON Schema:", jsonSchema)

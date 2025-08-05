@@ -1,6 +1,6 @@
 // interface for genetic programming evaluators
 
-import type { RS } from "@/utils/types"
+import type { RS } from "@utils/types"
 import type { Genome } from "@gp/Genome"
 import type { GenomeEvaluationResults } from "@gp/resources/gp.types"
 

@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   PATHS: {
     codeTools: "/mock/code/tools/path",
     setupFile: "/mock/setup/file/path",
@@ -58,7 +58,7 @@ vi.mock("@/runtime/settings/constants", () => ({
 }))
 
 // mock logging
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: vi.fn(),
     info: vi.fn(),
@@ -70,7 +70,7 @@ vi.mock("@/core/utils/logging/Logger", () => ({
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
 // mock genome creation for initialization
-vi.mock("@/core/improvement/GP/Genome", () => ({
+vi.mock("@improvement/GP/Genome", () => ({
   Genome: {
     createRandom: vi
       .fn()
@@ -91,7 +91,7 @@ vi.mock("@/core/improvement/GP/Genome", () => ({
   },
 }))
 
-vi.mock("@/core/improvement/GP/resources/utils", () => ({
+vi.mock("@improvement/GP/resources/utils", () => ({
   EvolutionUtils: {
     calculateStats: vi.fn().mockReturnValue({
       bestFitness: 0.8,
@@ -103,7 +103,7 @@ vi.mock("@/core/improvement/GP/resources/utils", () => ({
 }))
 
 // Mock database operations
-vi.mock("@/core/persistence/workflow/registerWorkflow", () => ({
+vi.mock("@persistence/workflow/registerWorkflow", () => ({
   registerWorkflowInDatabase: vi.fn().mockResolvedValue({
     workflowVersionId: "test-version-id",
     workflowInvocationId: "test-invocation-id",
@@ -114,7 +114,7 @@ vi.mock("@/core/persistence/workflow/registerWorkflow", () => ({
 }))
 
 // Mock supabase client to avoid real database calls
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockResolvedValue({ error: null }),
@@ -125,11 +125,11 @@ vi.mock("@/core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { Population } from "@/improvement/gp/Population"
-import { Select } from "@/improvement/gp/Select"
-import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
-import { createMockEvolutionConfig } from "@/utils/__tests__/setup/coreMocks"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import { Population } from "@improvement/gp/Population"
+import { Select } from "@improvement/gp/Select"
+import { createMockFlowEvolutionConfig } from "@utils/__tests__/setup/coreMocks"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
 
 describe("Population Basic Tests", () => {
   let population: Population
@@ -138,25 +138,7 @@ describe("Population Basic Tests", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    config = createMockEvolutionConfig(
-      {
-        populationSize: 5,
-        generations: 3,
-        maxCostUSD: 1.0,
-        eliteSize: 1,
-        tournamentSize: 2,
-        crossoverRate: 0.7,
-        maxEvaluationsPerHour: 100,
-        evaluationDataset: "test",
-        baselineComparison: false,
-        mutationParams: {
-          mutationInstructions: "test",
-        },
-      },
-      {
-        mode: "GP" as const,
-      }
-    )
+    config = createMockFlowEvolutionConfig()
 
     mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),

@@ -1,10 +1,10 @@
-import type { CoreContext } from "@/interfaces"
-import { TOOLS } from "@/runtime/settings/tools"
-import { validateAndCorrectWithSchema } from "@/tools/constraintValidation"
-import type { WorkflowFile } from "@/tools/context/contextStore.types"
-import { R, type RS } from "@/utils/types"
-import type { ExpectedOutputSchema } from "@/workflow/ingestion/ingestion.types"
+import { validateAndCorrectWithSchema } from "@tools/constraintValidation"
+import type { WorkflowFile } from "@tools/context/contextStore.types"
+import type { CoreContext } from "@utils/config/logger"
+import { R, type RS } from "@utils/types"
+import type { ExpectedOutputSchema } from "@workflow/ingestion/ingestion.types"
 import type { CodeToolName } from "@tools/tool.types"
+import { getToolsConfig } from "@utils/config/runtimeConfig"
 import { tool, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
 
@@ -54,7 +54,9 @@ export function defineTool<
   return {
     name: config.name,
     description:
-      config.description ?? TOOLS.code[config.name] ?? "No description",
+      config.description ??
+      getToolsConfig().definitions.code[config.name] ??
+      "No description",
     parameters: config.params,
 
     async execute(

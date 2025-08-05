@@ -1,22 +1,23 @@
 #!/usr/bin/env bun
-// src/core/runOnce.ts
+// src/runOnce.ts
 
-import type { ToolExecutionContext } from "@/tools/toolFactory"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/logger"
-import { PATHS } from "@/runtime/settings/constants"
-import { SELECTED_QUESTION } from "@/runtime/settings/inputs"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
+import { lgg } from "@logger"
+import type { ToolExecutionContext } from "@tools/toolFactory"
+import { llmify } from "@utils/common/llmify"
+import { getInputsConfig, getPaths } from "@utils/config/runtimeConfig"
+import { JSONN } from "@utils/file-types/json/jsonParse"
 import { WorkflowConfigHandler } from "@workflow/setup/WorkflowLoader"
 import { Workflow } from "@workflow/Workflow"
 import chalk from "chalk"
 import { resolve } from "path"
-import { llmify } from "./utils/common/llmify"
 
 async function runOnce(setupFilePath?: string) {
   try {
     // use provided setup file or default
-    const setupPath = setupFilePath ? resolve(setupFilePath) : PATHS.setupFile
+    const setupPath = setupFilePath
+      ? resolve(setupFilePath)
+      : getPaths().setupFile
     lgg.log(
       chalk.green(
         `🚀 Running workflow once${setupPath ? ` with ${setupPath}` : ""}`
@@ -25,25 +26,29 @@ async function runOnce(setupFilePath?: string) {
 
     // load workflow setup
     const setup = await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-      setupFilePath ?? PATHS.setupFile
+      setupFilePath ?? getPaths().setupFile
     )
 
     lgg.log(JSONN.show(setup, 2))
 
-    const toolContext: Partial<ToolExecutionContext> | undefined =
-      SELECTED_QUESTION.expectedOutputSchema
-        ? { expectedOutputType: SELECTED_QUESTION.expectedOutputSchema }
-        : undefined
+    const inputsConfig = getInputsConfig()
+
+    const toolContext: Partial<ToolExecutionContext> | undefined = inputsConfig
+      .selected.expectedOutputSchema
+      ? {
+          expectedOutputType: inputsConfig.selected.expectedOutputSchema,
+        }
+      : undefined
 
     // create workflow
     const runner = Workflow.create({
       config: setup,
-      evaluationInput: SELECTED_QUESTION,
+      evaluationInput: inputsConfig.selected,
       toolContext,
     })
 
     // set workflow IO with ingestion
-    await runner.prepareWorkflow(SELECTED_QUESTION)
+    await runner.prepareWorkflow(inputsConfig.selected)
 
     // create evaluator
     const aggregatedEvaluator = new AggregatedEvaluator()
@@ -75,7 +80,7 @@ async function runOnce(setupFilePath?: string) {
     )
 
     // save minimal results
-    const resultsPath = `${PATHS.node.logging}/runOnce/runOnce_results.json`
+    const resultsPath = `${getPaths().node.logging}/runOnce/runOnce_results.json`
     await lgg.logAndSave(resultsPath, {
       fitness: evaluationResult.fitness,
       cost: evaluationResult.cost,

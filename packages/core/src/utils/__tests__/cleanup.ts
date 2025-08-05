@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@/utils/clients/supabase/client"
+import { supabase } from "@utils/clients/supabase/client"
 
 /**
  * Cleanup function that removes WorkflowInvocations associated with EvolutionRuns

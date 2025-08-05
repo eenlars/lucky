@@ -1,7 +1,7 @@
-import { lgg } from "@/logger" // src/core/node/tools/toolManager.ts
+import { lgg } from "@logger" // src/core/node/tools/toolManager.ts
+import { getLogging } from "@utils/config/runtimeConfig"
 
-import { isNir } from "@/utils/common/isNir"
-import { CONFIG } from "@/runtime/settings/constants"
+import { isNir } from "@utils/common/isNir"
 import { setupCodeToolsForNode } from "@tools/code/codeToolsSetup"
 import { setupMCPForNode } from "@tools/mcp/mcp"
 import type { CodeToolName, MCPToolName } from "@tools/tool.types"
@@ -35,7 +35,7 @@ export class ToolManager {
       return
     }
 
-    if (CONFIG.logging.override.Tools) {
+    if (getLogging().Tools) {
       lgg.info(`🔧 Initializing tools for node "${this.nodeId}"...`)
       lgg.info(`  📋 MCP Tools: [${this.mcpToolNames.join(", ")}]`)
       lgg.info(`  📋 Code Tools: [${this.codeToolNames.join(", ")}]`)
@@ -54,7 +54,7 @@ export class ToolManager {
       const codeToolNames = Object.keys(this.codeTools)
       const totalToolCount = mcpToolNames.length + codeToolNames.length
 
-      if (CONFIG.logging.override.Tools) {
+      if (getLogging().Tools) {
         lgg.info(
           `✅ Successfully initialized ${totalToolCount} tools for node "${this.nodeId}":`
         )

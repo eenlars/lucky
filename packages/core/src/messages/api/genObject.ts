@@ -1,16 +1,16 @@
 import { type CoreMessage } from "ai"
 import { z } from "zod"
 
-import { repairAIRequest } from "@/messages/api/repairAIRequest"
-import { sendAI } from "@/messages/api/sendAI"
-import { zodToJson } from "@/messages/utils/zodToJson"
-import { getConfig, getModels } from "@/config"
-import { isNir } from "@/utils/common/isNir"
-import { llmify, truncater } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import type { ModelName } from "@/utils/models/models"
-import { R, type RS } from "@/utils/types"
+import { repairAIRequest } from "@messages/api/repairAIRequest"
+import { sendAI } from "@messages/api/sendAI"
+import { zodToJson } from "@messages/utils/zodToJson"
+import { isNir } from "@utils/common/isNir"
+import { llmify, truncater } from "@utils/common/llmify"
+import { getLogging, getModels } from "@utils/config/runtimeConfig"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import type { ModelName } from "@utils/models/models"
+import { R, type RS } from "@utils/types"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
   return z.object({
@@ -86,7 +86,7 @@ output:
   const { success, data, error } = schema.safeParse(extractedJson)
   if (!success) {
     if (opts?.repair) {
-      if (getConfig().logging.override.API) {
+      if (getLogging().API) {
         lgg.warn(
           "repairing",
           error.message,

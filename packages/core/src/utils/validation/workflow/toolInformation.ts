@@ -1,6 +1,6 @@
 // verify the toolsInformation is valid
 
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
 import { ACTIVE_CODE_TOOL_NAMES, type CodeToolName } from "@tools/tool.types"
 
 export type ToolsInformation = Record<CodeToolName, any>

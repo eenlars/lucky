@@ -1,19 +1,19 @@
 import { z } from "zod"
 
-import { agentDescriptionsWithTools } from "@/node/schemas/agentWithTools"
-import { MemorySchemaOptional } from "@/node/schemas/memorySchema"
-import type { ModelName } from "@/utils/models/models"
-import { MODELS } from "@/utils/models/models"
-import { ACTIVE_MODEL_NAMES } from "@/utils/spending/pricing"
-import { withDescriptions } from "@/utils/zod/withDescriptions"
+import { agentDescriptionsWithTools } from "@node/schemas/agentWithTools"
+import { MemorySchemaOptional } from "@node/schemas/memorySchema"
+import type { ModelName } from "@utils/models/models"
+import { ACTIVE_MODEL_NAMES } from "@utils/spending/pricing"
+import { withDescriptions } from "@utils/zod/withDescriptions"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,
-} from "@/workflow/schema/workflow.types"
+} from "@workflow/schema/workflow.types"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,
 } from "@tools/tool.types"
+import { getModels } from "@utils/config/runtimeConfig"
 
 export const WorkflowNodeConfigSchema = z.object({
   nodeId: z.string(),
@@ -86,10 +86,10 @@ export const handleWorkflowCompletion = (
       )
       const modelName: ModelName =
         partialNode.modelName === "medium"
-          ? MODELS.medium
+          ? getModels().medium
           : partialNode.modelName === "high"
-            ? MODELS.high
-            : MODELS.default
+            ? getModels().high
+            : getModels().default
 
       const fullNode = { ...partialNode, modelName }
       return oldNode ? { ...oldNode, ...fullNode } : fullNode

@@ -1,4 +1,4 @@
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 
 export const findDifficulty = (task: EvaluationInput) => `
 You are an expert problem analyst specializing in task complexity assessment for AI workflow systems.

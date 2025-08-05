@@ -40,7 +40,7 @@ const mockEvolutionEngine = {
   }),
 }
 
-vi.mock("@/core/improvement/GP/EvolutionEngine", () => {
+vi.mock("@improvement/GP/EvolutionEngine", () => {
   const EvolutionEngine = vi.fn().mockImplementation(() => mockEvolutionEngine)
   ;(EvolutionEngine as any).createDefaultConfig = vi.fn().mockReturnValue({
     populationSize: 4,
@@ -49,7 +49,7 @@ vi.mock("@/core/improvement/GP/EvolutionEngine", () => {
   return { EvolutionEngine }
 })
 
-vi.mock("@/core/workflow/Workflow", () => ({
+vi.mock("@workflow/Workflow", () => ({
   Workflow: {
     create: vi.fn().mockReturnValue({
       getWorkflowVersionId: () => "test-workflow-version-id",
@@ -66,15 +66,15 @@ vi.mock("@/core/workflow/Workflow", () => ({
   },
 }))
 
-vi.mock("@/core/utils/persistence/workflow/setupWorkflow", () => ({
+vi.mock("@utils/persistence/workflow/setupWorkflow", () => ({
   getWorkflowSetup: mockGetWorkflowSetup,
 }))
 
-vi.mock("@/core/utils/persistence/workflow/saveWorkflowConfig", () => ({
+vi.mock("@utils/persistence/workflow/saveWorkflowConfig", () => ({
   saveWorkflowConfig: mockSaveWorkflowConfig,
 }))
 
-vi.mock("@/core/utils/logging/displayResults", () => ({
+vi.mock("@utils/logging/displayResults", () => ({
   displayResults: mockDisplayResults,
 }))
 
@@ -89,16 +89,16 @@ mockLogger.log = vi.fn((...args) => console.log("LGG LOG:", ...args))
 mockLogger.warn = vi.fn((...args) => console.warn("LGG WARN:", ...args))
 mockLogger.info = vi.fn((...args) => console.info("LGG INFO:", ...args))
 
-vi.mock("@/logger", () => ({
+vi.mock("@logger", () => ({
   lgg: mockLogger,
 }))
 
 // Mock additional dependencies
-vi.mock("@/core/utils/persistence/file/resultPersistence", () => ({
+vi.mock("@utils/persistence/file/resultPersistence", () => ({
   persistWorkflow: vi.fn().mockResolvedValue(undefined),
 }))
 
-vi.mock("@/core/utils/spending/SpendingTracker", () => ({
+vi.mock("@utils/spending/SpendingTracker", () => ({
   SpendingTracker: {
     getInstance: vi.fn().mockReturnValue({
       initialize: vi.fn(),
@@ -108,7 +108,7 @@ vi.mock("@/core/utils/spending/SpendingTracker", () => ({
   },
 }))
 
-vi.mock("@/core/workflow/ingestion/IngestionLayer", () => ({
+vi.mock("@workflow/ingestion/IngestionLayer", () => ({
   IngestionLayer: {
     convert: vi.fn().mockResolvedValue([
       {
@@ -119,7 +119,7 @@ vi.mock("@/core/workflow/ingestion/IngestionLayer", () => ({
   },
 }))
 
-vi.mock("@/core/workflow/schema/errorMessages", () => ({
+vi.mock("@workflow/schema/errorMessages", () => ({
   guard: vi.fn((value, message) => {
     if (!value) throw new Error(message || "Guard failed")
   }),
@@ -148,7 +148,7 @@ vi.mock("@improvement/evaluators/GPEvaluatorAdapter", () => ({
   })),
 }))
 
-vi.mock("@/core/improvement/GP/RunService", () => ({
+vi.mock("@improvement/GP/RunService", () => ({
   RunService: vi.fn().mockImplementation(() => ({
     createRun: vi.fn().mockResolvedValue(undefined),
     getRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -170,7 +170,7 @@ vi.mock("@workflow/setup/saveWorkflowToFile", () => ({
 }))
 
 // Mock runtime constants
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -242,13 +242,13 @@ const mockParseCliArguments = vi.fn().mockReturnValue({
   populationSize: 4,
   setupFile: "/test/setup.json",
 })
-vi.mock("@/core/utils/cli/argumentParser", () => ({
+vi.mock("@utils/cli/argumentParser", () => ({
   parseCliArguments: mockParseCliArguments,
   ArgumentParsingError: class ArgumentParsingError extends Error {},
 }))
 
 // Mock SELECTED_QUESTION
-vi.mock("@/runtime/setup/inputs", () => ({
+vi.mock("@example/setup/inputs", () => ({
   SELECTED_QUESTION: {
     type: "text",
     goal: "test question",
@@ -302,7 +302,7 @@ describe("main.ts", () => {
       // IMPROVEMENT NEEDED: This test fails because the main function hits error paths due to missing mocks
       // The test expects process.exit(0) but gets process.exit(1), indicating unhandled errors
       // Need to properly mock all dependencies including RunService, AggregatedEvaluator, and persistence layers
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -324,7 +324,7 @@ describe("main.ts", () => {
         new Error("cultural evolution failed")
       )
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -353,7 +353,7 @@ describe("main.ts", () => {
       }
       mocks.culturalEvolutionMain.mockResolvedValue(mockResult)
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -377,7 +377,7 @@ describe("main.ts", () => {
     it("should run genetic programming successfully", async () => {
       // IMPROVEMENT NEEDED: Test expects GP mode but parseCliArguments returns 'cultural' mode in beforeEach
       // Need to properly mock parseCliArguments to return GP mode for this test
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -398,16 +398,16 @@ describe("main.ts", () => {
         new Error("GP initialization failed")
       )
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // await expect(main()).rejects.toThrow("GP initialization failed")
     })
 
     it("should create evolution engine with correct config", async () => {
       // IMPROVEMENT NEEDED: EvolutionEngine not called in cultural mode
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
       const { EvolutionEngine } = await import(
-        "@/core/improvement/gp/evolutionengine"
+        "@improvement/gp/evolutionengine"
       )
 
       await main()
@@ -417,7 +417,7 @@ describe("main.ts", () => {
 
     it("should save best workflow to file", async () => {
       // IMPROVEMENT NEEDED: saveWorkflowConfig not called in cultural mode path
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -433,7 +433,7 @@ describe("main.ts", () => {
         new Error("workflow setup not found")
       )
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // Currently fails with different error - exits with code 1
       await main() // expect(main()).rejects.toThrow("workflow setup not found")
@@ -441,7 +441,7 @@ describe("main.ts", () => {
 
     it("should use default config values", async () => {
       // IMPROVEMENT NEEDED: getWorkflowSetup is mocked but loadSingleWorkflow is called
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -449,11 +449,11 @@ describe("main.ts", () => {
     })
 
     it("should handle invalid evolution mode", async () => {
-      // IMPROVEMENT NEEDED: Mode comes from CLI args, not CONFIG.evolution.mode
+      // IMPROVEMENT NEEDED: Mode comes from CLI args, not getSettings().evolution.mode
       // parseCliArguments determines mode, not config
       mocks.CONFIG.evolution.mode = "invalid-mode"
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // Currently exits with code 1, doesn't throw
       await main() // expect(main()).rejects.toThrow()
@@ -470,7 +470,7 @@ describe("main.ts", () => {
       }
       mocks.getWorkflowSetup.mockResolvedValue(mockSetup)
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -493,7 +493,7 @@ describe("main.ts", () => {
         new Error("workflow creation failed")
       )
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // Currently exits with code 1, doesn't throw specific error
       await main() // expect(main()).rejects.toThrow("workflow creation failed")
@@ -506,7 +506,7 @@ describe("main.ts", () => {
       const error = new Error("test error")
       mocks.getWorkflowSetup.mockRejectedValue(error)
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // Currently exits with code 1, doesn't throw or call lggError as expected
       await main() // expect(main()).rejects.toThrow("test error")
@@ -517,7 +517,7 @@ describe("main.ts", () => {
       // IMPROVEMENT NEEDED: Same as above - mode comes from CLI args, not CONFIG
       mocks.CONFIG.evolution.mode = "invalid-mode"
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // Currently exits with code 1, doesn't throw
       await main() // expect(main()).rejects.toThrow()
@@ -526,7 +526,7 @@ describe("main.ts", () => {
 
   describe("Result Display", () => {
     it("should format genetic results correctly", async () => {
-      // IMPROVEMENT NEEDED: CONFIG.evolution.mode doesn't control mode - CLI args do
+      // IMPROVEMENT NEEDED: getSettings().evolution.mode doesn't control mode - CLI args do
       // Running in cultural mode, not GP mode, so displayResults won't be called with GP results
       mocks.CONFIG.evolution.mode = "GP"
       const mockGPResult = {
@@ -538,7 +538,7 @@ describe("main.ts", () => {
       }
       mocks.evolutionEngineRun.mockResolvedValue(mockGPResult)
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 
@@ -557,7 +557,7 @@ describe("main.ts", () => {
         throw new Error("display error")
       })
 
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       // should not throw, just log the error
       await main()
@@ -572,7 +572,7 @@ describe("main.ts", () => {
   describe("Cost Tracking", () => {
     it("should track total cost across operations", async () => {
       // IMPROVEMENT NEEDED: displayResults not called due to errors in runEvolution()
-      const { default: main } = await import("@/core/main")
+      const { default: main } = await import("@/main")
 
       await main()
 

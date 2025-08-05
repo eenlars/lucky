@@ -1,8 +1,9 @@
 // Core autonomous workflow system exports
 
 // Types & Interfaces
-export * from "./interfaces"
-export * from "./interfaces/runtimeConfig"
+export * from "./utils/config/logger"
+export * from "./utils/config/runtimeConfig"
+export * from "./utils/config/runtimeConfig.types"
 
 // Main entry points with dependency injection
 export { runEvolution, type EvolutionOptions } from "./runEvolution"
@@ -43,10 +44,10 @@ export * from "@messages/api/sendAI"
 export { WorkflowMessage } from "@messages/WorkflowMessage"
 
 // Utilities
-export * from "@/utils/common/llmify"
-export * from "@/utils/common/parallelLimit"
-export * from "@/utils/file-types/json/jsonParse"
-export { SpendingTracker } from "@/utils/spending/SpendingTracker"
+export * from "@utils/common/llmify"
+export * from "@utils/common/parallelLimit"
+export * from "@utils/file-types/json/jsonParse"
+export { SpendingTracker } from "@utils/spending/SpendingTracker"
 
 // Prompts (for customization)
 export * from "@prompts/standardPrompt"

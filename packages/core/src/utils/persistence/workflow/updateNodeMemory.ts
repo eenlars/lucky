@@ -1,6 +1,6 @@
-import { supabase } from "@/utils/clients/supabase/client"
-import { lgg } from "@/utils/logging/Logger"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+import { supabase } from "@utils/clients/supabase/client"
+import { lgg } from "@utils/logging/Logger"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 /**
  * Updates node memory in the WorkflowVersion DSL

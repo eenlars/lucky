@@ -1,6 +1,6 @@
-import { explainAgents } from "@/prompts/explainAgents"
-import { explainSubsetOfTools } from "@/prompts/explainTools"
-import { workflowToAdjacencyList } from "@/workflow/actions/generate/toAdjacencyList"
+import { workflowToAdjacencyList } from "@workflow/actions/generate/toAdjacencyList"
+import { explainAgents } from "@prompts/explainAgents"
+import { explainSubsetOfTools } from "@prompts/explainTools"
 import type { Workflow } from "@workflow/Workflow"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
@@ -37,15 +37,15 @@ export function workflowToString(
   if (includeToolExplanations) {
     totalString += explainSubsetOfTools(
       workflow
-        .getConfig()
+        .getWFConfig()
         .nodes.flatMap((node) => [...node.mcpTools, ...node.codeTools])
     )
   }
   if (includeAdjacencyList)
-    totalString += workflowToAdjacencyList(workflow.getConfig())
+    totalString += workflowToAdjacencyList(workflow.getWFConfig())
 
   if (includeAgents)
-    totalString += explainAgents(workflow.getConfig().nodes, easyModelNames)
+    totalString += explainAgents(workflow.getWFConfig().nodes, easyModelNames)
 
   if (includeMemory) totalString += JSON.stringify(workflow.getMemory())
   return totalString

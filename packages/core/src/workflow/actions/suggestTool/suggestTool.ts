@@ -1,5 +1,5 @@
-import { Messages } from "@/messages"
-import { MODELS } from "@/runtime/settings/constants"
+import { Messages } from "@messages"
+import { getModels } from "@utils/config/runtimeConfig"
 import { SuggestToolPrompts } from "@workflow/actions/suggestTool/suggestTool.p"
 import type { Workflow } from "@workflow/Workflow"
 
@@ -19,7 +19,7 @@ export async function suggestNewTool(
       problemDescription: bottleneck,
       workflowDescription: workflow.toString({ easyModelNames: true }),
     }),
-    model: MODELS.default,
+    model: getModels().default,
     mode: "structured",
     schema: SuggestToolPrompts.newTool,
     output: "object",

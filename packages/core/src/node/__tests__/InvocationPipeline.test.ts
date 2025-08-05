@@ -1,5 +1,5 @@
-import { WorkflowMessage } from "@/messages/WorkflowMessage"
-import { MODELS } from "@/runtime/settings/constants.client"
+import { WorkflowMessage } from "@messages/WorkflowMessage"
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   InvocationPipeline,
@@ -8,7 +8,7 @@ import {
 import { ToolManager } from "../toolManager"
 
 // mock external dependencies with simple implementations
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
     data: {
@@ -19,10 +19,10 @@ vi.mock("@/core/messages/api/sendAI", () => ({
     },
     usdCost: 0.01,
   }),
-  normalizeModelName: vi.fn().mockReturnValue(MODELS.default),
+  normalizeModelName: vi.fn().mockReturnValue(getModels().default),
 }))
 
-vi.mock("@/core/messages/api/processResponse", () => ({
+vi.mock("@messages/api/processResponse", () => ({
   processModelResponse: vi.fn().mockReturnValue({
     nodeId: "test-node",
     type: "text",
@@ -54,7 +54,7 @@ vi.mock("@/core/messages/api/processResponse", () => ({
   getResponseContent: vi.fn().mockReturnValue("response content"),
 }))
 
-vi.mock("@/core/messages/summaries", () => ({
+vi.mock("@messages/summaries", () => ({
   createSummary: vi.fn().mockResolvedValue({
     summary: "test summary",
     usdCost: 0.005,
@@ -65,11 +65,11 @@ vi.mock("@/core/messages/summaries", () => ({
   formatSummary: vi.fn().mockReturnValue("formatted test summary"),
 }))
 
-vi.mock("@/core/tools/any/selectToolStrategy", () => ({
+vi.mock("@tools/any/selectToolStrategy", () => ({
   selectToolStrategy: vi.fn().mockResolvedValue("auto"),
 }))
 
-vi.mock("@/core/tools/any/selectToolStrategyV2", () => ({
+vi.mock("@tools/any/selectToolStrategyV2", () => ({
   selectToolStrategyV2: vi.fn().mockResolvedValue({
     type: "terminate",
     reasoning: "test reasoning",
@@ -77,7 +77,7 @@ vi.mock("@/core/tools/any/selectToolStrategyV2", () => ({
   }),
 }))
 
-vi.mock("@/core/node/strategies/MultiStepLoopV2", () => ({
+vi.mock("@node/strategies/MultiStepLoopV2", () => ({
   runMultiStepLoopV2: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
@@ -108,7 +108,7 @@ vi.mock("@/core/node/strategies/MultiStepLoopV2", () => ({
   }),
 }))
 
-vi.mock("@/core/node/strategies/MultiStepLoopV3", () => ({
+vi.mock("@node/strategies/MultiStepLoopV3", () => ({
   runMultiStepLoopV3: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
@@ -139,24 +139,24 @@ vi.mock("@/core/node/strategies/MultiStepLoopV3", () => ({
   }),
 }))
 
-vi.mock("@/core/prompts/makeLearning", () => ({
+vi.mock("@prompts/makeLearning", () => ({
   makeLearning: vi.fn().mockResolvedValue({
     learning: { type: "learning", return: "test learning" },
     updatedMemory: { learned: "something new" },
   }),
 }))
 
-vi.mock("@/core/utils/persistence/node/saveNodeInvocation", () => ({
+vi.mock("@utils/persistence/node/saveNodeInvocation", () => ({
   saveNodeInvocationToDB: vi
     .fn()
     .mockResolvedValue({ nodeInvocationId: "test-invocation-id" }),
 }))
 
-vi.mock("@/core/utils/persistence/message/saveMessage", () => ({
+vi.mock("@utils/persistence/message/saveMessage", () => ({
   saveMessage: vi.fn().mockResolvedValue({ messageId: "test-message-id" }),
 }))
 
-vi.mock("@/core/messages/api/genObject", () => ({
+vi.mock("@messages/api/genObject", () => ({
   quickSummaryNull: vi.fn().mockResolvedValue("test quick summary"),
 }))
 
@@ -179,7 +179,7 @@ describe("InvocationPipeline", () => {
     replyMessage: null,
     workflowVersionId: "v1",
     mainWorkflowGoal: "test workflow goal",
-    model: MODELS.default,
+    model: getModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",
@@ -195,7 +195,7 @@ describe("InvocationPipeline", () => {
       const pipeline = new InvocationPipeline(
         baseContext,
         toolManager,
-        MODELS.default
+        getModels().default
       )
 
       await pipeline.prepare()
@@ -206,16 +206,15 @@ describe("InvocationPipeline", () => {
     })
 
     it("handles tool strategy selection", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalStrategy = CONFIG.tools.usePrepareStepStrategy
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalStrategy = getSettings().tools.usePrepareStepStrategy
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
       // temporarily modify config using Object.defineProperty for readonly properties
-      Object.defineProperty(CONFIG.tools, "usePrepareStepStrategy", {
+      Object.defineProperty(getSettings().tools, "usePrepareStepStrategy", {
         value: true,
         writable: true,
       })
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
@@ -230,7 +229,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -239,24 +238,27 @@ describe("InvocationPipeline", () => {
         expect(pipeline).toBeDefined()
       } finally {
         // restore original values
-        Object.defineProperty(CONFIG.tools, "usePrepareStepStrategy", {
+        Object.defineProperty(getSettings().tools, "usePrepareStepStrategy", {
           value: originalStrategy,
           writable: true,
         })
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
   })
 
   describe("execute()", () => {
     it("executes successfully with experimental multi-step loop", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: true,
         writable: true,
       })
@@ -271,7 +273,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -286,21 +288,24 @@ describe("InvocationPipeline", () => {
           })
         )
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
 
     it("multi-step loop executes tool strategy and terminates properly", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
       const { selectToolStrategyV2 } = await import(
-        "@/core/tools/any/selectToolStrategyV2"
+        "@tools/any/selectToolStrategyV2"
       )
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: true,
         writable: true,
       })
@@ -324,7 +329,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -343,18 +348,21 @@ describe("InvocationPipeline", () => {
           })
         )
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
 
     it("executes successfully with single call mode", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
@@ -364,7 +372,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -373,23 +381,26 @@ describe("InvocationPipeline", () => {
         const toolUsage = pipeline.getToolUsage()
         expect(toolUsage.totalCost).toBeGreaterThan(0)
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
 
     it("handles execution errors gracefully", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
 
-      const { sendAI } = await import("@/core/messages/api/sendAI")
+      const { sendAI } = await import("@messages/api/sendAI")
       const mockSendAI = sendAI as any
       mockSendAI.mockRejectedValueOnce(new Error("AI service error"))
 
@@ -398,7 +409,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -407,20 +418,23 @@ describe("InvocationPipeline", () => {
           "Execution error: AI service error"
         )
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
   })
 
   describe("process()", () => {
     it("processes results after execution", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
@@ -430,7 +444,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -441,10 +455,14 @@ describe("InvocationPipeline", () => {
         expect(result.nodeInvocationId).toBeDefined()
         expect(result.error).toBeUndefined()
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
 
@@ -453,7 +471,7 @@ describe("InvocationPipeline", () => {
       const pipeline = new InvocationPipeline(
         baseContext,
         toolManager,
-        MODELS.default
+        getModels().default
       )
 
       const result = await pipeline.process()
@@ -466,10 +484,9 @@ describe("InvocationPipeline", () => {
 
   describe("memory and cost tracking", () => {
     it("tracks costs and memory updates", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
@@ -484,7 +501,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           contextWithMemory,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         await pipeline.prepare()
@@ -497,25 +514,28 @@ describe("InvocationPipeline", () => {
         const updatedMemory = pipeline.getUpdatedMemory()
         expect(updatedMemory).toBeDefined()
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
       }
     })
   })
 
   describe("full pipeline flow", () => {
     it("completes prepare → execute → process successfully", async () => {
-      const { CONFIG } = await import("@/runtime/settings/constants")
-      const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
-      const originalStrategy = CONFIG.tools.usePrepareStepStrategy
+      const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
+      const originalStrategy = getSettings().tools.usePrepareStepStrategy
 
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: false,
         writable: true,
       })
-      Object.defineProperty(CONFIG.tools, "usePrepareStepStrategy", {
+      Object.defineProperty(getSettings().tools, "usePrepareStepStrategy", {
         value: false,
         writable: true,
       })
@@ -525,7 +545,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getModels().default
         )
 
         // complete full pipeline
@@ -538,11 +558,15 @@ describe("InvocationPipeline", () => {
         expect(pipeline.getToolUsage().totalCost).toBeGreaterThan(0)
         expect(pipeline.getUpdatedMemory()).toBeDefined()
       } finally {
-        Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
-          value: originalMultiStep,
-          writable: true,
-        })
-        Object.defineProperty(CONFIG.tools, "usePrepareStepStrategy", {
+        Object.defineProperty(
+          getSettings().tools,
+          "experimentalMultiStepLoop",
+          {
+            value: originalMultiStep,
+            writable: true,
+          }
+        )
+        Object.defineProperty(getSettings().tools, "usePrepareStepStrategy", {
           value: originalStrategy,
           writable: true,
         })

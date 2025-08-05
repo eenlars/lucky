@@ -1,4 +1,4 @@
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,

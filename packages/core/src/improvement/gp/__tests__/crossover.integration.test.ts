@@ -1,16 +1,16 @@
-import { Crossover } from "@/improvement/gp/operators/crossover/Crossover"
-import { workflowConfigToGenome } from "@/improvement/gp/resources/wrappers"
-import { lgg } from "@/utils/logging/Logger"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import { Crossover } from "@improvement/gp/operators/crossover/Crossover"
+import { workflowConfigToGenome } from "@improvement/gp/resources/wrappers"
+import { lgg } from "@utils/logging/Logger"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import { describe, expect, test } from "vitest"
 
 // Import the parent setup files
-import parentSetup1 from "@/improvement/gp/__tests__/setup/setupfile-parent-1.json"
-import parentSetup2 from "@/improvement/gp/__tests__/setup/setupfile-parent-2.json"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { sendAI } from "@/messages/api/sendAI"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS } from "@/runtime/settings/constants.client"
+import parentSetup1 from "@improvement/gp/__tests__/setup/setupfile-parent-1.json"
+import parentSetup2 from "@improvement/gp/__tests__/setup/setupfile-parent-2.json"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 describe("Crossover Integration Test", () => {
   test("crossover between real parent genomes produces valid offspring evaluated by LLM", async () => {
@@ -81,7 +81,7 @@ Answer PASS or FAIL with brief reason.`
 
     const evaluationResponse = await sendAI({
       messages: [{ role: "user", content: evaluationPrompt }],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "text",
     })
 

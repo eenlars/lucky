@@ -1,8 +1,8 @@
-import type { Payload } from "@/messages/MessagePayload"
-import type { TablesUpdate } from "@/utils/clients/supabase/types"
-import { genShortId } from "@/utils/common/utils"
-import { Messages } from "@/utils/persistence/message/main"
-import { lgg } from "@/logger"
+import type { Payload } from "@messages/MessagePayload"
+import type { TablesUpdate } from "@utils/clients/supabase/types"
+import { genShortId } from "@utils/common/utils"
+import { Messages } from "@utils/persistence/message/main"
+import { lgg } from "@logger"
 
 export class WorkflowMessage<P extends Payload = Payload> {
   readonly messageId: string = genShortId()

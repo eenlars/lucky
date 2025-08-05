@@ -1,10 +1,10 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { llmify } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { R, type RS } from "@/utils/types"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { ExpectedOutputSchema } from "@/workflow/ingestion/ingestion.types"
-import { MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { llmify } from "@utils/common/llmify"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { R, type RS } from "@utils/types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { ExpectedOutputSchema } from "@workflow/ingestion/ingestion.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { FitnessOfWorkflowSchema } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 
 /**
@@ -69,7 +69,7 @@ In your feedback, include: critique quality justification, specific weaknesses a
       { role: "system", content: systemPrompt },
       { role: "user", content: critique },
     ],
-    model: MODELS.fitness,
+    model: getModels().default,
     mode: "structured",
     schema: FitnessOfWorkflowSchema,
     opts: {

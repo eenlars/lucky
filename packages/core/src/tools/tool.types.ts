@@ -1,8 +1,8 @@
-import { CONFIG } from "@/runtime/settings/constants.client"
-import { TOOLS } from "@/runtime/settings/tools"
+import { TOOLS } from "@example/settings/tools"
+import { getSettings } from "@utils/config/runtimeConfig"
 
-const INACTIVE_TOOLS = CONFIG.tools.inactive
-const DEFAULT_TOOLS = CONFIG.tools.defaultTools
+const INACTIVE_TOOLS = getSettings().tools.inactive
+const DEFAULT_TOOLS = getSettings().tools.defaultTools
 
 export const getActiveTools = <T extends Record<string, any>>(
   tools: T,

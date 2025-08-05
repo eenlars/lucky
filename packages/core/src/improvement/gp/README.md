@@ -390,7 +390,7 @@ describe("EvolutionEngine", () => {
     const engine = new EvolutionEngine(defaultConfig)
     const population = await engine.initializePopulation("test goal")
 
-    expect(population).toHaveLength(defaultConfig.populationSize)
+    expect(population).toHaveLength(defaultconfig.populationSize)
     expect(population[0]).toHaveProperty("evolutionId")
     expect(population[0]).toHaveProperty("generation", 0)
   })
@@ -506,9 +506,9 @@ engine.enablePersistence(persistenceConfig)
 **Solution**: Increase mutation rate, reduce selection pressure, add diversity injection
 
 ```typescript
-config.mutationRate = 0.6 // Increase exploration
-config.tournamentSize = 2 // Reduce selection pressure
-config.diversityThreshold = 0.8 // Force diversity maintenance
+getSettings().mutationRate = 0.6 // Increase exploration
+getSettings().tournamentSize = 2 // Reduce selection pressure
+getSettings().diversityThreshold = 0.8 // Force diversity maintenance
 ```
 
 #### Issue: Evolution not improving
@@ -522,7 +522,7 @@ console.log("Test evaluation:", testResult)
 
 // Increase exploration
 config.populationSize = 50
-config.generations = 20
+getSettings().generations = 20
 ```
 
 #### Issue: Evaluation timeouts

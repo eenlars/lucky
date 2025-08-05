@@ -1,13 +1,13 @@
-import { codeToolAutoDiscovery } from "@/tools/code/AutoDiscovery"
+import { codeToolAutoDiscovery } from "@tools/code/AutoDiscovery"
 import {
   createMockEvaluationInputGeneric,
   createMockEvaluator,
   createMockEvolutionSettings,
   mockRuntimeConstantsForGP,
-} from "@/utils/__tests__/setup/coreMocks"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { Workflow } from "@/workflow/Workflow"
-import { MODELS } from "@/runtime/settings/constants.client"
+} from "@utils/__tests__/setup/coreMocks"
+import { getModels } from "@utils/config/runtimeConfig"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { Workflow } from "@workflow/Workflow"
 import { vi } from "vitest"
 import { EvolutionEngine } from "../evolutionengine"
 import { Genome } from "../Genome"
@@ -17,11 +17,11 @@ const mockSupabaseClient = {
   from: vi.fn(),
 }
 
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 
-vi.mock("@/core/messages/api/sendAI", () => ({
+vi.mock("@messages/api/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     data: "Mock AI response",
     success: true,
@@ -31,7 +31,7 @@ vi.mock("@/core/messages/api/sendAI", () => ({
 }))
 
 // Mock crossover and mutation operations to return valid genomes
-vi.mock("@/core/improvement/GP/operators/Crossover", () => ({
+vi.mock("@improvement/GP/operators/Crossover", () => ({
   Crossover: {
     crossover: vi.fn().mockResolvedValue({
       success: true,
@@ -57,7 +57,7 @@ vi.mock("@/core/improvement/GP/operators/Crossover", () => ({
   },
 }))
 
-vi.mock("@/core/improvement/GP/operators/Mutations", () => ({
+vi.mock("@improvement/GP/operators/Mutations", () => ({
   Mutations: {
     mutateWorkflowGenome: vi.fn().mockResolvedValue({
       success: true,
@@ -99,7 +99,7 @@ describe("Engine Critical", () => {
         nodes: [
           {
             nodeId: "node1",
-            modelName: MODELS.default,
+            modelName: getModels().default,
             systemPrompt: "Mock system prompt",
             description: "Mock description",
             mcpTools: [],
@@ -221,7 +221,7 @@ describe("Engine Critical", () => {
 
     // Run evolve
     const result = await engine.evolve({
-      evaluationInput: createMockEvaluationInputGeneric("text"),
+      evaluationInput: createMockEvaluationInputGeneric(),
       evaluator: createMockEvaluator(),
       _baseWorkflow: undefined,
       problemAnalysis: "dummy",

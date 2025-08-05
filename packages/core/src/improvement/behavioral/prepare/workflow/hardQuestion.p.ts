@@ -1,4 +1,4 @@
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 
 export const hardQuestion = (_task: EvaluationInput) => `
 Perform a deep, rigorous, and thorough analysis to achieve maximum insight and accuracy in task execution. Elevate your thinking process with a focus on comprehensive understanding, detailed problem-solving, and expansive verification.

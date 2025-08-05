@@ -1,44 +1,49 @@
-import { lgg } from "@/logger"
+import { lgg } from "@logger"
+import {
+  getLogging,
+  getModels,
+  getPaths,
+  getSettings,
+} from "@utils/config/runtimeConfig"
 
 import {
   extractPromptFromPayload,
   type Payload,
-} from "@/messages/MessagePayload"
-import { WorkflowMessage } from "@/messages/WorkflowMessage"
+} from "@messages/MessagePayload"
+import { WorkflowMessage } from "@messages/WorkflowMessage"
 import {
   processModelResponse,
   type NodeLog,
-} from "@/messages/api/processResponse"
+} from "@messages/api/processResponse"
 import {
   isErrorProcessed,
   isTextProcessed,
   isToolProcessed,
   type ProcessedResponse,
-} from "@/messages/api/processResponse.types"
-import { sendAI } from "@/messages/api/sendAI"
-import { buildMessages } from "@/messages/create/buildMessages"
-import { createSummary } from "@/messages/summaries"
-import type { NodeInvocationResult } from "@/node/WorkFlowNode"
-import { extractToolLogs } from "@/node/extractToolLogs"
-import { handleError, handleSuccess } from "@/node/responseHandler"
-import type { ToolManager } from "@/node/toolManager"
-import { explainSubsetOfTools } from "@/prompts/explainTools"
-import { makeLearning } from "@/prompts/makeLearning"
-import { saveInLoc, saveInLogging } from "@/runtime/code_tools/file-saver/save"
-import { CONFIG, MODELS, PATHS } from "@/runtime/settings/constants"
-import { selectToolStrategy } from "@/tools/any/selectToolStrategy"
-import type { ToolExecutionContext } from "@/tools/toolFactory"
-import { isNir } from "@/utils/common/isNir"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import type { ModelName } from "@/utils/models/models"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+} from "@messages/api/processResponse.types"
+import { sendAI } from "@messages/api/sendAI"
+import { buildMessages } from "@messages/create/buildMessages"
+import { createSummary } from "@messages/summaries"
+import type { NodeInvocationResult } from "@node/WorkFlowNode"
+import { extractToolLogs } from "@node/extractToolLogs"
+import { handleError, handleSuccess } from "@node/responseHandler"
+import type { ToolManager } from "@node/toolManager"
+import { selectToolStrategy } from "@tools/any/selectToolStrategy"
+import type { ToolExecutionContext } from "@tools/toolFactory"
+import { isNir } from "@utils/common/isNir"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import type { ModelName } from "@utils/models/models"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { explainSubsetOfTools } from "@prompts/explainTools"
+import { makeLearning } from "@prompts/makeLearning"
 import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import { runMultiStepLoopV2Helper } from "./strategies/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "./strategies/MultiStepLoopV3"
+import { saveInLoc, saveInLogging } from "@example/code_tools/file-saver/save"
 
-const maxRounds = CONFIG.tools.experimentalMultiStepLoopMaxRounds
+const maxRounds = getSettings().tools.experimentalMultiStepLoopMaxRounds
 
-const verbose = CONFIG.logging.override.InvocationPipeline
+const verbose = getLogging().InvocationPipeline
 
 export interface NodeInvocationCallContext extends ToolExecutionContext {
   nodeId: string
@@ -103,7 +108,7 @@ export class InvocationPipeline {
     const toolsAvailable = Object.keys(this.tools)
 
     const { data: prepareThinking } = await sendAI({
-      model: MODELS.default,
+      model: getModels().default,
       mode: "text",
       messages: [
         {
@@ -139,9 +144,9 @@ export class InvocationPipeline {
     const hasOneTool = Object.keys(this.tools).length === 1
 
     // no need to prepare. this is handled in the multi-step loop.
-    if (CONFIG.tools.experimentalMultiStepLoop) return this
+    if (getSettings().tools.experimentalMultiStepLoop) return this
 
-    if (!hasOneTool && CONFIG.tools.usePrepareStepStrategy) {
+    if (!hasOneTool && getSettings().tools.usePrepareStepStrategy) {
       this.toolChoice = await selectToolStrategy(
         this.tools,
         this.ctx.nodeSystemPrompt,
@@ -160,7 +165,7 @@ export class InvocationPipeline {
   public async execute(): Promise<this> {
     try {
       if (
-        CONFIG.tools.experimentalMultiStepLoop &&
+        getSettings().tools.experimentalMultiStepLoop &&
         Object.keys(this.tools)?.length > 0
       ) {
         await this.runMultiStepLoopV2()
@@ -291,7 +296,7 @@ export class InvocationPipeline {
     }
 
     const res = await sendAI({
-      model: MODELS.nano,
+      model: getModels().nano,
       messages: this.sdkMessages,
       mode: "tool",
       opts: {
@@ -321,7 +326,7 @@ export class InvocationPipeline {
     if (verbose) {
       const ts = Date.now()
       saveInLoc(
-        `${PATHS.node.logging}/debug/response_after_processing_${ts}_${this.ctx.nodeId}`,
+        `${getPaths().node.logging}/debug/response_after_processing_${ts}_${this.ctx.nodeId}`,
         JSONN.show(processed)
       )
     }
@@ -400,7 +405,7 @@ export class InvocationPipeline {
     })
 
     // Store memory updates
-    if (learnings && !CONFIG.tools.experimentalMultiStepLoop) {
+    if (learnings && !getSettings().tools.experimentalMultiStepLoop) {
       // the experimentalMultiStepLoop already updates the memory
       this.updatedMemory = learnings.updatedMemory
     }

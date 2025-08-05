@@ -1,10 +1,10 @@
 import {
   contextFilePrompt,
   type WorkflowFiles,
-} from "@/tools/context/contextStore.types"
-import { isNir } from "@/utils/common/isNir"
-import { lgg } from "@/utils/logging/Logger"
-import { CONFIG } from "@/runtime/settings/constants"
+} from "@tools/context/contextStore.types"
+import { isNir } from "@utils/common/isNir"
+import { lgg } from "@utils/logging/Logger"
+import { getLogging } from "@utils/config/runtimeConfig"
 import type { CoreMessage } from "ai"
 import chalk from "chalk"
 import { llmify } from "../../utils/common/llmify"
@@ -123,7 +123,7 @@ Use this memory to inform your decisions and responses.`
     throw new Error("Invalid messages format for AI model")
   }
 
-  if (CONFIG.logging.override.InvocationPipeline && debug) {
+  if (getLogging().InvocationPipeline && debug) {
     lgg.log(chalk.green("sdkMessages:"))
     for (const msg of sdkMessages) {
       const roleColor = msg.role === "system" ? chalk.yellow : chalk.blue

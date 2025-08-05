@@ -1,5 +1,5 @@
-import { PATHS } from "@/runtime/settings/constants"
 import { listFiles } from "@huggingface/hub"
+import { getPaths } from "@utils/config/runtimeConfig"
 import { execSync } from "child_process"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import { readParquet } from "parquet-wasm"
@@ -83,7 +83,7 @@ async function testSWEBenchLoader() {
         console.log(`\nDownloading: ${filename}`)
 
         // Ensure downloads directory exists
-        const downloadsDir = join(PATHS.root, "..", "downloads")
+        const downloadsDir = join(getPaths().root, "..", "downloads")
         await mkdir(downloadsDir, { recursive: true })
 
         const tempPath = join(downloadsDir, filename.replace(/[\/\\]/g, "_"))

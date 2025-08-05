@@ -2,10 +2,10 @@
  * structure mutation operations
  */
 
-import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
-import { lgg } from "@/utils/logging/Logger"
-import { Workflow } from "@/workflow/Workflow"
+import { lgg } from "@utils/logging/Logger"
+import { Workflow } from "@workflow/Workflow"
 import { failureTracker } from "@gp/resources/tracker"
+import { SharedWorkflowPrompts } from "@prompts/workflowAnalysisPrompts"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { NodeMutationOperator } from "./mutation.types"
 

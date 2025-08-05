@@ -1,11 +1,11 @@
-import { improveNodesSelfImprovement } from "@/improvement/behavioral/judge/improveNode"
-import { improveWorkflowUnified } from "@/improvement/behavioral/judge/improveWorkflow"
-import { judge } from "@/improvement/behavioral/judge/judge"
-import { parseCliArguments } from "@/utils/cli/argumentParser"
-import { validateAndRepairWorkflow } from "@/utils/validation/validateWorkflow"
-import { guard } from "@/workflow/schema/errorMessages"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
+import { improveNodesSelfImprovement } from "@improvement/behavioral/judge/improveNode"
+import { improveWorkflowUnified } from "@improvement/behavioral/judge/improveWorkflow"
+import { judge } from "@improvement/behavioral/judge/judge"
+import { parseCliArguments } from "@utils/cli/argumentParser"
+import { getSettings } from "@utils/config/runtimeConfig"
+import { validateAndRepairWorkflow } from "@utils/validation/validateWorkflow"
+import { guard } from "@workflow/schema/errorMessages"
+import { lgg } from "@logger"
 import { Workflow, WorkflowImprovementResult } from "@workflow/Workflow"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
@@ -39,7 +39,7 @@ export async function improveNodesCulturallyImpl(
   const { _fitness, workflowInvocationId } = params
   let totalCost = 0
   // use the improved configuration or keep current if no improvements needed
-  let finalConfig: WorkflowConfig = workflow.getConfig()
+  let finalConfig: WorkflowConfig = workflow.getWFConfig()
 
   // Parse CLI arguments for runtime configuration
   const args = process.argv.slice(2)
@@ -47,9 +47,11 @@ export async function improveNodesCulturallyImpl(
 
   // Use CLI args if provided, otherwise fall back to CONFIG
   const selfImproveNodes =
-    parsedArgs.selfImproveNodes ?? CONFIG.improvement.flags.selfImproveNodes
+    parsedArgs.selfImproveNodes ??
+    getSettings().improvement.flags.selfImproveNodes
   const improvementType =
-    parsedArgs.improvementType ?? CONFIG.improvement.flags.improvementType
+    parsedArgs.improvementType ??
+    getSettings().improvement.flags.improvementType
 
   lgg.log("🚀 Starting cultural improvement process...")
 
@@ -83,7 +85,7 @@ export async function improveNodesCulturallyImpl(
     case "judge": {
       // Use judge function to make improvement decisions
       const judgeResult = await judge(
-        workflowForImprovement.getConfig(),
+        workflowForImprovement.getWFConfig(),
         workflowForImprovement.getFeedback() ?? "No feedback available",
         workflowForImprovement.getFitness()!
       )
@@ -93,13 +95,13 @@ export async function improveNodesCulturallyImpl(
         // Fall back to unified approach
         const { improvedConfig, cost: improvementCost } =
           await improveWorkflowUnified({
-            config: workflowForImprovement.getConfig(),
+            config: workflowForImprovement.getWFConfig(),
             fitness: workflowForImprovement.getFitness()!,
             feedback:
               workflowForImprovement.getFeedback() ?? "No feedback available",
           })
         totalCost += improvementCost
-        finalConfig = improvedConfig ?? workflowForImprovement.getConfig()
+        finalConfig = improvedConfig ?? workflowForImprovement.getWFConfig()
       } else {
         // Use the judge result
         totalCost += judgeResult.usdCost || 0
@@ -112,13 +114,13 @@ export async function improveNodesCulturallyImpl(
       // Use unified workflow improvement approach
       const { improvedConfig, cost: improvementCost } =
         await improveWorkflowUnified({
-          config: workflowForImprovement.getConfig(),
+          config: workflowForImprovement.getWFConfig(),
           fitness: workflowForImprovement.getFitness()!,
           feedback:
             workflowForImprovement.getFeedback() ?? "No feedback available",
         })
       totalCost += improvementCost
-      finalConfig = improvedConfig ?? workflowForImprovement.getConfig()
+      finalConfig = improvedConfig ?? workflowForImprovement.getWFConfig()
       break
     }
 

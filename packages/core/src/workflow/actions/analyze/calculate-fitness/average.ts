@@ -1,8 +1,8 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { truncater } from "@/utils/common/llmify"
-import { R, type RS } from "@/utils/types"
-import { guard } from "@/workflow/schema/errorMessages"
-import { MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { truncater } from "@utils/common/llmify"
+import { R, type RS } from "@utils/types"
+import { guard } from "@workflow/schema/errorMessages"
+import { getModels } from "@utils/config/runtimeConfig"
 import type { FitnessOfWorkflow } from "./fitness.types"
 
 export const calculateAverageFitness = (
@@ -70,7 +70,7 @@ Please provide a synthesized feedback that:
 
   const result = await sendAI({
     messages: [{ role: "user", content: prompt }],
-    model: MODELS.medium,
+    model: getModels().medium,
     mode: "text",
   })
 

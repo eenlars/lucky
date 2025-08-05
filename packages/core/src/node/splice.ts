@@ -1,4 +1,4 @@
-import { lgg } from "@/logger"
+import { lgg } from "@logger"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 /**

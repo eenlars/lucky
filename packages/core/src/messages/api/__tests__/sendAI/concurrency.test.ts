@@ -1,4 +1,4 @@
-import { sendAI } from "@/messages/api/sendAI"
+import { sendAI } from "@messages/api/sendAI"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("ai", () => ({
@@ -9,7 +9,9 @@ vi.mock("ai", () => ({
   })),
 }))
 
-afterEach(() => vi.restoreAllMocks())
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe("sendAI – text mode", () => {
   it("returns success=true on happy path", async () => {

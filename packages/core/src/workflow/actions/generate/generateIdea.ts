@@ -1,11 +1,11 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { toolsExplanations } from "@/prompts/explainTools"
-import { WORKFLOW_GENERATION_RULES } from "@/prompts/generationRules"
-import { MODELS } from "@/runtime/settings/constants"
-import { lgg } from "@/utils/logging/Logger"
-import type { ModelName } from "@/utils/models/models"
-import { R, type RS } from "@/utils/types"
+import { sendAI } from "@messages/api/sendAI"
+import { lgg } from "@utils/logging/Logger"
+import type { ModelName } from "@utils/models/models"
+import { R, type RS } from "@utils/types"
+import { toolsExplanations } from "@prompts/explainTools"
+import { WORKFLOW_GENERATION_RULES } from "@prompts/generationRules"
 import { ALL_ACTIVE_TOOL_NAMES } from "@tools/tool.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { z } from "zod"
 
 export type GenerateWorkflowIdeaRequest = {
@@ -98,7 +98,7 @@ export async function generateWorkflowIdea(
       },
       { role: "user", content: request.prompt },
     ],
-    model: request.model ?? MODELS.reasoning,
+    model: request.model ?? getModels().reasoning,
     mode: "structured",
     schema: z.object({
       workflow: z.string().describe(`The workflow idea in adjacency list format

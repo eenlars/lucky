@@ -1,52 +1,49 @@
-// src/core/workflow/Workflow.ts
-import { prepareProblem } from "@/improvement/behavioral/prepare/workflow/prepareMain"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { zodToJson } from "@/messages/utils/zodToJson"
-import { WorkFlowNode } from "@/node/WorkFlowNode"
-import { CONFIG } from "@/runtime/settings/constants"
-import type { WorkflowFile } from "@/tools/context/contextStore.types"
-import type { ToolExecutionContext } from "@/tools/toolFactory"
-import { supabase } from "@/utils/clients/supabase/client"
-import { genShortId } from "@/utils/common/utils"
-import { lgg } from "@/utils/logging/Logger"
-import type { ModelName } from "@/utils/models/models"
-import { persistWorkflow } from "@/utils/persistence/file/resultPersistence"
-import {
-  createContextStore,
-  type ContextStore,
-} from "@/utils/persistence/memory/ContextStore"
+import { improveNodesCulturallyImpl } from "@improvement/behavioral/judge/mainImprovement"
+import { prepareProblem } from "@improvement/behavioral/prepare/workflow/prepareMain"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { lgg } from "@logger"
+import { zodToJson } from "@messages/utils/zodToJson"
+import { WorkFlowNode } from "@node/WorkFlowNode"
+import type { WorkflowFile } from "@tools/context/contextStore.types"
+import { INACTIVE_TOOLS } from "@tools/tool.types"
+import type { ToolExecutionContext } from "@tools/toolFactory"
+import { supabase } from "@utils/clients/supabase/client"
+import { genShortId } from "@utils/common/utils"
+import { getLogging, getSettings } from "@utils/config/runtimeConfig"
+import { persistWorkflow } from "@utils/persistence/file/resultPersistence"
+import type { ContextStore } from "@utils/persistence/memory/ContextStore"
+import { createContextStore } from "@utils/persistence/memory/ContextStore"
 import {
   createWorkflowInvocation,
   createWorkflowVersion,
   updateWorkflowVersionWithIO,
-} from "@/utils/persistence/workflow/registerWorkflow"
-import type { RS } from "@/utils/types"
-import { R } from "@/utils/types"
+} from "@utils/persistence/workflow/registerWorkflow"
+import type { RS } from "@utils/types"
+import { R } from "@utils/types"
 import {
   verifyWorkflowConfig,
   verifyWorkflowConfigStrict,
-} from "@/utils/validation/workflow"
-import { formalizeWorkflow } from "@/workflow/actions/generate/formalizeWorkflow"
+} from "@validation/workflow"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import { formalizeWorkflow } from "@workflow/actions/generate/formalizeWorkflow"
 import {
   workflowToString,
   type SimplifyOptions,
-} from "@/workflow/actions/generate/workflowToString"
+} from "@workflow/actions/generate/workflowToString"
 import type {
   EvaluationInput,
   WorkflowIO,
-} from "@/workflow/ingestion/ingestion.types"
-import type { AggregateEvaluationResult } from "@/workflow/runner/queueRun"
+} from "@workflow/ingestion/ingestion.types"
+import type { AggregateEvaluationResult } from "@workflow/runner/queueRun"
 import {
   aggregateResults,
   evaluateRuns,
   runAllIO,
   type RunResult,
-} from "@/workflow/runner/runAllInputs"
-import { ensure, guard, throwIf } from "@/workflow/schema/errorMessages"
-import { improveNodesCulturallyImpl } from "@behavioral/judge/mainImprovement"
-import { INACTIVE_TOOLS } from "@tools/tool.types"
-import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+} from "@workflow/runner/runAllInputs"
+import { ensure, guard, throwIf } from "@workflow/schema/errorMessages"
 import type {
+  ModelName,
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@workflow/schema/workflow.types"
@@ -125,7 +122,7 @@ export class Workflow {
   private verifyCriticalIssues(config: WorkflowConfig): void {
     const inactiveToolsUsed: string[] = []
 
-    for (const node of config.nodes) {
+    for (const node of this.getWFConfig().nodes) {
       const allNodeTools = [...(node.codeTools || []), ...(node.mcpTools || [])]
 
       for (const tool of allNodeTools) {
@@ -234,7 +231,7 @@ export class Workflow {
     return { workflow: wf, fitness: _fitness, feedback: _feedback }
   }
 
-  public getConfig(): WorkflowConfig {
+  public getWFConfig(): WorkflowConfig {
     return this.config
   }
 
@@ -425,7 +422,7 @@ export class Workflow {
       workflowId: this.workflowId,
     })
 
-    for (const workflowNodeConfig of this.config.nodes) {
+    for (const workflowNodeConfig of this.getWFConfig().nodes) {
       const workflowNode = await WorkFlowNode.create(
         workflowNodeConfig,
         this.workflowVersionId
@@ -452,10 +449,6 @@ export class Workflow {
       workflowVersionId: this.workflowVersionId,
       runId: this.evolutionContext?.runId,
       generation: this.evolutionContext?.generationId,
-      metadata: {
-        configFiles: this.config.contextFile ? [this.config.contextFile] : [],
-        workflowIOIndex: index,
-      },
       expectedOutputType: this.evaluationInput.expectedOutputSchema
         ? zodToJson(this.evaluationInput.expectedOutputSchema)
         : null,
@@ -485,11 +478,11 @@ export class Workflow {
   }
 
   /**
-   * Gets the entry node ID from the workflow config.
+   * Gets the entry node ID from the workflow getWFConfig().
    */
   getEntryNodeId(): string {
-    guard(this.config.entryNodeId, "Entry node ID is not set")
-    return this.config.entryNodeId
+    guard(this.getWFConfig().entryNodeId, "Entry node ID is not set")
+    return this.getWFConfig().entryNodeId
   }
 
   getNodes(): WorkFlowNode[] {
@@ -610,7 +603,7 @@ export class Workflow {
    * Checks if a new workflow file can be created based on the configured limit.
    */
   canCreateWorkflowFile(): boolean {
-    return this.workflowFiles.size < CONFIG.context.maxFilesPerWorkflow
+    return this.workflowFiles.size < getSettings().context.maxFilesPerWorkflow
   }
 
   async improveNodesCulturally(params: {
@@ -635,7 +628,7 @@ export class Workflow {
 
   getMemory(): Record<string, Record<string, string>> {
     const workflowMemory: Record<string, Record<string, string>> = {}
-    for (const node of this.config.nodes) {
+    for (const node of this.getWFConfig().nodes) {
       if (node.memory) {
         workflowMemory[node.nodeId] = node.memory
       }
@@ -647,7 +640,7 @@ export class Workflow {
    * Gets workflow-level memory (not node-specific memory)
    */
   getWorkflowMemory(): Record<string, string> {
-    return this.config.memory || {}
+    return this.getWFConfig().memory || {}
   }
 
   /**
@@ -670,7 +663,7 @@ export class Workflow {
   }
 
   addNode(node: WorkflowNodeConfig): void {
-    this.config.nodes.push(node)
+    this.getWFConfig().nodes.push(node)
   }
 
   static async ideaToWorkflow({
@@ -696,7 +689,7 @@ export class Workflow {
       )
     }
 
-    if (CONFIG.logging.override.GP) {
+    if (getLogging().Improvement) {
       lgg.log(
         `[Converter] Workflow idea: ${workflowIdeaResponse.data.workflow}`
       )

@@ -3,26 +3,26 @@
  * Simple Genome implementation for prompt evolution
  */
 
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
-import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
-import { CONFIG } from "@/runtime/settings/constants"
-import { isNir } from "@/utils/common/isNir"
-import { truncater } from "@/utils/common/llmify"
-import { genShortId } from "@/utils/common/utils"
-import { lgg } from "@/utils/logging/Logger"
+import { isNir } from "@utils/common/isNir"
+import { truncater } from "@utils/common/llmify"
+import { genShortId } from "@utils/common/utils"
+import { lgg } from "@utils/logging/Logger"
 import {
   createWorkflowVersion,
   ensureWorkflowExists,
-} from "@/utils/persistence/workflow/registerWorkflow"
-import { ACTIVE_MODEL_NAMES } from "@/utils/spending/pricing"
-import { R, type RS } from "@/utils/types"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { guard } from "@/workflow/schema/errorMessages"
+} from "@utils/persistence/workflow/registerWorkflow"
+import { ACTIVE_MODEL_NAMES } from "@utils/spending/pricing"
+import { R, type RS } from "@utils/types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import { guard } from "@workflow/schema/errorMessages"
 import { Mutations } from "@gp/operators/Mutations"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import { EvolutionUtils } from "@gp/resources/utils"
 import { workflowConfigToGenome } from "@gp/resources/wrappers"
+import { SharedWorkflowPrompts } from "@prompts/workflowAnalysisPrompts"
+import { getEvolutionConfig, getLogging } from "@utils/config/runtimeConfig"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Workflow } from "@workflow/Workflow"
 import crypto from "crypto"
@@ -41,7 +41,7 @@ export class Genome extends Workflow {
   public readonly genome: WorkflowGenome
   public genomeEvaluationResults: GenomeEvaluationResults
   private evolutionCost: number
-  static verbose = CONFIG.logging.override.GP
+  static verbose = getLogging().GP
   public isEvaluated = false
 
   /**
@@ -147,7 +147,7 @@ export class Genome extends Workflow {
       // needs work: typo "bassed" should be "based"
       // do the randomness based on poisson distribution
       const randomness = EvolutionUtils.poisson(1, 4, 5)
-      if (CONFIG.evolution.GP.verbose) {
+      if (getEvolutionConfig().GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
         return R.success(
           createDummyGenome(parentWorkflowVersionIds, _evolutionContext),
@@ -155,7 +155,7 @@ export class Genome extends Workflow {
         )
       }
 
-      if (CONFIG.evolution.initialPopulationMethod === "baseWorkflow") {
+      if (getEvolutionConfig().initialPopulationMethod === "baseWorkflow") {
         if (!baseWorkflow) {
           return R.error(
             "Base workflow required for baseWorkflow initialization method",
@@ -249,7 +249,7 @@ export class Genome extends Workflow {
   }): Promise<RS<Genome>> {
     try {
       const randomness = EvolutionUtils.poisson(1, 4, 5)
-      if (CONFIG.evolution.GP.verbose) {
+      if (getEvolutionConfig().GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createPrepared")
         return R.success(
           createDummyGenome(parentWorkflowVersionIds, _evolutionContext),

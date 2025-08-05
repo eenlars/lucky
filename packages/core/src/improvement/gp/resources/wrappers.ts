@@ -2,11 +2,11 @@
  * Wrapper functions for external services with caching
  */
 
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
-import { verifyWorkflowConfig } from "@/utils/validation/workflow"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { lgg } from "@utils/logging/Logger"
+import { R, type RS } from "@utils/types"
+import { verifyWorkflowConfig } from "@utils/validation/workflow"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import type { WorkflowGenome } from "@gp/resources/gp.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Genome } from "../Genome"

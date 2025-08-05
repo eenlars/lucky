@@ -32,7 +32,7 @@ describe("Debug describeWorkflow", () => {
 
   it("should test describeWorkflow step by step", () => {
     const mockWorkflow = {
-      getConfig: () => {
+      getWFConfig: () => {
         const config = {
           nodes: [
             {
@@ -50,7 +50,7 @@ describe("Debug describeWorkflow", () => {
     } as unknown as Workflow
 
     // Test extracting tools from workflow
-    const config = mockWorkflow.getConfig()
+    const config = mockWorkflow.getWFConfig()
     const allTools = config.nodes.flatMap((node) => [
       ...node.mcpTools,
       ...node.codeTools,

@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/clients/supabase/client"
+import { supabase } from "@utils/clients/supabase/client"
 
 export const getWorkflowVersion = async ({
   workflowVersionId,

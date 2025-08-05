@@ -3,15 +3,15 @@
  * Simple selection mechanisms for prompt evolution
  */
 
-import { Mutations } from "@/improvement/gp/operators/Mutations"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { CONFIG } from "@/runtime/settings/constants"
-import { isNir } from "@/utils/common/isNir"
-import { truncater } from "@/utils/common/llmify"
-import { parallelLimit } from "@/utils/common/parallelLimit"
-import { lgg } from "@/utils/logging/Logger"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import { Mutations } from "@improvement/gp/operators/Mutations"
+import type { EvolutionSettings } from "@improvement/gp/resources/evolution-types"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { isNir } from "@utils/common/isNir"
+import { truncater } from "@utils/common/llmify"
+import { parallelLimit } from "@utils/common/parallelLimit"
+import { getEvolutionConfig, getLogging } from "@utils/config/runtimeConfig"
+import { lgg } from "@utils/logging/Logger"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import { Genome } from "@gp/Genome"
 import {
   createDummyGenome,
@@ -24,7 +24,7 @@ import type { MutationOptions } from "./operators/mutations/mutation.types"
 import { Population } from "./Population"
 
 export class Select {
-  private static verbose = CONFIG.logging.override.GP
+  private static verbose = getLogging().GP
 
   /**
    * Select random parents for breeding from valid genomes
@@ -60,7 +60,7 @@ export class Select {
     population: Population
     config: EvolutionSettings
   }): Promise<Genome[]> {
-    if (CONFIG.evolution.GP.verbose) {
+    if (getEvolutionConfig().GP.verbose) {
       lgg.log(
         "[Select] Verbose mode: skipping parent selection for selectParents"
       )
@@ -167,7 +167,7 @@ export class Select {
     offspring: Genome[]
     config: EvolutionSettings
   }): Promise<Genome[]> {
-    if (CONFIG.evolution.GP.verbose)
+    if (getEvolutionConfig().GP.verbose)
       return createDummySurvivors(parents, offspring)
 
     if (parents.length === 0 && offspring.length === 0) return []

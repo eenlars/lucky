@@ -1,14 +1,20 @@
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the constants module
-vi.mock("@/runtime/constants", () => ({
+vi.mock("@example/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
   },
 }))
 
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+// Mock the runtime config
+vi.mock("@utils/config/runtimeConfig", () => ({
+  getSettings: vi.fn(),
+  getModels: vi.fn(() => ({ default: "test-model" })),
+}))
+
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import { verifyHierarchicalStructure } from "../verifyHierarchical"
 
 describe("verifyHierarchicalStructure", () => {
@@ -20,7 +26,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "test-node-1",
         description: "orchestrator",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["data-processor"],
@@ -29,7 +35,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "data-processor",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["bcorp-verifier"],
@@ -38,7 +44,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "bcorp-verifier",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["bcorp-directory-search"],
@@ -47,7 +53,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "bcorp-directory-search",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["end"],
@@ -57,6 +63,7 @@ describe("verifyHierarchicalStructure", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(getSettings).mockReturnValue({ coordinationType: "sequential" } as any)
   })
 
   it("should return empty array when coordinationType is sequential", async () => {
@@ -67,7 +74,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should validate hierarchical structure correctly in hierarchical mode", async () => {
     // Mock hierarchical mode
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    vi.mocked(getSettings).mockReturnValue({ coordinationType: "hierarchical" } as any)
 
     const result = await verifyHierarchicalStructure(problemWorkflow)
     // Should pass with our new logic that supports worker chains
@@ -76,7 +83,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should detect invalid handoffs to non-existent nodes", async () => {
     // Mock hierarchical mode
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    vi.mocked(getSettings).mockReturnValue({ coordinationType: "hierarchical" } as any)
 
     const invalidHandoffWorkflow: WorkflowConfig = {
       entryNodeId: "orchestrator",
@@ -85,7 +92,7 @@ describe("verifyHierarchicalStructure", () => {
           nodeId: "orchestrator",
           description: "orchestrator",
           systemPrompt: "test",
-          modelName: MODELS.default,
+          modelName: getModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["worker1"],
@@ -94,7 +101,7 @@ describe("verifyHierarchicalStructure", () => {
           nodeId: "worker1",
           description: "worker",
           systemPrompt: "test",
-          modelName: MODELS.default,
+          modelName: getModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["non-existent-node"],

@@ -1,21 +1,18 @@
 // src/core/workflow/queueRun.ts
 
-import type { NodeLogs } from "@/messages/api/processResponse"
-import type {
-  AggregatedPayload,
-  MessageType,
-} from "@/messages/MessagePayload"
-import type { InvocationSummary } from "@/messages/summaries"
-import { WorkflowMessage } from "@/messages/WorkflowMessage"
-import type { ToolExecutionContext } from "@/tools/toolFactory"
-import type { Json } from "@/utils/clients/supabase/types"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import { updateWorkflowInvocationInDatabase } from "@/utils/persistence/workflow/registerWorkflow"
-import { updateWorkflowMemory } from "@/utils/persistence/workflow/updateNodeMemory"
-import { R, type RS } from "@/utils/types"
-import { getNodeRole } from "@/utils/validation/workflow/verifyHierarchical"
-import { CONFIG } from "@/runtime/settings/constants"
+import type { NodeLogs } from "@messages/api/processResponse"
+import type { AggregatedPayload, MessageType } from "@messages/MessagePayload"
+import type { InvocationSummary } from "@messages/summaries"
+import { WorkflowMessage } from "@messages/WorkflowMessage"
+import type { ToolExecutionContext } from "@tools/toolFactory"
+import type { Json } from "@utils/clients/supabase/types"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import { updateWorkflowInvocationInDatabase } from "@utils/persistence/workflow/registerWorkflow"
+import { updateWorkflowMemory } from "@utils/persistence/workflow/updateNodeMemory"
+import { R, type RS } from "@utils/types"
+import { getNodeRole } from "@utils/validation/workflow/verifyHierarchical"
+import { getLogging, getSettings } from "@utils/config/runtimeConfig"
 import { calculateFeedback } from "@workflow/actions/analyze/calculate-fitness/calculateFeedback"
 import { calculateFitness } from "@workflow/actions/analyze/calculate-fitness/calculateFitness"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
@@ -53,8 +50,8 @@ export type AggregateEvaluationResult = {
   averageFeedback: string
 }
 
-const coordinationType = CONFIG.coordinationType
-const verbose = CONFIG.logging.override.Memory ?? false
+const coordinationType = getSettings().coordinationType
+const verbose = getLogging().Memory ?? false
 
 export async function queueRun({
   workflow,
@@ -87,7 +84,7 @@ export async function queueRun({
   let nodeInvocations = 0
   const summaries: InvocationSummary[] = []
   const startTime = Date.now()
-  const maxNodeInvocations = CONFIG.workflow.maxNodeInvocations
+  const maxNodeInvocations = getSettings().workflow.maxNodeInvocations
   let lastNodeOutput = ""
 
   // Message queue to process
@@ -153,7 +150,7 @@ export async function queueRun({
 
     // Check if this node is waiting for multiple messages
     const nodeConfig = workflow
-      .getConfig()
+      .getWFConfig()
       .nodes.find((n) => n.nodeId === currentMessage.toNodeId)
     const waitingFor = nodeConfig?.waitingFor || nodeConfig?.waitFor
 
@@ -207,7 +204,7 @@ export async function queueRun({
 
     // Validate hierarchical message flow if coordination type is hierarchical
     if (coordinationType === "hierarchical") {
-      const workflowConfig = workflow.getConfig()
+      const workflowConfig = workflow.getWFConfig()
       const fromNodeRole = getNodeRole(
         currentMessage.fromNodeId,
         workflowConfig
@@ -255,7 +252,7 @@ export async function queueRun({
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
       workflowVersionId,
-      workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
+      workflowConfig: workflow.getWFConfig(), // Added for hierarchical role inference
       ...toolContext,
     })
 
@@ -296,7 +293,7 @@ export async function queueRun({
     if (updatedMemory) {
       // Update the node's memory in the workflow config
       const nodeConfig = workflow
-        .getConfig()
+        .getWFConfig()
         .nodes.find((n) => n.nodeId === targetNode.nodeId)
       if (nodeConfig) {
         nodeConfig.memory = updatedMemory
@@ -378,13 +375,13 @@ export async function queueRun({
 
   // Persist memory updates to database if any nodes updated their memory
   const hasMemoryUpdates = workflow
-    .getConfig()
+    .getWFConfig()
     .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
   if (hasMemoryUpdates) {
     try {
       await updateWorkflowMemory({
         workflowVersionId: workflow.getWorkflowVersionId(),
-        workflowConfig: workflow.getConfig(),
+        workflowConfig: workflow.getWFConfig(),
       })
 
       lgg.onlyIf(
@@ -435,7 +432,10 @@ export const evaluateQueueRun = async ({
   })
 
   let feedbackResult: RS<string> | null = null
-  if (CONFIG.improvement.flags.operatorsWithFeedback) {
+  if (
+    getSettings().improvement.flags.operatorsWithFeedback &&
+    feedbackResult !== null
+  ) {
     feedbackResult = await calculateFeedback({
       nodeOutputs: queueRunResult.nodeOutputs,
       evaluation: evaluation,

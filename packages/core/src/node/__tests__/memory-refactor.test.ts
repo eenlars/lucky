@@ -1,11 +1,11 @@
-import { CONFIG } from "@/runtime/settings/constants"
+import { getSettings } from "@utils/config/runtimeConfig"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock dependencies
-vi.mock("@/core/messages/api/sendAI")
-vi.mock("@/core/node/makeLearning")
-vi.mock("@/core/messages/summaries")
-vi.mock("@/core/node/extractToolLogs")
+vi.mock("@messages/api/sendAI")
+vi.mock("@node/makeLearning")
+vi.mock("@messages/summaries")
+vi.mock("@node/extractToolLogs")
 
 describe("InvocationPipeline Memory Refactor", () => {
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("InvocationPipeline Memory Refactor", () => {
 
   it("should have createSummary available", () => {
     // Test that createSummary is imported and available
-    expect(typeof import("@/core/messages/summaries")).toBe("object")
+    expect(typeof import("@/messages/summaries")).toBe("object")
   })
 
   it("should have extractToolLogs helper available", () => {
@@ -28,10 +28,10 @@ describe("InvocationPipeline Memory Refactor", () => {
   })
 
   it("should support switching between experimental and traditional modes", () => {
-    // Test that CONFIG.tools.experimentalMultiStepLoop exists and can be read
-    expect(typeof CONFIG.tools.experimentalMultiStepLoop).toBe("boolean")
+    // Test that getSettings().tools.experimentalMultiStepLoop exists and can be read
+    expect(typeof getSettings().tools.experimentalMultiStepLoop).toBe("boolean")
 
     // Test that it has a defined value
-    expect(CONFIG.tools.experimentalMultiStepLoop).toBeDefined()
+    expect(getSettings().tools.experimentalMultiStepLoop).toBeDefined()
   })
 })

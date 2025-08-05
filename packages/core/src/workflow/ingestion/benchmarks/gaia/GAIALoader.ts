@@ -1,6 +1,6 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
+import type { GAIAInstance } from "@workflow/ingestion/ingestion.types"
 import { GAIALocalLoader } from "./GAIALocalLoader"
-import type { GAIAInstance } from "@/workflow/ingestion/ingestion.types"
 
 export class GAIALoader {
   private static readonly DATASET = "gaia-benchmark/GAIA"

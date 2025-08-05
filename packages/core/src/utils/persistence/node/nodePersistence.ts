@@ -1,15 +1,15 @@
 // src/core/node/persistence/nodePersistence.ts
 
-import { saveNodeVersionToDB } from "@/utils/persistence/node/saveNode"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
+import { saveNodeVersionToDB } from "@utils/persistence/node/saveNode"
+import { lgg } from "@logger"
+import { getLogging } from "@utils/config/runtimeConfig"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 /**
  * Manages persistence operations for workflow nodes.
  */
 export class NodePersistenceManager {
-  static verbose = CONFIG.logging.override.Memory
+  static verbose = getLogging().Memory
   constructor(
     private readonly nodeId: string,
     private readonly config: WorkflowNodeConfig,
@@ -17,7 +17,7 @@ export class NodePersistenceManager {
     private readonly skipDatabasePersistence: boolean = false
   ) {
     // Initialize memory from config
-    this.memory = { ...(config.memory ?? {}) }
+    this.memory = { ...(this.config.memory ?? {}) }
   }
 
   /**

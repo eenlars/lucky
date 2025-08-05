@@ -1,9 +1,8 @@
-import { normalizeModelName } from "@/messages/api/sendAI"
-import { supabase } from "@/utils/clients/supabase/client"
-import type { Json, TablesInsert } from "@/utils/clients/supabase/types"
-import { isNir } from "@/utils/common/isNir"
-import { isJSON, JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
+import { supabase } from "@utils/clients/supabase/client"
+import type { Json, TablesInsert } from "@utils/clients/supabase/types"
+import { isNir } from "@utils/common/isNir"
+import { isJSON, JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@workflow/schema/workflow.types"
 
 export const saveNodeVersionToDB = async ({

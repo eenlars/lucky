@@ -42,7 +42,7 @@ GAIA is a comprehensive benchmark that tests AI capabilities including reasoning
 ### Basic Usage
 
 ```typescript
-import { IngestionLayer } from "@/core/workflow/ingestion/IngestionLayer"
+import { IngestionLayer } from "@workflow/ingestion/IngestionLayer"
 
 const gaiaEvaluation = {
   type: "gaia",

@@ -1,4 +1,4 @@
-import { lgg } from "@/logger"
+import { lgg } from "@logger"
 
 import { codeToolAutoDiscovery } from "@tools/code/AutoDiscovery"
 import { codeToolRegistry } from "@tools/code/CodeToolRegistry"

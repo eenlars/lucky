@@ -1,15 +1,9 @@
 import {
-  isActiveModel,
-  MODEL_CONFIG,
   pricing,
   type ActiveModelName,
   type ModelName,
-} from "@/utils/models/models"
-
-// Get active models from new provider structure
-const getActiveModels = (): ReadonlyArray<ActiveModelName> => {
-  return MODEL_CONFIG.activeModels.filter(isActiveModel) as ActiveModelName[]
-}
+} from "@utils/models/models"
+import { getActiveModels } from "@utils/models/functions"
 
 const getActiveModelsWithInfo = (): string => {
   return getActiveModels()

@@ -1,4 +1,4 @@
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 // must have at least one node

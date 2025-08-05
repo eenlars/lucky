@@ -1,4 +1,4 @@
-import { truncater } from "@/utils/common/llmify"
+import { truncater } from "@utils/common/llmify"
 
 export const CreateSummaryPrompt = {
   summaryPromptText: (content: string): string => {

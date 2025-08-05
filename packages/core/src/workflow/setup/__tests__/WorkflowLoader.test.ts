@@ -1,4 +1,4 @@
-import { PATHS } from "@/runtime/settings/constants"
+import { getPaths } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { WorkflowConfigHandler, loadSingleWorkflow } from "../WorkflowLoader"
 
@@ -22,7 +22,7 @@ describe("WorkflowConfigHandler", () => {
   })
 
   it("should export convenience function", async () => {
-    const workflow = await loadSingleWorkflow(PATHS.setupFile)
+    const workflow = await loadSingleWorkflow(getPaths().setupFile)
 
     expect(workflow).toBeDefined()
     expect(workflow.entryNodeId).toBeDefined()

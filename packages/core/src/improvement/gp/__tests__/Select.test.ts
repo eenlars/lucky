@@ -4,11 +4,11 @@ import {
   createMockGenome,
   createMockWorkflowScore,
   setupCoreTest,
-} from "@/utils/__tests__/setup/coreMocks"
+} from "@utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     evolution: {
       GP: {
@@ -52,23 +52,23 @@ const mockLggWarn = vi.fn()
 const mockGenomeCreateRandom = vi.fn()
 
 // mock external dependencies
-vi.mock("@/core/improvement/GP/resources/debug/dummyGenome", () => ({
+vi.mock("@improvement/GP/resources/debug/dummyGenome", () => ({
   createDummyGenome: mockCreateDummyGenome,
 }))
 
-vi.mock("@/core/improvement/GP/operators/Crossover", () => ({
+vi.mock("@improvement/GP/operators/Crossover", () => ({
   Crossover: {
     crossover: mockCrossoverCrossover,
   },
 }))
 
-vi.mock("@/core/improvement/GP/operators/Mutations", () => ({
+vi.mock("@improvement/GP/operators/Mutations", () => ({
   Mutations: {
     mutateWorkflowGenome: mockMutationsMutate,
   },
 }))
 
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: mockLggLog,
     info: mockLggInfo,
@@ -77,7 +77,7 @@ vi.mock("@/core/utils/logging/Logger", () => ({
   },
 }))
 
-vi.mock("@/core/improvement/GP/Genome", () => ({
+vi.mock("@improvement/GP/Genome", () => ({
   Genome: {
     createRandom: mockGenomeCreateRandom,
   },
@@ -86,7 +86,7 @@ vi.mock("@/core/improvement/GP/Genome", () => ({
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
 // Mock validation config directly
-vi.mock("@/core/validation/message/validationConfig", () => ({
+vi.mock("@validation/message/validationConfig", () => ({
   DEFAULT_VALIDATION_CONFIG: {
     enabled: false,
     thresholds: {
@@ -142,7 +142,7 @@ describe("Select", () => {
     })
 
     it("should return dummy genome in verbose mode", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const population = createMockPopulation([])
       const config = createMockEvolutionSettings()
@@ -157,13 +157,13 @@ describe("Select", () => {
     })
 
     it("should perform tournament selection", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
-        createMockGenome(0, [], createMockWorkflowScore(0.6)),
-        createMockGenome(0, [], createMockWorkflowScore(0.8)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.6) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
       ])
 
       const population = createMockPopulation(mockGenomes, 0)
@@ -182,7 +182,7 @@ describe("Select", () => {
     })
 
     it("should handle empty population", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const population = createMockPopulation([])
       const config = createMockEvolutionSettings()
@@ -196,13 +196,9 @@ describe("Select", () => {
     })
 
     it("should handle single genome population", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
-      const mockGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.8)
-      )
+      const mockGenome = await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } })
       const population = createMockPopulation([mockGenome])
       const config = createMockEvolutionSettings({ populationSize: 2 })
 
@@ -215,12 +211,12 @@ describe("Select", () => {
     })
 
     it("should select fittest genomes for tournament", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
-        createMockGenome(0, [], createMockWorkflowScore(0.6)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.6) } }),
       ])
 
       const population = createMockPopulation(mockGenomes, 0)
@@ -240,10 +236,10 @@ describe("Select", () => {
 
   describe("selectSurvivors", () => {
     it("should return dummy genomes in verbose mode", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
-      const mockParents = [await createMockGenome(0)]
-      const mockOffspring = [await createMockGenome(1)]
+      const mockParents = [await createMockGenome()]
+      const mockOffspring = [await createMockGenome()]
       const config = createMockEvolutionSettings({ populationSize: 2 })
 
       const result = await (Select as any).selectSurvivors({
@@ -257,15 +253,15 @@ describe("Select", () => {
     })
 
     it("should combine parents and offspring for selection", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockParents = [
-        await createMockGenome(0, [], createMockWorkflowScore(0.8)),
-        await createMockGenome(0, [], createMockWorkflowScore(0.7)),
+        await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
+        await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
       ]
       const mockOffspring = [
-        await createMockGenome(1, [], createMockWorkflowScore(0.9)),
-        await createMockGenome(1, [], createMockWorkflowScore(0.6)),
+        await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.6) } }),
       ]
       const config = createMockEvolutionSettings({ populationSize: 3 })
 
@@ -286,7 +282,7 @@ describe("Select", () => {
     })
 
     it("should handle empty parents and offspring", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const config = createMockEvolutionSettings({ populationSize: 0 })
 
@@ -301,16 +297,16 @@ describe("Select", () => {
     })
 
     it("should respect population size limit", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockParents = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.8)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
       ])
       const mockOffspring = await Promise.all([
-        createMockGenome(1, [], createMockWorkflowScore(0.95)),
-        createMockGenome(1, [], createMockWorkflowScore(0.85)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.95) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.85) } }),
       ])
       const config = createMockEvolutionSettings({ populationSize: 3 })
 
@@ -327,12 +323,12 @@ describe("Select", () => {
 
   describe("tournamentSelection", () => {
     it("should select winner from tournament", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
-        createMockGenome(0, [], createMockWorkflowScore(0.6)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.6) } }),
       ])
 
       // tournament selection should pick highest fitness
@@ -343,13 +339,9 @@ describe("Select", () => {
     })
 
     it("should handle single genome tournament", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
-      const mockGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.8)
-      )
+      const mockGenome = await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } })
 
       const winner = await (Select as any).tournamentSelection([mockGenome], 1)
 
@@ -357,7 +349,7 @@ describe("Select", () => {
     })
 
     it("should handle empty tournament", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const winner = await (Select as any).tournamentSelection([], 2)
 
@@ -365,11 +357,11 @@ describe("Select", () => {
     })
 
     it("should handle tournament size larger than population", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
       ])
 
       const winner = await (Select as any).tournamentSelection(mockGenomes, 5)
@@ -381,13 +373,13 @@ describe("Select", () => {
 
   describe("elite selection", () => {
     it("should preserve elite individuals", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.8)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
-        createMockGenome(0, [], createMockWorkflowScore(0.6)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.6) } }),
       ])
 
       const config = createMockEvolutionSettings({
@@ -411,7 +403,7 @@ describe("Select", () => {
 
   describe("genetic operator selection", () => {
     it("should correctly select crossover, mutation, and immigration based on rates", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       // Mock Math.random to test specific ranges
       const originalRandom = Math.random
@@ -430,7 +422,7 @@ describe("Select", () => {
         crossoverRate: 0.6,
         mutationRate: 0.3,
         populationSize: 10,
-        lambda_offspring_to_produce: 10,
+        offspringCount: 10,
       })
 
       // Set up specific random values to trigger each operator
@@ -448,7 +440,7 @@ describe("Select", () => {
         selectRandomParents: (count: number) =>
           Array(count)
             .fill(null)
-            .map(() => createMockGenome(0)),
+            .map(() => createMockGenome()),
       }
 
       // Clear previous mock calls
@@ -492,18 +484,10 @@ describe("Select", () => {
 
   describe("fitness-based selection", () => {
     it("should prioritize valid genomes", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
-      const validGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.7)
-      )
-      const invalidGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.9)
-      )
+      const validGenome = await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } })
+      const invalidGenome = await createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } })
 
       const config = createMockEvolutionSettings({ populationSize: 1 })
 
@@ -519,11 +503,11 @@ describe("Select", () => {
     })
 
     it("should handle all invalid genomes", async () => {
-      const { Select } = await import("@/core/improvement/gp/Select")
+      const { Select } = await import("@improvement/gp/Select")
 
       const mockGenomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
-        createMockGenome(0, [], createMockWorkflowScore(0.8)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
       ])
 
       const config = createMockEvolutionSettings({ populationSize: 1 })

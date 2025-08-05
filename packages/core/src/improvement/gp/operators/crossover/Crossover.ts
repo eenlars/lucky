@@ -3,23 +3,24 @@
  * llm-based crossover operations for prompt evolution
  */
 
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
-import { verifyWorkflowConfig } from "@/utils/validation/workflow"
-import { formalizeWorkflow } from "@/workflow/actions/generate/formalizeWorkflow"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@/runtime/settings/constants"
-import type { Genome } from "@gp/Genome"
 import {
   getCrossoverVariability,
   selectCrossoverType,
-} from "@/improvement/gp/operators/crossover/crossoverStrategy"
+} from "@improvement/gp/operators/crossover/crossoverStrategy"
+import { lgg } from "@utils/logging/Logger"
+import { R, type RS } from "@utils/types"
+import { verifyWorkflowConfig } from "@utils/validation/workflow"
+import { formalizeWorkflow } from "@workflow/actions/generate/formalizeWorkflow"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { Genome } from "@gp/Genome"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import { failureTracker } from "@gp/resources/tracker"
 import { workflowConfigToGenome } from "@gp/resources/wrappers"
+import { getEvolutionConfig, getSettings } from "@utils/config/runtimeConfig"
 import type { EvolutionContext } from "../../resources/types"
 
-const operatorsWithFeedback = CONFIG.improvement.flags.operatorsWithFeedback
+const operatorsWithFeedback =
+  getSettings().improvement.flags.operatorsWithFeedback
 
 export class Crossover {
   /**
@@ -117,7 +118,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
     )
     const [parent1, parent2] = parents
 
-    if (CONFIG.evolution.GP.verbose || verbose) {
+    if (getEvolutionConfig().GP.verbose || verbose) {
       lgg.log(`Crossover between ${parentWorkflowVersionIds.join(", ")}`)
       return {
         success: true,

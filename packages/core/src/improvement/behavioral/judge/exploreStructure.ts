@@ -1,9 +1,9 @@
-import { getModels } from "@/config"
-import { sendAI } from "@/messages/api/sendAI"
-import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
-import { R, type RS } from "@/utils/types"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
+import { R, type RS } from "@utils/types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { SharedWorkflowPrompts } from "@prompts/workflowAnalysisPrompts"
 import z from "zod"
 
 export interface StructureExplorationResult {

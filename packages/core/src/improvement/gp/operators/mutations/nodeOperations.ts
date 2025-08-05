@@ -2,8 +2,8 @@
  * node addition and deletion operations
  */
 
-import { lgg } from "@/utils/logging/Logger"
-import { Workflow } from "@/workflow/Workflow"
+import { lgg } from "@utils/logging/Logger"
+import { Workflow } from "@workflow/Workflow"
 import { failureTracker } from "@gp/resources/tracker"
 import type {
   WorkflowConfig,

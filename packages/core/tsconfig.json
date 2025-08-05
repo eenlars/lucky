@@ -15,12 +15,10 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/core/*": ["./src/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/logger": ["./src/utils/logging/Logger.ts"],
-      "@/benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
-      "@/runtime/*": ["../../example/*"],
+      "@types/*": ["./src/types/*"],
+      "@logger": ["./src/utils/logging/Logger.ts"],
+      "@benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
+      "@example/*": ["../../example/*"],
       "@workflow/*": ["./src/workflow/*"],
       "@node/*": ["./src/node/*"],
       "@messages/*": ["./src/messages/*"],
@@ -31,10 +29,17 @@
       "@improvement/*": ["./src/improvement/*"],
       "@behavioral/*": ["./src/improvement/behavioral/*"],
       "@gp/*": ["./src/improvement/gp/*"],
-      "@env": ["./env.mjs"]
+      "@settings/*": ["./src/settings/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@env": ["./env.mjs"],
+      "@/*": ["./src/*"]
     },
     "allowSyntheticDefaultImports": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js"
+  ],
   "exclude": ["node_modules"]
 }

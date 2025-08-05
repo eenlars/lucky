@@ -1,20 +1,20 @@
-import { isNir } from "@/utils/common/isNir"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
+import { isNir } from "@utils/common/isNir"
+import { lgg } from "@utils/logging/Logger"
+import { R, type RS } from "@utils/types"
 import {
   calculateAverageFeedback,
   calculateAverageFitness,
-} from "@/workflow/actions/analyze/calculate-fitness/average"
+} from "@workflow/actions/analyze/calculate-fitness/average"
 import {
   evaluateQueueRun,
   queueRun,
   type AggregateEvaluationResult,
   type EvaluationResult,
   type QueueRunResult,
-} from "@/workflow/runner/queueRun"
-import { guard } from "@/workflow/schema/errorMessages"
-import type { Workflow } from "@/workflow/Workflow"
-import { CONFIG } from "@/runtime/settings/constants"
+} from "@workflow/runner/queueRun"
+import { guard } from "@workflow/schema/errorMessages"
+import type { Workflow } from "@workflow/Workflow"
+import { getSettings } from "@utils/config/runtimeConfig"
 
 export type RunResult = {
   workflowInvocationId: string
@@ -32,7 +32,7 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
     `[runAllIO] Starting for ${workflow.getWorkflowVersionId()} with ${workflowIo.length} IO cases`
   )
 
-  const batchSize = CONFIG.limits.maxConcurrentWorkflows
+  const batchSize = getSettings().limits.maxConcurrentWorkflows
   const results: RunResult[] = []
 
   for (let i = 0; i < workflowIo.length; i += batchSize) {
@@ -153,7 +153,7 @@ export async function aggregateResults(
   const evalFeedback = evals.map((r) => r.feedback)
   guard(evalFeedback.length > 0, "No feedback to average")
   console.log(evalFeedback, evals)
-  if (CONFIG.improvement.flags.operatorsWithFeedback) {
+  if (getSettings().improvement.flags.operatorsWithFeedback) {
     const { success, data, error } =
       await calculateAverageFeedback(evalFeedback)
     if (!success) {

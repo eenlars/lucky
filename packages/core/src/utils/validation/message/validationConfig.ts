@@ -1,4 +1,4 @@
-import { CONFIG } from "@/runtime/settings/constants"
+import { getSettings } from "@utils/config/runtimeConfig"
 
 export interface ValidationConfig {
   enabled: boolean
@@ -15,7 +15,7 @@ export interface ValidationConfig {
 }
 
 export const DEFAULT_VALIDATION_CONFIG: ValidationConfig = {
-  enabled: CONFIG.verification.enableOutputValidation,
+  enabled: getSettings().verification.enableOutputValidation,
   thresholds: {
     proceedMinScore: 7,
     retryMinScore: 4,

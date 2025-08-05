@@ -1,25 +1,25 @@
-import { getModelConfig } from "@/config"
-import { isNir } from "@/utils/common/isNir"
-import { pricing } from "@/utils/models/models"
+import { isNir } from "@utils/common/isNir"
+import { getModelSettings } from "@utils/config/runtimeConfig"
+import { pricing } from "@utils/models/models"
 import {
   everyNodeIsConnectedToStartNode,
   startNodeIsConnectedToEndNode,
-} from "@/utils/validation/workflow/connectionVerification"
-import { verifyAtLeastOneNode } from "@/utils/validation/workflow/simple"
+} from "@utils/validation/workflow/connectionVerification"
+import { verifyAtLeastOneNode } from "@utils/validation/workflow/simple"
 import {
   verifyAllToolsAreActive,
   verifyMaxToolsPerAgent,
   verifyToolSetEachNodeIsUnique,
   verifyToolsUnique,
-} from "@/utils/validation/workflow/toolsVerification"
+} from "@utils/validation/workflow/toolsVerification"
 import type {
   ValidationOptions,
   VerificationErrors,
   VerificationResult,
-} from "@/utils/validation/workflow/verify.types"
-import { verifyNoCycles } from "@/utils/validation/workflow/verifyDirectedGrapht"
-import { verifyHierarchicalStructure } from "@/utils/validation/workflow/verifyHierarchical"
-import { verifyNodes } from "@/utils/validation/workflow/verifyOneNode"
+} from "@utils/validation/workflow/verify.types"
+import { verifyNoCycles } from "@utils/validation/workflow/verifyDirectedGrapht"
+import { verifyHierarchicalStructure } from "@utils/validation/workflow/verifyHierarchical"
+import { verifyNodes } from "@utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 // verify that each node has a modelname that exists
@@ -59,7 +59,7 @@ export const verifyModelsAreActive = async (
 ): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (node.modelName && getModelConfig().inactive.has(node.modelName)) {
+    if (node.modelName && getModelSettings().inactive.has(node.modelName)) {
       errors.push(
         `Node '${node.nodeId}' uses inactive model: ${node.modelName}`
       )
@@ -115,7 +115,7 @@ export const verifyWorkflowConfig = async (
   if (config.nodes.length === 1) {
     // do not change the console.warn to lgg.warn
     console.warn(
-      "only one node found—check node config. consider adding more nodes."
+      "only one node found—check node getSettings(). consider adding more nodes."
     )
   }
 

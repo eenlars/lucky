@@ -1,17 +1,17 @@
-import { Population } from "@/improvement/gp/Population"
-import { Select } from "@/improvement/gp/Select"
+import { Population } from "@improvement/gp/Population"
+import { Select } from "@improvement/gp/Select"
 import {
   createMockEvaluationInputGeneric,
-  createMockEvolutionConfig,
+  createMockFlowEvolutionConfig,
   createMockGenome,
   createMockWorkflowConfig,
   createMockWorkflowScore,
-} from "@/utils/__tests__/setup/coreMocks"
-import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
+} from "@utils/__tests__/setup/coreMocks"
+import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants
-vi.mock("@/core/types", () => ({
+vi.mock("@types", () => ({
   runtimeConstants: {
     paths: {
       loggingFolder: "/tmp/test-logs",
@@ -20,7 +20,7 @@ vi.mock("@/core/types", () => ({
   },
 }))
 
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     logging: { level: "info", override: { GP: true } },
     evolution: {
@@ -83,7 +83,7 @@ vi.mock("../RunService", () => ({
 
 // Mock Genome.createRandom
 let mockGenomeCounter = 0
-vi.mock("@/core/improvement/GP/Genome", () => ({
+vi.mock("@improvement/GP/Genome", () => ({
   Genome: {
     createRandom: vi.fn().mockImplementation(() => {
       const id = `test-genome-${++mockGenomeCounter}`
@@ -114,7 +114,7 @@ vi.mock("@/core/improvement/GP/Genome", () => ({
 }))
 
 // Mock EvolutionUtils
-vi.mock("@/core/improvement/GP/resources/utils", () => ({
+vi.mock("@improvement/GP/resources/utils", () => ({
   EvolutionUtils: {
     calculateStats: vi.fn().mockImplementation((genomes) => {
       const evaluatedGenomes = genomes.filter((g: any) => g.isEvaluated)
@@ -137,7 +137,7 @@ vi.mock("@/core/improvement/GP/resources/utils", () => ({
 }))
 
 // Mock logger
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     info: vi.fn(),
     warn: vi.fn(),
@@ -146,7 +146,7 @@ vi.mock("@/core/utils/logging/Logger", () => ({
 }))
 
 // Mock Select
-vi.mock("@/core/improvement/GP/Select", () => ({
+vi.mock("@improvement/GP/Select", () => ({
   Select: {
     selectRandomParents: vi.fn().mockImplementation((population, count) => {
       const genomes = population.getGenomes()
@@ -171,16 +171,7 @@ describe("Population", () => {
     // Reset all mocks
     vi.clearAllMocks()
 
-    config = createMockEvolutionConfig({
-      populationSize: 10,
-      generations: 5,
-      eliteSize: 2,
-      tournamentSize: 3,
-      numberOfParentsCreatingOffspring: 10,
-      offspringCount: 10,
-    }, {
-      mode: "GP" as const,
-    })
+    config = createMockFlowEvolutionConfig()
     const runService = new RunService()
     population = new Population(config, runService)
   })
@@ -666,7 +657,8 @@ describe("Population", () => {
 
     describe("Edge Cases", () => {
       it("should handle very small population sizes", async () => {
-        const smallConfig = createMockEvolutionConfig({ populationSize: 1 }, { mode: "GP" as const })
+        const smallConfig = createMockFlowEvolutionConfig()
+        smallConfig.GP.populationSize = 1
         const smallPopulation = new Population(smallConfig, new RunService())
         const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -682,7 +674,8 @@ describe("Population", () => {
       })
 
       it("should handle zero population size gracefully", () => {
-        const zeroConfig = createMockEvolutionConfig({ populationSize: 0 }, { mode: "GP" as const })
+        const zeroConfig = createMockFlowEvolutionConfig()
+        zeroConfig.GP.populationSize = 0
         const zeroPopulation = new Population(zeroConfig, new RunService())
 
         expect(zeroPopulation.size()).toBe(0)
@@ -699,7 +692,7 @@ describe("Population", () => {
             undefined as any,
             "dummy-problem-analysis"
           ),
-          createMockGenome().then((g) => population.addGenome(g)),
+          createMockGenome().then((g: any) => population.addGenome(g)),
         ]
 
         await expect(Promise.all(promises)).resolves.not.toThrow()
@@ -708,7 +701,8 @@ describe("Population", () => {
 
     describe("Performance", () => {
       it("should initialize large populations efficiently", async () => {
-        const largeConfig = createMockEvolutionConfig({ populationSize: 50 }, { mode: "GP" as const })
+        const largeConfig = createMockFlowEvolutionConfig()
+        largeConfig.GP.populationSize = 50
         const largePopulation = new Population(largeConfig, new RunService())
         const evaluationInput = createMockEvaluationInputGeneric()
 

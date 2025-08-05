@@ -1,21 +1,25 @@
 // src/core/main.ts
 
-import { getConfig, getEvolutionConfig, getPaths } from "@/config"
-import { prepareProblem } from "@/improvement/behavioral/prepare/workflow/prepareMain"
-import { EvolutionEngine } from "@/improvement/gp/evolutionengine"
-import { lgg } from "@/logger"
-import { SELECTED_QUESTION } from "@/runtime/settings/inputs"
+import { prepareProblem } from "@improvement/behavioral/prepare/workflow/prepareMain"
+import { EvolutionEngine } from "@improvement/gp/evolutionengine"
 import {
   ArgumentParsingError,
   parseCliArguments,
-} from "@/utils/cli/argumentParser"
-import { displayResults } from "@/utils/logging/displayResults"
-import { SpendingTracker } from "@/utils/spending/SpendingTracker"
-import { guard } from "@/workflow/schema/errorMessages"
+} from "@utils/cli/argumentParser"
+import {
+  getEvolutionConfig,
+  getPaths,
+  getSettings,
+} from "@utils/config/runtimeConfig"
+import { displayResults } from "@utils/logging/displayResults"
+import { SpendingTracker } from "@utils/spending/SpendingTracker"
+import { guard } from "@workflow/schema/errorMessages"
+import { SELECTED_QUESTION } from "@example/settings/inputs"
 import { GenomeEvaluationResults, WorkflowGenome } from "@gp/resources/gp.types"
 import { RunService } from "@gp/RunService"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
 import { GPEvaluatorAdapter } from "@improvement/evaluators/GPEvaluatorAdapter"
+import { lgg } from "@logger"
 import {
   loadSingleWorkflow,
   persistWorkflow,
@@ -131,11 +135,11 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     await runService.createRun(SELECTED_QUESTION.goal, config)
 
     // initialize spending tracker
-    if (getConfig().limits.enableSpendingLimits) {
+    if (getSettings().limits.enableSpendingLimits) {
       SpendingTracker.getInstance().initialize(
-        getConfig().limits.maxCostUsdPerRun
+        getSettings().limits.maxCostUsdPerRun
       )
-      lgg.log(`spending limit: $${getConfig().limits.maxCostUsdPerRun}`)
+      lgg.log(`spending limit: $${getSettings().limits.maxCostUsdPerRun}`)
     }
 
     let setup = await loadSingleWorkflow(cliSetupFile ?? getPaths().setupFile)
@@ -261,7 +265,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
 
       stats.failed++
       lgg.error(
-        `💥 Iteration ${iteration} permanently failed. Continuing with last successful config.`
+        `💥 Iteration ${iteration} permanently failed. Continuing with last successful getSettings().`
       )
       setup = lastSuccessfulConfig
       return false
@@ -327,22 +331,12 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
   )
 
   // initialize spending tracker for GP
-  if (getConfig().limits.enableSpendingLimits) {
+  if (getSettings().limits.enableSpendingLimits) {
     SpendingTracker.getInstance().initialize(
-      getConfig().limits.maxCostUsdPerRun
+      getSettings().limits.maxCostUsdPerRun
     )
-    lgg.log(`spending limit: $${getConfig().limits.maxCostUsdPerRun}`)
+    lgg.log(`spending limit: $${getSettings().limits.maxCostUsdPerRun}`)
   }
-
-  // create evolution config for aggregated evaluation
-  const evolutionSettings = EvolutionEngine.createDefaultConfig({
-    offspringCount: Math.floor(GP_POPULATION_SIZE * 0.8),
-    maxCostUSD: getConfig().limits.maxCostUsdPerRun,
-    maxEvaluationsPerHour: 500,
-    noveltyWeight: 0.5,
-    immigrantRate: 3,
-    immigrantInterval: 5,
-  })
 
   const { problemAnalysis, workflowIO, newGoal } =
     await prepareProblem(SELECTED_QUESTION)

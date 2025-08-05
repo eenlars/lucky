@@ -1,8 +1,8 @@
-import { sendAI } from "@/messages/api/sendAI"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { IngestionLayer } from "@/workflow/ingestion/IngestionLayer"
-import { MODELS, PATHS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import { IngestionLayer } from "@workflow/ingestion/IngestionLayer"
 import { listFiles } from "@huggingface/hub"
+import { getModels, getPaths } from "@utils/config/runtimeConfig"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import { join } from "path"
 import { z } from "zod"
@@ -42,7 +42,7 @@ async function downloadSWEBenchDataset(): Promise<void> {
 
   try {
     // Ensure downloads directory exists
-    const downloadsDir = join(PATHS.root, "..", "downloads")
+    const downloadsDir = join(getPaths().root, "..", "downloads")
     await mkdir(downloadsDir, { recursive: true })
 
     // Try to download from different repository names
@@ -199,7 +199,7 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
         },
         { role: "user", content: validationPrompt },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "text",
       opts: {
         reasoning: true,
@@ -383,7 +383,7 @@ Be thorough in your analysis and provide a working solution.`
         { role: "system", content: systemPrompt },
         { role: "user", content: workflowInput },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: solutionSchema,
       opts: {

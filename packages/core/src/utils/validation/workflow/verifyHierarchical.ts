@@ -1,6 +1,6 @@
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { CONFIG } from "@/runtime/settings/constants"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getSettings } from "@utils/config/runtimeConfig"
 
 /**
  * Verifies that a workflow follows hierarchical coordination constraints:
@@ -13,7 +13,7 @@ export const verifyHierarchicalStructure = async (
   config: WorkflowConfig
 ): Promise<VerificationErrors> => {
   // Only validate if coordination type is hierarchical
-  if (CONFIG.coordinationType !== "hierarchical") return []
+  if (getSettings().coordinationType !== "hierarchical") return []
 
   const errors: string[] = []
   const orchestratorId = config.entryNodeId
@@ -60,7 +60,8 @@ export const isOrchestrator = (
   config: WorkflowConfig
 ): boolean => {
   return (
-    CONFIG.coordinationType === "hierarchical" && nodeId === config.entryNodeId
+    getSettings().coordinationType === "hierarchical" &&
+    nodeId === config.entryNodeId
   )
 }
 
@@ -71,6 +72,6 @@ export const getNodeRole = (
   nodeId: string,
   config: WorkflowConfig
 ): "orchestrator" | "worker" | null => {
-  if (CONFIG.coordinationType !== "hierarchical") return null
+  if (getSettings().coordinationType !== "hierarchical") return null
   return nodeId === config.entryNodeId ? "orchestrator" : "worker"
 }

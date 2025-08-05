@@ -20,15 +20,15 @@ const mockLggError = vi.fn()
 const mockLggWarn = vi.fn()
 
 // Mock external dependencies
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 
-vi.mock("@/core/utils/common/utils", () => ({
+vi.mock("@utils/common/utils", () => ({
   genShortId: mockGenShortId,
 }))
 
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: mockLggLog,
     error: mockLggError,
@@ -48,7 +48,7 @@ describe("getLastCompletedGeneration", () => {
       error: null,
     })
 
-    const { RunService } = await import("@/core/improvement/gp/RunService")
+    const { RunService } = await import("@improvement/gp/RunService")
     const service = new RunService()
 
     const result = await service.getLastCompletedGeneration("test-run-id")
@@ -77,7 +77,7 @@ describe("getLastCompletedGeneration", () => {
       error: { code: "PGRST116" },
     })
 
-    const { RunService } = await import("@/core/improvement/gp/RunService")
+    const { RunService } = await import("@improvement/gp/RunService")
     const service = new RunService()
     // service.setRunId("test-run-id") -> old way
 
@@ -94,7 +94,7 @@ describe("getLastCompletedGeneration", () => {
       error: dbError,
     })
 
-    const { RunService } = await import("@/core/improvement/gp/RunService")
+    const { RunService } = await import("@improvement/gp/RunService")
     const service = new RunService()
     // service.setRunId("test-run-id") -> old way
 
@@ -111,7 +111,7 @@ describe("getLastCompletedGeneration", () => {
       error: null,
     })
 
-    const { RunService } = await import("@/core/improvement/gp/RunService")
+    const { RunService } = await import("@improvement/gp/RunService")
     const service = new RunService()
     // service.setRunId("test-run-id") -> old way
 

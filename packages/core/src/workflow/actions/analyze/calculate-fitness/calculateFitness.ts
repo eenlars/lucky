@@ -1,10 +1,10 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { zodToJson } from "@/messages/utils/zodToJson"
-import { isNir } from "@/utils/common/isNir"
-import { llmify } from "@/utils/common/llmify"
-import { R, type RS } from "@/utils/types"
-import { lgg } from "@/logger"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { zodToJson } from "@messages/utils/zodToJson"
+import { isNir } from "@utils/common/isNir"
+import { llmify } from "@utils/common/llmify"
+import { R, type RS } from "@utils/types"
+import { lgg } from "@logger"
+import { getModels, getSettings } from "@utils/config/runtimeConfig"
 import {
   FitnessOfWorkflowSchema,
   type FitnessFunctionInput,
@@ -73,7 +73,7 @@ if not good, you need to give examples why it's not good.
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    model: MODELS.fitness,
+    model: getModels().fitness,
     mode: "structured",
     schema: FitnessOfWorkflowSchema,
     opts: {
@@ -99,9 +99,9 @@ if not good, you need to give examples why it's not good.
   const gatedCostBonus = normalizedCost * accuracyGate
 
   const finalFitness =
-    effectiveScore * CONFIG.improvement.fitness.weights.score +
-    gatedTimeBonus * CONFIG.improvement.fitness.weights.time +
-    gatedCostBonus * CONFIG.improvement.fitness.weights.cost
+    effectiveScore * getSettings().improvement.fitness.weights.score +
+    gatedTimeBonus * getSettings().improvement.fitness.weights.time +
+    gatedCostBonus * getSettings().improvement.fitness.weights.cost
 
   // Cap at 100 to allow promising workflows higher scores
   const cappedFinalScore = Math.min(100, Math.round(finalFitness))

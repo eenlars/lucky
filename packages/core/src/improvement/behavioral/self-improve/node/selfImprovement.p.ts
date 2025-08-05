@@ -1,6 +1,6 @@
-import type { AgentDescriptionsNoToolsConfigZod } from "@/node/schemas/agentNoTools"
-import { createAgentPrompt } from "@/prompts/createAgent"
-import { llmify } from "@/utils/common/llmify"
+import type { AgentDescriptionsNoToolsConfigZod } from "@node/schemas/agentNoTools"
+import { llmify } from "@utils/common/llmify"
+import { createAgentPrompt } from "@prompts/createAgent"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 
 export const getSelfImprovePrompt = ({

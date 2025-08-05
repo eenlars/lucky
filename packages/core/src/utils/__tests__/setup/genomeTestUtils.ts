@@ -1,9 +1,9 @@
 // Genome test utilities without problematic vi.mock calls
-import { MODELS } from "@/utils/models/models"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { WorkflowGenome } from "@gp/resources/gp.types"
+import { getModels } from "@utils/config/runtimeConfig"
 
 export const createMockWorkflowGenome = (
   generationNumber = 0,
@@ -14,7 +14,7 @@ export const createMockWorkflowGenome = (
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -24,7 +24,7 @@ export const createMockWorkflowGenome = (
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -48,7 +48,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -58,7 +58,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],

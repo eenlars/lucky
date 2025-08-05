@@ -1,4 +1,4 @@
-import { getConfig } from "@/config"
+import { getSettings } from "@utils/config/runtimeConfig"
 import { generateText, StepResult } from "ai"
 import pTimeout from "p-timeout"
 
@@ -14,7 +14,7 @@ export async function runWithStallGuard<R>(
     stallTimeoutMs: number
   }
 ): Promise<R> {
-  if (!getConfig().limits.enableStallGuard) {
+  if (!getSettings().limits.enableStallGuard) {
     return (await generateText(base)) as R
   }
 

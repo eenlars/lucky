@@ -1,7 +1,7 @@
-import { readFileSync, existsSync } from "fs"
-import { join, dirname } from "path"
+import type { GAIAInstance } from "@workflow/ingestion/ingestion.types"
+import { existsSync, readFileSync } from "fs"
+import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import type { GAIAInstance } from "@/workflow/ingestion/ingestion.types"
 
 /**
  * Local GAIA dataset loader that reads from cached JSON files

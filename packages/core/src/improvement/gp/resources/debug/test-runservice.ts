@@ -3,9 +3,9 @@
  * This demonstrates the write-time protocol implementation
  */
 
-import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
-import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
+import { createEvolutionSettingsWithConfig } from "@example/settings/evolution"
+import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
 import { RunService } from "../../RunService"
 
 async function testRunService() {

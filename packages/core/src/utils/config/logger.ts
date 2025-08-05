@@ -5,3 +5,6 @@ export interface CoreLogger {
   debug(message: string, data?: any): void
   warn(message: string, data?: any): void
 }
+export interface CoreContext {
+  logger: CoreLogger
+}

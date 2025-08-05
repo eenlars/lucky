@@ -1,7 +1,7 @@
-import { isNir } from "@/utils/common/isNir"
-import type { VerificationErrors } from "@/utils/validation/workflow/verify.types"
-import { CONFIG } from "@/runtime/settings/constants"
+import { isNir } from "@utils/common/isNir"
+import type { VerificationErrors } from "@utils/validation/workflow/verify.types"
 import { ALL_ACTIVE_TOOL_NAMES, INACTIVE_TOOLS } from "@tools/tool.types"
+import { getSettings } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 // check that each tool is used by only one workflow node
@@ -48,7 +48,7 @@ export const verifyToolsUnique = async (
   })
 
   // Return error messages instead of throwing
-  if (duplicateTools.length > 0 && CONFIG.tools.uniqueToolsPerAgent) {
+  if (duplicateTools.length > 0 && getSettings().tools.uniqueToolsPerAgent) {
     return [
       `setup verification failed. each tool must be unique to one node:\n${duplicateTools.join("\n")}`,
     ]
@@ -75,7 +75,7 @@ export const verifyAllToolsAreActive = async (
         inactiveToolsUsed.push(
           `node "${node.nodeId}" uses inactive tool "${tool}"`
         )
-      } else if (CONFIG.tools.defaultTools.has(tool)) {
+      } else if (getSettings().tools.defaultTools.has(tool)) {
         // skip default tools, they are always active, but do not appear on the all active tools list,
         // because they shouldn't be assigned while creating a workflow. (they are assigned by default)
       } else if (!ALL_ACTIVE_TOOL_NAMES.includes(tool)) {
@@ -107,7 +107,7 @@ export const verifyAllToolsAreActive = async (
 export const verifyToolSetEachNodeIsUnique = async (
   config: WorkflowConfig
 ): Promise<VerificationErrors> => {
-  if (!CONFIG.tools.uniqueToolSetsPerAgent) return [] // skip if disabled
+  if (!getSettings().tools.uniqueToolSetsPerAgent) return [] // skip if disabled
 
   const nodes = config.nodes
   const toolSetUsage = new Map<string, string[]>()
@@ -151,20 +151,26 @@ export const verifyMaxToolsPerAgent = async (
 ): Promise<VerificationErrors> => {
   const errors: VerificationErrors = []
 
-  const defaultToolsCount = CONFIG.tools.defaultTools.size
+  const defaultToolsCount = getSettings().tools.defaultTools.size
   for (const node of config.nodes) {
     const mcpToolsCount = node.mcpTools?.length ?? 0
     const codeToolsCount = node.codeTools?.length ?? 0
 
-    if (mcpToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
+    if (
+      mcpToolsCount >
+      getSettings().tools.maxToolsPerAgent + defaultToolsCount
+    ) {
       errors.push(
-        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${getSettings().tools.maxToolsPerAgent}`
       )
     }
 
-    if (codeToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
+    if (
+      codeToolsCount >
+      getSettings().tools.maxToolsPerAgent + defaultToolsCount
+    ) {
       errors.push(
-        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${getSettings().tools.maxToolsPerAgent}`
       )
     }
   }

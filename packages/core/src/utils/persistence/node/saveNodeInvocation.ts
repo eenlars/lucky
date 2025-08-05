@@ -1,12 +1,12 @@
-import { lgg } from "@/logger"
-import type { NodeLogs } from "@/messages/api/processResponse"
-import { normalizeModelName } from "@/messages/api/sendAI"
-import { CONFIG } from "@/runtime/settings/constants"
-import { supabase } from "@/utils/clients/supabase/client"
-import type { Json, TablesInsert } from "@/utils/clients/supabase/types"
-import { llmify } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import type { ModelName } from "@/utils/models/models"
+import type { NodeLogs } from "@messages/api/processResponse"
+import { normalizeModelName } from "@messages/api/sendAI"
+import { supabase } from "@utils/clients/supabase/client"
+import type { Json, TablesInsert } from "@utils/clients/supabase/types"
+import { llmify } from "@utils/common/llmify"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import type { ModelName } from "@utils/models/models"
+import { lgg } from "@logger"
+import { getLogging } from "@utils/config/runtimeConfig"
 
 type SaveNodeInvocationOpts = {
   nodeId: string
@@ -39,7 +39,7 @@ export const saveNodeInvocationToDB = async ({
 }: SaveNodeInvocationOpts): Promise<{ nodeInvocationId: string }> => {
   // Debug logging for tool calls
   lgg.onlyIf(
-    CONFIG.logging.override.Tools,
+    getLogging().Tools,
     `[saveNodeInvocation] Saving toolUsage: ${toolUsage?.outputs.length} outputs`
   )
 
@@ -71,7 +71,7 @@ export const saveNodeInvocationToDB = async ({
     model: normalizeModelName(model),
   }
 
-  if (CONFIG.logging.override.Database) {
+  if (getLogging().Database) {
     // Check if NodeVersion exists before attempting insert
     const { data: nodeVersionCheck, error: nodeVersionError } = await supabase
       .from("NodeVersion")

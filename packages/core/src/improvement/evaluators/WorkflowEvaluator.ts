@@ -1,9 +1,9 @@
 // abstract base class for workflow evaluation strategies
 
-import type { InvocationSummary } from "@/messages/summaries"
-import type { RS } from "@/utils/types"
-import type { WorkflowIO } from "@/workflow/ingestion/ingestion.types"
-import { guard } from "@/workflow/schema/errorMessages"
+import type { InvocationSummary } from "@messages/summaries"
+import type { RS } from "@utils/types"
+import type { WorkflowIO } from "@workflow/ingestion/ingestion.types"
+import { guard } from "@workflow/schema/errorMessages"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { Workflow } from "@workflow/Workflow"
 

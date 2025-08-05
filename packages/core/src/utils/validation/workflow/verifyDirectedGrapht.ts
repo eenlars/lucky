@@ -1,9 +1,9 @@
-import { CONFIG } from "@/runtime/settings/constants"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { VerificationErrors } from "./verify.types"
+import { getSettings } from "@utils/config/runtimeConfig"
 
 export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {
-  if (CONFIG.verification.allowCycles) {
+  if (getSettings()?.verification?.allowCycles) {
     return []
   }
 

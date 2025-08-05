@@ -1,15 +1,15 @@
 import {
   buildSimpleMessage,
   type BuildSimpleMessageContext,
-} from "@/messages/create/buildSimpleMessage"
+} from "@messages/create/buildSimpleMessage"
 import {
   isDelegationPayload,
   isSequentialPayload,
   type AggregatedPayload,
-} from "@/messages/MessagePayload"
-import type { WorkflowMessage } from "@/messages/WorkflowMessage"
-import { agentSystemPrompt } from "@/prompts/standardPrompt"
-import type { WorkflowFiles } from "@/tools/context/contextStore.types"
+} from "@messages/MessagePayload"
+import type { WorkflowMessage } from "@messages/WorkflowMessage"
+import type { WorkflowFiles } from "@tools/context/contextStore.types"
+import { agentSystemPrompt } from "@prompts/standardPrompt"
 import type { CoreMessage } from "ai"
 
 export interface BuildMessagesContext extends WorkflowFiles {

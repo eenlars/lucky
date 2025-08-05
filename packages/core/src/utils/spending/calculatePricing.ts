@@ -1,6 +1,6 @@
-import { isNir } from "@/utils/common/isNir"
-import type { TokenUsage } from "@/utils/models/models"
-import { pricing, type ModelName } from "@/utils/models/models"
+import { isNir } from "@utils/common/isNir"
+import type { TokenUsage } from "@utils/models/models"
+import { pricing, type ModelName } from "@utils/models/models"
 
 export type VercelUsage = {
   promptTokens: number
@@ -113,7 +113,8 @@ export function calculateCost(model: string, usage: TokenUsage): number {
   let cost = 0
 
   // Calculate input token cost
-  const nonCachedInput = usage.inputTokens - (usage.cachedInputTokens || 0)
+  const inputTokens = usage.inputTokens || 0
+  const nonCachedInput = inputTokens - (usage.cachedInputTokens || 0)
   cost += (nonCachedInput / 1_000_000) * modelPricing.input
 
   // Calculate cached input token cost if applicable
@@ -122,7 +123,8 @@ export function calculateCost(model: string, usage: TokenUsage): number {
   }
 
   // Calculate output token cost
-  cost += (usage.outputTokens / 1_000_000) * modelPricing.output
+  const outputTokens = usage.outputTokens || 0
+  cost += (outputTokens / 1_000_000) * modelPricing.output
 
   return cost
 }

@@ -1,20 +1,18 @@
 // EvolutionEngine.ts
 
-import { getEvolutionConfig } from "@/config"
-import { Population } from "@/improvement/gp/Population"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
-import { evolutionSettingsToString } from "@/improvement/gp/resources/evolution-types"
-import { validateGPConfig } from "@/improvement/gp/resources/validation"
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
-import { CONFIG } from "@/runtime/settings/constants"
-import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
-import { isNir } from "@/utils/common/isNir"
-import { parallelLimit } from "@/utils/common/parallelLimit"
-import { lgg } from "@/utils/logging/Logger"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { Errors, guard } from "@/workflow/schema/errorMessages"
+import { Population } from "@improvement/gp/Population"
+import type { EvolutionSettings } from "@improvement/gp/resources/evolution-types"
+import { evolutionSettingsToString } from "@improvement/gp/resources/evolution-types"
+import { validateGPConfig } from "@improvement/gp/resources/validation"
+import { isNir } from "@utils/common/isNir"
+import { parallelLimit } from "@utils/common/parallelLimit"
+import { getEvolutionConfig, getLogging } from "@utils/config/runtimeConfig"
+import { lgg } from "@utils/logging/Logger"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import { Errors, guard } from "@workflow/schema/errorMessages"
 import { failureTracker } from "@gp/resources/tracker"
 import type { EvolutionEvaluator } from "@improvement/evaluators/EvolutionEvaluator"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import { Genome } from "./Genome"
 import type {
@@ -31,7 +29,7 @@ export class EvolutionEngine {
   private runService: RunService
   private population: Population
   private statsTracker: StatsTracker
-  static verbose = CONFIG.logging.override.GP
+  static verbose = getLogging().GP
 
   constructor(
     private evolutionMode: FlowEvolutionMode,
@@ -393,6 +391,6 @@ export class EvolutionEngine {
   static createDefaultConfig(
     overrides?: Partial<EvolutionSettings>
   ): EvolutionSettings {
-    return createEvolutionSettingsWithConfig(overrides)
+    return getEvolutionConfig().GP
   }
 }

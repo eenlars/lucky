@@ -9,20 +9,20 @@
  * - Updates EvolutionRun.end_time & status on termination
  */
 
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import type {
-  FlowEvolutionConfig,
-  FlowEvolutionMode,
-} from "@/interfaces/runtimeConfig"
-import { supabase } from "@/utils/clients/supabase/client"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { supabase } from "@utils/clients/supabase/client"
 import type {
   Tables,
   TablesInsert,
   TablesUpdate,
-} from "@/utils/clients/supabase/types"
-import { isNir } from "@/utils/common/isNir"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
+} from "@utils/clients/supabase/types"
+import { isNir } from "@utils/common/isNir"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import type {
+  FlowEvolutionConfig,
+  FlowEvolutionMode,
+} from "@utils/config/runtimeConfig.types"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 

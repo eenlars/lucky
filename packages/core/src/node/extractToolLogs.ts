@@ -3,7 +3,7 @@ import {
   isTextProcessed,
   isToolProcessed,
   type ProcessedResponse,
-} from "@/messages/api/processResponse.types"
+} from "@messages/api/processResponse.types"
 
 /**
  * Extracts tool logs from a ProcessedResponse in a format suitable for makeLearning

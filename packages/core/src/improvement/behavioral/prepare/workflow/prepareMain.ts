@@ -1,14 +1,14 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import { IngestionLayer } from "@/workflow/ingestion/IngestionLayer"
+import { sendAI } from "@messages/api/sendAI"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { getModels, getSettings, getLogging } from "@utils/config/runtimeConfig"
+import { lgg } from "@utils/logging/Logger"
+import { IngestionLayer } from "@workflow/ingestion/IngestionLayer"
 import type {
   EvaluationInput,
   WorkflowIO,
-} from "@/workflow/ingestion/ingestion.types"
-import type { InvocationInput } from "@/workflow/runner/invokeWorkflow"
-import { invokeWorkflow } from "@/workflow/runner/invokeWorkflow"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+} from "@workflow/ingestion/ingestion.types"
+import type { InvocationInput } from "@workflow/runner/invokeWorkflow"
+import { invokeWorkflow } from "@workflow/runner/invokeWorkflow"
 import { z } from "zod"
 
 const ProblemAnalysisSchema = z.object({
@@ -40,15 +40,16 @@ export const prepareProblem = async (
     type: task.type,
     goal: task.goal,
     question: task.type === "text" ? task.question : undefined,
-    method: CONFIG.workflow.prepareProblemMethod,
+    method: getSettings().workflow.prepareProblemMethod,
   })
 
   // New workflow invocation method
-  if (CONFIG.workflow.prepareProblemMethod === "workflow") {
+  if (getSettings().workflow.prepareProblemMethod === "workflow") {
     lgg.info(
       "[prepareProblem] Using workflow version ID for problem analysis",
       {
-        workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+        workflowVersionId:
+          getSettings().workflow.prepareProblemWorkflowVersionId,
       }
     )
 
@@ -57,7 +58,7 @@ export const prepareProblem = async (
 
     // Invoke the workflow with the specified version ID
     const invocationInput: InvocationInput = {
-      workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+      workflowVersionId: getSettings().workflow.prepareProblemWorkflowVersionId,
       evalInput: {
         type: "prompt-only",
         goal: task.goal,
@@ -141,7 +142,7 @@ Guidelines:
   const { data, success, error, usdCost } = await sendAI({
     mode: "structured",
     schema: ProblemAnalysisSchema,
-    model: MODELS.high,
+    model: getModels().high,
     messages: [
       {
         role: "system",
@@ -172,7 +173,7 @@ ${sampleWorkflowIO.length > 1 ? samplesExplanation : ""}
   }
 
   lgg.onlyIf(
-    CONFIG.logging.override.Setup,
+    getLogging().Setup,
     `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`
   )
 

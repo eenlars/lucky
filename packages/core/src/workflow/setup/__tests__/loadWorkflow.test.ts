@@ -1,4 +1,4 @@
-import { PATHS } from "@/runtime/settings/constants"
+import { getPaths } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 
@@ -6,7 +6,7 @@ describe("loadWorkflow", () => {
   it("should load workflow setup asynchronously", async () => {
     const workflow =
       await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
+        getPaths().setupFile
       )
 
     expect(workflow).toBeDefined()
@@ -21,11 +21,11 @@ describe("loadWorkflow", () => {
   it("should cache workflow setup on subsequent calls", async () => {
     const workflow1 =
       await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
+        getPaths().setupFile
       )
     const workflow2 =
       await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
+        getPaths().setupFile
       )
 
     // Should be the same reference due to caching

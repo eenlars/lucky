@@ -1,12 +1,12 @@
-import { truncater } from "@/utils/common/llmify"
-import { verifyWorkflowConfig } from "@/utils/validation/workflow"
-import type { VerificationResult } from "@/utils/validation/workflow/verify.types"
-import { lgg } from "@/logger"
-import { CONFIG } from "@/runtime/settings/constants"
+import { truncater } from "@utils/common/llmify"
+import { verifyWorkflowConfig } from "@utils/validation/workflow"
+import type { VerificationResult } from "@utils/validation/workflow/verify.types"
+import { lgg } from "@logger"
+import { getSettings, getLogging } from "@utils/config/runtimeConfig"
 import { repairWorkflow } from "@workflow/actions/repair/repairWorkflow"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
-const MAX_RETRIES = CONFIG.improvement.flags.maxRetriesForWorkflowRepair
+const MAX_RETRIES = getSettings().improvement.flags.maxRetriesForWorkflowRepair
 
 /**
  * Validates and optionally repairs a workflow configuration with customizable behavior.
@@ -53,7 +53,7 @@ export async function validateAndRepairWorkflow(
       currentCost += enhancementCost ?? 0
       retryCount++
     } catch (error) {
-      if (CONFIG.logging.override.API) {
+      if (getLogging().API) {
         lgg.error(
           "❌ Error in workflow validation and repair:",
           error,

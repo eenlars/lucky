@@ -2,23 +2,21 @@
  * ModelRegistry implementation for runtime model management
  */
 
-import { getModelConfig } from "@/config"
+import { getModelSettings } from "@utils/config/runtimeConfig"
 import {
   type ActiveModelName,
-  MODELS,
   type ModelName,
-  type Provider,
   isActiveModel,
   pricing,
   providers,
-} from "@/utils/models/models"
+} from "@utils/models/models"
+import type { LuckyProvider } from "@utils/models/models.types"
 
 export class ModelRegistry {
   private activeModels: Set<ActiveModelName>
-  private providerModels: Map<Provider, ModelName[]>
+  private providerModels: Map<LuckyProvider, ModelName[]>
 
   // Expose MODELS for backward compatibility
-  readonly MODELS = MODELS
 
   constructor() {
     this.activeModels = new Set()
@@ -36,7 +34,7 @@ export class ModelRegistry {
 
     // Build provider-model mapping
     for (const [provider, models] of Object.entries(providers)) {
-      const providerKey = provider as Provider
+      const providerKey = provider as LuckyProvider
       const modelNames = Object.keys(models).map((model) => {
         // For openrouter, the model name already includes the provider prefix
         // For openai and groq, we need to add the provider prefix
@@ -56,7 +54,7 @@ export class ModelRegistry {
     return Array.from(this.activeModels)
   }
 
-  getModelsForProvider(provider: Provider): ModelName[] {
+  getModelsForProvider(provider: LuckyProvider): ModelName[] {
     return this.providerModels.get(provider) || []
   }
 
@@ -66,7 +64,7 @@ export class ModelRegistry {
       return model
     }
 
-    const provider = getModelConfig().provider
+    const provider = getModelSettings().provider
     if (!provider) {
       throw new Error(`No provider found for model: ${model}`)
     }
@@ -127,7 +125,7 @@ export class ModelRegistry {
    */
   getModelInfo(model: ModelName): {
     name: ModelName
-    provider: Provider
+    provider: LuckyProvider
     active: boolean
     pricing: ReturnType<ModelRegistry["getModelPricing"]>
     info: string
@@ -138,7 +136,7 @@ export class ModelRegistry {
     }
 
     // Determine provider from model name
-    let provider: Provider
+    let provider: LuckyProvider
     if (model.startsWith("openai/")) {
       provider = "openai"
     } else if (model.startsWith("groq/")) {

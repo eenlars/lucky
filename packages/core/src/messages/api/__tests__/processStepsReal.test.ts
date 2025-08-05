@@ -1,6 +1,7 @@
-import type { NodeLogs } from "@/messages/api/processResponse"
-import type { LocationData } from "@/runtime/schemas/location.types"
-import { MODELS, type ModelName } from "@/utils/models/models"
+import type { NodeLogs } from "@messages/api/processResponse"
+import { type ModelName } from "@utils/models/models"
+import type { LocationData } from "@example/code_tools/mapbox/mapboxUse"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"
 import responseMultiple from "./resources/toolResponseMultipleSteps.json"
@@ -13,7 +14,7 @@ interface LocationDataManagerArgs {
   workflowInvocationId: string
 }
 
-const testModel: ModelName = MODELS.default
+const testModel: ModelName = getModels().default
 
 describe("real world data", () => {
   it("should process complex multi-step response from responseMultiple.json", () => {

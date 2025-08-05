@@ -1,4 +1,4 @@
-import { Json } from "@/utils/clients/supabase/types"
+import { Json } from "@utils/clients/supabase/types"
 
 // Server-side only functions - will throw error if used in client
 export async function mkdirIfMissing(p: string) {

@@ -1,4 +1,4 @@
-import { JSONN } from "@/utils/file-types/json/jsonParse"
+import { JSONN } from "@utils/file-types/json/jsonParse"
 import type { CodeToolName } from "@tools/tool.types"
 
 interface ToolError {

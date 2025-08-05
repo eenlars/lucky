@@ -1,16 +1,16 @@
-import { MODELS } from "@/utils/models/models"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 
 describe("Todo Tools Integration Test", () => {
   it("should execute todoWrite and todoRead workflow", async () => {
     // Import the todo tools directly
     const todoWrite = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-write"
+      "@example/code_tools/todo-manager/tool-todo-write"
     )
     const todoRead = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-read"
+      "@example/code_tools/todo-manager/tool-todo-read"
     )
-    const { sendAI } = await import("@/core/messages/api/sendAI")
+    const { sendAI } = await import("@messages/api/sendAI")
 
     const workflowInvocationId = `todo-integration-test-${Date.now()}`
 
@@ -62,7 +62,7 @@ describe("Todo Tools Integration Test", () => {
     )
 
     const verification = await sendAI({
-      model: MODELS.default,
+      model: getModels().default,
       mode: "text",
       messages: [
         {
@@ -90,10 +90,10 @@ describe("Todo Tools Integration Test", () => {
 
   it("should handle multiple todos in workflow", async () => {
     const todoWrite = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-write"
+      "@example/code_tools/todo-manager/tool-todo-write"
     )
     const todoRead = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-read"
+      "@example/code_tools/todo-manager/tool-todo-read"
     )
 
     const workflowInvocationId = `todo-multi-integration-test-${Date.now()}`

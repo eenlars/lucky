@@ -2,9 +2,9 @@
  * Comprehensive test proving the complete fix for searchGoogleMaps validation error
  */
 
-import { sendAI } from "@/messages/api/sendAI"
-import { validateAndCorrectWithSchema } from "@/tools/constraintValidation"
-import { mockLogger } from "@/utils/__tests__/setup/coreMocks"
+import { sendAI } from "@messages/api/sendAI"
+import { validateAndCorrectWithSchema } from "@tools/constraintValidation"
+import { mockLogger } from "@utils/__tests__/setup/coreMocks"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -62,7 +62,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
 
   it("should show that parameter schemas are now visible to AI models", async () => {
     // Import zodToJson to test schema conversion
-    const { zodToJson } = await import("@/core/messages/utils/zodToJson")
+    const { zodToJson } = await import("@messages/utils/zodToJson")
 
     // Test with the actual commonSchemas.resultCount used by searchGoogleMaps
     const resultCountSchema = z.number().max(20).default(10).nullish()
@@ -149,9 +149,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     )
   })
 
-  it("should confirm CONFIG.tools.showParameterSchemas is enabled", async () => {
-    const { CONFIG } = await import("@/runtime/settings/constants")
-    expect(CONFIG.tools.showParameterSchemas).toBe(true)
+  it("should confirm getSettings().tools.showParameterSchemas is enabled", async () => {
+    const { getSettings } = await import("@utils/config/runtimeConfig")
+    expect(getSettings().tools.showParameterSchemas).toBe(true)
     console.log("✅ Parameter schema visibility enabled in config")
   })
 })

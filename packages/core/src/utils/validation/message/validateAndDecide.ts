@@ -1,5 +1,5 @@
-import type { WorkflowMessage } from "@/messages/WorkflowMessage"
-import { lgg } from "@/utils/logging/Logger"
+import type { WorkflowMessage } from "@messages/WorkflowMessage"
+import { lgg } from "@utils/logging/Logger"
 import { validateNodeOutput } from "./validateNodeOutput"
 import {
   DEFAULT_VALIDATION_CONFIG,

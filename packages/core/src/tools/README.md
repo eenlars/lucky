@@ -203,7 +203,7 @@ export type MCPToolName = keyof typeof TOOLS.mcp // "tavily" | "filesystem" | ..
 export type CodeToolName = keyof typeof TOOLS.code // "csvReader" | "contextHandler" | ...
 export type AllToolNames = MCPToolName | CodeToolName
 
-// Active tool filtering (respects CONFIG.tools.inactive)
+// Active tool filtering (respects getSettings().tools.inactive)
 export const getActiveTools = <T>(tools: T): T => {
   /* filters inactive tools */
 }

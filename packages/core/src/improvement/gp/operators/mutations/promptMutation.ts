@@ -2,12 +2,12 @@
  * prompt mutation operations
  */
 
-import { sendAI } from "@/messages/api/sendAI"
-import { WORKFLOW_GENERATION_RULES } from "@/prompts/generationRules"
-import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
-import { lgg } from "@/utils/logging/Logger"
-import { MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { lgg } from "@utils/logging/Logger"
 import { failureTracker } from "@gp/resources/tracker"
+import { WORKFLOW_GENERATION_RULES } from "@prompts/generationRules"
+import { SharedWorkflowPrompts } from "@prompts/workflowAnalysisPrompts"
+import { getModels } from "@utils/config/runtimeConfig"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,
@@ -45,7 +45,7 @@ export class PromptMutation implements MutationOperator {
       `
 
       const result = await sendAI({
-        model: MODELS.nano,
+        model: getModels().nano,
         messages: [{ role: "user", content: mutationPrompt }],
         mode: "text",
       })

@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/clients/supabase/client"
+import { supabase } from "@utils/clients/supabase/client"
 
 export interface NodeInvocationSummary {
   node_invocation_id: string

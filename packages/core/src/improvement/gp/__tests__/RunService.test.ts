@@ -1,11 +1,10 @@
 // tests for RunService - database persistence for evolution runs
 import {
-  createMockEvolutionSettings,
   createMockFlowEvolutionConfig,
   createMockGenome,
   mockRuntimeConstantsForGP,
   setupCoreTest,
-} from "@/utils/__tests__/setup/coreMocks"
+} from "@utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Create mock instances directly
@@ -18,15 +17,15 @@ const mockLggError = vi.fn()
 const mockLggWarn = vi.fn()
 
 // mock external dependencies
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 
-vi.mock("@/core/utils/common/utils", () => ({
+vi.mock("@utils/common/utils", () => ({
   genShortId: mockGenShortId,
 }))
 
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: mockLggLog,
     error: mockLggError,
@@ -105,7 +104,7 @@ describe("RunService", () => {
 
   describe("constructor", () => {
     it("should initialize with default verbose false", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@/improvement/gp/RunService")
 
       const service = new RunService()
 
@@ -114,7 +113,7 @@ describe("RunService", () => {
     })
 
     it("should initialize with verbose mode", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService(true)
 
@@ -125,7 +124,7 @@ describe("RunService", () => {
 
   describe("createRun", () => {
     it("should create new evolution run successfully", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -138,7 +137,7 @@ describe("RunService", () => {
     })
 
     it("should handle verbose mode for run creation", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService(true)
       const config = createMockFlowEvolutionConfig()
@@ -151,7 +150,7 @@ describe("RunService", () => {
 
   describe("createGeneration", () => {
     it("should create new generation successfully", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -168,7 +167,7 @@ describe("RunService", () => {
 
   describe("completeGeneration", () => {
     it("should update generation with best genome", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -200,7 +199,7 @@ describe("RunService", () => {
     })
 
     it("should require active generation", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const mockGenome = await createMockGenome()
@@ -227,7 +226,7 @@ describe("RunService", () => {
     })
 
     it("should handle generation update failure", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -262,7 +261,7 @@ describe("RunService", () => {
 
   describe("completeRun", () => {
     it("should update run status to completed", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -275,7 +274,7 @@ describe("RunService", () => {
     })
 
     it("should handle failure status", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -288,7 +287,7 @@ describe("RunService", () => {
     })
 
     it("should require active run", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
 
@@ -300,7 +299,7 @@ describe("RunService", () => {
     })
 
     it("should handle run update failure", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -327,7 +326,7 @@ describe("RunService", () => {
 
   describe("error handling", () => {
     it("should handle network errors gracefully", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       // mock the insert to throw an error
       const mockEvolutionRunChain = {
@@ -350,7 +349,7 @@ describe("RunService", () => {
     })
 
     it("should log errors in verbose mode", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       // mock the insert to return an error
       const mockEvolutionRunChain = {
@@ -379,7 +378,7 @@ describe("RunService", () => {
 
   describe("state management", () => {
     it("should track run and generation IDs correctly", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()
@@ -395,7 +394,7 @@ describe("RunService", () => {
     })
 
     it("should reset state appropriately", async () => {
-      const { RunService } = await import("@/core/improvement/gp/RunService")
+      const { RunService } = await import("@improvement/gp/RunService")
 
       const service = new RunService()
       const config = createMockFlowEvolutionConfig()

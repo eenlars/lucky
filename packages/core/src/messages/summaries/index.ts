@@ -1,3 +1,4 @@
+import { Messages } from "@messages"
 import {
   isErrorProcessed,
   isTextProcessed,
@@ -5,15 +6,14 @@ import {
   type ProcessedResponse,
   type TextProcessed,
   type ToolProcessed,
-} from "@/messages/api/processResponse.types"
-import { Messages } from "@/messages"
-import { buildSimpleMessage } from "@/messages/create/buildSimpleMessage"
-import { CreateSummaryPrompt } from "@/prompts/createSummary.p"
-import { isNir } from "@/utils/common/isNir"
-import { llmify, truncater } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/logger"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
+} from "@messages/api/processResponse.types"
+import { buildSimpleMessage } from "@messages/create/buildSimpleMessage"
+import { isNir } from "@utils/common/isNir"
+import { llmify, truncater } from "@utils/common/llmify"
+import { getLogging, getModels } from "@utils/config/runtimeConfig"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@logger"
+import { CreateSummaryPrompt } from "@prompts/createSummary.p"
 import chalk from "chalk"
 import z from "zod"
 
@@ -24,13 +24,13 @@ export type InvocationSummary = {
   nodeId: string
 }
 
-const verbose = CONFIG.logging.override.Summary
+const verbose = getLogging().Summary
 const BYTES_FOR_SUMMARY = 200
 
 const createAISummary = async (
   prompt: string,
   description: string,
-  model = MODELS.summary,
+  model = getModels().summary,
   schema?: z.ZodSchema
 ): Promise<{ summary: string; usdCost: number } | null> => {
   try {
@@ -181,7 +181,7 @@ export const createToolSummary = async (
       JSON.stringify(outputs, null, 2)
     ),
     "data analyzer that summarizes tool execution results",
-    MODELS.summary,
+    getModels().summary,
     z.object({
       summary: z
         .string()

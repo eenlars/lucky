@@ -4,12 +4,11 @@ import {
   createMockWorkflowConfig,
   createMockWorkflowGenome,
   createMockWorkflowScore,
-} from "@/utils/__tests__/setup/genomeTestUtils"
-import { MODELS } from "@/runtime/settings/constants.client"
+} from "@utils/__tests__/setup/genomeTestUtils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -136,7 +135,7 @@ vi.mock("@gp/resources/debug/dummyGenome", () => ({
 }))
 
 // Mock database operations
-vi.mock("@/core/utils/persistence/workflow/registerWorkflow", () => ({
+vi.mock("@utils/persistence/workflow/registerWorkflow", () => ({
   registerWorkflowInDatabase: vi.fn().mockResolvedValue({
     workflowVersionId: "test-version-id",
     workflowInvocationId: "test-invocation-id",
@@ -147,7 +146,7 @@ vi.mock("@/core/utils/persistence/workflow/registerWorkflow", () => ({
 }))
 
 // Mock ideaToWorkflow
-vi.mock("@/core/workflow/actions/generate/ideaToWorkflow", () => ({
+vi.mock("@workflow/actions/generate/ideaToWorkflow", () => ({
   ideaToWorkflow: vi.fn().mockResolvedValue({
     success: true,
     data: { nodes: [], entryNodeId: "test-node" },
@@ -156,7 +155,7 @@ vi.mock("@/core/workflow/actions/generate/ideaToWorkflow", () => ({
 }))
 
 // Mock supabase client to avoid real database calls
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockResolvedValue({ error: null }),
@@ -170,19 +169,20 @@ vi.mock("@/core/utils/clients/supabase/client", () => ({
 // Don't mock Workflow class - let Genome inherit properly
 
 // Import after mocks to avoid hoisting issues
-import { createWorkflowVersion } from "@/utils/persistence/workflow/registerWorkflow"
+import { createWorkflowVersion } from "@utils/persistence/workflow/registerWorkflow"
 import { Genome } from "@gp/Genome"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import type { WorkflowGenome } from "@gp/resources/gp.types"
 import type { EvolutionContext } from "@gp/resources/types"
 import { workflowConfigToGenome } from "@gp/resources/wrappers"
+import { getModels } from "@utils/config/runtimeConfig"
 
-import type { RS } from "@/utils/types"
+import type { RS } from "@utils/types"
 import type {
   EvaluationCSV,
   EvaluationInput,
-} from "@/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+} from "@workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 // Get references to mocked functions
 const mockIdeaToWorkflow = vi.fn()
 const mockWorkflowConfigToGenome = vi.mocked(workflowConfigToGenome)
@@ -249,7 +249,7 @@ describe("Genome", () => {
               nodeId: "dummy-node",
               description: "dummy node",
               systemPrompt: "dummy system prompt",
-              modelName: MODELS.default,
+              modelName: getModels().default,
               mcpTools: [],
               codeTools: [],
               handOffs: [],
@@ -493,7 +493,7 @@ describe("Genome", () => {
 
       // test inherited workflow methods
       expect(genome.getNodeIds()).toBeDefined()
-      expect(genome.getConfig()).toBeDefined()
+      expect(genome.getWorkflowConfig().entryNodeId).toBeDefined()
       expect(genome.getEvaluationInput().goal).toBeDefined()
     })
 

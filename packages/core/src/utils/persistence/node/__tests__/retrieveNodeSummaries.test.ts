@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest"
 import { retrieveNodeInvocationSummaries } from "../retrieveNodeSummaries"
 
 // mock supabase client
-vi.mock("@/core/utils/clients/supabase/client", () => {
-  const mockSupabaseClient = {
+vi.mock("@core/utils/clients/supabase/client", () => {
+  const mockSupabaseClient: any = {
     from: vi.fn(() => mockSupabaseClient),
     select: vi.fn(() => mockSupabaseClient),
     eq: vi.fn(() => mockSupabaseClient),
@@ -30,7 +30,7 @@ describe("retrieveNodeSummaries", () => {
       },
     ]
 
-    const { supabase } = await import("@/core/utils/clients/supabase/client")
+    const { supabase } = await import("@utils/clients/supabase/client")
     ;(supabase as any).order.mockResolvedValueOnce({
       data: mockData,
       error: null,
@@ -48,7 +48,7 @@ describe("retrieveNodeSummaries", () => {
   })
 
   it("should handle empty results gracefully", async () => {
-    const { supabase } = await import("@/core/utils/clients/supabase/client")
+    const { supabase } = await import("@utils/clients/supabase/client")
     ;(supabase as any).order.mockResolvedValueOnce({
       data: [],
       error: null,
@@ -60,7 +60,7 @@ describe("retrieveNodeSummaries", () => {
   })
 
   it("should throw error when supabase query fails", async () => {
-    const { supabase } = await import("@/core/utils/clients/supabase/client")
+    const { supabase } = await import("@utils/clients/supabase/client")
     ;(supabase as any).order.mockResolvedValueOnce({
       data: null,
       error: new Error("Database error"),

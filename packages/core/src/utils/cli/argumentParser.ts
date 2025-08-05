@@ -1,4 +1,4 @@
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 
 export interface ParsedArgs {
   mode?: FlowEvolutionMode

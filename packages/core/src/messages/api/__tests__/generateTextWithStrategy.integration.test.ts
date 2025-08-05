@@ -1,13 +1,13 @@
-import { processStepsV2 } from "@/messages/api/stepProcessor"
-import { createPrepareStepStrategy } from "@/tools/any/selectToolStrategy"
-import { openrouter } from "@/utils/clients/openrouter/openrouterClient"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { MODELS } from "@/runtime/settings/constants"
+import { processStepsV2 } from "@messages/api/stepProcessor"
+import { createPrepareStepStrategy } from "@tools/any/selectToolStrategy"
+import { openrouter } from "@utils/clients/openrouter/openrouterClient"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { getModels } from "@utils/config/runtimeConfig"
 import { generateText, tool, type ToolSet } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-const model = openrouter(MODELS.medium)
+const model = openrouter(getModels().medium)
 
 // return F if it should never return that
 
@@ -100,7 +100,7 @@ describe("generateText with createPrepareStepStrategy", () => {
     })
 
     // convert to v2
-    const resultV2 = processStepsV2(result.steps, MODELS.medium)
+    const resultV2 = processStepsV2(result.steps, getModels().medium)
 
     console.log(JSONN.show(resultV2))
 
@@ -173,7 +173,7 @@ Now, let me execute the tools as requested.`,
     })
 
     // convert to v2
-    const resultV2 = processStepsV2(result.steps, MODELS.nano)
+    const resultV2 = processStepsV2(result.steps, getModels().nano)
 
     console.log(JSONN.show(resultV2))
 

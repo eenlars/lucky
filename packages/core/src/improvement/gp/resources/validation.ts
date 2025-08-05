@@ -2,7 +2,7 @@
  * Evolution configuration validation for genetic programming
  */
 
-import type { FlowEvolutionConfig } from "@/interfaces/runtimeConfig"
+import type { FlowEvolutionConfig } from "@utils/config/runtimeConfig.types"
 import type { EvolutionSettings } from "./evolution-types"
 
 /**
@@ -24,7 +24,7 @@ export function validateGPConfig(config: EvolutionSettings): void {
   // Core GP Requirements
   if (config.populationSize < 2) {
     errors.push(
-      `Population size (${config.populationSize}) insufficient for genetic programming. Crossover requires at least 2 individuals. Set CONFIG.evolution.GP.populationSize to at least 4 for effective evolution.`
+      `Population size (${config.populationSize}) insufficient for genetic programming. Crossover requires at least 2 individuals. Set config.GP.populationSize to at least 4 for effective evolution.`
     )
   }
 

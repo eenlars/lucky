@@ -1,8 +1,8 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
 import type {
   SWEBenchInstance,
   WorkflowIO,
-} from "@/workflow/ingestion/ingestion.types"
+} from "@workflow/ingestion/ingestion.types"
 
 export class SWEBenchLoader {
   private static readonly DATASET = "princeton-nlp/SWE-bench"

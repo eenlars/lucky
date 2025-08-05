@@ -1,4 +1,4 @@
-import { isNir } from "@/utils/common/isNir"
+import { isNir } from "@utils/common/isNir"
 
 export const Errors = {
   workflowInvocationIdNotSet:

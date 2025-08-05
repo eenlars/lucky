@@ -1,6 +1,6 @@
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { TOOLS } from "@/runtime/settings/tools"
-import { MODELS, type ModelName } from "@/utils/models/models"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { MODELS, type ModelName } from "@utils/models/models"
+import { TOOLS } from "@example/settings/tools"
 import { Genome } from "@gp/Genome"
 import {
   getActiveTools,

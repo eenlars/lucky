@@ -1,4 +1,4 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
@@ -53,7 +53,7 @@ describe("browserUse MCP", () => {
 describe("External MCP Configuration", () => {
   it("should load googleScholar MCP from external config", async () => {
     // This test verifies that external MCP configs work
-    // Since we have mcp-config.json with googleScholar configured,
+    // Since we have mcp-getSettings().json with googleScholar configured,
     // it should load the tools successfully
 
     const tools = await setupMCPForNode(
@@ -77,20 +77,17 @@ describe("External MCP Configuration", () => {
 
   it("should load tavily MCP from external config (not built-in)", async () => {
     // This test verifies that built-in MCPs can be moved to external config
-    // Tavily is now defined in mcp-config.json instead of being built-in
-    
-    const tools = await setupMCPForNode(
-      ["tavily"],
-      "test-tavily-external"
-    )
-    
+    // Tavily is now defined in mcp-getSettings().json instead of being built-in
+
+    const tools = await setupMCPForNode(["tavily"], "test-tavily-external")
+
     expect(tools).toBeTypeOf("object")
-    
+
     const toolCount = Object.keys(tools).length
     const toolNames = Object.keys(tools)
     lgg.log(`tavily tools loaded from external config: ${toolCount}`)
     lgg.log(`Tool names: ${toolNames.join(", ")}`)
-    
+
     // Tavily MCP provides multiple tools
     expect(toolCount).toBeGreaterThan(0)
     expect(toolNames).toContain("tavily-search")
@@ -102,7 +99,7 @@ describe("External MCP Configuration", () => {
       ["nonExistentMCP" as any],
       "test-invalid-mcp"
     )
-    
+
     // Should return empty object for invalid tools
     expect(tools).toBeTypeOf("object")
     expect(Object.keys(tools).length).toBe(0)

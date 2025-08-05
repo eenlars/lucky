@@ -1,7 +1,6 @@
-import { EvolutionEngine } from "@/improvement/gp/evolutionengine"
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
-import type { CoreContext } from "./interfaces"
+import type { CoreContext } from "./utils/config/logger"
 
 export interface EvolutionOptions {
   mode?: FlowEvolutionMode
@@ -27,6 +26,8 @@ export async function runEvolution(
   } else {
     // TODO: Implement proper GP evolution with required parameters
     // The evolve method requires evaluator, _baseWorkflow, and problemAnalysis
-    throw new Error("GP evolution not fully implemented in runEvolution. Use main.ts for complete GP evolution.")
+    throw new Error(
+      "GP evolution not fully implemented in runEvolution. Use main.ts for complete GP evolution."
+    )
   }
 }

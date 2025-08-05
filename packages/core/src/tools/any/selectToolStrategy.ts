@@ -1,8 +1,8 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { processStepsV2 } from "@/messages/api/stepProcessor"
-import { CONFIG, MODELS } from "@/runtime/settings/constants"
-import { isNir } from "@/utils/common/isNir"
-import type { ModelName } from "@/utils/models/models"
+import { sendAI } from "@messages/api/sendAI"
+import { processStepsV2 } from "@messages/api/stepProcessor"
+import { isNir } from "@utils/common/isNir"
+import { getLogging, getModels, getSettings } from "@utils/config/runtimeConfig"
+import type { ModelName } from "@utils/models/models"
 import type {
   CoreMessage,
   LanguageModel,
@@ -26,7 +26,7 @@ export type ExperimentalStepFunction<TOOLS extends ToolSet> = (options: {
   | undefined
 >
 
-const verbose = CONFIG.logging.override.Tools
+const verbose = getLogging().Tools
 
 /**
  * Determines tool selection strategy based on available tools.
@@ -47,7 +47,7 @@ export async function selectToolStrategy<T extends ToolSet>(
   payload: string,
   costCallback?: (cost: number) => void
 ): Promise<ToolChoice<T>> {
-  if (isNir(tools) || CONFIG.tools.autoSelectTools) {
+  if (isNir(tools) || getSettings().tools.autoSelectTools) {
     return "auto"
   }
 
@@ -116,7 +116,7 @@ IMPORTANT: When multiple tools are mentioned as requirements, we can only enforc
 
   try {
     const response = await sendAI({
-      model: MODELS.nano,
+      model: getModels().nano,
       messages: analysisPrompt,
       mode: "structured",
       schema: ToolStrategySchema,
@@ -189,7 +189,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
   | undefined
 > {
   return async ({ steps, stepNumber, maxSteps, model: _model }) => {
-    if (isNir(tools) || CONFIG.tools.autoSelectTools) {
+    if (isNir(tools) || getSettings().tools.autoSelectTools) {
       return undefined // Use default settings
     }
 
@@ -203,7 +203,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
       return undefined
     }
 
-    const model: ModelName = MODELS.nano
+    const model: ModelName = getModels().nano
 
     // Analyze previous steps to understand context
     const previousStepsContext = processStepsV2(steps, model) ?? { outputs: [] }

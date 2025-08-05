@@ -1,5 +1,5 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { MODELS } from "@/utils/models/models"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
 import { generateObject } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"
@@ -10,11 +10,11 @@ vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }))
 
-vi.mock("@/core/utils/clients/openrouter/openrouterClient", () => ({
+vi.mock("@utils/clients/openrouter/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 
-vi.mock("@/core/utils/spending/SpendingTracker", () => ({
+vi.mock("@utils/spending/SpendingTracker", () => ({
   SpendingTracker: {
     getInstance: () => ({
       canMakeRequest: () => true,
@@ -23,11 +23,11 @@ vi.mock("@/core/utils/spending/SpendingTracker", () => ({
   },
 }))
 
-vi.mock("@/core/messages/utils/saveResult", () => ({
+vi.mock("@messages/utils/saveResult", () => ({
   saveResultOutput: vi.fn(),
 }))
 
-vi.mock("@/runtime/code_tools/file-saver/save", () => ({
+vi.mock("@example/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
@@ -68,7 +68,7 @@ describe("sendAIRequest with structuredOutput", () => {
           content: "Generate a person object with name, age, and email",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: testSchema,
       output: "object",
@@ -125,7 +125,7 @@ describe("sendAIRequest with structuredOutput", () => {
           content: "Generate a list of items",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: itemSchema,
       output: "array",
@@ -159,7 +159,7 @@ describe("sendAIRequest with structuredOutput", () => {
           content: "Classify this movie genre",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: z.string(),
       output: "object",
@@ -192,7 +192,7 @@ describe("sendAIRequest with structuredOutput", () => {
           content: "Generate something",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: testSchema,
     })

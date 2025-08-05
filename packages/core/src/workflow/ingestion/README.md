@@ -103,8 +103,8 @@ const promptOnlyEval: EvaluationInput = {
 ## Usage Example
 
 ```typescript
-import { IngestionLayer } from "@/core/workflow/ingestion/IngestionLayer"
-import type { EvaluationInput } from "@/core/workflow/ingestion/ingestion.types"
+import { IngestionLayer } from "@workflow/ingestion/IngestionLayer"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 
 // convert any evaluation type to WorkflowIO format
 const evaluation: EvaluationInput = {

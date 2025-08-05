@@ -3,8 +3,8 @@
  * as the single source of truth. No hardcoded constraints.
  */
 
-import type { CoreContext } from "../interfaces"
 import type { ZodSchema } from "zod"
+import type { CoreContext } from "../utils/config/logger"
 
 /**
  * Validates and auto-corrects tool parameters using the tool's Zod schema.

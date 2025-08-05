@@ -1,12 +1,12 @@
 // tests for crossover operations
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
 import {
   createMockCrossoverParams,
   createMockGenome,
   createMockWorkflowConfig,
   mockSuccessfulAIResponse,
   setupCoreTest,
-} from "@/utils/__tests__/setup/coreMocks"
+} from "@utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Create mock instances directly
@@ -17,20 +17,20 @@ const mockLggError = vi.fn()
 const mockWorkflowConfigToGenome = vi.fn()
 
 // Mock external dependencies using vi.mock
-vi.mock("@/core/workflow/actions/generate/formalizeWorkflow", () => ({
+vi.mock("@workflow/actions/generate/formalizeWorkflow", () => ({
   formalizeWorkflow: vi.fn(),
 }))
 
-vi.mock("@/core/utils/validation/workflow", async (importOriginal) => {
+vi.mock("@utils/validation/workflow", async (importOriginal) => {
   const mod =
-    await importOriginal<typeof import("@/core/utils/validation/workflow")>()
+    await importOriginal<typeof import("@utils/validation/workflow")>()
   return {
     ...mod,
     verifyWorkflowConfig: mockVerifyWorkflowConfigStrict,
   }
 })
 
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: mockLggLog,
     error: mockLggError,
@@ -38,7 +38,7 @@ vi.mock("@/core/utils/logging/Logger", () => ({
 }))
 
 // Mock runtime constants at top level
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -147,7 +147,7 @@ vi.mock("@/runtime/settings/constants", () => ({
   },
 }))
 
-vi.mock("@/core/improvement/GP/OperatorRegistry", () => ({
+vi.mock("@improvement/GP/OperatorRegistry", () => ({
   OperatorRegistry: {
     registerCrossover: mockRegisterCrossover,
   },
@@ -157,7 +157,7 @@ vi.mock("@improvement/GP/resources/wrappers", () => ({
   workflowConfigToGenome: mockWorkflowConfigToGenome,
 }))
 
-vi.mock("@/core/improvement/gp/resources/debug/dummyGenome", () => ({
+vi.mock("@improvement/gp/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi
     .fn()
     .mockImplementation((parentIds, evolutionContext) => ({
@@ -200,7 +200,7 @@ describe("Crossover", () => {
 
     // Get the mocked function from the module
     const { formalizeWorkflow } = await import(
-      "@/core/workflow/actions/generate/formalizeWorkflow"
+      "@workflow/actions/generate/formalizeWorkflow"
     )
     mockFormalizeWorkflow = vi.mocked(formalizeWorkflow)
 
@@ -228,10 +228,10 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { createDummyGenome } = await import(
-        "@/core/improvement/gp/resources/debug/dummyGenome"
+        "@improvement/gp/resources/debug/dummyGenome"
       )
 
       const params = createMockCrossoverParams({
@@ -256,7 +256,7 @@ describe("Crossover", () => {
     it("should handle empty parents array in verbose mode", async () => {
       // Import the module after mocks are set up
       const CrossoverModule = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { Crossover } = CrossoverModule
 
@@ -277,10 +277,10 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { createDummyGenome } = await import(
-        "@/core/improvement/gp/resources/debug/dummyGenome"
+        "@improvement/gp/resources/debug/dummyGenome"
       )
 
       const params = createMockCrossoverParams({
@@ -300,10 +300,10 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { createDummyGenome } = await import(
-        "@/core/improvement/gp/resources/debug/dummyGenome"
+        "@improvement/gp/resources/debug/dummyGenome"
       )
 
       const params = createMockCrossoverParams({
@@ -327,10 +327,10 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { createDummyGenome } = await import(
-        "@/core/improvement/gp/resources/debug/dummyGenome"
+        "@improvement/gp/resources/debug/dummyGenome"
       )
 
       const params = createMockCrossoverParams({
@@ -353,7 +353,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       const mockWorkflowConfig = createMockWorkflowConfig()
@@ -394,7 +394,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       mockFormalizeWorkflow.mockResolvedValue({
@@ -412,7 +412,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       const mockWorkflowConfig = { nodes: [], entryNodeId: "invalid" }
@@ -435,7 +435,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       const strategy = "blend genetic features"
@@ -445,7 +445,6 @@ describe("Crossover", () => {
       })
 
       const params = createMockCrossoverParams({
-        crossoverStrategy: strategy,
         verbose: false,
       })
       await Crossover.crossover(params)
@@ -460,7 +459,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       const params = createMockCrossoverParams({
@@ -481,7 +480,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       const params = createMockCrossoverParams({ verbose: true })
@@ -500,7 +499,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       mockFormalizeWorkflow.mockResolvedValue({
@@ -516,7 +515,7 @@ describe("Crossover", () => {
       // Non-verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
 
       mockFormalizeWorkflow.mockRejectedValue(new Error("Request timeout"))
@@ -533,10 +532,10 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import(
-        "@/core/improvement/gp/operators/crossover/Crossover"
+        "@improvement/gp/operators/crossover/Crossover"
       )
       const { createDummyGenome } = await import(
-        "@/core/improvement/gp/resources/debug/dummyGenome"
+        "@improvement/gp/resources/debug/dummyGenome"
       )
 
       const startTime = Date.now()

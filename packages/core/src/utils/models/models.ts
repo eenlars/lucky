@@ -1,15 +1,14 @@
-// DO NOT CHANGE ANYTHING IN THIS FILE OR ANY TYPE WITHOUT CONSENT
-/* ---------- PRICING TYPES ---------- */
-export type ModelPricing = {
-  input: number
-  "cached-input": number | null
-  output: number
-  info: `IQ:${number}/10;speed:${"fast" | "medium" | "slow"};pricing:${"low" | "medium" | "high"};`
-  context_length: number
-  active: boolean
-} // per 1M tokens
-
-export type Provider = "openai" | "openrouter" | "groq"
+import { getModelSettings } from "@utils/config/runtimeConfig"
+import {
+  CURRENT_PROVIDER,
+  getActiveModels,
+  getInactiveModels,
+} from "@utils/models/functions"
+import type {
+  ActiveKeys,
+  LuckyProvider,
+  ModelPricing,
+} from "@utils/models/models.types"
 
 export const providers = {
   // Direct OpenAI API
@@ -127,7 +126,8 @@ export const providers = {
       active: false,
     },
   },
-} as const satisfies Record<Provider, Record<string, ModelPricing>>
+} as const satisfies Record<LuckyProvider, Record<string, ModelPricing>>
+
 // DO NOT CHANGE THIS OR ANY TYPE WITHOUT CONSENT
 // Generate flat pricing object for backward compatibility
 export const pricing = Object.fromEntries(
@@ -142,30 +142,12 @@ export const pricing = Object.fromEntries(
   )
 ) as Record<string, ModelPricing>
 
-/* ───────── TYPE-SAFE MODEL SELECTION ───────── */
-
-import { CURRENT_PROVIDER } from "./config"
-
-// Keep only "active: true" model keys as strings
-type ActiveKeys<T extends Record<string, { active: boolean }>> = Extract<
-  {
-    [K in keyof T]: T[K]["active"] extends true ? K : never
-  }[keyof T],
-  string
->
-
 // Only allow active models from the current provider
 export type AllowedModelName = ActiveKeys<
   (typeof providers)[typeof CURRENT_PROVIDER]
 >
 
 export type ModelName = keyof (typeof providers)[typeof CURRENT_PROVIDER]
-
-export interface TokenUsage {
-  inputTokens: number
-  outputTokens: number
-  cachedInputTokens?: number
-}
 
 /* ---------- MODELS - compile-time guarded ---------- */
 export const DEFAULT_MODELS = {
@@ -181,19 +163,14 @@ export const DEFAULT_MODELS = {
   fallback: "switchpoint/router",
 } as const satisfies Record<string, AllowedModelName>
 
-// Get all active models from provider structure
-const getActiveModels = (): ModelName[] => {
-  return Object.entries(pricing)
-    .filter(([_, config]) => config.active)
-    .map(([modelName]) => modelName as ModelName)
-}
-
-// Get all inactive models from provider structure
-const getInactiveModels = (): ModelName[] => {
-  return Object.entries(pricing)
-    .filter(([_, config]) => !config.active)
-    .map(([modelName]) => modelName as ModelName)
-}
+// Model runtime configuration
+export const DEFAULT_MODEL_CONFIG = {
+  provider: CURRENT_PROVIDER,
+  activeModels: getActiveModels(),
+  inactiveModels: getInactiveModels(),
+  // Backward compatibility
+  inactive: new Set(getInactiveModels()),
+} as const
 
 // Create type-safe active model subset - ActiveModelName should be assignable to ModelName
 export type ActiveModelName = ModelName
@@ -203,14 +180,25 @@ export function isActiveModel(model: ModelName): model is ActiveModelName {
   return pricing[model]?.active === true
 }
 
-// Model runtime configuration
-export const MODEL_CONFIG = {
-  provider: CURRENT_PROVIDER,
-  activeModels: getActiveModels(),
-  inactiveModels: getInactiveModels(),
-  // Backward compatibility
-  inactive: new Set(getInactiveModels()),
-} as const
+/**
+ * Check if a model is active (not in inactive set)
+ */
+export function isModelActive(model: ModelName): boolean {
+  const config = getModelSettings()
+  return !config.inactive.has(model)
+}
 
-// Export MODELS for backward compatibility
+// Export legacy names for backward compatibility
 export const MODELS = DEFAULT_MODELS
+export const MODEL_CONFIG = DEFAULT_MODEL_CONFIG
+
+// Export types that may be used elsewhere
+export type TokenUsage = {
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+  // AI SDK format
+  inputTokens?: number
+  outputTokens?: number
+  cachedInputTokens?: number
+}

@@ -1,9 +1,9 @@
-import { Messages } from "@/messages"
-import { truncater } from "@/utils/common/llmify"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
-import { getConfig, getModels } from "@/config"
+import { Messages } from "@messages"
+import { truncater } from "@utils/common/llmify"
+import { getLogging, getModels } from "@utils/config/runtimeConfig"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import { R, type RS } from "@utils/types"
 import type { CoreMessage } from "ai"
 import { z } from "zod"
 
@@ -12,7 +12,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
   response: string,
   schema: T
 ): Promise<RS<z.infer<T>>> => {
-  if (getConfig().logging.override.API) {
+  if (getLogging().API) {
     lgg.log(
       `⚠️  [repairAIRequest] we need to repair this response: ${truncater(
         JSON.stringify(response, null, 2),

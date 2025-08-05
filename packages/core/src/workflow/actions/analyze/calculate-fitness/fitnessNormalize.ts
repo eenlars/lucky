@@ -1,8 +1,8 @@
-import { CONFIG } from "@/runtime/settings/constants"
+import { getSettings } from "@utils/config/runtimeConfig"
 
 export const normalizeTime = (timeMs: number): number => {
   const { timeThresholdSeconds, baselineTimeSeconds } =
-    CONFIG.improvement.fitness
+    getSettings().improvement.fitness
   const timeThresholdMs = timeThresholdSeconds * 1000
   const baselineTimeMs = baselineTimeSeconds * 1000
 
@@ -19,7 +19,8 @@ export const normalizeTime = (timeMs: number): number => {
 }
 
 export const normalizeCost = (costUsd: number): number => {
-  const { costThresholdUsd, baselineCostUsd } = CONFIG.improvement.fitness
+  const { costThresholdUsd, baselineCostUsd } =
+    getSettings().improvement.fitness
 
   // 1) no penalty region
   if (costUsd <= costThresholdUsd) return 100

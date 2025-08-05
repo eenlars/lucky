@@ -1,6 +1,6 @@
-import { persistWorkflow } from "@/utils/persistence/file/resultPersistence"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { MODELS, PATHS } from "@/runtime/settings/constants"
+import { persistWorkflow } from "@utils/persistence/file/resultPersistence"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getModels, getPaths } from "@utils/config/runtimeConfig"
 import * as fs from "fs/promises"
 import * as path from "path"
 import {
@@ -24,7 +24,7 @@ describe("resultPersistence", () => {
         codeTools: [],
         mcpTools: [],
         description: "Test node",
-        modelName: MODELS.default,
+        modelName: getModels().default,
       },
     ],
   }
@@ -32,21 +32,21 @@ describe("resultPersistence", () => {
   const testFileName = "test-persistence.json"
 
   // use a test-specific directory to avoid touching the real setup file
-  const TEST_DIR = path.join(PATHS.node.logging, "test-persistence")
+  const TEST_DIR = path.join(getPaths().node.logging, "test-persistence")
   const TEST_SETUP_FILE = path.join(TEST_DIR, "test-setupfile.json")
 
   // save original setupFile path
-  const originalSetupFile = PATHS.setupFile
+  const originalSetupFile = getPaths().setupFile
   // The actual directory where files are saved is hardcoded in persistWorkflow
-  const actualOutDir = path.dirname(PATHS.setupFile) // This resolves correctly
-  const actualBackupDir = path.join(PATHS.node.logging, "backups")
+  const actualOutDir = path.dirname(getPaths().setupFile) // This resolves correctly
+  const actualBackupDir = path.join(getPaths().node.logging, "backups")
 
   beforeAll(async () => {
     // create test directory
     await fs.mkdir(TEST_DIR, { recursive: true })
 
-    // override PATHS.setupFile to point to test directory
-    Object.defineProperty(PATHS, "setupFile", {
+    // override getPaths().setupFile to point to test directory
+    Object.defineProperty(getPaths(), "setupFile", {
       value: TEST_SETUP_FILE,
       writable: true,
       configurable: true,
@@ -55,7 +55,7 @@ describe("resultPersistence", () => {
 
   afterAll(async () => {
     // restore original setupFile path
-    Object.defineProperty(PATHS, "setupFile", {
+    Object.defineProperty(getPaths(), "setupFile", {
       value: originalSetupFile,
       writable: true,
       configurable: true,
@@ -248,7 +248,7 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Starter node",
-            modelName: MODELS.default,
+            modelName: getModels().default,
           },
           {
             nodeId: "processor",
@@ -257,7 +257,7 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Processor node",
-            modelName: MODELS.default,
+            modelName: getModels().default,
           },
         ],
       }

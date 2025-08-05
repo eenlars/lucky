@@ -1,7 +1,7 @@
-import { createWorkflowPrompt } from "@/prompts/createWorkflow"
-import { WORKFLOW_GENERATION_RULES } from "@/prompts/generationRules"
-import { SharedWorkflowPrompts } from "@/prompts/workflowAnalysisPrompts"
-import { workflowToStringFromConfig } from "@/workflow/actions/generate/workflowToString"
+import { workflowToStringFromConfig } from "@workflow/actions/generate/workflowToString"
+import { createWorkflowPrompt } from "@prompts/createWorkflow"
+import { WORKFLOW_GENERATION_RULES } from "@prompts/generationRules"
+import { SharedWorkflowPrompts } from "@prompts/workflowAnalysisPrompts"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 

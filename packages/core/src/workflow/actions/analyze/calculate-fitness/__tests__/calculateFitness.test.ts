@@ -1,9 +1,9 @@
-import { sendAI } from "@/messages/api/sendAI"
+import { sendAI } from "@messages/api/sendAI"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { calculateFitness } from "../calculateFitness"
 
 // Mock sendAI at module level
-vi.mock("@/core/messages/api/sendAI")
+vi.mock("@messages/api/sendAI")
 const mockSendAI = vi.mocked(sendAI)
 
 describe("calculateFitness", () => {

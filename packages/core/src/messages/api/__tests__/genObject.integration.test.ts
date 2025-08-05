@@ -1,4 +1,4 @@
-import { MODELS } from "@/runtime/settings/constants.client"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import { zodToJson } from "../../utils/zodToJson"
@@ -56,7 +56,7 @@ describe("genObject integration tests", () => {
     const result = await genObject({
       messages,
       schema: simpleSchema,
-      model: MODELS.default,
+      model: getModels().default,
       opts: {
         retries: 3,
         repair: false,
@@ -78,7 +78,7 @@ describe("genObject integration tests", () => {
     const result = await genObject({
       messages,
       schema: simpleSchema,
-      model: MODELS.default,
+      model: getModels().default,
       opts: {
         retries: 3,
         repair: false,
@@ -100,7 +100,7 @@ describe("genObject integration tests", () => {
     const result = await genObject({
       messages,
       schema: schemaWithOptional,
-      model: MODELS.default,
+      model: getModels().default,
       opts: {
         retries: 3,
         repair: false,
@@ -123,7 +123,7 @@ describe("genObject integration tests", () => {
     const result = await genObject({
       messages,
       schema: schemaWithOptional,
-      model: MODELS.default,
+      model: getModels().default,
       opts: {
         retries: 3,
         repair: false,

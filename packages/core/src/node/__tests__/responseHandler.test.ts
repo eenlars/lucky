@@ -1,15 +1,15 @@
-import type { ProcessedResponse } from "@/messages/api/processResponse.types"
-import { MODELS } from "@/runtime/settings/constants.client"
+import type { ProcessedResponse } from "@messages/api/processResponse.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../InvocationPipeline"
 import { handleSuccess } from "../responseHandler"
 
 // Mock dependencies
-vi.mock("@/core/messages/api/processResponse", () => ({
+vi.mock("@messages/api/processResponse", () => ({
   getResponseContent: vi.fn().mockReturnValue("test output"),
 }))
 
-vi.mock("@/core/utils/validation/message", () => ({
+vi.mock("@utils/validation/message", () => ({
   validateAndDecide: vi.fn().mockResolvedValue({
     shouldProceed: true,
     validationError: null,
@@ -17,13 +17,13 @@ vi.mock("@/core/utils/validation/message", () => ({
   }),
 }))
 
-vi.mock("@/core/utils/persistence/node/saveNodeInvocation", () => ({
+vi.mock("@utils/persistence/node/saveNodeInvocation", () => ({
   saveNodeInvocationToDB: vi.fn().mockResolvedValue({
     nodeInvocationId: "test-invocation-id",
   }),
 }))
 
-vi.mock("@/core/messages/handoffs/main", () => ({
+vi.mock("@messages/handoffs/main", () => ({
   chooseHandoff: vi.fn().mockResolvedValue({
     handoff: "next-node",
     usdCost: 0.01,
@@ -31,18 +31,18 @@ vi.mock("@/core/messages/handoffs/main", () => ({
   }),
 }))
 
-vi.mock("@/core/messages/summaries", () => ({
+vi.mock("@messages/summaries", () => ({
   formatSummary: vi.fn().mockReturnValue("formatted summary"),
 }))
 
-vi.mock("@/logger", () => ({
+vi.mock("@logger", () => ({
   lgg: {
     onlyIf: vi.fn(),
     error: vi.fn(),
   },
 }))
 
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     logging: { override: { Tools: false } },
     coordinationType: "sequential",
@@ -71,7 +71,7 @@ describe("responseHandler - Parallel Handoff Logic", () => {
     replyMessage: null,
     workflowVersionId: "test-version-id",
     mainWorkflowGoal: "test goal",
-    model: MODELS.default,
+    model: getModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",
@@ -97,7 +97,7 @@ describe("responseHandler - Parallel Handoff Logic", () => {
 
     // Should return both nodes as nextIds for parallel processing
     expect(result.nextIds).toEqual(["node1", "node2"])
-    expect(result.replyMessage.kind).toBe("sequential") // Based on CONFIG.coordinationType
+    expect(result.replyMessage.kind).toBe("sequential") // Based on getSettings().coordinationType
   })
 
   it("should use sequential processing when handOffType is 'sequential'", async () => {

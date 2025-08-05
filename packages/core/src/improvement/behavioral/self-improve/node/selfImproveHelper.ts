@@ -1,11 +1,11 @@
-import { getSelfImprovePrompt } from "@/improvement/behavioral/self-improve/node/selfImprovement.p"
-import { Messages } from "@/messages"
-import { AgentSelfImprovementOutputSchema } from "@/node/schemas/restrictedAgent"
-import type { WorkFlowNode } from "@/node/WorkFlowNode"
-import { retrieveNodeInvocationSummaries } from "@/utils/persistence/node/retrieveNodeSummaries"
-import { lgg } from "@/logger" // src/core/node/improve/function.ts
-import { saveInLoc } from "@/runtime/code_tools/file-saver/save"
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
+import { getSelfImprovePrompt } from "@improvement/behavioral/self-improve/node/selfImprovement.p"
+import { Messages } from "@messages"
+import { AgentSelfImprovementOutputSchema } from "@node/schemas/restrictedAgent"
+import type { WorkFlowNode } from "@node/WorkFlowNode"
+import { getPaths, getSettings } from "@utils/config/runtimeConfig"
+import { retrieveNodeInvocationSummaries } from "@utils/persistence/node/retrieveNodeSummaries"
+import { saveInLoc } from "@example/code_tools/file-saver/save"
+import { lgg } from "@logger" // src/core/node/improve/function.ts
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   WorkflowConfig,
@@ -33,7 +33,7 @@ export async function selfImproveHelper({
   // use summaries instead of raw transcript when enabled
   let executionData: string
 
-  if (CONFIG.improvement.flags.useSummariesForImprovement) {
+  if (getSettings().improvement.flags.useSummariesForImprovement) {
     try {
       const summaries = await retrieveNodeInvocationSummaries(
         workflowInvocationId,
@@ -105,7 +105,7 @@ export async function selfImproveHelper({
   }
 
   saveInLoc(
-    `${PATHS.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
+    `${getPaths().node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
     JSON.stringify(
       { updated_node_config, learn_points, improve_points, usdCost },
       null,

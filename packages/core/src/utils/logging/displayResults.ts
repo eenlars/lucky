@@ -1,5 +1,5 @@
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
-import { lgg } from "@/logger"
+import { lgg } from "@logger"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 
 type CulturalResult = {
   results: Array<{

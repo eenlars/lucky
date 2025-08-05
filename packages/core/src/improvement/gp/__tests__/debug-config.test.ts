@@ -1,5 +1,5 @@
 // debug test to see actual config values
-import { createEvolutionSettingsWithConfig } from "@/runtime/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@example/settings/evolution"
 import { describe, expect, it } from "vitest"
 
 describe("Debug Config", () => {

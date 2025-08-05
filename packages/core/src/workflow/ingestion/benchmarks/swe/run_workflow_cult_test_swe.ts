@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 // Simple cultural evolution test on random SWE-bench evaluation
 
-import { lgg } from "@/logger"
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import { getEvolutionConfig, getPaths } from "@utils/config/runtimeConfig"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import { AggregatedEvaluator } from "@improvement/evaluators/AggregatedEvaluator"
+import { lgg } from "@logger"
 import {
   loadSingleWorkflow,
   saveWorkflowConfig,
@@ -32,14 +32,16 @@ async function runCulturalTest() {
   } as any
 
   lgg.log(`🎲 Testing SWE-bench ID: ${randomId}`)
-  lgg.log(`🧬 Running ${CONFIG.evolution.generationAmount} cultural iterations`)
+  lgg.log(
+    `🧬 Running ${getEvolutionConfig().generationAmount} cultural iterations`
+  )
 
   const evaluator = new AggregatedEvaluator()
-  let workflowPath = PATHS.setupFile
+  let workflowPath = getPaths().setupFile
   const results = []
 
-  for (let i = 1; i <= CONFIG.evolution.generationAmount; i++) {
-    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.generationAmount}`)
+  for (let i = 1; i <= getEvolutionConfig().generationAmount; i++) {
+    lgg.log(`\n🔄 Iteration ${i}/${getEvolutionConfig().generationAmount}`)
 
     const setup = await loadSingleWorkflow(workflowPath)
     const workflow = Workflow.create({
@@ -61,8 +63,8 @@ async function runCulturalTest() {
     lgg.log(`✅ Fitness: ${fitness.score}, Cost: $${cost.toFixed(4)}`)
 
     // Save for next iteration
-    const nextPath = `${PATHS.node.logging}/cultural/workflow_${i}.json`
-    await saveWorkflowConfig(workflow.getConfig(), nextPath)
+    const nextPath = `${getPaths().node.logging}/cultural/workflow_${i}.json`
+    await saveWorkflowConfig(workflow.getWFConfig(), nextPath)
     workflowPath = `output/${nextPath}`
   }
 

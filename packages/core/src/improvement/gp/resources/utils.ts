@@ -3,7 +3,7 @@
  * Consolidated from duplicate implementations across files
  */
 
-import { guard } from "@/workflow/schema/errorMessages"
+import { guard } from "@workflow/schema/errorMessages"
 import { Genome } from "../Genome"
 
 /**

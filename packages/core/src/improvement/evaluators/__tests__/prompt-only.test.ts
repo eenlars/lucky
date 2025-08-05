@@ -1,6 +1,6 @@
-import { Genome } from "@/improvement/gp/Genome"
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
+import { Genome } from "@improvement/gp/Genome"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { GPEvaluatorAdapter } from "../GPEvaluatorAdapter"
 

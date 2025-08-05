@@ -1,5 +1,5 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { MODELS } from "@/utils/models/models"
+import { sendAI } from "@messages/api/sendAI"
+import { getModels } from "@utils/config/runtimeConfig"
 import { generateText } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"
@@ -9,11 +9,11 @@ vi.mock("ai", () => ({
   generateText: vi.fn(),
 }))
 
-vi.mock("@/core/utils/clients/openrouter/openrouterClient", () => ({
+vi.mock("@utils/clients/openrouter/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 
-vi.mock("@/core/utils/spending/SpendingTracker", () => ({
+vi.mock("@utils/spending/SpendingTracker", () => ({
   SpendingTracker: {
     getInstance: () => ({
       canMakeRequest: () => true,
@@ -22,15 +22,15 @@ vi.mock("@/core/utils/spending/SpendingTracker", () => ({
   },
 }))
 
-vi.mock("@/core/messages/utils/saveResult", () => ({
+vi.mock("@messages/utils/saveResult", () => ({
   saveResultOutput: vi.fn(),
 }))
 
-vi.mock("@/runtime/code_tools/file-saver/save", () => ({
+vi.mock("@example/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
-vi.mock("@/core/messages", () => ({
+vi.mock("@messages", () => ({
   Messages: {
     sendAI: vi.fn().mockResolvedValue({
       success: false,
@@ -40,7 +40,7 @@ vi.mock("@/core/messages", () => ({
   },
 }))
 
-vi.mock("@/runtime/settings/constants", () => ({
+vi.mock("@example/settings/constants", () => ({
   CONFIG: {
     logging: {
       override: {
@@ -107,7 +107,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate a person object with name, age, and email",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: testSchema,
     })
@@ -164,7 +164,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate a person",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: testSchema,
     })
@@ -199,7 +199,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate something",
         },
       ],
-      model: MODELS.default,
+      model: getModels().default,
       mode: "structured",
       schema: testSchema,
     })

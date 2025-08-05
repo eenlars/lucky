@@ -5,11 +5,8 @@ Multi-layered validation system ensuring workflow reliability, cost efficiency, 
 ## Quick Start
 
 ```typescript
-import { validateAndDecide } from "@/core/validation/message"
-import {
-  verifyWorkflowConfig,
-  repairWorkflow,
-} from "@/core/validation/workflow"
+import { validateAndDecide } from "@validation/message"
+import { verifyWorkflowConfig, repairWorkflow } from "@validation/workflow"
 
 // Validate node output with AI analysis
 const { shouldProceed, validationError } = await validateAndDecide({
@@ -34,7 +31,7 @@ validation/
 ├── message/                     # AI-powered output validation
 │   ├── responseValidator.ts     # Quality assessment system
 │   ├── validateAndDecide.ts     # Decision logic for handoffs
-│   └── validationConfig.ts      # Configuration and thresholds
+│   └── validationgetSettings().ts      # Configuration and thresholds
 ├── workflow/                    # Workflow configuration validation
 │   ├── verifyOneNode.ts         # Individual node validation
 │   ├── toolsVerification.ts     # Tool availability and uniqueness
@@ -110,7 +107,7 @@ Efficient validation with minimal overhead:
 // Uses nano model for cost efficiency (~$0.001 per validation)
 const validationResponse = await sendAIRequest({
   messages: validationMessages,
-  model: MODELS.nano, // Gemini 2.5 Flash
+  model: getModels().nano, // Gemini 2.5 Flash
   temperature: 0.1, // Consistent scoring
   maxTokens: 1000, // Structured response
   validateResponse: true, // Ensure proper JSON
@@ -182,7 +179,7 @@ const toolValidation = {
   verifyAllToolsAreActive: async (nodes: NodeConfig[]) => {
     const allTools = extractAllTools(nodes)
     const inactiveTools = allTools.filter((tool) =>
-      CONFIG.tools.inactive.includes(tool)
+      getSettings().tools.inactive.includes(tool)
     )
 
     if (inactiveTools.length > 0) {
@@ -304,10 +301,10 @@ export const repairWorkflow = async (
     const repairPrompt = `
       Fix the following workflow validation errors:
       ${verificationResult.errors.join("\n")}
-      
+
       Current workflow configuration:
       ${JSON.stringify(currentNodes, null, 2)}
-      
+
       Please provide a corrected workflow configuration that:
       1. Fixes all validation errors
       2. Maintains the original workflow intent
@@ -317,7 +314,7 @@ export const repairWorkflow = async (
 
     const response = await sendAIRequest({
       messages: [{ role: "user", content: repairPrompt }],
-      model: MODELS.medium, // Use more capable model for repair
+      model: getModels().medium, // Use more capable model for repair
       temperature: 0.1, // Consistent repairs
       maxTokens: 4000, // Allow comprehensive response
     })
@@ -329,11 +326,11 @@ export const repairWorkflow = async (
     const newVerification = await verifyWorkflowConfig(repairedConfig)
 
     if (newVerification.isValid) {
-      return { nodes: repairedConfig.nodes, usdCost: totalCost }
+      return { nodes: repairedgetSettings().nodes, usdCost: totalCost }
     }
 
     // Update for next iteration
-    currentNodes = repairedConfig.nodes
+    currentNodes = repairedgetSettings().nodes
     verificationResult = newVerification
   }
 
@@ -501,7 +498,7 @@ class Workflow {
     const validationResult = await verifyWorkflowConfig(this.config, true)
 
     if (!validationResult.isValid) {
-      if (CONFIG.verification.strictMode) {
+      if (getSettings().verification.strictMode) {
         throw new Error(
           `Invalid workflow: ${validationResult.errors.join(", ")}`
         )
@@ -525,7 +522,7 @@ const handleNodeResponse = async (context: ResponseContext) => {
   const response = await processNodeResponse(context)
 
   // Validate response before handoff
-  if (CONFIG.verification.enableOutputValidation) {
+  if (getSettings().verification.enableOutputValidation) {
     const validation = await validateAndDecide({
       nodeOutput: response.content,
       workflowMessage: context.workflowMessageIncoming,

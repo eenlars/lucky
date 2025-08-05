@@ -7,15 +7,15 @@ const mockExplainAgents = vi.fn().mockReturnValue("Agent explanations\n")
 const mockExplainSubsetOfTools = vi.fn().mockReturnValue("Tool explanations\n")
 const mockWorkflowToAdjacencyList = vi.fn().mockReturnValue("Adjacency list\n")
 
-vi.mock("@/core/workflow/actions/generate/utils/explainAgents", () => ({
+vi.mock("@workflow/actions/generate/utils/explainAgents", () => ({
   explainAgents: mockExplainAgents,
 }))
 
-vi.mock("@/core/workflow/actions/generate/utils/explainTools", () => ({
+vi.mock("@workflow/actions/generate/utils/explainTools", () => ({
   explainSubsetOfTools: mockExplainSubsetOfTools,
 }))
 
-vi.mock("@/core/workflow/actions/generate/utils/toAdjacencyList", () => ({
+vi.mock("@workflow/actions/generate/utils/toAdjacencyList", () => ({
   workflowToAdjacencyList: mockWorkflowToAdjacencyList,
 }))
 

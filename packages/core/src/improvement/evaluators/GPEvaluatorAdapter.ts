@@ -1,12 +1,12 @@
 // adapter to use AggregatedEvaluator in genetic programming
 
-import type { EvolutionContext } from "@/improvement/gp/resources/types"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import { R } from "@/utils/types"
-import type { WorkflowIO } from "@/workflow/ingestion/ingestion.types"
-import { guard } from "@/workflow/schema/errorMessages"
-import { CONFIG } from "@/runtime/settings/constants"
+import type { EvolutionContext } from "@improvement/gp/resources/types"
+import { getEvolutionConfig } from "@utils/config/runtimeConfig"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import { R } from "@utils/types"
+import type { WorkflowIO } from "@workflow/ingestion/ingestion.types"
+import { guard } from "@workflow/schema/errorMessages"
 import { Genome } from "@gp/Genome"
 import { MockGPEvaluator } from "@gp/resources/debug/MockGPEvaluator"
 import { failureTracker } from "@gp/resources/tracker"
@@ -18,7 +18,7 @@ import type { EvolutionEvaluator } from "./EvolutionEvaluator"
  * Bridges the gap between genome-based evaluation and workflow-based evaluation.
  */
 export class GPEvaluatorAdapter implements EvolutionEvaluator {
-  static verbose = CONFIG.logging.override.GP
+  static verbose = getEvolutionConfig().GP.verbose
   private aggregatedEvaluator: AggregatedEvaluator
   private mockEvaluator: MockGPEvaluator
 
@@ -65,7 +65,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
     }
 
     // Use mock evaluator in verbose mode
-    if (CONFIG.evolution.GP.verbose) {
+    if (getEvolutionConfig().GP.verbose) {
       return this.mockEvaluator.evaluate(genome)
     }
 

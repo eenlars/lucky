@@ -1,7 +1,7 @@
 // todo-hierarchyviolation: utils (level 0) importing from tools (level 1) violates hierarchy
-import { ContextFileInfo } from "@/tools/context/contextStore.types"
-import { InMemoryContextStore } from "@/utils/persistence/memory/MemoryStore"
-import { SupabaseContextStore } from "@/utils/persistence/memory/SupabaseStore"
+import { ContextFileInfo } from "@tools/context/contextStore.types"
+import { InMemoryContextStore } from "@utils/persistence/memory/MemoryStore"
+import { SupabaseContextStore } from "@utils/persistence/memory/SupabaseStore"
 
 export interface ContextStore {
   get<T>(scope: "workflow" | "node", key: string): Promise<T | undefined>

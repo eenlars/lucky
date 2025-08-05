@@ -1,16 +1,16 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { createWorkflowPrompt } from "@/prompts/createWorkflow"
-import { toolsExplanations } from "@/prompts/explainTools"
-import { WORKFLOW_GENERATION_RULES } from "@/prompts/generationRules"
-import { llmify } from "@/utils/common/llmify"
-import { R, type RS } from "@/utils/types"
-import { validateAndRepairWorkflow } from "@/utils/validation/validateWorkflow"
-import { withDescriptions } from "@/utils/zod/withDescriptions"
+import { sendAI } from "@messages/api/sendAI"
+import { llmify } from "@utils/common/llmify"
+import { R, type RS } from "@utils/types"
+import { validateAndRepairWorkflow } from "@utils/validation/validateWorkflow"
+import { withDescriptions } from "@utils/zod/withDescriptions"
 import type {
   AfterGenerationOptions,
   GenerationOptions,
-} from "@/workflow/actions/generate/generateWF.types"
-import { MODELS } from "@/runtime/settings/constants"
+} from "@workflow/actions/generate/generateWF.types"
+import { createWorkflowPrompt } from "@prompts/createWorkflow"
+import { toolsExplanations } from "@prompts/explainTools"
+import { WORKFLOW_GENERATION_RULES } from "@prompts/generationRules"
+import { getModels } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import {
   handleWorkflowCompletion,
@@ -26,9 +26,9 @@ export async function formalizeWorkflow(
     return {
       ...node,
       modelName:
-        node.modelName === MODELS.medium
+        node.modelName === getModels().medium
           ? "medium"
-          : node.modelName === MODELS.high
+          : node.modelName === getModels().high
             ? "high"
             : "low",
     }
@@ -79,7 +79,7 @@ Create 1 workflow configuration for: ${prompt}
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: MODELS.medium,
+    model: getModels().medium,
     mode: "structured",
     schema: withDescriptions(WorkflowConfigSchemaEasy.shape, {
       nodes: "The nodes in the workflow",

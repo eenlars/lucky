@@ -1,9 +1,9 @@
-import { lgg } from "@/logger"
-import { Messages } from "@/messages"
-import { MemorySchemaOptional } from "@/node/schemas/memorySchema"
-import { WorkflowAnalysisPrompts } from "@/prompts/analyzeWorkflow.p"
-import { llmify } from "@/utils/common/llmify"
-import type { ModelName } from "@/utils/models/models"
+import { Messages } from "@messages"
+import { MemorySchemaOptional } from "@node/schemas/memorySchema"
+import { llmify } from "@utils/common/llmify"
+import type { ModelName } from "@utils/models/models"
+import { lgg } from "@logger"
+import { WorkflowAnalysisPrompts } from "@prompts/analyzeWorkflow.p"
 import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { Workflow } from "@workflow/Workflow"
 import { z } from "zod"
@@ -119,7 +119,7 @@ export async function analyzeWorkflowBottlenecks(
     memories:
       memories ||
       workflow
-        .getConfig()
+        .getWFConfig()
         .nodes.map((node) => node.memory)
         .reduce(
           (acc, curr) => {

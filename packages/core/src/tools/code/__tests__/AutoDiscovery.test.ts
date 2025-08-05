@@ -1,4 +1,4 @@
-import { CodeToolAutoDiscovery } from "@/tools/code/AutoDiscovery"
+import { CodeToolAutoDiscovery } from "@tools/code/AutoDiscovery"
 import { describe, expect, it, beforeEach } from "vitest"
 
 describe("CodeToolAutoDiscovery", () => {

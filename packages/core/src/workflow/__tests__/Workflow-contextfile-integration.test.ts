@@ -1,5 +1,5 @@
-import { buildSimpleMessage } from "@/messages/create/buildSimpleMessage"
-import { createMockWorkflowFile } from "@/utils/__tests__/setup/coreMocks"
+import { buildSimpleMessage } from "@messages/create/buildSimpleMessage"
+import { createMockWorkflowFile } from "@utils/__tests__/setup/coreMocks"
 import { describe, expect, it } from "vitest"
 
 describe("ContextFile Integration", () => {

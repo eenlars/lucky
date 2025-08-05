@@ -1,4 +1,4 @@
-import { isNir } from "@/utils/common/isNir"
+import { isNir } from "@utils/common/isNir"
 import type { CodeToolName } from "@tools/tool.types"
 import type { ToolExecutionContext } from "@tools/toolFactory"
 import type { Tool, ToolSet } from "ai"

@@ -1,4 +1,4 @@
-import type { ModelName } from "@/utils/models/models"
+import type { ModelName } from "@utils/models/models"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 
 export interface GenerationOptions {

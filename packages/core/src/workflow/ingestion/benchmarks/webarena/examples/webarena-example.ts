@@ -1,4 +1,4 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
 import { WebArenaLoader } from "../WebArenaLoader"
 
 /**

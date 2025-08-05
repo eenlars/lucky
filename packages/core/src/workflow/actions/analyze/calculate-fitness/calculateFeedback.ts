@@ -1,10 +1,10 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { rcaPrompt } from "@/prompts/rca"
-import { isNir } from "@/utils/common/isNir"
-import { llmify } from "@/utils/common/llmify"
-import { R, type RS } from "@/utils/types"
-import { lgg } from "@/logger"
-import { MODELS } from "@/runtime/settings/constants"
+import { sendAI } from "@messages/api/sendAI"
+import { isNir } from "@utils/common/isNir"
+import { llmify } from "@utils/common/llmify"
+import { R, type RS } from "@utils/types"
+import { lgg } from "@logger"
+import { rcaPrompt } from "@prompts/rca"
+import { getModels } from "@utils/config/runtimeConfig"
 import {
   feedbackPrompt,
   type FitnessFunctionInput,
@@ -50,7 +50,7 @@ You may include the original question in the feedback, but you have to note that
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    model: MODELS.fitness,
+    model: getModels().fitness,
     mode: "text",
     opts: {
       reasoning: true,

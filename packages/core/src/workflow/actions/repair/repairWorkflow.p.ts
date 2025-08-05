@@ -1,4 +1,4 @@
-import { AgentDescriptionsWithToolsSchema } from "@/node/schemas/agentWithTools"
+import { AgentDescriptionsWithToolsSchema } from "@node/schemas/agentWithTools"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { CoreMessage } from "ai"
 import z from "zod"

@@ -1,13 +1,13 @@
 // comprehensive tests for evolution engine
-import { EvolutionEngine } from "@/improvement/gp/evolutionengine"
+import { EvolutionEngine } from "@improvement/gp/evolutionengine"
+import type { EvolutionSettings } from "@improvement/gp/resources/evolution-types"
 import {
   createMockEvaluationInput,
   createMockEvaluator,
   createMockEvolutionSettings,
   createMockWorkflowConfig,
-} from "@/utils/__tests__/setup/coreMocks"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+} from "@utils/__tests__/setup/coreMocks"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Module-level mock instances
@@ -57,26 +57,26 @@ const mockVerificationCache = {
 }
 
 // Mock external dependencies at module level
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 
-vi.mock("@/core/improvement/GP/RunService", () => ({
+vi.mock("@improvement/GP/RunService", () => ({
   RunService: vi.fn(() => mockRunService),
 }))
 
-vi.mock("@/core/workflow/validation/workflowVerificationCache", () => ({
+vi.mock("@workflow/validation/workflowVerificationCache", () => ({
   verificationCache: mockVerificationCache,
 }))
 
-vi.mock("@/core/improvement/GP/Select", () => ({
+vi.mock("@improvement/GP/Select", () => ({
   Select: {
     createNextGeneration: vi.fn().mockResolvedValue(undefined),
   },
 }))
 
 // Mock StatsTracker
-vi.mock("@/core/improvement/GP/resources/stats", () => ({
+vi.mock("@improvement/GP/resources/stats", () => ({
   StatsTracker: vi.fn(() => ({
     logEvolutionStart: vi.fn(),
     recordGenerationStats: vi.fn().mockReturnValue({
@@ -97,7 +97,7 @@ vi.mock("@/core/improvement/GP/resources/stats", () => ({
 }))
 
 // Mock VerificationCache
-vi.mock("@/core/improvement/GP/resources/wrappers", () => ({
+vi.mock("@improvement/GP/resources/wrappers", () => ({
   VerificationCache: vi.fn(() => ({
     verifyWithCache: vi.fn().mockResolvedValue({ valid: true }),
   })),
@@ -146,7 +146,7 @@ vi.mock("../Population", () => ({
 }))
 
 // Mock runtime constants at module level
-vi.mock("@/core/types", () => ({
+vi.mock("@types", () => ({
   runtimeConstants: {
     paths: {
       loggingFolder: "/tmp/test-logs",

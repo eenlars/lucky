@@ -1,5 +1,5 @@
-import { supabase } from "@/utils/clients/supabase/client"
-import { lgg } from "@/utils/logging/Logger"
+import { supabase } from "@utils/clients/supabase/client"
+import { lgg } from "@utils/logging/Logger"
 
 interface CleanupStats {
   workflowInvocations: number

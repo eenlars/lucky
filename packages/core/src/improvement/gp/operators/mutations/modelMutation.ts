@@ -2,9 +2,10 @@
  * model mutation operations
  */
 
-import { lgg } from "@/utils/logging/Logger"
-import { ACTIVE_MODEL_NAMES } from "@/utils/spending/pricing"
+import { lgg } from "@utils/logging/Logger"
+import { ACTIVE_MODEL_NAMES } from "@utils/spending/pricing"
 import { failureTracker } from "@gp/resources/tracker"
+import { getModelSettings } from "@utils/config/runtimeConfig"
 import type {
   ModelName,
   WorkflowConfig,
@@ -26,14 +27,8 @@ export class ModelMutation implements NodeMutationOperator {
         return
       }
 
-      // they don't support tool use.
-      const inactiveModels: ModelName[] = [
-        // "qwen/qwq-32b:free",
-        // "deepseek/deepseek-r1-0528:free",
-      ]
-
       const modelsNotInPool: ModelName[] = ModelMutation.MODEL_POOL.filter(
-        (model) => !inactiveModels.includes(model)
+        (model) => !getModelSettings().inactive.has(model)
       )
 
       if (modelsNotInPool.length === 0) {

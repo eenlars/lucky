@@ -1,3 +1,4 @@
+import { getSettings } from "@utils/config/runtimeConfig"
 import { describe, expect, it, vi } from "vitest"
 
 describe("InvocationPipeline System Prompt Integration", () => {
@@ -94,16 +95,16 @@ describe("InvocationPipeline System Prompt Integration", () => {
     })
 
     // Mock the modules
-    vi.doMock("@/core/messages/api/sendAI", () => ({
+    vi.doMock("@messages/api/sendAI", () => ({
       sendAI: mockSendAI,
       normalizeModelName: vi.fn().mockReturnValue("openai/gpt-4.1-mini"),
     }))
 
-    vi.doMock("@/runtime/code_tools/todo-manager/tool-todo-write", () => ({
+    vi.doMock("@example/code_tools/todo-manager/tool-todo-write", () => ({
       default: { execute: mockTodoWrite },
     }))
 
-    vi.doMock("@/runtime/code_tools/todo-manager/tool-todo-read", () => ({
+    vi.doMock("@example/code_tools/todo-manager/tool-todo-read", () => ({
       default: { execute: mockTodoRead },
     }))
 
@@ -174,7 +175,9 @@ describe("InvocationPipeline System Prompt Integration", () => {
     expect(finalTodos[0].content).toBe("Test integration task")
 
     // Verify correct tool execution order
-    expect(mockTodoWrite).toHaveBeenCalledBefore(mockTodoRead)
+    expect(mockTodoWrite.mock.invocationCallOrder[0]).toBeLessThan(
+      mockTodoRead.mock.invocationCallOrder[0]
+    )
 
     console.log("✅ System prompt integration test passed:")
     console.log("  - System prompt:", systemPrompt)
@@ -189,7 +192,6 @@ describe("InvocationPipeline System Prompt Integration", () => {
 
   it("should verify experimental multi-step loop follows same pattern", async () => {
     // This test verifies that multi-step loop would follow the same system prompt
-    const { CONFIG } = await import("@/runtime/settings/constants")
 
     // Mock multi-step behavior - tool strategy calls followed by termination
     const mockSelectToolStrategyV2 = vi
@@ -214,13 +216,13 @@ describe("InvocationPipeline System Prompt Integration", () => {
         usdCost: 0.003,
       })
 
-    vi.doMock("@/core/tools/any/selectToolStrategyV2", () => ({
+    vi.doMock("@tools/any/selectToolStrategyV2", () => ({
       selectToolStrategyV2: mockSelectToolStrategyV2,
     }))
 
     // Simulate multi-step execution
-    const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
-    Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+    const originalMultiStep = getSettings().tools.experimentalMultiStepLoop
+    Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
       value: true,
       writable: true,
     })
@@ -250,7 +252,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
       console.log("  - Step 3: Termination")
       console.log("  - System prompt order maintained in multi-step loop")
     } finally {
-      Object.defineProperty(CONFIG.tools, "experimentalMultiStepLoop", {
+      Object.defineProperty(getSettings().tools, "experimentalMultiStepLoop", {
         value: originalMultiStep,
         writable: true,
       })

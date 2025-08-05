@@ -1,5 +1,13 @@
-import type { ModelRuntimeConfig } from "@/config"
-import type { EvolutionSettings } from "@/improvement/gp/resources/evolution-types"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import type {
+  TOOL_CONFIG,
+  TOOL_IMPROVEMENT_CONFIG,
+  TOOLS,
+} from "@example/settings/tools"
+import type { AllToolNames } from "@tools/tool.types"
+import type { LuckyProvider } from "@utils/models/models.types"
+import type { EvolutionSettings } from "../../improvement/gp/resources/evolution-types"
+import type { AllowedModelName } from "../models/models"
 
 export type FlowCoordinationType = "sequential" | "hierarchical"
 export type FlowEvolutionMode = "cultural" | "GP"
@@ -25,6 +33,24 @@ export type FlowPathsConfig = {
   }
 }
 
+export interface ModelConfig {
+  summary: AllowedModelName
+  nano: AllowedModelName
+  low: AllowedModelName
+  medium: AllowedModelName
+  high: AllowedModelName
+  default: AllowedModelName
+  fitness: AllowedModelName
+  reasoning: AllowedModelName
+  fallback: AllowedModelName
+}
+
+export interface ModelRuntimeConfig {
+  provider: LuckyProvider
+  inactive: Set<string>
+  models: ModelConfig
+}
+
 export type FlowEvolutionConfig = {
   readonly mode: FlowEvolutionMode
   readonly generationAmount: number
@@ -33,13 +59,37 @@ export type FlowEvolutionConfig = {
   readonly GP: EvolutionSettings
 }
 
+export type ToolsConfig = {
+  readonly inactive: Set<AllToolNames>
+  readonly uniqueToolsPerAgent: boolean
+  readonly uniqueToolSetsPerAgent: boolean
+  readonly maxToolsPerAgent: number
+  readonly maxStepsVercel: number
+  readonly defaultTools: Set<AllToolNames>
+  readonly autoSelectTools: boolean
+  readonly usePrepareStepStrategy: boolean
+  readonly experimentalMultiStepLoop: boolean
+  readonly showParameterSchemas: boolean
+  readonly experimentalMultiStepLoopMaxRounds: number
+}
+export type LoggingTypes = {
+  readonly Setup: boolean
+  readonly Tools: boolean
+  readonly Memory: boolean
+  readonly InvocationPipeline: boolean
+  readonly Messaging: boolean
+  readonly ValidationBeforeHandoff: boolean
+  readonly Improvement: boolean
+  readonly Summary: boolean
+  readonly Database: boolean
+  readonly GP: boolean
+  readonly API: boolean
+}
+
 export type FlowRuntimeConfig = {
   readonly coordinationType: FlowCoordinationType
   readonly newNodeProbability: number
-  readonly logging: {
-    readonly level: "none" | "error" | "info" | "debug"
-    readonly override: Record<string, unknown>
-  }
+  readonly logging: LoggingTypes
   readonly workflow: {
     readonly parallelExecution: boolean
     readonly asyncExecution: boolean
@@ -50,23 +100,8 @@ export type FlowRuntimeConfig = {
     readonly prepareProblemMethod: "ai" | "workflow"
     readonly prepareProblemWorkflowVersionId: string
   }
-  readonly tools: {
-    readonly inactive: Set<string>
-    readonly uniqueToolsPerAgent: boolean
-    readonly uniqueToolSetsPerAgent: boolean
-    readonly maxToolsPerAgent: number
-    readonly maxStepsVercel: number
-    readonly defaultTools: Set<string>
-    readonly autoSelectTools: boolean
-    readonly usePrepareStepStrategy: boolean
-    readonly experimentalMultiStepLoop: boolean
-    readonly showParameterSchemas: boolean
-    readonly experimentalMultiStepLoopMaxRounds: number
-  }
-  readonly models: {
-    readonly inactive: Set<string>
-    readonly provider: ModelRuntimeConfig["provider"]
-  }
+  readonly tools: ToolsConfig
+  readonly models: ModelRuntimeConfig
   readonly improvement: {
     readonly fitness: {
       readonly timeThresholdSeconds: number
@@ -115,8 +150,18 @@ export type FlowRuntimeConfig = {
   }
 }
 
-export type FullFlowRuntimeConfig = {
-  CONFIG: FlowRuntimeConfig
-  PATHS: FlowPathsConfig
-  MODELS: ModelRuntimeConfig
+export interface FlowSettings {
+  readonly config: FlowRuntimeConfig
+  readonly paths: FlowPathsConfig
+  readonly modelSettings: ModelRuntimeConfig
+  readonly tools: {
+    readonly definitions: typeof TOOLS
+    readonly config: typeof TOOL_CONFIG
+    readonly improvement: typeof TOOL_IMPROVEMENT_CONFIG
+  }
+  readonly evolution: FlowEvolutionConfig
+  readonly inputs: {
+    readonly questions: Record<string, EvaluationInput>
+    readonly selected: EvaluationInput
+  }
 }

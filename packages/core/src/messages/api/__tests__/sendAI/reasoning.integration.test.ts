@@ -1,5 +1,5 @@
-import { Messages } from "@/messages"
-import { MODELS } from "@/runtime/settings/constants"
+import { Messages } from "@messages"
+import { getModels } from "@utils/config/runtimeConfig"
 import { describe, expect, it } from "vitest"
 
 describe("sendAI reasoning integration", () => {
@@ -11,7 +11,7 @@ describe("sendAI reasoning integration", () => {
           content: "What is 2 + 2? Think step by step.",
         },
       ],
-      model: MODELS.reasoning,
+      model: getModels().reasoning,
       mode: "text",
       opts: {
         reasoning: true,

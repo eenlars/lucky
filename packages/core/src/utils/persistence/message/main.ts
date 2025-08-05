@@ -1,10 +1,10 @@
-import type { Json, TablesUpdate } from "@/utils/clients/supabase/types"
-import { lgg } from "@/logger"
+import type { Json, TablesUpdate } from "@utils/clients/supabase/types"
+import { lgg } from "@logger"
 
-import type { WorkflowMessage } from "@/messages/WorkflowMessage"
-import { supabase } from "@/utils/clients/supabase/client"
-import type { TablesInsert } from "@/utils/clients/supabase/types"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
+import type { WorkflowMessage } from "@messages/WorkflowMessage"
+import { supabase } from "@utils/clients/supabase/client"
+import type { TablesInsert } from "@utils/clients/supabase/types"
+import { JSONN } from "@utils/file-types/json/jsonParse"
 
 export const Messages = {
   save: async (message: WorkflowMessage) => {

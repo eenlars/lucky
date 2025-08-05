@@ -1,8 +1,8 @@
-import { lgg } from "@/utils/logging/Logger"
+import { lgg } from "@utils/logging/Logger"
 import type {
   WebArenaInstance,
   WorkflowIO,
-} from "@/workflow/ingestion/ingestion.types"
+} from "@workflow/ingestion/ingestion.types"
 
 export class WebArenaLoader {
   private static readonly DATASET_REPO = "web-arena-x/webarena"

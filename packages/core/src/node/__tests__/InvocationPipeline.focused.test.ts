@@ -11,10 +11,10 @@ describe("InvocationPipeline Focused Integration", () => {
 
     // Import todo tools directly - these should work without circular deps
     const todoWrite = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-write"
+      "@example/code_tools/todo-manager/tool-todo-write"
     )
     const todoRead = await import(
-      "@/runtime/code_tools/todo-manager/tool-todo-read"
+      "@example/code_tools/todo-manager/tool-todo-read"
     )
 
     const toolContext = {

@@ -1,4 +1,4 @@
-import { bunk, isNir } from "@/utils/common/isNir"
+import { bunk, isNir } from "@utils/common/isNir"
 import { describe, expect, it } from "vitest"
 
 describe("isNir", () => {

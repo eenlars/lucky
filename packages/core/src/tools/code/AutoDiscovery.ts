@@ -1,5 +1,5 @@
-import { lgg } from "@/logger"
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
+import { getLogging, getPaths } from "@utils/config/runtimeConfig"
+import { lgg } from "@logger"
 import type { FlexibleToolDefinition } from "@tools/code/CodeToolRegistry"
 import { codeToolRegistry } from "@tools/code/CodeToolRegistry"
 import { glob } from "glob"
@@ -15,7 +15,7 @@ export class CodeToolAutoDiscovery {
   private basePath: string
   private discovered: boolean = false
 
-  constructor(basePath: string = PATHS.codeTools) {
+  constructor(basePath: string = getPaths().codeTools) {
     this.basePath = basePath
   }
 
@@ -39,7 +39,7 @@ export class CodeToolAutoDiscovery {
         ignore: ["**/*.test.ts", "**/*.spec.ts"],
       })
 
-      if (CONFIG.logging.override.Tools) {
+      if (getLogging().Tools) {
         lgg.log(`🔍 Discovering tools from pattern: ${toolPattern}`)
         lgg.log(
           `📁 Found ${allFiles.length} potential tool files:`,
@@ -62,7 +62,7 @@ export class CodeToolAutoDiscovery {
             .replace(/\.ts$/, "")
             .replace(/^src\//, "@/")
 
-          if (CONFIG.logging.override.Tools) {
+          if (getLogging().Tools) {
             lgg.log(`📦 Importing potential tool from: ${importPath}`)
           }
 
@@ -101,16 +101,16 @@ export class CodeToolAutoDiscovery {
           if (foundTool && !seenTools.has(foundTool.name)) {
             tools.push(foundTool)
             seenTools.add(foundTool.name)
-            if (CONFIG.logging.override.Tools) {
+            if (getLogging().Tools) {
               lgg.log(
                 `✅ Discovered tool: ${foundTool.name} from ${path.basename(filePath)}`
               )
             }
-          } else if (CONFIG.logging.override.Tools && !foundTool) {
+          } else if (getLogging().Tools && !foundTool) {
             lgg.log(`⏭️ No valid tool found in: ${path.basename(filePath)}`)
           }
         } catch (error) {
-          if (CONFIG.logging.override.Tools) {
+          if (getLogging().Tools) {
             lgg.warn(
               `⚠️ Failed to import potential tool from ${filePath}:`,
               error
@@ -145,13 +145,13 @@ export class CodeToolAutoDiscovery {
    */
   async setupCodeTools(): Promise<FlexibleToolDefinition[]> {
     if (this.discovered) {
-      if (CONFIG.logging.override.Tools) {
+      if (getLogging().Tools) {
         lgg.log("🔄 Tools already discovered, skipping...")
       }
       return codeToolRegistry.getAllTools()
     }
 
-    if (CONFIG.logging.override.Tools) {
+    if (getLogging().Tools) {
       lgg.log("🚀 Starting auto-discovery of code tools...")
     }
 
@@ -163,13 +163,13 @@ export class CodeToolAutoDiscovery {
     }
 
     // Register all discovered tools
-    if (CONFIG.logging.override.Tools) {
+    if (getLogging().Tools) {
       lgg.log(`📝 Registering ${tools.length} tools...`)
     }
     for (const tool of tools) {
       try {
         codeToolRegistry.register(tool)
-        if (CONFIG.logging.override.Tools) {
+        if (getLogging().Tools) {
           lgg.log(`✅ Registered: ${tool.name}`)
         }
       } catch (error) {
@@ -180,7 +180,7 @@ export class CodeToolAutoDiscovery {
     this.discovered = true
 
     const stats = codeToolRegistry.getStats()
-    if (CONFIG.logging.override.Tools) {
+    if (getLogging().Tools) {
       lgg.log(
         `🎉 Auto-discovery complete! ${stats.totalTools} tools registered.`
       )

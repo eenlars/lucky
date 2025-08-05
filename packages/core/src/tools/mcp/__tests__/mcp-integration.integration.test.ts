@@ -1,5 +1,5 @@
-import { sendAI } from "@/messages/api/sendAI"
-import { lgg } from "@/utils/logging/Logger"
+import { sendAI } from "@messages/api/sendAI"
+import { lgg } from "@utils/logging/Logger"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 

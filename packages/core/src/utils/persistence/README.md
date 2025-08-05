@@ -8,9 +8,9 @@ Comprehensive persistence system with workflow versioning, evolutionary genealog
 import {
   registerWorkflowInDatabase,
   createWorkflowInvocation,
-} from "@/core/persistence/workflow"
-import { saveNodeInvocationToDB } from "@/core/persistence/node"
-import { createContextStore } from "@/core/persistence/memory"
+} from "@persistence/workflow"
+import { saveNodeInvocationToDB } from "@persistence/node"
+import { createContextStore } from "@persistence/memory"
 
 // Register workflow with evolution tracking
 const workflowVersion = await registerWorkflowInDatabase({
@@ -250,7 +250,7 @@ const nodeInvocation = await saveNodeInvocationToDB({
     model: 0.02,
     tools: 0.005,
   },
-  filesUsed: ["customers.csv", "analysis_config.json"],
+  filesUsed: ["customers.csv", "analysis_getSettings().json"],
 })
 ```
 

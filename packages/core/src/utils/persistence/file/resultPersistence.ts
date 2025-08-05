@@ -1,10 +1,10 @@
 // persist.ts
 // Drop this anywhere; call persist(finalConfig, analysisResult?)
 
-import type { Json } from "@/utils/clients/supabase/types"
-import { mkdirIfMissing, writeJsonAtomic } from "@/utils/common/files"
-import { lgg } from "@/utils/logging/Logger"
-import { PATHS } from "@/runtime/settings/constants"
+import type { Json } from "@utils/clients/supabase/types"
+import { mkdirIfMissing, writeJsonAtomic } from "@utils/common/files"
+import { lgg } from "@utils/logging/Logger"
+import { getPaths } from "@utils/config/runtimeConfig"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import path from "path"
 
@@ -20,8 +20,8 @@ export async function persistWorkflow(
   skipBackup: boolean = false
 ): Promise<void> {
   // compute directories at runtime to respect test overrides
-  const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))
-  const BACKUP_DIR = path.join(PATHS.node.logging, "backups")
+  const OUT_DIR = path.dirname(path.resolve(getPaths().setupFile))
+  const BACKUP_DIR = path.join(getPaths().node.logging, "backups")
 
   mkdirIfMissing(OUT_DIR)
   mkdirIfMissing(BACKUP_DIR)

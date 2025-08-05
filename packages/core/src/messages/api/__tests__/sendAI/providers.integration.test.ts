@@ -1,4 +1,4 @@
-import { sendAI } from "@/messages/api/sendAI"
+import { sendAI } from "@messages/api/sendAI"
 import { describe, expect, it } from "vitest"
 
 describe("sendAI with Groq provider", () => {

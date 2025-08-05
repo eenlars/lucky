@@ -1,46 +1,43 @@
-import { getModelsConfig } from "@/config"
-import { codeToolAutoDiscovery } from "@/tools/code/AutoDiscovery"
+import { codeToolAutoDiscovery } from "@tools/code/AutoDiscovery"
 import {
   createMockGenome,
   createMockWorkflowConfig,
   createMockWorkflowIO,
   createMockWorkflowScore,
   setupCoreTest,
-} from "@/utils/__tests__/setup/coreMocks"
-import { Workflow } from "@/workflow/Workflow"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
+} from "@utils/__tests__/setup/coreMocks"
+import { Workflow } from "@workflow/Workflow"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { getModels } from "@utils/config/runtimeConfig"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock external dependencies
 const mockWorkflowCreate = vi.fn()
-vi.mock("@/core/workflow/Workflow", () => ({
+vi.mock("@workflow/Workflow", () => ({
   Workflow: {
     create: mockWorkflowCreate,
   },
 }))
 
 const mockAggregatedEvaluatorEvaluate = vi.fn()
-vi.mock("@/core/improvement/evaluators/AggregatedEvaluator", () => ({
+vi.mock("@improvement/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: mockAggregatedEvaluatorEvaluate,
   })),
 }))
 
 const mockCalculateFitness = vi.fn()
-vi.mock(
-  "@/core/workflow/actions/analyze/calculate-fitness/calculateFitness",
-  () => ({
-    calculateFitness: mockCalculateFitness,
-  })
-)
+vi.mock("@workflow/actions/analyze/calculate-fitness/calculateFitness", () => ({
+  calculateFitness: mockCalculateFitness,
+}))
 
 const mockSaveGenomeToDatabase = vi.fn()
-vi.mock("@/core/improvement/gp/resources/saveGenomeToDatabase", () => ({
+vi.mock("@improvement/gp/resources/saveGenomeToDatabase", () => ({
   saveGenomeToDatabase: mockSaveGenomeToDatabase,
 }))
 
 const mockLggError = vi.fn()
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     log: vi.fn(),
     error: mockLggError,
@@ -62,7 +59,7 @@ describe("Engine Critical", () => {
         nodes: [
           {
             nodeId: "node1",
-            modelName: getModelsConfig().models.default,
+            modelName: getModels().default,
             systemPrompt: "Mock system prompt",
             description: "Mock description",
             mcpTools: [],
@@ -125,7 +122,7 @@ describe("Evaluator", () => {
   describe("GPEvaluatorAdapter", () => {
     it("should evaluate genome successfully", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -156,7 +153,7 @@ describe("Evaluator", () => {
 
     it("should create workflow with genome config", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -168,7 +165,7 @@ describe("Evaluator", () => {
       const expectedConfig = createMockWorkflowConfig()
 
       // mock genome to return specific config
-      mockGenome.getWorkflowConfig.mockReturnValue(expectedConfig)
+      mockGenome.getWorkflowgetSettings().mockReturnValue(expectedConfig)
 
       await evaluator.evaluate(mockGenome, {
         runId: "test-run-id",
@@ -186,7 +183,7 @@ describe("Evaluator", () => {
 
     it("should run workflow and collect metrics", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -210,7 +207,7 @@ describe("Evaluator", () => {
 
     it("should handle workflow creation failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockWorkflowCreate.mockImplementation(() => {
@@ -240,7 +237,7 @@ describe("Evaluator", () => {
 
     it("should handle workflow execution failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockRejectedValue(
@@ -267,7 +264,7 @@ describe("Evaluator", () => {
 
     it("should handle fitness calculation failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockRejectedValue(
@@ -293,7 +290,7 @@ describe("Evaluator", () => {
 
     it("should handle invalid fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -330,7 +327,7 @@ describe("Evaluator", () => {
 
     it("should track costs correctly", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -367,7 +364,7 @@ describe("Evaluator", () => {
   describe("evaluation metrics", () => {
     it("should generate valid timestamps", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -390,7 +387,7 @@ describe("Evaluator", () => {
 
     it("should handle zero cost evaluations", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -425,7 +422,7 @@ describe("Evaluator", () => {
 
     it("should handle high fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -461,7 +458,7 @@ describe("Evaluator", () => {
 
     it("should handle long execution times", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -498,7 +495,7 @@ describe("Evaluator", () => {
   describe("error recovery", () => {
     it("should return consistent invalid result format", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockWorkflowCreate.mockImplementation(() => {
@@ -528,7 +525,7 @@ describe("Evaluator", () => {
 
     it("should not throw exceptions on evaluation failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockWorkflowCreate.mockImplementation(() => {
@@ -553,7 +550,7 @@ describe("Evaluator", () => {
 
     it("should log detailed error information", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const specificError = new Error("specific evaluation error")
@@ -582,7 +579,7 @@ describe("Evaluator", () => {
   describe("multi-objective evaluation", () => {
     it("should support multiple fitness criteria", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       mockAggregatedEvaluatorEvaluate.mockResolvedValue({
@@ -621,7 +618,7 @@ describe("Evaluator", () => {
   describe("performance optimization", () => {
     it("should handle concurrent evaluations", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -630,9 +627,9 @@ describe("Evaluator", () => {
         "test analysis"
       )
       const genomes = await Promise.all([
-        createMockGenome(0, [], createMockWorkflowScore(0.8)),
-        createMockGenome(0, [], createMockWorkflowScore(0.7)),
-        createMockGenome(0, [], createMockWorkflowScore(0.9)),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.8) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.7) } }),
+        createMockGenome({ genomeEvaluationResults: { fitness: createMockWorkflowScore(0.9) } }),
       ])
 
       const evaluationPromises = genomes.map((genome) =>
@@ -655,7 +652,7 @@ describe("Evaluator", () => {
 
     it("should maintain evaluation state independence", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@/core/improvement/evaluators/GPEvaluatorAdapter"
+        "@improvement/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(

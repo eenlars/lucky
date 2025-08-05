@@ -1,8 +1,8 @@
-import { WorkflowEvolutionPrompts } from "@/prompts/improveWorkflow.p"
-import { R, type RS } from "@/utils/types"
-import type { FitnessOfWorkflow } from "@/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { WorkflowConfig } from "@/workflow/schema/workflow.types"
-import { Workflow } from "@/workflow/Workflow"
+import { R, type RS } from "@utils/types"
+import type { FitnessOfWorkflow } from "@workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { Workflow } from "@workflow/Workflow"
+import { WorkflowEvolutionPrompts } from "@prompts/improveWorkflow.p"
 import type { StructureExplorationResult } from "./exploreStructure"
 
 export async function judgeWithStructure(

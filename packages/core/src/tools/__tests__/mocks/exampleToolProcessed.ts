@@ -1,4 +1,4 @@
-import type { NodeLogs } from "@/messages/api/processResponse"
+import type { NodeLogs } from "@messages/api/processResponse"
 
 export const exampleToolProcessed = {
   type: "tool",

@@ -2,15 +2,15 @@
  * main mutations coordinator
  */
 
-import { improveWorkflowUnified } from "@/improvement/behavioral/judge/improveWorkflow"
-import type { FlowEvolutionMode } from "@/interfaces/runtimeConfig"
-import { CONFIG } from "@/runtime/settings/constants"
-import { truncater } from "@/utils/common/llmify"
-import { lgg } from "@/utils/logging/Logger"
-import { R, type RS } from "@/utils/types"
-import { validateAndRepairWorkflow } from "@/utils/validation/validateWorkflow"
+import { improveWorkflowUnified } from "@improvement/behavioral/judge/improveWorkflow"
+import { truncater } from "@utils/common/llmify"
+import { lgg } from "@utils/logging/Logger"
+import { R, type RS } from "@utils/types"
+import { validateAndRepairWorkflow } from "@utils/validation/validateWorkflow"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import { failureTracker } from "@gp/resources/tracker"
+import { getEvolutionConfig } from "@utils/config/runtimeConfig"
+import type { FlowEvolutionMode } from "@utils/config/runtimeConfig.types"
 import type { WorkflowConfig } from "@workflow/schema/workflow.types"
 import type { Genome } from "../../Genome"
 import { workflowConfigToGenome } from "../../resources/wrappers"
@@ -40,7 +40,7 @@ export class MutationCoordinator {
   ): Promise<RS<Genome>> {
     const { parent, intensity = 0.5, evolutionMode } = options
 
-    if (CONFIG.evolution.GP.verbose) {
+    if (getEvolutionConfig().GP.verbose) {
       return {
         success: true,
         data: createDummyGenome(

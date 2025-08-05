@@ -1,15 +1,14 @@
-import { describe, expect, it, vi, beforeEach } from "vitest"
-import type { SupabaseClient } from "@supabase/supabase-js"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock supabase client
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn(),
   },
 }))
 
 // mock logger
-vi.mock("@/core/utils/logging/Logger", () => ({
+vi.mock("@utils/logging/Logger", () => ({
   lgg: {
     error: vi.fn(),
     info: vi.fn(),
@@ -17,9 +16,9 @@ vi.mock("@/core/utils/logging/Logger", () => ({
   },
 }))
 
+import { supabase } from "@utils/clients/supabase/client"
+import { lgg } from "@utils/logging/Logger"
 import { cleanupStaleRecords } from "../cleanupStaleRecords"
-import { supabase } from "@/utils/clients/supabase/client"
-import { lgg } from "@/utils/logging/Logger"
 
 describe("cleanupStaleRecords", () => {
   const mockFrom = vi.mocked(supabase.from)

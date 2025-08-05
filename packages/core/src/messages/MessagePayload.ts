@@ -1,4 +1,4 @@
-import type { Enums } from "@/utils/clients/supabase/types"
+import type { Enums } from "@utils/clients/supabase/types"
 
 // collaboration Types
 

@@ -37,15 +37,15 @@ import { z, ZodTypeAny, type Schema } from "zod"
 
 import pTimeout, { TimeoutError } from "p-timeout"
 
-import { getConfig, getModelsConfig } from "@/config"
-import { runWithStallGuard } from "@/messages/api/stallGuard"
-import { groqProvider } from "@/utils/clients/groq/groqClient"
-import { lgg } from "@/utils/logging/Logger"
-import { DEFAULT_MODELS, type ModelName } from "@/utils/models/models"
-import { saveResultOutput } from "@/utils/persistence/saveResult"
-import { calculateUsageCost } from "@/utils/spending/calculatePricing"
-import { getPricingLevel, openaiModelsByLevel } from "@/utils/spending/pricing"
-import { SpendingTracker } from "@/utils/spending/SpendingTracker"
+import { runWithStallGuard } from "@messages/api/stallGuard"
+import { groqProvider } from "@utils/clients/groq/groqClient"
+import { getModelSettings, getModels, getSettings } from "@utils/config/runtimeConfig"
+import { lgg } from "@utils/logging/Logger"
+import { type ModelName } from "@utils/models/models"
+import { saveResultOutput } from "@utils/persistence/saveResult"
+import { calculateUsageCost } from "@utils/spending/calculatePricing"
+import { getPricingLevel, openaiModelsByLevel } from "@utils/spending/pricing"
+import { SpendingTracker } from "@utils/spending/SpendingTracker"
 
 /* -------------------------------------------------------------------------- */
 /*                               Public types                                 */
@@ -141,23 +141,23 @@ const spending = SpendingTracker.getInstance()
 // Simple rate limiting - can be configured by runtime
 const hitTimestamps: number[] = []
 function rateLimit(): string | null {
-  const config = getConfig()
+  const config = getSettings()
   const now = Date.now()
   while (
     hitTimestamps.length &&
-    now - hitTimestamps[0] > config.limits.rateWindowMs
+    now - hitTimestamps[0] > getSettings().limits.rateWindowMs
   )
     hitTimestamps.shift()
-  if (hitTimestamps.length >= config.limits.maxRequestsPerWindow) {
-    return `sendAI: Rate limit exceeded: ${config.limits.maxRequestsPerWindow} req / ${config.limits.rateWindowMs} ms`
+  if (hitTimestamps.length >= getSettings().limits.maxRequestsPerWindow) {
+    return `sendAI: Rate limit exceeded: ${getSettings().limits.maxRequestsPerWindow} req / ${getSettings().limits.rateWindowMs} ms`
   }
   hitTimestamps.push(now)
   return null
 }
 
 function spendingGuard(): string | null {
-  const config = getConfig()
-  if (!config.limits.enableSpendingLimits) return null
+  const config = getSettings()
+  if (!getSettings().limits.enableSpendingLimits) return null
   if (spending.canMakeRequest()) return null
   const { currentSpend, spendingLimit } = spending.getStatus()
   return `Spending limit exceeded: $${currentSpend.toFixed(
@@ -183,21 +183,24 @@ function getModelTimeoutCount(model: ModelName): number {
   ).length
 }
 function shouldUseModelFallback(model: ModelName): boolean {
-  const models = getModelsConfig()
-  return getModelTimeoutCount(model) >= 10 && model !== models.models.fallback
+  const models = getModelSettings()
+  return (
+    getModelTimeoutCount(model) >= 10 &&
+    model !== getModels().fallback
+  )
 }
 function getFallbackModel(model: ModelName): ModelName {
-  const models = getModelsConfig()
-  const config = getModelsConfig()
-  switch (config.provider) {
+  const models = getModelSettings()
+  const config = getModelSettings()
+  switch (getModelSettings().provider) {
     case "openai":
-      return models.models.default
+      return getModels().default
     case "groq":
       return "moonshotai/kimi-k2-instruct"
     case "openrouter":
-      return models.models.fallback
+      return getModels().fallback
     default:
-      throw new Error(`Unknown provider: ${config.provider}`)
+      throw new Error(`Unknown provider: ${getModelSettings().provider}`)
   }
 }
 function cleanupOldTimeouts(model?: ModelName): void {
@@ -217,20 +220,20 @@ function cleanupOldTimeouts(model?: ModelName): void {
 /* ----------------------------- Model helpers ------------------------------ */
 
 export function normalizeModelName(model: ModelName): ModelName {
-  const config = getModelsConfig()
-  if (config.provider === "openai") {
+  const config = getModelSettings()
+  if (getModelSettings().provider === "openai") {
     const level = getPricingLevel(model)
     return level ? openaiModelsByLevel[level] : openaiModelsByLevel.low
   }
-  if (config.provider === "groq") {
+  if (getModelSettings().provider === "groq") {
     return "moonshotai/kimi-k2-instruct"
   }
   return model
 }
 
 function toOpenaiModelName(model: ModelName): string {
-  const config = getModelsConfig()
-  if (config.provider !== "openai") {
+  const config = getModelSettings()
+  if (getModelSettings().provider !== "openai") {
     throw new Error(`Only for openai models!: ${model}`)
   }
   return model.split("/").slice(1).join("/")
@@ -246,19 +249,19 @@ function providerOpts(
   if (model.includes("openai")) {
     return { ...base, reasoning: { effort: "high" } }
   }
-  const config = getModelsConfig()
-  if (model.includes("anthropic") && config.provider === "openrouter") {
+  const config = getModelSettings()
+  if (model.includes("anthropic") && getModelSettings().provider === "openrouter") {
     return { ...base, reasoning: { max_tokens: 2_000 } }
   }
   return base
 }
 
 function getProvider(model: ModelName, reasoning?: boolean): LanguageModelV1 {
-  const config = getModelsConfig()
-  if (model.includes("openai") && config.provider === "openai") {
+  const config = getModelSettings()
+  if (model.includes("openai") && getModelSettings().provider === "openai") {
     return openai(toOpenaiModelName(model), providerOpts(model, reasoning))
   }
-  if (config.provider === "groq") {
+  if (getModelSettings().provider === "groq") {
     return groqProvider("kimi-k2-instruct") as any
   }
   return openrouter(model, providerOpts(model, reasoning))
@@ -273,7 +276,7 @@ async function execText(
 ): Promise<TResponse<{ text: string; reasoning?: string }>> {
   const {
     messages,
-    model: wanted = DEFAULT_MODELS.default,
+    model: wanted = getModels().default,
     retries = 2,
     opts = {},
   } = req
@@ -289,7 +292,7 @@ async function execText(
       model: provider,
       messages,
       maxRetries: retries,
-      maxSteps: opts.maxSteps ?? getConfig().tools.maxStepsVercel,
+      maxSteps: opts.maxSteps ?? getSettings().tools.maxStepsVercel,
     }
 
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
@@ -345,7 +348,7 @@ async function execTool(
   req: ToolRequest
 ): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
-  const requestedModel = modelIn ?? getModelsConfig().models.default
+  const requestedModel = modelIn ?? getModels().default
 
   try {
     const model = shouldUseModelFallback(requestedModel)
@@ -360,7 +363,7 @@ async function execTool(
       maxRetries: retries,
       tools: opts.tools,
       toolChoice: opts.toolChoice,
-      maxSteps: opts.maxSteps ?? getConfig().tools.maxStepsVercel,
+      maxSteps: opts.maxSteps ?? getSettings().tools.maxStepsVercel,
     }
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
       baseOptions,
@@ -414,7 +417,7 @@ async function execStructured<S extends ZodTypeAny>(
 ): Promise<TResponse<z.infer<S>>> {
   const { messages, model: modelIn, retries = 2, schema, opts = {} } = req
 
-  const requestedModel = modelIn ?? getModelsConfig().models.default
+  const requestedModel = modelIn ?? getModels().default
   const model = shouldUseModelFallback(requestedModel)
     ? getFallbackModel(requestedModel)
     : requestedModel
@@ -529,7 +532,7 @@ async function _sendAIInternal(
   }
 
   /* ---- normalize model ---- */
-  req.model = normalizeModelName(req.model ?? getModelsConfig().models.default)
+  req.model = normalizeModelName(req.model ?? getModels().default)
 
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {
@@ -553,11 +556,11 @@ async function _sendAIInternal(
  * **Public API** –
  * Use sendAI with the following signature:
  *
- * sendAI is the main API for interacting with AI models. It supports three modes:
+ * sendAI is the main API for interacting with AI getModels(). It supports three modes:
  *
  * 1. TextRequest - For simple text generation:
  *    - messages: Array of chat messages with role and content
- *    - model: AI model to use (defaults to MODELS.default)
+ *    - model: AI model to use (defaults to getModels().default)
  *    - mode: "text"
  *    - opts: Optional settings like temperature, reasoning, etc.
  *

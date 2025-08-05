@@ -1,6 +1,6 @@
-import { createContextStore } from "@/utils/persistence/memory/ContextStore"
-import { InMemoryContextStore } from "@/utils/persistence/memory/MemoryStore"
-import { SupabaseContextStore } from "@/utils/persistence/memory/SupabaseStore"
+import { createContextStore } from "@utils/persistence/memory/ContextStore"
+import { InMemoryContextStore } from "@utils/persistence/memory/MemoryStore"
+import { SupabaseContextStore } from "@utils/persistence/memory/SupabaseStore"
 import { describe, expect, it } from "vitest"
 
 describe("ContextStore", () => {

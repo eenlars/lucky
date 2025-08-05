@@ -1,10 +1,10 @@
-import { CONFIG } from "@/runtime/settings/constants"
-import { truncater } from "@/utils/common/llmify"
-import { CSVLoader } from "@/utils/file-types/csv/CSVLoader"
-import { JSONN } from "@/utils/file-types/json/jsonParse"
-import { lgg } from "@/utils/logging/Logger"
-import type { EvaluationInput } from "@/workflow/ingestion/ingestion.types"
-import { guard } from "@/workflow/schema/errorMessages"
+import { truncater } from "@utils/common/llmify"
+import { CSVLoader } from "@utils/file-types/csv/CSVLoader"
+import { JSONN } from "@utils/file-types/json/jsonParse"
+import { lgg } from "@utils/logging/Logger"
+import { getSettings, getLogging } from "@utils/config/runtimeConfig"
+import type { EvaluationInput } from "@workflow/ingestion/ingestion.types"
+import { guard } from "@workflow/schema/errorMessages"
 import { GAIALoader } from "./benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "./benchmarks/swe/SWEBenchLoader"
 import type { WorkflowIO } from "./ingestion.types"
@@ -14,7 +14,7 @@ import type { WorkflowIO } from "./ingestion.types"
  * handles both text and CSV evaluation inputs
  */
 export class IngestionLayer {
-  static verbose = CONFIG.logging.override.Setup
+  static verbose = getLogging().Setup
 
   /**
    * converts EvaluationInput to WorkflowIO array
@@ -144,7 +144,7 @@ export class IngestionLayer {
       // calculate number of cases to select based on configured percentage
       const numCasesToSelect = Math.max(
         1,
-        Math.min(workflowCases.length, CONFIG.ingestion.taskLimit)
+        Math.min(workflowCases.length, getSettings().ingestion.taskLimit)
       )
 
       // use proper random sampling instead of array sort for performance
@@ -234,7 +234,7 @@ export class IngestionLayer {
       }
 
       // return up to configured limit of workflow cases
-      const limit = Math.min(CONFIG.ingestion.taskLimit, 100)
+      const limit = Math.min(getSettings().ingestion.taskLimit, 100)
       const casesToReturn = workflowCases.slice(0, limit)
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] loaded SWE-bench cases", {
@@ -274,7 +274,7 @@ export class IngestionLayer {
       }
 
       // fetch multiple GAIA instances by level (up to configured limit)
-      const limit = Math.min(CONFIG.ingestion.taskLimit, 100)
+      const limit = Math.min(getSettings().ingestion.taskLimit, 100)
       const instances = await GAIALoader.fetchByLevel(
         evaluation.level || 1,
         evaluation.split || "validation",
