@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
-import { createEvolutionVisualizationData } from "../lib/evolution-utils"
 import { writeFileSync } from "fs"
 import { join } from "path"
+import { createEvolutionVisualizationData } from "../lib/evolution-utils"
+import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
 
 async function generateEvolutionGraph(invocationId: string) {
   console.log(`🔍 Tracing evolution for invocation: ${invocationId}`)
@@ -55,7 +55,7 @@ async function generateEvolutionGraph(invocationId: string) {
 
   console.log("\n🎯 KEY MILESTONES")
   console.log("=================")
-  visualization.milestones.forEach((milestone: any, i: number) => {
+  visualization.milestones.forEach((milestone: any, _i: number) => {
     const emoji = milestone.isTarget ? "🎯" : "📍"
     console.log(`${emoji} ${milestone.accuracy}% - ${milestone.invocationId}`)
   })

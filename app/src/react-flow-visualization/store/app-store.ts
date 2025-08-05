@@ -24,9 +24,9 @@ import nodesConfig, {
   type WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes"
 import { initialSetupConfig } from "@/react-flow-visualization/lib/workflow-data"
-import { layoutGraph } from "./layout"
-import type { WorkflowConfig } from "@/core/workflow/schema/workflow.types"
 import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { layoutGraph } from "./layout"
 
 export type AppState = {
   nodes: AppNode[]

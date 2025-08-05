@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import type { Tables } from "@core/utils/clients/supabase/types"
 import { ReactFlowProvider } from "@xyflow/react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-import type { Tables } from "@/core/utils/clients/supabase/types"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"

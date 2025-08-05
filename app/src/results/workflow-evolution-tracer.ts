@@ -1,9 +1,9 @@
 "use server"
 
-import { supabase } from "@/core/utils/clients/supabase/client"
-import type { Tables } from "@/core/utils/clients/supabase/types"
+import { supabase } from "@core/utils/clients/supabase/client"
+import type { Tables } from "@core/utils/clients/supabase/types"
 
-import type { EvolutionNode, EvolutionGraph } from "@/lib/evolution-utils"
+import type { EvolutionGraph, EvolutionNode } from "@/lib/evolution-utils"
 
 export async function traceWorkflowEvolution(
   invocationId: string

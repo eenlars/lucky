@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["./src/*"],
+      "@core/types/*": ["./src/types/*"],
+      "@core/logger": ["./src/utils/logging/Logger.ts"],
+      "@core/benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
+      "@core/workflow/*": ["./src/workflow/*"],
+      "@core/node/*": ["./src/node/*"],
+      "@core/messages/*": ["./src/messages/*"],
+      "@core/memories/*": ["./src/memories/*"],
+      "@core/tools/*": ["./src/tools/*"],
+      "@core/prompts/*": ["./src/prompts/*"],
+      "@core/validation/*": ["./src/utils/validation/*"],
+      "@core/improvement/*": ["./src/improvement/*"],
+      "@runtime/*": ["../runtime/*"],
+      "@shared/*": ["../shared/src/*"]
+    },
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.json",
+    "../runtime/**/*.ts",
+    "../shared/**/*.ts",
+    "../runtime/**/*.json",
+    "scripts/runOnce.ts",
+    "scripts/cleanup.ts"
+  ],
+  "exclude": ["node_modules", "src/runtime/logging_folder", "src/utils/env.mjs"]
+}

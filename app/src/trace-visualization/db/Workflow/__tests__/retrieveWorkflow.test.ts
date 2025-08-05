@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { retrieveWorkflowInvocations } from "../retrieveWorkflow"
 
 // FAILING: "Cannot access 'mockSupabase' before initialization" - vitest hoisting issue with mock variables
@@ -7,7 +7,7 @@ const mockSupabase = {
   from: vi.fn(),
 }
 
-vi.mock("@/core/utils/clients/supabase/client", () => ({
+vi.mock("@core/utils/clients/supabase/client", () => ({
   supabase: mockSupabase,
 }))
 

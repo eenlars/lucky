@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,7 +11,7 @@
     "generate": "node scripts/dev.js generate",
     "parse-prd": "node scripts/dev.js parse-prd",
     "format": "prettier --write .",
-    "once": "tsx --env-file=.env src/core/runOnce.ts",
+    "once": "cd ../core && bun run scripts/runOnce.ts",
     "twice": "tsx --env-file=.env src/core/runTwice.ts",
     "gp": "node scripts/run-gp.js",
     "cultural": "rm -rf src/runtime/logging_folder && tsx --env-file=.env src/core/main.ts --mode=cultural",

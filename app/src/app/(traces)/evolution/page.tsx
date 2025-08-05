@@ -1,10 +1,7 @@
 "use client"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import {
-  cleanupStaleEvolutionRuns,
-  retrieveEvolutionRuns as _retrieveEvolutionRuns,
-} from "@/trace-visualization/db/Evolution/retrieveEvolution"
+import { cleanupStaleEvolutionRuns } from "@/trace-visualization/db/Evolution/retrieveEvolution"
+import type { Tables } from "@core/utils/clients/supabase/types"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
@@ -149,30 +146,46 @@ export default function EvolutionPage() {
   const filteredAndSortedRuns = evolutionRuns
     .filter((run) => {
       // Empty runs filter
-      if (hideEmptyRuns && (!run.total_invocations || run.total_invocations === 0)) return false
-      
+      if (
+        hideEmptyRuns &&
+        (!run.total_invocations || run.total_invocations === 0)
+      )
+        return false
+
       // Search filter
-      if (searchTerm && !run.goal_text.toLowerCase().includes(searchTerm.toLowerCase()) && !run.run_id.toLowerCase().includes(searchTerm.toLowerCase())) return false
-      
+      if (
+        searchTerm &&
+        !run.goal_text.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !run.run_id.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+        return false
+
       // Status filter
       if (statusFilter !== "all" && run.status !== statusFilter) return false
-      
+
       // Mode filter
       if (modeFilter !== "all" && run.config?.mode !== modeFilter) return false
-      
+
       // Date filter
       if (dateFilter !== "all") {
         const runDate = new Date(run.start_time)
         const now = new Date()
-        const daysDiff = (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
-        
+        const daysDiff =
+          (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
+
         switch (dateFilter) {
-          case "today": if (daysDiff > 1) return false; break
-          case "week": if (daysDiff > 7) return false; break
-          case "month": if (daysDiff > 30) return false; break
+          case "today":
+            if (daysDiff > 1) return false
+            break
+          case "week":
+            if (daysDiff > 7) return false
+            break
+          case "month":
+            if (daysDiff > 30) return false
+            break
         }
       }
-      
+
       return true
     })
     .sort((a, b) => {
@@ -212,7 +225,7 @@ export default function EvolutionPage() {
   // Auto-refresh running workflows without showing loading state
   useEffect(() => {
     if (!autoRefresh) return
-    
+
     const hasRunningWorkflows = evolutionRuns.some(
       (run) => run.status === "running"
     )
@@ -223,7 +236,12 @@ export default function EvolutionPage() {
     }, refreshInterval * 1000)
 
     return () => clearInterval(interval)
-  }, [evolutionRuns.some(run => run.status === "running"), fetchEvolutionRuns, autoRefresh, refreshInterval])
+  }, [
+    evolutionRuns.some((run) => run.status === "running"),
+    fetchEvolutionRuns,
+    autoRefresh,
+    refreshInterval,
+  ])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -252,7 +270,7 @@ export default function EvolutionPage() {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           <button
             onClick={() => fetchEvolutionRuns(true, true)}
             disabled={loading}
@@ -260,7 +278,7 @@ export default function EvolutionPage() {
           >
             {loading ? "Loading..." : "🔄 Refresh"}
           </button>
-          
+
           <button
             onClick={() => {
               setSearchTerm("")
@@ -275,7 +293,7 @@ export default function EvolutionPage() {
             🗑️ Clear
           </button>
         </div>
-        
+
         {/* Row 2: Filters */}
         <div className="flex items-center gap-4 flex-wrap">
           <select
@@ -289,7 +307,7 @@ export default function EvolutionPage() {
             <option value="interrupted">Interrupted</option>
             <option value="failed">Failed</option>
           </select>
-          
+
           <select
             value={modeFilter}
             onChange={(e) => setModeFilter(e.target.value)}
@@ -299,7 +317,7 @@ export default function EvolutionPage() {
             <option value="cultural">Cultural</option>
             <option value="GP">Genetic Programming</option>
           </select>
-          
+
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
@@ -310,7 +328,7 @@ export default function EvolutionPage() {
             <option value="week">This Week</option>
             <option value="month">This Month</option>
           </select>
-          
+
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
               type="checkbox"
@@ -321,7 +339,7 @@ export default function EvolutionPage() {
             Hide empty runs
           </label>
         </div>
-        
+
         {/* Row 3: Auto-refresh and stats */}
         <div className="flex items-center gap-4 flex-wrap justify-between">
           <div className="flex items-center gap-4 flex-wrap">
@@ -334,10 +352,12 @@ export default function EvolutionPage() {
               />
               Auto-refresh
             </label>
-            
+
             {autoRefresh && (
               <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-700 dark:text-gray-300">Every</label>
+                <label className="text-sm text-gray-700 dark:text-gray-300">
+                  Every
+                </label>
                 <select
                   value={refreshInterval}
                   onChange={(e) => setRefreshInterval(Number(e.target.value))}
@@ -350,7 +370,7 @@ export default function EvolutionPage() {
                 </select>
               </div>
             )}
-            
+
             {hasMore && (
               <button
                 onClick={() => fetchEvolutionRuns(true, false)}
@@ -361,22 +381,28 @@ export default function EvolutionPage() {
               </button>
             )}
           </div>
-          
+
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Showing {filteredAndSortedRuns.length} of {evolutionRuns.length} runs
+              Showing {filteredAndSortedRuns.length} of {evolutionRuns.length}{" "}
+              runs
             </span>
-            
-            {evolutionRuns.some(run => run.status === "running") && (
+
+            {evolutionRuns.some((run) => run.status === "running") && (
               <span className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400">
                 <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-                {evolutionRuns.filter(run => run.status === "running").length} running
+                {evolutionRuns.filter((run) => run.status === "running").length}{" "}
+                running
               </span>
             )}
           </div>
         </div>
-        
-        {error && <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3">{error}</div>}
+
+        {error && (
+          <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3">
+            {error}
+          </div>
+        )}
       </div>
 
       {filteredAndSortedRuns.length > 0 ? (

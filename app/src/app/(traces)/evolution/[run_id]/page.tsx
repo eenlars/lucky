@@ -2,7 +2,6 @@
 
 import { StructureMiniMap } from "@/app/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
-import type { Tables } from "@/core/utils/clients/supabase/types"
 import {
   cleanupStaleEvolutionRuns,
   retrieveAllInvocationsForRunGroupedByGeneration,
@@ -11,8 +10,9 @@ import {
   type WorkflowInvocationSubset,
 } from "@/trace-visualization/db/Evolution/retrieveEvolution"
 import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { WorkflowConfig } from "@workflow/schema/workflow.types"
-import { isWorkflowConfig } from "@workflow/schema/workflow.types"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
@@ -79,7 +79,7 @@ export default function EvolutionRunPage({
   const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(
     new Set()
   )
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0)
+  const [_lastFetchTime, setLastFetchTime] = useState<number>(0)
   const [showGraph, setShowGraph] = useState<boolean>(true)
 
   // DSL modal state
@@ -174,9 +174,9 @@ export default function EvolutionRunPage({
     if (evolutionRun) {
       fetchGenerationsData()
     }
-  }, [evolutionRun?.run_id])
+  }, [evolutionRun, fetchGenerationsData])
 
-  // Auto-refresh if evolution run is still running  
+  // Auto-refresh if evolution run is still running
   useEffect(() => {
     if (!evolutionRun || evolutionRun.status !== "running") return
 
@@ -185,7 +185,7 @@ export default function EvolutionRunPage({
     }, 30000)
 
     return () => clearInterval(interval)
-  }, [evolutionRun?.status === "running", run_id])
+  }, [evolutionRun, fetchGenerationsData])
 
   if (loading) {
     return (

@@ -1,20 +1,20 @@
 "use client"
 
 import {
-  isControlPayload,
-  isDelegationPayload,
-  isErrorPayload,
-  isSequentialPayload,
-  isShowWorkPayload,
-} from "@/core/messages/MessagePayload"
-import type { Json } from "@/core/utils/clients/supabase/types"
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { CodeInput } from "@/ui/code"
+import {
+  isControlPayload,
+  isDelegationPayload,
+  isErrorPayload,
+  isSequentialPayload,
+  isShowWorkPayload,
+} from "@core/messages/MessagePayload"
+import type { Json } from "@core/utils/clients/supabase/types"
 import {
   AlertCircle,
   CheckCircle,

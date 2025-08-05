@@ -1,0 +1,31 @@
+{
+  "name": "@lucky/runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@mendable/firecrawl-js": "^1.29.3",
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
+    "merge-deep": "^3.0.3",
+    "nanoid": "^5.1.5",
+    "papaparse": "^5.5.3",
+    "puppeteer": "^24.15.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "turndown": "^7.2.0",
+    "zod": "^3.25.73"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "@types/papaparse": "^5.3.16",
+    "@types/turndown": "^5.0.5",
+    "vite": "^7.0.6",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  }
+}

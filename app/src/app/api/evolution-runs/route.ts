@@ -1,5 +1,5 @@
+import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
-import { supabase } from "@/core/utils/clients/supabase/client"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -113,7 +113,7 @@ export async function GET(request: Request) {
         successful_invocations: successful,
         generation_count: generations,
       }))
-      .filter(run => run.generation_count > 0)
+      .filter((run) => run.generation_count > 0)
       .sort(
         (a, b) =>
           new Date(b.start_time).getTime() - new Date(a.start_time).getTime()

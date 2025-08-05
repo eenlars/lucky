@@ -1,6 +1,6 @@
 "use server"
-import { supabase } from "@/core/utils/clients/supabase/client"
-import type { TablesUpdate } from "@/core/utils/clients/supabase/types"
+import { supabase } from "@core/utils/clients/supabase/client"
+import type { TablesUpdate } from "@core/utils/clients/supabase/types"
 
 export const retrieveNodeInvocations = async (workflowInvocationId: string) => {
   const { data, error: nodeInvocationError } = await supabase

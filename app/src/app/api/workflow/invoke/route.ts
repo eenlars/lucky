@@ -1,7 +1,7 @@
 import {
   invokeWorkflow,
   type InvocationInput,
-} from "@/core/workflow/runner/invokeWorkflow"
+} from "@core/workflow/runner/invokeWorkflow"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {

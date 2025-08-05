@@ -1,4 +1,8 @@
 {
+  "installCommand": "bun i && cd ../core && bun i && cd ../shared && bun i && cd ../runtime && bun i",
+  "buildCommand": "cd ../shared && bun run build && cd ../runtime && bun run build && cd ../app && bun run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
   "crons": [
     {
       "path": "/api/cron/cleanup",

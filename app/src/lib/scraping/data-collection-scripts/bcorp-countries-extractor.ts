@@ -1,12 +1,12 @@
-import { CSVLoader } from "@/core/utils/file-types/csv/CSVLoader"
-import { lgg } from "@/core/utils/logging/Logger"
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import {
   slugifyBCorp,
   toDomain,
 } from "@/lib/scraping/data-collection-scripts/utils"
-import { saveInLoc } from "@/runtime/code_tools/file-saver/save"
-import { PATHS } from "@/runtime/settings/constants"
+import { lgg } from "@core/utils/logging/Logger"
+import { saveInLoc } from "@runtime/code_tools/file-saver/save"
+import { PATHS } from "@runtime/settings/constants"
+import { CSVLoader } from "@shared/utils/files/csv/CSVLoader"
 import crypto from "crypto"
 import fs from "fs"
 

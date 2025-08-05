@@ -1,7 +1,6 @@
 "use server"
 
-import { supabase } from "@/core/utils/clients/supabase/client"
-import type { Tables } from "@/core/utils/clients/supabase/types"
+import { supabase } from "@core/utils/clients/supabase/client"
 
 // test with the actual invocation ID to see what data we have
 export async function exploreWorkflowInvocation(invocationId: string) {

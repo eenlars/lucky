@@ -1,8 +1,8 @@
 "use client"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { loadFromDSL } from "@/core/workflow/setup/WorkflowLoader"
 import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { runWorkflowFromDSL } from "../actions/workflowActions"

@@ -1,4 +1,4 @@
-import { verifyWorkflowConfig } from "@/core/utils/validation/workflow"
+import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {

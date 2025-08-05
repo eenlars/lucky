@@ -1,12 +1,12 @@
 "use client"
 
-import type { Tables } from "@/core/utils/clients/supabase/types"
 import {
   deleteWorkflowInvocations,
   retrieveWorkflowInvocations,
   type WorkflowInvocationFilters,
   type WorkflowInvocationSortOptions,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import type { Tables } from "@core/utils/clients/supabase/types"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"

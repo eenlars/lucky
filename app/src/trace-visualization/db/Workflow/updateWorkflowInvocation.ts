@@ -1,5 +1,5 @@
-import { supabase } from "@/core/utils/clients/supabase/client"
-import { lgg } from "@/logger"
+import { supabase } from "@core/utils/clients/supabase/client"
+import { lgg } from "@core/utils/logging/Logger"
 
 export interface InvocationScores {
   accuracy: number

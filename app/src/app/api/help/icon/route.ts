@@ -1,4 +1,4 @@
-import { lgg } from "@/logger"
+import { lgg } from "@core/utils/logging/Logger"
 import * as cheerio from "cheerio"
 import { NextRequest, NextResponse } from "next/server"
 

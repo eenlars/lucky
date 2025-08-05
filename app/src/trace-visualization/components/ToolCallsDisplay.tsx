@@ -1,8 +1,8 @@
 "use client"
 
-import type { NodeLogs } from "@/core/messages/api/processResponse"
-import { isNir } from "@/core/utils/common/isNir"
 import { Card } from "@/ui/card"
+import type { NodeLogs } from "@core/messages/api/processResponse"
+import { isNir } from "@core/utils/common/isNir"
 import {
   AlertCircle,
   BookOpen,
@@ -58,7 +58,7 @@ export const ToolCallsDisplay = ({
     })
     return initialCollapsed
   })
-  const [showResultButton, setShowResultButton] = useState<
+  const [_showResultButton, _setShowResultButton] = useState<
     Record<number, boolean>
   >({})
   const resultRefs = useRef<Record<number, HTMLDivElement | null>>({})
@@ -86,7 +86,7 @@ export const ToolCallsDisplay = ({
         newShowButtons[Number(index)] = ref.scrollHeight > 160 // max-h-40 = 160px
       }
     })
-    setShowResultButton(newShowButtons)
+    _setShowResultButton(newShowButtons)
   }, [toolUsage])
 
   // Handle expand/collapse all

@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+.cache
+.cache/
+**/.cache/
 
 # debug
 npm-debug.log*
@@ -42,6 +45,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+dist/
+**/dist/
 
 # Added by Claude Task Master
 # Logs
@@ -79,3 +84,12 @@ downloads/*
 mcp/*
 
 **/research-experiments/*
+
+# Local config files
+*.local
+
+# Turborepo
+.turbo/
+
+# NPM pack output
+*.tgz

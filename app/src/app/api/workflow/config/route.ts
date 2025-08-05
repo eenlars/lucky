@@ -1,9 +1,9 @@
-import { PATHS } from "@/runtime/settings/constants"
-import {
-  loadSingleWorkflow,
-  loadFromDatabaseForDisplay,
-} from "@workflow/setup/WorkflowLoader"
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import {
+  loadFromDatabaseForDisplay,
+  loadSingleWorkflow,
+} from "@core/workflow/setup/WorkflowLoader"
+import { PATHS } from "@runtime/settings/constants"
 import { NextResponse } from "next/server"
 
 export async function GET() {

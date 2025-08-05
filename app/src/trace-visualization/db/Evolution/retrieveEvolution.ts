@@ -1,6 +1,6 @@
 "use server"
-import { supabase } from "@/core/utils/clients/supabase/client"
-import type { Tables } from "@/core/utils/clients/supabase/types"
+import { supabase } from "@core/utils/clients/supabase/client"
+import type { Tables } from "@core/utils/clients/supabase/types"
 
 export interface WorkflowInvocationSubset {
   wf_invocation_id: string

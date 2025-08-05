@@ -82,9 +82,9 @@ mockRuntimeConstantsForDatabase({
 #### Before (Crossover.test.ts - 19 lines)
 
 ```typescript
-vi.mock("@/runtime/settings/constants", async (importOriginal) => {
+vi.mock("@runtime/settings/constants", async (importOriginal) => {
   const mod =
-    await importOriginal<typeof import("@/runtime/settings/constants")>()
+    await importOriginal<typeof import("@runtime/settings/constants")>()
   return {
     ...mod,
     MODELS: {

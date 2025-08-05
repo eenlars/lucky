@@ -1,0 +1,41 @@
+{
+    "name": "@lucky/shared",
+    "type": "module",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Shared utilities and types for Lucky applications",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "bun x tsup",
+        "dev": "bun x tsup --watch",
+        "clean": "rimraf dist",
+        "prebuild": "rimraf dist && rm -f tsconfig.tsbuildinfo",
+        "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
+        "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "dependencies": {
+        "json5": "^2.2.3",
+        "papaparse": "^5.5.3"
+    },
+    "devDependencies": {
+        "@supabase/supabase-js": "^2.49.4",
+        "@types/bun": "latest",
+        "@types/papaparse": "^5.3.16",
+        "prettier": "^3.4.2",
+        "rimraf": "^5.0.10",
+        "tsup": "^8.0.1",
+        "typescript": "^5.0.0"
+    }
+}

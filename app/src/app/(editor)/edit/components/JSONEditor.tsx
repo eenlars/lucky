@@ -1,18 +1,18 @@
 "use client"
 
 import { formalizeWorkflowAction } from "@/app/actions/formalizeWorkflow"
-import { createWorkflowPrompt } from "@/core/prompts/createWorkflow"
-import type { Tables } from "@/core/utils/clients/supabase/types"
-import { genShortId } from "@/core/utils/common/utils"
+import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ensureWorkflowExists,
   saveWorkflowVersion,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
+import type { Tables } from "@core/utils/clients/supabase/types"
+import { genShortId } from "@core/utils/common/utils"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-import { useAppStore } from "@/react-flow-visualization/store"
 import SyntaxHighlightedEditor from "../[wf_version_id]/components/SyntaxHighlightedEditor"
 
 interface JSONEditorProps {
@@ -123,7 +123,7 @@ export default function JSONEditor({
     } finally {
       setIsOptimizing(false)
     }
-  }, [workflowJSON, feedback])
+  }, [workflowJSON, feedback, updateWorkflowJSON, setIsDirty, setFeedback, setVerificationResult])
 
   // Helper functions for cleaner code organization
   const parseWorkflowSafely = (content: string) => {
@@ -174,41 +174,33 @@ export default function JSONEditor({
 
     try {
       const parsedWorkflow = parseWorkflowSafely(workflowJSON)
-      const newWorkflowVersion = await saveWorkflowToDatabase(parsedWorkflow)
-      navigateToSavedWorkflow(newWorkflowVersion)
+      
+      // Save workflow to database
+      const workflowId = `wf_id_${genShortId()}`
+      await ensureWorkflowExists(commitMessage, workflowId)
+      const newWorkflowVersion = await saveWorkflowVersion({
+        dsl: parsedWorkflow,
+        commitMessage,
+        workflowId,
+        parentId: workflowVersion?.wf_version_id,
+        iterationBudget: workflowVersion?.iteration_budget || 50,
+        timeBudgetSeconds: workflowVersion?.time_budget_seconds || 3600,
+      })
+      
+      // Navigate to saved workflow
+      setIsDirty(false)
+      setShowSaveModal(false)
+      setCommitMessage("")
+      router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
-      handleSaveError(error)
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save workflow"
+      setSaveError(errorMessage)
     } finally {
       setIsLoading(false)
     }
-  }, [workflowJSON, workflowVersion, commitMessage, router])
+  }, [workflowJSON, commitMessage, workflowVersion, router])
 
-  const saveWorkflowToDatabase = async (workflow: any) => {
-    const workflowId = `wf_id_${genShortId()}`
-
-    await ensureWorkflowExists(commitMessage, workflowId)
-    return await saveWorkflowVersion({
-      dsl: workflow,
-      commitMessage,
-      workflowId,
-      parentId: workflowVersion?.wf_version_id,
-      iterationBudget: workflowVersion?.iteration_budget || 50,
-      timeBudgetSeconds: workflowVersion?.time_budget_seconds || 3600,
-    })
-  }
-
-  const navigateToSavedWorkflow = (newWorkflowVersion: any) => {
-    setIsDirty(false)
-    setShowSaveModal(false)
-    setCommitMessage("")
-    router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
-  }
-
-  const handleSaveError = (error: unknown) => {
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to save workflow"
-    setSaveError(errorMessage)
-  }
 
   // Keyboard shortcuts
   useEffect(() => {

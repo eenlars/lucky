@@ -1,6 +1,6 @@
-import { genShortId } from "@/core/utils/common/utils"
-import type { EvaluationText } from "@/core/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@workflow/schema/workflow.types"
+import { genShortId } from "@core/utils/common/utils"
+import type { EvaluationText } from "@core/workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { NextRequest, NextResponse } from "next/server"
 
 interface AsyncWorkflowExecution {

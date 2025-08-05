@@ -1,7 +1,5 @@
 "use client"
 
-import type { NodeLogs } from "@/core/messages/api/processResponse"
-import { isNir } from "@/core/utils/common/isNir"
 import {
   Dialog,
   DialogContent,
@@ -9,10 +7,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
-import { TOOLS } from "@/runtime/settings/tools"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import type { NodeLogs } from "@core/messages/api/processResponse"
+import { isNir } from "@core/utils/common/isNir"
+import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Eye } from "lucide-react"
 import dynamic from "next/dynamic"

@@ -1,11 +1,11 @@
 "use server"
-import { supabase } from "@/core/utils/clients/supabase/client"
+import { supabase } from "@core/utils/clients/supabase/client"
 import type {
   Tables,
   TablesInsert,
   TablesUpdate,
-} from "@/core/utils/clients/supabase/types"
-import { genShortId } from "@/core/utils/common/utils"
+} from "@core/utils/clients/supabase/types"
+import { genShortId } from "@core/utils/common/utils"
 
 export const retrieveWorkflowInvocation = async (
   invocationId: string
