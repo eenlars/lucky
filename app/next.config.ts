@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
       "puppeteer-extra-plugin-stealth":
         "commonjs puppeteer-extra-plugin-stealth",
       "puppeteer-extra-plugin": "commonjs puppeteer-extra-plugin",
+      "import-fresh": "commonjs import-fresh",
+      cosmiconfig: "commonjs cosmiconfig",
+      puppeteer: "commonjs puppeteer",
+      typescript: "commonjs typescript",
     })
 
     return config

@@ -79,7 +79,7 @@ export default function EvolutionRunPage({
   const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(
     new Set()
   )
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0)
+  const [_lastFetchTime, setLastFetchTime] = useState<number>(0)
   const [showGraph, setShowGraph] = useState<boolean>(true)
 
   // DSL modal state
@@ -174,7 +174,7 @@ export default function EvolutionRunPage({
     if (evolutionRun) {
       fetchGenerationsData()
     }
-  }, [evolutionRun?.run_id])
+  }, [evolutionRun, fetchGenerationsData])
 
   // Auto-refresh if evolution run is still running
   useEffect(() => {
@@ -185,7 +185,7 @@ export default function EvolutionRunPage({
     }, 30000)
 
     return () => clearInterval(interval)
-  }, [evolutionRun?.status === "running", run_id])
+  }, [evolutionRun, fetchGenerationsData])
 
   if (loading) {
     return (

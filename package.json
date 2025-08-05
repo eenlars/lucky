@@ -4,5 +4,8 @@
     "nanoid": "^5.1.5",
     "puppeteer": "^24.15.0",
     "zod": "^4.0.14"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.16"
   }
 }
