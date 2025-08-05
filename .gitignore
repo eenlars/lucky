@@ -23,6 +23,9 @@ node_modules/
 # misc
 .DS_Store
 *.pem
+.cache
+.cache/
+**/.cache/
 
 # debug
 npm-debug.log*
@@ -43,6 +46,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 dist/
+**/dist/
 
 # Added by Claude Task Master
 # Logs
@@ -80,3 +84,12 @@ downloads/*
 mcp/*
 
 **/research-experiments/*
+
+# Local config files
+*.local
+
+# Turborepo
+.turbo/
+
+# NPM pack output
+*.tgz
