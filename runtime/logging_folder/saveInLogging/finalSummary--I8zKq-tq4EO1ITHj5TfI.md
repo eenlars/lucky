@@ -1,1 +1,0 @@
-"The tool execution requested manual input of known Tony's Chocolonely store locations in the Netherlands, excluding the headquarters, to supplement data for filtering and counting. No automated data was processed or returned."

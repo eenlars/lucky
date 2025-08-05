@@ -1,1 +1,0 @@
-"The tool execution failed because the raw location data was empty. This indicates a potential bug or missing data. The user should verify the search query and data retrieval process. The tool was unable to proceed with filtering duplicates, identifying headquarters vs. stores, or preparing a clean dataset for counting due to the lack of initial data."

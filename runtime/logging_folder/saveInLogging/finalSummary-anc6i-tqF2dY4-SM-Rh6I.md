@@ -1,1 +1,0 @@
-"The tool execution failed to provide a specific numeric answer regarding the number of Tony's Chocolonely stores in the Netherlands due to a lack of available data or search results."

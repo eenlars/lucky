@@ -1,1 +1,0 @@
-"The search returned empty content, indicating a potential bug or missing data. The tool will manually input known Tony's Chocolonely store locations in the Netherlands, excluding the headquarters, to supplement the data. Awaiting confirmation to proceed with manual input."

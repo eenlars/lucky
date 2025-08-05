@@ -1,1 +1,0 @@
-"The tool execution failed because the Google Maps tool requested additional information (12 locations) that was not provided in the input. Therefore, no data could be processed or filtered."

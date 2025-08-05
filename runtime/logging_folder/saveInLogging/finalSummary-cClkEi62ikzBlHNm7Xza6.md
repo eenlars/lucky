@@ -1,1 +1,0 @@
-"The tool successfully identified that Tony's Chocolonely has multiple physical store locations in the Netherlands. However, the exact number of stores was not provided in the output. The tool recommended checking the official website or contacting customer service for precise details."

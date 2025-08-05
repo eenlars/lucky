@@ -1,1 +1,0 @@
-"The tool execution determined that the company \"Aero srl\" is based in Argentina and operates there. It does not meet the criteria for finding physical stores in the Netherlands because its country of operation is Argentina and the countries of operation field is empty. The tool will proceed to the next company or task."

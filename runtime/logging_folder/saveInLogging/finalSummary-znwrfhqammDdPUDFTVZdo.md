@@ -1,1 +1,0 @@
-"The tool execution determined that Olifant Media B.V., an online marketing bureau based in the Netherlands, is unlikely to have physical stores accessible to customers (B2C) and therefore no physical stores were found for this company."

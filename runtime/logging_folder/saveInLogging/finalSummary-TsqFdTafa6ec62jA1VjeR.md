@@ -1,1 +1,0 @@
-"The tool execution successfully determined that BTSA does not have physical stores in the Netherlands, as no information supporting their existence was found in the provided data. The tool also noted that BTSA has operations in multiple countries, including the Netherlands, but no B2C physical stores were identified."

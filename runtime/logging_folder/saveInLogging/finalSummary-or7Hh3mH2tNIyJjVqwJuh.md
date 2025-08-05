@@ -1,1 +1,0 @@
-"The tool execution determined that the company does not meet the criteria for finding physical stores in the Netherlands or elsewhere for B2C purposes because its headquarters are in the United States and the countries of operation field is empty. Consequently, the tool skipped this company."

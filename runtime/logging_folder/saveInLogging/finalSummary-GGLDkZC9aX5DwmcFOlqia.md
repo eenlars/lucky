@@ -1,1 +1,0 @@
-"The tool execution successfully determined that Summerhill does not have physical stores in the Netherlands, as its headquarters are in Toronto, Canada. No further action is required."

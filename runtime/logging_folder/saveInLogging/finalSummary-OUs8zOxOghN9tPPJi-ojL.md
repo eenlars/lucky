@@ -1,1 +1,0 @@
-"The tool is awaiting data from alternative sources and manual input. Once the data is received, it will proceed with filtering duplicates, separating headquarters from stores, cleaning the data, and preparing it for verification."

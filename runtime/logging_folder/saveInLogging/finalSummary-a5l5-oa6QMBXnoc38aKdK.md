@@ -1,1 +1,0 @@
-"The tool execution determined that the company's headquarters are in the United Kingdom and the countries of operation field is empty. Based on these criteria, the company can be skipped. Additionally, no physical stores in the Netherlands were identified for this B-corporation."

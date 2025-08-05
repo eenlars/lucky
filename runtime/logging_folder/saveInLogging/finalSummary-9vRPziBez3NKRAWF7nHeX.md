@@ -1,1 +1,0 @@
-"The tool execution was skipped because the company Glacier Carbon Reduction GmbH, headquartered in Austria with operations in Germany, does not meet the criteria for having physical stores in the Netherlands. No data was returned as a result."

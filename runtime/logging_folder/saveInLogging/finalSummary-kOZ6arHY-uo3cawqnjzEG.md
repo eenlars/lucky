@@ -1,1 +1,0 @@
-"The tool execution determined that Reid's Automotive Recycling Ltd. is based in Canada and has no listed countries of operation. Consequently, it does not meet the criteria for searching physical stores in the Netherlands, and no physical stores were found for this company."

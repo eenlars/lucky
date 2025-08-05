@@ -1,1 +1,0 @@
-"The tool successfully returned information about Tony's Chocolonely stores in the Netherlands, stating there are 10 stores excluding the headquarters. The confidence level for this information is high, as it was verified through official sources and store listings."

@@ -1,1 +1,0 @@
-"The tool execution determined that the company \"Smith & Connors\" does not have physical stores or operations in the Netherlands. The company is based in the United States and is not a Dutch company. No further action is required."

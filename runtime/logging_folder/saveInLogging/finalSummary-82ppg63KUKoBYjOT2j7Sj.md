@@ -1,1 +1,0 @@
-"The tool successfully identified that Tony's Chocolonely has 4 stores in the Netherlands, with its headquarters located in Amsterdam. The confidence level for this information is high, based on verified sources."

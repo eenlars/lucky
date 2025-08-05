@@ -1,1 +1,0 @@
-"The tool execution failed because the raw location data was empty. The error message indicates a potential bug or missing data, and suggests providing search results or raw location data for processing."

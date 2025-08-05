@@ -1,1 +1,0 @@
-"The tool execution determined that The Estate Dairy is based in the UK and should be skipped because its headquarters are not in the Netherlands and the countries of operation field is empty."

@@ -1,1 +1,0 @@
-"The tool execution is in progress. The next step is to gather Tony's Chocolonely store and headquarters location data from alternative online sources and manual input to supplement existing searchGoogleMaps data. This data will then be prepared for preprocessing."

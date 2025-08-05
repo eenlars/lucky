@@ -1,1 +1,0 @@
-"The tool execution determined that Breckland Orchard Ltd is based in the United Kingdom and has no physical stores in the Netherlands. Therefore, the company was skipped according to the instructions."
