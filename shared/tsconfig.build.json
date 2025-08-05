@@ -1,5 +1,4 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     // Module settings
     "module": "ESNext",
@@ -10,8 +9,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declaration": true,
-    "declarationMap": true, // Adds source maps for declarations
-    "sourceMap": true, // Adds source maps for better debugging
+    "declarationMap": true,
+    "sourceMap": true,
 
     // Path resolution
     "baseUrl": ".",
@@ -21,14 +20,13 @@
 
     "target": "ES2020",
     "lib": ["ESNext", "DOM"],
-    "composite": true,
 
     // Code quality
     "strict": true,
-    "noUncheckedIndexedAccess": true, // More safety with indexed access
+    "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
-    "exactOptionalPropertyTypes": true, // More precise optional properties
-    "noImplicitOverride": true, // Requires explicit override keyword
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
 
     // Integration
     "resolveJsonModule": true,
@@ -39,7 +37,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "**/*.test.ts", // Exclude test files from the shared library build
+    "**/*.test.ts",
     "**/*.spec.ts"
   ]
 }

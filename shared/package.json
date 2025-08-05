@@ -10,7 +10,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "bun x tsup src/index.ts --format esm --dts",
+        "build": "bun x tsup",
         "dev": "bun x tsup --watch",
         "clean": "rimraf dist",
         "prebuild": "rimraf dist && rm -f tsconfig.tsbuildinfo",
@@ -25,7 +25,10 @@
             "import": "./dist/index.js"
         }
     },
-    "dependencies": {},
+    "dependencies": {
+        "json5": "^2.2.3",
+        "papaparse": "^5.5.3"
+    },
     "devDependencies": {
         "@supabase/supabase-js": "^2.49.4",
         "@types/bun": "latest",
