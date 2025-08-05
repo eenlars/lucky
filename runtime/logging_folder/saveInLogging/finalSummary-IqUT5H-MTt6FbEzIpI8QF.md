@@ -1,0 +1,1 @@
+"The tool execution is in progress. The next step is to gather additional or alternative location data for Tony's Chocolonely stores and headquarters in the Netherlands from other online sources or manual input to supplement searchGoogleMaps data. This is being done to ensure completeness and accuracy for the count."

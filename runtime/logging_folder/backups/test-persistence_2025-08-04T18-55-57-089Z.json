@@ -1,0 +1,28 @@
+{
+  "entryNodeId": "starter",
+  "nodes": [
+    {
+      "nodeId": "starter",
+      "systemPrompt": "Complex test prompt with special chars: {}[]\"'",
+      "handOffs": [
+        "processor",
+        "validator"
+      ],
+      "codeTools": [],
+      "mcpTools": [],
+      "description": "Starter node",
+      "modelName": "openai/gpt-4.1-mini"
+    },
+    {
+      "nodeId": "processor",
+      "systemPrompt": "Process data",
+      "handOffs": [
+        "end"
+      ],
+      "codeTools": [],
+      "mcpTools": [],
+      "description": "Processor node",
+      "modelName": "openai/gpt-4.1-mini"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+[
+  {
+    "name": "Tony's Chocolonely Super Store",
+    "address": "Oudebrugsteeg 15",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3755748,
+      "longitude": 4.8967595
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJL1vfcbgJxkcRdFHxXONAcek",
+        "address": "Oudebrugsteeg 15",
+        "category": "Chocolaterie",
+        "status": "",
+        "phone": "020 205 1200",
+        "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely+Super+Store/data=!4m7!3m6!1s0x47c609b871df5b2f:0xe97140e35cf15174!8m2!3d52.3755748!4d4.8967595!16s%2Fg%2F11hd6rzf7x!19sChIJL1vfcbgJxkcRdFHxXONAcek?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://tonyschocolonely.com/nl/en/visit-us/tonys-super-store",
+        "storeName": "Tony's Chocolonely Super Store",
+        "ratingText": "4,3 sterren 3.658 reviews",
+        "stars": "4,3 sterren 3.658 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Chocolaterie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely+Super+Store/data=!4m7!3m6!1s0x47c609b871df5b2f:0xe97140e35cf15174!8m2!3d52.3755748!4d4.8967595!16s%2Fg%2F11hd6rzf7x!19sChIJL1vfcbgJxkcRdFHxXONAcek?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://tonyschocolonely.com/nl/en/visit-us/tonys-super-store",
+      "stars": "4,3 sterren 3.658 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-31T01:30:44.335Z"
+    },
+    "domain": "tonyschocolonely.com"
+  },
+  {
+    "name": "Tony's Chocolonely",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3112562,
+      "longitude": 4.7616381
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-_DH4ZrhxUcRsErvus-zZxA",
+        "address": "",
+        "category": "Chocolaterie",
+        "status": "",
+        "phone": "Lounge 3, Evert van de Beekstraat 202",
+        "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely/data=!4m7!3m6!1s0x47c5e19ae1c7f0fb:0x1067b3cfbaef4ab0!8m2!3d52.3112562!4d4.7616381!16s%2Fg%2F11nnm0f8sw!19sChIJ-_DH4ZrhxUcRsErvus-zZxA?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "https://www.schiphol.nl/nl/op-schiphol/shoppen/tonys-chocolonely",
+        "storeName": "Tony's Chocolonely",
+        "ratingText": "4,4 sterren 23 reviews",
+        "stars": "4,4 sterren 23 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Chocolaterie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely/data=!4m7!3m6!1s0x47c5e19ae1c7f0fb:0x1067b3cfbaef4ab0!8m2!3d52.3112562!4d4.7616381!16s%2Fg%2F11nnm0f8sw!19sChIJ-_DH4ZrhxUcRsErvus-zZxA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "https://www.schiphol.nl/nl/op-schiphol/shoppen/tonys-chocolonely",
+      "stars": "4,4 sterren 23 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-31T01:30:44.335Z"
+    },
+    "domain": "schiphol.nl"
+  },
+  {
+    "name": "Tony's Chocolonely Office",
+    "address": "Danzigerkade 23B",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3999396,
+      "longitude": 4.8765228
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ8_wJufwIxkcR3OkvPOur5aI",
+        "address": "Danzigerkade 23B",
+        "category": "Hoofdkantoor",
+        "status": "",
+        "phone": "020 205 1200",
+        "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely+Office/data=!4m7!3m6!1s0x47c608fcb909fcf3:0xa2e5abeb3c2fe9dc!8m2!3d52.3999396!4d4.8765228!16s%2Fg%2F1tf80sww!19sChIJ8_wJufwIxkcR3OkvPOur5aI?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://www.nl.tonyschocolonely.com/",
+        "storeName": "Tony's Chocolonely Office",
+        "ratingText": "4,5 sterren 232 reviews",
+        "stars": "4,5 sterren 232 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Hoofdkantoor",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tony%27s+Chocolonely+Office/data=!4m7!3m6!1s0x47c608fcb909fcf3:0xa2e5abeb3c2fe9dc!8m2!3d52.3999396!4d4.8765228!16s%2Fg%2F1tf80sww!19sChIJ8_wJufwIxkcR3OkvPOur5aI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://www.nl.tonyschocolonely.com/",
+      "stars": "4,5 sterren 232 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-31T01:30:44.335Z"
+    },
+    "domain": "tonyschocolonely.com"
+  }
+]

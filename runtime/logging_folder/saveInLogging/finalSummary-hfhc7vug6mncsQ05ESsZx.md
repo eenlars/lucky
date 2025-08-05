@@ -1,0 +1,1 @@
+"The tool execution determined that DEFY Brands is a certified B-corp with operations in the Netherlands. However, no information was found to indicate the presence of physical stores accessible to customers (B2C). Therefore, no physical stores could be listed for DEFY Brands in the Netherlands."

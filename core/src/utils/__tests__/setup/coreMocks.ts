@@ -1,0 +1,1243 @@
+// core test utilities and mocks - consolidated mock file
+import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import type {
+  GenomeEvaluationResults,
+  WorkflowGenome,
+} from "@core/improvement/gp/resources/gp.types"
+import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import type {
+  FlowPathsConfig,
+  FlowRuntimeConfig,
+  FullFlowRuntimeConfig,
+} from "@core/types"
+import type { RS } from "@core/utils/types"
+import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
+import type {
+  EvaluationCSV,
+  EvaluationInput,
+  EvaluationText,
+  WorkflowIO,
+} from "@core/workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { Workflow } from "@core/workflow/Workflow"
+import type { CONFIG } from "@runtime/settings/constants"
+import { MODELS } from "@runtime/settings/constants.client"
+import { vi } from "vitest"
+
+// CLI and system-level mocks
+export const mockProcessExit = vi.fn()
+export const mockConsoleLog = vi.fn()
+export const mockConsoleError = vi.fn()
+export const mockDisplayResults = vi.fn()
+export const mockSaveWorkflowConfig = vi.fn()
+export const mockGetWorkflowSetup = vi.fn()
+
+// evolution engine mocks
+export const mockEvolutionEngineRun = vi.fn()
+export const mockEvolutionEngineInit = vi.fn()
+
+// cultural evolution mocks
+export const mockCulturalEvolutionMain = vi.fn()
+
+// supabase client mocks
+export const mockSupabaseInsert = vi.fn()
+export const mockSupabaseUpdate = vi.fn()
+export const mockSupabaseSelect = vi.fn()
+export const mockSupabaseFrom = vi.fn()
+
+// mock instances for runtime constants
+const mockRunServiceInstance = {
+  createRun: vi.fn(),
+  createGeneration: vi.fn(),
+  completeGeneration: vi.fn(),
+  completeRun: vi.fn(),
+  getCurrentRunId: vi.fn(),
+  getCurrentGenerationId: vi.fn(),
+  getRunId: vi.fn(),
+  getGenerationId: vi.fn(),
+  getLastCompletedGeneration: vi.fn(),
+  setRunId: vi.fn(),
+  setGenerationId: vi.fn(),
+  generationExists: vi.fn(),
+  getGenerationIdByNumber: vi.fn(),
+}
+
+const mockVerificationCacheInstance = {
+  verifyWithCache: vi.fn(),
+  clearCache: vi.fn(),
+}
+
+const mockSupabaseInstance = {
+  from: vi.fn().mockReturnValue({
+    insert: vi.fn().mockResolvedValue({ error: null }),
+    upsert: vi.fn().mockResolvedValue({ error: null }),
+    select: vi.fn().mockResolvedValue({ data: [], error: null }),
+    update: vi.fn().mockResolvedValue({ error: null }),
+    delete: vi.fn().mockResolvedValue({ error: null }),
+    eq: vi.fn().mockReturnThis(),
+    not: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  }),
+}
+
+const mockLoggerInstance = {
+  log: vi.fn(),
+  error: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+}
+
+const mockGenomeInstance = {
+  getWorkflowVersionId: vi.fn(),
+  getWorkflowConfig: vi.fn(),
+  getFitness: vi.fn(),
+  getRawGenome: vi.fn(),
+  hash: vi.fn(),
+  reset: vi.fn(),
+  getGenerationNumber: vi.fn(),
+  getParentIds: vi.fn(),
+  getEvolutionContext: vi.fn(),
+}
+
+const mockPopulationInstance = {
+  getGenomes: vi.fn(),
+  getValidGenomes: vi.fn(),
+  getFittestGenomes: vi.fn(),
+  getUnevaluated: vi.fn(),
+  getBest: vi.fn(),
+  size: vi.fn(),
+  getGenerationId: vi.fn(),
+  setPopulation: vi.fn(),
+  addGenome: vi.fn(),
+  removeGenome: vi.fn(),
+  getBestGenome: vi.fn(),
+  getStats: vi.fn(),
+  reset: vi.fn(),
+}
+
+const mockEvaluatorInstance = {
+  evaluate: vi.fn(),
+}
+
+// GP module mocks
+export const mockAIRequest = vi.fn()
+export const mockGenerateSingleVariation = vi.fn()
+export const mockConvertSimpleToFull = vi.fn()
+export const mockVerifyWorkflowConfigStrict = vi.fn()
+export const mockRegisterWorkflowInDatabase = vi.fn()
+
+// Export individual mock instances for easier access
+export const getMockRunService = () => mockRunServiceInstance
+export const getMockVerificationCache = () => mockVerificationCacheInstance
+export const getMockSupabase = () => mockSupabaseInstance
+export const getMockLogger = () => mockLoggerInstance
+export const getMockGenome = () => mockGenomeInstance
+export const getMockPopulation = () => mockPopulationInstance
+export const getMockEvaluator = () => mockEvaluatorInstance
+
+// test fixtures
+export const createMockCliArgs = (overrides = {}): string[] => [
+  "node",
+  "main.js",
+  ...Object.entries(overrides).flatMap(([key, value]) =>
+    key.startsWith("--") ? [key, String(value)] : [`--${key}`, String(value)]
+  ),
+]
+
+export const createMockEvolutionSettings = (
+  overrides = {}
+): EvolutionSettings => ({
+  mode: "GP",
+  mutationRate: 0.1,
+  populationSize: 5,
+  generations: 3,
+  maxCostUSD: 1.0,
+  eliteSize: 1,
+  tournamentSize: 2,
+  crossoverRate: 0.7,
+  mutationParams: {
+    mutationInstructions: "test mutation",
+  },
+  maxEvaluationsPerHour: 100,
+  offspringCount: 5,
+  numberOfParentsCreatingOffspring: 2,
+  evaluationDataset: "test",
+  baselineComparison: false,
+  ...overrides,
+})
+
+export const createMockEvaluationInput = (): EvaluationInput => ({
+  type: "text",
+  goal: "test evolution goal",
+  question: "test question",
+  answer: "test evaluation criteria",
+  workflowId: "test-workflow-id",
+})
+
+export const createMockWorkflowIO = (): WorkflowIO => ({
+  workflowInput: "test workflow input",
+  expectedWorkflowOutput: "test expected output",
+})
+
+export const createMockSupabaseClient = (): any => ({
+  from: mockSupabaseFrom.mockReturnValue({
+    insert: mockSupabaseInsert.mockReturnValue({
+      select: mockSupabaseSelect.mockResolvedValue({
+        data: [{ id: "test-id" }],
+        error: null,
+      }),
+    }),
+    update: mockSupabaseUpdate.mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        select: mockSupabaseSelect.mockResolvedValue({
+          data: [{ id: "test-id" }],
+          error: null,
+        }),
+      }),
+    }),
+    select: mockSupabaseSelect.mockResolvedValue({
+      data: [],
+      error: null,
+    }),
+  }),
+})
+
+export const createMockEvolutionEngine = (): any => ({
+  run: mockEvolutionEngineRun.mockResolvedValue({
+    bestGenome: {
+      getWorkflowVersionId: () => "best-genome",
+      fitness: { score: 0.9 },
+    },
+    bestScore: { score: 0.9, valid: true },
+    finalFitness: 0.9,
+    totalCost: 0.1,
+    generations: 3,
+  }),
+  initialize: mockEvolutionEngineInit.mockResolvedValue(undefined),
+  getStats: vi.fn().mockReturnValue([]),
+  getTotalCost: vi.fn().mockReturnValue(0.1),
+})
+
+export const createMockCulturalResult = (): any => ({
+  results: [
+    {
+      iteration: 1,
+      fitness: { score: 0.8 },
+      cost: 0.05,
+      transcript: "test iteration 1",
+    },
+    {
+      iteration: 2,
+      fitness: { score: 0.85 },
+      cost: 0.06,
+      transcript: "test iteration 2",
+    },
+  ],
+  totalCost: 0.11,
+  logFilePath: "/test/log/path",
+})
+
+// setup default mock implementations
+export const setupCoreMocks = (): void => {
+  // successful defaults for all operations
+  mockGetWorkflowSetup.mockResolvedValue({
+    expectedFormat: "test format",
+    question: "test question",
+  })
+
+  mockSaveWorkflowConfig.mockResolvedValue(undefined)
+  mockDisplayResults.mockReturnValue(undefined)
+
+  mockCulturalEvolutionMain.mockResolvedValue(createMockCulturalResult())
+
+  // supabase defaults
+  mockSupabaseInsert.mockReturnValue({
+    select: mockSupabaseSelect.mockResolvedValue({
+      data: [{ id: "test-id", created_at: new Date().toISOString() }],
+      error: null,
+    }),
+  })
+
+  mockSupabaseUpdate.mockReturnValue({
+    eq: vi.fn().mockReturnValue({
+      select: mockSupabaseSelect.mockResolvedValue({
+        data: [{ id: "test-id" }],
+        error: null,
+      }),
+    }),
+  })
+
+  // GP module defaults
+  mockAIRequest.mockResolvedValue({
+    success: true,
+    data: createMockWorkflowConfig(),
+    error: null,
+    usdCost: 0,
+    debug_input: [],
+  })
+
+  mockGenerateSingleVariation.mockResolvedValue({
+    workflow: createMockWorkflowConfig(),
+    usdCost: 0.01,
+  })
+
+  mockConvertSimpleToFull.mockResolvedValue({
+    config: createMockWorkflowConfig(),
+    usdCost: 0.01,
+  })
+
+  mockVerifyWorkflowConfigStrict.mockResolvedValue(undefined)
+
+  mockRegisterWorkflowInDatabase.mockResolvedValue({
+    workflowInvocationId: "test-invocation-id",
+  })
+}
+
+// reset all core mocks
+export const resetCoreMocks = (): void => {
+  vi.clearAllMocks()
+  mockProcessExit.mockReset()
+  mockConsoleLog.mockReset()
+  mockConsoleError.mockReset()
+  mockDisplayResults.mockReset()
+  mockSaveWorkflowConfig.mockReset()
+  mockGetWorkflowSetup.mockReset()
+  mockEvolutionEngineRun.mockReset()
+  mockEvolutionEngineInit.mockReset()
+  mockCulturalEvolutionMain.mockReset()
+  mockSupabaseInsert.mockReset()
+  mockSupabaseUpdate.mockReset()
+  mockSupabaseSelect.mockReset()
+  mockSupabaseFrom.mockReset()
+  mockAIRequest.mockReset()
+  mockGenerateSingleVariation.mockReset()
+  mockConvertSimpleToFull.mockReset()
+  mockVerifyWorkflowConfigStrict.mockReset()
+  mockRegisterWorkflowInDatabase.mockReset()
+}
+
+// common setup helper
+export const setupCoreTest = (): void => {
+  resetCoreMocks()
+  setupCoreMocks()
+}
+
+// ====== WORKFLOW MOCK FACTORIES ======
+
+export const createMockWorkflowFile = (filePath: string): WorkflowFile => {
+  return {
+    store: "supabase",
+    filePath,
+    summary: "test summary",
+  }
+}
+
+export const createMockWorkflowConfig = (): WorkflowConfig => ({
+  nodes: [
+    {
+      nodeId: "node1",
+      description: "test system prompt",
+      systemPrompt: "test system prompt",
+      modelName: MODELS.default,
+      mcpTools: [],
+      codeTools: [],
+      handOffs: [],
+      memory: {},
+    },
+    {
+      nodeId: "node2",
+      description: "test system prompt 2",
+      systemPrompt: "test system prompt 2",
+      modelName: MODELS.default,
+      mcpTools: [],
+      codeTools: [],
+      handOffs: [],
+      memory: {},
+    },
+  ],
+  entryNodeId: "node1",
+})
+
+export const createMockWorkflow = (
+  options?: Parameters<typeof Workflow.create>[0]
+): Workflow => {
+  if (!options) {
+    options = {
+      config: createMockWorkflowConfig(),
+      evaluationInput: createMockEvaluationInput(),
+      toolContext: createMockEvaluationInput().expectedOutputSchema
+        ? {
+            expectedOutputType:
+              createMockEvaluationInput().expectedOutputSchema,
+          }
+        : undefined,
+    }
+  }
+  return Workflow.create(options)
+}
+
+export const createMockWorkflowScore = (score = 0.8): FitnessOfWorkflow => ({
+  score,
+  accuracy: 80,
+  novelty: 80,
+  totalCostUsd: 0.01,
+  totalTimeSeconds: 1.5,
+})
+
+// ====== EVALUATION INPUT FACTORIES ======
+
+export const createMockEvaluationInputText = (
+  evaluation?: string
+): EvaluationText => ({
+  type: "text",
+  question: "test question",
+  answer: evaluation || "test answer",
+  goal: "test goal for evolution",
+  workflowId: "test-workflow-id",
+})
+
+export const createMockEvaluationInputCSV = (
+  evaluation?: string
+): EvaluationCSV => ({
+  type: "csv",
+  evaluation: `column:${evaluation || "test_column"}` as `column:${string}`,
+  goal: "test goal for evolution",
+  workflowId: "test-workflow-id",
+})
+
+export const createMockEvaluationInputGeneric = <T extends "text" | "csv">(
+  type: T = "csv" as T,
+  evaluation?: string
+): T extends "text" ? EvaluationText : EvaluationCSV => {
+  if (type === "text") {
+    return createMockEvaluationInputText(evaluation) as T extends "text"
+      ? EvaluationText
+      : EvaluationCSV
+  }
+  return createMockEvaluationInputCSV(evaluation) as T extends "text"
+    ? EvaluationText
+    : EvaluationCSV
+}
+
+// ====== GENOME AND EVOLUTION FACTORIES ======
+
+export const createMockGenomeEvaluationResults = (
+  score = 0.8
+): GenomeEvaluationResults => ({
+  workflowVersionId: "test-version-id",
+  hasBeenEvaluated: true,
+  evaluatedAt: new Date().toISOString(),
+  fitness: {
+    score,
+    accuracy: 80,
+    novelty: 80,
+    totalCostUsd: 0.01,
+    totalTimeSeconds: 1.5,
+  },
+  costOfEvaluation: 0.01,
+  errors: [],
+  feedback: "test feedback",
+})
+
+export const createMockWorkflowGenome = (
+  generationNumber = 0,
+  parentIds: string[] = []
+): WorkflowGenome => {
+  return {
+    ...createMockWorkflowConfig(),
+    _evolutionContext: {
+      runId: "test-run-id",
+      generationId: "0",
+      generationNumber,
+    },
+    parentWorkflowVersionIds: parentIds,
+    createdAt: new Date().toISOString(),
+    evaluationResults: undefined,
+  }
+}
+
+export const createMockGenome = async (
+  generationNumber = 0,
+  parentIds: string[] = [],
+  fitness?: FitnessOfWorkflow
+): Promise<any> => {
+  const genomeData = createMockWorkflowGenome(generationNumber, parentIds)
+  const mockFitness = fitness || createMockWorkflowScore(0)
+  const mockId = `genome-${Math.random().toString(36).substring(2, 9)}`
+
+  // Track evaluation state like real Genome
+  let isEvaluated = false
+  let currentFitness = mockFitness
+
+  const mockInstance = {
+    // Core genome data
+    genome: genomeData,
+    get isEvaluated() {
+      return isEvaluated
+    },
+    set isEvaluated(value) {
+      isEvaluated = value
+    },
+
+    // Fitness methods - behave like real Workflow class
+    getFitness: vi.fn(() => currentFitness),
+    getFitnessScore: vi.fn(() => {
+      if (!currentFitness) throw new Error("Fitness not found for workflow")
+      return currentFitness.score
+    }),
+    setFitness: vi.fn((newFitness: FitnessOfWorkflow) => {
+      currentFitness = newFitness
+      isEvaluated = true
+    }),
+    setFitnessAndFeedback: vi.fn(
+      ({
+        fitness,
+        feedback,
+      }: {
+        fitness: FitnessOfWorkflow
+        feedback: string | null
+      }) => {
+        currentFitness = fitness
+        isEvaluated = true
+      }
+    ),
+
+    // Workflow interface methods
+    getFeedback: vi.fn(() =>
+      fitness ? "test feedback with good results" : "test feedback"
+    ),
+    getGoal: vi.fn(() => "test goal"),
+    getEvaluation: vi.fn(() => "test evaluation"),
+    getConfig: vi.fn(() => createMockWorkflowConfig()),
+    getRawGenome: vi.fn(() => genomeData),
+    getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    getEvaluationInput: vi.fn(() => createMockEvaluationInputGeneric()),
+    getWorkflowId: vi.fn(() => "test-workflow-id"),
+    getWorkflowVersionId: vi.fn(() => `wf-version-${mockId}`),
+    getEvolutionContext: vi.fn(() => ({
+      runId: "test-run-id",
+      generationId: "test-generation-id",
+      generationNumber,
+    })),
+    getGenerationNumber: vi.fn(() => generationNumber),
+
+    // Utility methods
+    hash: vi.fn(() => `hash-${mockId}`),
+    toString: vi.fn(() => JSON.stringify(createMockWorkflowConfig())),
+    addCost: vi.fn(),
+    reset: vi.fn(() => {
+      isEvaluated = false
+    }),
+
+    // Database methods
+    saveToDatabase: vi.fn().mockResolvedValue({
+      workflowVersionId: "test-version-id",
+      workflowInvocationId: "test-invocation-id",
+    }),
+
+    // Node methods
+    getNodeIds: vi.fn(() => ["node1", "node2"]),
+    nodes: createMockWorkflowConfig().nodes,
+  }
+
+  return mockInstance
+}
+
+export const createMockEvaluator = (): EvolutionEvaluator => {
+  const mockEvaluate = vi.fn().mockResolvedValue({
+    success: true,
+    data: {
+      fitness: {
+        workflowVersionId: "test-genome-id",
+        valid: true,
+        evaluatedAt: new Date().toISOString(),
+        score: 0.8,
+        totalCostUsd: 0.01,
+        totalTimeSeconds: 10,
+        accuracy: 0.8,
+        novelty: 0.8,
+      },
+      feedback: "test feedback",
+    },
+    usdCost: 0.01,
+    error: undefined,
+  })
+
+  return {
+    evaluate: mockEvaluate,
+  }
+}
+
+export const createMockCrossoverParams = (overrides = {}): any => {
+  const mockFitness = createMockWorkflowScore(0.8)
+  const mockParent1 = {
+    getWorkflowVersionId: vi.fn(() => "parent1-version"),
+    toString: vi.fn(() => JSON.stringify(createMockWorkflowConfig())),
+    getFeedback: vi.fn(() => "parent1 feedback"),
+    getFitness: vi.fn(() => mockFitness),
+    getGoal: vi.fn(() => "test goal"),
+    getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    genome: { generationNumber: 0, parentIds: [] },
+  }
+  const mockParent2 = {
+    getWorkflowVersionId: vi.fn(() => "parent2-version"),
+    toString: vi.fn(() => JSON.stringify(createMockWorkflowConfig())),
+    getFeedback: vi.fn(() => "parent2 feedback"),
+    getFitness: vi.fn(() => mockFitness),
+    getGoal: vi.fn(() => "test goal"),
+    getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    genome: { generation: 0, parentIds: [] },
+  }
+
+  return {
+    parents: [mockParent1, mockParent2],
+    generation: 1,
+    evaluationInput: createMockEvaluationInputGeneric(),
+    crossoverStrategy: "test crossover strategy",
+    verbose: false,
+    _evolutionContext: {
+      runId: "test-run-id",
+      generationId: "test-gen-id",
+      generationNumber: 0,
+    },
+    ...overrides,
+  }
+}
+
+// ====== RESPONSE HELPERS ======
+
+export const mockSuccessfulAIResponse = <T>(data: T): RS<T> => ({
+  success: true,
+  data,
+  error: undefined,
+  usdCost: 0.01,
+})
+
+export const mockFailedAIResponse = <T>(error: string): RS<T> => ({
+  success: false,
+  data: undefined,
+  error,
+  usdCost: 0,
+})
+
+// ====== RUNTIME CONFIGURATION FACTORIES ======
+
+export const createMockFullFlowRuntimeConfig = (
+  toolOverrides: Partial<typeof CONFIG.tools> = {}
+): FullFlowRuntimeConfig => ({
+  CONFIG: {
+    models: {
+      inactive: new Set(),
+      provider: "openai",
+    },
+    coordinationType: "sequential",
+    newNodeProbability: 0.7,
+    logging: {
+      level: "info",
+      override: {
+        Database: true,
+        GP: true,
+      },
+    },
+    workflow: {
+      parallelExecution: true,
+      asyncExecution: true,
+      maxNodeInvocations: 14,
+      maxNodes: 100,
+      handoffContent: "summary",
+      prepareProblem: true,
+      prepareProblemMethod: "ai",
+      prepareProblemWorkflowVersionId: "test-version-id",
+    },
+    tools: {
+      inactive: new Set(),
+      defaultTools: new Set(),
+      uniqueToolsPerAgent: false,
+      uniqueToolSetsPerAgent: false,
+      maxToolsPerAgent: 6,
+      maxStepsVercel: 1,
+      autoSelectTools: false,
+      usePrepareStepStrategy: false,
+      experimentalMultiStepLoop: false,
+      experimentalMultiStepLoopMaxRounds: 20,
+      showParameterSchemas: false,
+      ...toolOverrides,
+    },
+    verification: {
+      allowCycles: false,
+      enableOutputValidation: false,
+    },
+    improvement: {
+      flags: {
+        maxRetriesForWorkflowRepair: 3,
+        selfImproveNodes: false,
+        addTools: false,
+        analyzeWorkflow: false,
+        removeNodes: false,
+        editNodes: false,
+        useSummariesForImprovement: false,
+        improvementType: "judge",
+        operatorsWithFeedback: false, // LLM-as-judge
+      },
+      fitness: {
+        timeThresholdSeconds: 70,
+        baselineTimeSeconds: 5,
+        baselineCostUsd: 0.1,
+        costThresholdUsd: 1.0,
+        weights: {
+          score: 0.6,
+          time: 0.2,
+          cost: 0.2,
+        },
+      },
+    },
+    evolution: {
+      culturalIterations: 3,
+      GP: {
+        populationSize: 4,
+        generations: 3,
+        verbose: false,
+        initialPopulationMethod: "random",
+        initialPopulationFile: null,
+        maximumTimeMinutes: 10,
+      },
+    },
+    context: {
+      maxFilesPerWorkflow: 10,
+      enforceFileLimit: false,
+    },
+    ingestion: {
+      taskLimit: 10,
+    },
+    limits: {
+      maxCostUsdPerRun: 100,
+      enableSpendingLimits: false,
+      rateWindowMs: 1000,
+      maxRequestsPerWindow: 100,
+      maxConcurrentWorkflows: 10,
+      maxConcurrentAIRequests: 5,
+      enableStallGuard: false,
+      enableParallelLimit: false,
+    },
+  },
+  PATHS: {
+    root: "/test/root",
+    app: "/test/app",
+    runtime: "/test/runtime",
+    codeTools: "/test/codeTools",
+    setupFile: "/test/setup.json",
+    improver: "/test/improver",
+    node: {
+      logging: "/test/node/logging",
+      memory: {
+        root: "/test/memory/root",
+        workfiles: "/test/memory/workfiles",
+      },
+      error: "/test/node/error",
+    },
+  },
+  MODELS: {
+    inactive: new Set(),
+    provider: "openai",
+  },
+})
+
+// ====== RUNTIME CONSTANTS MOCKING ======
+
+export const mockRuntimeConstants = (
+  overrides: {
+    CONFIG?: Partial<FlowRuntimeConfig>
+    PATHS?: Partial<FlowPathsConfig>
+    MODELS?: Partial<Record<string, string>>
+    [key: string]: unknown
+  } = {}
+) => {
+  // This function does nothing since vi.mock needs to be called at top level
+  // Tests should mock runtime constants themselves
+  console.warn(
+    "mockRuntimeConstants called but runtime constants need to be mocked at top level"
+  )
+}
+
+// Create a comprehensive mock config for tests
+export const createMockRuntimeConstants = () => ({
+  CONFIG: {
+    coordinationType: "sequential" as const,
+    newNodeProbability: 0.7,
+    logging: {
+      level: "info" as const,
+      override: {
+        API: false,
+        GP: false,
+        Database: false,
+      },
+    },
+    workflow: {
+      maxNodeInvocations: 14,
+      maxNodes: 20,
+      handoffContent: "full" as const,
+      prepareProblem: true,
+      prepareProblemMethod: "ai" as const,
+      prepareProblemWorkflowVersionId: "test-version-id",
+    },
+    tools: {
+      inactive: new Set(),
+      uniqueToolsPerAgent: false,
+      uniqueToolSetsPerAgent: false,
+      maxToolsPerAgent: 3,
+      maxStepsVercel: 10,
+      defaultTools: new Set(),
+      autoSelectTools: true,
+      usePrepareStepStrategy: false,
+      experimentalMultiStepLoop: true,
+      showParameterSchemas: true,
+    },
+    models: {
+      provider: "openai" as const,
+      inactive: new Set(),
+    },
+    improvement: {
+      fitness: {
+        timeThresholdSeconds: 300,
+        baselineTimeSeconds: 60,
+        baselineCostUsd: 0.005,
+        costThresholdUsd: 0.01,
+        weights: { score: 0.7, time: 0.2, cost: 0.1 },
+      },
+      flags: {
+        selfImproveNodes: false,
+        addTools: true,
+        analyzeWorkflow: true,
+        removeNodes: true,
+        editNodes: true,
+        maxRetriesForWorkflowRepair: 4,
+        useSummariesForImprovement: true,
+        improvementType: "judge" as const,
+        operatorsWithFeedback: true,
+      },
+    },
+    verification: {
+      allowCycles: true,
+      enableOutputValidation: false,
+    },
+    context: {
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
+    },
+    evolution: {
+      culturalIterations: 50,
+      GP: {
+        generations: 40,
+        populationSize: 10,
+        verbose: false,
+        initialPopulationMethod: "prepared" as const,
+        initialPopulationFile: "",
+        maximumTimeMinutes: 700,
+      },
+    },
+    limits: {
+      maxConcurrentWorkflows: 2,
+      maxConcurrentAIRequests: 30,
+      maxCostUsdPerRun: 30.0,
+      enableSpendingLimits: true,
+      rateWindowMs: 10000,
+      maxRequestsPerWindow: 300,
+      enableStallGuard: true,
+      enableParallelLimit: true,
+    },
+  },
+  MODELS: {
+    summary: "google/gemini-2.0-flash-001",
+    nano: "google/gemini-2.0-flash-001",
+    free: "qwen/qwq-32b:free",
+    free2: "deepseek/deepseek-r1-0528:free",
+    low: "openai/gpt-4.1-nano",
+    medium: "openai/gpt-4.1-mini",
+    high: "anthropic/claude-sonnet-4",
+    default: "openai/gpt-4.1-mini",
+    fitness: "openai/gpt-4.1-mini",
+    reasoning: "anthropic/claude-sonnet-4",
+    fallbackOpenRouter: "switchpoint/router",
+  },
+  PATHS: {
+    root: "/test/root",
+    app: "/test/app",
+    runtime: "/test/runtime",
+    codeTools: "/test/codeTools",
+    setupFile: "/test/setup.json",
+    improver: "/test/improver",
+    node: {
+      logging: "/test/node/logging",
+      memory: {
+        root: "/test/memory/root",
+        workfiles: "/test/memory/workfiles",
+      },
+      error: "/test/node/error",
+    },
+  },
+})
+
+// ====== SPECIALIZED MOCK HELPERS ======
+
+export const mockRuntimeConstantsForGP = (
+  overrides: {
+    verbose?: boolean
+    populationSize?: number
+    generations?: number
+    [key: string]: unknown
+  } = {}
+) => {
+  return {
+    PATHS: {
+      codeTools: "/mock/code/tools/path",
+      setupFile: "/mock/setup/file/path",
+      node: {
+        logging: "/mock/logging/path",
+      },
+    },
+    CONFIG: {
+      evolution: {
+        GP: {
+          verbose: overrides.verbose ?? false,
+          populationSize: overrides.populationSize ?? 5,
+          generations: overrides.generations ?? 3,
+          maxCostUSD: 1.0,
+          eliteSize: 1,
+          tournamentSize: 2,
+          crossoverRate: 0.7,
+          maxEvaluationsPerHour: 100,
+          mu_parents_to_keep: 5,
+          lambda_offspring_to_produce: 5,
+          rho_parent_amount: 2,
+          evaluationDataset: "test",
+          baselineComparison: false,
+          mutationParams: {
+            mutationInstructions: "test",
+          },
+        },
+      },
+      improvement: {
+        flags: {
+          maxRetriesForWorkflowRepair: 3,
+        },
+      },
+      logging: { level: "info", override: { GP: true } },
+      models: {
+        inactive: new Set(["openai/gpt-4.1"]),
+      },
+      tools: {
+        enable: { mcp: false, code: true },
+      },
+      limits: {
+        enableParallelLimit: false,
+      },
+      workflow: {
+        parallelExecution: false,
+      },
+      verification: {
+        allowCycles: false,
+      },
+      coordinationType: "sequential",
+      newNodeProbability: 0.7,
+      ...overrides,
+    },
+  }
+}
+
+export const mockRuntimeConstantsForCultural = (
+  overrides: {
+    culturalIterations?: number
+    [key: string]: unknown
+  } = {}
+) => {
+  // This function does nothing since vi.mock needs to be called at top level
+  // Tests should mock runtime constants themselves
+  console.warn(
+    "mockRuntimeConstantsForCultural called but runtime constants need to be mocked at top level"
+  )
+}
+
+export const mockRuntimeConstantsForDatabase = (
+  overrides: {
+    enableSpendingLimits?: boolean
+    maxCostUsdPerRun?: number
+    [key: string]: unknown
+  } = {}
+) => {
+  // This function does nothing since vi.mock needs to be called at top level
+  // Tests should mock runtime constants themselves
+  console.warn(
+    "mockRuntimeConstantsForDatabase called but runtime constants need to be mocked at top level"
+  )
+}
+
+// ====== INDIVIDUAL MOCK HELPERS ======
+
+export const mockRunService = () => {
+  vi.mock("@core/improvement/GP/resources/RunService", () => ({
+    RunService: vi.fn().mockImplementation(() => mockRunServiceInstance),
+  }))
+  return mockRunServiceInstance
+}
+
+export const mockVerificationCache = () => {
+  vi.mock("@core/improvement/GP/resources/wrappers", () => ({
+    VerificationCache: vi
+      .fn()
+      .mockImplementation(() => mockVerificationCacheInstance),
+    workflowConfigToGenome: vi.fn(),
+  }))
+  return mockVerificationCacheInstance
+}
+
+export const mockSupabaseClient = () => {
+  vi.mock("@core/utils/clients/supabase/client", () => ({
+    supabase: {
+      from: vi.fn().mockReturnValue({
+        insert: vi.fn().mockResolvedValue({ error: null }),
+        upsert: vi.fn().mockResolvedValue({ error: null }),
+        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        update: vi.fn().mockResolvedValue({ error: null }),
+        delete: vi.fn().mockResolvedValue({ error: null }),
+        eq: vi.fn().mockReturnThis(),
+        not: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue({ data: null, error: null }),
+      }),
+    },
+  }))
+  return mockSupabaseInstance
+}
+
+export const mockLogger = () => {
+  vi.mock("@core/utils/logging/Logger", () => ({
+    lgg: {
+      log: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    },
+  }))
+  return mockLoggerInstance
+}
+
+export const mockGenomeClass = () => {
+  vi.mock("@core/improvement/GP/Genome", () => {
+    const GenomeMock = vi
+      .fn()
+      .mockImplementation(() => mockGenomeInstance) as any
+    GenomeMock.createRandom = vi.fn()
+    GenomeMock.createPrepared = vi.fn()
+    GenomeMock.createWorkflowVersion = vi.fn()
+
+    return {
+      Genome: GenomeMock,
+    }
+  })
+  return mockGenomeInstance
+}
+
+export const mockPopulationClass = () => {
+  vi.mock("@core/improvement/GP/Population", () => ({
+    Population: vi.fn().mockImplementation(() => mockPopulationInstance),
+  }))
+  return mockPopulationInstance
+}
+
+export const mockEvaluatorClass = () => {
+  vi.mock("@core/improvement/evaluators/EvolutionEvaluator", () => ({
+    EvolutionEvaluator: vi.fn().mockImplementation(() => mockEvaluatorInstance),
+  }))
+  return mockEvaluatorInstance
+}
+
+export const mockSelectClass = () => {
+  vi.mock("@core/improvement/GP/Select", () => ({
+    Select: {
+      createNextGeneration: vi.fn(),
+      selectParents: vi.fn(),
+      selectSurvivors: vi.fn(),
+      tournamentSelection: vi.fn(),
+      selectRandomParents: vi.fn(),
+    },
+  }))
+}
+
+export const mockCrossoverClass = () => {
+  vi.mock("@core/improvement/GP/operators/Crossover", () => ({
+    Crossover: {
+      crossover: vi.fn(),
+    },
+  }))
+}
+
+export const mockMutationsClass = () => {
+  vi.mock("@core/improvement/GP/operators/Mutations", () => ({
+    Mutations: {
+      mutateWorkflowGenome: vi.fn(),
+    },
+  }))
+}
+
+export const mockWorkflowGeneration = () => {
+  vi.mock(
+    "@core/workflow/actions/generate/convert-simple-to-full/converter",
+    () => ({
+      convertSimpleToFull: vi.fn().mockResolvedValue({
+        config: { nodes: [], entryNodeId: "test-node" },
+        usdCost: 0.01,
+      }),
+    })
+  )
+
+  vi.mock(
+    "@core/workflow/actions/generate/gen-single-variation/generateSingleVariation",
+    () => ({
+      generateSingleVariation: vi.fn().mockResolvedValue({
+        workflow: { nodes: [], entryNodeId: "test-node" },
+        usdCost: 0.01,
+      }),
+    })
+  )
+
+  vi.mock(
+    "@core/workflow/actions/generate/gen-simple-workflow-idea/generateIdea",
+    () => ({
+      generateWorkflowIdea: vi.fn().mockResolvedValue({
+        success: true,
+        data: { workflow: "test workflow idea" },
+        usdCost: 0.01,
+      }),
+    })
+  )
+
+  vi.mock(
+    "@core/workflow/actions/generate/gen-full-workflow/generateWorkflow",
+    () => ({
+      generateWorkflow: vi.fn().mockResolvedValue({
+        workflows: [{ nodes: [], entryNodeId: "test-node" }],
+        usdCost: 0.01,
+      }),
+    })
+  )
+
+  vi.mock("@core/validation/workflow/toolsVerification", () => ({
+    verifyWorkflowConfigStrict: vi.fn().mockResolvedValue(undefined),
+  }))
+
+  vi.mock("@core/utils/persistence/workflow/registerWorkflow", () => ({
+    registerWorkflowInDatabase: vi.fn().mockResolvedValue({
+      workflowInvocationId: "test-invocation-id",
+    }),
+  }))
+
+  vi.mock("@core/workflow/actions/generate/ideaToWorkflow", () => ({
+    ideaToWorkflow: vi.fn().mockResolvedValue({
+      success: true,
+      data: { nodes: [], entryNodeId: "test-node" },
+      usdCost: 0.01,
+    }),
+  }))
+
+  vi.mock("@core/utils/validation/workflow", () => ({
+    verifyWorkflowConfig: vi.fn().mockResolvedValue(undefined),
+  }))
+}
+
+// ====== COMBINED SETUP HELPERS ======
+
+export const setupGPTestMocks = (
+  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0]
+) => {
+  const runService = mockRunService()
+  const verificationCache = mockVerificationCache()
+  const logger = mockLogger()
+  const genome = mockGenomeClass()
+  const population = mockPopulationClass()
+
+  mockRuntimeConstantsForGP(runtimeOverrides)
+  mockSelectClass()
+  mockWorkflowGeneration()
+  mockCrossoverClass()
+  mockMutationsClass()
+
+  // setup defaults
+  runService.createRun.mockResolvedValue("test-run-id")
+  runService.createGeneration.mockResolvedValue("test-gen-id")
+  runService.completeGeneration.mockResolvedValue(undefined)
+  runService.completeRun.mockResolvedValue(undefined)
+  runService.getCurrentRunId.mockReturnValue("test-run-id")
+  runService.getCurrentGenerationId.mockReturnValue("test-gen-id")
+  runService.getRunId.mockReturnValue("test-run-id")
+  runService.getGenerationId.mockReturnValue("test-gen-id")
+  runService.getLastCompletedGeneration.mockResolvedValue(0)
+  runService.generationExists.mockResolvedValue(false)
+  runService.getGenerationIdByNumber.mockResolvedValue("test-gen-id")
+
+  verificationCache.verifyWithCache.mockResolvedValue({ valid: true })
+  verificationCache.clearCache.mockReturnValue(undefined)
+
+  genome.getWorkflowVersionId.mockReturnValue("test-workflow-version-id")
+  genome.getWorkflowConfig.mockReturnValue({
+    nodes: [],
+    entryNodeId: "test-node",
+  })
+  genome.getFitness.mockReturnValue({ score: 0.5, valid: true })
+  genome.getRawGenome.mockReturnValue({ nodes: [], entryNodeId: "test-node" })
+  genome.hash.mockReturnValue("test-hash")
+  genome.getGenerationNumber.mockReturnValue(0)
+  genome.getParentIds.mockReturnValue([])
+  genome.getEvolutionContext.mockReturnValue({
+    runId: "test-run-id",
+    generationId: "test-gen-id",
+    generationNumber: 0,
+  })
+
+  population.getGenomes.mockReturnValue([])
+  population.getValidGenomes.mockReturnValue([])
+  population.getFittestGenomes.mockReturnValue([])
+  population.getUnevaluated.mockReturnValue([])
+  population.getBest.mockReturnValue(null)
+  population.size.mockReturnValue(0)
+  population.getGenerationId.mockReturnValue(0)
+  population.getBestGenome.mockReturnValue(null)
+  population.getStats.mockReturnValue({
+    avgFitness: 0,
+    bestFitness: 0,
+    worstFitness: 0,
+    stdDev: 0,
+  })
+
+  return { runService, verificationCache, logger, genome, population }
+}
+
+export const setupDatabaseTestMocks = (
+  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForDatabase>[0]
+) => {
+  const supabase = mockSupabaseClient()
+  const logger = mockLogger()
+  mockRuntimeConstantsForDatabase(runtimeOverrides)
+  return { supabase, logger }
+}
+
+export const setupToolTestMocks = (
+  runtimeOverrides?: Parameters<typeof mockRuntimeConstants>[0]
+) => {
+  const logger = mockLogger()
+  mockRuntimeConstants(runtimeOverrides)
+  return { logger }
+}
+
+// ====== LEGACY COMPATIBILITY ALIASES ======
+
+// maintain backward compatibility with existing tests
+export const createMockEvolutionConfig = createMockEvolutionSettings
+export const resetAllMocks = resetCoreMocks
+export const setupDefaultMocks = setupCoreMocks
+export const setupGPTest = setupCoreTest

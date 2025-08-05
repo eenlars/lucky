@@ -1,0 +1,75 @@
+{
+  "mcpServers": {
+    "proxy": {
+      "command": "node",
+      "args": [
+        "../mcp/proxy/build/index.js"
+      ],
+      "env": {}
+    },
+    "filesystem": {
+      "command": "./node_modules/.bin/mcp-server-filesystem",
+      "args": [
+        "./src/runtime/logging_folder"
+      ],
+      "env": {}
+    },
+    "firecrawl": {
+      "command": "./node_modules/.bin/firecrawl-mcp",
+      "args": [],
+      "env": {}
+    },
+    "tavily": {
+      "command": "./node_modules/.bin/tavily-mcp",
+      "args": [],
+      "env": {}
+    },
+    "playwright": {
+      "command": "./node_modules/.bin/mcp-server-playwright",
+      "args": [],
+      "env": {}
+    },
+    "browserUse": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/here/CODE_FOLDER/side-projects/browser-use",
+        "run",
+        "python",
+        "-m",
+        "browser_use.cli",
+        "--mcp"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "BROWSER_USE_HEADLESS": "true",
+        "BROWSER_USE_LOGGING_LEVEL": "debug"
+      }
+    },
+    "serpAPI": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/here/CODE_FOLDER/side-projects/serpapi-mcp",
+        "run",
+        "python",
+        "-m",
+        "serpapi_mcp.cli",
+        "--mcp"
+      ],
+      "env": {
+        "SERPAPI_API_KEY": "${SERPAPI_API_KEY}"
+      }
+    },
+    "googleScholar": {
+      "command": "/Users/here/CODE_FOLDER/main-projects/thesis/together/mcp/google-scholar-MCP-Server/.venv/bin/python",
+      "args": [
+        "/Users/here/CODE_FOLDER/main-projects/thesis/together/mcp/google-scholar-MCP-Server/google_scholar_server.py"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

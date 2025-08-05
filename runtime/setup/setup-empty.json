@@ -1,0 +1,15 @@
+{
+  "entryNodeId": "workflow-node-starter",
+  "nodes": [
+    {
+      "nodeId": "workflow-node-starter",
+      "description": "describe the data",
+      "modelName": "google/gemini-2.5-flash-lite",
+      "mcpTools": [],
+      "codeTools": [],
+      "systemPrompt": "describe the data",
+      "handOffs": ["end"],
+      "memory": {}
+    }
+  ]
+}

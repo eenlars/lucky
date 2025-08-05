@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Natura Beauty",
+    "address": "Prins Hendrikstraat 23, 5951 EN Belfeld",
+    "city": "Belfeld",
+    "country": "Netherlands",
+    "postcode": "5951 EN",
+    "coordinates": null,
+    "opening_times": {
+      "monday": "24 uur geopend",
+      "tuesday": "24 uur geopend",
+      "wednesday": "24 uur geopend",
+      "thursday": "24 uur geopend",
+      "friday": "24 uur geopend",
+      "saturday": "24 uur geopend",
+      "sunday": "24 uur geopend"
+    },
+    "owner_imgs": [
+      "https://lh3.googleusercontent.com/p/AF1QipOjC-526ntnNrb1H-sQcPMAAXsblgD5KuD2ublJ=w408-h408-k-no"
+    ],
+    "metadata": {
+      "original_data": {
+        "storeName": "Natura Beauty",
+        "stars": null,
+        "numberOfReviews": 5,
+        "googleUrl": "https://www.google.com/maps/search/Natura+&Co+Netherlands",
+        "bizWebsite": "https://naturabeauty.eu/",
+        "address": "Adres: Prins Hendrikstraat 23, 5951 EN Belfeld",
+        "category": "Cosmeticawinkel",
+        "status": "24 uur geopend",
+        "phone": "Telefoon: 06 19249774",
+        "mainImage": "https://lh3.googleusercontent.com/p/AF1QipOjC-526ntnNrb1H-sQcPMAAXsblgD5KuD2ublJ=w408-h408-k-no",
+        "hours": {
+          "monday": "24 uur geopend",
+          "tuesday": "24 uur geopend",
+          "wednesday": "24 uur geopend",
+          "thursday": "24 uur geopend",
+          "friday": "24 uur geopend",
+          "saturday": "24 uur geopend",
+          "sunday": "24 uur geopend"
+        }
+      },
+      "category": "Cosmeticawinkel",
+      "status": "24 uur geopend",
+      "googleUrl": "https://www.google.com/maps/search/Natura+&Co+Netherlands",
+      "bizWebsite": "https://naturabeauty.eu/",
+      "stars": null,
+      "numberOfReviews": 5,
+      "scrapedAt": "2025-07-31T00:35:23.030Z"
+    },
+    "domain": "naturabeauty.eu"
+  }
+]

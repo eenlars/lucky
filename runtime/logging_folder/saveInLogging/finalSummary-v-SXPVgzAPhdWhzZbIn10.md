@@ -1,0 +1,1 @@
+"The tool execution determined that Deeplink SA does not meet the criteria for having physical stores in the Netherlands because its headquarters are in Switzerland and no specific countries of operation were provided. Consequently, further steps for this company were skipped."

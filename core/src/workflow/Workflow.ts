@@ -1,0 +1,769 @@
+// src/core/workflow/Workflow.ts
+import { improveNodesCulturallyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
+import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
+import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import { zodToJson } from "@core/messages/utils/zodToJson"
+import { WorkFlowNode } from "@core/node/WorkFlowNode"
+import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import { INACTIVE_TOOLS } from "@core/tools/tool.types"
+import type { ToolExecutionContext } from "@core/tools/toolFactory"
+import { supabase } from "@core/utils/clients/supabase/client"
+import { genShortId } from "@core/utils/common/utils"
+import { lgg } from "@core/utils/logging/Logger"
+import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
+import {
+  createContextStore,
+  type ContextStore,
+} from "@core/utils/persistence/memory/ContextStore"
+import {
+  createWorkflowInvocation,
+  createWorkflowVersion,
+  updateWorkflowVersionWithIO,
+} from "@core/utils/persistence/workflow/registerWorkflow"
+import type { RS } from "@core/utils/types"
+import { R } from "@core/utils/types"
+import {
+  verifyWorkflowConfig,
+  verifyWorkflowConfigStrict,
+} from "@core/utils/validation/workflow"
+import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
+import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
+import {
+  workflowToString,
+  type SimplifyOptions,
+} from "@core/workflow/actions/generate/workflowToString"
+import type {
+  EvaluationInput,
+  WorkflowIO,
+} from "@core/workflow/ingestion/ingestion.types"
+import type { AggregateEvaluationResult } from "@core/workflow/runner/queueRun"
+import {
+  aggregateResults,
+  evaluateRuns,
+  runAllIO,
+  type RunResult,
+} from "@core/workflow/runner/runAllInputs"
+import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
+import type {
+  WorkflowConfig,
+  WorkflowNodeConfig,
+} from "@core/workflow/schema/workflow.types"
+import { CONFIG } from "@runtime/settings/constants"
+import type { ModelName } from "@runtime/settings/models"
+import { createHash } from "crypto"
+import { generateWorkflowIdea } from "./actions/generate/generateIdea"
+
+type CreateFromIdParams =
+  | {
+      workflowInvocationId: string
+      evaluationInput?: never
+      versionId?: never
+    }
+  | {
+      workflowInvocationId?: never
+      evaluationInput: EvaluationInput
+      versionId: string
+    }
+
+type GenomeFeedback = string | null
+/**
+ * Workflow verifies, registers, instantiates and orchestrates execution.
+ */
+export class Workflow {
+  private readonly config: WorkflowConfig
+  private readonly workflowId: string
+  private readonly workflowVersionId: string
+  private readonly parent1Id?: string
+  private readonly parent2Id?: string
+  private readonly nodeMap = new Map<string, WorkFlowNode>()
+  public readonly nodes: WorkFlowNode[] = []
+  private workflowInvocationIds = new Map<number, string>()
+  private workflowIO: WorkflowIO[]
+  private mainGoal: string
+  private totalCost: number
+  private contextStores = new Map<string, ContextStore>()
+  private workflowFiles = new Set<WorkflowFile>()
+  public evolutionContext?: EvolutionContext
+  private evaluationInput: EvaluationInput //todo-evaluationInput possibly remove this.
+  private toolContext?: Partial<ToolExecutionContext> // partial, since the workflowInvocationId is set later
+  protected feedback: GenomeFeedback = null
+  protected fitness?: FitnessOfWorkflow
+  private runResults?: RunResult[]
+  private evaluated: boolean = false
+  private hasRun: boolean = false
+  private problemAnalysis: string | undefined
+
+  protected constructor(
+    config: WorkflowConfig,
+    evaluationInput: EvaluationInput,
+    evolutionContext?: EvolutionContext,
+    toolContext?: Partial<ToolExecutionContext> | undefined,
+    workflowVersionId?: string
+  ) {
+    this.config = config
+    this.workflowId = evaluationInput.workflowId
+    // Use provided ID or generate hash-based ID
+    if (workflowVersionId) {
+      this.workflowVersionId = workflowVersionId
+    } else {
+      const fullHash = createHash("sha256")
+        .update(JSON.stringify(config))
+        .digest("hex")
+      this.workflowVersionId = "wf_ver_" + fullHash.substring(0, 8)
+    }
+    this.mainGoal = evaluationInput.goal
+    this.verifyCriticalIssues(config)
+    this.workflowInvocationIds = new Map<number, string>()
+    this.workflowIO = [] // will be set later via prepareWorkflow
+    this.totalCost = 0
+    this.evolutionContext = evolutionContext
+    this.evaluationInput = evaluationInput
+    this.toolContext = toolContext
+    this.problemAnalysis = undefined
+  }
+
+  private verifyCriticalIssues(config: WorkflowConfig): void {
+    const inactiveToolsUsed: string[] = []
+
+    for (const node of config.nodes) {
+      const allNodeTools = [...(node.codeTools || []), ...(node.mcpTools || [])]
+
+      for (const tool of allNodeTools) {
+        if (INACTIVE_TOOLS.has(tool)) {
+          inactiveToolsUsed.push(
+            `node "${node.nodeId}" uses inactive tool "${tool}"`
+          )
+        }
+      }
+    }
+
+    if (inactiveToolsUsed.length > 0) {
+      lgg.error("🚨 Workflow verification failed - inactive tools detected:")
+      inactiveToolsUsed.forEach((error) => lgg.error(`   - ${error}`))
+    }
+  }
+
+  public static create({
+    config,
+    evaluationInput,
+    parent1Id,
+    parent2Id,
+    evolutionContext,
+    toolContext,
+    workflowVersionId,
+  }: {
+    config: WorkflowConfig
+    evaluationInput: EvaluationInput
+    parent1Id?: string
+    parent2Id?: string
+    evolutionContext?: EvolutionContext
+    toolContext: Partial<ToolExecutionContext> | undefined
+    workflowVersionId?: string
+  }): Workflow {
+    const wf = new Workflow(
+      config,
+      evaluationInput,
+      evolutionContext,
+      toolContext ?? undefined,
+      workflowVersionId
+    )
+    return wf
+  }
+
+  public static async createFromId(params: CreateFromIdParams): Promise<{
+    workflow: Workflow
+    fitness?: FitnessOfWorkflow
+    feedback?: string
+  }> {
+    const { workflowInvocationId, versionId, evaluationInput } = params
+    guard(
+      workflowInvocationId || versionId,
+      "Either workflowInvocationId or versionId must be provided"
+    )
+    let _evaluationInput: EvaluationInput | undefined = evaluationInput
+    let _versionId: string | undefined = versionId
+    const _nodes: WorkflowNodeConfig[] | undefined = []
+    let _fitness: FitnessOfWorkflow | undefined = undefined
+    let _feedback: string | undefined = undefined
+
+    if (workflowInvocationId) {
+      // Fetch the workflow invocation
+      const { data: invocation, error: invError } = await supabase
+        .from("WorkflowInvocation")
+        .select("*")
+        .eq("wf_invocation_id", workflowInvocationId)
+        .single()
+
+      if (invError || !invocation) {
+        throw new Error(
+          `Invocation not found: ${invError?.message || "No data"}`
+        )
+      }
+
+      _evaluationInput = invocation.workflow_input as unknown as EvaluationInput
+      _versionId = invocation.wf_version_id
+      _fitness = invocation.fitness as unknown as FitnessOfWorkflow
+      _feedback = invocation.feedback as unknown as string
+    }
+
+    guard(_evaluationInput, "Evaluation input not found")
+    guard(_versionId, "Version ID not found")
+
+    // Fetch the workflow version to get the goal (commit_message)
+    const { data: version, error: verError } = await supabase
+      .from("WorkflowVersion")
+      .select("*")
+      .eq("wf_version_id", _versionId)
+      .single()
+
+    if (verError || !version) {
+      throw new Error(`Version not found: ${verError?.message || "No data"}`)
+    }
+
+    const config = version.dsl as unknown as WorkflowConfig
+
+    const wf = Workflow.create({
+      config,
+      evaluationInput: _evaluationInput,
+      parent1Id: undefined,
+      parent2Id: undefined,
+      evolutionContext: undefined,
+      toolContext: undefined,
+      workflowVersionId: _versionId,
+    })
+    return { workflow: wf, fitness: _fitness, feedback: _feedback }
+  }
+
+  public getConfig(): WorkflowConfig {
+    return this.config
+  }
+
+  public async prepareWorkflow(
+    evaluationInput: EvaluationInput
+  ): Promise<void> {
+    const { newGoal, workflowIO, problemAnalysis } =
+      await prepareProblem(evaluationInput)
+
+    this.workflowIO = workflowIO
+    this.mainGoal = newGoal
+    this.problemAnalysis = problemAnalysis
+
+    // Update the WorkflowVersion with all WorkflowIO data
+    if (this.workflowIO.length > 0) {
+      await updateWorkflowVersionWithIO({
+        workflowVersionId: this.workflowVersionId,
+        allWorkflowIO: this.workflowIO,
+      })
+    } else {
+      lgg.warn("No workflow IO to update.. skipping")
+      lgg.warn("might be a problem if you are going to evaluate.")
+    }
+  }
+
+  /**
+   * Set pre-computed workflow IO and goals directly (for GP optimization)
+   * Avoids re-calling prepareProblem when data is already available
+   */
+  public setPrecomputedWorkflowData({
+    workflowIO,
+    newGoal,
+    problemAnalysis,
+  }: {
+    workflowIO: WorkflowIO[]
+    newGoal: string
+    problemAnalysis: string
+  }): void {
+    this.workflowIO = workflowIO
+    this.mainGoal = newGoal
+    this.problemAnalysis = problemAnalysis
+  }
+
+  public getWorkflowVersionId(): string {
+    return this.workflowVersionId
+  }
+
+  getWorkflowIO(): WorkflowIO[] {
+    return this.workflowIO
+  }
+
+  getTotalCost(): number {
+    return this.totalCost
+  }
+
+  toConfig(): WorkflowConfig {
+    return this.config
+  }
+
+  getEvaluationInput(): EvaluationInput {
+    return this.evaluationInput
+  }
+
+  //todo-leak :: Workflow retains fitness state accessible during improvement phases
+  getFitness(): FitnessOfWorkflow | undefined {
+    if (!this.fitness) throw new Error("Fitness not found for workflow")
+    return this.fitness
+  }
+
+  getFitnessScore(): number {
+    if (!this.fitness) throw new Error("Fitness not found for workflow")
+    return this.fitness.score
+  }
+
+  //todo-leak :: Workflow retains feedback state accessible during improvement phases
+  getFeedback(): GenomeFeedback {
+    return this.feedback
+  }
+
+  getLink(invocationId?: string): string {
+    const baseUrl = "https://flowgenerator.vercel.app/trace"
+    if (invocationId) {
+      return `${baseUrl}/${invocationId}`
+    }
+    return baseUrl
+  }
+
+  /**
+   * Runs workflow with starting prompt and evaluates.
+   * @returns aggregated evaluation result
+   */
+  async runAndEvaluate(): Promise<RS<AggregateEvaluationResult>> {
+    lgg.log(
+      `[Workflow.runAndEvaluate] Starting run phase for ${this.getWorkflowVersionId()}`
+    )
+    const { error } = await this.run()
+    if (error) {
+      lgg.error(
+        `[Workflow.runAndEvaluate] Run phase failed for ${this.getWorkflowVersionId()}: ${error}`
+      )
+      return R.error(error, 0)
+    }
+    lgg.log(
+      `[Workflow.runAndEvaluate] Run phase succeeded for ${this.getWorkflowVersionId()}, starting evaluate phase`
+    )
+    const result = await this.evaluate()
+    if (result.success) {
+      lgg.log(
+        `[Workflow.runAndEvaluate] Evaluate phase succeeded for ${this.getWorkflowVersionId()}`
+      )
+    } else {
+      lgg.error(
+        `[Workflow.runAndEvaluate] Evaluate phase failed for ${this.getWorkflowVersionId()}: ${result.error}`
+      )
+    }
+    return result
+  }
+
+  /**
+   * Executes the workflow for all IO without evaluation.
+   * @returns array of run results for each IO
+   */
+  async run(): Promise<RS<RunResult[]>> {
+    throwIf(this.evaluated, "Workflow has already been evaluated")
+    throwIf(this.hasRun, "Workflow has already been run")
+
+    lgg.log(`[Workflow.run] Starting setup for ${this.getWorkflowVersionId()}`)
+    await this.setup()
+
+    lgg.log(
+      `[Workflow.run] Setup complete, starting runAllIO for ${this.getWorkflowVersionId()}`
+    )
+    const { data: runResults, error } = await runAllIO(this)
+    this.hasRun = true
+    if (error) {
+      lgg.error(
+        `[Workflow.run] runAllIO failed for ${this.getWorkflowVersionId()}: ${error}`
+      )
+      return R.error(error, 0)
+    }
+    lgg.log(
+      `[Workflow.run] runAllIO succeeded for ${this.getWorkflowVersionId()}, got ${runResults?.length || 0} results`
+    )
+    this.runResults = runResults
+    return R.success(runResults ?? [], 0)
+  }
+
+  /**
+   * Evaluates given run results against expected outputs.
+   * @param runResults Results from a previous run()
+   * @returns aggregated evaluation result
+   */
+  async evaluate(): Promise<RS<AggregateEvaluationResult>> {
+    if (!this.runResults) {
+      return R.error("Run results not found", 0)
+    }
+    throwIf(this.evaluated, "Workflow has already been evaluated")
+    const evals = await evaluateRuns(this, this.runResults)
+    const { data, usdCost, error } = await aggregateResults(evals)
+    this.evaluated = true
+    guard(data, "evaluate failed: " + JSON.stringify(error))
+    this.fitness = data.averageFitness
+    this.totalCost += usdCost ?? 0
+    this.feedback = data.averageFeedback
+    return R.success(data, usdCost)
+  }
+
+  /**
+   * Verifies workflow, registers in DB, instantiates nodes.
+   */
+  protected async setup(strict: boolean = false): Promise<void> {
+    // check if io is set
+    guard(this.workflowIO, "Workflow IO is not set")
+
+    if (strict) await verifyWorkflowConfigStrict(this.config)
+    else await verifyWorkflowConfig(this.config, { throwOnError: false })
+
+    lgg.log("setting up workflow", this.workflowVersionId)
+
+    // Only register the workflow version, not the invocation
+    await createWorkflowVersion({
+      workflowVersionId: this.workflowVersionId,
+      workflowConfig: this.config,
+      commitMessage: this.goal,
+      parent1Id: this.parent1Id,
+      parent2Id: this.parent2Id,
+      generation: this.evolutionContext?.generationId,
+      workflowId: this.workflowId,
+    })
+
+    for (const workflowNodeConfig of this.config.nodes) {
+      const workflowNode = await WorkFlowNode.create(
+        workflowNodeConfig,
+        this.workflowVersionId
+      )
+      this.nodeMap.set(workflowNodeConfig.nodeId, workflowNode)
+      this.nodes.push(workflowNode)
+    }
+  }
+
+  /**
+   * Creates a workflow invocation for a specific WorkflowIO.
+   * @param index - The index of the WorkflowIO in the array
+   * @param workflowIO - The specific WorkflowIO object for this invocation
+   * @returns The created workflowInvocationId
+   */
+  async createInvocationForIO(
+    index: number,
+    workflowIO: WorkflowIO
+  ): Promise<string> {
+    const workflowInvocationId = genShortId()
+
+    await createWorkflowInvocation({
+      workflowInvocationId,
+      workflowVersionId: this.workflowVersionId,
+      runId: this.evolutionContext?.runId,
+      generation: this.evolutionContext?.generationId,
+      metadata: {
+        configFiles: this.config.contextFile ? [this.config.contextFile] : [],
+        workflowIOIndex: index,
+      },
+      expectedOutputType: this.evaluationInput.expectedOutputSchema
+        ? zodToJson(this.evaluationInput.expectedOutputSchema)
+        : null,
+      workflowInput: workflowIO.workflowInput as any,
+      workflowOutput: workflowIO.expectedWorkflowOutput as any,
+    })
+
+    this.workflowInvocationIds.set(index, workflowInvocationId)
+    return workflowInvocationId
+  }
+
+  /**
+   * Gets node by nodeId.
+   * @throws if node not found
+   */
+  getNode(nodeId: string): WorkFlowNode {
+    const node = this.nodeMap.get(nodeId)
+    guard(node, `Node ${nodeId} not found`)
+    return node
+  }
+
+  /**
+   * Gets all node IDs in the workflow.
+   */
+  getNodeIds(): string[] {
+    return Array.from(this.nodeMap.keys())
+  }
+
+  /**
+   * Gets the entry node ID from the workflow config.
+   */
+  getEntryNodeId(): string {
+    guard(this.config.entryNodeId, "Entry node ID is not set")
+    return this.config.entryNodeId
+  }
+
+  getNodes(): WorkFlowNode[] {
+    return this.nodes
+  }
+
+  getWorkflowId(): string {
+    return this.workflowId
+  }
+
+  /**
+   * Gets the workflow invocation ID for a specific index.
+   * @param index - The index of the WorkflowIO
+   * @throws if workflow invocation has not been created for this index
+   * @deprecated this is not safe, since it only returns the last invocation.
+   */
+  getWorkflowInvocationId(index?: number): string {
+    // If no index provided, return the first one (for backward compatibility)
+    const idx = index ?? 0
+    const invocationId = this.workflowInvocationIds.get(idx)
+    guard(
+      invocationId,
+      `Workflow invocation ID not found for index ${idx}. Create invocation first.`
+    )
+    return invocationId
+  }
+
+  /**
+   * Gets the workflow's main goal.
+   */
+  get goal(): string {
+    return this.mainGoal
+  }
+
+  /**
+   * Gets or creates a ContextStore for this workflow.
+   * @param name - Name of the context store (e.g., "fishcontext")
+   * @param backend - Backend to use ("memory" or "supabase")
+   * @returns ContextStore instance
+   */
+  getContextStore(
+    name: string,
+    backend: "memory" | "supabase" = "supabase",
+    index?: number
+  ): ContextStore {
+    const key = `${name}_${index ?? 0}`
+    if (this.contextStores.has(key)) {
+      return this.contextStores.get(key)!
+    }
+
+    let store: ContextStore
+    if (backend === "memory") {
+      const invocationId = this.workflowInvocationIds.get(index ?? 0)
+      store = createContextStore("memory", invocationId || "default")
+    } else {
+      const invocationId = ensure(
+        this.workflowInvocationIds.get(index ?? 0),
+        `Workflow invocation must be created for index ${index ?? 0} before creating Supabase context stores`
+      )
+      store = createContextStore("supabase", invocationId)
+    }
+
+    this.contextStores.set(key, store)
+    return store
+  }
+
+  /**
+   * Lists all context store names for this workflow.
+   */
+  getContextStoreNames(): string[] {
+    return Array.from(this.contextStores.keys())
+  }
+
+  /**
+   * Gets the current context file count for this workflow.
+   */
+  getWorkflowFileCount(): number {
+    return this.workflowFiles.size
+  }
+
+  /**
+   * Gets all workflow files for this workflow.
+   */
+  getWorkflowFiles(): Set<WorkflowFile> {
+    return new Set(this.workflowFiles)
+  }
+
+  /**
+   * Adds a workflow file to this workflow's tracking.
+   */
+  addWorkflowFile(workflowFile: WorkflowFile): void {
+    this.workflowFiles.add(workflowFile)
+  }
+
+  getToolExecutionContext(workflowInvocationId: string): ToolExecutionContext {
+    const files = this.getWorkflowFiles()
+      ? Array.from(this.getWorkflowFiles())
+      : []
+
+    const context: ToolExecutionContext = {
+      expectedOutputType: this.toolContext?.expectedOutputType,
+      workflowInvocationId: workflowInvocationId,
+      workflowFiles: files,
+      mainWorkflowGoal: this.mainGoal,
+      workflowId: this.workflowId,
+    }
+    return context
+  }
+
+  /**
+   * Checks if a workflow file already exists for this workflow.
+   */
+  hasWorkflowFile(workflowFile: WorkflowFile): boolean {
+    return this.workflowFiles.has(workflowFile)
+  }
+
+  /**
+   * Checks if a new workflow file can be created based on the configured limit.
+   */
+  canCreateWorkflowFile(): boolean {
+    return this.workflowFiles.size < CONFIG.context.maxFilesPerWorkflow
+  }
+
+  async improveNodesCulturally(params: {
+    _fitness: FitnessOfWorkflow
+    workflowInvocationId: string
+  }): Promise<WorkflowImprovementResult> {
+    const result = await improveNodesCulturallyImpl(this, {
+      _fitness: params._fitness,
+      workflowInvocationId: params.workflowInvocationId,
+    })
+    this.totalCost += result.cost
+    return result
+  }
+
+  async saveToFile(fileName?: string): Promise<void> {
+    await persistWorkflow(this.config, fileName || "setupfile.json")
+  }
+
+  toString(options: SimplifyOptions): string {
+    return workflowToString(this, options)
+  }
+
+  getMemory(): Record<string, Record<string, string>> {
+    const workflowMemory: Record<string, Record<string, string>> = {}
+    for (const node of this.config.nodes) {
+      if (node.memory) {
+        workflowMemory[node.nodeId] = node.memory
+      }
+    }
+    return workflowMemory
+  }
+
+  /**
+   * Gets workflow-level memory (not node-specific memory)
+   */
+  getWorkflowMemory(): Record<string, string> {
+    return this.config.memory || {}
+  }
+
+  /**
+   * Generate a deterministic hash for a workflow
+   */
+  hash(): string {
+    const jsonString = JSON.stringify(this.config)
+    return createHash("sha256").update(jsonString).digest("hex")
+  }
+
+  clone(): Workflow {
+    return Workflow.create({
+      config: this.config,
+      evaluationInput: this.evaluationInput,
+      parent1Id: this.parent1Id,
+      parent2Id: this.parent2Id,
+      evolutionContext: this.evolutionContext,
+      toolContext: this.toolContext,
+    })
+  }
+
+  addNode(node: WorkflowNodeConfig): void {
+    this.config.nodes.push(node)
+  }
+
+  static async ideaToWorkflow({
+    prompt,
+    randomness,
+    model,
+  }: {
+    prompt: string
+    randomness: number
+    model?: ModelName
+  }): Promise<RS<WorkflowConfig>> {
+    const workflowIdeaResponse = await generateWorkflowIdea({
+      prompt,
+      randomness,
+      model,
+    })
+
+    if (!workflowIdeaResponse.success) {
+      lgg.error("ideaToWorkflow", workflowIdeaResponse.error)
+      return R.error(
+        "Failed to generate workflow idea in generateWorkflowIdea",
+        workflowIdeaResponse.usdCost
+      )
+    }
+
+    if (CONFIG.logging.override.GP) {
+      lgg.log(
+        `[Converter] Workflow idea: ${workflowIdeaResponse.data.workflow}`
+      )
+    }
+
+    const {
+      data: fullWorkflowResult,
+      error,
+      usdCost,
+      success,
+    } = await formalizeWorkflow(workflowIdeaResponse.data.workflow, {
+      verifyWorkflow: "normal",
+      repairWorkflowAfterGeneration: true,
+    })
+
+    if (!success) {
+      lgg.error(
+        "Failed to generate workflow from already generated idea - ideaToWorkflow 1",
+        error
+      )
+      return R.error(
+        "Failed to generate workflow from already generated idea - ideaToWorkflow 2",
+        usdCost
+      )
+    }
+
+    return R.success(fullWorkflowResult, usdCost)
+  }
+
+  static async formalizeWorkflow(
+    ...args: Parameters<typeof formalizeWorkflow>
+  ): Promise<ReturnType<typeof formalizeWorkflow>> {
+    return await formalizeWorkflow(...args)
+  }
+
+  // for GP, we need to reset the workflow to a new generation
+  // if parents are surviving!
+  reset(evolutionContext: EvolutionContext): void {
+    this.totalCost = 0
+    this.contextStores = new Map()
+    this.workflowFiles = new Set()
+    this.workflowInvocationIds = new Map()
+    this.evolutionContext = evolutionContext
+    this.evaluated = false
+    this.hasRun = false
+    this.runResults = undefined
+    this.fitness = undefined
+    this.feedback = null
+
+    if ("genomeEvaluationResults" in this) {
+      this.genomeEvaluationResults = {
+        workflowVersionId: this.getWorkflowVersionId(),
+        hasBeenEvaluated: false,
+        evaluatedAt: new Date().toISOString(),
+        fitness: null,
+        costOfEvaluation: 0,
+        errors: [],
+        feedback: null,
+      }
+    }
+    if ("evolutionCost" in this) {
+      this.evolutionCost = 0
+    }
+  }
+}
+
+export type WorkflowImprovementResult = {
+  newConfig: WorkflowConfig
+  cost: number
+}

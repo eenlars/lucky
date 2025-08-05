@@ -1,0 +1,1 @@
+"The tool execution successfully determined that Tony's Chocolonely does not have any official physical store locations in the Netherlands, with the provided text stating the number of stores is zero."

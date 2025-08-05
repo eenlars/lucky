@@ -1,0 +1,59 @@
+{
+  "fileName": "1955b61f",
+  "locations": [
+    {
+      "quality": "complete",
+      "name": "Tony's Chocolonely Headquarters",
+      "address": "Wibautstraat 131, 1091 GL Amsterdam",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1091 GL",
+      "owner_imgs": [],
+      "metadata": {
+        "category": "headquarters"
+      },
+      "id": "tony-s-chocolonely-headquarters-wibautstraat-131-1091-gl-amsterdam"
+    },
+    {
+      "quality": "complete",
+      "name": "Tony's Chocolonely Store Amsterdam",
+      "address": "Haarlemmerstraat 7, 1013 EK Amsterdam",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1013 EK",
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store"
+      },
+      "id": "tony-s-chocolonely-store-amsterdam-haarlemmerstraat-7-1013-ek-amsterdam"
+    },
+    {
+      "quality": "complete",
+      "name": "Tony's Chocolonely Store Utrecht",
+      "address": "Oudegracht 245, 3511 NE Utrecht",
+      "city": "Utrecht",
+      "country": "Netherlands",
+      "postcode": "3511 NE",
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store"
+      },
+      "id": "tony-s-chocolonely-store-utrecht-oudegracht-245-3511-ne-utrecht"
+    },
+    {
+      "quality": "complete",
+      "name": "Tony's Chocolonely Store Rotterdam",
+      "address": "Meent 72, 3011 JP Rotterdam",
+      "city": "Rotterdam",
+      "country": "Netherlands",
+      "postcode": "3011 JP",
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store"
+      },
+      "id": "tony-s-chocolonely-store-rotterdam-meent-72-3011-jp-rotterdam"
+    }
+  ],
+  "createdAt": "2025-07-31T14:56:20.593Z",
+  "updatedAt": "2025-07-31T14:56:20.594Z"
+}

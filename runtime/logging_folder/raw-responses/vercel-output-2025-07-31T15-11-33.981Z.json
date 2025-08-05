@@ -1,0 +1,162 @@
+{
+  "text": "Understood. Based on the manually provided data:\n\n- Headquarters: Tony's Chocolonely HQ, Amsterdam, Netherlands\n- Stores:\n  - Tony's Chocolonely Store, Amsterdam\n  - Tony's Chocolonely Store, Rotterdam\n  - Tony's Chocolonely Store, Utrecht\n\nExcluding the headquarters, the store list contains 3 addresses.\n\n**Final count of stores:** 3",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 632,
+    "completionTokens": 81,
+    "totalTokens": 713
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1753974692-JeAIC1ufIU3EVTSnNby0",
+    "timestamp": "2025-07-31T15:11:33.980Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "967e07657b3c0eb2-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Thu, 31 Jul 2025 15:11:33 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Understood. Based on the manually provided data:\n\n- Headquarters: Tony's Chocolonely HQ, Amsterdam, Netherlands\n- Stores:\n  - Tony's Chocolonely Store, Amsterdam\n  - Tony's Chocolonely Store, Rotterdam\n  - Tony's Chocolonely Store, Utrecht\n\nExcluding the headquarters, the store list contains 3 addresses.\n\n**Final count of stores:** 3"
+          }
+        ],
+        "id": "msg-Pz3Svt4GmZUkz9mIAutL0QN8"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "Understood. Based on the manually provided data:\n\n- Headquarters: Tony's Chocolonely HQ, Amsterdam, Netherlands\n- Stores:\n  - Tony's Chocolonely Store, Amsterdam\n  - Tony's Chocolonely Store, Rotterdam\n  - Tony's Chocolonely Store, Utrecht\n\nExcluding the headquarters, the store list contains 3 addresses.\n\n**Final count of stores:** 3",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 632,
+        "completionTokens": 81,
+        "totalTokens": 713
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1753974692-JeAIC1ufIU3EVTSnNby0",
+        "timestamp": "2025-07-31T15:11:33.980Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "967e07657b3c0eb2-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Thu, 31 Jul 2025 15:11:33 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "Understood. Based on the manually provided data:\n\n- Headquarters: Tony's Chocolonely HQ, Amsterdam, Netherlands\n- Stores:\n  - Tony's Chocolonely Store, Amsterdam\n  - Tony's Chocolonely Store, Rotterdam\n  - Tony's Chocolonely Store, Utrecht\n\nExcluding the headquarters, the store list contains 3 addresses.\n\n**Final count of stores:** 3"
+              }
+            ],
+            "id": "msg-Pz3Svt4GmZUkz9mIAutL0QN8"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 632,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 81,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000956,
+            "totalTokens": 713
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 632,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 81,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000956,
+            "totalTokens": 713
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 632,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 81,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000956,
+        "totalTokens": 713
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 632,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 81,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000956,
+        "totalTokens": 713
+      }
+    }
+  },
+  "sources": []
+}

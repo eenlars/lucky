@@ -1,0 +1,1 @@
+"The tool successfully returned verified data indicating that Tony's Chocolonely has 10 stores in the Netherlands, excluding the headquarters. The confidence level for this information is high."

@@ -1,0 +1,67 @@
+{
+  "fileName": "afe1a487",
+  "locations": [
+    {
+      "name": "Tony's Chocolonely Store Amsterdam",
+      "address": "Haarlemmerstraat 123",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1013 EM",
+      "coordinates": {
+        "latitude": 52.377956,
+        "longitude": 4.89707
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store",
+        "googleUrl": "https://maps.google.com/?cid=1234567890",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-store-amsterdam-haarlemmerstraat-123",
+      "quality": "complete"
+    },
+    {
+      "name": "Tony's Chocolonely Store Utrecht",
+      "address": "Oudegracht 200",
+      "city": "Utrecht",
+      "country": "Netherlands",
+      "postcode": "3511 NE",
+      "coordinates": {
+        "latitude": 52.090737,
+        "longitude": 5.12142
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store",
+        "googleUrl": "https://maps.google.com/?cid=0987654321",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-store-utrecht-oudegracht-200",
+      "quality": "complete"
+    },
+    {
+      "name": "Tony's Chocolonely Headquarters",
+      "address": "Wibautstraat 150",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1091 GR",
+      "coordinates": {
+        "latitude": 52.36,
+        "longitude": 4.92
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "headquarters",
+        "googleUrl": "https://maps.google.com/?cid=1122334455",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-headquarters-wibautstraat-150",
+      "quality": "complete"
+    }
+  ],
+  "createdAt": "2025-08-01T02:58:57.010Z",
+  "updatedAt": "2025-08-01T02:58:57.010Z"
+}

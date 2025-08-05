@@ -1,0 +1,46 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    // Module settings
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+
+    // Output settings
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true, // Adds source maps for declarations
+    "sourceMap": true, // Adds source maps for better debugging
+
+    // Path resolution
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["./src/*"]
+    },
+
+    "target": "ES2020",
+    "lib": ["ESNext", "DOM"],
+    "composite": true,
+    "incremental": true, // Faster builds by reusing information from previous compilations
+
+    // Code quality
+    "strict": true,
+    "noUncheckedIndexedAccess": true, // More safety with indexed access
+    "forceConsistentCasingInFileNames": true,
+    "exactOptionalPropertyTypes": true, // More precise optional properties
+    "noImplicitOverride": true, // Requires explicit override keyword
+
+    // Integration
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts", // Exclude test files from the shared library build
+    "**/*.spec.ts"
+  ]
+}

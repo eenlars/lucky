@@ -1,0 +1,162 @@
+{
+  "text": "The company's headquarters are in the United States, and the countries of operation field is empty. Therefore, it does not meet the criteria for finding physical stores in the Netherlands or elsewhere for B2C purposes. I will skip this company.",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 696,
+    "completionTokens": 47,
+    "totalTokens": 743
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1754016059-leLBkhkyzzSYVAo26tJg",
+    "timestamp": "2025-08-01T02:41:00.864Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "9681f955ba665406-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Fri, 01 Aug 2025 02:41:00 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "The company's headquarters are in the United States, and the countries of operation field is empty. Therefore, it does not meet the criteria for finding physical stores in the Netherlands or elsewhere for B2C purposes. I will skip this company."
+          }
+        ],
+        "id": "msg-2J5eDHGhm9fWZdYWIXRhUOXZ"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "The company's headquarters are in the United States, and the countries of operation field is empty. Therefore, it does not meet the criteria for finding physical stores in the Netherlands or elsewhere for B2C purposes. I will skip this company.",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 696,
+        "completionTokens": 47,
+        "totalTokens": 743
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754016059-leLBkhkyzzSYVAo26tJg",
+        "timestamp": "2025-08-01T02:41:00.864Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "9681f955ba665406-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Fri, 01 Aug 2025 02:41:00 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "The company's headquarters are in the United States, and the countries of operation field is empty. Therefore, it does not meet the criteria for finding physical stores in the Netherlands or elsewhere for B2C purposes. I will skip this company."
+              }
+            ],
+            "id": "msg-2J5eDHGhm9fWZdYWIXRhUOXZ"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 696,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 47,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000884,
+            "totalTokens": 743
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 696,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 47,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000884,
+            "totalTokens": 743
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 696,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 47,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000884,
+        "totalTokens": 743
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 696,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 47,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000884,
+        "totalTokens": 743
+      }
+    }
+  },
+  "sources": []
+}

@@ -1,0 +1,16 @@
+{
+  "entryNodeId": "node-0",
+  "nodes": [
+    {
+      "nodeId": "test-node-1",
+      "systemPrompt": "Test prompt",
+      "handOffs": [
+        "end"
+      ],
+      "codeTools": [],
+      "mcpTools": [],
+      "description": "Test node",
+      "modelName": "openai/gpt-4.1-mini"
+    }
+  ]
+}

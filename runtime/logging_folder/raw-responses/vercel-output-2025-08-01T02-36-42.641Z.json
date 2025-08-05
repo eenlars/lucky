@@ -1,0 +1,162 @@
+{
+  "text": "Reid's Automotive Recycling Ltd. is based in Canada, with no listed countries of operation. Since its headquarters is outside the Netherlands and the countries of operation are empty, it does not meet the criteria for further search of physical stores in the Netherlands. \n\nNo physical stores to find for this company.",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 506,
+    "completionTokens": 60,
+    "totalTokens": 566
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1754015801-vXsRPn9KA2RzXfDHW0Ia",
+    "timestamp": "2025-08-01T02:36:42.641Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "9681f3056f865406-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Fri, 01 Aug 2025 02:36:41 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Reid's Automotive Recycling Ltd. is based in Canada, with no listed countries of operation. Since its headquarters is outside the Netherlands and the countries of operation are empty, it does not meet the criteria for further search of physical stores in the Netherlands. \n\nNo physical stores to find for this company."
+          }
+        ],
+        "id": "msg-ONPgStN2Jgkdg5F9eT0kjI1W"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "Reid's Automotive Recycling Ltd. is based in Canada, with no listed countries of operation. Since its headquarters is outside the Netherlands and the countries of operation are empty, it does not meet the criteria for further search of physical stores in the Netherlands. \n\nNo physical stores to find for this company.",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 506,
+        "completionTokens": 60,
+        "totalTokens": 566
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754015801-vXsRPn9KA2RzXfDHW0Ia",
+        "timestamp": "2025-08-01T02:36:42.641Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "9681f3056f865406-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Fri, 01 Aug 2025 02:36:41 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "Reid's Automotive Recycling Ltd. is based in Canada, with no listed countries of operation. Since its headquarters is outside the Netherlands and the countries of operation are empty, it does not meet the criteria for further search of physical stores in the Netherlands. \n\nNo physical stores to find for this company."
+              }
+            ],
+            "id": "msg-ONPgStN2Jgkdg5F9eT0kjI1W"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 506,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 60,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000746,
+            "totalTokens": 566
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 506,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 60,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000746,
+            "totalTokens": 566
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 506,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 60,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000746,
+        "totalTokens": 566
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 506,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 60,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000746,
+        "totalTokens": 566
+      }
+    }
+  },
+  "sources": []
+}

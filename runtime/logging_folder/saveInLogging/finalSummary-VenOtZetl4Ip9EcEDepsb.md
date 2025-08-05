@@ -1,0 +1,1 @@
+"The tool execution determined that the company \"THIRTY SEVEN EDUCATIONAL TECHNOLOGY(SHANGHAI)CO., LTD.\" is not located in the Netherlands and has no listed countries of operation, therefore it does not meet the criteria for finding physical stores in the Netherlands. The process is proceeding to the next company or step."

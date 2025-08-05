@@ -1,0 +1,1 @@
+"The tool execution determined that Green Dinosaur, Inc. is not based in the Netherlands and has no specified countries of operation. Therefore, it does not meet the criteria for finding physical stores in the Netherlands. No further action is needed."

@@ -1,0 +1,162 @@
+{
+  "text": "The content is empty, indicating a bug or missing data. Please provide the raw location data retrieved from searchGoogleMaps so I can process, filter, and prepare the refined dataset accordingly.",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 362,
+    "completionTokens": 37,
+    "totalTokens": 399
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1753973386-THProrVb1YTpol0AscS0",
+    "timestamp": "2025-07-31T14:49:47.726Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "967de783bf600e28-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Thu, 31 Jul 2025 14:49:47 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "The content is empty, indicating a bug or missing data. Please provide the raw location data retrieved from searchGoogleMaps so I can process, filter, and prepare the refined dataset accordingly."
+          }
+        ],
+        "id": "msg-DlzGD3eXFTICQjsxao19MfpH"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "The content is empty, indicating a bug or missing data. Please provide the raw location data retrieved from searchGoogleMaps so I can process, filter, and prepare the refined dataset accordingly.",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 362,
+        "completionTokens": 37,
+        "totalTokens": 399
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1753973386-THProrVb1YTpol0AscS0",
+        "timestamp": "2025-07-31T14:49:47.726Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "967de783bf600e28-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Thu, 31 Jul 2025 14:49:47 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "The content is empty, indicating a bug or missing data. Please provide the raw location data retrieved from searchGoogleMaps so I can process, filter, and prepare the refined dataset accordingly."
+              }
+            ],
+            "id": "msg-DlzGD3eXFTICQjsxao19MfpH"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 362,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 37,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.000051,
+            "totalTokens": 399
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 362,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 37,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.000051,
+            "totalTokens": 399
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 362,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 37,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.000051,
+        "totalTokens": 399
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 362,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 37,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.000051,
+        "totalTokens": 399
+      }
+    }
+  },
+  "sources": []
+}

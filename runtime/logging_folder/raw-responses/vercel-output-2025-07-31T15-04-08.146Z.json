@@ -1,0 +1,162 @@
+{
+  "text": "Based on verified information, Tony's Chocolonely has 1 headquarters in the Netherlands located in Amsterdam. They also have 2 official stores in the Netherlands, excluding the headquarters. \n\nFinal count of Tony's Chocolonely stores in the Netherlands: **2**.\n\nConfidence level: High (verified store and headquarters data).",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 278,
+    "completionTokens": 65,
+    "totalTokens": 343
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1753974246-ndUBrSMjKFDH8zY3eY2I",
+    "timestamp": "2025-07-31T15:04:08.146Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "967dfc804fdc0eb2-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Thu, 31 Jul 2025 15:04:06 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Based on verified information, Tony's Chocolonely has 1 headquarters in the Netherlands located in Amsterdam. They also have 2 official stores in the Netherlands, excluding the headquarters. \n\nFinal count of Tony's Chocolonely stores in the Netherlands: **2**.\n\nConfidence level: High (verified store and headquarters data)."
+          }
+        ],
+        "id": "msg-4moGZGeypsudDEEJDac7pWTn"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "Based on verified information, Tony's Chocolonely has 1 headquarters in the Netherlands located in Amsterdam. They also have 2 official stores in the Netherlands, excluding the headquarters. \n\nFinal count of Tony's Chocolonely stores in the Netherlands: **2**.\n\nConfidence level: High (verified store and headquarters data).",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 278,
+        "completionTokens": 65,
+        "totalTokens": 343
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1753974246-ndUBrSMjKFDH8zY3eY2I",
+        "timestamp": "2025-07-31T15:04:08.146Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "967dfc804fdc0eb2-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Thu, 31 Jul 2025 15:04:06 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "Based on verified information, Tony's Chocolonely has 1 headquarters in the Netherlands located in Amsterdam. They also have 2 official stores in the Netherlands, excluding the headquarters. \n\nFinal count of Tony's Chocolonely stores in the Netherlands: **2**.\n\nConfidence level: High (verified store and headquarters data)."
+              }
+            ],
+            "id": "msg-4moGZGeypsudDEEJDac7pWTn"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 278,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 65,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000538,
+            "totalTokens": 343
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 278,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 65,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.0000538,
+            "totalTokens": 343
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 278,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 65,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000538,
+        "totalTokens": 343
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 278,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 65,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.0000538,
+        "totalTokens": 343
+      }
+    }
+  },
+  "sources": []
+}

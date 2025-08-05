@@ -1,0 +1,182 @@
+[
+  {
+    "name": "GANT Amsterdam",
+    "address": "Van Baerlestraat 86",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3570622,
+      "longitude": 4.879016
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJR83aVuUJxkcRMQOpKejGSU0",
+        "address": "Van Baerlestraat 86",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 673 6291",
+        "googleUrl": "https://www.google.com/maps/place/GANT+Amsterdam/data=!4m7!3m6!1s0x47c609e556dacd47:0x4d49c6e829a90331!8m2!3d52.3570622!4d4.879016!16s%2Fg%2F1wk7q1kw!19sChIJR83aVuUJxkcRMQOpKejGSU0?authuser=0&hl=nl&rclk=1",
+        "storeName": "GANT Amsterdam",
+        "ratingText": "4,6 sterren 27 reviews",
+        "stars": "4,6 sterren 27 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/GANT+Amsterdam/data=!4m7!3m6!1s0x47c609e556dacd47:0x4d49c6e829a90331!8m2!3d52.3570622!4d4.879016!16s%2Fg%2F1wk7q1kw!19sChIJR83aVuUJxkcRMQOpKejGSU0?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 27 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:00:56.870Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Stone Island",
+    "address": "Pieter Cornelisz Hooftstraat 37",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3606009,
+      "longitude": 4.8824392
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJOVd1Pe8JxkcREehvWMAjuag",
+        "address": "Pieter Cornelisz Hooftstraat 37",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 229 4980",
+        "googleUrl": "https://www.google.com/maps/place/Stone+Island/data=!4m7!3m6!1s0x47c609ef3d755739:0xa8b923c0586fe811!8m2!3d52.3606009!4d4.8824392!16s%2Fg%2F11byp5z0cy!19sChIJOVd1Pe8JxkcREehvWMAjuag?authuser=0&hl=nl&rclk=1",
+        "storeName": "Stone Island",
+        "ratingText": "4,2 sterren 193 reviews",
+        "stars": "4,2 sterren 193 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Stone+Island/data=!4m7!3m6!1s0x47c609ef3d755739:0xa8b923c0586fe811!8m2!3d52.3606009!4d4.8824392!16s%2Fg%2F11byp5z0cy!19sChIJOVd1Pe8JxkcREehvWMAjuag?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,2 sterren 193 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:00:56.870Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "FOUR Amsterdam",
+    "address": "Van Baerlestraat 9-11",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3598357,
+      "longitude": 4.8775848
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJn6KzP7s5ZUERgdjInA0arao",
+        "address": "Van Baerlestraat 9-11",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "020 679 2244",
+        "googleUrl": "https://www.google.com/maps/place/FOUR+Amsterdam/data=!4m7!3m6!1s0x416539bb3fb3a29f:0xaaad1a0d9cc8d881!8m2!3d52.3598357!4d4.8775848!16s%2Fg%2F11b727rkjd!19sChIJn6KzP7s5ZUERgdjInA0arao?authuser=0&hl=nl&rclk=1",
+        "storeName": "FOUR Amsterdam",
+        "ratingText": "4,1 sterren 631 reviews",
+        "stars": "4,1 sterren 631 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/FOUR+Amsterdam/data=!4m7!3m6!1s0x416539bb3fb3a29f:0xaaad1a0d9cc8d881!8m2!3d52.3598357!4d4.8775848!16s%2Fg%2F11b727rkjd!19sChIJn6KzP7s5ZUERgdjInA0arao?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 631 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:00:56.870Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "The A'dam Giftshop",
+    "address": "Pieter Cornelisz Hooftstraat 33",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3606393,
+      "longitude": 4.8826278
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC2whPe8JxkcRYkfwtrO5yIo",
+        "address": "Pieter Cornelisz Hooftstraat 33",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "phone": "020 662 1213",
+        "googleUrl": "https://www.google.com/maps/place/The+A%27dam+Giftshop/data=!4m7!3m6!1s0x47c609ef3d216c0b:0x8ac8b9b3b6f04762!8m2!3d52.3606393!4d4.8826278!16s%2Fg%2F1tfbmj3y!19sChIJC2whPe8JxkcRYkfwtrO5yIo?authuser=0&hl=nl&rclk=1",
+        "storeName": "The A'dam Giftshop",
+        "ratingText": "4,7 sterren 57 reviews",
+        "stars": "4,7 sterren 57 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/The+A%27dam+Giftshop/data=!4m7!3m6!1s0x47c609ef3d216c0b:0x8ac8b9b3b6f04762!8m2!3d52.3606393!4d4.8826278!16s%2Fg%2F1tfbmj3y!19sChIJC2whPe8JxkcRYkfwtrO5yIo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 57 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:00:56.870Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "ZARA Home",
+    "address": "Van Baerlestraat 25",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.359051,
+      "longitude": 4.878166
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ_1tBC-UJxkcRp0wmXN9ZPFs",
+        "address": "Van Baerlestraat 25",
+        "category": "Woonwinkel",
+        "status": "",
+        "phone": "020 305 0520",
+        "googleUrl": "https://www.google.com/maps/place/ZARA+Home/data=!4m7!3m6!1s0x47c609e50b415bff:0x5b3c59df5c264ca7!8m2!3d52.359051!4d4.878166!16s%2Fg%2F1ptw0tdq0!19sChIJ_1tBC-UJxkcRp0wmXN9ZPFs?authuser=0&hl=nl&rclk=1",
+        "storeName": "ZARA Home",
+        "ratingText": "3,6 sterren 481 reviews",
+        "stars": "3,6 sterren 481 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Woonwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/ZARA+Home/data=!4m7!3m6!1s0x47c609e50b415bff:0x5b3c59df5c264ca7!8m2!3d52.359051!4d4.878166!16s%2Fg%2F1ptw0tdq0!19sChIJ_1tBC-UJxkcRp0wmXN9ZPFs?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,6 sterren 481 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:00:56.870Z"
+    },
+    "domain": null
+  }
+]

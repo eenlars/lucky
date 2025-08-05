@@ -1,0 +1,1 @@
+"The tool execution determined that \"Global Vision Direct Ltd\" is not eligible for store searches in the Netherlands because its headquarters is outside the Netherlands and it has specified countries of operation. The company was skipped as a result."

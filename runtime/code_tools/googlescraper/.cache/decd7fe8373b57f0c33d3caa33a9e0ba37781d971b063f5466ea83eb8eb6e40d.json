@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Crowe Peak",
+    "address": "24-28 Olympisch Stadion",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.343135,
+      "longitude": 4.853144
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJw-5TCPnhxUcR9jyOVamHMkk",
+        "address": "24-28 Olympisch Stadion",
+        "category": "Accountant",
+        "status": "",
+        "phone": "088 205 5000",
+        "googleUrl": "https://www.google.com/maps/place/Crowe+Peak/data=!4m7!3m6!1s0x47c5e1f90853eec3:0x493287a9558e3cf6!8m2!3d52.343135!4d4.853144!16s%2Fg%2F11cjkq920t!19sChIJw-5TCPnhxUcR9jyOVamHMkk?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "/aclk?sa=L&ai=DChcSEwi1zJz5vsqOAxUnnYMHHXo2NVgYABAAGgJlZg&co=1&gclid=EAIaIQobChMItcyc-b7KjgMVJ52DBx16NjVYEBAYASAAEgK7XPD_BwE&sig=AOD64_0gX0jVN22sg4zJqQ0HkgTOgGLugw&adurl&q&ctype=99",
+        "storeName": "Crowe Peak",
+        "ratingText": "4,0 sterren 1 reviews",
+        "stars": "4,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Accountant",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Crowe+Peak/data=!4m7!3m6!1s0x47c5e1f90853eec3:0x493287a9558e3cf6!8m2!3d52.343135!4d4.853144!16s%2Fg%2F11cjkq920t!19sChIJw-5TCPnhxUcR9jyOVamHMkk?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "/aclk?sa=L&ai=DChcSEwi1zJz5vsqOAxUnnYMHHXo2NVgYABAAGgJlZg&co=1&gclid=EAIaIQobChMItcyc-b7KjgMVJ52DBx16NjVYEBAYASAAEgK7XPD_BwE&sig=AOD64_0gX0jVN22sg4zJqQ0HkgTOgGLugw&adurl&q&ctype=99",
+      "stars": "4,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:27:13.329Z"
+    },
+    "domain": ""
+  },
+  {
+    "name": "B Lab Europe",
+    "address": "",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3626842,
+      "longitude": 4.92062
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJkeZ_8gQJxkcRnby-eT7QS3I",
+        "address": "",
+        "category": "Non-profitorganisatie",
+        "status": "",
+        "phone": "Mauritskade 63",
+        "googleUrl": "https://www.google.com/maps/place/B+Lab+Europe/data=!4m7!3m6!1s0x47c60904f27fe691:0x724bd03e79bebc9d!8m2!3d52.3626842!4d4.92062!16s%2Fg%2F11f9ztckf2!19sChIJkeZ_8gQJxkcRnby-eT7QS3I?authuser=0&hl=nl&rclk=1",
+        "bizWebsite": "http://bcorporation.eu/",
+        "storeName": "B Lab Europe",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Non-profitorganisatie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/B+Lab+Europe/data=!4m7!3m6!1s0x47c60904f27fe691:0x724bd03e79bebc9d!8m2!3d52.3626842!4d4.92062!16s%2Fg%2F11f9ztckf2!19sChIJkeZ_8gQJxkcRnby-eT7QS3I?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": "http://bcorporation.eu/",
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:27:13.329Z"
+    },
+    "domain": "bcorporation.eu"
+  },
+  {
+    "name": "B2C E-commerce",
+    "address": "Oranje Nassaulaan",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3548201,
+      "longitude": 4.8634599
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ6zq8k-bjxUcRIEHiqRvmo28",
+        "address": "Oranje Nassaulaan",
+        "category": "Internetmarketing",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/B2C+E-commerce/data=!4m7!3m6!1s0x47c5e3e693bc3aeb:0x6fa3e61ba9e24120!8m2!3d52.3548201!4d4.8634599!16s%2Fg%2F11t47c_cbn!19sChIJ6zq8k-bjxUcRIEHiqRvmo28?authuser=0&hl=nl&rclk=1",
+        "storeName": "B2C E-commerce",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Internetmarketing",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/B2C+E-commerce/data=!4m7!3m6!1s0x47c5e3e693bc3aeb:0x6fa3e61ba9e24120!8m2!3d52.3548201!4d4.8634599!16s%2Fg%2F11t47c_cbn!19sChIJ6zq8k-bjxUcRIEHiqRvmo28?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-07-20T03:27:13.329Z"
+    },
+    "domain": null
+  }
+]

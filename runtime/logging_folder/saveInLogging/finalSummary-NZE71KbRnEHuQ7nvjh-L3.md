@@ -1,0 +1,1 @@
+"The tool execution successfully determined that Portola Creek Capital is not headquartered in the Netherlands and is unlikely to have physical stores there, as it is an investment advisory firm. The execution was stopped as further searching was deemed unnecessary."

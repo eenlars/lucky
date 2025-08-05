@@ -1,0 +1,1 @@
+"The tool execution was skipped because the company's headquarters is not in the Netherlands and no countries of operation were specified, as per the instructions."

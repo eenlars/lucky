@@ -1,0 +1,1 @@
+"The tool successfully identified that Tony's Chocolonely has 4 retail stores in the Netherlands, excluding the headquarters, with a high confidence level."

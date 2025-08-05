@@ -1,0 +1,1 @@
+"The tool execution was skipped for Sustain Homes Limited because its headquarters are in the United Kingdom and the countries of operation field was empty, meaning it did not meet the criteria for finding physical stores in the Netherlands or B2C stores."

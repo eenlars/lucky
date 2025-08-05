@@ -1,0 +1,1 @@
+"The tool execution failed because the raw location data was empty. The output indicates a bug or missing data, and suggests providing search results from searchGoogleMaps or official website data to proceed with filtering and counting stores."

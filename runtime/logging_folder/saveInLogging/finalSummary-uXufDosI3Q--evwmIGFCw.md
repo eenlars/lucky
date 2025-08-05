@@ -1,0 +1,1 @@
+"The tool execution determined that \"Clean Cut Energy Corp\" is not eligible for further processing because it is not based in the Netherlands and does not have any listed operating countries. Therefore, the company was skipped."

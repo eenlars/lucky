@@ -1,0 +1,67 @@
+{
+  "fileName": "96486fb6",
+  "locations": [
+    {
+      "name": "Tony's Chocolonely Headquarters",
+      "address": "Wibautstraat 131, 1091 GL Amsterdam",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1091 GL",
+      "coordinates": {
+        "latitude": 52.3601,
+        "longitude": 4.9175
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "headquarters",
+        "googleUrl": "https://maps.google.com/?cid=1234567890",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-headquarters-wibautstraat-131-1091-gl-amsterdam",
+      "quality": "complete"
+    },
+    {
+      "name": "Tony's Chocolonely Store Amsterdam",
+      "address": "Haarlemmerstraat 42, 1013 ES Amsterdam",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "postcode": "1013 ES",
+      "coordinates": {
+        "latitude": 52.3779,
+        "longitude": 4.8875
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store",
+        "googleUrl": "https://maps.google.com/?cid=0987654321",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-store-amsterdam-haarlemmerstraat-42-1013-es-amsterdam",
+      "quality": "complete"
+    },
+    {
+      "name": "Tony's Chocolonely Store Utrecht",
+      "address": "Oudegracht 200, 3511 NE Utrecht",
+      "city": "Utrecht",
+      "country": "Netherlands",
+      "postcode": "3511 NE",
+      "coordinates": {
+        "latitude": 52.0907,
+        "longitude": 5.1214
+      },
+      "owner_imgs": [],
+      "metadata": {
+        "category": "store",
+        "googleUrl": "https://maps.google.com/?cid=1122334455",
+        "bizWebsite": "https://tonyschocolonely.com"
+      },
+      "domain": "tonyschocolonely.com",
+      "id": "tony-s-chocolonely-store-utrecht-oudegracht-200-3511-ne-utrecht",
+      "quality": "complete"
+    }
+  ],
+  "createdAt": "2025-08-01T02:15:08.531Z",
+  "updatedAt": "2025-08-01T02:15:08.532Z"
+}

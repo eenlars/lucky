@@ -1,0 +1,710 @@
+[
+  {
+    "name": "Tekst-Shop.nl",
+    "address": "Noordhavenpoort 8",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2759981,
+      "longitude": 4.6202458
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJS1vE7nPDxUcRNUApmN8hUS8",
+        "address": "Noordhavenpoort 8",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Tekst-Shop.nl/data=!4m7!3m6!1s0x47c5c373eec45b4b:0x2f5121df98294035!8m2!3d52.2759981!4d4.6202458!16s%2Fg%2F11h_y28fy7!19sChIJS1vE7nPDxUcRNUApmN8hUS8?authuser=0&hl=nl&rclk=1",
+        "storeName": "Tekst-Shop.nl",
+        "ratingText": "4,9 sterren 102 reviews",
+        "stars": "4,9 sterren 102 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tekst-Shop.nl/data=!4m7!3m6!1s0x47c5c373eec45b4b:0x2f5121df98294035!8m2!3d52.2759981!4d4.6202458!16s%2Fg%2F11h_y28fy7!19sChIJS1vE7nPDxUcRNUApmN8hUS8?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,9 sterren 102 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.803Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Holland Experience",
+    "address": "Damrak 24",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3764058,
+      "longitude": 4.8969799
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJe48MIrgJxkcRBUfxlVAS3cU",
+        "address": "Damrak 24",
+        "category": "Souvenirwinkel",
+        "status": "",
+        "phone": "020 622 2766",
+        "googleUrl": "https://www.google.com/maps/place/Holland+Experience/data=!4m7!3m6!1s0x47c609b8220c8f7b:0xc5dd125095f14705!8m2!3d52.3764058!4d4.8969799!16s%2Fg%2F11b6xjyf_q!19sChIJe48MIrgJxkcRBUfxlVAS3cU?authuser=0&hl=nl&rclk=1",
+        "storeName": "Holland Experience",
+        "ratingText": "3,9 sterren 44 reviews",
+        "stars": "3,9 sterren 44 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Souvenirwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Holland+Experience/data=!4m7!3m6!1s0x47c609b8220c8f7b:0xc5dd125095f14705!8m2!3d52.3764058!4d4.8969799!16s%2Fg%2F11b6xjyf_q!19sChIJe48MIrgJxkcRBUfxlVAS3cU?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 44 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.803Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Blij-maker.nl",
+    "address": "Reestein 32",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.272004,
+      "longitude": 4.6164912
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ326RZazpxUcRkhdiqjXfnJQ",
+        "address": "Reestein 32",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "phone": "06 20092583",
+        "googleUrl": "https://www.google.com/maps/place/Blij-maker.nl/data=!4m7!3m6!1s0x47c5e9ac65916edf:0x949cdf35aa621792!8m2!3d52.272004!4d4.6164912!16s%2Fg%2F11jh988tj8!19sChIJ326RZazpxUcRkhdiqjXfnJQ?authuser=0&hl=nl&rclk=1",
+        "storeName": "Blij-maker.nl",
+        "ratingText": "5,0 sterren 15 reviews",
+        "stars": "5,0 sterren 15 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Blij-maker.nl/data=!4m7!3m6!1s0x47c5e9ac65916edf:0x949cdf35aa621792!8m2!3d52.272004!4d4.6164912!16s%2Fg%2F11jh988tj8!19sChIJ326RZazpxUcRkhdiqjXfnJQ?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 15 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.803Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "de Bijenkorf Amsterdam",
+    "address": "Dam 1",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3737531,
+      "longitude": 4.8952706
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJGTWpP8cJxkcRPgLGybsqgJI",
+        "address": "Dam 1",
+        "category": "Warenhuis",
+        "status": "",
+        "phone": "020 808 9333",
+        "googleUrl": "https://www.google.com/maps/place/de+Bijenkorf+Amsterdam/data=!4m7!3m6!1s0x47c609c73fa93519:0x92802abbc9c6023e!8m2!3d52.3737531!4d4.8952706!16s%2Fg%2F1td5kwy3!19sChIJGTWpP8cJxkcRPgLGybsqgJI?authuser=0&hl=nl&rclk=1",
+        "storeName": "de Bijenkorf Amsterdam",
+        "ratingText": "4,3 sterren 17.914 reviews",
+        "stars": "4,3 sterren 17.914 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/de+Bijenkorf+Amsterdam/data=!4m7!3m6!1s0x47c609c73fa93519:0x92802abbc9c6023e!8m2!3d52.3737531!4d4.8952706!16s%2Fg%2F1td5kwy3!19sChIJGTWpP8cJxkcRPgLGybsqgJI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,3 sterren 17.914 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.803Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Winkel Keukenhof",
+    "address": "Stationsweg 166 A",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.268174,
+      "longitude": 4.5498455
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-yOIWEjDxUcRO3JsTOqEdFc",
+        "address": "Stationsweg 166 A",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Winkel+Keukenhof/data=!4m7!3m6!1s0x47c5c348588823fb:0x577484ea4c6c723b!8m2!3d52.268174!4d4.5498455!16s%2Fg%2F11rvhb9dnr!19sChIJ-yOIWEjDxUcRO3JsTOqEdFc?authuser=0&hl=nl&rclk=1",
+        "storeName": "Winkel Keukenhof",
+        "ratingText": "4,5 sterren 279 reviews",
+        "stars": "4,5 sterren 279 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Winkel+Keukenhof/data=!4m7!3m6!1s0x47c5c348588823fb:0x577484ea4c6c723b!8m2!3d52.268174!4d4.5498455!16s%2Fg%2F11rvhb9dnr!19sChIJ-yOIWEjDxUcRO3JsTOqEdFc?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,5 sterren 279 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "100% Holland",
+    "address": "Dam 19",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3724193,
+      "longitude": 4.893681
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-bqANscJxkcR1hZWfJtage4",
+        "address": "Dam 19",
+        "category": "Souvenirwinkel",
+        "status": "",
+        "phone": "020 620 3432",
+        "googleUrl": "https://www.google.com/maps/place/100%25+Holland/data=!4m7!3m6!1s0x47c609c73680baf9:0xee815a9b7c5616d6!8m2!3d52.3724193!4d4.893681!16s%2Fg%2F11gx_nd9h4!19sChIJ-bqANscJxkcR1hZWfJtage4?authuser=0&hl=nl&rclk=1",
+        "storeName": "100% Holland",
+        "ratingText": "3,4 sterren 51 reviews",
+        "stars": "3,4 sterren 51 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Souvenirwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/100%25+Holland/data=!4m7!3m6!1s0x47c609c73680baf9:0xee815a9b7c5616d6!8m2!3d52.3724193!4d4.893681!16s%2Fg%2F11gx_nd9h4!19sChIJ-bqANscJxkcR1hZWfJtage4?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,4 sterren 51 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Indian Handloom & Dresses in Netherlands",
+    "address": "Anne Franklaan 12",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2990332,
+      "longitude": 4.6696006
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJvQpCtZvnxUcRHFfZewSy37Y",
+        "address": "Anne Franklaan 12",
+        "category": "Kledingwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Indian+Handloom+%26+Dresses+in+Netherlands/data=!4m7!3m6!1s0x47c5e79bb5420abd:0xb6dfb2047bd9571c!8m2!3d52.2990332!4d4.6696006!16s%2Fg%2F11y7ws1341!19sChIJvQpCtZvnxUcRHFfZewSy37Y?authuser=0&hl=nl&rclk=1",
+        "storeName": "Indian Handloom & Dresses in Netherlands",
+        "stars": null,
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Indian+Handloom+%26+Dresses+in+Netherlands/data=!4m7!3m6!1s0x47c5e79bb5420abd:0xb6dfb2047bd9571c!8m2!3d52.2990332!4d4.6696006!16s%2Fg%2F11y7ws1341!19sChIJvQpCtZvnxUcRHFfZewSy37Y?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": null,
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Primark",
+    "address": "Marktplein 254",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3036911,
+      "longitude": 4.6941706
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJUwVGc6nnxUcRF-PyQ-TNu2s",
+        "address": "Marktplein 254",
+        "category": "Kledingwinkel",
+        "status": "",
+        "phone": "023 557 3111",
+        "googleUrl": "https://www.google.com/maps/place/Primark/data=!4m7!3m6!1s0x47c5e7a973460553:0x6bbbcde443f2e317!8m2!3d52.3036911!4d4.6941706!16s%2Fg%2F1tw_mf75!19sChIJUwVGc6nnxUcRF-PyQ-TNu2s?authuser=0&hl=nl&rclk=1",
+        "storeName": "Primark",
+        "ratingText": "3,9 sterren 3.464 reviews",
+        "stars": "3,9 sterren 3.464 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Kledingwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Primark/data=!4m7!3m6!1s0x47c5e7a973460553:0x6bbbcde443f2e317!8m2!3d52.3036911!4d4.6941706!16s%2Fg%2F1tw_mf75!19sChIJUwVGc6nnxUcRF-PyQ-TNu2s?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 3.464 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Dutch Souvenirs Shop",
+    "address": "Nieuwezijds Voorburgwal 62",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3763738,
+      "longitude": 4.8933455
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJKa_iy8cJxkcRjE_OeTS9A5s",
+        "address": "Nieuwezijds Voorburgwal 62",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Dutch+Souvenirs+Shop/data=!4m7!3m6!1s0x47c609c7cbe2af29:0x9b03bd3479ce4f8c!8m2!3d52.3763738!4d4.8933455!16s%2Fg%2F1v44d4_s!19sChIJKa_iy8cJxkcRjE_OeTS9A5s?authuser=0&hl=nl&rclk=1",
+        "storeName": "Dutch Souvenirs Shop",
+        "ratingText": "2,9 sterren 16 reviews",
+        "stars": "2,9 sterren 16 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Dutch+Souvenirs+Shop/data=!4m7!3m6!1s0x47c609c7cbe2af29:0x9b03bd3479ce4f8c!8m2!3d52.3763738!4d4.8933455!16s%2Fg%2F1v44d4_s!19sChIJKa_iy8cJxkcRjE_OeTS9A5s?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "2,9 sterren 16 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Tuesday Netherlands B.V.",
+    "address": "Cornelis Schuytstraat 74",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3526484,
+      "longitude": 4.8727506
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ6czP8_sJxkcRaWeKl9e0IXI",
+        "address": "Cornelis Schuytstraat 74",
+        "category": "Winkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+        "storeName": "Tuesday Netherlands B.V.",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Winkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Tuesday+Netherlands+B.V./data=!4m7!3m6!1s0x47c609fbf3cfcce9:0x7221b4d7978a6769!8m2!3d52.3526484!4d4.8727506!16s%2Fg%2F11f42qdy9x!19sChIJ6czP8_sJxkcRaWeKl9e0IXI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "HEMA",
+    "address": "Polderplein 209",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3024062,
+      "longitude": 4.6949071
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJW0WMyRzixUcRu0-ZRY-_USI",
+        "address": "Polderplein 209",
+        "category": "Warenhuis",
+        "status": "",
+        "phone": "023 554 3443",
+        "googleUrl": "https://www.google.com/maps/place/HEMA/data=!4m7!3m6!1s0x47c5e21cc98c455b:0x2251bf8f45994fbb!8m2!3d52.3024062!4d4.6949071!16s%2Fg%2F1tg_f79y!19sChIJW0WMyRzixUcRu0-ZRY-_USI?authuser=0&hl=nl&rclk=1",
+        "storeName": "HEMA",
+        "ratingText": "3,9 sterren 614 reviews",
+        "stars": "3,9 sterren 614 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Warenhuis",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/HEMA/data=!4m7!3m6!1s0x47c5e21cc98c455b:0x2251bf8f45994fbb!8m2!3d52.3024062!4d4.6949071!16s%2Fg%2F1tg_f79y!19sChIJW0WMyRzixUcRu0-ZRY-_USI?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 614 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Dutch Food Gifts",
+    "address": "Evert van de Beekstraat 202",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3067152,
+      "longitude": 4.7638876
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ3WlS7dfgxUcRE8jLMarsK1U",
+        "address": "Evert van de Beekstraat 202",
+        "category": "Cadeauwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Dutch+Food+Gifts/data=!4m7!3m6!1s0x47c5e0d7ed5269dd:0x552becaa31cbc813!8m2!3d52.3067152!4d4.7638876!16s%2Fg%2F11fhr7fgx3!19sChIJ3WlS7dfgxUcRE8jLMarsK1U?authuser=0&hl=nl&rclk=1",
+        "storeName": "Dutch Food Gifts",
+        "ratingText": "3,1 sterren 20 reviews",
+        "stars": "3,1 sterren 20 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Cadeauwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Dutch+Food+Gifts/data=!4m7!3m6!1s0x47c5e0d7ed5269dd:0x552becaa31cbc813!8m2!3d52.3067152!4d4.7638876!16s%2Fg%2F11fhr7fgx3!19sChIJ3WlS7dfgxUcRE8jLMarsK1U?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,1 sterren 20 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Holland Souvenirs",
+    "address": "Korte Poten 13",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.0798347,
+      "longitude": 4.3173108
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJM1eBKCO3xUcRqHbNvxcbXjw",
+        "address": "Korte Poten 13",
+        "category": "Souvenirwinkel",
+        "status": "",
+        "phone": "070 444 9660",
+        "googleUrl": "https://www.google.com/maps/place/Holland+Souvenirs/data=!4m7!3m6!1s0x47c5b72328815733:0x3c5e1b17bfcd76a8!8m2!3d52.0798347!4d4.3173108!16s%2Fg%2F11cmt2r5l8!19sChIJM1eBKCO3xUcRqHbNvxcbXjw?authuser=0&hl=nl&rclk=1",
+        "storeName": "Holland Souvenirs",
+        "ratingText": "4,6 sterren 292 reviews",
+        "stars": "4,6 sterren 292 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Souvenirwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Holland+Souvenirs/data=!4m7!3m6!1s0x47c5b72328815733:0x3c5e1b17bfcd76a8!8m2!3d52.0798347!4d4.3173108!16s%2Fg%2F11cmt2r5l8!19sChIJM1eBKCO3xUcRqHbNvxcbXjw?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 292 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Dutch Discoveries",
+    "address": "Randweg D-pier 1118",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3115401,
+      "longitude": 4.7575488
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJC2MYljnhxUcR-r1MxXx_qGw",
+        "address": "Randweg D-pier 1118",
+        "category": "Souvenirwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Dutch+Discoveries/data=!4m7!3m6!1s0x47c5e1399618630b:0x6ca87f7cc54cbdfa!8m2!3d52.3115401!4d4.7575488!16s%2Fg%2F11j3vv0gb0!19sChIJC2MYljnhxUcR-r1MxXx_qGw?authuser=0&hl=nl&rclk=1",
+        "storeName": "Dutch Discoveries",
+        "ratingText": "3,5 sterren 14 reviews",
+        "stars": "3,5 sterren 14 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Souvenirwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Dutch+Discoveries/data=!4m7!3m6!1s0x47c5e1399618630b:0x6ca87f7cc54cbdfa!8m2!3d52.3115401!4d4.7575488!16s%2Fg%2F11j3vv0gb0!19sChIJC2MYljnhxUcR-r1MxXx_qGw?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,5 sterren 14 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "MediaMarkt",
+    "address": "Cruquiusplein 10",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3312819,
+      "longitude": 4.629256
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJs8ld_ZToxUcRY7eRdtRUlyA",
+        "address": "Cruquiusplein 10",
+        "category": "Elektronicawinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/MediaMarkt/data=!4m7!3m6!1s0x47c5e894fd5dc9b3:0x209754d47691b763!8m2!3d52.3312819!4d4.629256!16s%2Fg%2F1tcw7cf7!19sChIJs8ld_ZToxUcRY7eRdtRUlyA?authuser=0&hl=nl&rclk=1",
+        "storeName": "MediaMarkt",
+        "ratingText": "3,9 sterren 3.109 reviews",
+        "stars": "3,9 sterren 3.109 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Elektronicawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/MediaMarkt/data=!4m7!3m6!1s0x47c5e894fd5dc9b3:0x209754d47691b763!8m2!3d52.3312819!4d4.629256!16s%2Fg%2F1tcw7cf7!19sChIJs8ld_ZToxUcRY7eRdtRUlyA?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 3.109 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "ParfumWebshop.nl",
+    "address": "Venneperstraat 5",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2653571,
+      "longitude": 4.6316168
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJewbcUqnCxUcRzB5ms_6CB2A",
+        "address": "Venneperstraat 5",
+        "category": "Parfumerie",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/ParfumWebshop.nl/data=!4m7!3m6!1s0x47c5c2a952dc067b:0x600782feb3661ecc!8m2!3d52.2653571!4d4.6316168!16s%2Fg%2F11j8lnjy21!19sChIJewbcUqnCxUcRzB5ms_6CB2A?authuser=0&hl=nl&rclk=1",
+        "storeName": "ParfumWebshop.nl",
+        "ratingText": "4,1 sterren 34 reviews",
+        "stars": "4,1 sterren 34 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Parfumerie",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/ParfumWebshop.nl/data=!4m7!3m6!1s0x47c5c2a952dc067b:0x600782feb3661ecc!8m2!3d52.2653571!4d4.6316168!16s%2Fg%2F11j8lnjy21!19sChIJewbcUqnCxUcRzB5ms_6CB2A?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,1 sterren 34 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Goodstore Netherlands B.V.",
+    "address": "Ambachtsweg 6",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.0299931,
+      "longitude": 4.4421036
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJgaR2b4LJxUcRBjG2-9Gjqqo",
+        "address": "Ambachtsweg 6",
+        "category": "Internetwinkel",
+        "status": "",
+        "phone": "070 307 0400",
+        "googleUrl": "https://www.google.com/maps/place/Goodstore+Netherlands+B.V./data=!4m7!3m6!1s0x47c5c9826f76a481:0xaaaaa3d1fbb63106!8m2!3d52.0299931!4d4.4421036!16s%2Fg%2F12hlk5jxb!19sChIJgaR2b4LJxUcRBjG2-9Gjqqo?authuser=0&hl=nl&rclk=1",
+        "storeName": "Goodstore Netherlands B.V.",
+        "ratingText": "4,6 sterren 270 reviews",
+        "stars": "4,6 sterren 270 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Internetwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Goodstore+Netherlands+B.V./data=!4m7!3m6!1s0x47c5c9826f76a481:0xaaaaa3d1fbb63106!8m2!3d52.0299931!4d4.4421036!16s%2Fg%2F12hlk5jxb!19sChIJgaR2b4LJxUcRBjG2-9Gjqqo?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,6 sterren 270 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "MediaMarkt Hoofddorp",
+    "address": "Burgemeester van Stamplein 282",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.3015237,
+      "longitude": 4.6943377
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ-RE-7ajnxUcRQ8St01WHP3U",
+        "address": "Burgemeester van Stamplein 282",
+        "category": "Elektronicawinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/MediaMarkt+Hoofddorp/data=!4m7!3m6!1s0x47c5e7a8ed3e11f9:0x753f8755d3adc443!8m2!3d52.3015237!4d4.6943377!16s%2Fg%2F1tq8hrlj!19sChIJ-RE-7ajnxUcRQ8St01WHP3U?authuser=0&hl=nl&rclk=1",
+        "storeName": "MediaMarkt Hoofddorp",
+        "ratingText": "3,9 sterren 2.600 reviews",
+        "stars": "3,9 sterren 2.600 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Elektronicawinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/MediaMarkt+Hoofddorp/data=!4m7!3m6!1s0x47c5e7a8ed3e11f9:0x753f8755d3adc443!8m2!3d52.3015237!4d4.6943377!16s%2Fg%2F1tq8hrlj!19sChIJ-RE-7ajnxUcRQ8St01WHP3U?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "3,9 sterren 2.600 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Rieboutique.nl",
+    "address": "Burg Jansoniushof 73",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.303776,
+      "longitude": 4.687256
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJ1e0uqg7nxUcR52AbhpUtnac",
+        "address": "Burg Jansoniushof 73",
+        "category": "Tassenwinkel",
+        "status": "",
+        "googleUrl": "https://www.google.com/maps/place/Rieboutique.nl/data=!4m7!3m6!1s0x47c5e70eaa2eedd5:0xa79d2d95861b60e7!8m2!3d52.303776!4d4.687256!16s%2Fg%2F11sgb_rqvs!19sChIJ1e0uqg7nxUcR52AbhpUtnac?authuser=0&hl=nl&rclk=1",
+        "storeName": "Rieboutique.nl",
+        "ratingText": "5,0 sterren 1 reviews",
+        "stars": "5,0 sterren 1 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Tassenwinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Rieboutique.nl/data=!4m7!3m6!1s0x47c5e70eaa2eedd5:0xa79d2d95861b60e7!8m2!3d52.303776!4d4.687256!16s%2Fg%2F11sgb_rqvs!19sChIJ1e0uqg7nxUcR52AbhpUtnac?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "5,0 sterren 1 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  },
+  {
+    "name": "Asian HyperMarkt",
+    "address": "Venneperhof 7",
+    "city": "",
+    "country": "Netherlands",
+    "postcode": "",
+    "coordinates": {
+      "latitude": 52.2639413,
+      "longitude": 4.6313336
+    },
+    "opening_times": null,
+    "owner_imgs": [],
+    "metadata": {
+      "original_data": {
+        "placeId": "ChIJt5fbnz3DxUcRTE0n1LpBRnY",
+        "address": "Venneperhof 7",
+        "category": "Aziatische kruidenierswinkel",
+        "status": "",
+        "phone": "06 28987875",
+        "googleUrl": "https://www.google.com/maps/place/Asian+HyperMarkt/data=!4m7!3m6!1s0x47c5c33d9fdb97b7:0x764641bad4274d4c!8m2!3d52.2639413!4d4.6313336!16s%2Fg%2F11mtjzfg_j!19sChIJt5fbnz3DxUcRTE0n1LpBRnY?authuser=0&hl=nl&rclk=1",
+        "storeName": "Asian HyperMarkt",
+        "ratingText": "4,7 sterren 77 reviews",
+        "stars": "4,7 sterren 77 reviews",
+        "numberOfReviews": null,
+        "hours": null
+      },
+      "category": "Aziatische kruidenierswinkel",
+      "status": null,
+      "googleUrl": "https://www.google.com/maps/place/Asian+HyperMarkt/data=!4m7!3m6!1s0x47c5c33d9fdb97b7:0x764641bad4274d4c!8m2!3d52.2639413!4d4.6313336!16s%2Fg%2F11mtjzfg_j!19sChIJt5fbnz3DxUcRTE0n1LpBRnY?authuser=0&hl=nl&rclk=1",
+      "bizWebsite": null,
+      "stars": "4,7 sterren 77 reviews",
+      "numberOfReviews": 0,
+      "scrapedAt": "2025-08-01T02:32:39.804Z"
+    },
+    "domain": null
+  }
+]

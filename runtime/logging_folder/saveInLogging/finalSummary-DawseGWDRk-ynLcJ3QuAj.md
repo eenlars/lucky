@@ -1,0 +1,1 @@
+"The tool execution failed because the content was empty, indicating a bug or missing data. The tool requires raw location data from searchGoogleMaps to process and prepare a refined dataset."

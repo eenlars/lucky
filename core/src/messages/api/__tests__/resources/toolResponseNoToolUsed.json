@@ -1,0 +1,36 @@
+{
+  "text": "I understand. not possible.",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 278,
+    "completionTokens": 112,
+    "totalTokens": 390
+  },
+  "warnings": [],
+  "request": {},
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "I understand. not possible.",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 278,
+        "completionTokens": 112,
+        "totalTokens": 390
+      },
+      "warnings": [],
+      "request": {},
+      "isContinued": false
+    }
+  ],
+  "sources": []
+}

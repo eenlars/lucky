@@ -1,0 +1,19 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./shared/tsconfig.json"
+    },
+    {
+      "path": "./core/tsconfig.json"
+    },
+    {
+      "path": "./runtime/tsconfig.json"
+    },
+    {
+      "path": "./app/tsconfig.json"
+    }
+  ],
+  "compilerOptions": {},
+  "exclude": ["node_modules", "dist"]
+}

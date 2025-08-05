@@ -1,0 +1,162 @@
+{
+  "text": "The company \"Global Vision Direct Ltd\" is based in the United Kingdom, with operations in the United States, Germany, and India. Its country of operation field is not empty, but the headquarters is outside the Netherlands. Since the headquarters is not in the Netherlands and the countries of operation are specified, this company does not meet the criteria for finding physical stores in the Netherlands. Therefore, I will skip this company.",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [],
+  "toolResults": [],
+  "finishReason": "stop",
+  "usage": {
+    "promptTokens": 468,
+    "completionTokens": 83,
+    "totalTokens": 551
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1754015089-rKumfGPjQgNZp4CsgUfM",
+    "timestamp": "2025-08-01T02:24:51.336Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "9681e1a748fdf975-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Fri, 01 Aug 2025 02:24:50 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "The company \"Global Vision Direct Ltd\" is based in the United Kingdom, with operations in the United States, Germany, and India. Its country of operation field is not empty, but the headquarters is outside the Netherlands. Since the headquarters is not in the Netherlands and the countries of operation are specified, this company does not meet the criteria for finding physical stores in the Netherlands. Therefore, I will skip this company."
+          }
+        ],
+        "id": "msg-j948qDLLWYQwTk5t2qX5vEHP"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "The company \"Global Vision Direct Ltd\" is based in the United Kingdom, with operations in the United States, Germany, and India. Its country of operation field is not empty, but the headquarters is outside the Netherlands. Since the headquarters is not in the Netherlands and the countries of operation are specified, this company does not meet the criteria for finding physical stores in the Netherlands. Therefore, I will skip this company.",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [],
+      "toolResults": [],
+      "finishReason": "stop",
+      "usage": {
+        "promptTokens": 468,
+        "completionTokens": 83,
+        "totalTokens": 551
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754015089-rKumfGPjQgNZp4CsgUfM",
+        "timestamp": "2025-08-01T02:24:51.336Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "9681e1a748fdf975-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Fri, 01 Aug 2025 02:24:50 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "The company \"Global Vision Direct Ltd\" is based in the United Kingdom, with operations in the United States, Germany, and India. Its country of operation field is not empty, but the headquarters is outside the Netherlands. Since the headquarters is not in the Netherlands and the countries of operation are specified, this company does not meet the criteria for finding physical stores in the Netherlands. Therefore, I will skip this company."
+              }
+            ],
+            "id": "msg-j948qDLLWYQwTk5t2qX5vEHP"
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 468,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 83,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.00008,
+            "totalTokens": 551
+          }
+        }
+      },
+      "experimental_providerMetadata": {
+        "openrouter": {
+          "usage": {
+            "promptTokens": 468,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokens": 83,
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "cost": 0.00008,
+            "totalTokens": 551
+          }
+        }
+      },
+      "isContinued": false
+    }
+  ],
+  "experimental_providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 468,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 83,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.00008,
+        "totalTokens": 551
+      }
+    }
+  },
+  "providerMetadata": {
+    "openrouter": {
+      "usage": {
+        "promptTokens": 468,
+        "promptTokensDetails": {
+          "cachedTokens": 0
+        },
+        "completionTokens": 83,
+        "completionTokensDetails": {
+          "reasoningTokens": 0
+        },
+        "cost": 0.00008,
+        "totalTokens": 551
+      }
+    }
+  },
+  "sources": []
+}
