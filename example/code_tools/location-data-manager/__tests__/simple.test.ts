@@ -1,11 +1,8 @@
+import { DataQuality, type PartialLocationData } from "@schemas/location.types"
 import { promises as fs } from "fs"
 import { tmpdir } from "os"
 import { join } from "path"
 import { afterEach, beforeEach, describe, expect, test } from "vitest"
-import {
-  DataQuality,
-  type PartialLocationData,
-} from "../../../schemas/location.types"
 import { LocationDataManager } from "../mainLocationDataManager"
 // create a test-specific location data manager that uses a temp directory
 class TestLocationDataManager extends LocationDataManager {

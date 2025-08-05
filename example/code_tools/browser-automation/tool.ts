@@ -1,8 +1,8 @@
 import {
   browserAutomation,
   inputSchemaBrowserAutomation,
-} from "@/runtime/code_tools/browser-automation/main"
-import { defineTool } from "@tools/toolFactory"
+} from "@/code_tools/browser-automation/main"
+import { defineTool } from "@core/tools/toolFactory"
 
 /**
  * browser automation tool for web interactions

@@ -20,7 +20,7 @@ To our knowledge, this is the first framework that supports zero-code workflows 
 ```bash
 # Clone and install dependencies
 git clone <repository-url>
-cd together/app
+cd lucky/app
 bun install
 
 # Configure environment
@@ -28,7 +28,7 @@ cp .env.example .env
 # Edit .env with your API keys (OpenAI, Supabase, etc.)
 
 # Run the workflow engine
-bun run flow
+bun run cult
 
 # Start web interface
 bun dev
@@ -39,19 +39,21 @@ bun dev
 The system treats AI agent workflows as evolvable data structures. Instead of manually coding agent interactions, you define workflows in JSON that the system can automatically improve through:
 
 1. **Cultural Learning**: Iterative analysis and improvement of individual workflows
-2. **Genetic Programming**: Population-based evolution with crossover and mutation  
+2. **Genetic Programming**: Population-based evolution with crossover and mutation
 3. **Agent Handoffs**: Automatic routing between specialized agents based on task context
 4. **Tool Integration**: Automatic discovery and use of 17+ tool categories
 
 ## Architecture
 
 ### Core Module
+
 - **Workflow Engine**: Graph-based execution with message passing
 - **Node Network**: Autonomous AI agents with tool access
 - **Tool Registry**: Unified interface for code tools and external services
 - **Memory Manager**: Context preservation and data summarization
 
-### Optimization Module  
+### Optimization Module
+
 - **Genetic Programming**: Population-based workflow evolution
 - **Cultural Learning**: Knowledge preservation across generations
 - **Fitness Evaluator**: Multi-dimensional performance assessment (accuracy, cost, time)
@@ -71,7 +73,7 @@ const workflow = await Workflow.create({
       tools: ["browserAutomation", "locationDataManager"],
     },
     {
-      name: "validator", 
+      name: "validator",
       systemPrompt: "You validate extracted data quality",
       tools: ["locationDataManager"],
     },
@@ -85,7 +87,7 @@ const result = await workflow.execute("https://example-bcorp.com")
 
 ```bash
 bun dev              # Start web interface
-bun run flow         # Run workflow engine  
+bun run cult         # Run workflow engine
 bun run test         # Run test suite
 bun run tsc          # TypeScript checking
 ```

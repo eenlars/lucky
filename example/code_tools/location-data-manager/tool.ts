@@ -1,5 +1,5 @@
-import { isNir } from "@/core/utils/common/isNir"
-import { defineTool } from "@tools/toolFactory"
+import { isNir } from "@core/utils/common/isNir"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 import { locationDataSchema } from "../../schemas/location.types"
 import {

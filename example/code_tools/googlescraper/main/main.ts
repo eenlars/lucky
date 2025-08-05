@@ -1,23 +1,23 @@
 /* searchGoogleMaps.ts – single-file, self-contained
    ------------------------------------------------- */
 
-import type { LocationMapLink } from "@/runtime/code_tools/googlescraper/main/data_manager"
-import { searchSingleBusiness } from "@/runtime/code_tools/googlescraper/main/page-detail/extractDetailPage"
-import { handleMultipleFeed } from "@/runtime/code_tools/googlescraper/main/page-multiple/handleMultipleFeed"
-import type { GoogleMapsBusiness } from "@/runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import type { LocationMapLink } from "@/code_tools/googlescraper/main/data_manager"
+import { searchSingleBusiness } from "@/code_tools/googlescraper/main/page-detail/extractDetailPage"
+import { handleMultipleFeed } from "@/code_tools/googlescraper/main/page-multiple/handleMultipleFeed"
+import type { GoogleMapsBusiness } from "@/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import {
   cleanupBrowser,
   navigateToGoogleMaps,
   sanitizeJSON,
-} from "@/runtime/code_tools/googlescraper/main/util"
-import { normalizeHostname } from "@/runtime/code_tools/googlescraper/utils/hostname"
-import type { ProxyResponse } from "@/runtime/code_tools/googlescraper/utils/proxies"
+} from "@/code_tools/googlescraper/main/util"
+import { normalizeHostname } from "@/code_tools/googlescraper/utils/hostname"
+import type { ProxyResponse } from "@/code_tools/googlescraper/utils/proxies"
 import {
   detectFeed,
   setupPage,
-} from "@/runtime/code_tools/googlescraper/utils/scrapeUtils"
-import Tools, { type CodeToolResult } from "@tools/code/output.types"
-import type { CodeToolName } from "@tools/tool.types"
+} from "@/code_tools/googlescraper/utils/scrapeUtils"
+import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
+import type { CodeToolName } from "@core/tools/tool.types"
 
 export type GoogleMapsResult = {
   businesses: GoogleMapsBusiness[]

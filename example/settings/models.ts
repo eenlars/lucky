@@ -2,7 +2,10 @@
  * Model definitions and configuration
  */
 
-import type { ModelConfig, ModelRuntimeConfig } from "@/config"
+import type {
+  ModelConfig,
+  ModelRuntimeConfig,
+} from "@core/utils/config/runtimeConfig.types"
 
 export const MODELS: ModelConfig = {
   nano: "google/gemini-2.5-flash-lite",

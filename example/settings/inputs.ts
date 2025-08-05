@@ -1,4 +1,4 @@
-import type { EvaluationInput } from "@together/core/src/workflow/ingestion/ingestion.types"
+import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { ExpectedOutputSchema } from "../schemas/output.types"
 
 const QUESTIONS = {

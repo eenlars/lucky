@@ -1,29 +1,33 @@
 {
-  "extends": "../packages/core/tsconfig.json",
   "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../packages/core/src/*"],
-      "@/core/*": ["../packages/core/src/*"],
-      "@/types/*": ["../packages/core/src/types/*"],
-      "@/logger": ["../packages/core/src/utils/logging/Logger.ts"],
-      "@/benchmarks/*": [
-        "../packages/core/src/workflow/ingestion/benchmarks/*"
-      ],
-      "@/runtime/*": ["./*"],
-      "@workflow/*": ["../packages/core/src/workflow/*"],
-      "@node/*": ["../packages/core/src/node/*"],
-      "@messages/*": ["../packages/core/src/messages/*"],
-      "@memories/*": ["../packages/core/src/memories/*"],
-      "@tools/*": ["../packages/core/src/tools/*"],
-      "@prompts/*": ["../packages/core/src/prompts/*"],
-      "@validation/*": ["../packages/core/src/utils/validation/*"],
-      "@improvement/*": ["../packages/core/src/improvement/*"],
-      "@behavioral/*": ["../packages/core/src/improvement/behavioral/*"],
-      "@gp/*": ["../packages/core/src/improvement/gp/*"],
-      "@env": ["../packages/core/env.mjs"],
+      "@/*": ["./*"],
       "@settings/*": ["./settings/*"],
       "@schemas/*": ["./schemas/*"]
-    }
-  }
+    },
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./**/*.js"
+  ],
+  "exclude": ["node_modules"],
+  "references": [
+    { "path": "../packages/core" }
+  ]
 }

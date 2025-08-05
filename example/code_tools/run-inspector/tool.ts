@@ -1,6 +1,6 @@
-import { defineTool } from "@/core/tools/toolFactory"
-import { supabase } from "@/core/utils/clients/supabase/client"
-import { lgg } from "@/core/utils/logging/Logger"
+import { defineTool } from "@core/tools/toolFactory"
+import { supabase } from "@core/utils/clients/supabase/client"
+import { lgg } from "@core/utils/logging/Logger"
 import { z } from "zod"
 
 const runInspector = defineTool({

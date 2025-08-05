@@ -1,5 +1,5 @@
 {
-  "name": "together",
+  "name": "lucky-nextjs-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,15 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "list": "node scripts/dev.js list",
-    "generate": "node scripts/dev.js generate",
-    "parse-prd": "node scripts/dev.js parse-prd",
     "format": "prettier --write .",
     "once": "tsx --env-file=.env src/core/runOnce.ts",
     "twice": "tsx --env-file=.env src/core/runTwice.ts",
     "gp": "node scripts/run-gp.js",
-    "cultural": "rm -rf src/runtime/logging_folder && tsx --env-file=.env src/core/main.ts --mode=cultural",
-    "culture": "rm -rf src/runtime/logging_folder && tsx --env-file=.env src/core/main.ts --mode=cultural",
     "cult": "rm -rf src/runtime/logging_folder && tsx --env-file=.env src/core/main.ts --mode=cultural",
     "clean": "tsx --env-file=.env scripts/cleanup.ts",
     "test": "bunx vitest",
@@ -27,7 +22,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@together/core": "workspace:*",
+    "@lucky/core": "workspace:*",
     "@ai-sdk/groq": "^1.2.9",
     "@ai-sdk/openai": "^1.3.23",
     "@dagrejs/dagre": "^1.1.5",

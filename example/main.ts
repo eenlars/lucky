@@ -1,13 +1,6 @@
-import { setRuntimeConfig } from "@together/core/src/config"
-import { CONFIG, MODELS, PATHS } from "./settings/constants"
-import { MODEL_CONFIG } from "./settings/models"
-
-// Initialize core package with runtime configuration
-console.log("Setting runtime config...")
-setRuntimeConfig(MODELS, MODEL_CONFIG, { CONFIG, PATHS, MODELS })
-console.log("Runtime config set, importing main...")
-
-// Import main AFTER setting config to avoid early evaluation
-const { default: main } = await import("@together/core/src/main")
+// Import main directly - runtime config is handled via @example/index import
+const { default: main } = await import("../packages/core/src/main")
 
 main()
+
+export {}

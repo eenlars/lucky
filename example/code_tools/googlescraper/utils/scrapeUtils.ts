@@ -1,6 +1,6 @@
-import { setupBrowser } from "@/runtime/code_tools/googlescraper/main/util"
-import type { ProxyResponse } from "@/runtime/code_tools/googlescraper/utils/proxies"
-import { Utils } from "@/runtime/code_tools/googlescraper/utils/userAgent"
+import { setupBrowser } from "@/code_tools/googlescraper/main/util"
+import type { ProxyResponse } from "@/code_tools/googlescraper/utils/proxies"
+import { Utils } from "@/code_tools/googlescraper/utils/userAgent"
 import type { Page } from "puppeteer"
 import { Browser } from "puppeteer"
 

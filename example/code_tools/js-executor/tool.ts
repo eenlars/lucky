@@ -1,5 +1,5 @@
-import Tools from "@/core/tools/code/output.types"
-import { defineTool } from "@tools/toolFactory"
+import Tools from "@core/tools/code/output.types"
+import { defineTool } from "@core/tools/toolFactory"
 import vm from "node:vm"
 import { z } from "zod"
 

@@ -3,6 +3,10 @@
  * llm-based crossover operations for prompt evolution
  */
 
+import {
+  getCrossoverVariability,
+  selectCrossoverType,
+} from "@/core/improvement/gp/operators/crossover/crossoverStrategy"
 import { lgg } from "@/core/utils/logging/Logger"
 import { R, type RS } from "@/core/utils/types"
 import { verifyWorkflowConfig } from "@/core/utils/validation/workflow"
@@ -10,10 +14,6 @@ import { formalizeWorkflow } from "@/core/workflow/actions/generate/formalizeWor
 import type { EvaluationInput } from "@/core/workflow/ingestion/ingestion.types"
 import { CONFIG } from "@/runtime/settings/constants"
 import type { Genome } from "@gp/Genome"
-import {
-  getCrossoverVariability,
-  selectCrossoverType,
-} from "@/core/improvement/gp/operators/crossover/crossoverStrategy"
 import { createDummyGenome } from "@gp/resources/debug/dummyGenome"
 import { failureTracker } from "@gp/resources/tracker"
 import { workflowConfigToGenome } from "@gp/resources/wrappers"

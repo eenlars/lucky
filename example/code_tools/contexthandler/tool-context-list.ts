@@ -1,8 +1,8 @@
-import { JSONN } from "@/core/utils/file-types/json/jsonParse"
-import { createContextStore } from "@/core/utils/persistence/memory/ContextStore"
-import { lgg } from "@/logger"
-import Tools, { type CodeToolResult } from "@tools/code/output.types"
-import { defineTool } from "@tools/toolFactory"
+import { JSONN } from "@core/utils/file-types/json/jsonParse"
+import { lgg } from "@core/utils/logging/Logger"
+import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 
 type KeyMetadata = {
@@ -96,7 +96,7 @@ const contextList = defineTool({
 
       for (const currentScope of scopesToCheck) {
         const keys = await store.list(currentScope)
-        keys.forEach((key) => allKeys.push({ scope: currentScope, key }))
+        keys.forEach((key: string) => allKeys.push({ scope: currentScope, key }))
       }
 
       // apply filter if provided

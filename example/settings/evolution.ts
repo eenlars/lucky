@@ -1,6 +1,6 @@
-import type { EvolutionSettings } from "@together/core/src/improvement/gp/resources/evolution-types"
-import { _createDefaultGPConfig } from "@together/core/src/improvement/gp/resources/validation"
-import type { FlowEvolutionConfig } from "@together/core/src/interfaces/runtimeConfig"
+import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import { _createDefaultGPConfig } from "@core/improvement/gp/resources/validation"
+import type { FlowEvolutionConfig } from "@core/utils/config/runtimeConfig.types"
 
 // evolution runtime configuration
 export const EVOLUTION_CONFIG: FlowEvolutionConfig = {

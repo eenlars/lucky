@@ -1,6 +1,6 @@
-import { lgg } from "@/logger" // core location data manager operations
-
-import { CONFIG, PATHS } from "@/runtime/settings/constants"
+import { PATHS } from "@/settings/constants"
+import { getLogging } from "@core/index"
+import { lgg } from "@core/utils/logging/Logger"
 import { promises as fs } from "fs"
 import { join } from "path"
 import type {
@@ -12,7 +12,7 @@ import { DataQuality } from "../../schemas/location.types"
 import { assessDataQuality } from "./assessQuality"
 
 export class LocationDataManagerError extends Error {
-  static verbose = CONFIG.logging.override.Tools
+  static verbose = getLogging().Tools
   constructor(
     message: string,
     public cause?: Error

@@ -1,5 +1,5 @@
-import { codeToolAutoDiscovery } from "@tools/code/AutoDiscovery"
-import type { FlexibleToolDefinition } from "@tools/code/CodeToolRegistry"
+import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
+import type { FlexibleToolDefinition } from "@core/tools/code/CodeToolRegistry"
 
 /**
  * Code Tools Implementation Directory

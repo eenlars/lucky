@@ -1,4 +1,4 @@
-import { defineTool } from "@tools/toolFactory"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 import { geocodeLocation, type LocationData } from "./mapboxUse"
 

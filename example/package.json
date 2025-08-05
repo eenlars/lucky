@@ -4,8 +4,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "bun run main.ts",
-        "build": "bun build main.ts --outdir dist",
-        "typecheck": "bun tsc --noEmit"
+        "once": "tsx --env-file=.env ../packages/core/src/runOnce.ts",
+        "twice": "tsx --env-file=.env ../packages/core/src/runTwice.ts",
+        "gp": "node scripts/run-gp.js",
+        "cult": "rm -rf ../packages/core/src/runtime/logging_folder && tsx --env-file=.env ../packages/core/src/main.ts --mode=cultural",
+        "clean": "tsx --env-file=.env ../packages/core/scripts/cleanup.ts",
+        "typecheck": "bun tsc --noEmit --skipLibCheck --project ."
     }
 }

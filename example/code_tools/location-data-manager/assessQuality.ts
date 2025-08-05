@@ -1,7 +1,4 @@
-import {
-  DataQuality,
-  type LocationData,
-} from "@/runtime/schemas/location.types"
+import { DataQuality, type LocationData } from "@/schemas/location.types"
 
 // utility function to assess location data quality
 export function assessDataQuality(data: LocationData): DataQuality {

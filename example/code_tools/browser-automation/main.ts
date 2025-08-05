@@ -1,7 +1,8 @@
-import { lgg } from "@/logger"
-import Tools, { type CodeToolResult } from "@tools/code/output.types"
+import type { CodeToolResult } from "@core/tools/code/output.types"
+import Tools from "@core/tools/code/output.types"
+import { lgg } from "@core/utils/logging/Logger"
 
-import type { ProxyResponse } from "@/runtime/code_tools/googlescraper/main"
+import type { ProxyResponse } from "@/code_tools/googlescraper/main"
 import {
   inputSchemaNetworkMonitor,
   networkMonitor,

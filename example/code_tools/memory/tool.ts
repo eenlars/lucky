@@ -1,12 +1,12 @@
-import Tools, { type CodeToolResult } from "@/core/tools/code/output.types"
-import { defineTool } from "@/core/tools/toolFactory"
+import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
+import { defineTool } from "@core/tools/toolFactory"
 import {
   addMemory,
   deleteMemory,
   getAllMemories,
   getMemories,
   updateMemory,
-} from "@/core/utils/clients/mem0/client"
+} from "@core/utils/clients/mem0/client"
 import { z } from "zod"
 
 const MemoryActionSchema = z

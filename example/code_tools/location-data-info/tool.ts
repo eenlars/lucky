@@ -1,6 +1,6 @@
 // location data verification and info tool
 
-import { defineTool } from "@tools/toolFactory"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 import {
   getLocationData,

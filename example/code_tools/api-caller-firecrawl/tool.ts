@@ -1,5 +1,5 @@
 import FirecrawlApp, { type ExtractParams } from "@mendable/firecrawl-js"
-import { defineTool } from "@tools/toolFactory"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 
 const app = new FirecrawlApp({

@@ -3,19 +3,18 @@
  * This file should only be imported in server-side code.
  * For client-side code, use constants.client.ts
  */
-
-import type {
-  FlowEvolutionConfig,
-  FlowPathsConfig,
-  FlowRuntimeConfig,
-} from "@together/core/src/interfaces/runtimeConfig"
 import path from "path"
 import { fileURLToPath } from "url"
 
 // Import client-safe constants
-import { CONFIG as CLIENT_CONFIG, MODELS } from "./constants.client"
+import type {
+  FlowEvolutionConfig,
+  FlowPathsConfig,
+} from "@core/utils/config/runtimeConfig.types"
+import { CONFIG as CLIENT_CONFIG } from "./constants.client"
+import { MODELS } from "./models"
 
-// Re-export MODELS for server use
+// Re-export MODELS for compatibility
 export { MODELS }
 
 /* ---------- PATHS ---------- */
@@ -43,6 +42,8 @@ export const PATHS: FlowPathsConfig = {
   },
 } as const satisfies FlowPathsConfig
 
+export const CONFIG = CLIENT_CONFIG
+
 const EVOLUTION_CONFIG: FlowEvolutionConfig = {
   mode: "GP",
   generationAmount: 3,
@@ -58,10 +59,3 @@ const EVOLUTION_CONFIG: FlowEvolutionConfig = {
     ...CLIENT_CONFIG.evolution.GP,
   },
 }
-
-/* ---------- CONFIG ---------- */
-// Extend client config with server-specific paths
-export const CONFIG = {
-  ...CLIENT_CONFIG,
-  evolution: EVOLUTION_CONFIG,
-} as const satisfies Partial<FlowRuntimeConfig>

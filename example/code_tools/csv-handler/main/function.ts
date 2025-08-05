@@ -1,7 +1,7 @@
-import type { WorkflowFile } from "@/core/tools/context/contextStore.types"
-import type { ContextStore } from "@/core/utils/persistence/memory/ContextStore"
-import type { CodeToolResult } from "@tools/code/output.types"
-import Tools from "@tools/code/output.types"
+import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
+import type { CodeToolResult } from "@core/tools/code/output.types"
+import Tools from "@core/tools/code/output.types"
 import { CsvHandler } from "./CsvHandler"
 import type {
   CsvColumn,

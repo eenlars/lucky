@@ -1,4 +1,19 @@
-import type { AllToolNames } from "@tools/tool.types"
+// import type { getToolsConfig } from "@core/index" // Not exported
+import type { AllToolNames } from "@core/tools/tool.types"
+
+type ToolsConfig = {
+  experimentalMultiStepLoopMaxRounds: number
+  inactive: Set<AllToolNames>
+  uniqueToolsPerAgent: boolean
+  uniqueToolSetsPerAgent: boolean
+  maxToolsPerAgent: number
+  maxStepsVercel: number
+  defaultTools: Set<AllToolNames>
+  autoSelectTools: boolean
+  usePrepareStepStrategy: boolean
+  experimentalMultiStepLoop: boolean
+  showParameterSchemas: boolean
+}
 
 // tool definitions and configuration
 export const TOOLS = {
@@ -72,7 +87,7 @@ export const TOOLS = {
 } as const
 
 // tool runtime configuration
-export const TOOL_CONFIG = {
+export const TOOL_CONFIG: ToolsConfig = {
   experimentalMultiStepLoopMaxRounds: 10,
   inactive: new Set<AllToolNames>([
     // DO NOT CHANGE THIS!

@@ -1,4 +1,4 @@
-import type { ToolExecutionContext } from "@/core/tools/toolFactory"
+import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import { tool as expectedOutputHandler } from "../tool"

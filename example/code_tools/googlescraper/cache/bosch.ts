@@ -1,4 +1,4 @@
-import { StandardizedLocation } from "@/runtime/code_tools/googlescraper/convert"
+import { StandardizedLocation } from "@/code_tools/googlescraper/convert"
 
 export const DenBoschAlbertHeijn: StandardizedLocation[] = [
   {

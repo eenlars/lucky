@@ -1,9 +1,9 @@
-import { lgg } from "@/logger"
-import { fetcher } from "@/runtime/code_tools/url-to-markdown/fetcher"
+import { fetcher } from "@/code_tools/url-to-markdown/fetcher"
 import {
   processHtmlToMarkdown,
   type ProcessHtmlToMarkdownResult,
-} from "@/runtime/code_tools/url-to-markdown/process"
+} from "@/code_tools/url-to-markdown/process"
+import { lgg } from "@core/utils/logging/Logger"
 
 type HtmlToMarkdownOptions = {
   url: string

@@ -592,7 +592,7 @@ export const sendAI: SendAI = async (
     }
   }
   // extract
-  // EXAMPLE OUTPUT of callerFile => '    at Function.mutatePrompt (/Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/core/improvement/gp/operators/Mutations.ts'
+  // EXAMPLE OUTPUT of callerFile => '    at Function.mutatePrompt (/Users/.../app/src/core/improvement/gp/operators/Mutations.ts'
 
   try {
     // lgg.info(`Sending AI request from ${extractedFileName}`)

@@ -1,7 +1,7 @@
 // api wrapper functions for tool integration
 
-import type { CodeToolResult } from "@tools/code/output.types"
-import type { CodeToolName } from "@tools/tool.types"
+import type { CodeToolResult } from "@core/tools/code/output.types"
+import type { CodeToolName } from "@core/tools/tool.types"
 import type { PartialLocationData } from "../../schemas/location.types"
 import { locationDataManager } from "./mainLocationDataManager"
 

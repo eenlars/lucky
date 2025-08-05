@@ -1,4 +1,4 @@
-import { lgg } from "@/logger"
+import { lgg } from "@core/utils/logging/Logger"
 import * as cheerio from "cheerio"
 
 // normalize unicode dash variations to regular hyphen

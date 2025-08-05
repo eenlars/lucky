@@ -1,11 +1,11 @@
-import type { ToolExecutionContext } from "@/core/tools/toolFactory"
+import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { vi } from "vitest"
 import { z } from "zod"
 import { tool as expectedOutputHandler } from "../tool"
 
 // Mock the sendAIRequest function
 const mockSendAIRequest = vi.fn()
-vi.mock("@/core/messages/api/sendAIRequest", () => ({
+vi.mock("@core/messages/api/sendAIRequest", () => ({
   sendAIRequest: mockSendAIRequest,
 }))
 

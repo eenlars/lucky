@@ -1,4 +1,4 @@
-import type { ToolExecutionContext } from "@/core/tools/toolFactory"
+import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import contextGet from "../tool-context-get"

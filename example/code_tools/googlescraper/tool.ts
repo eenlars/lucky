@@ -1,13 +1,13 @@
-import { DenBoschAlbertHeijn } from "@/runtime/code_tools/googlescraper/cache/bosch"
-import { DenBoschAlbertHeijnNoDomain } from "@/runtime/code_tools/googlescraper/cache/bosch-no-domain"
+import { DenBoschAlbertHeijn } from "@/code_tools/googlescraper/cache/bosch"
+import { DenBoschAlbertHeijnNoDomain } from "@/code_tools/googlescraper/cache/bosch-no-domain"
 import {
   transformLocationData,
   type StandardizedLocation,
-} from "@/runtime/code_tools/googlescraper/convert"
-import { searchGoogleMaps } from "@/runtime/code_tools/googlescraper/main/main"
-import { normalizeHostname } from "@/runtime/code_tools/googlescraper/utils/hostname"
-import Tools, { type CodeToolResult } from "@tools/code/output.types"
-import { commonSchemas, defineTool } from "@tools/toolFactory"
+} from "@/code_tools/googlescraper/convert"
+import { searchGoogleMaps } from "@/code_tools/googlescraper/main/main"
+import { normalizeHostname } from "@/code_tools/googlescraper/utils/hostname"
+import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
+import { commonSchemas, defineTool } from "@core/tools/toolFactory"
 import { createHash } from "crypto"
 import fs from "fs/promises"
 import path, { dirname } from "path"

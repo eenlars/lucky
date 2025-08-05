@@ -1,6 +1,6 @@
-import { htmlToMarkdown } from "@/runtime/code_tools/url-to-markdown/function"
-import Tools, { type CodeToolResult } from "@tools/code/output.types"
-import { defineTool } from "@tools/toolFactory"
+import { htmlToMarkdown } from "@/code_tools/url-to-markdown/function"
+import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
+import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
 
 const toolName = "urlToMarkdown"

@@ -1,21 +1,21 @@
-import { isNir } from "@/core/utils/common/isNir"
 import type {
   GoogleMapsResult,
   InputAuto,
   InputMultiple,
-} from "@/runtime/code_tools/googlescraper/main/main"
-import { scrapeDetailPage } from "@/runtime/code_tools/googlescraper/main/page-detail/extractDetailPage"
-import { searchMultipleBusinesses } from "@/runtime/code_tools/googlescraper/main/page-multiple/extractorMultiple"
-import type { GoogleMapsBusiness } from "@/runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+} from "@/code_tools/googlescraper/main/main"
+import { scrapeDetailPage } from "@/code_tools/googlescraper/main/page-detail/extractDetailPage"
+import { searchMultipleBusinesses } from "@/code_tools/googlescraper/main/page-multiple/extractorMultiple"
+import type { GoogleMapsBusiness } from "@/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import {
   autoScroll,
   cleanupBrowser,
   sanitizeJSON,
-} from "@/runtime/code_tools/googlescraper/main/util"
-import { normalizeHostname } from "@/runtime/code_tools/googlescraper/utils/hostname"
-import type { ProxyResponse } from "@/runtime/code_tools/googlescraper/utils/proxies"
-import type { CodeToolResult } from "@tools/code/output.types"
-import Tools from "@tools/code/output.types"
+} from "@/code_tools/googlescraper/main/util"
+import { normalizeHostname } from "@/code_tools/googlescraper/utils/hostname"
+import type { ProxyResponse } from "@/code_tools/googlescraper/utils/proxies"
+import { isNir } from "@core/utils/common/isNir"
+import type { CodeToolResult } from "@core/tools/code/output.types"
+import Tools from "@core/tools/code/output.types"
 import type { Browser, Page } from "puppeteer"
 
 const toolName = "searchGoogleMaps" as const

@@ -1,4 +1,4 @@
-import { lgg } from "@/logger"
+import { lgg } from "@core/utils/logging/Logger"
 import { getMultipleWebshareProxiesFull } from "../../utils/proxies"
 import { DataManager, type LocationMapLink } from "../data_manager"
 import { BatchProcessor } from "./batch_processor"

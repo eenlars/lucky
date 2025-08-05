@@ -1,4 +1,4 @@
-import { parseHours } from "@/runtime/code_tools/googlescraper/utils/extractHours"
+import { parseHours } from "@/code_tools/googlescraper/utils/extractHours"
 import { readFileSync } from "fs"
 import { join } from "path"
 import { beforeAll, describe, expect, it } from "vitest"

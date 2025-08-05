@@ -1,4 +1,4 @@
-import type { GoogleMapsBusiness } from "@/runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import type { GoogleMapsBusiness } from "../main/types/GoogleMapsBusiness"
 
 function normalizeAddress(address: string): string {
   return address

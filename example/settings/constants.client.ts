@@ -3,16 +3,15 @@
  * This file contains only the constants that don't require Node.js modules.
  */
 
-import { EVOLUTION_CONFIG } from "@/runtime/settings/evolution"
 import type {
   FlowCoordinationType,
   FlowRuntimeConfig,
-} from "@together/core/src/interfaces/runtimeConfig"
-import { LoggingTypes } from "./logging"
-import { MODELS, MODEL_CONFIG } from "./models"
+} from "@core/utils/config/runtimeConfig.types"
+import { EVOLUTION_CONFIG } from "@settings/evolution"
+import { MODEL_CONFIG, MODELS } from "./models"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
 
-// Re-export for convenience
+// Re-export MODELS for compatibility
 export { MODELS }
 
 export const CONFIG = {
@@ -20,12 +19,17 @@ export const CONFIG = {
   newNodeProbability: 0.7,
 
   logging: {
-    /** "none" | "error" | "info" | "debug" */
-    level: "info" as const,
-    /** Component overrides (undefined → inherit global level) */
-    override: {
-      ...LoggingTypes.custom,
-    },
+    Setup: false,
+    Tools: false,
+    Memory: false,
+    InvocationPipeline: false,
+    Messaging: false,
+    ValidationBeforeHandoff: false,
+    Improvement: true,
+    Summary: false,
+    Database: false,
+    GP: false,
+    API: false,
   },
 
   workflow: {

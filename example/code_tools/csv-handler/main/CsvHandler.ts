@@ -1,5 +1,5 @@
-import type { WorkflowFile } from "@/core/tools/context/contextStore.types"
-import type { ContextStore } from "@/core/utils/persistence/memory/ContextStore"
+import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
 import Papa from "papaparse"
 import path from "path"
 import type {
