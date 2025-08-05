@@ -10,7 +10,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "bun x tsup && tsc --emitDeclarationOnly --outDir dist",
+        "build": "bun x tsup src/index.ts --format esm --dts",
         "dev": "bun x tsup --watch",
         "clean": "rimraf dist",
         "prebuild": "rimraf dist && rm -f tsconfig.tsbuildinfo",
