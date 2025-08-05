@@ -129,8 +129,8 @@ async function transformModels(roundDecimals = 6) {
 
 const { sortedPricingSummary, transformed } = await transformModels()
 
-const scriptDir = new URL('.', import.meta.url).pathname
-const dataDir = scriptDir + 'pricing-data/'
+const scriptDir = new URL(".", import.meta.url).pathname
+const dataDir = scriptDir + "pricing-data/"
 
 // ensure directory exists
 if (!fs.existsSync(dataDir)) {

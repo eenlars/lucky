@@ -164,17 +164,21 @@ export function WorkflowEvolutionVisualization({
 
   // Memoize expensive chart data calculations
   const chartData = useMemo(() => {
-    return prepareChartData(invocationsByGeneration, graph?.targetNode?.invocationId || "")
+    return prepareChartData(
+      invocationsByGeneration,
+      graph?.targetNode?.invocationId || ""
+    )
   }, [invocationsByGeneration, graph?.targetNode?.invocationId])
 
   const { successCount, failureCount, successRate } = useMemo(() => {
-    if (!invocationsByGeneration) return { successCount: 0, failureCount: 0, successRate: 0 }
-    
+    if (!invocationsByGeneration)
+      return { successCount: 0, failureCount: 0, successRate: 0 }
+
     let success = 0
     let failure = 0
-    
-    invocationsByGeneration.forEach(gen => {
-      gen.invocations.forEach(inv => {
+
+    invocationsByGeneration.forEach((gen) => {
+      gen.invocations.forEach((inv) => {
         if (inv.accuracy !== undefined && inv.accuracy > 0) {
           success++
         } else {
@@ -182,12 +186,12 @@ export function WorkflowEvolutionVisualization({
         }
       })
     })
-    
+
     const total = success + failure
     return {
       successCount: success,
       failureCount: failure,
-      successRate: total > 0 ? Math.round((success / total) * 100) : 0
+      successRate: total > 0 ? Math.round((success / total) * 100) : 0,
     }
   }, [invocationsByGeneration])
 
@@ -461,7 +465,6 @@ export function WorkflowEvolutionVisualization({
           </ResponsiveContainer>
         )}
       </div>
-
 
       {/* Success vs Failure Distribution */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
