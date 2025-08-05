@@ -1,6 +1,6 @@
+import { resolve } from "path"
 import { defineConfig, loadEnv } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
-import { resolve } from "path"
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "")
@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     ...env,
     NODE_ENV: mode as "development" | "production",
   }
-  
+
   return {
     plugins: [tsconfigPaths()],
     build: {
@@ -17,20 +17,68 @@ export default defineConfig(({ mode }) => {
         entry: resolve(__dirname, "code_tools/index.ts"),
         name: "Runtime",
         fileName: "index",
-        formats: ["es", "cjs"]
+        formats: ["es", "cjs"],
       },
       rollupOptions: {
         external: (id) => {
-          // External all node built-ins
-          return /^node:/.test(id) || 
-                 ["fs", "path", "url", "os", "crypto", "util", "events", "stream", "buffer", "vm", "fs/promises"].includes(id) ||
-                 // External all dependencies (not devDependencies)
-                 !id.startsWith(".") && !id.startsWith("/") && !id.includes(__dirname);
-        }
+          // External node built-ins
+          if (
+            /^node:/.test(id) ||
+            [
+              "fs",
+              "path",
+              "url",
+              "os",
+              "crypto",
+              "util",
+              "events",
+              "stream",
+              "buffer",
+              "vm",
+              "fs/promises",
+              "http",
+              "https",
+              "net",
+              "tls",
+              "dns",
+              "assert",
+              "zlib",
+              "module",
+              "child_process",
+              "process",
+              "worker_threads",
+              "querystring",
+              "readline",
+              "dgram",
+              "cluster",
+              "console",
+              "constants",
+              "domain",
+              "inspector",
+              "punycode",
+              "repl",
+              "string_decoder",
+              "sys",
+              "timers",
+              "tty",
+              "v8",
+            ].includes(id)
+          ) {
+            return true
+          }
+
+          // Allow internal module imports (@core, @shared only - NOT @runtime since that's this module)
+          if (id.startsWith("@core/") || id.startsWith("@shared/")) {
+            return true
+          }
+
+          // Bundle everything else (npm packages)
+          return false
+        },
       },
       outDir: "dist",
       sourcemap: true,
-      target: "node18"
-    }
+      target: "node18",
+    },
   }
 })

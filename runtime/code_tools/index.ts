@@ -1,5 +1,6 @@
 import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
 import type { FlexibleToolDefinition } from "@core/tools/code/CodeToolRegistry"
+import { ALL_TOOLS } from "./registry"
 
 /**
  * Code Tools Implementation Directory
@@ -28,3 +29,6 @@ export async function discoverTools(): Promise<FlexibleToolDefinition[]> {
 
 // re-export the auto-discovery instance for advanced usage
 export { codeToolAutoDiscovery }
+
+// Export statically registered tools to ensure bundling
+export { ALL_TOOLS }
