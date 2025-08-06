@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { generateText } from "ai"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
@@ -221,7 +221,7 @@ describe("browser functionality tests", () => {
     // Process steps using processStepsV2
     const processedSteps = processStepsV2(
       stateResult.steps || [],
-      MODELS.default
+      getDefaultModels().default
     )
 
     const stateResults = processedSteps?.outputs.filter(

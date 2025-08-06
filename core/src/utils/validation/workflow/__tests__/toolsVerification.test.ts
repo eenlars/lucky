@@ -1,5 +1,5 @@
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
 import { describe, expect, it } from "vitest"
 import { verifyModelNameExists, verifyNoDuplicateHandoffs } from "../index"
 import { verifyToolsUnique } from "../toolsVerification"
@@ -11,7 +11,7 @@ const wrongExample: WorkflowConfig = {
       description:
         "Planning Node – Generates a comprehensive task list based on the request, ensuring data completeness and providing actionable next steps.",
       systemPrompt: "",
-      modelName: MODELS.medium,
+      modelName: getDefaultModels().medium,
       mcpTools: [],
       codeTools: [],
       handOffs: [
@@ -26,7 +26,7 @@ const wrongExample: WorkflowConfig = {
       description:
         "Google Maps Node – Efficiently locates businesses in the area with improved accuracy, utilizing optimized search parameters.",
       systemPrompt: "",
-      modelName: MODELS.nano,
+      modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
@@ -44,7 +44,7 @@ const wrongExample: WorkflowConfig = {
       description:
         "File Saver Node – Saves detailed results, including store counts and unique addresses, to a specified output file path.",
       systemPrompt: "",
-      modelName: MODELS.nano,
+      modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: ["saveFileLegacy"],
       handOffs: ["end"],
@@ -54,7 +54,7 @@ const wrongExample: WorkflowConfig = {
       description:
         "Enhanced Store Extractor Node – Employs advanced algorithms to search for and extract all relevant store locations, verifying results against multiple sources for accuracy.",
       systemPrompt: "",
-      modelName: MODELS.nano,
+      modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: ["verifyLocation"],
       handOffs: ["file-saver-1"],
@@ -71,7 +71,7 @@ const wrongExample: WorkflowConfig = {
       description:
         "Store Data Automation Node – Automatically retrieves and verifies store addresses from a dedicated API, ensuring comprehensive coverage and reducing manual effort.",
       systemPrompt: "",
-      modelName: MODELS.nano,
+      modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
@@ -122,7 +122,7 @@ const duplicateHandoffsExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: MODELS.medium,
+      modelName: getDefaultModels().medium,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end", "end"],

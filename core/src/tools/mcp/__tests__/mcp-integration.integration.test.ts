@@ -1,5 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
@@ -24,7 +25,7 @@ describe("MCP Integration Tests", () => {
             "Search for recent news about artificial intelligence breakthroughs in 2024. Use tavily search.",
         },
       ],
-      model: "openai/gpt-4.1-nano",
+      model: getDefaultModels().nano,
       opts: {
         tools,
         maxSteps: 5,

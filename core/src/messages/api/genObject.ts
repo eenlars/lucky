@@ -7,8 +7,9 @@ import { zodToJson } from "@core/messages/utils/zodToJson"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 
@@ -131,7 +132,7 @@ export const quickSummary = async (input: string): Promise<string> => {
           content: `Give a small and concise summary about this data: ${JSON.stringify(input)}`,
         },
       ],
-      model: MODELS.summary,
+      model: getDefaultModels().summary,
     })
     if (!isNir(data?.text)) return data.text
     return ""
@@ -155,7 +156,7 @@ export const quickSummaryNull = async (
           content: `Give a small and concise summary about this data: ${JSON.stringify(input)}`,
         },
       ],
-      model: MODELS.summary,
+      model: getDefaultModels().summary,
       retries,
     })
     if (!isNir(data?.text)) return data.text

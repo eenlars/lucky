@@ -1,5 +1,6 @@
 import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { CONFIG } from "@runtime/settings/constants"
 import { tool } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -52,7 +53,7 @@ describe("Parameter Schema Visibility Fix", () => {
       [],
       3,
       "Test system message",
-      MODELS.default
+      getDefaultModels().default
     )
 
     // Verify sendAI was called
@@ -78,7 +79,7 @@ describe("Parameter Schema Visibility Fix", () => {
       [],
       3,
       "Test system message",
-      MODELS.default
+      getDefaultModels().default
     )
 
     const firstCall = (sendAI as any).mock.calls[0][0]

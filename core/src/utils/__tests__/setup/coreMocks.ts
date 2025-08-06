@@ -11,6 +11,7 @@ import type {
   FlowRuntimeConfig,
   FullFlowRuntimeConfig,
 } from "@core/types"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
@@ -22,7 +23,6 @@ import type {
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import type { CONFIG } from "@runtime/settings/constants"
-import { MODELS } from "@runtime/settings/constants.client"
 import { vi } from "vitest"
 
 // CLI and system-level mocks
@@ -342,7 +342,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -352,7 +352,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],

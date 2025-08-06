@@ -9,10 +9,10 @@ import path from "path"
 import { fileURLToPath } from "url"
 
 // Import client-safe constants
-import { CONFIG as CLIENT_CONFIG, MODELS } from "./constants.client"
+import { CONFIG as CLIENT_CONFIG, MODELS, getDefaultModels } from "./constants.client"
 
-// Re-export MODELS for server use
-export { MODELS }
+// Re-export MODELS for server usage
+export { MODELS, getDefaultModels }
 
 /* ---------- PATHS ---------- */
 const __filename = fileURLToPath(import.meta.url)

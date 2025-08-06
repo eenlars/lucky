@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { generateText } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
@@ -27,7 +27,7 @@ describe("browser session persistence tests", () => {
     )
 
     const navResult = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -52,7 +52,7 @@ describe("browser session persistence tests", () => {
     )
 
     const stateResult = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -146,7 +146,7 @@ describe("browser session persistence tests", () => {
     // Make multiple tool calls in a single generateText call to use the same session
     lgg.log("Making multiple tool calls in single session...")
     const result = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -164,7 +164,10 @@ describe("browser session persistence tests", () => {
     lgg.log("Tool results:", JSON.stringify(result.toolResults, null, 2))
 
     // Process steps using processStepsV2
-    const processedSteps = processStepsV2(result.steps || [], MODELS.default)
+    const processedSteps = processStepsV2(
+      result.steps || [],
+      getDefaultModels().default
+    )
 
     // Check if we got content extraction
     const extractResults = processedSteps?.outputs.filter(
@@ -209,7 +212,7 @@ describe("advanced browser tests", () => {
     // Navigate to nos.nl
     lgg.log("Step 1: Navigating to nos.nl...")
     await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -227,7 +230,7 @@ describe("advanced browser tests", () => {
     // Extract the main headline
     lgg.log("Step 2: Extracting latest headline...")
     const headlineResult = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -274,7 +277,7 @@ describe("advanced browser tests", () => {
     // Navigate to a simple page first
     lgg.log("Step 1: Navigate to simple page...")
     await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -292,7 +295,7 @@ describe("advanced browser tests", () => {
 
     lgg.log("Step 2: Test browser_extract_content on simple page...")
     const extractResult = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -312,7 +315,7 @@ describe("advanced browser tests", () => {
     // Also test with explicit parameters
     lgg.log("Step 3: Test with different query...")
     const extractResult2 = await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -347,7 +350,7 @@ async function cleanupBrowser(tools: any) {
   lgg.log("closing browser...")
   try {
     await generateText({
-      model: openai(MODELS.default),
+      model: openai(getDefaultModels().default),
       messages: [
         {
           role: "user",

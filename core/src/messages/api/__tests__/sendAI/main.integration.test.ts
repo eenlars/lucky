@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -19,7 +19,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
             "What is 25 + 17? Provide the answer as a number and a brief explanation.",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: mathSchema,
     })
@@ -60,7 +60,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
             "Generate a fictional adult user profile with name, age (18-100), email, and 1-3 interests. Include metadata with generated=true and a confidence score.",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: userSchema,
       output: "object",
@@ -101,7 +101,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
             "Create a product entry for a coffee mug. Include name, price, and whether it's in stock. Description is optional.",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: productSchema,
       output: "object",
@@ -138,7 +138,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
             "Create a task for reviewing code with high priority, todo status, and no assignee yet.",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: taskSchema,
       output: "object",

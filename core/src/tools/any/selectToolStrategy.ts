@@ -1,7 +1,8 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { isNir } from "@core/utils/common/isNir"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { CONFIG } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import type {
   CoreMessage,
@@ -116,7 +117,7 @@ IMPORTANT: When multiple tools are mentioned as requirements, we can only enforc
 
   try {
     const response = await sendAI({
-      model: MODELS.nano,
+      model: getDefaultModels().nano,
       messages: analysisPrompt,
       mode: "structured",
       schema: ToolStrategySchema,
@@ -203,7 +204,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
       return undefined
     }
 
-    const model: ModelName = MODELS.nano
+    const model: ModelName = getDefaultModels().nano
 
     // Analyze previous steps to understand context
     const previousStepsContext = processStepsV2(steps, model) ?? { outputs: [] }

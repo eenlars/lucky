@@ -1,5 +1,5 @@
 import { Messages } from "@core/messages"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 
 describe("sendAI reasoning integration", () => {
@@ -11,7 +11,7 @@ describe("sendAI reasoning integration", () => {
           content: "What is 2 + 2? Think step by step.",
         },
       ],
-      model: MODELS.reasoning,
+      model: getDefaultModels().reasoning,
       mode: "text",
       opts: {
         reasoning: true,

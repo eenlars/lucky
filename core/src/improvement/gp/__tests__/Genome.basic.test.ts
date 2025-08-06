@@ -4,7 +4,7 @@ import {
   setupCoreTest,
   setupGPTestMocks,
 } from "@core/utils/__tests__/setup/coreMocks"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
@@ -229,7 +229,7 @@ vi.mock("@core/improvement/GP/resources/debug/dummyGenome", () => ({
             nodeId: "dummy-node",
             description: "dummy",
             systemPrompt: "dummy",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -288,7 +288,7 @@ describe("Genome Basic Tests", () => {
         nodeId: "test-node",
         description: "test description",
         systemPrompt: "test system prompt",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: [],

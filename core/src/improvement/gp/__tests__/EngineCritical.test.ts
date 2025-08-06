@@ -7,10 +7,10 @@ import {
 } from "@core/utils/__tests__/setup/coreMocks"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { MODELS } from "@runtime/settings/constants.client"
 import { vi } from "vitest"
 import { EvolutionEngine } from "../evolutionengine"
 import { Genome } from "../Genome"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 
 // Create mock supabase client
 const mockSupabaseClient = {
@@ -99,7 +99,7 @@ describe("Engine Critical", () => {
         nodes: [
           {
             nodeId: "node1",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
             systemPrompt: "Mock system prompt",
             description: "Mock description",
             mcpTools: [],

@@ -1,11 +1,12 @@
 import { Messages } from "@core/messages"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { type CodeToolName } from "@core/tools/tool.types"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 
 export interface UnifiedImprovementParams {
   config: WorkflowConfig
@@ -44,7 +45,7 @@ export async function improveWorkflowUnified(
       fitness,
       feedback
     ),
-    model: MODELS.reasoning,
+    model: getDefaultModels().reasoning,
     mode: "structured",
     schema: WorkflowConfigSchema,
     output: "object",

@@ -1,5 +1,5 @@
 import type { TResponse } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { makeLearning } from "../../prompts/makeLearning"
 
@@ -39,7 +39,7 @@ describe("makeLearning Integration Test", () => {
 
     // Verify the schema was called correctly
     expect(sendAI).toHaveBeenCalledWith({
-      model: MODELS.nano,
+      model: getDefaultModels().nano,
       messages: expect.any(Array),
       mode: "structured",
       schema: expect.any(Object),

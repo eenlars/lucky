@@ -6,10 +6,13 @@
 import type { FlowCoordinationType, FlowRuntimeConfig } from "@core/types"
 import { LoggingTypes } from "@runtime/settings/logging"
 import { EVOLUTION_CONFIG } from "./evolution"
-import { MODEL_CONFIG } from "./models"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
+import { MODEL_CONFIG } from "@runtime/settings/models"
 
-export { MODELS } from "./models"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+
+export const MODELS = getDefaultModels()
+export { getDefaultModels }
 
 export const CONFIG = {
   coordinationType: "sequential" as FlowCoordinationType,

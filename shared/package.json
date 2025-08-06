@@ -27,7 +27,8 @@
     },
     "dependencies": {
         "json5": "^2.2.3",
-        "papaparse": "^5.5.3"
+        "papaparse": "^5.5.3",
+        "vitest": "^3.2.4"
     },
     "devDependencies": {
         "@supabase/supabase-js": "^2.49.4",

@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { SWEBenchLoader } from "./SWEBenchLoader"
 
 // run in the terminal with:
@@ -118,7 +118,7 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
         },
         { role: "user", content: validationPrompt },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
       opts: {
         reasoning: true,
@@ -273,7 +273,7 @@ Focus on providing a practical, working solution that addresses the failing test
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
       opts: {
         reasoning: true,

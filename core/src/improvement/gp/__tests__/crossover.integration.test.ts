@@ -10,7 +10,7 @@ import parentSetup2 from "@core/improvement/gp/__tests__/setup/setupfile-parent-
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { sendAI } from "@core/messages/api/sendAI"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 
 describe("Crossover Integration Test", () => {
   test("crossover between real parent genomes produces valid offspring evaluated by LLM", async () => {
@@ -81,7 +81,7 @@ Answer PASS or FAIL with brief reason.`
 
     const evaluationResponse = await sendAI({
       messages: [{ role: "user", content: evaluationPrompt }],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
     })
 

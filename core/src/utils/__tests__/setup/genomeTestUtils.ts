@@ -3,7 +3,7 @@ import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 
 export const createMockWorkflowGenome = (
   generationNumber = 0,
@@ -14,7 +14,7 @@ export const createMockWorkflowGenome = (
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -24,7 +24,7 @@ export const createMockWorkflowGenome = (
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -48,7 +48,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -58,7 +58,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: MODELS.default,
+      modelName: getDefaultModels().default,
       mcpTools: [],
       codeTools: [],
       handOffs: [],

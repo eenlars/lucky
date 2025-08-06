@@ -1,12 +1,15 @@
 import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
+import type { ModelNameV2, AllowedModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
-import { pricing } from "@runtime/settings/models"
+
+// Use the active-only model type for consistency
+export type ModelName = AllowedModelName
 
 export interface WorkflowNodeConfig {
   nodeId: string
   description: string
   systemPrompt: string
-  modelName: ModelName
+  modelName: AllowedModelName
   mcpTools: MCPToolName[]
   codeTools: CodeToolName[]
   handOffs: string[]
@@ -26,8 +29,6 @@ export type WorkflowConfig = {
   memory?: Record<string, string> | null
   toolsInformation?: ToolsInformation
 }
-
-export type ModelName = keyof typeof pricing
 
 export const isWorkflowConfig = (config: unknown): config is WorkflowConfig => {
   if (typeof config !== "object" || config === null) return false

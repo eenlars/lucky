@@ -4,7 +4,7 @@ import { sendAI } from "@core/messages/api/sendAI"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { AgentDescriptionsWithToolsSchema } from "@core/node/schemas/agentWithTools"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 
 // this generates a workflow node from a text prompt
 export async function generateAgentFromText(
@@ -28,7 +28,7 @@ export async function generateAgentFromText(
 
   const response = await sendAI({
     messages,
-    model: MODELS.default,
+    model: getDefaultModels().default,
     mode: "structured",
     schema: AgentDescriptionsWithToolsSchema,
   })

@@ -1,4 +1,4 @@
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 
 describe("Todo Tools Integration Test", () => {
@@ -62,7 +62,7 @@ describe("Todo Tools Integration Test", () => {
     )
 
     const verification = await sendAI({
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
       messages: [
         {

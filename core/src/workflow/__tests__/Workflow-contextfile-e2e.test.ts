@@ -4,9 +4,9 @@ import {
   createMockEvaluationInput,
   createMockWorkflowFile,
 } from "@core/utils/__tests__/setup/coreMocks"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { Workflow } from "../Workflow"
 
@@ -19,7 +19,7 @@ describe("ContextFile End-to-End Integration", () => {
           nodeId: "test-node",
           description: "Test node that should receive contextFile info",
           systemPrompt: "You are a test agent",
-          modelName: MODELS.default,
+          modelName: getDefaultModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],

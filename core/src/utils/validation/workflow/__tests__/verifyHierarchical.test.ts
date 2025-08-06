@@ -8,7 +8,8 @@ vi.mock("@runtime/constants", () => ({
   },
 }))
 
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { CONFIG } from "@runtime/settings/constants"
 import { verifyHierarchicalStructure } from "../verifyHierarchical"
 
 describe("verifyHierarchicalStructure", () => {
@@ -20,7 +21,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "test-node-1",
         description: "orchestrator",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["data-processor"],
@@ -29,7 +30,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "data-processor",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["bcorp-verifier"],
@@ -38,7 +39,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "bcorp-verifier",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["bcorp-directory-search"],
@@ -47,7 +48,7 @@ describe("verifyHierarchicalStructure", () => {
         nodeId: "bcorp-directory-search",
         description: "worker",
         systemPrompt: "test",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["end"],
@@ -85,7 +86,7 @@ describe("verifyHierarchicalStructure", () => {
           nodeId: "orchestrator",
           description: "orchestrator",
           systemPrompt: "test",
-          modelName: MODELS.default,
+          modelName: getDefaultModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["worker1"],
@@ -94,7 +95,7 @@ describe("verifyHierarchicalStructure", () => {
           nodeId: "worker1",
           description: "worker",
           systemPrompt: "test",
-          modelName: MODELS.default,
+          modelName: getDefaultModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["non-existent-node"],

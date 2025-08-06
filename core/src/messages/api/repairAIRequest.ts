@@ -1,8 +1,9 @@
 import { Messages } from "@core/messages"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { CoreMessage } from "ai"
 import { z } from "zod"
@@ -34,7 +35,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
   ]
   const result = await Messages.sendAI({
     messages,
-    model: MODELS.nano,
+    model: getDefaultModels().nano,
     mode: "text", // avoid circular dependency with structured mode
     retries: 1, // limit retries for repair
   })

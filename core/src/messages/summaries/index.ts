@@ -12,7 +12,8 @@ import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { CONFIG } from "@runtime/settings/constants"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import chalk from "chalk"
 import z from "zod"
@@ -30,7 +31,7 @@ const BYTES_FOR_SUMMARY = 200
 const createAISummary = async (
   prompt: string,
   description: string,
-  model = MODELS.summary,
+  model = getDefaultModels().summary,
   schema?: z.ZodSchema
 ): Promise<{ summary: string; usdCost: number } | null> => {
   try {
@@ -181,7 +182,7 @@ export const createToolSummary = async (
       JSON.stringify(outputs, null, 2)
     ),
     "data analyzer that summarizes tool execution results",
-    MODELS.summary,
+    getDefaultModels().summary,
     z.object({
       summary: z
         .string()

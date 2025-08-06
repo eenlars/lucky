@@ -28,7 +28,7 @@ import {
   type MCPToolName,
 } from "@core/tools/tool.types"
 import type { ModelName } from "@core/workflow/schema/workflow.types"
-import { pricing } from "@runtime/settings/models"
+import { pricingOLD } from "@runtime/settings/models"
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react"
 import React, { useState } from "react"
 
@@ -135,7 +135,7 @@ export function NodeDetailsDialog({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {(Object.keys(pricing) as ModelName[]).map(
+                        {(Object.keys(pricingOLD) as ModelName[]).map(
                           (modelName) => {
                             const displayName = modelName
                               .split("/")[1]

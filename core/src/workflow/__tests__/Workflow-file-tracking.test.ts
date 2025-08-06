@@ -2,9 +2,9 @@ import {
   createMockEvaluationInput,
   createMockWorkflow,
 } from "@core/utils/__tests__/setup/coreMocks"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 
 describe("Workflow File Tracking", () => {
@@ -14,7 +14,7 @@ describe("Workflow File Tracking", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -31,7 +31,7 @@ describe("Workflow File Tracking", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: [],
