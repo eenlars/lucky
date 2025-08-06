@@ -1,13 +1,19 @@
+import type { AllowedModelName } from "@core/utils/spending/models.types"
+import type { LuckyProvider } from "@core/utils/spending/provider"
+
 /* ---------- PRICING TYPES ---------- */
 export type ModelPricing = {
   input: number
   "cached-input": number | null
   output: number
-  info: `IQ:${number}/10;speed:${"fast" | "medium" | "slow"};pricing:${"low" | "medium" | "high"};`
+  info: `IQ:${number}/10;speed:${"fast" | "medium" | "slow"};pricing:${
+    | "low"
+    | "medium"
+    | "high"};`
   context_length: number
 } // per 1M tokens
 
-export const pricing = {
+export const pricingOLD = {
   "openai/gpt-4.1-nano": {
     input: 0.1,
     "cached-input": 0.025,
@@ -58,32 +64,10 @@ export const pricing = {
     context_length: 128000,
   },
 } satisfies Record<string, ModelPricing>
-export type ModelName = keyof typeof pricing
-
-export interface TokenUsage {
-  inputTokens: number
-  outputTokens: number
-  cachedInputTokens?: number
-}
-
-/* ---------- MODELS ---------- */
-export const MODELS = {
-  summary: "google/gemini-2.5-flash-lite",
-  nano: "openai/gpt-4.1-nano",
-  // free: "qwen/qwq-32b:free",
-  low: "openai/gpt-4.1-mini",
-  medium: "openai/gpt-4.1-mini",
-  high: "google/gemini-2.5-pro-preview",
-  /** Default when a task declares no preference */
-  default: "openai/gpt-4.1-mini",
-  fitness: "openai/gpt-4.1-mini",
-  reasoning: "openai/gpt-4.1-mini",
-  fallbackOpenRouter: "switchpoint/router",
-} as const satisfies Record<string, ModelName>
 
 // model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openrouter" as "openai" | "openrouter" | "groq",
+  provider: "openrouter" as const satisfies LuckyProvider,
   inactive: new Set<string>([
     "moonshotai/kimi-k2",
     // "deepseek/deepseek-r1-0528:free", // timeouts
@@ -96,3 +80,8 @@ export const MODEL_CONFIG = {
     // "openai/gpt-4.1-mini",
   ]),
 } as const
+
+export type ModelName = AllowedModelName<typeof MODEL_CONFIG.provider>
+
+// Re-export pricing for backward compatibility  
+export { pricingOLD as pricing }

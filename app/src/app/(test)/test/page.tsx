@@ -1,7 +1,7 @@
 "use client"
 
-import type { TokenUsage } from "@runtime/settings/models"
-import { calculateCost } from "@core/utils/spending/calculatePricing"
+import { calculateCost } from "@core/utils/spending/vercel/calculatePricing"
+import type { TokenUsage } from "@core/utils/spending/models.types"
 import "highlight.js/styles/github.css"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
