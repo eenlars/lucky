@@ -1,7 +1,7 @@
 import { Messages } from "@core/messages"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import z from "zod"
 
 const validationSchema = z.object({
@@ -79,7 +79,7 @@ Recommend "escalate" for fundamental failures (scores <4).
   try {
     const { data, error, usdCost } = await Messages.sendAI({
       messages: [{ role: "user", content: prompt }],
-      model: MODELS.nano,
+      model: getDefaultModels().nano,
       mode: "structured",
       schema: validationSchema,
       output: "object",

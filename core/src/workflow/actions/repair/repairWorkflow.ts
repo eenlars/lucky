@@ -1,5 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { RS } from "@core/utils/types"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { WorkflowRepairPrompts } from "@core/workflow/actions/repair/repairWorkflow.p"
@@ -7,7 +8,6 @@ import type {
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
 
 /**
  * when a workflow contains errors,
@@ -44,7 +44,7 @@ export async function repairWorkflow(
       config,
       verificationSummary
     ),
-    model: MODELS.medium,
+    model: getDefaultModels().medium,
     mode: "structured",
     schema: WorkflowRepairPrompts.expectedOutput,
   })

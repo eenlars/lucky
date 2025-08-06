@@ -3,7 +3,8 @@ import type { Payload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { CONFIG } from "@runtime/settings/constants"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import z from "zod"
 
@@ -28,7 +29,7 @@ export async function callModelHandoff({
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(prompt) },
     ],
-    model: MODELS.nano,
+    model: getDefaultModels().nano,
     mode: "structured",
     schema: createHandoffSchema(handOffs),
   })

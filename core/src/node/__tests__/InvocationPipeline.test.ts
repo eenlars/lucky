@@ -1,5 +1,5 @@
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   InvocationPipeline,
@@ -19,7 +19,7 @@ vi.mock("@core/messages/api/sendAI", () => ({
     },
     usdCost: 0.01,
   }),
-  normalizeModelName: vi.fn().mockReturnValue(MODELS.default),
+  normalizeModelName: vi.fn().mockReturnValue(getDefaultModels().default),
 }))
 
 vi.mock("@core/messages/api/processResponse", () => ({
@@ -179,7 +179,7 @@ describe("InvocationPipeline", () => {
     replyMessage: null,
     workflowVersionId: "v1",
     mainWorkflowGoal: "test workflow goal",
-    model: MODELS.default,
+    model: getDefaultModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",
@@ -195,7 +195,7 @@ describe("InvocationPipeline", () => {
       const pipeline = new InvocationPipeline(
         baseContext,
         toolManager,
-        MODELS.default
+        getDefaultModels().default
       )
 
       await pipeline.prepare()
@@ -230,7 +230,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -271,7 +271,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -324,7 +324,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -364,7 +364,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -398,7 +398,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -430,7 +430,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -453,7 +453,7 @@ describe("InvocationPipeline", () => {
       const pipeline = new InvocationPipeline(
         baseContext,
         toolManager,
-        MODELS.default
+        getDefaultModels().default
       )
 
       const result = await pipeline.process()
@@ -484,7 +484,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           contextWithMemory,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         await pipeline.prepare()
@@ -525,7 +525,7 @@ describe("InvocationPipeline", () => {
         const pipeline = new InvocationPipeline(
           baseContext,
           toolManager,
-          MODELS.default
+          getDefaultModels().default
         )
 
         // complete full pipeline

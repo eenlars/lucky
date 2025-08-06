@@ -9,11 +9,11 @@ import {
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type {
-  ModelName,
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import type { ModelNameV2 } from "@core/utils/spending/models.types"
 
 export const WorkflowNodeConfigSchema = z.object({
   nodeId: z.string(),
@@ -84,12 +84,12 @@ export const handleWorkflowCompletion = (
       const oldNode = oldWorkflow?.nodes?.find(
         (n) => n.nodeId === partialNode.nodeId
       )
-      const modelName: ModelName =
+      const modelName: ModelNameV2 =
         partialNode.modelName === "medium"
-          ? MODELS.medium
+          ? getDefaultModels().medium
           : partialNode.modelName === "high"
-            ? MODELS.high
-            : MODELS.default
+            ? getDefaultModels().high
+            : getDefaultModels().default
 
       const fullNode = { ...partialNode, modelName }
       return oldNode ? { ...oldNode, ...fullNode } : fullNode

@@ -1,10 +1,10 @@
-import { MODELS } from "@runtime/settings/constants.client"
-import type { ModelName } from "@runtime/settings/models"
+import type { ModelNameV2 } from "@core/utils/spending/models.types"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../stepProcessor"
 
 describe("processStepsV2", () => {
-  const testModel: ModelName = MODELS.default
+  const testModel: ModelNameV2 = getDefaultModels().default
 
   describe("invalid inputs", () => {
     it("should return empty result for non-array input", () => {

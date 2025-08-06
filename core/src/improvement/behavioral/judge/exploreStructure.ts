@@ -3,7 +3,7 @@ import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import z from "zod"
 
 export interface StructureExplorationResult {
@@ -63,7 +63,7 @@ Evaluate if implementing this structural pattern would improve the workflow:
 Return your analysis with a clear recommendation.`
 
   const response = await sendAI({
-    model: MODELS.reasoning,
+    model: getDefaultModels().reasoning,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },

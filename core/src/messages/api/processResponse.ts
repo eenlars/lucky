@@ -8,12 +8,11 @@ import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
 import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import {
-  calculateUsageCost,
-  type VercelUsage,
-} from "@core/utils/spending/calculatePricing"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { type VercelUsage } from "@core/utils/spending/vercel/calculatePricing"
+import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
 import { R, type RS } from "@core/utils/types"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { GenerateTextResult, ToolSet } from "ai"
@@ -101,7 +100,7 @@ export const generateSummary = async (content: string): Promise<RS<string>> => {
           )}, maximum 150 characters.`,
         },
       ],
-      model: MODELS.summary,
+      model: getDefaultModels().summary,
       mode: "text",
     })
     return R.success(result.data?.text ?? "", result.usdCost ?? 0)

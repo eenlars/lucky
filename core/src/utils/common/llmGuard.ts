@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { z } from "zod"
 
 export interface GuardResult {
@@ -31,7 +31,7 @@ export const llmGuard = async (
       },
       { role: "user", content: input },
     ],
-    model: MODELS.summary,
+    model: getDefaultModels().summary,
     mode: "structured",
     schema: GuardResponseSchema,
   })

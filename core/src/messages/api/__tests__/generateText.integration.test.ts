@@ -1,6 +1,6 @@
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { generateText, tool } from "ai"
 import { describe, expect, it } from "vitest"
@@ -59,7 +59,7 @@ describe("generateText with sequential tools", () => {
     })
 
     // convert to v2
-    const resultV2 = processStepsV2(result.steps, MODELS.default)
+    const resultV2 = processStepsV2(result.steps, getDefaultModels().default)
 
     console.log(JSONN.show(resultV2))
 
@@ -118,7 +118,7 @@ Now, let me execute the tools as requested.`,
     })
 
     // convert to v2
-    const resultV2 = processStepsV2(result.steps, MODELS.default)
+    const resultV2 = processStepsV2(result.steps, getDefaultModels().default)
 
     console.log(JSONN.show(resultV2))
 

@@ -1,6 +1,7 @@
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS, PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@runtime/settings/constants"
 import * as fs from "fs/promises"
 import * as path from "path"
 import {
@@ -24,7 +25,7 @@ describe("resultPersistence", () => {
         codeTools: [],
         mcpTools: [],
         description: "Test node",
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
       },
     ],
   }
@@ -248,7 +249,7 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Starter node",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
           },
           {
             nodeId: "processor",
@@ -257,7 +258,7 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Processor node",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
           },
         ],
       }

@@ -15,7 +15,7 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { CoreMessage } from "ai"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
 
@@ -173,7 +173,7 @@ export async function runMultiStepLoopV2Helper(
       error,
       usdCost,
     } = await sendAI({
-      model: MODELS.medium,
+      model: getDefaultModels().medium,
       mode: "tool",
       messages: [
         ...currentMessages,
@@ -215,7 +215,7 @@ export async function runMultiStepLoopV2Helper(
 
     const processed = await processVercelResponse({
       response: toolUseResponse,
-      model: MODELS.medium,
+      model: getDefaultModels().medium,
       nodeId: ctx.nodeId,
     })
 

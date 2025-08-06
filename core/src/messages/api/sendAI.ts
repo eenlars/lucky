@@ -18,11 +18,6 @@
  * Nothing else needs to import `openai`, `groq`, or any model string.
  */
 
-import { openai } from "@ai-sdk/openai"
-import {
-  openrouter,
-  type OpenRouterSharedSettings,
-} from "@openrouter/ai-sdk-provider"
 import {
   APICallError,
   CoreMessage,
@@ -38,17 +33,17 @@ import { z, ZodTypeAny, type Schema } from "zod"
 import pTimeout, { TimeoutError } from "p-timeout"
 
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
-import { groqProvider } from "@core/utils/clients/groq/groqClient"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
-import { calculateUsageCost } from "@core/utils/spending/calculatePricing"
-import {
-  getPricingLevel,
-  openaiModelsByLevel,
-} from "@core/utils/spending/pricing"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
+import { CONFIG } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
+import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
+import { groqProvider } from "@core/utils/clients/groq/groqClient"
+import { openai } from "@ai-sdk/openai"
+import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 
 /* -------------------------------------------------------------------------- */
 /*                               Public types                                 */
@@ -169,12 +164,6 @@ function spendingGuard(): string | null {
 const modelTimeouts = new Map<ModelName, number[]>()
 const TIMEOUT_WINDOW_MS = 30_000 // 30 s rolling window
 
-function trackModelTimeout(model: ModelName): void {
-  const now = Date.now()
-  if (!modelTimeouts.has(model)) modelTimeouts.set(model, [])
-  modelTimeouts.get(model)!.push(now)
-  cleanupOldTimeouts(model)
-}
 function getModelTimeoutCount(model: ModelName): number {
   const now = Date.now()
   return (modelTimeouts.get(model) || []).filter(
@@ -183,79 +172,29 @@ function getModelTimeoutCount(model: ModelName): number {
 }
 function shouldUseModelFallback(model: ModelName): boolean {
   return (
-    getModelTimeoutCount(model) >= 10 && model !== MODELS.fallbackOpenRouter
+    getModelTimeoutCount(model) >= 10 && model !== getDefaultModels().fallback
   )
 }
 function getFallbackModel(model: ModelName): ModelName {
-  switch (CONFIG.models.provider) {
-    case "openai":
-      return "openai/gpt-4.1-nano" as any
-    case "groq":
-      return "moonshotai/kimi-k2-instruct" as any
-    case "openrouter":
-      return MODELS.fallbackOpenRouter
-    default:
-      throw new Error(`Unknown provider: ${CONFIG.models.provider}`)
-  }
-}
-function cleanupOldTimeouts(model?: ModelName): void {
-  const now = Date.now()
-  const entries = model ? [[model, modelTimeouts.get(model)]] : modelTimeouts
-  for (const [m, arr] of entries as any) {
-    if (!arr) continue
-    const fresh = arr.filter((t: number) => now - t <= TIMEOUT_WINDOW_MS)
-    if (fresh.length) {
-      modelTimeouts.set(m, fresh)
-    } else {
-      modelTimeouts.delete(m)
-    }
-  }
+  return getDefaultModels().fallback
 }
 
-/* ----------------------------- Model helpers ------------------------------ */
+/* -------------------------------------------------------------------------- */
+/*                          Model Name to LanguageModel                       */
+/* -------------------------------------------------------------------------- */
 
-export function normalizeModelName(model: ModelName): ModelName {
-  if (CONFIG.models.provider === "openai") {
-    const level = getPricingLevel(model)
-    return level ? openaiModelsByLevel[level] : openaiModelsByLevel.low
+function getLanguageModel(modelName: ModelName): LanguageModelV1 {
+  // Determine provider from model name or use CURRENT_PROVIDER
+  if (CURRENT_PROVIDER === "openrouter") {
+    return openrouter(modelName)
+  } else if (CURRENT_PROVIDER === "groq") {
+    return groqProvider(modelName)
+  } else if (CURRENT_PROVIDER === "openai") {
+    return openai(modelName)
   }
-  if (CONFIG.models.provider === "groq") {
-    return "moonshotai/kimi-k2-instruct" as any
-  }
-  return model
-}
-
-function toOpenaiModelName(model: ModelName): string {
-  if (CONFIG.models.provider !== "openai") {
-    throw new Error(`Only for openai models!: ${model}`)
-  }
-  return model.split("/").slice(1).join("/")
-}
-
-function providerOpts(
-  model: ModelName,
-  wantReasoning?: boolean
-): OpenRouterSharedSettings | undefined {
-  const base: OpenRouterSharedSettings = { usage: { include: true } }
-  if (!wantReasoning) return base
-
-  if (model.includes("openai")) {
-    return { ...base, reasoning: { effort: "high" } }
-  }
-  if (model.includes("anthropic") && CONFIG.models.provider === "openrouter") {
-    return { ...base, reasoning: { max_tokens: 2_000 } }
-  }
-  return base
-}
-
-function getProvider(model: ModelName, reasoning?: boolean): LanguageModelV1 {
-  if (model.includes("openai") && CONFIG.models.provider === "openai") {
-    return openai(toOpenaiModelName(model), providerOpts(model, reasoning))
-  }
-  if (CONFIG.models.provider === "groq") {
-    return groqProvider("kimi-k2-instruct") as any
-  }
-  return openrouter(model, providerOpts(model, reasoning))
+  
+  // Fallback to openrouter if provider not recognized
+  return openrouter(modelName)
 }
 
 /* -------------------------------------------------------------------------- */
@@ -267,20 +206,20 @@ async function execText(
 ): Promise<TResponse<{ text: string; reasoning?: string }>> {
   const {
     messages,
-    model: wanted = MODELS.default,
+    model: wanted = getDefaultModels().default,
     retries = 2,
     opts = {},
   } = req
 
-  const model = shouldUseModelFallback(wanted)
+  const modelName = shouldUseModelFallback(wanted)
     ? getFallbackModel(wanted)
     : wanted
+  
+  const model = getLanguageModel(modelName)
 
   try {
-    const provider = getProvider(model, opts.reasoning)
-
     const baseOptions: Parameters<typeof generateText>[0] = {
-      model: provider,
+      model,
       messages,
       maxRetries: retries,
       maxSteps: opts.maxSteps ?? CONFIG.tools.maxStepsVercel,
@@ -289,13 +228,13 @@ async function execText(
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
       baseOptions,
       {
-        modelName: model,
+        modelName: modelName,
         overallTimeoutMs: 30_000,
         stallTimeoutMs: 100_000,
       }
     )
 
-    const usd = calculateUsageCost(gen.usage, model)
+    const usd = calculateUsageCost(gen.usage, modelName)
     if (opts.saveOutputs) await saveResultOutput(gen)
     spending.addCost(usd)
 
@@ -339,17 +278,17 @@ async function execTool(
   req: ToolRequest
 ): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
-  const requestedModel = modelIn ?? MODELS.default
+  const requestedModel = modelIn ?? getDefaultModels().default
 
   try {
-    const model = shouldUseModelFallback(requestedModel)
+    const modelName = shouldUseModelFallback(requestedModel)
       ? getFallbackModel(requestedModel)
       : requestedModel
-
-    const provider = getProvider(model, opts.reasoning)
+    
+    const model = getLanguageModel(modelName)
 
     const baseOptions: Parameters<typeof generateText>[0] = {
-      model: provider,
+      model,
       messages,
       maxRetries: retries,
       tools: opts.tools,
@@ -359,13 +298,13 @@ async function execTool(
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
       baseOptions,
       {
-        modelName: model,
+        modelName: modelName,
         overallTimeoutMs: 300_000,
         stallTimeoutMs: 200_000,
       }
     )
 
-    const usd = calculateUsageCost(gen.usage, model)
+    const usd = calculateUsageCost(gen.usage, modelName)
     if (opts.saveOutputs) await saveResultOutput(gen)
     spending.addCost(usd)
 
@@ -408,7 +347,7 @@ async function execStructured<S extends ZodTypeAny>(
 ): Promise<TResponse<z.infer<S>>> {
   const { messages, model: modelIn, retries = 2, schema, opts = {} } = req
 
-  const requestedModel = modelIn ?? MODELS.default
+  const requestedModel = modelIn ?? getDefaultModels().default
   const model = shouldUseModelFallback(requestedModel)
     ? getFallbackModel(requestedModel)
     : requestedModel
@@ -523,7 +462,7 @@ async function _sendAIInternal(
   }
 
   /* ---- normalize model ---- */
-  req.model = normalizeModelName(req.model ?? MODELS.default)
+  req.model = req.model ?? getDefaultModels().default
 
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {
@@ -551,7 +490,7 @@ async function _sendAIInternal(
  *
  * 1. TextRequest - For simple text generation:
  *    - messages: Array of chat messages with role and content
- *    - model: AI model to use (defaults to MODELS.default)
+ *    - model: AI model to use (defaults to getDefaultModels().default)
  *    - mode: "text"
  *    - opts: Optional settings like temperature, reasoning, etc.
  *
@@ -615,4 +554,10 @@ export const sendAI: SendAI = async (
       debug_output: error,
     }
   }
+}
+
+// Normalize model names for database storage
+export const normalizeModelName = (modelName: ModelName): string => {
+  // Ensure consistent string format and trim any whitespace
+  return String(modelName).trim()
 }

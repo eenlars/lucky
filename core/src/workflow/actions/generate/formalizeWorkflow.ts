@@ -3,6 +3,7 @@ import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { llmify } from "@core/utils/common/llmify"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
@@ -15,7 +16,6 @@ import {
   handleWorkflowCompletion,
   WorkflowConfigSchemaEasy,
 } from "@core/workflow/schema/workflowSchema"
-import { MODELS } from "@runtime/settings/constants"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
@@ -26,9 +26,9 @@ export async function formalizeWorkflow(
     return {
       ...node,
       modelName:
-        node.modelName === MODELS.medium
+        node.modelName === getDefaultModels().medium
           ? "medium"
-          : node.modelName === MODELS.high
+          : node.modelName === getDefaultModels().high
             ? "high"
             : "low",
     }
@@ -79,7 +79,7 @@ Create 1 workflow configuration for: ${prompt}
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: MODELS.medium,
+    model: getDefaultModels().medium,
     mode: "structured",
     schema: withDescriptions(WorkflowConfigSchemaEasy.shape, {
       nodes: "The nodes in the workflow",

@@ -1,5 +1,5 @@
 import type { ProcessedResponse } from "@core/messages/api/processResponse.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../InvocationPipeline"
 import { handleSuccess } from "../responseHandler"
@@ -71,7 +71,7 @@ describe("responseHandler - Parallel Handoff Logic", () => {
     replyMessage: null,
     workflowVersionId: "test-version-id",
     mainWorkflowGoal: "test goal",
-    model: MODELS.default,
+    model: getDefaultModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",

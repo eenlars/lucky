@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeNode } from "../invokeNode"
 
 describe("invokeNode", () => {
@@ -12,7 +12,7 @@ describe("invokeNode", () => {
       description: "A test node for unit testing",
       systemPrompt:
         "You are a helpful assistant. Just respond with the input you received.",
-      modelName: MODELS.nano,
+      modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"], // Single node invocation should end here

@@ -3,8 +3,8 @@ import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { ALL_ACTIVE_TOOL_NAMES } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
-import { MODELS } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import { z } from "zod"
 
@@ -98,7 +98,7 @@ export async function generateWorkflowIdea(
       },
       { role: "user", content: request.prompt },
     ],
-    model: request.model ?? MODELS.reasoning,
+    model: request.model ?? getDefaultModels().reasoning,
     mode: "structured",
     schema: z.object({
       workflow: z.string().describe(`The workflow idea in adjacency list format

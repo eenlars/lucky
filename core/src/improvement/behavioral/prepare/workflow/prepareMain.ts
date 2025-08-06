@@ -1,5 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type {
   EvaluationInput,
@@ -7,7 +8,7 @@ import type {
 } from "@core/workflow/ingestion/ingestion.types"
 import type { InvocationInput } from "@core/workflow/runner/invokeWorkflow"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { z } from "zod"
 
@@ -141,7 +142,7 @@ Guidelines:
   const { data, success, error, usdCost } = await sendAI({
     mode: "structured",
     schema: ProblemAnalysisSchema,
-    model: MODELS.high,
+    model: getDefaultModels().high,
     messages: [
       {
         role: "system",

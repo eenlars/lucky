@@ -1,4 +1,4 @@
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { describe, expect, it } from "vitest"
 
 describe("InvocationPipeline Real Integration", () => {
@@ -92,7 +92,7 @@ describe("InvocationPipeline Real Integration", () => {
     await saveNodeVersionToDB({
       config: {
         nodeId,
-        modelName: MODELS.default,
+        modelName: getDefaultModels().default,
         systemPrompt:
           "use todo write first, and then return the output of todo read",
         mcpTools: [],
@@ -144,7 +144,7 @@ describe("InvocationPipeline Real Integration", () => {
       replyMessage: null,
       workflowVersionId,
       mainWorkflowGoal: "Test real InvocationPipeline with todo workflow",
-      model: MODELS.default,
+      model: getDefaultModels().default,
       workflowFiles: [],
       expectedOutputType: undefined,
       workflowId: "real-pipeline-workflow",
@@ -162,7 +162,7 @@ describe("InvocationPipeline Real Integration", () => {
     const pipeline = new InvocationPipeline(
       context,
       toolManager,
-      MODELS.default
+      getDefaultModels().default
     )
 
     // Execute the REAL pipeline - this will make actual LLM calls
@@ -202,7 +202,7 @@ describe("InvocationPipeline Real Integration", () => {
 
     // Verify the response contains todo information (should be output of todoRead)
     const verification = await sendAI({
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
       messages: [
         {
@@ -281,7 +281,7 @@ describe("InvocationPipeline Real Integration", () => {
         replyMessage: null,
         workflowVersionId,
         mainWorkflowGoal: "Test real multi-step InvocationPipeline",
-        model: MODELS.default,
+        model: getDefaultModels().default,
         workflowFiles: [],
         expectedOutputType: undefined,
         workflowId: "real-multi-pipeline-workflow",
@@ -297,7 +297,7 @@ describe("InvocationPipeline Real Integration", () => {
       const pipeline = new InvocationPipeline(
         context,
         toolManager,
-        MODELS.default
+        getDefaultModels().default
       )
 
       await pipeline.prepare()
@@ -353,7 +353,7 @@ describe("InvocationPipeline Real Integration", () => {
 
   // Test with all available models from pricing.types.ts (except kimi)
   const testModels = [
-    MODELS.default,
+    getDefaultModels().default,
     "openai/gpt-4.1-mini",
     "openai/gpt-4.1",
     "google/gemini-2.5-flash-lite",

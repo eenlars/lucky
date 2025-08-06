@@ -10,7 +10,7 @@ import {
 } from "@core/utils/__tests__/setup/coreMocks"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock external dependencies
@@ -64,7 +64,7 @@ describe("Engine Critical", () => {
         nodes: [
           {
             nodeId: "node1",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
             systemPrompt: "Mock system prompt",
             description: "Mock description",
             mcpTools: [],

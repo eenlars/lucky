@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -42,7 +42,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
 
     // Test Case 1: Valid parameter (should work)
     const validCall = await sendAI({
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "tool",
       messages: [
         {
@@ -64,7 +64,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
     // We'll directly test the validation by trying to create a tool call with invalid args
     try {
       await sendAI({
-        model: MODELS.default,
+        model: getDefaultModels().default,
         mode: "tool",
         messages: [
           {

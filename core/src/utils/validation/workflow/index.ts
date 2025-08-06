@@ -1,4 +1,5 @@
 import { isNir } from "@core/utils/common/isNir"
+import { getModelV2 } from "@core/utils/spending/functions"
 import {
   everyNodeIsConnectedToStartNode,
   startNodeIsConnectedToEndNode,
@@ -20,7 +21,6 @@ import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/ver
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
-import { pricing } from "@runtime/settings/models"
 
 // verify that each node has a modelname that exists
 export const verifyModelNameExists = async (
@@ -30,7 +30,7 @@ export const verifyModelNameExists = async (
   for (const node of config.nodes) {
     if (!node.modelName) {
       errors.push(`Node '${node.nodeId}' is missing a modelName`)
-    } else if (!pricing[node.modelName]) {
+    } else if (!getModelV2(node.modelName)) {
       errors.push(
         `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
       )

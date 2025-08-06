@@ -1,4 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 
 import {
   extractPromptFromPayload,
@@ -29,7 +30,7 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
-import { CONFIG, MODELS, PATHS } from "@runtime/settings/constants"
+import { CONFIG, PATHS } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
@@ -103,7 +104,7 @@ export class InvocationPipeline {
     const toolsAvailable = Object.keys(this.tools)
 
     const { data: prepareThinking } = await sendAI({
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "text",
       messages: [
         {
@@ -291,7 +292,7 @@ export class InvocationPipeline {
     }
 
     const res = await sendAI({
-      model: MODELS.nano,
+      model: getDefaultModels().nano,
       messages: this.sdkMessages,
       mode: "tool",
       opts: {

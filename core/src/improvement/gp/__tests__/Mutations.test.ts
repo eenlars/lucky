@@ -88,7 +88,7 @@ import type { RS } from "@core/utils/types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import type { WorkflowGenome } from "../resources/gp.types"
 
 describe("Mutations", () => {
@@ -103,7 +103,7 @@ describe("Mutations", () => {
           nodeId: `node-${id}`,
           description: `description ${id}`,
           systemPrompt: `prompt ${id}`,
-          modelName: MODELS.default,
+          modelName: getDefaultModels().default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -153,7 +153,7 @@ describe("Mutations", () => {
             nodeId: "mutated-node",
             description: "mutated prompt",
             systemPrompt: "mutated prompt",
-            modelName: MODELS.default,
+            modelName: getDefaultModels().default,
             mcpTools: [],
             codeTools: [],
             handOffs: [],

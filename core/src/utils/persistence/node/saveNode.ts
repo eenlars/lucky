@@ -1,4 +1,3 @@
-import { normalizeModelName } from "@core/messages/api/sendAI"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { isNir } from "@core/utils/common/isNir"
@@ -40,7 +39,7 @@ export const saveNodeVersionToDB = async ({
     node_id: config.nodeId,
     wf_version_id: workflowVersionId,
     version: nextVersion,
-    llm_model: normalizeModelName(config.modelName),
+    llm_model: config.modelName,
     system_prompt: config.systemPrompt,
     tools: [...config.mcpTools, ...config.codeTools],
     extras: {},

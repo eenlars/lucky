@@ -11,8 +11,9 @@ import {
   type MCPToolName,
 } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 import z from "zod"
 import type { Genome } from "../../Genome"
 import type { MutationOperator } from "./mutation.types"
@@ -52,7 +53,7 @@ export class ToolMutation implements MutationOperator {
 
       // instructions = sendAi () : text ->
       const instructions = await sendAI({
-        model: MODELS.nano,
+        model: getDefaultModels().nano,
         messages: [
           {
             role: "user",

@@ -107,7 +107,7 @@ Efficient validation with minimal overhead:
 // Uses nano model for cost efficiency (~$0.001 per validation)
 const validationResponse = await sendAIRequest({
   messages: validationMessages,
-  model: MODELS.nano, // Gemini 2.5 Flash
+  model: getDefaultModels().nano, // Gemini 2.5 Flash
   temperature: 0.1, // Consistent scoring
   maxTokens: 1000, // Structured response
   validateResponse: true, // Ensure proper JSON
@@ -314,7 +314,7 @@ export const repairWorkflow = async (
 
     const response = await sendAIRequest({
       messages: [{ role: "user", content: repairPrompt }],
-      model: MODELS.medium, // Use more capable model for repair
+      model: getDefaultModels().medium, // Use more capable model for repair
       temperature: 0.1, // Consistent repairs
       maxTokens: 4000, // Allow comprehensive response
     })

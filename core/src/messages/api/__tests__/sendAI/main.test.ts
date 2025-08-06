@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { generateText } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"
@@ -107,7 +107,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate a person object with name, age, and email",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: testSchema,
     })
@@ -164,7 +164,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate a person",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: testSchema,
     })
@@ -199,7 +199,7 @@ describe("sendAIRequest with expectedOutput", () => {
           content: "Generate something",
         },
       ],
-      model: MODELS.default,
+      model: getDefaultModels().default,
       mode: "structured",
       schema: testSchema,
     })

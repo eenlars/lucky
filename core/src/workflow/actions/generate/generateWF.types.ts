@@ -1,7 +1,5 @@
-import type {
-  ModelName,
-  WorkflowConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { ModelName } from "@runtime/settings/models"
 
 export interface GenerationOptions {
   /**

@@ -3,12 +3,12 @@ import { rcaPrompt } from "@core/prompts/rca"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import {
   feedbackPrompt,
   type FitnessFunctionInput,
 } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import { MODELS } from "@runtime/settings/constants"
 
 export async function calculateFeedback({
   nodeOutputs,
@@ -50,7 +50,7 @@ You may include the original question in the feedback, but you have to note that
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    model: MODELS.fitness,
+    model: getDefaultModels().fitness,
     mode: "text",
     opts: {
       reasoning: true,

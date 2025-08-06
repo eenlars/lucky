@@ -1,4 +1,4 @@
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { processModelResponse } from "../processResponse"
 import toolResponseMultipleSteps from "./resources/toolResponseMultipleSteps.json" assert { type: "json" }
@@ -13,7 +13,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processModelResponse({
       response,
-      modelUsed: MODELS.nano,
+      modelUsed: getDefaultModels().nano,
       nodeId: "test",
     })
 
@@ -45,7 +45,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processModelResponse({
       response,
-      modelUsed: MODELS.nano,
+      modelUsed: getDefaultModels().nano,
       nodeId: "test",
     })
 

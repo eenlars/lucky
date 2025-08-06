@@ -5,7 +5,7 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { TOOLS } from "@runtime/settings/tools"
 
 // function to get a random element from an array
@@ -53,9 +53,10 @@ export const createDummyGenome = (
   const secondNodeId = "process-node"
   const thirdNodeId = "end-node"
 
-  const randomModel1 = getRandomElement(Object.values(MODELS))
-  const randomModel2 = getRandomElement(Object.values(MODELS))
-  const randomModel3 = getRandomElement(Object.values(MODELS))
+  const defaultModels = getDefaultModels()
+  const randomModel1 = getRandomElement(Object.values(defaultModels))
+  const randomModel2 = getRandomElement(Object.values(defaultModels))
+  const randomModel3 = getRandomElement(Object.values(defaultModels))
 
   const activeMcpTools = Object.keys(getActiveTools(TOOLS.mcp)) as MCPToolName[]
   const activeCodeTools = Object.keys(

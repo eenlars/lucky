@@ -3,7 +3,7 @@ import { sendAI } from "@core/messages/api/sendAI"
 import { MemoryResponseSchema } from "@core/node/schemas/memorySchema"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { MODELS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { isNir } from "../utils/common/isNir"
 
 export const makeLearning = async ({
@@ -82,7 +82,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
 
   try {
     const memoryResponse = await sendAI({
-      model: MODELS.nano,
+      model: getDefaultModels().nano,
       messages: [{ role: "user", content: memoryPrompt }],
       mode: "structured",
       schema: MemoryResponseSchema,

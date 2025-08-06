@@ -7,11 +7,11 @@ import { sendAI } from "@core/messages/api/sendAI"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants"
 import type { Genome } from "../../Genome"
 import type { IntensityLevel, MutationOperator } from "./mutation.types"
 
@@ -45,7 +45,7 @@ export class PromptMutation implements MutationOperator {
       `
 
       const result = await sendAI({
-        model: MODELS.nano,
+        model: getDefaultModels().nano,
         messages: [{ role: "user", content: mutationPrompt }],
         mode: "text",
       })

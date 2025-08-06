@@ -3,6 +3,7 @@ import { zodToJson } from "@core/messages/utils/zodToJson"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import {
   FitnessOfWorkflowSchema,
@@ -13,7 +14,7 @@ import {
   normalizeCost,
   normalizeTime,
 } from "@core/workflow/actions/analyze/calculate-fitness/fitnessNormalize"
-import { CONFIG, MODELS } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants"
 
 export async function calculateFitness({
   nodeOutputs,
@@ -73,7 +74,7 @@ if not good, you need to give examples why it's not good.
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    model: MODELS.fitness,
+    model: getDefaultModels().fitness,
     mode: "structured",
     schema: FitnessOfWorkflowSchema,
     opts: {

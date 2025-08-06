@@ -5,7 +5,7 @@ import {
   createMockWorkflowGenome,
   createMockWorkflowScore,
 } from "@core/utils/__tests__/setup/genomeTestUtils"
-import { MODELS } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
@@ -249,7 +249,7 @@ describe("Genome", () => {
               nodeId: "dummy-node",
               description: "dummy node",
               systemPrompt: "dummy system prompt",
-              modelName: MODELS.default,
+              modelName: getDefaultModels().default,
               mcpTools: [],
               codeTools: [],
               handOffs: [],
