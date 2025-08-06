@@ -73,23 +73,21 @@ describe("generateWorkflowIdea", () => {
   })
 
   it("should handle AI request failure", async () => {
-    // IMPROVEMENT NEEDED: Same mock issue - real AI call instead of mock
-    // Test expects false success but gets true, indicating mock failure
-    const { generateWorkflowIdea } = await import("../generateIdea")
-
     mockSendAIRequest.mockResolvedValue({
       success: false,
       error: "AI request failed",
     })
+
+    const { generateWorkflowIdea } = await import("../generateIdea")
 
     const result = await generateWorkflowIdea({
       prompt: "test prompt",
       randomness: 1,
     })
 
-    expect(result.success).toBe(true) // currently true, should be false after fixing mocks
-    // expect(result.error).toBe("AI request failed")
-    // expect(result.data).toBeUndefined()
+    expect(result.success).toBe(false)
+    expect(result.error).toBe("AI request failed")
+    expect(result.data).toBeUndefined()
   })
 
   it("should call sendAIRequest with correct parameters", async () => {
@@ -226,10 +224,6 @@ describe("generateWorkflowIdea", () => {
   })
 
   it("should handle complex workflow with multiple tools", async () => {
-    // IMPROVEMENT NEEDED: Real AI call expected 3 nodes but got 5, indicating mock failure
-    // Complex workflow generation works but uses real AI instead of mocks
-    const { generateWorkflowIdea } = await import("../generateIdea")
-
     const mockResponse = {
       success: true,
       data: {
@@ -243,13 +237,15 @@ describe("generateWorkflowIdea", () => {
 
     mockSendAIRequest.mockResolvedValue(mockResponse)
 
+    const { generateWorkflowIdea } = await import("../generateIdea")
+
     const result = await generateWorkflowIdea({
       prompt: "find all store locations from CSV data",
       randomness: 1,
     })
 
     expect(result.success).toBe(true)
-    expect(result.data?.amountOfNodes).toBe(5) // currently 5, should be 3 after fixing mocks
+    expect(result.data?.amountOfNodes).toBe(3)
     // expect(result.data?.tools).toHaveLength(4)
     // expect(result.data?.workflow).toContain("search locations")
     // expect(result.data?.workflow).toContain("verify data")

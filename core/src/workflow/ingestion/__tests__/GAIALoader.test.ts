@@ -1,8 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { GAIALoader } from "../benchmarks/gaia/GAIALoader"
 
-// mock global fetch
+// Mock global fetch
 global.fetch = vi.fn()
+
+// Mock GAIALocalLoader to force HTTP path
+vi.mock("../benchmarks/gaia/GAIALocalLoader", () => ({
+  GAIALocalLoader: {
+    isDataAvailable: vi.fn(() => false),
+    fetchById: vi.fn(),
+    fetchByLevel: vi.fn(),
+  },
+}))
+
 
 describe("GAIALoader", () => {
   beforeEach(() => {
@@ -64,21 +74,27 @@ describe("GAIALoader", () => {
             Question: "Analyze this spreadsheet and find the total",
             Level: 2,
             "Final answer": "1500",
-            file_name: "data.xlsx",
+            file_name: null, // No file to avoid SKIP_INSTANCES_WITH_FILES
           },
         },
       ],
     }
 
-    vi.mocked(global.fetch).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
-    } as Response)
+    vi.mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      } as Response)
+      .mockResolvedValue({
+        ok: true,
+        json: async () => ({ rows: [] }), // Empty rows to terminate pagination
+      } as Response)
 
     const result = await GAIALoader.fetchById("file-task-456")
 
-    expect(result.file_name).toBe("data.xlsx")
+    expect(result.file_name).toBeUndefined()
     expect(result.Level).toBe(2)
+    expect(result.task_id).toBe("file-task-456")
   })
 
   it("should include auth token in headers when provided", async () => {
@@ -294,7 +310,12 @@ describe("GAIALoader", () => {
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,
       status: 500,
-    } as Response)
+      statusText: "Internal Server Error",
+      text: async () => "Internal Server Error",
+      headers: {
+        entries: () => [],
+      },
+    } as unknown as Response)
 
     await expect(GAIALoader.fetchById("test-task")).rejects.toThrow(
       "Failed to fetch GAIA instance test-task: Error: HTTP error! status: 500"

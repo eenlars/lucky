@@ -13,116 +13,47 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// mock external dependencies
-const mockWorkflowCreate = vi.fn()
-vi.mock("@core/workflow/Workflow", () => ({
-  Workflow: {
-    create: mockWorkflowCreate,
-  },
-}))
-
-const mockAggregatedEvaluatorEvaluate = vi.fn()
 vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
-    evaluate: mockAggregatedEvaluatorEvaluate,
-  })),
+    evaluate: vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        fitness: { score: 0.8, totalCostUsd: 0.05, totalTimeSeconds: 1.5, accuracy: 0.85, novelty: 0.85 },
+        feedback: "test feedback"
+      },
+      usdCost: 0.05
+    })
+  }))
 }))
 
-const mockCalculateFitness = vi.fn()
-vi.mock(
-  "@core/workflow/actions/analyze/calculate-fitness/calculateFitness",
-  () => ({
-    calculateFitness: mockCalculateFitness,
-  })
-)
-
-const mockSaveGenomeToDatabase = vi.fn()
-vi.mock("@core/improvement/gp/resources/saveGenomeToDatabase", () => ({
-  saveGenomeToDatabase: mockSaveGenomeToDatabase,
+vi.mock("@core/improvement/gp/resources/tracker", () => ({
+  failureTracker: {
+    trackEvaluationAttempt: vi.fn(),
+    trackEvaluationFailure: vi.fn()
+  }
 }))
 
-const mockLggError = vi.fn()
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: {
     log: vi.fn(),
-    error: mockLggError,
-  },
+    error: vi.fn()
+  }
+}))
+
+vi.mock("@core/workflow/Workflow", () => ({
+  Workflow: {
+    create: vi.fn()
+  }
 }))
 
 // Mock runtime constants to avoid dependency issues
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
-describe("Engine Critical", () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    vi.spyOn(codeToolAutoDiscovery, "discoverTools").mockResolvedValue([])
-
-    vi.spyOn(Workflow, "ideaToWorkflow").mockResolvedValue({
-      success: true,
-      data: {
-        entryNodeId: "node1",
-        nodes: [
-          {
-            nodeId: "node1",
-            modelName: getDefaultModels().default,
-            systemPrompt: "Mock system prompt",
-            description: "Mock description",
-            mcpTools: [],
-            codeTools: [],
-            handOffs: [],
-          },
-        ] as WorkflowConfig["nodes"],
-      } as WorkflowConfig,
-      usdCost: 0.01,
-    })
-  })
-})
-
 describe("Evaluator", () => {
   beforeEach(() => {
     setupCoreTest()
     mockRuntimeConstantsForGP()
-
-    // setup default successful workflow execution
-    const mockWorkflow = {
-      run: vi.fn().mockResolvedValue({
-        result: "test workflow output",
-        cost: 0.05,
-        executionTime: 1500,
-      }),
-      getWorkflowVersionId: vi.fn().mockReturnValue("test-version-id"),
-      setWorkflowIO: vi.fn().mockResolvedValue(undefined),
-    }
-    mockWorkflowCreate.mockReturnValue(mockWorkflow)
-
-    // setup default aggregated evaluator behavior
-    mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-      fitness: {
-        score: 0.8,
-        totalCostUsd: 0.05,
-        totalTimeSeconds: 1.5,
-        accuracy: 0.85,
-        novelty: 0.85,
-      },
-      transcript: "test transcript",
-      cost: 0.05,
-      summaries: [],
-    })
-
-    // setup default fitness calculation
-    mockCalculateFitness.mockReturnValue({
-      score: 0.8,
-      accuracy: 0.85,
-      novelty: 0.85,
-      cost: 0.05,
-      time: 1.5,
-      valid: true,
-    })
-
-    mockSaveGenomeToDatabase.mockResolvedValue({
-      workflowVersionId: "test-version-id",
-      workflowInvocationId: "test-invocation-id",
-    })
+    vi.clearAllMocks()
   })
 
   describe("GPEvaluatorAdapter", () => {
@@ -144,50 +75,12 @@ describe("Evaluator", () => {
         generationNumber: 1,
       })
 
-      expect(result).toEqual({
-        valid: true,
-        score: 0.8,
-        totalCostUsd: 0.05,
-        totalTimeSeconds: expect.any(Number),
-        accuracy: 0,
-        novelty: 0,
-        noveltyScore: 0,
-        workflowVersionId: mockGenome.getWorkflowVersionId(),
-        evaluatedAt: expect.any(String),
-      })
+      expect(result.success).toBe(true)
+      expect(result.data?.fitness?.score).toBe(0.8)
+      expect(result.usdCost).toBe(0.05)
     })
 
-    it("should create workflow with genome config", async () => {
-      const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
-      )
-
-      const evaluator = new GPEvaluatorAdapter(
-        [createMockWorkflowIO()],
-        "test goal",
-        "test analysis"
-      )
-      const mockGenome = await createMockGenome()
-      const expectedConfig = createMockWorkflowConfig()
-
-      // mock genome to return specific config
-      mockGenome.getWorkflowConfig.mockReturnValue(expectedConfig)
-
-      await evaluator.evaluate(mockGenome, {
-        runId: "test-run-id",
-        generationId: "test-generation-id",
-        generationNumber: 1,
-      })
-
-      expect(mockWorkflowCreate).toHaveBeenCalledWith({
-        config: expectedConfig,
-        evaluationInput: mockGenome.getEvaluationInput(),
-        parentVersionId: undefined,
-        _evolutionContext: undefined,
-      })
-    })
-
-    it("should run workflow and collect metrics", async () => {
+    it("should set precomputed workflow data on genome", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
@@ -205,20 +98,51 @@ describe("Evaluator", () => {
         generationNumber: 1,
       })
 
-      expect(mockAggregatedEvaluatorEvaluate).toHaveBeenCalledWith(
-        expect.any(Object), // the workflow instance
-        [createMockWorkflowIO()]
-      )
+      expect(mockGenome.setPrecomputedWorkflowData).toHaveBeenCalledWith({
+        workflowIO: [createMockWorkflowIO()],
+        newGoal: "test goal",
+        problemAnalysis: "test analysis",
+      })
     })
 
-    it("should handle workflow creation failure", async () => {
+    it("should call aggregated evaluator with genome", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockWorkflowCreate.mockImplementation(() => {
-        throw new Error("workflow creation failed")
+      const evaluator = new GPEvaluatorAdapter(
+        [createMockWorkflowIO()],
+        "test goal",
+        "test analysis"
+      )
+      const mockGenome = await createMockGenome()
+
+      await evaluator.evaluate(mockGenome, {
+        runId: "test-run-id",
+        generationId: "test-generation-id",
+        generationNumber: 1,
       })
+
+      const mockEvaluatorInstance = vi.mocked(AggregatedEvaluator).mock.results[0].value
+      expect(mockEvaluatorInstance.evaluate).toHaveBeenCalledWith(mockGenome)
+    })
+
+    it("should handle aggregated evaluator returning failure", async () => {
+      const { GPEvaluatorAdapter } = await import(
+        "@core/improvement/evaluators/GPEvaluatorAdapter"
+      )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
+
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: false,
+        error: "evaluation failed",
+        usdCost: 0.02
+      })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -234,21 +158,22 @@ describe("Evaluator", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe("workflow creation failed")
-      expect(mockLggError).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(Error)
-      )
+      expect(result.error).toBe("Aggregated evaluation failed: evaluation failed")
+      expect(result.usdCost).toBe(0.02)
     })
 
-    it("should handle workflow execution failure", async () => {
+    it("should handle aggregated evaluator throwing exception", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
+      const { lgg } = await import("@core/utils/logging/Logger")
 
-      mockAggregatedEvaluatorEvaluate.mockRejectedValue(
-        new Error("workflow execution failed")
-      )
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockRejectedValue(new Error("evaluation threw error"))
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -264,18 +189,29 @@ describe("Evaluator", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe("workflow execution failed")
-      expect(mockLggError).toHaveBeenCalled()
+      expect(result.error).toBe("Evaluation failed")
+      expect(result.usdCost).toBe(0.001)
+      expect(vi.mocked(lgg.error)).toHaveBeenCalled()
     })
 
-    it("should handle fitness calculation failure", async () => {
+    it("should handle missing fitness data", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockRejectedValue(
-        new Error("fitness calculation failed")
-      )
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          // missing fitness property
+          feedback: "test feedback"
+        },
+        usdCost: 0.05
+      })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -291,26 +227,33 @@ describe("Evaluator", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe("fitness calculation failed")
+      expect(result.error).toBe("Evaluation failed")
     })
 
     it("should handle invalid fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: NaN,
-          totalCostUsd: 0.05,
-          totalTimeSeconds: 1.5,
-          accuracy: -1,
-          novelty: -1,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: NaN,
+            totalCostUsd: 0.05,
+            totalTimeSeconds: 1.5,
+            accuracy: -1,
+            novelty: -1,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0.05,
-        summaries: [],
+        usdCost: 0.05
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -328,26 +271,33 @@ describe("Evaluator", () => {
       // GPEvaluatorAdapter doesn't validate NaN scores, it just returns them
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.score).toBeNaN()
-      expect(result.data?.fitness?.accuracy).toBe(0)
+      expect(result.data?.fitness?.accuracy).toBe(-1)
     })
 
     it("should track costs correctly", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: 0.9,
-          totalCostUsd: 0.15,
-          totalTimeSeconds: 2.0,
-          accuracy: 0.95,
-          novelty: 0.95,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: 0.9,
+            totalCostUsd: 0.15,
+            totalTimeSeconds: 2.0,
+            accuracy: 0.95,
+            novelty: 0.95,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0.15,
-        summaries: [],
+        usdCost: 0.15
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -363,7 +313,7 @@ describe("Evaluator", () => {
       })
 
       expect(result.data?.fitness?.totalCostUsd).toBe(0.15)
-      expect(result.data?.fitness?.totalTimeSeconds).toBeLessThan(1) // actual evaluation time, not the mocked value
+      expect(result.usdCost).toBe(0.15)
     })
   })
 
@@ -395,19 +345,26 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: 0.7,
-          totalCostUsd: 0,
-          totalTimeSeconds: 0.5,
-          accuracy: 0.75,
-          novelty: 0.75,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: 0.7,
+            totalCostUsd: 0,
+            totalTimeSeconds: 0.5,
+            accuracy: 0.75,
+            novelty: 0.75,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0,
-        summaries: [],
+        usdCost: 0
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -424,25 +381,33 @@ describe("Evaluator", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.totalCostUsd).toBe(0)
+      expect(result.usdCost).toBe(0)
     })
 
     it("should handle high fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: 0.99,
-          totalCostUsd: 0.02,
-          totalTimeSeconds: 0.8,
-          accuracy: 0.98,
-          novelty: 0.98,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: 0.99,
+            totalCostUsd: 0.02,
+            totalTimeSeconds: 0.8,
+            accuracy: 0.98,
+            novelty: 0.98,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0.02,
-        summaries: [],
+        usdCost: 0.02
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -459,26 +424,33 @@ describe("Evaluator", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.score).toBe(0.99)
-      expect(result.data?.fitness?.accuracy).toBe(0) // GPEvaluatorAdapter returns 0 for accuracy
+      expect(result.data?.fitness?.accuracy).toBe(0.98)
     })
 
     it("should handle long execution times", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: 0.6,
-          totalCostUsd: 0.1,
-          totalTimeSeconds: 30.0,
-          accuracy: 0.65,
-          novelty: 0.65,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: 0.6,
+            totalCostUsd: 0.1,
+            totalTimeSeconds: 30.0,
+            accuracy: 0.65,
+            novelty: 0.65,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0.1,
-        summaries: [],
+        usdCost: 0.1
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -494,7 +466,7 @@ describe("Evaluator", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data?.fitness?.totalTimeSeconds).toBeLessThan(1) // actual evaluation time, not the mocked value
+      expect(result.data?.fitness?.totalTimeSeconds).toBe(30.0) // returns the actual fitness data from aggregated evaluator
     })
   })
 
@@ -503,10 +475,13 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockWorkflowCreate.mockImplementation(() => {
-        throw new Error("failure")
-      })
+      // Override mock to throw an error
+      const mockEvaluate = vi.fn().mockRejectedValue(new Error("catastrophic failure"))
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -523,9 +498,9 @@ describe("Evaluator", () => {
 
       expect(result).toEqual({
         success: false,
-        error: "catastrophic failure",
+        error: "Evaluation failed",
         data: undefined,
-        usdCost: 0,
+        usdCost: 0.001,
       })
     })
 
@@ -533,10 +508,13 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockWorkflowCreate.mockImplementation(() => {
-        throw new Error("catastrophic failure")
-      })
+      // Override mock to throw an error
+      const mockEvaluate = vi.fn().mockRejectedValue(new Error("catastrophic failure"))
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -558,9 +536,15 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
+      const { lgg } = await import("@core/utils/logging/Logger")
 
       const specificError = new Error("specific evaluation error")
-      mockAggregatedEvaluatorEvaluate.mockRejectedValue(specificError)
+      // Override mock to throw specific error
+      const mockEvaluate = vi.fn().mockRejectedValue(specificError)
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -575,7 +559,7 @@ describe("Evaluator", () => {
         generationNumber: 1,
       })
 
-      expect(mockLggError).toHaveBeenCalledWith(
+      expect(vi.mocked(lgg.error)).toHaveBeenCalledWith(
         expect.any(String),
         specificError
       )
@@ -587,19 +571,26 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
-      mockAggregatedEvaluatorEvaluate.mockResolvedValue({
-        fitness: {
-          score: 0.85,
-          totalCostUsd: 0.03,
-          totalTimeSeconds: 1.2,
-          accuracy: 0.9,
-          novelty: 0.9,
+      // Override mock for this test only
+      const mockEvaluate = vi.fn().mockResolvedValue({
+        success: true,
+        data: {
+          fitness: {
+            score: 0.85,
+            totalCostUsd: 0.03,
+            totalTimeSeconds: 1.2,
+            accuracy: 0.9,
+            novelty: 0.9,
+          },
+          feedback: "test feedback"
         },
-        transcript: "test transcript",
-        cost: 0.03,
-        summaries: [],
+        usdCost: 0.03
       })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -616,8 +607,8 @@ describe("Evaluator", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.score).toBe(0.85)
-      expect(result.data?.fitness?.accuracy).toBe(0) // GPEvaluatorAdapter returns 0 for accuracy
-      // additional criteria might be included in future versions
+      expect(result.data?.fitness?.accuracy).toBe(0.9)
+      expect(result.data?.fitness?.novelty).toBe(0.9)
     })
   })
 
@@ -660,6 +651,7 @@ describe("Evaluator", () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/improvement/evaluators/GPEvaluatorAdapter"
       )
+      const { AggregatedEvaluator } = await import("@core/improvement/evaluators/AggregatedEvaluator")
 
       const evaluator = new GPEvaluatorAdapter(
         [createMockWorkflowIO()],
@@ -669,32 +661,39 @@ describe("Evaluator", () => {
       const genome1 = await createMockGenome()
       const genome2 = await createMockGenome()
 
-      // set up different results for each evaluation
-      mockAggregatedEvaluatorEvaluate
+      // Override mock to return different results for each evaluation
+      const mockEvaluate = vi.fn()
         .mockResolvedValueOnce({
-          fitness: {
-            score: 0.6,
-            totalCostUsd: 0.1,
-            totalTimeSeconds: 2.0,
-            accuracy: 0.6,
-            novelty: 0.6,
+          success: true,
+          data: {
+            fitness: {
+              score: 0.6,
+              totalCostUsd: 0.1,
+              totalTimeSeconds: 2.0,
+              accuracy: 0.6,
+              novelty: 0.6,
+            },
+            feedback: "test feedback 1"
           },
-          transcript: "test transcript 1",
-          cost: 0.1,
-          summaries: [],
+          usdCost: 0.1
         })
         .mockResolvedValueOnce({
-          fitness: {
-            score: 0.9,
-            totalCostUsd: 0.02,
-            totalTimeSeconds: 0.8,
-            accuracy: 0.95,
-            novelty: 0.95,
+          success: true,
+          data: {
+            fitness: {
+              score: 0.9,
+              totalCostUsd: 0.02,
+              totalTimeSeconds: 0.8,
+              accuracy: 0.95,
+              novelty: 0.95,
+            },
+            feedback: "test feedback 2"
           },
-          transcript: "test transcript 2",
-          cost: 0.02,
-          summaries: [],
+          usdCost: 0.02
         })
+      vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
+        evaluate: mockEvaluate
+      }) as any)
 
       const result1 = await evaluator.evaluate(genome1, {
         runId: "test-run-id",

@@ -5,6 +5,7 @@ import {
   toolUsageToString,
   type StrategyResult,
 } from "@core/node/strategies/utils"
+import { isVercelAIStructure, isZodSchema } from "@core/tools/utils/schemaDetection"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
@@ -16,21 +17,6 @@ const verbose = CONFIG.logging.override.Tools
 const verboseOverride = false
 
 // TODO-later: if we want to invoke other nodes from this node, this can be part of the strategy.
-
-/**
- * checks if parameters has vercel ai structure with jsonSchema property
- */
-function isVercelAIStructure(params: any): params is { jsonSchema: any } {
-  return params?.jsonSchema !== undefined
-}
-
-/**
- * checks if parameters is a zod schema
- */
-function isZodSchema(params: any): boolean {
-  if (isNir(params)) return false
-  return params && typeof params === "object" && "typeName" in params
-}
 
 /**
  * V2: Decides next action: terminate or select one tool with reasoning.
@@ -65,7 +51,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
         if (isVercelAIStructure(params)) {
           argsString = JSON.stringify(params.jsonSchema)
         } else if (isZodSchema(params)) {
-          argsString = JSON.stringify(zodToJson(params))
+          argsString = zodToJson(params)
         } else {
           argsString = JSON.stringify(params)
         }
