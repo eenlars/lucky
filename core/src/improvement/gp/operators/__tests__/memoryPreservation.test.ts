@@ -3,11 +3,14 @@
  */
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it } from "vitest"
 import { createDummyGenome } from "../../resources/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"
 
 describe("MemoryPreservation", () => {
+  const validModel = getDefaultModels().medium
+
   const createTestGenome = (
     nodeMemories: Record<string, Record<string, string>>
   ) => {
@@ -25,7 +28,7 @@ describe("MemoryPreservation", () => {
         nodeId,
         description: `Description for ${nodeId}`,
         systemPrompt: `System prompt for ${nodeId}`,
-        modelName: "gpt-4" as any,
+        modelName: validModel,
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -51,7 +54,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Updated node",
             systemPrompt: "Updated prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -60,7 +63,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node2",
             description: "Another node",
             systemPrompt: "Another prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -90,7 +93,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Original node",
             systemPrompt: "Original prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -99,7 +102,7 @@ describe("MemoryPreservation", () => {
             nodeId: "newNode",
             description: "New node",
             systemPrompt: "New node prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -134,7 +137,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Crossover node",
             systemPrompt: "Crossover prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -143,7 +146,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node2",
             description: "Another node",
             systemPrompt: "Another prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -152,7 +155,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node3",
             description: "Third node",
             systemPrompt: "Third prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -196,7 +199,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Valid node",
             systemPrompt: "Valid prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -206,7 +209,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node2",
             description: "Another valid node",
             systemPrompt: "Another prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -216,7 +219,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node3",
             description: "Third valid node",
             systemPrompt: "Third prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -248,7 +251,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Invalid node",
             systemPrompt: "Invalid prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -258,7 +261,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node2",
             description: "Another invalid node",
             systemPrompt: "Another prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -294,7 +297,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Node without memory",
             systemPrompt: "Prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -324,7 +327,7 @@ describe("MemoryPreservation", () => {
             nodeId: "node1",
             description: "Node with preserved memory",
             systemPrompt: "Prompt",
-            modelName: "gpt-4" as any,
+            modelName: validModel,
             mcpTools: [],
             codeTools: [],
             handOffs: [],

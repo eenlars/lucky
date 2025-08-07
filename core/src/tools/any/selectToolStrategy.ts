@@ -1,9 +1,8 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { isNir } from "@core/utils/common/isNir"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import type {
   CoreMessage,
   LanguageModel,
@@ -204,7 +203,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
       return undefined
     }
 
-    const model: ModelName = getDefaultModels().nano
+    const model = getDefaultModels().nano
 
     // Analyze previous steps to understand context
     const previousStepsContext = processStepsV2(steps, model) ?? { outputs: [] }

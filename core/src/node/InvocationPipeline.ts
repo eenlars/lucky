@@ -1,5 +1,4 @@
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 
 import {
   extractPromptFromPayload,
@@ -28,10 +27,11 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { selectToolStrategy } from "@core/tools/any/selectToolStrategy"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import { runMultiStepLoopV2Helper } from "./strategies/MultiStepLoopV2"

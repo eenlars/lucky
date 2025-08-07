@@ -4,8 +4,8 @@ import { supabase } from "@core/utils/clients/supabase/client"
 import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import type { ModelNameV2 } from "@core/utils/spending/models.types"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 type SaveNodeInvocationOpts = {
@@ -19,7 +19,7 @@ type SaveNodeInvocationOpts = {
   summary: string
   files?: string[]
   workflowVersionId: string
-  model: ModelName
+  model: ModelNameV2
   updatedMemory?: Record<string, string>
 }
 

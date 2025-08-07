@@ -15,7 +15,7 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import type { CoreMessage } from "ai"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
 

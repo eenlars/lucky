@@ -1,10 +1,10 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { llmify } from "@core/utils/common/llmify"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { FitnessOfWorkflowSchema } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 /**

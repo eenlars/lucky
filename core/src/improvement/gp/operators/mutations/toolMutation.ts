@@ -11,9 +11,9 @@ import {
   type MCPToolName,
 } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/models"
 import z from "zod"
 import type { Genome } from "../../Genome"
 import type { MutationOperator } from "./mutation.types"

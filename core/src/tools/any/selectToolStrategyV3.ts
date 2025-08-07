@@ -5,11 +5,14 @@ import {
   toolUsageToString,
   type StrategyResult,
 } from "@core/node/strategies/utils"
-import { isVercelAIStructure, isZodSchema } from "@core/tools/utils/schemaDetection"
+import {
+  isVercelAIStructure,
+  isZodSchema,
+} from "@core/tools/utils/schemaDetection"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
 import type { CoreMessage, ToolSet } from "ai"
 import { z } from "zod"
 
@@ -17,7 +20,6 @@ const verbose = CONFIG.logging.override.Tools
 const verboseOverride = false
 
 // TODO-later: if we want to invoke other nodes from this node, this can be part of the strategy.
-
 
 /**
  * V3: Decides next action: terminate or select one tool with reasoning.

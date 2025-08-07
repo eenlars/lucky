@@ -31,7 +31,7 @@ describe("Crossover Integration Test", () => {
 
     // Convert JSON configs to Genome objects
     const { data: parent1 } = await workflowConfigToGenome({
-      workflowConfig: parentSetup1 as WorkflowConfig,
+      workflowConfig: parentSetup1 as unknown as WorkflowConfig,
       parentWorkflowVersionIds: [],
       evaluationInput,
       _evolutionContext: evolutionContext,
@@ -40,7 +40,7 @@ describe("Crossover Integration Test", () => {
     })
 
     const { data: parent2 } = await workflowConfigToGenome({
-      workflowConfig: parentSetup2 as WorkflowConfig,
+      workflowConfig: parentSetup2 as unknown as WorkflowConfig,
       parentWorkflowVersionIds: ["00143667"],
       evaluationInput,
       _evolutionContext: evolutionContext,

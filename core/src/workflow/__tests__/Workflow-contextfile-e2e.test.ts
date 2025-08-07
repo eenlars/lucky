@@ -166,7 +166,7 @@ import {
   createMockEvaluationInput,
   createMockWorkflowFile,
 } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it, vi } from "vitest"

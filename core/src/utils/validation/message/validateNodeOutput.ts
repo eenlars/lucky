@@ -1,7 +1,7 @@
 import { Messages } from "@core/messages"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import z from "zod"
 
 const validationSchema = z.object({

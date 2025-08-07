@@ -1,5 +1,5 @@
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { PATHS } from "@runtime/settings/constants"
 import * as fs from "fs/promises"

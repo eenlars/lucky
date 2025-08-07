@@ -32,18 +32,22 @@ import { z, ZodTypeAny, type Schema } from "zod"
 
 import pTimeout, { TimeoutError } from "p-timeout"
 
+import { openai } from "@ai-sdk/openai"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
+import { groqProvider } from "@core/utils/clients/groq/groqClient"
+import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import type { ModelName } from "@core/utils/spending/models.types"
+import { ModelNameV2 } from "@core/utils/spending/models.types"
+import {
+  CURRENT_PROVIDER,
+  type LuckyProvider,
+} from "@core/utils/spending/provider"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
-import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
-import { groqProvider } from "@core/utils/clients/groq/groqClient"
-import { openai } from "@ai-sdk/openai"
-import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
+import { getDefaultModels } from "@runtime/settings/models"
 
 /* -------------------------------------------------------------------------- */
 /*                               Public types                                 */
@@ -184,15 +188,17 @@ function getFallbackModel(model: ModelName): ModelName {
 /* -------------------------------------------------------------------------- */
 
 function getLanguageModel(modelName: ModelName): LanguageModelV1 {
+  const provider = CURRENT_PROVIDER as LuckyProvider
+
   // Determine provider from model name or use CURRENT_PROVIDER
-  if (CURRENT_PROVIDER === "openrouter") {
+  if (provider === "openrouter") {
     return openrouter(modelName)
-  } else if (CURRENT_PROVIDER === "groq") {
+  } else if (provider === "groq") {
     return groqProvider(modelName)
-  } else if (CURRENT_PROVIDER === "openai") {
+  } else if (provider === "openai") {
     return openai(modelName)
   }
-  
+
   // Fallback to openrouter if provider not recognized
   return openrouter(modelName)
 }
@@ -214,7 +220,7 @@ async function execText(
   const modelName = shouldUseModelFallback(wanted)
     ? getFallbackModel(wanted)
     : wanted
-  
+
   const model = getLanguageModel(modelName)
 
   try {
@@ -284,7 +290,7 @@ async function execTool(
     const modelName = shouldUseModelFallback(requestedModel)
       ? getFallbackModel(requestedModel)
       : requestedModel
-    
+
     const model = getLanguageModel(modelName)
 
     const baseOptions: Parameters<typeof generateText>[0] = {
@@ -322,10 +328,18 @@ async function execTool(
     lgg.error("execTool error", error, opts.toolChoice, opts.tools)
     if (APICallError.isInstance(error)) {
       if (error.responseBody) {
-        message = JSON.parse(
-          ((JSON.parse(error.responseBody) as any)?.error as any).metadata.raw
-        )
-        if (!message) message = error.message
+        try {
+          const parsedError = JSON.parse(error.responseBody)
+          if (parsedError?.error?.metadata?.raw) {
+            message = JSON.parse(parsedError.error.metadata.raw)
+          } else if (parsedError?.error?.message) {
+            message = parsedError.error.message
+          } else {
+            message = parsedError?.message || error.message
+          }
+        } catch (parseError) {
+          message = error.message
+        }
       } else {
         message = error.message
       }
@@ -557,7 +571,7 @@ export const sendAI: SendAI = async (
 }
 
 // Normalize model names for database storage
-export const normalizeModelName = (modelName: ModelName): string => {
+export const normalizeModelName = (modelName: ModelNameV2): string => {
   // Ensure consistent string format and trim any whitespace
   return String(modelName).trim()
 }

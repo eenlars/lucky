@@ -19,6 +19,7 @@ import {
   createWorkflowVersion,
   updateWorkflowVersionWithIO,
 } from "@core/utils/persistence/workflow/registerWorkflow"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@core/utils/types"
 import { R } from "@core/utils/types"
 import {
@@ -48,7 +49,6 @@ import type {
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
 import { createHash } from "crypto"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 

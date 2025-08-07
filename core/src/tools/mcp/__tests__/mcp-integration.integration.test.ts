@@ -1,6 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 

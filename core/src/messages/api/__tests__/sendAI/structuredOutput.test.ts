@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { generateObject } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"

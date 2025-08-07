@@ -1,6 +1,7 @@
 import { isNir } from "@core/utils/common/isNir"
+import { getModelV2 } from "@core/utils/spending/functions"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { VercelUsage } from "@core/utils/spending/vercel/calculatePricing"
-import { pricingOLD, type ModelName } from "@runtime/settings/models"
 
 /**
  * Calculate the USD cost of a completion given token usage and per-million-token pricing.
@@ -17,7 +18,7 @@ export function calculateUsageCost(
   }
   const { promptTokens = 0, completionTokens = 0 } = usage
 
-  const modelPricing = pricingOLD[modelName]
+  const modelPricing = getModelV2(modelName)
   if (!modelPricing) {
     console.error(`Model pricing not found for: ${modelName}`)
     return 0

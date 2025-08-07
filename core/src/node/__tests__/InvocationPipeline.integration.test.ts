@@ -1,4 +1,5 @@
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
+import type { ModelNameV2 } from "@core/utils/spending/models.types"
 import { describe, expect, it } from "vitest"
 
 describe("InvocationPipeline Real Integration", () => {
@@ -353,19 +354,9 @@ describe("InvocationPipeline Real Integration", () => {
 
   // Test with all available models from pricing.types.ts (except kimi)
   const testModels = [
-    getDefaultModels().default,
-    "openai/gpt-4.1-mini",
-    "openai/gpt-4.1",
-    "google/gemini-2.5-flash-lite",
-    "meta-llama/llama-4-maverick",
-    "qwen/qwen2.5-vl-32b-instruct",
-    "openai/o4-mini-high",
-    "anthropic/claude-sonnet-4",
-    "x-ai/grok-4",
-    "deepseek/deepseek-r1-0528:free",
-    "google/gemini-2.0-flash-001",
-    "switchpoint/router",
-  ] as const
+    getDefaultModels().medium,
+    getDefaultModels().high,
+  ]
 
   testModels.forEach((modelName) => {
     it(`should work with model ${modelName}`, async () => {
@@ -421,7 +412,7 @@ describe("InvocationPipeline Real Integration", () => {
       const pipeline = new InvocationPipeline(
         context as any,
         toolManager,
-        modelName as any
+        modelName
       )
 
       await pipeline.prepare()

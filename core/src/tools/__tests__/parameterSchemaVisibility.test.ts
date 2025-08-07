@@ -1,5 +1,5 @@
 import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { CONFIG } from "@runtime/settings/constants"
 import { tool } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"

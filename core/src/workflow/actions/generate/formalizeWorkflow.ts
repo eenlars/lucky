@@ -1,9 +1,9 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
+import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { llmify } from "@core/utils/common/llmify"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
@@ -16,6 +16,7 @@ import {
   handleWorkflowCompletion,
   WorkflowConfigSchemaEasy,
 } from "@core/workflow/schema/workflowSchema"
+import { getDefaultModels } from "@runtime/settings/models"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
@@ -25,12 +26,7 @@ export async function formalizeWorkflow(
   const normalizedConfigNodes = options.workflowConfig?.nodes.map((node) => {
     return {
       ...node,
-      modelName:
-        node.modelName === getDefaultModels().medium
-          ? "medium"
-          : node.modelName === getDefaultModels().high
-            ? "high"
-            : "low",
+      modelName: mapModelNameToEasyName(node.modelName),
     }
   })
 

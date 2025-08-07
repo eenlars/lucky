@@ -5,6 +5,7 @@ export const providersV2 = {
   // Direct OpenAI API
   openai: {
     "gpt-4.1-nano": {
+      id: "openai/gpt-4.1-nano",
       input: 0.1,
       "cached-input": 0.025,
       output: 0.4,
@@ -13,6 +14,7 @@ export const providersV2 = {
       active: true,
     },
     "gpt-4.1-mini": {
+      id: "openai/gpt-4.1-mini",
       input: 0.4,
       "cached-input": 0.1,
       output: 1.6,
@@ -20,7 +22,53 @@ export const providersV2 = {
       context_length: 1047576,
       active: true,
     },
+    "gpt-4o-mini": {
+      id: "openai/gpt-4o-mini",
+      input: 0.15,
+      "cached-input": 0.075,
+      output: 0.6,
+      info: "IQ:7/10;speed:fast;pricing:low;",
+      context_length: 128000,
+      active: true,
+    },
+    "gpt-3.5-turbo": {
+      id: "openai/gpt-3.5-turbo",
+      input: 0.5,
+      "cached-input": null,
+      output: 1.5,
+      info: "IQ:6/10;speed:fast;pricing:low;",
+      context_length: 16385,
+      active: true,
+    },
+    "gpt-4": {
+      id: "openai/gpt-4",
+      input: 30,
+      "cached-input": null,
+      output: 60,
+      info: "IQ:8/10;speed:slow;pricing:high;",
+      context_length: 8192,
+      active: true,
+    },
+    "gpt-4-turbo": {
+      id: "openai/gpt-4-turbo",
+      input: 10,
+      "cached-input": null,
+      output: 30,
+      info: "IQ:8/10;speed:medium;pricing:high;",
+      context_length: 128000,
+      active: true,
+    },
+    "gpt-4o": {
+      id: "openai/gpt-4o",
+      input: 2.5,
+      "cached-input": 1.25,
+      output: 10,
+      info: "IQ:8/10;speed:medium;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
     "gpt-4o-search-preview": {
+      id: "openai/gpt-4o-search-preview",
       input: 2.5,
       "cached-input": 0.833333,
       output: 10,
@@ -33,6 +81,7 @@ export const providersV2 = {
   // OpenRouter API (different model names)
   openrouter: {
     "google/gemini-2.5-flash-lite": {
+      id: "google/gemini-2.5-flash-lite",
       input: 0.15,
       "cached-input": 0.06,
       output: 0.6,
@@ -41,6 +90,7 @@ export const providersV2 = {
       active: true,
     },
     "google/gemini-2.5-pro-preview": {
+      id: "google/gemini-2.5-pro-preview",
       input: 1.25,
       "cached-input": 0.416667,
       output: 10,
@@ -49,6 +99,7 @@ export const providersV2 = {
       active: true,
     },
     "anthropic/claude-sonnet-4": {
+      id: "anthropic/claude-sonnet-4",
       input: 3,
       "cached-input": 1.166667,
       output: 15,
@@ -57,6 +108,7 @@ export const providersV2 = {
       active: true,
     },
     "switchpoint/router": {
+      id: "switchpoint/router",
       input: 0.85,
       "cached-input": 0.283333,
       output: 3.4,
@@ -64,7 +116,80 @@ export const providersV2 = {
       info: "IQ:8/10;speed:medium;pricing:medium;",
       active: true,
     },
+    "openai/gpt-4.1": {
+      id: "openai/gpt-4.1",
+      input: 12,
+      "cached-input": 4,
+      output: 48,
+      info: "IQ:8/10;speed:medium;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
+    "openai/gpt-4.1-mini": {
+      id: "openai/gpt-4.1-mini",
+      input: 0.4,
+      "cached-input": 0.1,
+      output: 1.6,
+      info: "IQ:7/10;speed:fast;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
+    "openai/gpt-4.1-nano": {
+      id: "openai/gpt-4.1-nano",
+      input: 0.15,
+      "cached-input": 0.06,
+      output: 0.6,
+      info: "IQ:8/10;speed:medium;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
+    "openai/gpt-4o-mini": {
+      id: "openai/gpt-4o-mini",
+      input: 0.15,
+      "cached-input": 0.075,
+      output: 0.6,
+      info: "IQ:7/10;speed:fast;pricing:low;",
+      context_length: 128000,
+      active: true,
+    },
+    "openai/gpt-3.5-turbo": {
+      id: "openai/gpt-3.5-turbo",
+      input: 0.5,
+      "cached-input": 0.025,
+      output: 0.4,
+      info: "IQ:6/10;speed:fast;pricing:low;",
+      context_length: 16385,
+      active: true,
+    },
+    "openai/gpt-4o": {
+      id: "openai/gpt-4o",
+      input: 2.5,
+      "cached-input": 1.25,
+      output: 10,
+      info: "IQ:8/10;speed:medium;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
+    "anthropic/claude-3-5-haiku": {
+      id: "anthropic/claude-3-5-haiku",
+      input: 0.25,
+      "cached-input": 0.125,
+      output: 1.25,
+      info: "IQ:7/10;speed:fast;pricing:low;",
+      context_length: 200000,
+      active: true,
+    },
+    "meta-llama/llama-3.1-8b-instruct": {
+      id: "meta-llama/llama-3.1-8b-instruct",
+      input: 0.055,
+      "cached-input": null,
+      output: 0.055,
+      info: "IQ:6/10;speed:fast;pricing:low;",
+      context_length: 131072,
+      active: true,
+    },
     "moonshotai/kimi-k2": {
+      id: "moonshotai/kimi-k2",
       input: 0.5,
       "cached-input": 0.1,
       output: 1.5,
@@ -73,6 +198,7 @@ export const providersV2 = {
       active: false,
     },
     "moonshotai/kimi-k2-instruct": {
+      id: "moonshotai/kimi-k2-instruct",
       input: 0.5,
       "cached-input": 0.1,
       output: 1.5,
@@ -81,6 +207,7 @@ export const providersV2 = {
       active: false,
     },
     "x-ai/grok-4": {
+      id: "x-ai/grok-4",
       input: 2.0,
       "cached-input": 0.5,
       output: 8.0,
@@ -89,6 +216,7 @@ export const providersV2 = {
       active: false,
     },
     "qwen/qwq-32b:free": {
+      id: "qwen/qwq-32b:free",
       input: 0,
       "cached-input": 0,
       output: 0,
@@ -97,6 +225,7 @@ export const providersV2 = {
       active: false,
     },
     "deepseek/deepseek-r1-0528:free": {
+      id: "deepseek/deepseek-r1-0528:free",
       input: 0,
       "cached-input": 0,
       output: 0,
@@ -104,17 +233,36 @@ export const providersV2 = {
       context_length: 32768,
       active: false,
     },
+    "mistralai/mistral-small-3.2-24b-instruct": {
+      id: "mistralai/mistral-small-3.2-24b-instruct",
+      input: 0.055,
+      "cached-input": 0.018333,
+      output: 0.055,
+      info: "IQ:6/10;speed:fast;pricing:low;",
+      context_length: 131072,
+      active: true,
+    },
   },
 
   // Groq API
   groq: {
-    "llama-3.1-70b-versatile": {
+    "openai/gpt-oss-20b": {
+      id: "openai/gpt-oss-20b",
       input: 0.5,
       "cached-input": 0.1,
       output: 0.8,
       info: "IQ:7/10;speed:fast;pricing:low;",
       context_length: 131072,
-      active: false,
+      active: true,
+    },
+    "openai/gpt-oss-120b": {
+      id: "openai/gpt-oss-120b",
+      input: 0.15,
+      "cached-input": 0.015,
+      output: 0.75,
+      info: "IQ:9/10;speed:fast;pricing:low;",
+      context_length: 131072,
+      active: true,
     },
   },
 } as const satisfies Record<LuckyProvider, Record<string, ModelPricingV2>>

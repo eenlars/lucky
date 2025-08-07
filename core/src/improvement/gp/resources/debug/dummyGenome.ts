@@ -5,7 +5,7 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { TOOLS } from "@runtime/settings/tools"
 
 // function to get a random element from an array

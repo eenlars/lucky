@@ -17,7 +17,7 @@ import {
   createWorkflowVersion,
   ensureWorkflowExists,
 } from "@core/utils/persistence/workflow/registerWorkflow"
-import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
+import { getActiveModelNames } from "@core/utils/spending/functions"
 import { R, type RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -180,10 +180,8 @@ export class Genome extends Workflow {
         })
         return formalizedWorkflow
       }
-      const randomModel =
-        ACTIVE_MODEL_NAMES[
-          Math.floor(Math.random() * ACTIVE_MODEL_NAMES.length)
-        ]
+      const activeModels = getActiveModelNames()
+      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `
@@ -260,10 +258,8 @@ export class Genome extends Workflow {
       // Use the already-computed problem analysis passed from Workflow.prepareWorkflow()
       const enhancedAnalysis = problemAnalysis
 
-      const randomModel =
-        ACTIVE_MODEL_NAMES[
-          Math.floor(Math.random() * ACTIVE_MODEL_NAMES.length)
-        ]
+      const activeModels = getActiveModelNames()
+      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `

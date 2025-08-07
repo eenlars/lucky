@@ -2,7 +2,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type {
-  ActiveModelName,
+  AllowedModelName,
   ModelNameV2,
   ModelPricingV2,
 } from "@core/utils/spending/models.types"
@@ -10,24 +10,26 @@ import {
   CURRENT_PROVIDER,
   type LuckyProvider,
 } from "@core/utils/spending/provider"
+import { MODEL_CONFIG } from "@runtime/settings/models"
 
 // Get all active models from provider structure
 export const getActiveModelNames = <T extends LuckyProvider>(
   customProvider: T = CURRENT_PROVIDER as T
-): ModelNameV2<T>[] => {
+): AllowedModelName<T>[] => {
   if (isNir(customProvider)) return []
 
   return Object.keys(providersV2[customProvider])
     .filter((modelName) => isActiveModel(modelName as ModelNameV2))
-    .map((modelName) => modelName as ModelNameV2<T>)
+    .map((modelName) => modelName as AllowedModelName<T>)
 }
 
 // Type guard to check if a model is active
-export function isActiveModel(model: string): model is ActiveModelName {
-  const modelConfig = providersV2[CURRENT_PROVIDER][
-    model as ModelNameV2<LuckyProvider>
-  ] as ModelPricingV2
-  return modelConfig?.active === true
+export function isActiveModel(model: string): model is AllowedModelName {
+  const modelConfig =
+    providersV2[CURRENT_PROVIDER][model as ModelNameV2<typeof CURRENT_PROVIDER>]
+
+  // Check both the providersV2 active flag AND the MODEL_CONFIG inactive set
+  return modelConfig?.active === true && !MODEL_CONFIG.inactive.has(model)
 }
 
 // Get model pricing for a given model name
