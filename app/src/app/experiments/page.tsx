@@ -1,22 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import {
-  BarChart,
   Bar,
-  LineChart,
+  BarChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
 } from "recharts"
 
 // Adaptive behavior data
@@ -37,20 +37,24 @@ const sequentialData = [
 const loadToolCapacityData = async () => {
   try {
     const [resultsResponse, analysisResponse] = await Promise.all([
-      fetch('/research-experiments/tool-real/experiments/01-capacity-limits/tool-capacity-results.json'),
-      fetch('/research-experiments/tool-real/experiments/01-capacity-limits/tool-capacity-analysis.json')
+      fetch(
+        "/research-experiments/tool-real/experiments/01-capacity-limits/tool-capacity-results-2.json"
+      ),
+      fetch(
+        "/research-experiments/tool-real/experiments/01-capacity-limits/tool-capacity-analysis-2.json"
+      ),
     ])
-    
+
     if (!resultsResponse.ok || !analysisResponse.ok) {
-      throw new Error('Failed to load research data')
+      throw new Error("Failed to load research data")
     }
-    
+
     const results = await resultsResponse.json()
     const analysis = await analysisResponse.json()
-    
+
     return { results, analysis }
   } catch (error) {
-    console.error('Error loading tool capacity data:', error)
+    console.error("Error loading tool capacity data:", error)
     return null
   }
 }
@@ -58,15 +62,21 @@ const loadToolCapacityData = async () => {
 // Transform analysis data to visualization format
 const transformToolCapacityData = (analysis: any) => {
   if (!analysis?.toolCountPerformance) return []
-  
+
   const toolCountData = analysis.toolCountPerformance
   const modelPerformance = analysis.modelPerformance
-  
+
   return toolCountData.map((item: any) => ({
     tools: item.toolCount,
-    "gpt-3.5-turbo": modelPerformance.find((m: any) => m.model === "gpt-3.5-turbo")?.accuracy || 0,
-    "gpt-4o-mini": modelPerformance.find((m: any) => m.model === "gpt-4o-mini")?.accuracy || 0,
-    "gpt-4-turbo": modelPerformance.find((m: any) => m.model === "gpt-4-turbo")?.accuracy || 0,
+    "gpt-3.5-turbo":
+      modelPerformance.find((m: any) => m.model === "gpt-3.5-turbo")
+        ?.accuracy || 0,
+    "gpt-4o-mini":
+      modelPerformance.find((m: any) => m.model === "gpt-4o-mini")?.accuracy ||
+      0,
+    "gpt-4-turbo":
+      modelPerformance.find((m: any) => m.model === "gpt-4-turbo")?.accuracy ||
+      0,
   }))
 }
 
@@ -74,10 +84,30 @@ const transformToolCapacityData = (analysis: any) => {
 const fallbackToolCapacityData = [
   { tools: 4, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
   { tools: 8, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
-  { tools: 16, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
-  { tools: 32, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
-  { tools: 64, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
-  { tools: 104, "gpt-3.5-turbo": 74.4, "gpt-4o-mini": 76.7, "gpt-4-turbo": 82.2 },
+  {
+    tools: 16,
+    "gpt-3.5-turbo": 74.4,
+    "gpt-4o-mini": 76.7,
+    "gpt-4-turbo": 82.2,
+  },
+  {
+    tools: 32,
+    "gpt-3.5-turbo": 74.4,
+    "gpt-4o-mini": 76.7,
+    "gpt-4-turbo": 82.2,
+  },
+  {
+    tools: 64,
+    "gpt-3.5-turbo": 74.4,
+    "gpt-4o-mini": 76.7,
+    "gpt-4-turbo": 82.2,
+  },
+  {
+    tools: 104,
+    "gpt-3.5-turbo": 74.4,
+    "gpt-4o-mini": 76.7,
+    "gpt-4-turbo": 82.2,
+  },
 ]
 
 // Create radar data with real tool capacity results
@@ -97,9 +127,15 @@ const createRadarData = (modelPerformance: any) => {
     },
     {
       capability: "Tool Capacity",
-      "gpt-3.5-turbo": modelPerformance?.find((m: any) => m.model === "gpt-3.5-turbo")?.accuracy || 74.4,
-      "gpt-4o-mini": modelPerformance?.find((m: any) => m.model === "gpt-4o-mini")?.accuracy || 76.7,
-      "gpt-4-turbo": modelPerformance?.find((m: any) => m.model === "gpt-4-turbo")?.accuracy || 82.2,
+      "gpt-3.5-turbo":
+        modelPerformance?.find((m: any) => m.model === "gpt-3.5-turbo")
+          ?.accuracy || 74.4,
+      "gpt-4o-mini":
+        modelPerformance?.find((m: any) => m.model === "gpt-4o-mini")
+          ?.accuracy || 76.7,
+      "gpt-4-turbo":
+        modelPerformance?.find((m: any) => m.model === "gpt-4-turbo")
+          ?.accuracy || 82.2,
     },
     {
       capability: "Clear Prompt Response",
@@ -121,12 +157,14 @@ export default function ExperimentsPage() {
   const [activeTab, setActiveTab] = useState<
     "adaptive" | "sequential" | "capacity" | "overview"
   >("overview")
-  
+
   const [researchData, setResearchData] = useState<any>(null)
-  const [toolCapacityData, setToolCapacityData] = useState(fallbackToolCapacityData)
+  const [toolCapacityData, setToolCapacityData] = useState(
+    fallbackToolCapacityData
+  )
   const [radarData, setRadarData] = useState(createRadarData(null))
   const [overallAccuracy, setOverallAccuracy] = useState(77.8)
-  
+
   useEffect(() => {
     const loadData = async () => {
       const data = await loadToolCapacityData()
@@ -235,8 +273,12 @@ export default function ExperimentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-2">Overall Accuracy</h3>
-                <p className="text-3xl font-bold text-blue-600">{overallAccuracy.toFixed(1)}%</p>
-                <p className="text-gray-600">Tool selection accuracy across all tests</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {overallAccuracy.toFixed(1)}%
+                </p>
+                <p className="text-gray-600">
+                  Tool selection accuracy across all tests
+                </p>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-2">Best Performer</h3>
@@ -245,8 +287,12 @@ export default function ExperimentsPage() {
               </div>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-2">Total Runs</h3>
-                <p className="text-3xl font-bold text-purple-600">{researchData?.results?.summary?.totalRuns || 270}</p>
-                <p className="text-gray-600">Experimental data points collected</p>
+                <p className="text-3xl font-bold text-purple-600">
+                  {researchData?.results?.summary?.totalRuns || 270}
+                </p>
+                <p className="text-gray-600">
+                  Experimental data points collected
+                </p>
               </div>
             </div>
           </div>
@@ -395,19 +441,37 @@ export default function ExperimentsPage() {
             <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
               <h3 className="font-semibold text-blue-800">Research Insights</h3>
               <p className="text-blue-700">
-                GPT-4 Turbo achieved {researchData?.analysis?.modelPerformance?.find((m: any) => m.model === "gpt-4-turbo")?.accuracy?.toFixed(1) || 82.2}% accuracy across all tool counts.
-                Performance varies by tool count, with 32 tools showing optimal results ({researchData?.analysis?.toolCountPerformance?.find((t: any) => t.toolCount === 32)?.accuracy?.toFixed(1) || 88.9}% accuracy).
-                Average latency: {researchData?.results?.summary?.averageLatency || 3564}ms per request.
+                GPT-4 Turbo achieved{" "}
+                {researchData?.analysis?.modelPerformance
+                  ?.find((m: any) => m.model === "gpt-4-turbo")
+                  ?.accuracy?.toFixed(1) || 82.2}
+                % accuracy across all tool counts. Performance varies by tool
+                count, with 32 tools showing optimal results (
+                {researchData?.analysis?.toolCountPerformance
+                  ?.find((t: any) => t.toolCount === 32)
+                  ?.accuracy?.toFixed(1) || 88.9}
+                % accuracy). Average latency:{" "}
+                {researchData?.results?.summary?.averageLatency || 3564}ms per
+                request.
               </p>
             </div>
-            
+
             {researchData && (
               <div className="bg-gray-50 border-l-4 border-gray-400 p-4">
-                <h3 className="font-semibold text-gray-800">Experiment Details</h3>
+                <h3 className="font-semibold text-gray-800">
+                  Experiment Details
+                </h3>
                 <p className="text-gray-700">
-                  Data collected from {researchData.results.summary.totalRuns} runs across {researchData.results.configuration.models.length} models 
-                  and {researchData.results.configuration.toolCounts.length} different tool count configurations.
-                  Test period: {new Date(researchData.results.timestamp).toLocaleDateString()} - {new Date(researchData.results.endTime).toLocaleDateString()}
+                  Data collected from {researchData.results.summary.totalRuns}{" "}
+                  runs across {researchData.results.configuration.models.length}{" "}
+                  models and{" "}
+                  {researchData.results.configuration.toolCounts.length}{" "}
+                  different tool count configurations. Test period:{" "}
+                  {new Date(
+                    researchData.results.timestamp
+                  ).toLocaleDateString()}{" "}
+                  -{" "}
+                  {new Date(researchData.results.endTime).toLocaleDateString()}
                 </p>
               </div>
             )}

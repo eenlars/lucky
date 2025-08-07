@@ -1,70 +1,10 @@
-import type { AllowedModelName } from "@core/utils/spending/models.types"
+import { providersV2 } from "@core/utils/spending/modelInfo"
+import type {
+  AllowedModelName,
+  ModelPricingV2,
+  StandardModels,
+} from "@core/utils/spending/models.types"
 import type { LuckyProvider } from "@core/utils/spending/provider"
-import type { StandardModels } from "@core/utils/spending/models.types"
-
-/* ---------- PRICING TYPES ---------- */
-export type ModelPricing = {
-  input: number
-  "cached-input": number | null
-  output: number
-  info: `IQ:${number}/10;speed:${"fast" | "medium" | "slow"};pricing:${
-    | "low"
-    | "medium"
-    | "high"};`
-  context_length: number
-} // per 1M tokens
-
-export const pricingOLD = {
-  "openai/gpt-4.1-nano": {
-    input: 0.1,
-    "cached-input": 0.025,
-    output: 0.4,
-    info: "IQ:6/10;speed:fast;pricing:low;",
-    context_length: 1047576,
-  },
-  "openai/gpt-4.1-mini": {
-    input: 0.4,
-    "cached-input": 0.1,
-    output: 1.6,
-    info: "IQ:7/10;speed:fast;pricing:medium;",
-    context_length: 1047576,
-  },
-  "google/gemini-2.5-flash-lite": {
-    input: 0.15,
-    "cached-input": 0.06,
-    output: 0.6,
-    info: "IQ:5/10;speed:fast;pricing:low;",
-    context_length: 1048576,
-  },
-  "switchpoint/router": {
-    input: 0.85,
-    "cached-input": 0.283333,
-    output: 3.4,
-    context_length: 131072,
-    info: "IQ:8/10;speed:medium;pricing:medium;",
-  },
-  "google/gemini-2.5-pro-preview": {
-    input: 1.25,
-    "cached-input": 0.416667,
-    output: 10,
-    info: "IQ:7/10;speed:medium;pricing:medium;",
-    context_length: 1048576,
-  },
-  "anthropic/claude-sonnet-4": {
-    input: 3,
-    "cached-input": 1.166667,
-    output: 15,
-    info: "IQ:8/10;speed:medium;pricing:medium;",
-    context_length: 1047576,
-  },
-  "openai/gpt-4o-search-preview": {
-    input: 2.5,
-    "cached-input": 0.833333,
-    output: 10,
-    info: "IQ:8/10;speed:medium;pricing:medium;",
-    context_length: 128000,
-  },
-} satisfies Record<string, ModelPricing>
 
 // model runtime configuration
 export const MODEL_CONFIG = {
@@ -82,11 +22,6 @@ export const MODEL_CONFIG = {
   ]),
 } as const
 
-export type ModelName = AllowedModelName<typeof MODEL_CONFIG.provider>
-
-// Re-export pricing for backward compatibility  
-export { pricingOLD as pricing }
-
 /* ---------- DEFAULT MODELS ---------- */
 export const DEFAULT_MODELS = {
   openrouter: {
@@ -101,15 +36,15 @@ export const DEFAULT_MODELS = {
     fallback: "switchpoint/router",
   },
   groq: {
-    summary: "llama-3.1-70b-versatile",
-    nano: "llama-3.1-70b-versatile",
-    low: "llama-3.1-70b-versatile",
-    medium: "llama-3.1-70b-versatile",
-    high: "llama-3.1-70b-versatile",
-    default: "llama-3.1-70b-versatile",
-    fitness: "llama-3.1-70b-versatile",
-    reasoning: "llama-3.1-70b-versatile",
-    fallback: "llama-3.1-70b-versatile",
+    summary: "openai/gpt-oss-20b",
+    nano: "openai/gpt-oss-20b",
+    low: "openai/gpt-oss-20b",
+    medium: "openai/gpt-oss-20b",
+    high: "openai/gpt-oss-20b",
+    default: "openai/gpt-oss-20b",
+    fitness: "openai/gpt-oss-20b",
+    reasoning: "openai/gpt-oss-20b",
+    fallback: "openai/gpt-oss-20b",
   },
   openai: {
     summary: "gpt-4.1-nano",
@@ -126,7 +61,37 @@ export const DEFAULT_MODELS = {
   [T in LuckyProvider]: StandardModels<T, "any">
 }
 
-export const getDefaultModels = (): StandardModels<LuckyProvider, "any"> => {
+type DEFAULT_MODELS_BY_CURRENT_PROVIDER =
+  (typeof DEFAULT_MODELS)[typeof MODEL_CONFIG.provider]
+
+export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
   const provider = MODEL_CONFIG.provider
-  return DEFAULT_MODELS[provider] as StandardModels<LuckyProvider, "any">
+  return DEFAULT_MODELS[provider]
 }
+
+export const getActiveModelNames = (): AllowedModelName<
+  typeof MODEL_CONFIG.provider
+>[] => {
+  const provider = MODEL_CONFIG.provider
+  return Object.keys(DEFAULT_MODELS[provider]) as AllowedModelName<
+    typeof MODEL_CONFIG.provider
+  >[]
+}
+
+export const experimentalModels = {
+  gpt41: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1"],
+  gpt41mini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-mini"],
+  gpt41nano: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-nano"],
+  gpt4o: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o"],
+  gpt4oMini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o-mini"],
+  mistral:
+    providersV2[MODEL_CONFIG.provider][
+      "mistralai/mistral-small-3.2-24b-instruct"
+    ],
+  gemini25pro:
+    providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-pro-preview"],
+  claude35haiku:
+    providersV2[MODEL_CONFIG.provider]["anthropic/claude-3-5-haiku"],
+  claudesonnet4:
+    providersV2[MODEL_CONFIG.provider]["anthropic/claude-sonnet-4"],
+} as const satisfies Record<string, ModelPricingV2>
