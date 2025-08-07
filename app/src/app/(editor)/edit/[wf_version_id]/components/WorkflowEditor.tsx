@@ -5,7 +5,7 @@ import type { Tables } from "@core/utils/clients/supabase/types"
 import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { runWorkflowFromDSL } from "../actions/workflowActions"
+// Removed server action import - using API route instead
 import ActionBar from "./ActionBar"
 import DSLEditor from "./DSLEditor"
 import ResultsPanel from "./ResultsPanel"
@@ -76,11 +76,23 @@ export default function WorkflowEditor({
       const parsedDsl = JSON.parse(dslContent)
       const validatedConfig = await loadFromDSL(parsedDsl)
 
-      // Run the workflow via server action
-      const result = await runWorkflowFromDSL(
-        validatedConfig,
-        workflowVersion.workflow_id
-      )
+      // Run the workflow via API route
+      const response = await fetch("/api/workflow/run", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dslConfig: validatedConfig,
+          workflowId: workflowVersion.workflow_id,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
 
       if (result.success) {
         setExecutionResults({

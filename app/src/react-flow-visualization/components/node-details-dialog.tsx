@@ -27,7 +27,8 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
-import { ModelName, pricing } from "@runtime/settings/models"
+import { getActiveModelNames } from "@core/utils/spending/functions"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react"
 import React, { useState } from "react"
 
@@ -149,7 +150,7 @@ export function NodeDetailsDialog({
                     onValueChange={(value) =>
                       setEditedData({
                         ...editedData,
-                        modelName: value as ModelName,
+                        modelName: value as AllowedModelName,
                       })
                     }
                   >
@@ -157,23 +158,22 @@ export function NodeDetailsDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(pricing) as ModelName[]).map(
-                        (modelName) => {
-                          const displayName = modelName
-                            .split("/")[1]
-                            .split("-")
-                            .map(
-                              (word) =>
+                      {getActiveModelNames().map((modelName: string) => {
+                        const parts = modelName.split("/")
+                        const displayName = parts.length > 1
+                          ? parts[1]
+                              .split("-")
+                              .map((word: string) =>
                                 word.charAt(0).toUpperCase() + word.slice(1)
-                            )
-                            .join(" ")
-                          return (
-                            <SelectItem key={modelName} value={modelName}>
-                              {displayName}
-                            </SelectItem>
-                          )
-                        }
-                      )}
+                              )
+                              .join(" ")
+                          : modelName
+                        return (
+                          <SelectItem key={modelName} value={modelName}>
+                            {displayName}
+                          </SelectItem>
+                        )
+                      })}
                     </SelectContent>
                   </Select>
                 ) : (

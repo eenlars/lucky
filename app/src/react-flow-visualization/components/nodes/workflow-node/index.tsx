@@ -49,18 +49,27 @@ function WorkflowNode({
     [id, runWorkflow]
   )
 
+  // check if this is a start or end node
+  const isStartOrEndNode = data?.title === "Initial Node" || data?.title === "Output Node"
+  
   const onNodeClick = useCallback(
-    () => openNodeDetails(id),
-    [id, openNodeDetails]
+    () => {
+      if (!isStartOrEndNode) {
+        openNodeDetails(id)
+      }
+    },
+    [id, openNodeDetails, isStartOrEndNode]
   )
 
   const handleTitleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      setIsEditingTitle(true)
-      setTempTitle(data?.title || "")
+      if (!isStartOrEndNode) {
+        setIsEditingTitle(true)
+        setTempTitle(data?.title || "")
+      }
     },
-    [data?.title]
+    [data?.title, isStartOrEndNode]
   )
 
   const handleTitleSave = useCallback(() => {
@@ -134,11 +143,15 @@ function WorkflowNode({
   return (
     <NodeStatusIndicator status={data?.status}>
       <BaseNode
-        className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 group focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className={`bg-white border border-gray-200 rounded-lg shadow-sm transition-shadow p-4 group focus:outline-none ${
+          isStartOrEndNode 
+            ? "cursor-default opacity-75" 
+            : "cursor-pointer hover:shadow-md focus:ring-2 focus:ring-blue-300"
+        }`}
         style={{ ...NODE_SIZE }}
         onClick={onNodeClick}
         onDoubleClick={onNodeClick}
-        tabIndex={0}
+        tabIndex={isStartOrEndNode ? -1 : 0}
         role="button"
         aria-label={`Node ${data?.nodeId}`}
       >
@@ -156,11 +169,15 @@ function WorkflowNode({
             />
           ) : (
             <h3
-              className="text-lg font-medium text-gray-900 cursor-pointer hover:bg-gray-50 rounded px-1 -mx-1 transition-colors group/title"
+              className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
+                isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
+              }`}
               onDoubleClick={handleTitleDoubleClick}
             >
               {data?.nodeId}
-              <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
+              {!isStartOrEndNode && (
+                <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
+              )}
             </h3>
           )}
 

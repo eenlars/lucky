@@ -78,9 +78,12 @@ export default function EditModeSelector({
     if (workflowVersion && workflowVersion.dsl) {
       const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
       updateWorkflowJSON(jsonString)
-      loadWorkflowFromData(workflowVersion.dsl)
+      loadWorkflowFromData(workflowVersion.dsl).then(() => {
+        // Auto-organize layout once data is loaded
+        organizeLayout()
+      })
     }
-  }, [workflowVersion, updateWorkflowJSON, loadWorkflowFromData])
+  }, [workflowVersion, updateWorkflowJSON, loadWorkflowFromData, organizeLayout])
 
   const handleModeChange = async (newMode: EditMode) => {
     // Sync data when switching modes

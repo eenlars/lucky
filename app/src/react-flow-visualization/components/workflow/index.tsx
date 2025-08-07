@@ -63,9 +63,12 @@ export default function Workflow({
 
   useEffect(() => {
     if (nodes.length === 0 && !workflowLoading && !workflowError) {
+      console.log("Loading workflow data automatically...")
       if (workflowVersionId) {
+        console.log("Loading specific workflow version:", workflowVersionId)
         loadWorkflowVersion(workflowVersionId)
       } else {
+        console.log("Loading default workflow config (includes layout organization)")
         loadWorkflowConfig()
       }
     }
@@ -86,8 +89,6 @@ export default function Workflow({
     executeWorkflowWithPrompt,
     isRunning,
   } = useWorkflowRunner()
-
-  console.log("Workflow component - promptDialogOpen:", promptDialogOpen)
 
   const proOptions = {
     // passing in the account property will enable hiding the attribution

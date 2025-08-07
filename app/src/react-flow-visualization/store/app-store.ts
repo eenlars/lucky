@@ -308,6 +308,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       },
 
       loadWorkflowConfig: async (mode = "cultural") => {
+        console.log("loadWorkflowConfig called with mode:", mode)
         set({ workflowLoading: true, workflowError: undefined })
 
         try {
@@ -320,6 +321,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
 
           const workflowConfig = await response.json()
+          console.log("Workflow config loaded:", workflowConfig)
 
           // Check if this is a fallback version loaded from database
           if (workflowConfig._fallbackVersion) {
@@ -334,16 +336,21 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
 
           const setup = initialSetupConfig(workflowConfig)
+          console.log("Initial setup config:", setup)
 
           // apply layout to position nodes properly
+          console.log("Applying layout to nodes...")
           const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+          console.log("Layout applied, positioned nodes:", layoutedNodes.length)
 
           set({
             nodes: layoutedNodes,
             edges: setup.edges,
             workflowLoading: false,
           })
+          console.log("Workflow config loading completed")
         } catch (error) {
+          console.error("Error loading workflow config:", error)
           const errorMessage =
             error instanceof Error ? error.message : "Unknown error"
           set({
