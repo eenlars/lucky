@@ -1,8 +1,11 @@
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
+import type { ModelNameV2, AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
 import { verifyModelNameExists, verifyNoDuplicateHandoffs } from "../index"
 import { verifyToolsUnique } from "../toolsVerification"
+
+const validModel = getDefaultModels().medium
 const wrongExample: WorkflowConfig = {
   entryNodeId: "planning-node",
   nodes: [
@@ -90,7 +93,7 @@ const modelNameMissingExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: undefined as any,
+      modelName: undefined as unknown as AllowedModelName,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -106,7 +109,7 @@ const invalidModelNameExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: "not-a-real-model" as any,
+      modelName: "not-a-real-model" as unknown as AllowedModelName,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],

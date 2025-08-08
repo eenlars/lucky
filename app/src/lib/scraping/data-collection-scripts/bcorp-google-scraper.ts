@@ -491,7 +491,7 @@ async function processCountry(
   )
 
   saveResults([...final.values()], country)
-  lgg.log(`   🎯 done: ${final.size}/${companies.length} companies`)
+  lgg.log(`🎯 done: ${final.size}/${companies.length} companies`)
 }
 
 /* ────────────────────────────────  main  ────────────────────────────────── */

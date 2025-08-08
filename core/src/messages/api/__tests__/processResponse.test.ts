@@ -1,3 +1,4 @@
+import type { ModelName } from "@core/utils/spending/models.types"
 import { describe, expect, it, vi } from "vitest"
 import { processModelResponse, type NodeLogs } from "../processResponse"
 import toolResponseMultipleSteps from "./resources/toolResponseMultipleSteps.json"
@@ -7,9 +8,9 @@ import toolResponseNoToolUsed from "./resources/toolResponseNoToolUsed.json"
 vi.mock("@core/utils/env.mjs", () => ({
   envi: {
     GOOGLE_API_KEY: "mock-key",
-    OPENAI_API_KEY: "mock-key", 
+    OPENAI_API_KEY: "mock-key",
     SERPAPI_API_KEY: "mock-key",
-  }
+  },
 }))
 
 describe("processModelResponse", () => {
@@ -17,7 +18,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processModelResponse({
       response: toolResponseMultipleSteps as any,
-      modelUsed: "claude-3-haiku-20240307" as any,
+      modelUsed: "claude-3-haiku-20240307" as unknown as ModelName,
       nodeId: "test",
     })
 
@@ -49,7 +50,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processModelResponse({
       response: toolResponseNoToolUsed as any,
-      modelUsed: "claude-3-haiku-20240307" as any,
+      modelUsed: "claude-3-haiku-20240307" as unknown as ModelName,
       nodeId: "test",
     })
 

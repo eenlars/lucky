@@ -14,7 +14,6 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { CoreMessage } from "ai"
 import { llmify } from "../../utils/common/llmify"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
@@ -48,14 +47,14 @@ export async function runMultiStepLoopV3Helper(
   const debugPrompts: string[] = []
   for (let round = 0; round < maxRounds; round++) {
     const { strategyResult: strategy, debugPrompt } =
-      await selectToolStrategyV3(
+      await selectToolStrategyV3({
         tools,
-        currentMessages,
-        toolUsage,
-        maxRounds - round,
-        ctx.nodeSystemPrompt,
-        ctx.model
-      )
+        messages: currentMessages,
+        nodeLogs: toolUsage,
+        roundsLeft: maxRounds - round,
+        systemMessage: ctx.nodeSystemPrompt,
+        model: ctx.model,
+      })
 
     debugPrompts.push(llmify(debugPrompt))
 
@@ -176,14 +175,16 @@ export async function runMultiStepLoopV3Helper(
       )
     }
 
+    // execute the tool call
     const {
       data: toolUseResponse,
       success,
       error,
       usdCost,
     } = await sendAI({
-      model: getDefaultModels().medium,
+      model: ctx.model,
       mode: "tool",
+      debug: true,
       messages: [
         ...currentMessages,
         {
@@ -224,7 +225,7 @@ export async function runMultiStepLoopV3Helper(
 
     const processed = await processVercelResponse({
       response: toolUseResponse,
-      model: getDefaultModels().medium,
+      model: ctx.model,
       nodeId: ctx.nodeId,
     })
 

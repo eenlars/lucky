@@ -345,10 +345,10 @@ const memoryConfig = {
 // Evolution progress tracking
 engine.onGenerationComplete((stats) => {
   console.log(`Generation ${stats.generation}:`)
-  console.log(`  Best Fitness: ${stats.bestFitness}`)
-  console.log(`  Average Fitness: ${stats.averageFitness}`)
-  console.log(`  Diversity Index: ${stats.diversityIndex}`)
-  console.log(`  Total Cost: $${stats.totalCost}`)
+  console.log(`Best Fitness: ${stats.bestFitness}`)
+  console.log(`Average Fitness: ${stats.averageFitness}`)
+  console.log(`Diversity Index: ${stats.diversityIndex}`)
+  console.log(`Total Cost: $${stats.totalCost}`)
 })
 
 // Individual evaluation tracking

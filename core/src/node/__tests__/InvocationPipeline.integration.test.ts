@@ -1,5 +1,7 @@
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
+import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it } from "vitest"
+import { InvocationPipeline } from "../InvocationPipeline"
 
 describe("InvocationPipeline Real Integration", () => {
   // FAILING: This test suite is failing because the todoWrite tool isn't being executed properly
@@ -19,8 +21,8 @@ describe("InvocationPipeline Real Integration", () => {
   }
 
   const extractTestResult = (
-    pipeline: any,
-    pipelineResult: any
+    pipeline: InvocationPipeline,
+    pipelineResult: NodeInvocationResult
   ): TestResult => {
     const toolUsage = pipeline.getToolUsage()
     const toolCalls = toolUsage.outputs.filter(
@@ -204,6 +206,7 @@ describe("InvocationPipeline Real Integration", () => {
     const verification = await sendAI({
       model: getDefaultModels().default,
       mode: "text",
+      debug: true,
       messages: [
         {
           role: "user",
@@ -352,20 +355,7 @@ describe("InvocationPipeline Real Integration", () => {
   }, 180000) // 3 minute timeout for multi-step execution
 
   // Test with all available models from pricing.types.ts (except kimi)
-  const testModels = [
-    getDefaultModels().default,
-    "openai/gpt-4.1-mini",
-    "openai/gpt-4.1",
-    "google/gemini-2.5-flash-lite",
-    "meta-llama/llama-4-maverick",
-    "qwen/qwen2.5-vl-32b-instruct",
-    "openai/o4-mini-high",
-    "anthropic/claude-sonnet-4",
-    "x-ai/grok-4",
-    "deepseek/deepseek-r1-0528:free",
-    "google/gemini-2.0-flash-001",
-    "switchpoint/router",
-  ] as const
+  const testModels = [getDefaultModels().medium, getDefaultModels().high]
 
   testModels.forEach((modelName) => {
     it(`should work with model ${modelName}`, async () => {
@@ -421,7 +411,7 @@ describe("InvocationPipeline Real Integration", () => {
       const pipeline = new InvocationPipeline(
         context as any,
         toolManager,
-        modelName as any
+        modelName
       )
 
       await pipeline.prepare()

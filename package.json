@@ -6,6 +6,8 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@types/papaparse": "^5.3.16"
+    "@types/papaparse": "^5.3.16",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.3"
   }
 }

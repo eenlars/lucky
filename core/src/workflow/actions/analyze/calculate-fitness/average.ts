@@ -1,8 +1,8 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { truncater } from "@core/utils/common/llmify"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { getDefaultModels } from "@runtime/settings/models"
 import type { FitnessOfWorkflow } from "./fitness.types"
 
 export const calculateAverageFitness = (

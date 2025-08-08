@@ -8,12 +8,12 @@ import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
 import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { type ModelName } from "@core/utils/spending/models.types"
 import { type VercelUsage } from "@core/utils/spending/vercel/calculatePricing"
 import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
 import { R, type RS } from "@core/utils/types"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { GenerateTextResult, ToolSet } from "ai"
 export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is called.
@@ -80,7 +80,9 @@ export interface NodeLogs<T = unknown> {
   totalCost: number
 }
 
-export const NodeLogsJustResponse = <T>(toolUsage: NodeLogs<T>): (T | string)[] => {
+export const NodeLogsJustResponse = <T>(
+  toolUsage: NodeLogs<T>
+): (T | string)[] => {
   return toolUsage.outputs.map((output) => output.return)
 }
 
@@ -336,7 +338,9 @@ export const getFinalOutputNodeInvocation = (
       return output.return
     }
     if (output.type === "tool") {
-      return typeof output.return === "string" ? output.return : JSON.stringify(output.return)
+      return typeof output.return === "string"
+        ? output.return
+        : JSON.stringify(output.return)
     }
   }
 

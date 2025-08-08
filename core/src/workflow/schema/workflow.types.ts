@@ -1,9 +1,6 @@
 import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
-import type { ModelNameV2, AllowedModelName } from "@core/utils/spending/models.types"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
-
-// Use the active-only model type for consistency
-export type ModelName = AllowedModelName
 
 export interface WorkflowNodeConfig {
   nodeId: string

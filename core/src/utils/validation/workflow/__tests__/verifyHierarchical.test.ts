@@ -8,7 +8,7 @@ vi.mock("@runtime/constants", () => ({
   },
 }))
 
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { CONFIG } from "@runtime/settings/constants"
 import { verifyHierarchicalStructure } from "../verifyHierarchical"
 

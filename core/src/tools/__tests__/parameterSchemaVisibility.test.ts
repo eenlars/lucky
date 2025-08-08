@@ -1,6 +1,6 @@
 import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { CONFIG } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/models"
 import { tool } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -53,14 +53,14 @@ describe("Parameter Schema Visibility", () => {
 
     const { sendAI } = await import("@core/messages/api/sendAI")
 
-    await selectToolStrategyV2(
-      mockTools,
-      [],
-      [],
-      3,
-      "Test system message",
-      getDefaultModels().default
-    )
+    await selectToolStrategyV2({
+      tools: mockTools,
+      messages: [],
+      nodeLogs: [],
+      roundsLeft: 3,
+      systemMessage: "Test system message",
+      model: getDefaultModels().default,
+    })
 
     const firstCall = (sendAI as any).mock.calls[0][0]
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
@@ -77,20 +77,22 @@ describe("Parameter Schema Visibility", () => {
 
     const { sendAI } = await import("@core/messages/api/sendAI")
 
-    await selectToolStrategyV2(
-      mockTools,
-      [],
-      [],
-      3,
-      "Test system message",
-      getDefaultModels().default
-    )
+    await selectToolStrategyV2({
+      tools: mockTools,
+      messages: [],
+      nodeLogs: [],
+      roundsLeft: 3,
+      systemMessage: "Test system message",
+      model: getDefaultModels().default,
+    })
 
     const firstCall = (sendAI as any).mock.calls[0][0]
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
 
     expect(userMessage.content).toContain("Tool: searchGoogleMaps")
-    expect(userMessage.content).toContain("Description: Search Google Maps for business information")
+    expect(userMessage.content).toContain(
+      "Description: Search Google Maps for business information"
+    )
     expect(userMessage.content).toContain("Args: not shown")
     expect(userMessage.content).not.toContain("maxResultCount")
   })
@@ -117,14 +119,14 @@ describe("Parameter Schema Visibility", () => {
 
     const { sendAI } = await import("@core/messages/api/sendAI")
 
-    await selectToolStrategyV2(
-      complexTools,
-      [],
-      [],
-      3,
-      "Test system message",
-      getDefaultModels().default
-    )
+    await selectToolStrategyV2({
+      tools: complexTools,
+      messages: [],
+      nodeLogs: [],
+      roundsLeft: 3,
+      systemMessage: "Test system message",
+      model: getDefaultModels().default,
+    })
 
     const firstCall = (sendAI as any).mock.calls[0][0]
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
@@ -154,9 +156,9 @@ describe("Parameter Schema Visibility", () => {
         jsonSchema: {
           type: "object",
           properties: {
-            input: { type: "string" }
-          }
-        }
+            input: { type: "string" },
+          },
+        },
       },
       execute: async () => "vercel result",
     }
@@ -165,14 +167,14 @@ describe("Parameter Schema Visibility", () => {
 
     const { sendAI } = await import("@core/messages/api/sendAI")
 
-    await selectToolStrategyV2(
-      mixedTools as any,
-      [],
-      [],
-      3,
-      "Test system message",
-      getDefaultModels().default
-    )
+    await selectToolStrategyV2({
+      tools: mixedTools as any,
+      messages: [],
+      nodeLogs: [],
+      roundsLeft: 3,
+      systemMessage: "Test system message",
+      model: getDefaultModels().default,
+    })
 
     const firstCall = (sendAI as any).mock.calls[0][0]
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")

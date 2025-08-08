@@ -7,10 +7,10 @@ import { zodToJson } from "@core/messages/utils/zodToJson"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
 import { CONFIG } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {

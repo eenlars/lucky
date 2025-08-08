@@ -22,7 +22,7 @@ async function main() {
     const shoppingTasks = await WebArenaLoader.fetchBySites(["shopping"], 3)
     lgg.info(`Found ${shoppingTasks.length} shopping tasks:`)
     shoppingTasks.forEach((task) => {
-      lgg.info(`  - Task ${task.task_id}: ${task.intent}`)
+      lgg.info(`- Task ${task.task_id}: ${task.intent}`)
     })
 
     // fetch tasks as WorkflowIO for evaluation

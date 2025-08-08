@@ -1,7 +1,7 @@
 "use client"
 
 import type { Tables } from "@core/utils/clients/supabase/types"
-import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
+import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import RunnerPanel from "./RunnerPanel"
@@ -147,7 +147,7 @@ export default function WorkflowRunner({
 
     try {
       // Validate and normalize the DSL before execution
-      const validatedConfig = await loadFromDSL(workflowVersion.dsl as any)
+      const validatedConfig = await loadFromDSLClient(workflowVersion.dsl as any)
 
       // Start workflow execution and get invocation ID immediately
       const startResult = await startWorkflowExecution(

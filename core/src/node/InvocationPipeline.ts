@@ -1,5 +1,4 @@
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 
 import {
   extractPromptFromPayload,
@@ -28,10 +27,11 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { selectToolStrategy } from "@core/tools/any/selectToolStrategy"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import { runMultiStepLoopV2Helper } from "./strategies/MultiStepLoopV2"
@@ -57,6 +57,7 @@ export interface NodeInvocationCallContext extends ToolExecutionContext {
   model: ModelName
   workflowConfig?: WorkflowConfig // Added for hierarchical role inference
   skipDatabasePersistence?: boolean
+  toolStrategyOverride?: "v2" | "v3"
 }
 
 /* -------------------------------------------------------------------------- */
@@ -164,7 +165,11 @@ export class InvocationPipeline {
         CONFIG.tools.experimentalMultiStepLoop &&
         Object.keys(this.tools)?.length > 0
       ) {
-        await this.runMultiStepLoopV2()
+        if (this.ctx.toolStrategyOverride === "v3") {
+          await this.runMultiStepLoopV3()
+        } else {
+          await this.runMultiStepLoopV2()
+        }
 
         // Sync the toolUsage and cost from multi-step loop result
         if (this.processedResponse && this.processedResponse.toolUsage) {

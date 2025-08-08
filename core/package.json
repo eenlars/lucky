@@ -21,7 +21,8 @@
     "coverage": "bunx vitest run --coverage",
     "gen:types": "supabase gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/core/utils/clients/supabase/types.ts",
     "tree": "tree -L 7 -I 'node_modules|.git|dist|build|public' src/core",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "pricing": "bun run scripts/fetchOpenRouterPricing.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.2.9",

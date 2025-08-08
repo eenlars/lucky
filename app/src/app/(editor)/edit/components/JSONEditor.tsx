@@ -1,6 +1,6 @@
 "use client"
 
-import { formalizeWorkflowAction } from "@/app/actions/formalizeWorkflow"
+// Removed server action import - using API route instead
 import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ensureWorkflowExists,
@@ -138,12 +138,27 @@ export default function JSONEditor({
     currentWorkflow: any,
     userFeedback: string
   ) => {
-    const result = await formalizeWorkflowAction(userFeedback, {
-      workflowConfig: currentWorkflow,
-      workflowGoal: userFeedback,
-      verifyWorkflow: "none", // Skip verification for instant feedback
-      repairWorkflowAfterGeneration: false,
+    const response = await fetch("/api/workflow/formalize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: userFeedback,
+        options: {
+          workflowConfig: currentWorkflow,
+          workflowGoal: userFeedback,
+          verifyWorkflow: "none", // Skip verification for instant feedback
+          repairWorkflowAfterGeneration: false,
+        },
+      }),
     })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
 
     if (!result.success || !result.data) {
       throw new Error(result.error || "Failed to generate optimized workflow")

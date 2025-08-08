@@ -13,7 +13,10 @@ export function isZodSchema(params: any): boolean {
   }
 
   // Strategy 2: Method-based detection (most reliable across versions)
-  if (typeof params.parse === "function" && typeof params.safeParse === "function") {
+  if (
+    typeof params.parse === "function" &&
+    typeof params.safeParse === "function"
+  ) {
     return true
   }
 
@@ -39,6 +42,8 @@ export function isZodSchema(params: any): boolean {
 /**
  * Checks if parameters has Vercel AI structure with jsonSchema property
  */
-export function isVercelAIStructure(params: any): params is { jsonSchema: any } {
+export function isVercelAIStructure(
+  params: any
+): params is { jsonSchema: any } {
   return params?.jsonSchema !== undefined
 }

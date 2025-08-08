@@ -27,7 +27,6 @@ export function PromptInputDialog({
 }: PromptInputDialogProps) {
   const [prompt, setPrompt] = useState("")
 
-  console.log("PromptInputDialog render - open:", open)
 
   const handleExecute = () => {
     if (prompt.trim()) {

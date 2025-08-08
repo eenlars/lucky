@@ -5,17 +5,15 @@ import type { Tool, ToolSet } from "ai"
 import { codeToolRegistry } from "./index"
 
 /**
- * Initialize the code tool registry
- */
-await codeToolRegistry.initialize()
-
-/**
  * Code-specific tool setup that accepts workflowInvocationId for context injection
  */
 export const setupCodeToolsForNode = async (
   toolNames: CodeToolName[],
   toolExecutionContext?: ToolExecutionContext
 ): Promise<ToolSet> => {
+  // initialize the code tool registry
+  await codeToolRegistry.initialize()
+
   if (isNir(toolNames)) {
     return {}
   }

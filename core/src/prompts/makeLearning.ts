@@ -3,7 +3,7 @@ import { sendAI } from "@core/messages/api/sendAI"
 import { MemoryResponseSchema } from "@core/node/schemas/memorySchema"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { getDefaultModels } from "@runtime/settings/models"
 import { isNir } from "../utils/common/isNir"
 
 export const makeLearning = async ({

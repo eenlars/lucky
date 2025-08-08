@@ -32,7 +32,7 @@ export const initialSetupConfig = (
 
   nodes.push(endNode)
 
-  for (const node of workflowConfig.nodes) {
+  for (const node of workflowConfig.nodes || []) {
     const nodeData: WorkflowNodeData = {
       nodeId: node.nodeId,
       description: node.description,
@@ -63,7 +63,7 @@ export const initialSetupConfig = (
   }
 
   // create edges based on handOffs
-  for (const node of workflowConfig.nodes) {
+  for (const node of workflowConfig.nodes || []) {
     if (node.handOffs && node.handOffs.length > 0) {
       for (const handOff of node.handOffs) {
         edges.push(createEdge(node.nodeId, handOff))

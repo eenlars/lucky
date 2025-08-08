@@ -11,6 +11,13 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/react-flow-visualization/components/ui/select"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
 import {
   ACTIVE_CODE_TOOL_NAMES,
@@ -18,6 +25,8 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
+import { getActiveModelNames } from "@core/utils/spending/functions"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
 import { X } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -163,6 +172,41 @@ export function NodeDetailsDialog({
                   placeholder="How should it accomplish this?"
                   className="min-h-[160px] resize-none border-gray-200 text-sm leading-relaxed px-4 py-4 focus-visible:ring-offset-2"
                 />
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-base font-normal">Model</h3>
+                <Select
+                  value={data.modelName}
+                  onValueChange={(value) =>
+                    setData((prev) => ({
+                      ...prev,
+                      modelName: value as AllowedModelName,
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full border-gray-200 focus-visible:ring-offset-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getActiveModelNames().map((modelName: string) => {
+                      const parts = modelName.split("/")
+                      const displayName = parts.length > 1 
+                        ? parts[1]
+                            .split("-")
+                            .map((word: string) =>
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")
+                        : modelName
+                      return (
+                        <SelectItem key={modelName} value={modelName}>
+                          {displayName}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

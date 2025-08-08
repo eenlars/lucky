@@ -3,9 +3,9 @@ import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { ALL_ACTIVE_TOOL_NAMES } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
-import type { ModelName } from "@runtime/settings/models"
+import { getDefaultModels } from "@runtime/settings/models"
 import { z } from "zod"
 
 export type GenerateWorkflowIdeaRequest = {

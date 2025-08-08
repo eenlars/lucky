@@ -3,12 +3,12 @@ import { rcaPrompt } from "@core/prompts/rca"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { R, type RS } from "@core/utils/types"
 import {
   feedbackPrompt,
   type FitnessFunctionInput,
 } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
+import { getDefaultModels } from "@runtime/settings/models"
 
 export async function calculateFeedback({
   nodeOutputs,

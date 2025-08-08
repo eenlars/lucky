@@ -1,7 +1,7 @@
 import { Messages } from "@core/messages"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { SuggestToolPrompts } from "@core/workflow/actions/suggestTool/suggestTool.p"
 import type { Workflow } from "@core/workflow/Workflow"
+import { getDefaultModels } from "@runtime/settings/models"
 
 /**
  * this function suggests a new tool after receiving a bottleneck.

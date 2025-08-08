@@ -38,7 +38,7 @@ async function runGAIAExample() {
 
   for (const task of level1Tasks) {
     console.log(`- Task ${task.task_id}: ${task.Question.substring(0, 80)}...`)
-    console.log(`  Level: ${task.Level}, Has file: ${!!task.file_name}`)
+    console.log(`Level: ${task.Level}, Has file: ${!!task.file_name}`)
   }
   console.log()
 

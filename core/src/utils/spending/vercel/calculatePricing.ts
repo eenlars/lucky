@@ -1,9 +1,6 @@
 import { getModelV2 } from "@core/utils/spending/functions"
-import { providersV2 } from "@core/utils/spending/modelInfo"
-import type { ModelNameV2, TokenUsage } from "@core/utils/spending/models.types"
-import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
+import type { ModelName, TokenUsage } from "@core/utils/spending/models.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { pricingOLD, type ModelName } from "@runtime/settings/models"
 
 export type VercelUsage = {
   promptTokens: number
@@ -14,29 +11,11 @@ export type PricingLevel = "low" | "medium" | "high"
 
 /**
  * @deprecated Use calculateCostV2 instead
+ * This function now uses the new providersV2 system internally
  */
 export function calculateCost(model: string, usage: TokenUsage): number {
-  const modelPricing = pricingOLD[model as ModelName]
-  if (!modelPricing) {
-    console.warn(`No pricing found for model: ${model}`)
-    return 0
-  }
-
-  let cost = 0
-
-  // Calculate input token cost
-  const nonCachedInput = usage.inputTokens - (usage.cachedInputTokens || 0)
-  cost += (nonCachedInput / 1_000_000) * modelPricing.input
-
-  // Calculate cached input token cost if applicable
-  if (usage.cachedInputTokens && modelPricing["cached-input"]) {
-    cost += (usage.cachedInputTokens / 1_000_000) * modelPricing["cached-input"]
-  }
-
-  // Calculate output token cost
-  cost += (usage.outputTokens / 1_000_000) * modelPricing.output
-
-  return cost
+  // Delegate to the new V2 function
+  return calculateCostV2(model, usage)
 }
 
 /**
@@ -69,10 +48,11 @@ export function calculateCostV2(model: string, usage: TokenUsage): number {
   return cost
 }
 
-export function getPricingLevelV2(model: ModelNameV2): PricingLevel {
-  const inputPrice = providersV2[CURRENT_PROVIDER][model].input
+export function getPricingLevelV2(model: ModelName): PricingLevel {
+  const modelConfig = getModelV2(model)
+  guard(modelConfig, `getPricingLevelV2: No model config for ${model}`)
 
-  guard(inputPrice, `getPricingLevelV2: No input price for model ${model}`)
+  const inputPrice = modelConfig.input
 
   const ranges = {
     low: 0.5,

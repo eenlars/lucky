@@ -1,6 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type {
   EvaluationInput,
@@ -9,6 +8,7 @@ import type {
 import type { InvocationInput } from "@core/workflow/runner/invokeWorkflow"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import { CONFIG } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { z } from "zod"
 

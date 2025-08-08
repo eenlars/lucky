@@ -8,6 +8,7 @@ import type {
 
 /* ---------- PRICING TYPES ---------- */
 export type ModelPricingV2 = {
+  id: string
   input: number
   "cached-input": number | null
   output: number
@@ -26,8 +27,13 @@ export type ActiveKeys<T extends Record<string, { active: boolean }>> = Extract<
   string
 >
 
-export type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> =
-  keyof (typeof providersV2)[T]
+export type AnyModelName = {
+  [P in LuckyProvider]: keyof (typeof providersV2)[P]
+}[LuckyProvider]
+
+export type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> = {
+  [P in LuckyProvider]: keyof (typeof providersV2)[P]
+}[T]
 
 // DO NOT CHANGE THIS OR ANY TYPE WITHOUT CONSENT
 
@@ -35,6 +41,10 @@ export type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> =
 export type AllowedModelName<
   T extends LuckyProvider = typeof CURRENT_PROVIDER,
 > = ActiveKeys<(typeof providersV2)[T]>
+
+export type ModelName = AllowedModelName<typeof CURRENT_PROVIDER>
+
+export type OpenRouterModelName = AllowedModelName<"openrouter">
 
 export interface TokenUsage {
   inputTokens: number
@@ -67,4 +77,4 @@ export interface ModelPool {
   provider: LuckyProvider
 }
 // Create type-safe active model subset - ActiveModelName should be assignable to ModelName
-export type ActiveModelName = ModelNameV2
+export type ActiveModelName = AllowedModelName

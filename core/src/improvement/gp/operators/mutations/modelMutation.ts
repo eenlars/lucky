@@ -4,16 +4,16 @@
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
-import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type {
-  ModelName,
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
+import { getActiveModelNames } from "@runtime/settings/models"
 import type { NodeMutationOperator } from "./mutation.types"
 
 export class ModelMutation implements NodeMutationOperator {
-  private static readonly MODEL_POOL = ACTIVE_MODEL_NAMES
+  private static readonly MODEL_POOL = getActiveModelNames()
 
   async execute(workflow: WorkflowConfig): Promise<void> {
     try {
@@ -26,15 +26,9 @@ export class ModelMutation implements NodeMutationOperator {
         return
       }
 
-      // they don't support tool use.
-      const inactiveModels: ModelName[] = [
-        // "qwen/qwq-32b:free",
-        // "deepseek/deepseek-r1-0528:free",
-      ]
-
-      const modelsNotInPool: ModelName[] = ModelMutation.MODEL_POOL.filter(
-        (model) => !inactiveModels.includes(model)
-      )
+      const modelsNotInPool = ModelMutation.MODEL_POOL.filter((model) => {
+        return !ModelMutation.MODEL_POOL.includes(model)
+      })
 
       if (modelsNotInPool.length === 0) {
         lgg.error("Model mutation failed - no valid models available")
@@ -43,8 +37,9 @@ export class ModelMutation implements NodeMutationOperator {
       }
 
       // simple random model selection
-      node.modelName =
-        modelsNotInPool[Math.floor(Math.random() * modelsNotInPool.length)]
+      node.modelName = modelsNotInPool[
+        Math.floor(Math.random() * modelsNotInPool.length)
+      ] as AllowedModelName
     } catch (error) {
       lgg.error("Model mutation failed:", error)
       failureTracker.trackMutationFailure()

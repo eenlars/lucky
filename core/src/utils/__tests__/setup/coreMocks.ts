@@ -11,7 +11,6 @@ import type {
   FlowRuntimeConfig,
   FullFlowRuntimeConfig,
 } from "@core/types"
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
 import type { RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
@@ -23,6 +22,7 @@ import type {
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import type { CONFIG } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/models"
 import { vi } from "vitest"
 
 // CLI and system-level mocks
@@ -94,25 +94,25 @@ const mockLoggerInstance = {
 const mockGenomeInstance = {
   // State properties
   isEvaluated: false,
-  
+
   // Core genome methods
   getWorkflowVersionId: vi.fn(),
   getWorkflowConfig: vi.fn(),
   getRawGenome: vi.fn(),
   hash: vi.fn(),
-  
+
   // Fitness methods
   getFitness: vi.fn(),
   getFitnessScore: vi.fn(),
   setFitness: vi.fn(),
   setFitnessAndFeedback: vi.fn(),
-  
+
   // Evolution context methods
   getGenerationNumber: vi.fn(),
   getParentIds: vi.fn(),
   getEvolutionContext: vi.fn(),
   reset: vi.fn(),
-  
+
   // Workflow methods inherited from Workflow class
   getEvaluationInput: vi.fn(),
   getConfig: vi.fn(),
@@ -120,7 +120,7 @@ const mockGenomeInstance = {
   getFeedback: vi.fn(),
   getGoal: vi.fn(),
   addCost: vi.fn(),
-  
+
   // Database methods
   saveToDatabase: vi.fn().mockResolvedValue({
     workflowVersionId: "test-version-id",
@@ -138,12 +138,12 @@ const mockPopulationInstance = {
   getWorst: vi.fn(),
   getTop: vi.fn(),
   size: vi.fn(),
-  
+
   // Generation management
   getGenerationId: vi.fn(),
   getGenerationNumber: vi.fn(),
   incrementGenerationNumber: vi.fn(),
-  
+
   // Population manipulation
   setPopulation: vi.fn(),
   addGenome: vi.fn(),
@@ -151,21 +151,21 @@ const mockPopulationInstance = {
   removeUnevaluated: vi.fn().mockResolvedValue(undefined),
   resetGenomes: vi.fn(),
   clear: vi.fn(),
-  
+
   // Evolution methods
   initialize: vi.fn().mockResolvedValue(undefined),
   generateRandomGenomes: vi.fn().mockResolvedValue([]),
   initializePopulationHelper: vi.fn().mockResolvedValue(undefined),
   initializePreparedPopulation: vi.fn().mockResolvedValue(undefined),
-  
+
   // Analysis methods
   getStats: vi.fn(),
   findSimilarGenomes: vi.fn(),
   pruneSimilar: vi.fn(),
-  
+
   // Service access
   getRunService: vi.fn(),
-  
+
   // Legacy aliases for backward compatibility
   getFittestGenomes: vi.fn(),
   getBestGenome: vi.fn(),

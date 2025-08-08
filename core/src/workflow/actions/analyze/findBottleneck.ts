@@ -3,9 +3,9 @@ import { MemorySchemaOptional } from "@core/node/schemas/memorySchema"
 import { WorkflowAnalysisPrompts } from "@core/prompts/analyzeWorkflow.p"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { Workflow } from "@core/workflow/Workflow"
-import type { ModelName } from "@runtime/settings/models"
 import { z } from "zod"
 
 // this is the first analysis file for workflows.

@@ -8,12 +8,12 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
-import type { ModelName } from "@runtime/settings/models"
 import chalk from "chalk"
 import { createHash } from "crypto"
 import {
