@@ -434,12 +434,12 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
 
   lgg.log(`\n📊 GP evolution complete:`)
   lgg.log(
-    `   Best Aggregated Fitness: ${bestGenome.getFitness()?.score.toFixed(3)}`
+    `Best Aggregated Fitness: ${bestGenome.getFitness()?.score.toFixed(3)}`
   )
-  lgg.log(`   Total Cost:  $${totalCost.toFixed(2)}`)
-  lgg.log(`   Generations: ${stats.length}`)
+  lgg.log(`Total Cost:  $${totalCost.toFixed(2)}`)
+  lgg.log(`Generations: ${stats.length}`)
   lgg.log(
-    `   Workflow Cases Evaluated: ${SELECTED_QUESTION.type === "csv" ? SELECTED_QUESTION.evaluation?.length || 0 : 1}`
+    `Workflow Cases Evaluated: ${SELECTED_QUESTION.type === "csv" ? SELECTED_QUESTION.evaluation?.length || 0 : 1}`
   )
 
   const overallBest = allRunResults.reduce((best, curr) =>
@@ -462,10 +462,10 @@ async function main() {
     lgg.log(chalk.green(`🚀 Starting Evolution Mode: ${mode.toUpperCase()}`))
 
     if (mode === "GP") {
-      lgg.log(`   Population Size: ${GP_POPULATION_SIZE}`)
-      lgg.log(`   Generations:     ${GP_GENERATIONS}`)
+      lgg.log(`Population Size: ${GP_POPULATION_SIZE}`)
+      lgg.log(`Generations:     ${GP_GENERATIONS}`)
     } else {
-      lgg.log(`   Iterations:      ${CULTURAL_EVOLUTION_ITERATIONS}`)
+      lgg.log(`Iterations:      ${CULTURAL_EVOLUTION_ITERATIONS}`)
     }
 
     const results = await runEvolution()

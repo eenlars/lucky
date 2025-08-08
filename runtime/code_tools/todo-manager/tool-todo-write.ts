@@ -42,7 +42,6 @@ const todoWrite = defineTool({
       const { todos } = params
 
       lgg.info("todoWrite: updating session todo list", {
-        workflowInvocationId,
         todoCount: todos.length,
         todos: todos.map((t) => ({
           id: t.id,
@@ -91,7 +90,9 @@ const todoWrite = defineTool({
           (t) => t.status === "completed"
         ).length
 
-        message += ` ${todos?.length ?? 0} total todos (${pendingCount} pending, ${inProgressCount} in progress, ${completedCount} completed).`
+        message += ` ${
+          todos?.length ?? 0
+        } total todos (${pendingCount} pending, ${inProgressCount} in progress, ${completedCount} completed).`
       }
 
       return Tools.createSuccess<TodoWriteResult>("todoWrite", {

@@ -78,7 +78,7 @@ export class BatchScraper {
       `got ${this.config.proxyCount} different proxies for concurrent processing:`
     )
     proxies.forEach((proxy, index) => {
-      lgg.log(`  proxy ${index + 1}: ${proxy.ip}:${proxy.port}`)
+      lgg.log(`proxy ${index + 1}: ${proxy.ip}:${proxy.port}`)
     })
 
     // process all batches
@@ -99,7 +99,11 @@ export class BatchScraper {
           `batch ${batchIndex} complete (${batchSize} locations). total businesses saved: ${updatedBusinesses.length}`
         )
         lgg.log(
-          `progress: ${stats.processedCount} processed, ${stats.skippedCount} skipped, ${stats.errorCount} errors (${stats.totalFailures} total failures), current time: ${new Date().toISOString()}`
+          `progress: ${stats.processedCount} processed, ${
+            stats.skippedCount
+          } skipped, ${stats.errorCount} errors (${
+            stats.totalFailures
+          } total failures), current time: ${new Date().toISOString()}`
         )
 
         // call progress callback if provided

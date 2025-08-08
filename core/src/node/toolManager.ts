@@ -37,14 +37,14 @@ export class ToolManager {
 
     if (CONFIG.logging.override.Tools) {
       lgg.info(`🔧 Initializing tools for node "${this.nodeId}"...`)
-      lgg.info(`  📋 MCP Tools: [${this.mcpToolNames.join(", ")}]`)
-      lgg.info(`  📋 Code Tools: [${this.codeToolNames.join(", ")}]`)
+      lgg.info(`📋 MCP Tools: [${this.mcpToolNames.join(", ")}]`)
+      lgg.info(`📋 Code Tools: [${this.codeToolNames.join(", ")}]`)
     }
 
     try {
       const [mcp, code] = await Promise.all([
         setupMCPForNode(this.mcpToolNames, this.workflowVersionId),
-        setupCodeToolsForNode(this.codeToolNames),
+        setupCodeToolsForNode(this.codeToolNames), // todo-this will never execute because we are not passing in a toolExecutionContext
       ])
       this.mcpTools = mcp
       this.codeTools = code
@@ -60,12 +60,12 @@ export class ToolManager {
         )
         if (mcpToolNames.length > 0) {
           lgg.info(
-            `  🔌 MCP Tools (${mcpToolNames.length}): ${mcpToolNames.join(", ")}`
+            `🔌 MCP Tools (${mcpToolNames.length}): ${mcpToolNames.join(", ")}`
           )
         }
         if (codeToolNames.length > 0) {
           lgg.info(
-            `  ⚙️  Code Tools (${codeToolNames.length}): ${codeToolNames.join(", ")}`
+            `⚙️  Code Tools (${codeToolNames.length}): ${codeToolNames.join(", ")}`
           )
         }
       }
@@ -105,6 +105,14 @@ export class ToolManager {
     const filteredTools = Object.fromEntries(
       Object.entries(allTools).filter(([_, tool]) => tool !== undefined)
     ) as ToolSet
+
+    if (Object.keys(filteredTools).length < Object.keys(allTools).length) {
+      lgg.error(
+        `Different number of tools found for node "${this.nodeId}". This is a bug.`,
+        filteredTools,
+        allTools
+      )
+    }
 
     return filteredTools
   }

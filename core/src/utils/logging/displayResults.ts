@@ -49,7 +49,7 @@ export function displayResults(
     lgg.log("\n📊 Iteration Summary:")
     culturalResults.results.forEach((result, index) => {
       lgg.log(
-        `   ${index + 1}: Fitness ${result.fitness.score.toFixed(3)}, Cost $${result.cost.toFixed(3)}`
+        `${index + 1}: Fitness ${result.fitness.score.toFixed(3)}, Cost $${result.cost.toFixed(3)}`
       )
     })
   } else if (type === "GP") {
@@ -61,7 +61,7 @@ export function displayResults(
     lgg.log("\n📊 Run Summary:")
     geneticResults.results.forEach((result, index) => {
       lgg.log(
-        `   ${index + 1}: Fitness ${result.finalFitness.toFixed(3)}, Cost $${result.totalCost.toFixed(2)}`
+        `${index + 1}: Fitness ${result.finalFitness.toFixed(3)}, Cost $${result.totalCost.toFixed(2)}`
       )
     })
   } else {
@@ -73,7 +73,7 @@ export function displayResults(
     lgg.log("\n📊 Run Summary:")
     geneticResults.results.forEach((result, index) => {
       lgg.log(
-        `   Run ${index + 1}: Fitness ${result.finalFitness.toFixed(3)}, Cost $${result.totalCost.toFixed(2)}`
+        `Run ${index + 1}: Fitness ${result.finalFitness.toFixed(3)}, Cost $${result.totalCost.toFixed(2)}`
       )
     })
   }

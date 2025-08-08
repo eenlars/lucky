@@ -2,7 +2,7 @@
  * Evolution configuration validation for genetic programming
  */
 
-import type { EvolutionSettings, _MutationParams } from "./evolution-types"
+import type { EvolutionSettings } from "./evolution-types"
 
 /**
  * Validation errors for evolution configuration
@@ -99,10 +99,10 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
   if (errors.length > 0) {
     const errorMessage = [
       "Evolution configuration validation failed:",
-      ...errors.map((e) => `  • ${e}`),
+      ...errors.map((e) => `• ${e}`),
       "",
       warnings.length > 0 ? "Warnings:" : "",
-      ...warnings.map((w) => `  ⚠ ${w}`),
+      ...warnings.map((w) => `⚠ ${w}`),
     ]
       .filter(Boolean)
       .join("\n")
@@ -113,7 +113,7 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
   // Log warnings if any
   if (warnings.length > 0) {
     console.warn("Evolution configuration warnings:")
-    warnings.forEach((w) => console.warn(`  ⚠ ${w}`))
+    warnings.forEach((w) => console.warn(`⚠ ${w}`))
   }
 }
 

@@ -1,25 +1,32 @@
 import type { NodeLog } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI"
-import { zodToJson } from "@core/messages/utils/zodToJson"
 import {
   toolUsageToString,
   type StrategyResult,
 } from "@core/node/strategies/utils"
-import {
-  isVercelAIStructure,
-  isZodSchema,
-} from "@core/tools/utils/schemaDetection"
+import { explainTools } from "@core/tools/any/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { CONFIG } from "@runtime/settings/constants"
 import type { CoreMessage, ToolSet } from "ai"
+import chalk from "chalk"
 import { z } from "zod"
 
 const verbose = CONFIG.logging.override.Tools
-const verboseOverride = false
+const verboseOverride = true
 
 // TODO-later: if we want to invoke other nodes from this node, this can be part of the strategy.
+// this means no message-based system, so it needs thinking.
+
+export type SelectToolStrategyOptions<T extends ToolSet> = {
+  tools: T
+  messages: CoreMessage[]
+  nodeLogs: NodeLog<unknown>[]
+  roundsLeft: number
+  systemMessage: string
+  model: ModelName
+}
 
 /**
  * V2: Decides next action: terminate or select one tool with reasoning.
@@ -28,13 +35,11 @@ const verboseOverride = false
  * @returns {type: 'tool', toolName: keyof T, reasoning: string} or {type: 'terminate', reasoning: string}
  */
 export async function selectToolStrategyV2<T extends ToolSet>(
-  tools: T,
-  messages: CoreMessage[],
-  nodeLogs: NodeLog<any>[],
-  roundsLeft: number,
-  systemMessage: string,
-  model: ModelName
+  options: SelectToolStrategyOptions<T>
 ): Promise<StrategyResult<T>> {
+  const { tools, messages, nodeLogs, roundsLeft, systemMessage, model } =
+    options
+
   if (isNir(tools) || Object.keys(tools).length === 0) {
     // this should never happen.
     lgg.error("No tools available.", { tools, messages, roundsLeft })
@@ -42,30 +47,6 @@ export async function selectToolStrategyV2<T extends ToolSet>(
   }
 
   const toolKeys = Object.keys(tools) as (keyof T)[]
-
-  const argsEnabled = CONFIG.tools.showParameterSchemas
-  const fullToolListWithArgs = toolKeys
-    .map((key) => {
-      const tool = tools[key]
-      const params = tool.parameters
-
-      let argsString = "not shown"
-      if (argsEnabled) {
-        if (isVercelAIStructure(params)) {
-          argsString = JSON.stringify(params.jsonSchema)
-        } else if (isZodSchema(params)) {
-          argsString = zodToJson(params)
-        } else {
-          argsString = JSON.stringify(params)
-        }
-      }
-
-      return `Tool: ${String(key)}\nDescription: ${tool.description}\nArgs: ${argsString}`
-    })
-    .join("\n")
-
-  // Use provided system message as primary directive
-  const primaryInstruction = systemMessage
 
   // Define schema for structured output
   const DecisionSchema = z.object({
@@ -80,6 +61,8 @@ export async function selectToolStrategyV2<T extends ToolSet>(
     reasoning: z.string(),
     plan: z.string().optional().describe("only if using a tool"),
   })
+
+  const toolUsage = toolUsageToString(nodeLogs, 1000)
 
   // Analysis prompt
   const analysisMessages: CoreMessage[] = [
@@ -111,7 +94,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       
       #PRIMARY INSTRUCTION (MOST IMPORTANT)
       This is the node's core instruction that MUST be followed:
-      ${primaryInstruction}
+      ${systemMessage}
       
       CRITICAL: If the primary instruction contains action verbs (ask, find, search, write, create, etc.), 
       you MUST use the appropriate tool. Do NOT terminate if there are explicit action instructions.
@@ -125,7 +108,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
         !isNir(nodeLogs)
           ? `
       #these were the past calls (NOTE: if you see repeated calls, you should either terminate or do something else.):
-      ${toolUsageToString(nodeLogs)}`
+      ${toolUsage}`
           : "no past calls"
       }
     `,
@@ -133,7 +116,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
     {
       role: "user",
       content: `
-      Available tools:\n${fullToolListWithArgs}
+      Available tools:\n${explainTools(tools)}
     `,
     },
   ]
@@ -149,21 +132,29 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       messages: analysisMessages,
       mode: "structured",
       schema: DecisionSchema,
+      debug: true,
       opts: {
         reasoning: true,
       },
     })
 
     if (success && decision) {
-      if (decision.plan && (verbose || verboseOverride))
-        lgg.log(
-          "plan:",
-          JSON.stringify(decision, null, 2),
-          "context:",
-          nodeLogs,
-          "history:",
-          messages
+      if (decision.plan && (verbose || verboseOverride)) {
+        console.log(chalk.bold("decision:", JSON.stringify(decision, null, 2)))
+        console.log(
+          chalk.bold(
+            "analysisMessages:",
+            JSON.stringify(analysisMessages, null, 2)
+          )
         )
+        // console.log(chalk.blueBright.bold("plan:", decision.plan))
+        // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
+        // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
+
+        // console.log(chalk.yellow.bold("toolUsage:", toolUsage))
+        // console.log(chalk.cyan.bold("model:", model))
+        // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
+      }
 
       if (decision.type === "terminate") {
         return {
@@ -203,7 +194,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       usdCost: usdCost ?? 0,
     }
   } catch (error) {
-    lgg.error("Error in selectToolStrategyV2:", error)
+    console.error("Error in selectToolStrategyV2:", error)
     let message = "Error in strategy selection."
     if (typeof error === "string") {
       message = error

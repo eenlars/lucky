@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
       exclude: [...configDefaults.exclude, "**/e2e/**"],
       environment: "node",
       globals: true,
-      setupFiles: ["./src/__tests__/test-setup.ts"],
+      setupFiles: ["./src/__tests__/integration-setup.ts"],
       testTimeout: 120000,
       coverage: {
         provider: "v8",

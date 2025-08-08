@@ -1,6 +1,7 @@
+import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { getDefaultModels } from "@runtime/settings/models"
-import type { ModelNameV2 } from "@core/utils/spending/models.types"
 import { describe, expect, it } from "vitest"
+import { InvocationPipeline } from "../InvocationPipeline"
 
 describe("InvocationPipeline Real Integration", () => {
   // FAILING: This test suite is failing because the todoWrite tool isn't being executed properly
@@ -20,8 +21,8 @@ describe("InvocationPipeline Real Integration", () => {
   }
 
   const extractTestResult = (
-    pipeline: any,
-    pipelineResult: any
+    pipeline: InvocationPipeline,
+    pipelineResult: NodeInvocationResult
   ): TestResult => {
     const toolUsage = pipeline.getToolUsage()
     const toolCalls = toolUsage.outputs.filter(
@@ -205,6 +206,7 @@ describe("InvocationPipeline Real Integration", () => {
     const verification = await sendAI({
       model: getDefaultModels().default,
       mode: "text",
+      debug: true,
       messages: [
         {
           role: "user",
@@ -353,10 +355,7 @@ describe("InvocationPipeline Real Integration", () => {
   }, 180000) // 3 minute timeout for multi-step execution
 
   // Test with all available models from pricing.types.ts (except kimi)
-  const testModels = [
-    getDefaultModels().medium,
-    getDefaultModels().high,
-  ]
+  const testModels = [getDefaultModels().medium, getDefaultModels().high]
 
   testModels.forEach((modelName) => {
     it(`should work with model ${modelName}`, async () => {

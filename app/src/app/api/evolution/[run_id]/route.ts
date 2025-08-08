@@ -103,26 +103,22 @@ export async function GET(
   if (generations && generations.length > 0) {
     console.log(`[Evolution API] Run ${run_id} debug info:`)
     generations.forEach((gen: any) => {
-      console.log(`  Generation ${gen.number}:`)
+      console.log(`Generation ${gen.number}:`)
       console.log(
-        `    Best workflow version: ${gen.best_workflow_version?.wf_version_id || "none"}`
+        `Best workflow version: ${gen.best_workflow_version?.wf_version_id || "none"}`
       )
       if (gen.workflow_invocations && gen.workflow_invocations.length > 0) {
-        console.log(
-          `    Workflow invocations: ${gen.workflow_invocations.length}`
-        )
+        console.log(`Workflow invocations: ${gen.workflow_invocations.length}`)
         gen.workflow_invocations.forEach((inv: any) => {
-          console.log(`      Invocation ${inv.wf_invocation_id}:`)
-          console.log(`        Version: ${inv.wf_version_id}`)
-          console.log(
-            `        Node invocations: ${inv.node_invocations?.length || 0}`
-          )
+          console.log(`Invocation ${inv.wf_invocation_id}:`)
+          console.log(`Version: ${inv.wf_version_id}`)
+          console.log(`Node invocations: ${inv.node_invocations?.length || 0}`)
           if (inv.node_invocations && inv.node_invocations.length > 0) {
             const versions = new Set(
               inv.node_invocations.map((ni: any) => ni.wf_version_id)
             )
             console.log(
-              `        Unique workflow versions in nodes: ${Array.from(versions).join(", ")}`
+              `Unique workflow versions in nodes: ${Array.from(versions).join(", ")}`
             )
           }
         })

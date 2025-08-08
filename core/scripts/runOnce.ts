@@ -67,11 +67,11 @@ async function runOnce(setupFilePath?: string) {
     const workflowInvocationId = runner.getWorkflowInvocationId()
     lgg.log(`\n📊 Results (aggregated ${runner.getWorkflowIO().length} cases):`)
     lgg.log(
-      `   Average Fitness Score: ${evaluationResult.fitness.score.toFixed(3)}`
+      `Average Fitness Score: ${evaluationResult.fitness.score.toFixed(3)}`
     )
-    lgg.log(`   Total Cost: $${evaluationResult.cost.toFixed(2)}`)
+    lgg.log(`Total Cost: $${evaluationResult.cost.toFixed(2)}`)
     lgg.log(
-      `   Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`
+      `Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`
     )
 
     // save minimal results

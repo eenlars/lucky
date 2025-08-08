@@ -29,9 +29,7 @@ const todoRead = defineTool({
     try {
       const workflowInvocationId = externalContext.workflowInvocationId
 
-      lgg.info("todoRead: reading session todo list", {
-        workflowInvocationId,
-      })
+      lgg.info("todoRead: reading session todo list")
 
       // create context store for this workflow session
       const store = createContextStore("supabase", workflowInvocationId)

@@ -54,14 +54,14 @@ export async function runMultiStepLoopV2Helper(
 
   // todo-memoryleak: toolUsage array grows unbounded in long-running processes
   for (let round = 0; round < maxRounds; round++) {
-    const strategy = await selectToolStrategyV2(
+    const strategy = await selectToolStrategyV2({
       tools,
-      currentMessages,
-      toolUsage,
-      maxRounds - round,
-      ctx.nodeSystemPrompt,
-      ctx.model
-    )
+      messages: currentMessages,
+      nodeLogs: toolUsage,
+      roundsLeft: maxRounds - round,
+      systemMessage: ctx.nodeSystemPrompt,
+      model: ctx.model,
+    })
 
     // Track cost from strategy selection
     addCost(strategy.usdCost)
@@ -173,8 +173,9 @@ export async function runMultiStepLoopV2Helper(
       error,
       usdCost,
     } = await sendAI({
-      model: getDefaultModels().medium,
+      model: ctx.model,
       mode: "tool",
+      debug: true,
       messages: [
         ...currentMessages,
         {

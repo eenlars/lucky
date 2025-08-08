@@ -126,7 +126,7 @@ export class Workflow {
 
     if (inactiveToolsUsed.length > 0) {
       lgg.error("🚨 Workflow verification failed - inactive tools detected:")
-      inactiveToolsUsed.forEach((error) => lgg.error(`   - ${error}`))
+      inactiveToolsUsed.forEach((error) => lgg.error(`- ${error}`))
     }
   }
 

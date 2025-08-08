@@ -8,7 +8,7 @@ import type { NodeInvocationCallContext } from "../InvocationPipeline"
 export interface MultiStepLoopContext {
   ctx: NodeInvocationCallContext
   tools: ToolSet
-  toolUsage: NodeLog<any>[]
+  toolUsage: NodeLog<unknown>[]
   model: ModelName
   maxRounds: number
   verbose: boolean
@@ -17,7 +17,10 @@ export interface MultiStepLoopContext {
   getTotalCost: () => number
 }
 
-export const toolUsageToString = (usage: NodeLog<any>[]): string => {
+export const toolUsageToString = (
+  usage: NodeLog<unknown>[],
+  truncate = 100
+): string => {
   if (!usage) {
     lgg.error("toolUsageToString: usage is null/undefined", usage)
     return ""
@@ -26,10 +29,13 @@ export const toolUsageToString = (usage: NodeLog<any>[]): string => {
   return usage
     .map((u) => {
       if (!u) return ""
-      const data = u.return && u.return.data ? u.return.data : u.return
+      const data =
+        u.return && typeof u.return === "object" && "data" in u.return
+          ? u.return.data
+          : u.return
       switch (u.type) {
         case "tool":
-          return `tool:"${u.name}"\n${truncater(JSON.stringify(data), 100)}\n${u.summary ? `summary:${u.summary}` : ""}`
+          return `tool:"${u.name}"\n${truncater(JSON.stringify(data), truncate)}\n${u.summary ? `summary:${u.summary}` : ""}`
         case "text":
           return `text:${u.return}`
         case "error":

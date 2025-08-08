@@ -13,7 +13,7 @@ export const setupCodeToolsForNode = async (
 ): Promise<ToolSet> => {
   // initialize the code tool registry
   await codeToolRegistry.initialize()
-  
+
   if (isNir(toolNames)) {
     return {}
   }

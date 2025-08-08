@@ -215,24 +215,6 @@ export const providersV2 = {
       context_length: 131072,
       active: false,
     },
-    "qwen/qwq-32b:free": {
-      id: "qwen/qwq-32b:free",
-      input: 0,
-      "cached-input": 0,
-      output: 0,
-      info: "IQ:6/10;speed:slow;pricing:low;",
-      context_length: 32768,
-      active: false,
-    },
-    "deepseek/deepseek-r1-0528:free": {
-      id: "deepseek/deepseek-r1-0528:free",
-      input: 0,
-      "cached-input": 0,
-      output: 0,
-      info: "IQ:7/10;speed:slow;pricing:low;",
-      context_length: 32768,
-      active: false,
-    },
     "mistralai/mistral-small-3.2-24b-instruct": {
       id: "mistralai/mistral-small-3.2-24b-instruct",
       input: 0.055,
@@ -243,7 +225,6 @@ export const providersV2 = {
       active: true,
     },
   },
-
   // Groq API
   groq: {
     "openai/gpt-oss-20b": {

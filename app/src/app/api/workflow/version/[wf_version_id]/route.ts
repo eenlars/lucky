@@ -1,4 +1,4 @@
-import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(
@@ -8,16 +8,9 @@ export async function GET(
   try {
     const { wf_version_id } = await params
 
-    const workflowVersion = await retrieveWorkflowVersion(wf_version_id)
+    const workflowConfig = await loadFromDatabaseForDisplay(wf_version_id)
 
-    if (!workflowVersion) {
-      return NextResponse.json(
-        { error: "Workflow version not found" },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json(workflowVersion)
+    return NextResponse.json({ dsl: workflowConfig })
   } catch (error) {
     console.error("Failed to load workflow version:", error)
 

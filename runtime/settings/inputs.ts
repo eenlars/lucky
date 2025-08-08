@@ -197,7 +197,12 @@ const QUESTIONS = {
     expectedOutputSchema: ExpectedOutputSchema,
     workflowId: "wf-b-corp-sample",
   },
+  promptOnly: {
+    type: "prompt-only",
+    goal: "I want to have dinner in bilbao with 5 friends. Find me the best restaurants in bilbao. no pizza.",
+    workflowId: "wf-prompt-test",
+  },
 } satisfies Record<string, EvaluationInput>
 
 export { QUESTIONS }
-export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.ritualsHard
+export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.promptOnly

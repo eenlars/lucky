@@ -57,6 +57,7 @@ export interface NodeInvocationCallContext extends ToolExecutionContext {
   model: ModelName
   workflowConfig?: WorkflowConfig // Added for hierarchical role inference
   skipDatabasePersistence?: boolean
+  toolStrategyOverride?: "v2" | "v3"
 }
 
 /* -------------------------------------------------------------------------- */
@@ -164,7 +165,11 @@ export class InvocationPipeline {
         CONFIG.tools.experimentalMultiStepLoop &&
         Object.keys(this.tools)?.length > 0
       ) {
-        await this.runMultiStepLoopV2()
+        if (this.ctx.toolStrategyOverride === "v3") {
+          await this.runMultiStepLoopV3()
+        } else {
+          await this.runMultiStepLoopV2()
+        }
 
         // Sync the toolUsage and cost from multi-step loop result
         if (this.processedResponse && this.processedResponse.toolUsage) {

@@ -28,9 +28,9 @@ export const DEFAULT_MODELS = {
     summary: "google/gemini-2.5-flash-lite",
     nano: "google/gemini-2.5-flash-lite",
     low: "google/gemini-2.5-flash-lite",
-    medium: "google/gemini-2.5-pro-preview",
+    medium: "openai/gpt-4.1-mini",
     high: "google/gemini-2.5-pro-preview",
-    default: "google/gemini-2.5-flash-lite",
+    default: "openai/gpt-4.1-nano",
     fitness: "google/gemini-2.5-pro-preview",
     reasoning: "anthropic/claude-sonnet-4",
     fallback: "switchpoint/router",
@@ -79,6 +79,7 @@ export const getActiveModelNames = (): AllowedModelName<
 }
 
 export const experimentalModels = {
+  gpt35turbo: providersV2[MODEL_CONFIG.provider]["openai/gpt-3.5-turbo"],
   gpt41: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1"],
   gpt41mini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-mini"],
   gpt41nano: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-nano"],

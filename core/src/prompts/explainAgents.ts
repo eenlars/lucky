@@ -33,9 +33,7 @@ export const mapModelNameToEasyName = (
   if (modelName === "openai/gpt-4.1") return "high"
   if (modelName === "anthropic/claude-sonnet-4") return "high"
   if (modelName === "google/gemini-2.5-flash-lite") return "high"
-  if (modelName === "qwen/qwq-32b:free") return "low"
   if (modelName === "x-ai/grok-4") return "high"
-  if (modelName === "deepseek/deepseek-r1-0528:free") return "low"
   if (modelName === "moonshotai/kimi-k2") return "low"
 
   return "medium"

@@ -94,6 +94,7 @@ export type PreparedStepsFunction<
 
 interface RequestBase {
   messages: CoreMessage[]
+  debug?: boolean
   model?: ModelName
   retries?: number
   opts?: {
@@ -550,9 +551,17 @@ export const sendAI: SendAI = async (
   // EXAMPLE OUTPUT of callerFile => '    at Function.mutatePrompt (/Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/core/improvement/gp/operators/Mutations.ts'
 
   try {
+    const start = Date.now()
     // lgg.info(`Sending AI request from ${extractedFileName}`)
     // return await limiter.schedule(() => _sendAIInternal(req))
-    return await _sendAIInternal(req)
+    const result = await _sendAIInternal(req)
+    const end = Date.now()
+    const duration = end - start
+    // if (req.debug)
+    // lgg.info(
+    //   `sendAI duration for model ${req.model ?? "unknown"}: ${duration}ms`
+    // )
+    return result
   } catch (error) {
     const extractedFileName = callerFile?.split("/").pop()
     console.error(

@@ -20,7 +20,7 @@ async function testAutoDiscovery() {
     const discoveredTools = await codeToolAutoDiscovery.discoverTools()
     lgg.log(`Found ${discoveredTools.length} tools:`)
     discoveredTools.forEach((tool) => {
-      lgg.log(`  - ${tool.name}: ${tool.description}`)
+      lgg.log(`- ${tool.name}: ${tool.description}`)
     })
 
     // Test full setup
@@ -36,7 +36,7 @@ async function testAutoDiscovery() {
     const allTools = codeToolRegistry.getAllTools()
     lgg.log(`All registered tools:`)
     allTools.forEach((tool) => {
-      lgg.log(`  - ${tool.name}: ${tool.description}`)
+      lgg.log(`- ${tool.name}: ${tool.description}`)
     })
 
     // Test AI tool registry

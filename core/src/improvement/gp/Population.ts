@@ -32,7 +32,7 @@ export class Population {
   ) {
     lgg.info(`[Population] Configuration validated successfully:`)
     lgg.info(
-      `  Population: ${config.populationSize}, Generations: ${config.generations}`
+      `Population: ${config.populationSize}, Generations: ${config.generations}`
     )
     this.runService = runService
   }
