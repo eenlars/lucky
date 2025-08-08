@@ -1,8 +1,31 @@
-import { describe, expect, it } from "vitest"
+import { describe, it, expect, beforeEach, vi } from "vitest"
+import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { llmGuard } from "../llmGuard"
+import { sendAI } from "@core/messages/api/sendAI"
 
+vi.mock("@core/messages/api/sendAI")
+
+/**
+ * Unit tests for llmGuard function
+ * These tests mock the AI calls to test the guard logic without making real API requests
+ * For integration tests with real AI calls, see llmGuard.integration.test.ts (if exists)
+ */
 describe("llmGuard", () => {
+  beforeEach(() => {
+    setupCoreTest()
+    vi.clearAllMocks()
+  })
+
   it("should validate news content and return valid result", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "OK", reasoning: undefined } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const newsContent =
       "Breaking news: Dutch parliament discusses new climate policies. Headlines include major environmental reforms and renewable energy initiatives."
 
@@ -16,6 +39,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should reject non-news content and provide reason", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "ERROR", reasoning: "Content contains cooking recipes, not news content" } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const nonNewsContent =
       "Welcome to our cooking blog! Here are some delicious recipes for pasta and pizza. Check out our latest cooking tips and kitchen gadgets."
 
@@ -31,6 +63,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should validate technical content correctly", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "OK", reasoning: undefined } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const technicalContent =
       "function calculateSum(a, b) { return a + b; } console.log('Hello World');"
 
@@ -44,6 +85,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should reject inappropriate content with detailed reason", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "ERROR", reasoning: "Content contains advertisements and sales pitches, not educational material" } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const inappropriateContent =
       "This is some random text about shopping and advertisements. Buy now! Special offers available!"
 
@@ -59,6 +109,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should handle whitespace-only content", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "ERROR", reasoning: "Content contains only whitespace characters" } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const whitespaceContent = "   \n\t   "
 
     const result = await llmGuard(
@@ -71,6 +130,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should validate Dutch news content specifically", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "OK", reasoning: undefined } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const dutchNewsContent =
       "Nieuws vandaag: Regering kondigt nieuwe maatregelen aan. Breaking: Belangrijke ontwikkelingen in de politiek."
 
@@ -84,6 +152,15 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should provide specific reason for language mismatch", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: { text: "ERROR", reasoning: "Content is in English, but only Dutch language is allowed" } as any,
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    } as any)
+
     const englishContent =
       "Breaking news: New policies announced by government officials today."
 
@@ -97,4 +174,33 @@ describe("llmGuard", () => {
     expect(typeof result.reason).toBe("string")
     expect(result.reason!.length).toBeGreaterThan(0)
   }, 10000)
+
+  it("should default to valid when API call fails", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: false,
+      data: undefined as any,
+      error: "API call failed",
+      usdCost: 0,
+    } as any)
+
+    const content = "Any content"
+    const result = await llmGuard(content, "Some guard rules")
+
+    expect(result.isValid).toBe(true)
+    expect(result.reason).toBeUndefined()
+  })
+
+  it("should handle missing data in successful response", async () => {
+    vi.mocked(sendAI).mockResolvedValue({
+      success: true,
+      data: null as any,
+      usdCost: 0,
+    } as any)
+
+    const content = "Any content"
+    const result = await llmGuard(content, "Some guard rules")
+
+    expect(result.isValid).toBe(true)
+    expect(result.reason).toBeUndefined()
+  })
 })

@@ -12,6 +12,13 @@ export default defineConfig(({ mode }) => {
   }
   return {
     plugins: [tsconfigPaths()],
+    resolve: {
+      alias: {
+        "@core": new URL("./src", import.meta.url).pathname,
+        "@runtime": new URL("../runtime", import.meta.url).pathname,
+        "@shared": new URL("../shared/src", import.meta.url).pathname,
+      },
+    },
     test: {
       exclude: [
         ...configDefaults.exclude,
@@ -20,14 +27,14 @@ export default defineConfig(({ mode }) => {
       ],
       environment: "node",
       globals: true,
-      setupFiles: ["./src/test-setup.ts"],
+      setupFiles: ["./src/__tests__/test-setup.ts"],
       testTimeout: 30000, // 30 seconds for complex tests
       pool: "forks",
       coverage: {
         provider: "v8", // 'v8' or 'istanbul'
         reporter: ["text", "html"], // console summary + HTML files
         reportsDirectory: "coverage", // output dir
-        include: ["src/core/**/*.{ts,js}"], // your source files
+        include: ["src/**/*.{ts,js}"], // your source files
         exclude: ["node_modules/"], // skip deps
         all: true, // include files without any tests
       },

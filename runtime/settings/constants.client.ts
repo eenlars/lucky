@@ -4,12 +4,10 @@
  */
 
 import type { FlowCoordinationType, FlowRuntimeConfig } from "@core/types"
-import { LoggingTypes } from "@runtime/settings/logging"
+import { LoggingTypes } from "./logging"
 import { EVOLUTION_CONFIG } from "./evolution"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
-import { MODEL_CONFIG } from "@runtime/settings/models"
-
-import { getDefaultModels } from "@core/utils/spending/defaultModels"
+import { MODEL_CONFIG, getDefaultModels } from "./models"
 
 export const MODELS = getDefaultModels()
 export { getDefaultModels }

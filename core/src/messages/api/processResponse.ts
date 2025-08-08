@@ -75,15 +75,13 @@ export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is 
  * see: StepResult<ToolSet>[] in vercel ai sdk types.
  * example: @ai-sdk/openai -> createOpenAI() -> parallelToolCalls parameter
  */
-// todo-typesafety: replace 'any' default generic with proper constraint - violates CLAUDE.md "we hate any"
-export interface NodeLogs<T = any> {
+export interface NodeLogs<T = unknown> {
   outputs: NodeLog<T>[]
   totalCost: number
 }
 
-export const NodeLogsJustResponse = <T>(toolUsage: NodeLogs<T>): T[] => {
-  // todo-typesafety: unsafe 'as' type assertion - violates CLAUDE.md "we hate as"
-  return toolUsage.outputs.map((output) => output.return) as T[]
+export const NodeLogsJustResponse = <T>(toolUsage: NodeLogs<T>): (T | string)[] => {
+  return toolUsage.outputs.map((output) => output.return)
 }
 
 export const generateSummary = async (content: string): Promise<RS<string>> => {
@@ -116,8 +114,7 @@ export const processVercelResponse = async ({
   summary,
   nodeId,
 }: {
-  // todo-typesafety: replace 'any' generic with proper type - violates CLAUDE.md "we hate any"
-  response: GenerateTextResult<ToolSet, any>
+  response: GenerateTextResult<ToolSet, unknown>
   model: ModelName
   summary?: string
   nodeId: string
@@ -182,8 +179,7 @@ export function processModelResponse({
   nodeId,
   summary,
 }: {
-  // todo-typesafety: replace 'any' generic with proper type - violates CLAUDE.md "we hate any"
-  response: GenerateTextResult<ToolSet, any>
+  response: GenerateTextResult<ToolSet, unknown>
   modelUsed: ModelName
   nodeId: string
   summary?: string
@@ -292,7 +288,7 @@ export const getResponseContent = (
 // it returns the summary, or the full output.
 // if the last node is not a terminal node, it looks for the last summary, if not found, it returns null.
 export const getFinalOutputNodeInvocation = (
-  response: NodeLog<any>[]
+  response: NodeLog<unknown>[]
 ): string | null => {
   if (isNir(response)) return null
 
@@ -336,8 +332,11 @@ export const getFinalOutputNodeInvocation = (
   // if no summary found, return null
   for (let i = filterActionableSteps.length - 1; i >= 0; i--) {
     const output = filterActionableSteps[i]
-    if (output.type === "text" || output.type === "tool") {
+    if (output.type === "text") {
       return output.return
+    }
+    if (output.type === "tool") {
+      return typeof output.return === "string" ? output.return : JSON.stringify(output.return)
     }
   }
 

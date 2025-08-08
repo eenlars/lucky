@@ -1,9 +1,14 @@
+import { describe, it, expect, beforeEach } from "vitest"
+import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { InMemoryContextStore } from "@core/utils/persistence/memory/MemoryStore"
 import { SupabaseContextStore } from "@core/utils/persistence/memory/SupabaseStore"
-import { describe, expect, it } from "vitest"
 
 describe("ContextStore", () => {
+  beforeEach(() => {
+    setupCoreTest()
+  })
+
   describe("InMemoryContextStore", () => {
     it("should implement the enhanced interface with summaries", async () => {
       const store = createContextStore("memory", "test-workflow")

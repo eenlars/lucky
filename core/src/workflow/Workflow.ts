@@ -7,7 +7,6 @@ import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import { INACTIVE_TOOLS } from "@core/tools/tool.types"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
-import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
@@ -52,18 +51,6 @@ import { CONFIG } from "@runtime/settings/constants"
 import type { ModelName } from "@runtime/settings/models"
 import { createHash } from "crypto"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
-
-type CreateFromIdParams =
-  | {
-      workflowInvocationId: string
-      evaluationInput?: never
-      versionId?: never
-    }
-  | {
-      workflowInvocationId?: never
-      evaluationInput: EvaluationInput
-      versionId: string
-    }
 
 type GenomeFeedback = string | null
 /**
@@ -168,70 +155,6 @@ export class Workflow {
       workflowVersionId
     )
     return wf
-  }
-
-  public static async createFromId(params: CreateFromIdParams): Promise<{
-    workflow: Workflow
-    fitness?: FitnessOfWorkflow
-    feedback?: string
-  }> {
-    const { workflowInvocationId, versionId, evaluationInput } = params
-    guard(
-      workflowInvocationId || versionId,
-      "Either workflowInvocationId or versionId must be provided"
-    )
-    let _evaluationInput: EvaluationInput | undefined = evaluationInput
-    let _versionId: string | undefined = versionId
-    const _nodes: WorkflowNodeConfig[] | undefined = []
-    let _fitness: FitnessOfWorkflow | undefined = undefined
-    let _feedback: string | undefined = undefined
-
-    if (workflowInvocationId) {
-      // Fetch the workflow invocation
-      const { data: invocation, error: invError } = await supabase
-        .from("WorkflowInvocation")
-        .select("*")
-        .eq("wf_invocation_id", workflowInvocationId)
-        .single()
-
-      if (invError || !invocation) {
-        throw new Error(
-          `Invocation not found: ${invError?.message || "No data"}`
-        )
-      }
-
-      _evaluationInput = invocation.workflow_input as unknown as EvaluationInput
-      _versionId = invocation.wf_version_id
-      _fitness = invocation.fitness as unknown as FitnessOfWorkflow
-      _feedback = invocation.feedback as unknown as string
-    }
-
-    guard(_evaluationInput, "Evaluation input not found")
-    guard(_versionId, "Version ID not found")
-
-    // Fetch the workflow version to get the goal (commit_message)
-    const { data: version, error: verError } = await supabase
-      .from("WorkflowVersion")
-      .select("*")
-      .eq("wf_version_id", _versionId)
-      .single()
-
-    if (verError || !version) {
-      throw new Error(`Version not found: ${verError?.message || "No data"}`)
-    }
-
-    const config = version.dsl as unknown as WorkflowConfig
-
-    const wf = Workflow.create({
-      config,
-      evaluationInput: _evaluationInput,
-      parent1Id: undefined,
-      parent2Id: undefined,
-      evolutionContext: undefined,
-      toolContext: undefined,
-      workflowVersionId: _versionId,
-    })
-    return { workflow: wf, fitness: _fitness, feedback: _feedback }
   }
 
   public getConfig(): WorkflowConfig {

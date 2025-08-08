@@ -8,6 +8,43 @@ import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
+// Mock runtime constants
+vi.mock("@runtime/settings/constants", () => ({
+  CONFIG: {
+    tools: {
+      showParameterSchemas: true,
+      inactive: new Set(),
+      defaultTools: new Set(),
+      maxToolsPerAgent: 6,
+    },
+    models: {
+      inactive: new Set(),
+    },
+    logging: {
+      level: "info",
+      override: {
+        Tools: false,
+        API: false,
+      },
+    },
+    limits: {
+      rateWindowMs: 1000,
+      maxRequestsPerWindow: 100,
+      maxCostUsdPerRun: 100,
+      enableSpendingLimits: false,
+      maxConcurrentWorkflows: 10,
+      maxConcurrentAIRequests: 5,
+    },
+    workflow: {
+      parallelExecution: true,
+    },
+  },
+  MODELS: {
+    default: "openai/gpt-4.1-mini",
+  },
+  PATHS: {},
+}))
+
 describe("Complete Fix for SearchGoogleMaps Validation", () => {
   it("should auto-correct invalid maxResultCount parameters using Zod schema", () => {
     // Create the actual schema used by searchGoogleMaps (from commonSchemas.resultCount)

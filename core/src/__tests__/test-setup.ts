@@ -1,8 +1,35 @@
-// Mock environment variables
+// vitest setup file
+import { beforeEach, vi } from "vitest"
+
+// Make vi globally available
+declare global {
+  var vi: typeof import("vitest").vi
+}
+global.vi = vi
+
+// Set up environment variables for all tests
+process.env.GOOGLE_API_KEY = "test-google-key"
+process.env.OPENAI_API_KEY = "test-openai-key"
+process.env.SERPAPI_API_KEY = "test-serp-key"
+process.env.ANTHROPIC_API_KEY = "test-anthropic-key"
+process.env.TAVILY_API_KEY = "test-tavily-key"
+process.env.FIRECRAWL_API_KEY = "test-firecrawl-key"
+process.env.SUPABASE_ANON_KEY = "test-supabase-key"
+process.env.SUPABASE_PROJECT_ID = "test-project-id"
+process.env.OPENROUTER_API_KEY = "test-openrouter-key"
+process.env.XAI_API_KEY = "test-xai-key"
+process.env.MAPBOX_TOKEN = "test-mapbox-token"
+process.env.HF_TOKEN = "test-hf-token"
+process.env.HUGGING_FACE_API_KEY = "test-hf-key"
+process.env.WEBSHARE_API_KEY = "test-webshare-key"
+
+// Universal mocks for all tests - applied at the top level to prevent import issues
+
+// Mock environment variables to prevent validation failures  
 vi.mock("@core/utils/env.mjs", () => ({
   envi: {
     GOOGLE_API_KEY: "test-google-key",
-    OPENAI_API_KEY: "test-openai-key",
+    OPENAI_API_KEY: "test-openai-key", 
     SERPAPI_API_KEY: "test-serp-key",
     ANTHROPIC_API_KEY: "test-anthropic-key",
     TAVILY_API_KEY: "test-tavily-key",
@@ -18,7 +45,7 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
-// Mock runtime constants - comprehensive CONFIG
+// Mock runtime constants to prevent import resolution issues
 vi.mock("@runtime/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
@@ -29,7 +56,6 @@ vi.mock("@runtime/settings/constants", () => ({
         API: false,
         GP: false,
         Database: false,
-        Summary: false,
       },
     },
     workflow: {
@@ -138,15 +164,11 @@ vi.mock("@runtime/settings/constants", () => ({
   },
 }))
 
-// Mock Supabase client
+// Mock Supabase client to prevent database connection issues
 vi.mock("@core/utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
-      insert: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
-        }),
-      }),
+      insert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
       update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
@@ -160,37 +182,8 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { PATHS } from "@runtime/settings/constants"
-import { describe, expect, it, vi } from "vitest"
-import { WorkflowConfigHandler } from "../WorkflowLoader"
-
-describe("loadWorkflow", () => {
-  it("should load workflow setup asynchronously", async () => {
-    const workflow =
-      await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
-      )
-
-    expect(workflow).toBeDefined()
-    expect(workflow.entryNodeId).toBeDefined()
-
-    // Check that nodes have required properties
-    expect(workflow.nodes).toBeDefined()
-    expect(Array.isArray(workflow.nodes)).toBe(true)
-    expect(workflow.nodes.length).toBeGreaterThan(0)
-  })
-
-  it("should cache workflow setup on subsequent calls", async () => {
-    const workflow1 =
-      await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
-      )
-    const workflow2 =
-      await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-        PATHS.setupFile
-      )
-
-    // Should be the same reference due to caching
-    expect(workflow1).toStrictEqual(workflow2)
-  })
+// ensure clean state between tests
+beforeEach(() => {
+  // clear all mocks between tests
+  vi.clearAllMocks()
 })

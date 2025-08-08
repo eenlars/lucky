@@ -1,19 +1,23 @@
-import { getDefaultModels } from "@runtime/settings/constants.client"
-import { describe, expect, it } from "vitest"
-import { processModelResponse } from "../processResponse"
-import toolResponseMultipleSteps from "./resources/toolResponseMultipleSteps.json" assert { type: "json" }
-import toolResponseNoToolUsed from "./resources/toolResponseNoToolUsed.json" assert { type: "json" }
+import { describe, expect, it, vi } from "vitest"
+import { processModelResponse, type NodeLogs } from "../processResponse"
+import toolResponseMultipleSteps from "./resources/toolResponseMultipleSteps.json"
+import toolResponseNoToolUsed from "./resources/toolResponseNoToolUsed.json"
+
+// Mock environment validation
+vi.mock("@core/utils/env.mjs", () => ({
+  envi: {
+    GOOGLE_API_KEY: "mock-key",
+    OPENAI_API_KEY: "mock-key", 
+    SERPAPI_API_KEY: "mock-key",
+  }
+}))
 
 describe("processModelResponse", () => {
-  // FAILING: Test expects toolName/toolArgs properties but processStepsV2 outputs name/args properties instead
   it("should correctly process a valid tool response with results", () => {
-    // Arrange
-    const response = toolResponseMultipleSteps as any
-
     // Act
     const result = processModelResponse({
-      response,
-      modelUsed: getDefaultModels().nano,
+      response: toolResponseMultipleSteps as any,
+      modelUsed: "claude-3-haiku-20240307" as any,
       nodeId: "test",
     })
 
@@ -22,51 +26,55 @@ describe("processModelResponse", () => {
     expect(result).toHaveProperty("toolUsage")
     expect(result).toHaveProperty("cost")
 
-    // Check toolUsage structure
-    const toolUsage = (result as any).toolUsage
-    expect(toolUsage).toHaveProperty("outputs")
-    expect(toolUsage).toHaveProperty("totalCost")
-    expect(Array.isArray(toolUsage.outputs)).toBe(true)
-    expect(toolUsage.outputs.length).toBeGreaterThan(0)
+    // Check toolUsage structure - proper typing based on NodeLogs interface
+    if (result.type === "tool" && result.toolUsage) {
+      const toolUsage: NodeLogs = result.toolUsage
+      expect(toolUsage).toHaveProperty("outputs")
+      expect(toolUsage).toHaveProperty("totalCost")
+      expect(Array.isArray(toolUsage.outputs)).toBe(true)
+      expect(toolUsage.outputs.length).toBeGreaterThan(0)
 
-    // Check first output structure
-    const firstOutput = toolUsage.outputs[0]
-    expect(firstOutput).toHaveProperty("type", "tool")
-    expect(firstOutput).toHaveProperty("toolName")
-    expect(firstOutput).toHaveProperty("toolArgs")
-    expect(firstOutput).toHaveProperty("toolResponse")
+      // Check first output structure - correct property names per NodeLog interface
+      const firstOutput = toolUsage.outputs[0]
+      expect(firstOutput).toHaveProperty("type", "tool")
+      if (firstOutput.type === "tool") {
+        expect(firstOutput).toHaveProperty("name")
+        expect(firstOutput).toHaveProperty("args")
+        expect(firstOutput).toHaveProperty("return")
+      }
+    }
   })
 
-  // FAILING: Test expects toolName/toolArgs properties but processStepsV2 outputs name/args with different property names
   it("should correctly process a response with no tool usage", () => {
-    // Arrange
-    const response = toolResponseNoToolUsed as any
-
     // Act
     const result = processModelResponse({
-      response,
-      modelUsed: getDefaultModels().nano,
+      response: toolResponseNoToolUsed as any,
+      modelUsed: "claude-3-haiku-20240307" as any,
       nodeId: "test",
     })
 
-    // Assert
+    // Assert - text responses are processed as tool type with text NodeLog
     expect(result.type).toBe("tool")
     expect(result).toHaveProperty("toolUsage")
     expect(result).toHaveProperty("cost")
 
-    // Check toolUsage structure (should have text output)
-    const toolUsage = (result as any).toolUsage
-    expect(toolUsage).toHaveProperty("outputs")
-    expect(toolUsage).toHaveProperty("totalCost")
-    expect(Array.isArray(toolUsage.outputs)).toBe(true)
-    expect(toolUsage.outputs.length).toBe(1)
+    // Check toolUsage structure (should have text output) - proper typing
+    if (result.toolUsage) {
+      const toolUsage: NodeLogs = result.toolUsage
+      expect(toolUsage).toHaveProperty("outputs")
+      expect(toolUsage).toHaveProperty("totalCost")
+      expect(Array.isArray(toolUsage.outputs)).toBe(true)
+      expect(toolUsage.outputs.length).toBe(1)
 
-    // Check the text output structure
-    const textOutput = toolUsage.outputs[0]
-    expect(textOutput).toHaveProperty("type", "text")
-    expect(textOutput).toHaveProperty("toolName", undefined)
-    expect(textOutput).toHaveProperty("toolArgs", undefined)
-    expect(textOutput).toHaveProperty("toolResponse")
-    expect(typeof textOutput.toolResponse).toBe("string")
+      // Check the text output structure - correct property names per NodeLog interface
+      const textOutput = toolUsage.outputs[0]
+      expect(textOutput).toHaveProperty("type", "text")
+      if (textOutput.type === "text") {
+        expect(textOutput.name).toBeUndefined()
+        expect(textOutput.args).toBeUndefined()
+        expect(textOutput).toHaveProperty("return")
+        expect(typeof textOutput.return).toBe("string")
+      }
+    }
   })
 })

@@ -28,6 +28,7 @@
       "@core/validation/*": ["./src/utils/validation/*"],
       "@core/improvement/*": ["./src/improvement/*"],
       "@runtime/*": ["../runtime/*"],
+      "@runtime/settings/*": ["../runtime/settings/*"],
       "@shared/*": ["../shared/src/*"]
     },
     "allowSyntheticDefaultImports": true

@@ -33,16 +33,11 @@ describe("SWEBenchLoader", () => {
 
     const result = await SWEBenchLoader.fetchById("test-instance")
 
-    // verify fetch was called with correct URL
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("https://datasets-server.huggingface.tech/rows")
-    )
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("dataset=princeton-nlp%2FSWE-bench")
-    )
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("split=test")
-    )
+    // verify fetch was called with correct URL components
+    const fetchCall = vi.mocked(global.fetch).mock.calls[0]
+    expect(fetchCall[0]).toContain("https://datasets-server.huggingface.co/rows")
+    expect(fetchCall[0]).toContain("dataset=princeton-nlp%2FSWE-bench")
+    expect(fetchCall[0]).toContain("split=test")
 
     // verify result matches expected structure
     expect(result).toEqual({

@@ -92,30 +92,83 @@ const mockLoggerInstance = {
 }
 
 const mockGenomeInstance = {
+  // State properties
+  isEvaluated: false,
+  
+  // Core genome methods
   getWorkflowVersionId: vi.fn(),
   getWorkflowConfig: vi.fn(),
-  getFitness: vi.fn(),
   getRawGenome: vi.fn(),
   hash: vi.fn(),
-  reset: vi.fn(),
+  
+  // Fitness methods
+  getFitness: vi.fn(),
+  getFitnessScore: vi.fn(),
+  setFitness: vi.fn(),
+  setFitnessAndFeedback: vi.fn(),
+  
+  // Evolution context methods
   getGenerationNumber: vi.fn(),
   getParentIds: vi.fn(),
   getEvolutionContext: vi.fn(),
+  reset: vi.fn(),
+  
+  // Workflow methods inherited from Workflow class
+  getEvaluationInput: vi.fn(),
+  getConfig: vi.fn(),
+  getWorkflowId: vi.fn(),
+  getFeedback: vi.fn(),
+  getGoal: vi.fn(),
+  addCost: vi.fn(),
+  
+  // Database methods
+  saveToDatabase: vi.fn().mockResolvedValue({
+    workflowVersionId: "test-version-id",
+    workflowInvocationId: "test-invocation-id",
+  }),
 }
 
 const mockPopulationInstance = {
+  // Core population methods
   getGenomes: vi.fn(),
   getValidGenomes: vi.fn(),
-  getFittestGenomes: vi.fn(),
   getUnevaluated: vi.fn(),
+  getEvaluated: vi.fn(),
   getBest: vi.fn(),
+  getWorst: vi.fn(),
+  getTop: vi.fn(),
   size: vi.fn(),
+  
+  // Generation management
   getGenerationId: vi.fn(),
+  getGenerationNumber: vi.fn(),
+  incrementGenerationNumber: vi.fn(),
+  
+  // Population manipulation
   setPopulation: vi.fn(),
   addGenome: vi.fn(),
   removeGenome: vi.fn(),
-  getBestGenome: vi.fn(),
+  removeUnevaluated: vi.fn().mockResolvedValue(undefined),
+  resetGenomes: vi.fn(),
+  clear: vi.fn(),
+  
+  // Evolution methods
+  initialize: vi.fn().mockResolvedValue(undefined),
+  generateRandomGenomes: vi.fn().mockResolvedValue([]),
+  initializePopulationHelper: vi.fn().mockResolvedValue(undefined),
+  initializePreparedPopulation: vi.fn().mockResolvedValue(undefined),
+  
+  // Analysis methods
   getStats: vi.fn(),
+  findSimilarGenomes: vi.fn(),
+  pruneSimilar: vi.fn(),
+  
+  // Service access
+  getRunService: vi.fn(),
+  
+  // Legacy aliases for backward compatibility
+  getFittestGenomes: vi.fn(),
+  getBestGenome: vi.fn(),
   reset: vi.fn(),
 }
 
@@ -542,6 +595,9 @@ export const createMockGenome = async (
     // Node methods
     getNodeIds: vi.fn(() => ["node1", "node2"]),
     nodes: createMockWorkflowConfig().nodes,
+
+    // GP-specific methods
+    setPrecomputedWorkflowData: vi.fn(),
   }
 
   return mockInstance
@@ -794,6 +850,7 @@ export const createMockRuntimeConstants = () => ({
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
+      experimentalMultiStepLoopMaxRounds: 20,
       showParameterSchemas: true,
     },
     models: {
@@ -1028,13 +1085,24 @@ export const mockLogger = () => {
 }
 
 export const mockGenomeClass = () => {
-  vi.mock("@core/improvement/GP/Genome", () => {
+  vi.mock("@core/improvement/gp/Genome", () => {
     const GenomeMock = vi
       .fn()
       .mockImplementation(() => mockGenomeInstance) as any
-    GenomeMock.createRandom = vi.fn()
-    GenomeMock.createPrepared = vi.fn()
-    GenomeMock.createWorkflowVersion = vi.fn()
+    GenomeMock.createRandom = vi.fn().mockResolvedValue({
+      success: true,
+      data: mockGenomeInstance,
+      error: undefined,
+    })
+    GenomeMock.createPrepared = vi.fn().mockResolvedValue({
+      success: true,
+      data: mockGenomeInstance,
+      error: undefined,
+    })
+    GenomeMock.createWorkflowVersion = vi.fn().mockResolvedValue({
+      workflowVersionId: "test-version-id",
+      workflowInvocationId: "test-invocation-id",
+    })
 
     return {
       Genome: GenomeMock,

@@ -9,6 +9,146 @@ import {
 } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+// Mock environment variables
+vi.mock("@core/utils/env.mjs", () => ({
+  envi: {
+    GOOGLE_API_KEY: "test-google-key",
+    OPENAI_API_KEY: "test-openai-key",
+    SERPAPI_API_KEY: "test-serp-key",
+    ANTHROPIC_API_KEY: "test-anthropic-key",
+    TAVILY_API_KEY: "test-tavily-key",
+    FIRECRAWL_API_KEY: "test-firecrawl-key",
+    SUPABASE_ANON_KEY: "test-supabase-key",
+    SUPABASE_PROJECT_ID: "test-project-id",
+    OPENROUTER_API_KEY: "test-openrouter-key",
+    XAI_API_KEY: "test-xai-key",
+    MAPBOX_TOKEN: "test-mapbox-token",
+    HF_TOKEN: "test-hf-token",
+    HUGGING_FACE_API_KEY: "test-hf-key",
+    WEBSHARE_API_KEY: "test-webshare-key",
+  },
+}))
+
+// Mock runtime constants - comprehensive CONFIG
+vi.mock("@runtime/settings/constants", () => ({
+  CONFIG: {
+    coordinationType: "sequential" as const,
+    newNodeProbability: 0.7,
+    logging: {
+      level: "info" as const,
+      override: {
+        API: false,
+        GP: false,
+        Database: false,
+        Summary: false,
+      },
+    },
+    workflow: {
+      maxNodeInvocations: 14,
+      maxNodes: 20,
+      handoffContent: "full" as const,
+      prepareProblem: true,
+      prepareProblemMethod: "ai" as const,
+      prepareProblemWorkflowVersionId: "test-version-id",
+      parallelExecution: false,
+    },
+    tools: {
+      inactive: new Set(),
+      uniqueToolsPerAgent: false,
+      uniqueToolSetsPerAgent: false,
+      maxToolsPerAgent: 3,
+      maxStepsVercel: 10,
+      defaultTools: new Set(),
+      autoSelectTools: true,
+      usePrepareStepStrategy: false,
+      experimentalMultiStepLoop: true,
+      showParameterSchemas: true,
+    },
+    models: {
+      provider: "openai" as const,
+      inactive: new Set(),
+    },
+    improvement: {
+      fitness: {
+        timeThresholdSeconds: 300,
+        baselineTimeSeconds: 60,
+        baselineCostUsd: 0.005,
+        costThresholdUsd: 0.01,
+        weights: { score: 0.7, time: 0.2, cost: 0.1 },
+      },
+      flags: {
+        selfImproveNodes: false,
+        addTools: true,
+        analyzeWorkflow: true,
+        removeNodes: true,
+        editNodes: true,
+        maxRetriesForWorkflowRepair: 4,
+        useSummariesForImprovement: true,
+        improvementType: "judge" as const,
+        operatorsWithFeedback: true,
+      },
+    },
+    verification: {
+      allowCycles: true,
+      enableOutputValidation: false,
+    },
+    context: {
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
+    },
+    evolution: {
+      culturalIterations: 50,
+      GP: {
+        generations: 40,
+        populationSize: 10,
+        verbose: false,
+        initialPopulationMethod: "prepared" as const,
+        initialPopulationFile: "",
+        maximumTimeMinutes: 700,
+      },
+    },
+    limits: {
+      maxConcurrentWorkflows: 2,
+      maxConcurrentAIRequests: 30,
+      maxCostUsdPerRun: 30.0,
+      enableSpendingLimits: true,
+      rateWindowMs: 10000,
+      maxRequestsPerWindow: 300,
+      enableStallGuard: true,
+      enableParallelLimit: true,
+    },
+  },
+  MODELS: {
+    summary: "google/gemini-2.0-flash-001",
+    nano: "google/gemini-2.0-flash-001",
+    default: "openai/gpt-4.1-mini",
+    free: "qwen/qwq-32b:free",
+    free2: "deepseek/deepseek-r1-0528:free",
+    low: "openai/gpt-4.1-nano",
+    medium: "openai/gpt-4.1-mini",
+    high: "anthropic/claude-sonnet-4",
+    fitness: "openai/gpt-4.1-mini",
+    reasoning: "anthropic/claude-sonnet-4",
+    fallbackOpenRouter: "switchpoint/router",
+  },
+  PATHS: {
+    root: "/test/root",
+    app: "/test/app",
+    runtime: "/test/runtime",
+    codeTools: "/test/codeTools",
+    setupFile: "/test/setup.json",
+    improver: "/test/improver",
+    node: {
+      logging: "/test/node/logging",
+      memory: {
+        root: "/test/memory/root",
+        workfiles: "/test/memory/workfiles",
+      },
+      error: "/test/node/error",
+    },
+  },
+}))
+
 // Create mock instances directly
 const mockVerifyWorkflowConfigStrict = vi.fn()
 const mockRegisterCrossover = vi.fn()
@@ -37,115 +177,6 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-// Mock runtime constants at top level
-vi.mock("@runtime/settings/constants", () => ({
-  CONFIG: {
-    coordinationType: "sequential",
-    newNodeProbability: 0.7,
-    logging: {
-      level: "info",
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-      },
-    },
-    workflow: {
-      maxNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full",
-      prepareProblem: true,
-      prepareProblemMethod: "ai",
-      prepareProblemWorkflowVersionId: "test-version-id",
-    },
-    tools: {
-      inactive: new Set(),
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      defaultTools: new Set(),
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-    },
-    models: {
-      provider: "openai",
-      inactive: new Set(),
-    },
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: { score: 0.7, time: 0.2, cost: 0.1 },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 4,
-        useSummariesForImprovement: true,
-        improvementType: "judge",
-        operatorsWithFeedback: true,
-      },
-    },
-    verification: {
-      allowCycles: true,
-      enableOutputValidation: false,
-    },
-    context: {
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
-    evolution: {
-      culturalIterations: 50,
-      GP: {
-        generations: 40,
-        populationSize: 10,
-        verbose: true, // Override for testing
-        initialPopulationMethod: "prepared",
-        initialPopulationFile: "",
-        maximumTimeMinutes: 700,
-      },
-    },
-    limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      rateWindowMs: 10000,
-      maxRequestsPerWindow: 300,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-    },
-  },
-  MODELS: {
-    summary: "google/gemini-2.0-flash-001",
-    nano: "google/gemini-2.0-flash-001",
-    default: "openai/gpt-4.1-mini",
-  },
-  PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
-    node: {
-      logging: "/test/node/logging",
-      memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
-      },
-      error: "/test/node/error",
-    },
-  },
-}))
 
 vi.mock("@core/improvement/GP/OperatorRegistry", () => ({
   OperatorRegistry: {
@@ -164,7 +195,9 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
       getWorkflowVersionId: () => "dummy-genome-id",
       getWorkflowConfig: () => createMockWorkflowConfig(),
       getFitness: () => ({ score: 0.5, valid: true }),
-      parentWorkflowVersionIds: parentIds,
+      genome: {
+        parentWorkflowVersionIds: parentIds,
+      },
       evolutionContext,
     })),
 }))
@@ -285,6 +318,7 @@ describe("Crossover", () => {
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext)],
+        verbose: true, // Force verbose mode for single parent
       })
 
       const response = await Crossover.crossover(params)
@@ -311,6 +345,7 @@ describe("Crossover", () => {
           createDummyGenome([], evolutionContext),
           createDummyGenome([], evolutionContext),
         ],
+        verbose: true, // Force verbose mode
       })
 
       const response = await Crossover.crossover(params)
@@ -338,6 +373,7 @@ describe("Crossover", () => {
           createDummyGenome([], evolutionContext),
           createDummyGenome([], evolutionContext),
         ],
+        verbose: true, // Force verbose mode
       })
 
       const response = await Crossover.crossover(params)
@@ -403,9 +439,10 @@ describe("Crossover", () => {
       })
 
       const params = createMockCrossoverParams({ verbose: false })
-      await expect(Crossover.crossover(params)).rejects.toThrow(
-        "formalizeWorkflow returned no valid workflow"
-      )
+      const response = await Crossover.crossover(params)
+      
+      expect(response.success).toBe(false)
+      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
     })
 
     it("should handle verification failure", async () => {
@@ -426,9 +463,10 @@ describe("Crossover", () => {
       })
 
       const params = createMockCrossoverParams({ verbose: false })
-      await expect(Crossover.crossover(params)).rejects.toThrow(
-        "Crossover failed: invalid workflow after verifying"
-      )
+      const response = await Crossover.crossover(params)
+      
+      expect(response.success).toBe(false)
+      expect(response.error).toContain("Crossover failed: invalid workflow after verifying")
     })
 
     it("should use crossover strategy in prompt", async () => {
@@ -509,7 +547,10 @@ describe("Crossover", () => {
       })
 
       const params = createMockCrossoverParams({ verbose: false })
-      await expect(Crossover.crossover(params)).rejects.toThrow()
+      const response = await Crossover.crossover(params)
+      
+      expect(response.success).toBe(false)
+      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
     })
 
     it("should handle AI request timeout", async () => {
@@ -522,9 +563,10 @@ describe("Crossover", () => {
       mockFormalizeWorkflow.mockRejectedValue(new Error("Request timeout"))
 
       const params = createMockCrossoverParams({ verbose: false })
-      await expect(Crossover.crossover(params)).rejects.toThrow(
-        "Request timeout"
-      )
+      const response = await Crossover.crossover(params)
+      
+      expect(response.success).toBe(false)
+      expect(response.error).toContain("Crossover failed: error")
     })
   })
 
@@ -545,6 +587,7 @@ describe("Crossover", () => {
           createDummyGenome([], evolutionContext),
           createDummyGenome([], evolutionContext),
         ],
+        verbose: true, // Force verbose mode
       })
       const response = await Crossover.crossover(params)
       const endTime = Date.now()

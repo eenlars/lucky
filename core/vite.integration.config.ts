@@ -12,18 +12,25 @@ export default defineConfig(({ mode }) => {
   }
   return {
     plugins: [tsconfigPaths()],
+    resolve: {
+      alias: {
+        "@core": new URL("./src", import.meta.url).pathname,
+        "@runtime": new URL("../runtime", import.meta.url).pathname,
+        "@shared": new URL("../shared/src", import.meta.url).pathname,
+      },
+    },
     test: {
       include: ["**/*.integration.test.ts"],
       exclude: [...configDefaults.exclude, "**/e2e/**"],
       environment: "node",
       globals: true,
-      setupFiles: ["./src/test-setup.ts"],
+      setupFiles: ["./src/__tests__/test-setup.ts"],
       testTimeout: 120000,
       coverage: {
         provider: "v8",
         reporter: ["text", "html"],
         reportsDirectory: "coverage-integration",
-        include: ["src/core/**/*.{ts,js}"],
+        include: ["src/**/*.{ts,js}"],
         exclude: ["node_modules/"],
         all: true,
       },

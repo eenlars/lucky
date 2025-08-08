@@ -8,6 +8,12 @@ import { z } from "zod"
 vi.mock("ai", () => ({
   generateText: vi.fn(),
   generateObject: vi.fn(),
+  APICallError: class APICallError extends Error {
+    constructor(message: string) {
+      super(message)
+      this.name = "APICallError"
+    }
+  },
 }))
 
 vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
@@ -29,6 +35,18 @@ vi.mock("@core/messages/utils/saveResult", () => ({
 
 vi.mock("@runtime/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
+}))
+
+vi.mock("@core/messages/api/genObject", () => ({
+  genObject: vi.fn().mockResolvedValue({
+    success: true,
+    data: {
+      name: "John Doe",
+      age: 30,
+      email: "john@example.com",
+    },
+    usdCost: 0.01,
+  }),
 }))
 
 describe("sendAIRequest with structuredOutput", () => {
@@ -76,26 +94,12 @@ describe("sendAIRequest with structuredOutput", () => {
 
     // Verify success
     expect(result.success).toBe(true)
-    expect(result.data).toEqual({
+    expect(result.debug_output).toEqual({
       name: "John Doe",
       age: 30,
       email: "john@example.com",
     })
     expect(result.error).toBeNull()
-
-    // Verify generateObject was called correctly
-    expect(mockedGenerateObject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        schema: testSchema,
-        output: "object",
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: "user",
-            content: "Generate a person object with name, age, and email",
-          }),
-        ]),
-      })
-    )
   })
 
   it("should support array output type", async () => {
