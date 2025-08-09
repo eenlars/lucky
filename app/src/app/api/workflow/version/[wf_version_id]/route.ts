@@ -1,6 +1,9 @@
 import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextRequest, NextResponse } from "next/server"
 
+// revalidate every 5 minutes (300 seconds)
+export const revalidate = 300
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ wf_version_id: string }> }

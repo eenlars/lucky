@@ -88,16 +88,19 @@ export function useWorkflowRunner() {
         const workflowId = currentWorkflowId || "temp-workflow"
 
         console.log("Workflow data:", { dslConfig, workflowId, prompt })
-
-        const response = await fetch("/api/workflow/execute", {
+        // Directly invoke the workflow with prompt-only input (no evaluation/polling)
+        const response = await fetch("/api/workflow/invoke", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             dslConfig,
-            workflowId,
-            prompt,
+            evalInput: {
+              type: "prompt-only",
+              goal: prompt,
+              // workflowId is optional; server will default if omitted
+            },
           }),
         })
 
@@ -106,13 +109,33 @@ export function useWorkflowRunner() {
         console.log("API result:", result)
 
         if (result.success) {
+          const outputs: string[] = Array.isArray(result.data)
+            ? result.data
+                .map((r: any, idx: number) => {
+                  const out = r?.queueRunResult?.finalWorkflowOutput
+                  return out ? `Output #${idx + 1}: ${out}` : undefined
+                })
+                .filter(Boolean)
+            : []
+
+          const costMsg =
+            typeof result.usdCost === "number"
+              ? `Total cost: $${result.usdCost.toFixed(4)}`
+              : undefined
+
           setLogMessages((prev) => [
             ...prev,
-            `Workflow started with invocation ID: ${result.invocationId}`,
-            "Check the invocations page for results.",
+            "Workflow executed successfully.",
+            ...(costMsg ? [costMsg] : []),
+            ...(outputs.length > 0
+              ? outputs
+              : ["No final output returned from workflow."]),
           ])
         } else {
-          setLogMessages((prev) => [...prev, `Error: ${result.error}`])
+          setLogMessages((prev) => [
+            ...prev,
+            `Error: ${result.error ?? "Unknown error"}`,
+          ])
         }
       } catch (error) {
         console.error("Error in executeWorkflowWithPrompt:", error)
@@ -122,7 +145,6 @@ export function useWorkflowRunner() {
         ])
       } finally {
         isRunning.current = false
-        setPromptDialogOpen(false)
         setPendingStartNodeId(undefined)
       }
     },

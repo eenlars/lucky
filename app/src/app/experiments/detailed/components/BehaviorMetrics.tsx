@@ -1,5 +1,6 @@
 "use client"
 
+import { semantic } from "@/app/experiments/chartColors"
 import {
   Bar,
   BarChart,
@@ -57,9 +58,9 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
 
   const getScatterColor = (condition: string, success: boolean) => {
     if (condition === "vague") {
-      return success ? "#10b981" : "#ef4444" // green for success, red for failure
+      return success ? semantic.positive : semantic.negative
     } else {
-      return success ? "#059669" : "#dc2626" // darker green/red for clear
+      return success ? semantic.positiveEmphasis : semantic.negativeEmphasis
     }
   }
 
@@ -98,8 +99,8 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
             />
             <Tooltip />
             <Legend />
-            <Bar dataKey="OLD method" fill="#ef4444" />
-            <Bar dataKey="Our solution" fill="#10b981" />
+            <Bar dataKey="OLD method" fill={semantic.negative} />
+            <Bar dataKey="Our solution" fill={semantic.positive} />
           </BarChart>
         </ResponsiveContainer>
         <p className="text-sm text-gray-600 mt-2">
@@ -160,7 +161,7 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
                 return null
               }}
             />
-            <Scatter data={scatterData} fill="#8884d8">
+            <Scatter data={scatterData} fill={semantic.info}>
               {scatterData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}

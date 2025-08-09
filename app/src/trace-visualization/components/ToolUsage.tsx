@@ -17,18 +17,18 @@ export interface ToolUsageEntry {
 }
 
 interface ToolUsageProps {
-  toolUsage: ToolUsageEntry[]
+  agentSteps: ToolUsageEntry[]
 }
 
-export const ToolUsage = ({ toolUsage }: ToolUsageProps) => {
+export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
   const [isExpanded, setIsExpanded] = useState(true)
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set())
 
-  if (!toolUsage || toolUsage.length === 0) {
+  if (!agentSteps || agentSteps.length === 0) {
     return null
   }
 
-  const totalCost = toolUsage.reduce(
+  const totalCost = agentSteps.reduce(
     (sum, usage) => sum + (usage.toolCost || 0),
     0
   )
@@ -49,7 +49,7 @@ export const ToolUsage = ({ toolUsage }: ToolUsageProps) => {
         <div className="flex items-center space-x-2">
           <Wrench size={16} className="text-muted-foreground" />
           <h4 className="text-sm font-medium">
-            tool usage ({toolUsage.length})
+            tool usage ({agentSteps.length})
           </h4>
           {totalCost > 0 && (
             <div className="flex items-center space-x-1 text-xs text-muted-foreground">
@@ -78,7 +78,7 @@ export const ToolUsage = ({ toolUsage }: ToolUsageProps) => {
 
       {isExpanded && (
         <div className="space-y-3">
-          {toolUsage.map((usage, index) => (
+          {agentSteps.map((usage, index) => (
             <Card key={index} className="p-3 bg-muted/20">
               <div className="space-y-2">
                 {/* tool name and basic info */}

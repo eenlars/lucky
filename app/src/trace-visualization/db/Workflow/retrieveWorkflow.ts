@@ -237,8 +237,11 @@ export const retrieveWorkflowInvocations = async (
           })
         }
         break
-      default:
+      default: {
+        const _exhaustiveCheck: never = sort.field
+        void _exhaustiveCheck
         query = query.order("start_time", { ascending: false })
+      }
     }
   } else {
     // Default sorting

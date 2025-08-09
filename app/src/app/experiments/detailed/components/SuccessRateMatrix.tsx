@@ -1,5 +1,6 @@
 "use client"
 
+import { semantic } from "@/app/experiments/chartColors"
 import {
   Bar,
   BarChart,
@@ -98,13 +99,13 @@ export default function SuccessRateMatrix({ data }: SuccessRateMatrixProps) {
           <Legend />
           <Bar
             dataKey="Standard Method"
-            fill="#ef4444"
+            fill={semantic.negative}
             name="Standard Method"
             radius={[2, 2, 0, 0]}
           />
           <Bar
             dataKey="Our solution"
-            fill="#10b981"
+            fill={semantic.positive}
             name="Our solution"
             radius={[2, 2, 0, 0]}
           />

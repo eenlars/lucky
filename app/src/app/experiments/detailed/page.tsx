@@ -1,5 +1,10 @@
 "use client"
 
+import {
+  modelColors,
+  semantic,
+  stepColors,
+} from "@/app/experiments/chartColors"
 import { useEffect, useState } from "react"
 import {
   Bar,
@@ -367,12 +372,7 @@ export default function DetailedExperimentsPage() {
     {} as Record<number, any>
   )
 
-  const _colors = {
-    "gpt-3.5-turbo": "#8b5cf6",
-    "gpt-4o-mini": "#06b6d4",
-    "gpt-4-turbo": "#f59e0b",
-    o3: "#10b981",
-  }
+  const _colors = modelColors
 
   if (loading) {
     return (
@@ -438,8 +438,8 @@ export default function DetailedExperimentsPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="Vague Prompt" fill="#ef4444" />
-                  <Bar dataKey="Clear Prompt" fill="#10b981" />
+                  <Bar dataKey="Vague Prompt" fill={semantic.negative} />
+                  <Bar dataKey="Clear Prompt" fill={semantic.positive} />
                 </BarChart>
               </ResponsiveContainer>
               <p className="text-sm text-gray-600 mt-2">
@@ -608,9 +608,9 @@ export default function DetailedExperimentsPage() {
                   <YAxis domain={[0, 100]} />
                   <Tooltip formatter={(value) => `${value}%`} />
                   <Legend />
-                  <Bar dataKey="2-step" fill="#8b5cf6" />
-                  <Bar dataKey="5-step" fill="#06b6d4" />
-                  <Bar dataKey="10-step" fill="#f59e0b" />
+                  <Bar dataKey="2-step" fill={stepColors["2-step"]} />
+                  <Bar dataKey="5-step" fill={stepColors["5-step"]} />
+                  <Bar dataKey="10-step" fill={stepColors["10-step"]} />
                 </BarChart>
               </ResponsiveContainer>
               <p className="text-sm text-gray-600 mt-2">
@@ -658,19 +658,19 @@ export default function DetailedExperimentsPage() {
                   <Line
                     type="monotone"
                     dataKey="gpt-3.5-turbo"
-                    stroke="#8b5cf6"
+                    stroke={modelColors["gpt-3.5-turbo"]}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="gpt-4-turbo"
-                    stroke="#f59e0b"
+                    stroke={modelColors["gpt-4-turbo"]}
                     strokeWidth={2}
                   />
                   <Line
                     type="monotone"
                     dataKey="o3"
-                    stroke="#10b981"
+                    stroke={modelColors["o3"]}
                     strokeWidth={2}
                   />
                 </LineChart>

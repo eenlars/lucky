@@ -38,6 +38,7 @@ export type NodeConfig = {
 }
 
 export const NODE_SIZE = { width: 380, height: 180 }
+export const COMPACT_NODE_SIZE = { width: 72, height: 72 }
 
 const nodesConfig: Record<AppNodeType, NodeConfig> = {
   "initial-node": {
@@ -48,8 +49,8 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
       {
         type: "source",
         position: Position.Bottom,
-        x: NODE_SIZE.width * 0.5,
-        y: NODE_SIZE.height,
+        x: COMPACT_NODE_SIZE.width * 0.5,
+        y: COMPACT_NODE_SIZE.height,
       },
     ],
     icon: "Rocket",
@@ -136,7 +137,7 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
       {
         type: "target",
         position: Position.Top,
-        x: NODE_SIZE.width * 0.5,
+        x: COMPACT_NODE_SIZE.width * 0.5,
         y: 0,
       },
     ],
@@ -166,6 +167,8 @@ export function createNodeByType({
   const node = nodesConfig[type]
 
   const nodeId = id ?? nanoid()
+  const isCompact = type === "initial-node" || type === "output-node"
+  const size = isCompact ? COMPACT_NODE_SIZE : NODE_SIZE
   const newNode: AppNode = {
     id: nodeId,
     data: {
@@ -186,8 +189,8 @@ export function createNodeByType({
       icon: node.icon,
     },
     position: {
-      x: position.x - NODE_SIZE.width * 0.5,
-      y: position.y - NODE_SIZE.height * 0.5,
+      x: position.x - size.width * 0.5,
+      y: position.y - size.height * 0.5,
     },
     type,
   }
