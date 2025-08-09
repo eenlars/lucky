@@ -42,7 +42,8 @@ next-env.d.ts
 # open-source cleanup
 /logging_folder/
 /src/lib/scraping/exports/
-/src/research-experiments/*
+/src/experiments-2/*
+/src/research-experiments/*.json
 /docs/pseudocode*.md
 
 # local MCP configuration

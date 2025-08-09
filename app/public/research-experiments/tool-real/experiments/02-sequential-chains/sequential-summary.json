@@ -1,0 +1,88 @@
+{
+  "timestamp": "2025-08-08T00:01:24.270Z",
+  "experimentType": "sequential-tool-execution",
+  "totalScenarios": 84,
+  "modelsPerformance": [
+    {
+      "model": "openai/gpt-4o",
+      "avgScore": 0.9714285714285715,
+      "perfectCount": 12,
+      "totalTests": 14
+    },
+    {
+      "model": "openai/gpt-3.5-turbo",
+      "avgScore": 0.9714285714285715,
+      "perfectCount": 12,
+      "totalTests": 14
+    },
+    {
+      "model": "anthropic/claude-3-5-haiku",
+      "avgScore": 0.9714285714285715,
+      "perfectCount": 12,
+      "totalTests": 14
+    },
+    {
+      "model": "google/gemini-2.5-pro-preview",
+      "avgScore": 0.9214285714285716,
+      "perfectCount": 11,
+      "totalTests": 14
+    },
+    {
+      "model": "openai/gpt-4o-mini",
+      "avgScore": 0.9142857142857144,
+      "perfectCount": 12,
+      "totalTests": 14
+    },
+    {
+      "model": "mistralai/mistral-small-3.2-24b-instruct",
+      "avgScore": 0.05714285714285715,
+      "perfectCount": 0,
+      "totalTests": 14
+    }
+  ],
+  "chainComplexity": [
+    {
+      "chain": "10-step",
+      "avgScore": 0.8333333333333334,
+      "perfectCount": 30,
+      "totalTests": 36
+    },
+    {
+      "chain": "2-step",
+      "avgScore": 0.8138888888888889,
+      "perfectCount": 29,
+      "totalTests": 36
+    },
+    {
+      "chain": "3-step",
+      "avgScore": 0.6666666666666666,
+      "perfectCount": 0,
+      "totalTests": 12
+    }
+  ],
+  "overallStats": {
+    "totalTests": 84,
+    "avgScore": 0.801190476190476,
+    "perfectExecutions": 59
+  },
+  "keyFindings": {
+    "bestModel": {
+      "model": "openai/gpt-4o",
+      "avgScore": 0.9714285714285715,
+      "perfectCount": 12,
+      "totalTests": 14
+    },
+    "easiestChain": {
+      "chain": "10-step",
+      "avgScore": 0.8333333333333334,
+      "perfectCount": 30,
+      "totalTests": 36
+    },
+    "hardestChain": {
+      "chain": "3-step",
+      "avgScore": 0.6666666666666666,
+      "perfectCount": 0,
+      "totalTests": 12
+    }
+  }
+}
