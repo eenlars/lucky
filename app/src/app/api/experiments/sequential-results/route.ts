@@ -1,6 +1,8 @@
-import { promises as fs } from "fs"
+import {
+  publicExperimentDir,
+  readJsonLocal,
+} from "@/lib/experiments/file-utils"
 import { NextResponse } from "next/server"
-import path from "path"
 import { z } from "zod"
 
 const RawResultSchema = z.object({
@@ -16,38 +18,15 @@ type RawResult = z.infer<typeof RawResultSchema>
 
 export async function GET() {
   try {
-    // Try known locations (prefer the tool-real experiment path)
-    const candidateRelativePaths = [
-      // When cwd is app package root
-      "public/research-experiments/tool-real/experiments/02-sequential-chains/sequential-results.json",
-      "public/research-experiments/sequential-results.json",
-      // When cwd is monorepo root
-      "app/public/research-experiments/tool-real/experiments/02-sequential-chains/sequential-results.json",
-      "app/public/research-experiments/sequential-results.json",
-    ] as const
-
-    let chosenPath: string | null = null
-    for (const rel of candidateRelativePaths) {
-      const abs = path.resolve(process.cwd(), rel)
-      try {
-        await fs.access(abs)
-        chosenPath = abs
-        break
-      } catch {
-        // continue
-      }
-    }
-    const latestResultsPath = chosenPath
-      ? chosenPath
-      : path.resolve(
-          process.cwd(),
-          candidateRelativePaths[0] // default to primary expected location
-        )
+    // Single canonical local path under public
+    const latestResultsPath = publicExperimentDir(
+      "02-sequential-chains",
+      "sequential-results.json"
+    )
 
     let results: RawResult[] = []
     try {
-      const raw = await fs.readFile(latestResultsPath, "utf-8")
-      const parsedJson = JSON.parse(raw)
+      const parsedJson = await readJsonLocal<unknown>(latestResultsPath)
       const validation = RawResultSchema.array().safeParse(parsedJson)
       if (!validation.success) {
         return NextResponse.json(

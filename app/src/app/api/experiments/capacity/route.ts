@@ -1,7 +1,10 @@
+import {
+  getLatestFileByPrefix,
+  publicExperimentDir,
+} from "@/lib/experiments/file-utils"
 import type { ToolCapacityResponse } from "@/research-experiments/tool-real/experiments/01-capacity-limits/main-experiment"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
-import path from "path"
 
 type ToolCountPerf = {
   toolCount: number
@@ -29,71 +32,20 @@ export type ToolCapacityExperimentResponse = {
   }
 }
 
-const isToolCapacityExperimentResponse = (
-  response: unknown
-): response is ToolCapacityExperimentResponse => {
-  return (
-    response !== null &&
-    typeof response === "object" &&
-    "ok" in response &&
-    typeof response.ok === "boolean" &&
-    "analysis" in response &&
-    typeof response.analysis === "object" &&
-    "results" in response &&
-    typeof response.results === "object" &&
-    "files" in response &&
-    typeof response.files === "object"
-  )
-}
-
 async function getLatestFile(baseDir: string, prefix: string) {
-  try {
-    const entries = await fs.readdir(baseDir)
-    const candidates = entries
-      .filter((f) => f.startsWith(prefix) && f.endsWith(".json"))
-      .map((f) => path.join(baseDir, f))
-    if (candidates.length === 0) return null
-    const stats = await Promise.all(
-      candidates.map(async (p) => {
-        try {
-          const s = await fs.stat(p)
-          return { filePath: p, mtimeMs: s.mtimeMs }
-        } catch {
-          return { filePath: p, mtimeMs: 0 }
-        }
-      })
-    )
-    stats.sort((a, b) => b.mtimeMs - a.mtimeMs)
-    return stats[0]?.filePath ?? null
-  } catch {
-    return null
-  }
+  return getLatestFileByPrefix(baseDir, prefix)
 }
 
 export async function GET() {
   try {
-    const resultsDir = path.resolve(
-      process.cwd(),
-      "public/research-experiments/tool-real/experiments/01-capacity-limits"
+    const resultsDir = publicExperimentDir("01-capacity-limits")
+
+    const analysisPath = await getLatestFile(
+      resultsDir,
+      "tool-capacity-analysis"
     )
 
-    let analysisPath = await getLatestFile(resultsDir, "tool-capacity-analysis")
-    if (!analysisPath) {
-      const exact = path.join(resultsDir, "tool-capacity-analysis.json")
-      try {
-        await fs.access(exact)
-        analysisPath = exact
-      } catch {}
-    }
-
-    let resultsPath = await getLatestFile(resultsDir, "tool-capacity-results")
-    if (!resultsPath) {
-      const exact = path.join(resultsDir, "tool-capacity-results.json")
-      try {
-        await fs.access(exact)
-        resultsPath = exact
-      } catch {}
-    }
+    const resultsPath = await getLatestFile(resultsDir, "tool-capacity-results")
 
     if (!analysisPath && !resultsPath) {
       return NextResponse.json(

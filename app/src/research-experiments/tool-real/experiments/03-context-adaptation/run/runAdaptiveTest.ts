@@ -192,6 +192,22 @@ async function runBaselineSingleLoop() {
   }
   writeFileSync(out, JSON.stringify(payload, null, 2))
   console.log(`Saved: ${out}`)
+
+  // Also write a public copy with a fixed filename
+  try {
+    const publicDir = join(
+      process.cwd(),
+      "public/research-experiments/tool-real/experiments/03-context-adaptation"
+    )
+    mkdirSync(publicDir, { recursive: true })
+    const fixed = join(publicDir, "adaptive-results.json")
+    writeFileSync(fixed, JSON.stringify(payload, null, 2))
+    console.log(`Public baseline copy saved: ${fixed}`)
+  } catch (err) {
+    console.warn(
+      `Failed to write public adaptive baseline copy: ${err instanceof Error ? err.message : String(err)}`
+    )
+  }
 }
 
 // Quiet noisy internal logs

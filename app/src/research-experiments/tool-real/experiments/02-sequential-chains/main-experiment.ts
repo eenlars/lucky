@@ -255,6 +255,44 @@ async function runFullExperiment() {
     )
   )
 
+  // Also write copies into the public folder for easy static access
+  try {
+    const publicDir = join(
+      process.cwd(),
+      "public/research-experiments/tool-real/experiments/02-sequential-chains"
+    )
+    mkdirSync(publicDir, { recursive: true })
+    // Fixed filenames for app consumption
+    writeFileSync(
+      join(publicDir, "sequential-results.json"),
+      JSON.stringify(allResults, null, 2)
+    )
+    writeFileSync(
+      join(publicDir, "sequential-analysis.json"),
+      JSON.stringify(analysis, null, 2)
+    )
+    writeFileSync(
+      join(publicDir, "sequential-summary.json"),
+      JSON.stringify(
+        {
+          timestamp,
+          experimentType: "sequential-tool-execution",
+          totalScenarios: allResults.length,
+          modelsPerformance: analysis.modelPerformance,
+          chainComplexity: analysis.chainComplexity,
+          overallStats: analysis.overallStats,
+        },
+        null,
+        2
+      )
+    )
+    console.log(`Public copies saved to: ${publicDir}`)
+  } catch (err) {
+    console.warn(
+      `Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`
+    )
+  }
+
   console.log(`\nResults saved to:`)
   console.log(`Detailed: ${outputFiles.results}`)
   console.log(`Analysis: ${outputFiles.analysis}`)

@@ -1,3 +1,8 @@
+import {
+  ADAPTIVE_RESULTS_URL,
+  getLatestFileByPrefixes,
+  loadJsonProdOrLocal,
+} from "@/lib/experiments/file-utils"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
 import path from "path"
@@ -24,28 +29,7 @@ type V3Run = {
 }
 
 async function getLatestByPrefix(baseDir: string, prefixes: string[]) {
-  try {
-    const entries = await fs.readdir(baseDir)
-    const candidates = entries
-      .filter((f) => prefixes.some((p) => f.startsWith(p)))
-      .filter((f) => f.endsWith(".json"))
-      .map((f) => path.join(baseDir, f))
-    if (candidates.length === 0) return null
-    const stats = await Promise.all(
-      candidates.map(async (p) => {
-        try {
-          const s = await fs.stat(p)
-          return { filePath: p, mtimeMs: s.mtimeMs }
-        } catch {
-          return { filePath: p, mtimeMs: 0 }
-        }
-      })
-    )
-    stats.sort((a, b) => b.mtimeMs - a.mtimeMs)
-    return stats[0]?.filePath ?? null
-  } catch {
-    return null
-  }
+  return getLatestFileByPrefixes(baseDir, prefixes)
 }
 
 async function _getLatestBaselinePath(baseDir: string) {
@@ -291,6 +275,7 @@ export async function GET() {
       process.cwd(),
       "public/research-experiments/tool-real/experiments/03-context-adaptation"
     )
+    const PROD_BASELINE_URL = ADAPTIVE_RESULTS_URL
 
     // Collect all datasets: final, baseline, v3
     const files: { final?: string; baseline?: string; v3?: string } = {}
@@ -338,38 +323,40 @@ export async function GET() {
     //   }
     // }
 
-    // Baseline results — always use the fixed file path
+    // Baseline results — production from Supabase, dev from local public
     const baselinePath = path.resolve(
       process.cwd(),
       "public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.json"
     )
-    try {
-      const raw = await fs.readFile(baselinePath, "utf-8")
-      const json = JSON.parse(raw) as any
-      // Support either legacy {results: BaselineResult[]} or {runs: V3Run[]}
-      if (Array.isArray(json?.results)) {
-        const results = json.results as BaselineResult[]
+
+    const baselineLoad = await loadJsonProdOrLocal<any>(
+      PROD_BASELINE_URL,
+      baselinePath
+    )
+    if (baselineLoad.source !== "none") {
+      files.baseline = baselineLoad.file ?? undefined
+    }
+    if (baselineLoad.error) {
+      errors.push(`baseline: ${baselineLoad.error}`)
+    }
+    const baselineJson = baselineLoad.json
+    if (baselineJson) {
+      if (Array.isArray(baselineJson?.results)) {
+        const results = baselineJson.results as BaselineResult[]
         baselineChart = aggregateBaselineResults(results)
-        files.baseline = baselinePath
         info.push(
           `baseline: results=${results.length}, models=${baselineChart.length}`
         )
-        // No duration/cost data in legacy format
-      } else if (Array.isArray(json?.runs)) {
-        const runs = json.runs as V3Run[]
+      } else if (Array.isArray(baselineJson?.runs)) {
+        const runs = baselineJson.runs as V3Run[]
         baselineChart = aggregateV3Runs(runs)
         metricsChart = aggregateTimeAndCostFromRuns(runs)
-        files.baseline = baselinePath
         info.push(
           `baseline (runs): runs=${runs.length}, models=${baselineChart.length}`
         )
       } else {
-        info.push("Baseline file parsed but found neither results nor runs")
+        info.push("Baseline parsed but found neither results nor runs")
       }
-    } catch (e: any) {
-      const msg = `Failed reading/parsing baseline file: ${baselinePath}: ${e?.message ?? e}`
-      errors.push(msg)
-      console.error(msg)
     }
 
     // V3 runs

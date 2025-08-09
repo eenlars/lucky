@@ -113,6 +113,22 @@ async function runSanityV3() {
   }
   writeFileSync(out, JSON.stringify(payload, null, 2))
   console.log(`Saved: ${out}`)
+
+  // Also write a public copy with a fixed filename
+  try {
+    const publicDir = join(
+      process.cwd(),
+      "public/research-experiments/tool-real/experiments/03-context-adaptation"
+    )
+    mkdirSync(publicDir, { recursive: true })
+    const fixed = join(publicDir, "adaptive-results.v3.json")
+    writeFileSync(fixed, JSON.stringify(payload, null, 2))
+    console.log(`Public v3 copy saved: ${fixed}`)
+  } catch (err) {
+    console.warn(
+      `Failed to write public adaptive v3 copy: ${err instanceof Error ? err.message : String(err)}`
+    )
+  }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
