@@ -123,6 +123,8 @@ export async function improveNodesCulturallyImpl(
     }
 
     default: {
+      const _exhaustiveCheck: never = improvementType
+      void _exhaustiveCheck
       throw new Error(`Unknown improvement type: ${improvementType}`)
     }
   }

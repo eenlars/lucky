@@ -158,13 +158,13 @@ export const createTextSummary = async (
 export const createToolSummary = async (
   response: ToolProcessed
 ): Promise<SummaryResult> => {
-  const outputs = response.toolUsage?.outputs ?? []
+  const agentSteps = response.agentSteps ?? []
   const toolNames = [
-    ...new Set(outputs.map((step) => step.name).filter(Boolean)),
+    ...new Set(agentSteps.map((step) => step.name).filter(Boolean)),
   ]
   let usdCost = response.cost ?? 0
 
-  if (outputs.length === 0) {
+  if (agentSteps.length === 0) {
     return {
       summary: `Tool execution: ${toolNames.join(", ")} - no operations recorded`,
       usdCost,
@@ -173,13 +173,13 @@ export const createToolSummary = async (
 
   if (verbose) {
     lgg.log("response", JSON.stringify(response, null, 2))
-    lgg.log("rawData length", JSON.stringify(outputs, null, 2).length)
+    lgg.log("rawData length", JSON.stringify(agentSteps, null, 2).length)
   }
 
   const aiResult = await createAISummary(
     CreateSummaryPrompt.summaryPromptTool(
       toolNames.filter((n): n is string => Boolean(n)),
-      JSON.stringify(outputs, null, 2)
+      JSON.stringify(agentSteps, null, 2)
     ),
     "data analyzer that summarizes tool execution results",
     getDefaultModels().summary,
@@ -199,7 +199,7 @@ export const createToolSummary = async (
   }
 
   return {
-    summary: `Tool execution: ${toolNames.join(", ")} - ${outputs.length} operations (summary generation failed)`,
+    summary: `Tool execution: ${toolNames.join(", ")} - ${agentSteps.length} operations (summary generation failed)`,
     usdCost,
   }
 }

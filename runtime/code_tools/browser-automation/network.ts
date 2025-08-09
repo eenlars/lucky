@@ -1,7 +1,7 @@
+import { lgg } from "@core/utils/logging/Logger"
 import { randomUserAgents } from "@runtime/code_tools/browser-automation/constants"
 import { saveInLoc } from "@runtime/code_tools/file-saver/save"
 import type { ProxyResponse } from "@runtime/code_tools/googlescraper/main"
-import { lgg } from "@core/utils/logging/Logger"
 import { PATHS } from "@runtime/settings/constants"
 import type { HTTPRequest, HTTPResponse, Page } from "puppeteer"
 import puppeteer from "puppeteer"
@@ -55,7 +55,7 @@ const DEFAULT_EXCLUDED_TYPES = [
   "media",
   "websocket",
   "eventsource",
-]
+] as const
 
 const DEFAULT_EXCLUDED_URL_PATTERNS = [
   // file extensions
@@ -68,7 +68,7 @@ const DEFAULT_EXCLUDED_URL_PATTERNS = [
   /cookiebot|onetrust|trustarc|cookielaw|cookie.*consent|gdpr/i,
   // cdn and static assets
   /demandware\.static.*\.(svg|png|jpg|jpeg|gif|css|js)/i,
-]
+] as const
 
 export const inputSchemaNetworkMonitor = z.object({
   url: z.string(),

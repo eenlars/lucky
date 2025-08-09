@@ -224,6 +224,15 @@ export const providersV2 = {
       context_length: 131072,
       active: true,
     },
+    "openai/gpt-5": {
+      id: "openai/gpt-5",
+      input: 1.25,
+      "cached-input": 0.4,
+      output: 10,
+      info: "IQ:9/10;speed:medium;pricing:medium;",
+      context_length: 128000,
+      active: true,
+    },
   },
   // Groq API
   groq: {

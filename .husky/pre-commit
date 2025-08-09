@@ -1,0 +1,3 @@
+echo "[husky] running smoke tests..."
+bun run test:smoke || exit 1
+

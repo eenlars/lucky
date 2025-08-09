@@ -1,4 +1,4 @@
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { asArray } from "@core/utils/common/utils"
 import type { ModelName } from "@core/utils/spending/models.types"
@@ -19,12 +19,8 @@ const normaliseResults = <T extends ToolSet>(step: StepResult<T>) => {
 export const processStepsV2 = <T extends ToolSet>(
   steps: StepResult<T>[],
   modelUsed: ModelName
-): NodeLogs | undefined => {
-  if (isNir(steps) || !Array.isArray(steps))
-    return {
-      outputs: [],
-      totalCost: 0,
-    }
+): { usdCost: number; agentSteps: AgentSteps } | undefined => {
+  if (isNir(steps) || !Array.isArray(steps)) return undefined
 
   /* ---------- 1. Map every step to the internal shape ---------- */
   const perStep = (steps as StepResult<T>[]).map((rawStep) => {
@@ -59,16 +55,13 @@ export const processStepsV2 = <T extends ToolSet>(
   })
 
   /* ---------- 2. Aggregate using for loops ---------- */
-  const aggregated: NodeLogs = {
-    outputs: [],
-    totalCost: 0,
-  }
+  const aggregated: AgentSteps = []
   let lastText = ""
 
   for (const { toolCalls, totalCost, rawText } of perStep) {
     // add tool outputs if present
     for (const call of toolCalls) {
-      aggregated.outputs.push({
+      aggregated.push({
         type: "tool" as const,
         name: call.toolName as string,
         args: call.toolArgs as Record<string, any>,
@@ -78,12 +71,11 @@ export const processStepsV2 = <T extends ToolSet>(
 
     // remember the last plain-text chunk (for optional fallback)
     lastText = rawText || lastText
-    aggregated.totalCost += totalCost
   }
 
   /* ---------- 3. Fallback: no tool calls at all ⇒ emit text ---------- */
-  if (aggregated.outputs.length === 0) {
-    aggregated.outputs.push({
+  if (aggregated.length === 0) {
+    aggregated.push({
       type: "text" as const,
       name: undefined,
       args: undefined,
@@ -91,5 +83,8 @@ export const processStepsV2 = <T extends ToolSet>(
     })
   }
 
-  return aggregated
+  return {
+    usdCost: perStep.reduce((acc, step) => acc + step.totalCost, 0),
+    agentSteps: aggregated,
+  }
 }

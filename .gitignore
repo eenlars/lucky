@@ -83,7 +83,9 @@ downloads/*
 # MCP folder
 mcp/*
 
-**/research-experiments/*
+**/experiments-2/*
+**/research-experiments/*.json
+**/research-experiments/*.md
 
 # Local config files
 *.local

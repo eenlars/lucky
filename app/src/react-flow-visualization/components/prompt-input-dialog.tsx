@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import {
   Dialog,
@@ -11,6 +10,7 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+import { useState } from "react"
 
 interface PromptInputDialogProps {
   open: boolean
@@ -24,9 +24,9 @@ export function PromptInputDialog({
   onOpenChange,
   onExecute,
   loading = false,
-}: PromptInputDialogProps) {
+  logs = [],
+}: PromptInputDialogProps & { logs?: string[] }) {
   const [prompt, setPrompt] = useState("")
-
 
   const handleExecute = () => {
     if (prompt.trim()) {
@@ -64,6 +64,15 @@ export function PromptInputDialog({
           <p className="text-xs text-muted-foreground">
             Press Cmd/Ctrl + Enter to execute
           </p>
+          {logs.length > 0 && (
+            <div className="max-h-60 overflow-auto rounded border p-2 text-xs font-mono bg-muted/30">
+              {logs.map((m, i) => (
+                <p key={i} className="break-words">
+                  {m}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button

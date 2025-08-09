@@ -34,7 +34,10 @@ function extractJSON(
   for (const chunk of candidates) {
     const candidate = chunk.trim()
     // Try JSON5 first, then strict JSON
-    const tries = [() => JSON5.parse(candidate), () => JSON.parse(candidate)]
+    const tries = [
+      () => JSON5.parse(candidate),
+      () => JSON.parse(candidate),
+    ] as const
 
     for (const tryParse of tries) {
       try {

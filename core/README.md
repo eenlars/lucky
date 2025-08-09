@@ -2,7 +2,7 @@
 
 Autonomous workflow system using evolutionary AI to optimize agent-based workflows. The system operates as graphs of AI agents that execute workflows as directed acyclic graphs (DAGs), pass structured messages, use tools through unified TypeScript/MCP interfaces, store large data in chunked shared memory, and evolve through cultural learning and genetic programming.
 
-## Quick Start
+## Quick Start if using the SDK:
 
 ```typescript
 import { Workflow } from "@core/workflow/Workflow"

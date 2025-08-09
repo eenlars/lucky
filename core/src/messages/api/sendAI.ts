@@ -32,18 +32,13 @@ import { z, ZodTypeAny, type Schema } from "zod"
 
 import pTimeout, { TimeoutError } from "p-timeout"
 
-import { openai } from "@ai-sdk/openai"
+import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
-import { groqProvider } from "@core/utils/clients/groq/groqClient"
-import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { ModelNameV2 } from "@core/utils/spending/models.types"
-import {
-  CURRENT_PROVIDER,
-  type LuckyProvider,
-} from "@core/utils/spending/provider"
+// provider selection handled in modelFactory
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
 import { CONFIG } from "@runtime/settings/constants"
@@ -188,22 +183,6 @@ function getFallbackModel(model: ModelName): ModelName {
 /*                          Model Name to LanguageModel                       */
 /* -------------------------------------------------------------------------- */
 
-function getLanguageModel(modelName: ModelName): LanguageModelV1 {
-  const provider = CURRENT_PROVIDER as LuckyProvider
-
-  // Determine provider from model name or use CURRENT_PROVIDER
-  if (provider === "openrouter") {
-    return openrouter(modelName)
-  } else if (provider === "groq") {
-    return groqProvider(modelName)
-  } else if (provider === "openai") {
-    return openai(modelName)
-  }
-
-  // Fallback to openrouter if provider not recognized
-  return openrouter(modelName)
-}
-
 /* -------------------------------------------------------------------------- */
 /*                             exec* helpers                                  */
 /* -------------------------------------------------------------------------- */
@@ -222,7 +201,7 @@ async function execText(
     ? getFallbackModel(wanted)
     : wanted
 
-  const model = getLanguageModel(modelName)
+  const model = getLanguageModelWithReasoning(modelName, opts)
 
   try {
     const baseOptions: Parameters<typeof generateText>[0] = {
@@ -232,12 +211,15 @@ async function execText(
       maxSteps: opts.maxSteps ?? CONFIG.tools.maxStepsVercel,
     }
 
+    const isReasoning = Boolean(opts.reasoning)
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
       baseOptions,
       {
         modelName: modelName,
-        overallTimeoutMs: 30_000,
-        stallTimeoutMs: 100_000,
+        // Text generations can reasonably take longer than 30s, especially with reasoning models.
+        // Use higher defaults and scale with reasoning flag.
+        overallTimeoutMs: isReasoning ? 240_000 : 120_000,
+        stallTimeoutMs: isReasoning ? 120_000 : 60_000,
       }
     )
 
@@ -271,6 +253,16 @@ async function execText(
       message = (err as Error).message
     }
     lgg.error("execText errorr", message)
+    // Track model timeouts to enable temporary fallback if a model times out frequently.
+    if (
+      typeof message === "string" &&
+      (message.includes("Overall timeout") || message.includes("Stall timeout"))
+    ) {
+      const now = Date.now()
+      const existing = modelTimeouts.get(modelName) ?? []
+      existing.push(now)
+      modelTimeouts.set(modelName, existing)
+    }
     return {
       success: false,
       data: null,
@@ -292,7 +284,7 @@ async function execTool(
       ? getFallbackModel(requestedModel)
       : requestedModel
 
-    const model = getLanguageModel(modelName)
+    const model = getLanguageModelWithReasoning(modelName, opts)
 
     const baseOptions: Parameters<typeof generateText>[0] = {
       model,
@@ -324,9 +316,25 @@ async function execTool(
       debug_output: gen,
     }
   } catch (error: any) {
-    console.error(error)
+    // Handle tool errors gracefully without dumping large stacks
     let message = ""
-    lgg.error("execTool error", error, opts.toolChoice, opts.tools)
+    const isArgValidationError =
+      typeof error?.name === "string" &&
+      (error.name.includes("AI_InvalidToolArgumentsError") ||
+        error.name.includes("AI_TypeValidationError"))
+    const isTypeValidationText =
+      typeof error?.message === "string" &&
+      error.message.toLowerCase().includes("type validation failed")
+
+    if (!isArgValidationError && !isTypeValidationText) {
+      // Only log full details for unexpected errors
+      lgg.error("execTool error", error, opts.toolChoice, opts.tools)
+    } else {
+      // Keep logs concise for validation errors
+      lgg.warn(
+        `execTool validation error: ${error?.message ?? "invalid tool arguments"}`
+      )
+    }
     if (APICallError.isInstance(error)) {
       if (error.responseBody) {
         try {
@@ -487,13 +495,18 @@ async function _sendAIInternal(
       return execTool(req)
     case "structured":
       return execStructured(req)
-    default:
+    default: {
+      const _exhaustiveCheck: never = req
+      void _exhaustiveCheck
       return {
         success: false,
         data: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         error: `Unknown mode ${(req as any).mode}`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         debug_input: req as any,
       }
+    }
   }
 }
 

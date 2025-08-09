@@ -17,6 +17,7 @@ import type {
   VerificationResult,
 } from "@core/utils/validation/workflow/verify.types"
 import { verifyNoCycles } from "@core/utils/validation/workflow/verifyDirectedGraph"
+import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/verifyHandoffTypeConsistency"
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -89,8 +90,9 @@ export const verifyWorkflowConfig = async (
       verifyNoDuplicateHandoffs,
       verifyMaxToolsPerAgent,
       verifyNoCycles,
+      verifyHandoffTypeConsistency,
       verifyHierarchicalStructure, // Added hierarchical validation
-    ]
+    ] as const
 
     for (const verify of verificationFunctions) {
       const result = await verify(config)

@@ -194,7 +194,10 @@ export async function judge(
     case "doNothing":
       return R.success(workflow, response.usdCost)
 
-    default:
+    default: {
+      const _exhaustiveCheck: never = action as never
+      void _exhaustiveCheck
       return R.error(`Unknown action: ${action}`, response.usdCost)
+    }
   }
 }

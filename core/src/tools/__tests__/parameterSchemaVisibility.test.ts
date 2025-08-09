@@ -56,7 +56,7 @@ describe("Parameter Schema Visibility", () => {
     await selectToolStrategyV2({
       tools: mockTools,
       messages: [],
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -80,7 +80,7 @@ describe("Parameter Schema Visibility", () => {
     await selectToolStrategyV2({
       tools: mockTools,
       messages: [],
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -122,7 +122,7 @@ describe("Parameter Schema Visibility", () => {
     await selectToolStrategyV2({
       tools: complexTools,
       messages: [],
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -170,7 +170,7 @@ describe("Parameter Schema Visibility", () => {
     await selectToolStrategyV2({
       tools: mixedTools as any,
       messages: [],
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,

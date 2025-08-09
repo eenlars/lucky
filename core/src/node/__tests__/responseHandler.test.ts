@@ -83,10 +83,7 @@ describe("responseHandler - Parallel Handoff Logic", () => {
     content: "test output",
     cost: 0.05,
     summary: "test summary",
-    toolUsage: {
-      outputs: [{ type: "text", return: "test output" }],
-      totalCost: 0,
-    },
+    agentSteps: [{ type: "text", return: "test output" }],
   })
 
   it("should enable parallel processing when handOffType is 'parallel'", async () => {

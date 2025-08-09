@@ -123,7 +123,14 @@ export default function JSONEditor({
     } finally {
       setIsOptimizing(false)
     }
-  }, [workflowJSON, feedback, updateWorkflowJSON, setIsDirty, setFeedback, setVerificationResult])
+  }, [
+    workflowJSON,
+    feedback,
+    updateWorkflowJSON,
+    setIsDirty,
+    setFeedback,
+    setVerificationResult,
+  ])
 
   // Helper functions for cleaner code organization
   const parseWorkflowSafely = (content: string) => {
@@ -189,7 +196,7 @@ export default function JSONEditor({
 
     try {
       const parsedWorkflow = parseWorkflowSafely(workflowJSON)
-      
+
       // Save workflow to database
       const workflowId = `wf_id_${genShortId()}`
       await ensureWorkflowExists(commitMessage, workflowId)
@@ -201,7 +208,7 @@ export default function JSONEditor({
         iterationBudget: workflowVersion?.iteration_budget || 50,
         timeBudgetSeconds: workflowVersion?.time_budget_seconds || 3600,
       })
-      
+
       // Navigate to saved workflow
       setIsDirty(false)
       setShowSaveModal(false)
@@ -215,7 +222,6 @@ export default function JSONEditor({
       setIsLoading(false)
     }
   }, [workflowJSON, commitMessage, workflowVersion, router])
-
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -450,12 +456,6 @@ export default function JSONEditor({
                     edges
                   </code>{" "}
                   - Array of connections
-                </li>
-                <li>
-                  <code className="text-xs bg-gray-100 px-1 rounded">
-                    metadata
-                  </code>{" "}
-                  - Workflow metadata
                 </li>
               </ul>
             </div>

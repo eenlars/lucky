@@ -1,0 +1,3 @@
+echo "[husky] running gate tests..."
+bun run test:gate || exit 1
+

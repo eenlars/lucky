@@ -168,11 +168,14 @@ const csvWriterTool = defineTool({
         return Tools.createSuccess("csvWriter", result.output)
       }
 
-      default:
+      default: {
+        const _exhaustiveCheck: never = action
+        void _exhaustiveCheck
         return Tools.createFailure("csvWriter", {
           location: "csvWriter:unsupportedAction",
           error: `unsupported action: ${action}`,
         })
+      }
     }
   },
 })

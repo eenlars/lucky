@@ -114,11 +114,9 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
     }
 
     // extract tool usage
-    const toolUsage = pipeline.getToolUsage()
-    const toolCalls = toolUsage.outputs.filter(
-      (output: any) => output.type === "tool"
-    )
-    const toolsUsed = toolCalls.map((call: any) => call.name)
+    const agentSteps = pipeline.getAgentSteps()
+    const toolCalls = agentSteps.filter((output) => output.type === "tool")
+    const toolsUsed = toolCalls.map((call) => call.name)
 
     // verify both tools were called
     expect(toolsUsed).toContain("todoRead")
@@ -135,7 +133,7 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
     console.log("✅ MultiStep3 Test Results:", {
       toolsExecuted: toolsUsed,
       correctOrder: todoReadIndex < todoWriteIndex,
-      totalCost: toolUsage.totalCost,
+      totalCost: 0,
     })
   }, 60000) // 1 minute timeout
 })

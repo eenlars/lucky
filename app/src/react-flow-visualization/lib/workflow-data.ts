@@ -41,6 +41,7 @@ export const initialSetupConfig = (
       mcpTools: node.mcpTools || [],
       codeTools: node.codeTools || [],
       handOffs: node.handOffs || [],
+      handOffType: node.handOffType,
       memory: node.memory || {},
       title: node.nodeId,
       label: node.description,

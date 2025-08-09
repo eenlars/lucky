@@ -80,8 +80,8 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs).toHaveLength(1)
-      expect(result?.outputs[0]).toEqual({
+      expect(result?.agentSteps).toHaveLength(1)
+      expect(result?.agentSteps[0]).toEqual({
         type: "tool",
         name: "testTool",
         args: { param: "value" },
@@ -109,8 +109,8 @@ describe("processStepsV2", () => {
       const result = processStepsV2(steps as any, testModel)
 
       // Since the implementation doesn't handle alternative format, it should fallback to text
-      expect(result?.outputs).toHaveLength(1)
-      expect(result?.outputs[0]).toEqual({
+      expect(result?.agentSteps).toHaveLength(1)
+      expect(result?.agentSteps[0]).toEqual({
         type: "text",
         name: undefined,
         args: undefined,
@@ -137,9 +137,9 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs).toHaveLength(2)
-      expect(result?.outputs[0].name).toBe("tool1")
-      expect(result?.outputs[1].name).toBe("tool2")
+      expect(result?.agentSteps).toHaveLength(2)
+      expect(result?.agentSteps[0].name).toBe("tool1")
+      expect(result?.agentSteps[1].name).toBe("tool2")
     })
 
     it("should use text as fallback when no specific tool result", () => {
@@ -157,7 +157,7 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs[0].return).toBe("fallback text response")
+      expect(result?.agentSteps[0].return).toBe("fallback text response")
     })
 
     it("should use tool call result property when available", () => {
@@ -177,7 +177,7 @@ describe("processStepsV2", () => {
 
       // The implementation doesn't look for result property in toolCalls, only in toolResults
       // So this should fallback to empty string since there's no toolResults
-      expect(result?.outputs[0].return).toBe("")
+      expect(result?.agentSteps[0].return).toBe("")
     })
   })
 
@@ -196,10 +196,10 @@ describe("processStepsV2", () => {
       const result = processStepsV2(steps as any, testModel)
 
       // check that we get the individual tool calls with correct names
-      expect(result?.outputs).toHaveLength(3)
-      expect(result?.outputs[0].name).toBe("tool1")
-      expect(result?.outputs[1].name).toBe("tool2")
-      expect(result?.outputs[2].name).toBe("tool3")
+      expect(result?.agentSteps).toHaveLength(3)
+      expect(result?.agentSteps[0].name).toBe("tool1")
+      expect(result?.agentSteps[1].name).toBe("tool2")
+      expect(result?.agentSteps[2].name).toBe("tool3")
     })
 
     it("should handle missing tool names gracefully", () => {
@@ -213,7 +213,7 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs[0].name).toBe("")
+      expect(result?.agentSteps[0].name).toBe("")
     })
 
     it("should filter out non-string tool names", () => {
@@ -229,8 +229,8 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs).toHaveLength(3)
-      expect(result?.outputs[2].name).toBe("validTool")
+      expect(result?.agentSteps).toHaveLength(3)
+      expect(result?.agentSteps[2].name).toBe("validTool")
     })
   })
 
@@ -249,7 +249,7 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.totalCost).toBeGreaterThan(0)
+      expect(result?.usdCost).toBeGreaterThan(0)
     })
 
     it("should handle missing usage information", () => {
@@ -262,7 +262,7 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.totalCost).toBe(0)
+      expect(result?.usdCost).toBe(0)
     })
 
     it("should sum costs from multiple steps", () => {
@@ -287,13 +287,13 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.totalCost).toBeGreaterThan(0)
-      expect(result?.outputs).toHaveLength(2)
+      expect(result?.usdCost).toBeGreaterThan(0)
+      expect(result?.agentSteps).toHaveLength(2)
     })
   })
 
   describe("data structure integrity", () => {
-    it("should maintain correct NodeLogs structure", () => {
+    it("should maintain correct AgentStep structure", () => {
       const steps = [
         {
           toolCalls: [
@@ -309,14 +309,14 @@ describe("processStepsV2", () => {
       const result = processStepsV2(steps as any, testModel)
 
       // check top-level structure
-      expect(result).toHaveProperty("outputs")
-      expect(Array.isArray(result?.outputs)).toBe(true)
-      expect(typeof result?.totalCost).toBe("number")
+      expect(result).toHaveProperty("agentSteps")
+      expect(Array.isArray(result?.agentSteps)).toBe(true)
+      expect(typeof result?.usdCost).toBe("number")
 
       // check tool call structure
-      expect(result?.outputs[0]).toHaveProperty("name")
-      expect(result?.outputs[0]).toHaveProperty("args")
-      expect(result?.outputs[0]).toHaveProperty("return")
+      expect(result?.agentSteps[0]).toHaveProperty("name")
+      expect(result?.agentSteps[0]).toHaveProperty("args")
+      expect(result?.agentSteps[0]).toHaveProperty("return")
     })
 
     it("should preserve argument structure", () => {
@@ -340,7 +340,7 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs[0].args).toEqual(complexArgs)
+      expect(result?.agentSteps[0].args).toEqual(complexArgs)
     })
   })
 
@@ -354,14 +354,14 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs).toHaveLength(1)
-      expect(result?.outputs[0]).toEqual({
+      expect(result?.agentSteps).toHaveLength(1)
+      expect(result?.agentSteps[0]).toEqual({
         type: "text",
         name: undefined,
         args: undefined,
         return: "just text, no tools",
       })
-      expect(result?.totalCost).toBe(0)
+      expect(result?.usdCost).toBe(0)
     })
 
     it("should handle mixed step types", () => {
@@ -381,8 +381,8 @@ describe("processStepsV2", () => {
       const result = processStepsV2(steps as any, testModel)
 
       // Only tool1 will be processed since tool_calls format isn't supported
-      expect(result?.outputs).toHaveLength(1)
-      expect(result?.outputs[0].name).toBe("tool1")
+      expect(result?.agentSteps).toHaveLength(1)
+      expect(result?.agentSteps[0].name).toBe("tool1")
     })
 
     it("should handle mismatched calls and results arrays", () => {
@@ -401,9 +401,9 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
-      expect(result?.outputs).toHaveLength(2)
-      expect(result?.outputs[0].return).toEqual("result1")
-      expect(result?.outputs[1].return).toBe("") // fallback to empty text
+      expect(result?.agentSteps).toHaveLength(2)
+      expect(result?.agentSteps[0].return).toEqual("result1")
+      expect(result?.agentSteps[1].return).toBe("") // fallback to empty text
     })
   })
 })

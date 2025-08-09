@@ -21,7 +21,7 @@ const locationLinks = [
   "https://www.google.com/maps/place/De+Bonte+Koe+Chocolade/data=!4m7!3m6!1s0x47c4351a5376f255:0x1696f7f2235d8866!8m2!3d51.915549!4d4.4670237!16s%2Fg%2F11m847s0ck!19sChIJVfJ2Uxo1xEcRZohdI_L3lhY?authuser=0&hl=nl&rclk=1",
   "https://www.google.com/maps/place/De+Bonte+Koe+Chocolade/data=!4m7!3m6!1s0x47c5b7242ccf4f71:0x3894960dfe7c787d!8m2!3d52.0820821!4d4.2989459!16s%2Fg%2F11tj9vw65s!19sChIJcU_PLCS3xUcRfXh8_g2WlDg?authuser=0&hl=nl&rclk=1",
   "https://www.google.com/maps/place/De+Bonte+Koe+Chocolade+-+Chocolab/data=!4m7!3m6!1s0x47c4356d571ae661:0x549a2cc2a783d091!8m2!3d51.9152511!4d4.3986301!16s%2Fg%2F11m5kjhy71!19sChIJYeYaV201xEcRkdCDp8IsmlQ?authuser=0&hl=nl&rclk=1",
-]
+] as const
 
 const multiple = "De bonte koe chocolade"
 

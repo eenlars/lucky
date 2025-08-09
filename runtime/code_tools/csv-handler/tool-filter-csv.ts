@@ -269,11 +269,14 @@ const csvFilterTool = defineTool({
         return Tools.createSuccess("csvFilter", result.output)
       }
 
-      default:
+      default: {
+        const _exhaustiveCheck: never = action
+        void _exhaustiveCheck
         return Tools.createFailure("csvFilter", {
           location: "csvFilter",
           error: `unsupported action: ${action}`,
         })
+      }
     }
   },
 })

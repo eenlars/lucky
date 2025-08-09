@@ -172,6 +172,11 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         - Balance changes across behaviors, structures, and patterns
         - Use aggression level to control overall modification intensity`
         break
+      default: {
+        const _exhaustiveCheck: never = crossoverType
+        void _exhaustiveCheck
+        break
+      }
     }
 
     // Use formalizeWorkflow approach like in Mutations.ts to avoid schema issues

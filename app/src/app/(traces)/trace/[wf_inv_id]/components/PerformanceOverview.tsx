@@ -345,7 +345,7 @@ export default function PerformanceOverview({
 
           {/* Right: Structure Link */}
           <Link
-            href={`/trace/${wf_inv_id}/structure`}
+            href={`/edit/${workflowVersion?.wf_version_id}?mode=json`}
             className="flex items-center gap-1 text-blue-700 hover:text-blue-800 transition-colors text-sm font-semibold"
           >
             <FileText size={12} />

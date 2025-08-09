@@ -104,12 +104,12 @@ describe("generateText with createPrepareStepStrategy", () => {
 
     console.log(JSONN.show(resultV2))
 
-    expect(resultV2?.outputs).toBeDefined()
-    expect(resultV2?.outputs.length).toBeGreaterThan(0)
+    expect(resultV2?.agentSteps).toBeDefined()
+    expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.outputs.find((r) => r.name === "nod_333")
-    const tool2Result = resultV2?.outputs.find((r) => r.name === "mod_888")
-    const tool3Result = resultV2?.outputs.find((r) => r.name === "rod_999")
+    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "nod_333")
+    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "mod_888")
+    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "rod_999")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")
@@ -177,12 +177,12 @@ Now, let me execute the tools as requested.`,
 
     console.log(JSONN.show(resultV2))
 
-    expect(resultV2?.outputs).toBeDefined()
-    expect(resultV2?.outputs.length).toBeGreaterThan(0)
+    expect(resultV2?.agentSteps).toBeDefined()
+    expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.outputs.find((r) => r.name === "nod_333")
-    const tool2Result = resultV2?.outputs.find((r) => r.name === "mod_888")
-    const tool3Result = resultV2?.outputs.find((r) => r.name === "rod_999")
+    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "nod_333")
+    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "mod_888")
+    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "rod_999")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")

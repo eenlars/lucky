@@ -7,20 +7,19 @@ vi.mock("@core/utils/logging/Logger", () => ({
     error: vi.fn().mockResolvedValue(undefined),
     debug: vi.fn().mockResolvedValue(undefined),
     trace: vi.fn().mockResolvedValue(undefined),
-    onlyIf: vi.fn().mockImplementation((decider: boolean) => 
-      decider ? Promise.resolve() : null
-    ),
+    onlyIf: vi
+      .fn()
+      .mockImplementation((decider: boolean) =>
+        decider ? Promise.resolve() : null
+      ),
     logAndSave: vi.fn().mockResolvedValue(undefined),
     finalizeWorkflowLog: vi.fn().mockResolvedValue(null),
   },
 }))
 
 // Use standardized test setup
-import {
-  setupCoreTest,
-  createMockRuntimeConstants,
-} from "@core/utils/__tests__/setup/coreMocks"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
+import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
@@ -184,7 +183,7 @@ vi.mock("@core/messages/api/processResponse", () => ({
   processVercelResponse: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
-    toolUsage: {
+    agentSteps: {
       outputs: [
         {
           type: "tool",
@@ -202,7 +201,7 @@ vi.mock("@core/messages/api/processResponse", () => ({
     content: "final output",
     summary: "final summary",
   }),
-  getResponseContentNodeLogs: vi.fn().mockReturnValue("response content"),
+  getResponseContentagentSteps: vi.fn().mockReturnValue("response content"),
   getResponseContent: vi.fn().mockReturnValue("response content"),
 }))
 
@@ -230,7 +229,7 @@ vi.mock("@core/node/strategies/MultiStepLoopV2", () => ({
   runMultiStepLoopV2: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
-    toolUsage: {
+    agentSteps: {
       outputs: [
         { type: "reasoning", return: "test reasoning" },
         {
@@ -261,7 +260,7 @@ vi.mock("@core/node/strategies/MultiStepLoopV3", () => ({
   runMultiStepLoopV3: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
-    toolUsage: {
+    agentSteps: {
       outputs: [
         { type: "reasoning", return: "test reasoning" },
         {
@@ -348,16 +347,15 @@ describe("InvocationPipeline", () => {
       )
 
       await pipeline.prepare()
-      const toolUsage = pipeline.getToolUsage()
+      const agentSteps = pipeline.getAgentSteps()
 
       // prepare() calls sendAI for reasoning step, which adds a reasoning output
-      expect(toolUsage.outputs).toContainEqual(
+      expect(agentSteps).toContainEqual(
         expect.objectContaining({
           type: "reasoning",
           return: expect.stringMatching(/AI response/),
         })
       )
-      expect(toolUsage.totalCost).toBeGreaterThanOrEqual(0)
     })
 
     it("handles tool strategy selection with prepare step strategy", async () => {
@@ -395,9 +393,8 @@ describe("InvocationPipeline", () => {
       await pipeline.prepare()
       await pipeline.execute()
 
-      const toolUsage = pipeline.getToolUsage()
-      expect(toolUsage.totalCost).toBeGreaterThanOrEqual(0)
-      expect(toolUsage.outputs).toContainEqual(
+      const agentSteps = pipeline.getAgentSteps()
+      expect(agentSteps).toContainEqual(
         expect.objectContaining({
           type: "reasoning",
           return: expect.stringMatching(/test reasoning|AI response/),
@@ -409,7 +406,7 @@ describe("InvocationPipeline", () => {
       const { selectToolStrategyV2 } = await import(
         "@core/tools/any/selectToolStrategyV2"
       )
-      
+
       // mock a tool execution strategy followed by termination
       const mockStrategy = selectToolStrategyV2 as any
       mockStrategy.mockResolvedValueOnce({
@@ -433,19 +430,22 @@ describe("InvocationPipeline", () => {
       await pipeline.prepare()
       await pipeline.execute()
 
-      const toolUsage = pipeline.getToolUsage()
-      expect(toolUsage.totalCost).toBeGreaterThanOrEqual(0)
-      expect(toolUsage.outputs.length).toBeGreaterThan(0)
-      
+      const agentSteps = pipeline.getAgentSteps()
+      expect(agentSteps.length).toBeGreaterThan(0)
+
       // Multi-step loop should have reasoning output at minimum
-      expect(toolUsage.outputs).toContainEqual(
+      expect(agentSteps).toContainEqual(
         expect.objectContaining({
           type: "reasoning",
         })
       )
       // May also have terminate output from multi-step loop
-      const hasTerminate = toolUsage.outputs.some(output => output.type === "terminate")
-      const hasReasoning = toolUsage.outputs.some(output => output.type === "reasoning")
+      const hasTerminate = agentSteps.some(
+        (output) => output.type === "terminate"
+      )
+      const hasReasoning = agentSteps.some(
+        (output) => output.type === "reasoning"
+      )
       expect(hasTerminate || hasReasoning).toBe(true)
     })
 
@@ -460,8 +460,7 @@ describe("InvocationPipeline", () => {
       await pipeline.prepare()
       await pipeline.execute()
 
-      const toolUsage = pipeline.getToolUsage()
-      expect(toolUsage.totalCost).toBeGreaterThanOrEqual(0)
+      const agentSteps = pipeline.getAgentSteps()
     })
 
     it("handles execution errors gracefully", async () => {
@@ -537,8 +536,7 @@ describe("InvocationPipeline", () => {
       await pipeline.execute()
       await pipeline.process()
 
-      const toolUsage = pipeline.getToolUsage()
-      expect(toolUsage.totalCost).toBeGreaterThanOrEqual(0)
+      const agentSteps = pipeline.getAgentSteps()
 
       const updatedMemory = pipeline.getUpdatedMemory()
       expect(updatedMemory).toBeDefined()
@@ -561,7 +559,7 @@ describe("InvocationPipeline", () => {
 
       // verify end state
       expect(result).toBeDefined()
-      expect(pipeline.getToolUsage().totalCost).toBeGreaterThan(0)
+      expect(pipeline.getAgentSteps().length).toBeGreaterThan(0)
       expect(pipeline.getUpdatedMemory()).toBeDefined()
     })
   })

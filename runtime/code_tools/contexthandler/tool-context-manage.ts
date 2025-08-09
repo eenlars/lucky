@@ -262,11 +262,14 @@ const contextManage = defineTool({
           })
         }
 
-        default:
+        default: {
+          const _exhaustiveCheck: never = operation
+          void _exhaustiveCheck
           return Tools.createFailure("contextManage", {
             location: "contextManage:unknownOperation",
             error: `Unknown operation: ${operation}`,
           })
+        }
       }
     } catch (error) {
       const errorMessage =

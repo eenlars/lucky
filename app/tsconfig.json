@@ -38,7 +38,6 @@
   "exclude": [
     "node_modules",
     "src/runtime/logging_folder",
-    "src/research-experiments/meta-workflow",
-    "src/research-experiments/rituals-store-finder"
+    "src/experiments-2/*"
   ]
 }

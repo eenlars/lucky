@@ -23,6 +23,7 @@ export async function formalizeWorkflow(
   prompt: string,
   options: GenerationOptions & AfterGenerationOptions
 ): Promise<RS<WorkflowConfig>> {
+  console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))
   const normalizedConfigNodes = options.workflowConfig?.nodes.map((node) => {
     return {
       ...node,

@@ -1,5 +1,6 @@
 "use client"
 
+import { seriesPalette } from "@/app/experiments/chartColors"
 import {
   Bar,
   BarChart,
@@ -20,18 +21,7 @@ export default function PerfectRateChart({
   data: Row[]
   chains: string[]
 }) {
-  const palette = [
-    "#1f77b4",
-    "#ff7f0e",
-    "#2ca02c",
-    "#d62728",
-    "#9467bd",
-    "#8c564b",
-    "#e377c2",
-    "#7f7f7f",
-    "#bcbd22",
-    "#17becf",
-  ]
+  const palette = seriesPalette
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -52,7 +42,31 @@ export default function PerfectRateChart({
             typeof v === "number" ? `${(v * 100).toFixed(1)}%` : v
           }
         />
-        <Legend />
+        <Legend
+          content={(props) => {
+            const { payload } = props as any
+            if (!payload) return null
+
+            // Sort payload to match chains order
+            const sortedPayload = chains
+              .map((chain) => payload.find((p: any) => p.dataKey === chain))
+              .filter(Boolean)
+
+            return (
+              <div className="flex justify-center gap-4 mt-4">
+                {sortedPayload.map((entry: any) => (
+                  <div key={entry.dataKey} className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3"
+                      style={{ backgroundColor: entry.color }}
+                    />
+                    <span className="text-sm">{entry.value}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          }}
+        />
         {chains.map((chain, idx) => (
           <Bar
             key={chain}

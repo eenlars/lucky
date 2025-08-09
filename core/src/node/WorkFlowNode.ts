@@ -1,9 +1,9 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/WorkFlowNode.ts
 
 import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/node/selfImproveHelper"
-import type { NodeLogs } from "@core/messages/api/processResponse"
 import type { Payload } from "@core/messages/MessagePayload"
 import type { InvocationSummary } from "@core/messages/summaries"
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
@@ -28,12 +28,14 @@ export interface NodeInvocationResult {
   summaryWithInfo: InvocationSummary //todo-summary: allow null later
   replyMessage: Payload
   nextIds: readonly string[]
+  /** Optional: when present, use these to enqueue exact per-target messages */
+  outgoingMessages?: { toNodeId: string; payload: Payload }[]
   usdCost: number
   error?: {
     message: string
     stack?: string
   }
-  toolUsage: NodeLogs
+  agentSteps: AgentSteps
   updatedMemory?: Record<string, string>
   debugPrompts: string[]
 }
@@ -47,7 +49,7 @@ export class WorkFlowNode {
   private readonly config: WorkflowNodeConfig
   private readonly toolManager: ToolManager
   private readonly persistenceManager: NodePersistenceManager
-  private toolUsage: NodeLogs | null = null
+  private agentSteps: AgentSteps | null = null
 
   /**
    * Private constructor: no async work, no runtime‐only wiring.
@@ -237,7 +239,7 @@ export class WorkFlowNode {
         throw new Error(`[WorkFlowNode] no summary with info`)
       }
 
-      this.toolUsage = result.toolUsage ?? null
+      this.agentSteps = result.agentSteps ?? null
 
       // Update memory if provided
       if (result.updatedMemory) {

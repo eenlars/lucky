@@ -12,6 +12,8 @@ import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { z } from "zod"
 
+export type PrepareProblemMethod = "workflow" | "ai" | "none"
+
 const ProblemAnalysisSchema = z.object({
   problemAnalysis: z.string().describe(
     `The problem analysis of the workflow input 
@@ -31,7 +33,8 @@ const ProblemAnalysisSchema = z.object({
 })
 
 export const prepareProblem = async (
-  task: EvaluationInput
+  task: EvaluationInput,
+  method: PrepareProblemMethod
 ): Promise<{
   newGoal: string
   workflowIO: WorkflowIO[]
@@ -41,15 +44,16 @@ export const prepareProblem = async (
     type: task.type,
     goal: task.goal,
     question: task.type === "text" ? task.question : undefined,
-    method: CONFIG.workflow.prepareProblemMethod,
+    method,
   })
 
   // New workflow invocation method
-  if (CONFIG.workflow.prepareProblemMethod === "workflow") {
+  if (method === "workflow") {
     lgg.info(
       "[prepareProblem] Using workflow version ID for problem analysis",
       {
         workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+        method,
       }
     )
 
@@ -101,29 +105,28 @@ export const prepareProblem = async (
       )
       // Fall through to AI method
     }
-  }
+  } else if (method === "ai") {
+    // Original AI-based method (fallback or when method === "ai")
+    lgg.info("[prepareProblem] Using AI enhancement method")
 
-  // Original AI-based method (fallback or when method === "ai")
-  lgg.info("[prepareProblem] Using AI enhancement method")
+    // First, get the basic conversion from IngestionLayer
+    const basicWorkflowIO = await IngestionLayer.convert(task)
 
-  // First, get the basic conversion from IngestionLayer
-  const basicWorkflowIO = await IngestionLayer.convert(task)
+    // Use AI to enhance and analyze the problem
+    // get some random sample values of the workflowIO, so we can see the boundaries of the training input.
+    const sampleWorkflowIO = basicWorkflowIO
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 5)
+      .map((w) => w.workflowInput)
 
-  // Use AI to enhance and analyze the problem
-  // get some random sample values of the workflowIO, so we can see the boundaries of the training input.
-  const sampleWorkflowIO = basicWorkflowIO
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 5)
-    .map((w) => w.workflowInput)
+    const sampleWorkflowIOString = sampleWorkflowIO.join("\n")
 
-  const sampleWorkflowIOString = sampleWorkflowIO.join("\n")
-
-  const samplesExplanation = `
+    const samplesExplanation = `
     This is a sample of the workflow input: ${sampleWorkflowIOString}${sampleWorkflowIOString.length > 1 ? "" : `it is a list of 5 random workflow inputs from a list of ${basicWorkflowIO.length} workflow inputs`}.
   So, this is not representative of the entire input, but you can reason about the boundaries of the input.
   `
 
-  const systemPrompt = `You are an expert problem analyst. 
+    const systemPrompt = `You are an expert problem analyst. 
           Your task is to analyze and enhance workflow inputs to ensure they are well-structured and comprehensive for AI processing.
 
 Your role:
@@ -138,48 +141,54 @@ Guidelines:
 - Ensure the input is actionable and specific
 - Consider what additional information would be helpful for problem-solving`
 
-  // send a request to the AI to get the boundaries of the training input.
-  const { data, success, error, usdCost } = await sendAI({
-    mode: "structured",
-    schema: ProblemAnalysisSchema,
-    model: getDefaultModels().high,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: `Please analyze this workflow input to the very best of your ability:
+    // send a request to the AI to get the boundaries of the training input.
+    const { data, success, error, usdCost } = await sendAI({
+      mode: "structured",
+      schema: ProblemAnalysisSchema,
+      model: getDefaultModels().high,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: `Please analyze this workflow input to the very best of your ability:
 
 Original Goal: ${task.goal}
 Input Type: ${task.type}
 
 ${sampleWorkflowIO.length > 1 ? samplesExplanation : ""}
 `,
-      },
-    ],
-    retries: 2,
-  })
+        },
+      ],
+      retries: 2,
+    })
 
-  if (!success || !data) {
-    lgg.warn(`[prepareProblem] AI enhancement failed: ${error}`, { usdCost })
-    // Fall back to original if AI processing fails
+    if (!success || !data) {
+      lgg.warn(`[prepareProblem] AI enhancement failed: ${error}`, { usdCost })
+      // Fall back to original if AI processing fails
+      return {
+        newGoal: task.goal,
+        workflowIO: basicWorkflowIO,
+        problemAnalysis: "",
+      }
+    }
+
+    lgg.onlyIf(
+      CONFIG.logging.override.Setup,
+      `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`
+    )
+
     return {
-      newGoal: task.goal,
+      newGoal: data.instructionsToNodes,
       workflowIO: basicWorkflowIO,
-      problemAnalysis: "",
+      problemAnalysis: data.problemAnalysis,
     }
   }
-
-  lgg.onlyIf(
-    CONFIG.logging.override.Setup,
-    `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`
-  )
-
   return {
-    newGoal: data.instructionsToNodes,
-    workflowIO: basicWorkflowIO,
-    problemAnalysis: data.problemAnalysis,
+    newGoal: task.goal,
+    workflowIO: await IngestionLayer.convert(task),
+    problemAnalysis: "",
   }
 }

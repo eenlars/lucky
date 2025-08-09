@@ -9,7 +9,11 @@ import path from "path"
 import { fileURLToPath } from "url"
 
 // Import client-safe constants
-import { CONFIG as CLIENT_CONFIG, MODELS, getDefaultModels } from "./constants.client"
+import {
+  CONFIG as CLIENT_CONFIG,
+  MODELS,
+  getDefaultModels,
+} from "./constants.client"
 
 // Re-export MODELS for server usage
 export { MODELS, getDefaultModels }
@@ -18,8 +22,9 @@ export { MODELS, getDefaultModels }
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const ROOT = path.resolve(__dirname, "..", "..") // repo root
-const RUNTIME = path.join("src", "runtime")
-const LOGGING_FOLDER = path.join("src", "runtime", "logging_folder")
+// Use absolute paths rooted at the repo to avoid CWD-dependent resolution
+const RUNTIME = path.join(ROOT, "runtime")
+const LOGGING_FOLDER = path.join(RUNTIME, "logging_folder")
 const MEMORY_ROOT = path.join(LOGGING_FOLDER, "memory")
 
 export const PATHS = {

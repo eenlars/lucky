@@ -2,6 +2,7 @@
 // core/scripts/runOnce.ts
 
 import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
+import { NoEvaluator } from "@core/improvement/evaluators/NoEvaluator"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { WorkflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
@@ -43,18 +44,25 @@ async function runOnce(setupFilePath?: string) {
     })
 
     // set workflow IO with ingestion
-    await runner.prepareWorkflow(SELECTED_QUESTION)
+    await runner.prepareWorkflow(SELECTED_QUESTION, "none")
 
-    // create evaluator
-    const aggregatedEvaluator = new AggregatedEvaluator()
+    // choose evaluator: for prompt-only, skip evaluation and AI enhancements
+    const isPromptOnly = SELECTED_QUESTION.type === "prompt-only"
+    const evaluator = isPromptOnly
+      ? new NoEvaluator()
+      : new AggregatedEvaluator()
 
-    // run evaluation
-    lgg.log("running and evaluating workflow...")
+    // run (and optionally evaluate)
+    lgg.log(
+      isPromptOnly
+        ? "running workflow (prompt-only: NoEvaluator, no correctness evaluation)"
+        : "running and evaluating workflow..."
+    )
     const {
       success,
       error,
       data: evaluationResult,
-    } = await aggregatedEvaluator.evaluate(runner)
+    } = await evaluator.evaluate(runner)
 
     if (!success) {
       lgg.error(
@@ -67,9 +75,9 @@ async function runOnce(setupFilePath?: string) {
     const workflowInvocationId = runner.getWorkflowInvocationId()
     lgg.log(`\n📊 Results (aggregated ${runner.getWorkflowIO().length} cases):`)
     lgg.log(
-      `Average Fitness Score: ${evaluationResult.fitness.score.toFixed(3)}`
+      `${isPromptOnly ? "Fitness Score" : "Average Fitness Score"}: ${evaluationResult.fitness.score.toFixed(3)}`
     )
-    lgg.log(`Total Cost: $${evaluationResult.cost.toFixed(2)}`)
+    lgg.log(`Total Cost: $${evaluationResult.cost.toFixed(4)}`)
     lgg.log(
       `Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`
     )

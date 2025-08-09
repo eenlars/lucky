@@ -206,11 +206,13 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     const model = getDefaultModels().nano
 
     // Analyze previous steps to understand context
-    const previousStepsContext = processStepsV2(steps, model) ?? { outputs: [] }
+    const previousStepsContext = processStepsV2(steps, model) ?? {
+      agentSteps: [],
+    }
 
     const outputsString = isNir(previousStepsContext)
       ? "No previous steps"
-      : previousStepsContext.outputs
+      : previousStepsContext.agentSteps
           .map((o, ix) => `call ${ix + 1} tool ${o.name}`)
           .join(", ")
 

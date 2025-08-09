@@ -13,7 +13,7 @@ if (!args.some((arg) => arg.startsWith("--mode="))) {
 const command = [
   "rm -rf src/runtime/logging_folder",
   "&&",
-  "tsx --env-file=.env src/core/main.ts",
+  "tsx --env-file=.env src/main.ts",
   ...args,
 ].join(" ")
 

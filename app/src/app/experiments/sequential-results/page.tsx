@@ -1,5 +1,3 @@
-import { promises as fs } from "fs"
-import path from "path"
 import PerfectRateChart from "./components/PerfectRateChart"
 import SequentialResultsChart from "./components/SequentialResultsChart"
 
@@ -10,19 +8,15 @@ type RawResult = {
 }
 
 async function loadResults() {
-  // Next.js app cwd is the Next app root: together/app
-  // The results file lives under app/src/... → use cwd + src/... (no leading "app/")
-  const resultsPath = path.resolve(
-    process.cwd(),
-    "src/research-experiments/tool-real/experiments/02-sequential-chains/sequential-results.json"
-  )
-
   try {
-    const raw = await fs.readFile(resultsPath, "utf-8")
-    const results = JSON.parse(raw) as RawResult[]
-    return results
+    const res = await fetch(`/api/experiments/sequential-results`, {
+      cache: "no-store",
+    })
+    if (!res.ok) return []
+    const data = (await res.json()) as { results: RawResult[] }
+    return data.results || []
   } catch (err) {
-    console.error("Failed to read sequential-results.json", err)
+    console.error("Failed to fetch sequential results via API", err)
     return [] as RawResult[]
   }
 }
@@ -46,8 +40,9 @@ function aggregateByModelAndChain(results: RawResult[]) {
   }
 
   const chains = Array.from(chainSet).sort((a, b) => {
-    const na = parseInt(a)
-    const nb = parseInt(b)
+    // Extract numeric part from strings like "2-step", "10-step"
+    const na = parseInt(a.replace(/[^0-9]/g, ""))
+    const nb = parseInt(b.replace(/[^0-9]/g, ""))
     if (Number.isNaN(na) || Number.isNaN(nb)) return a.localeCompare(b)
     return na - nb
   })
@@ -134,7 +129,9 @@ export default async function SequentialResultsPage() {
         ) : null}
 
         <div className="w-full h-[520px] bg-white rounded-lg shadow p-4 mb-8">
-          <h2 className="text-xl font-semibold mb-2">Average Score by Chain</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Average Score per model
+          </h2>
           <SequentialResultsChart data={dataAvg} chains={chains} />
         </div>
 

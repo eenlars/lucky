@@ -91,8 +91,15 @@ export const experimentalModels = {
     ],
   gemini25pro:
     providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-pro-preview"],
+  geminiLite:
+    providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-flash-lite"],
   claude35haiku:
     providersV2[MODEL_CONFIG.provider]["anthropic/claude-3-5-haiku"],
   claudesonnet4:
     providersV2[MODEL_CONFIG.provider]["anthropic/claude-sonnet-4"],
+  moonshotKimiK2Instruct:
+    providersV2[MODEL_CONFIG.provider]["moonshotai/kimi-k2-instruct"],
+  llama318bInstruct:
+    providersV2[MODEL_CONFIG.provider]["meta-llama/llama-3.1-8b-instruct"],
+  gpt5: providersV2[MODEL_CONFIG.provider]["openai/gpt-5"],
 } as const satisfies Record<string, ModelPricingV2>

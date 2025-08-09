@@ -12,7 +12,7 @@ import {
 } from "@/react-flow-visualization/components/nodes/"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import { Input } from "@/react-flow-visualization/components/ui/input"
-import { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
+import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
 import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ACTIVE_MCP_TOOL_NAMES,
@@ -32,7 +32,7 @@ function WorkflowNode({
   data: WorkflowNodeData
   children?: React.ReactNode
 }) {
-  const { runWorkflow } = useWorkflowRunner()
+  const { runWorkflow, setPromptDialogOpen } = useWorkflowRunnerContext()
   const openNodeDetails = useAppStore((state) => state.openNodeDetails)
   const updateNode = useAppStore((state) => state.updateNode)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -41,25 +41,23 @@ function WorkflowNode({
 
   const onRunClick = useCallback(
     (e: React.MouseEvent) => {
-      console.log("Node onRunClick called with id:", id)
       e.stopPropagation()
-      console.log("About to call runWorkflow with id:", id)
-      runWorkflow(id)
+      // When clicking run from a node in graph mode, just open the prompt dialog.
+      // Optionally, we could pre-fill a startNodeId here.
+      setPromptDialogOpen(true)
     },
-    [id, runWorkflow]
+    [setPromptDialogOpen]
   )
 
   // check if this is a start or end node
-  const isStartOrEndNode = data?.title === "Initial Node" || data?.title === "Output Node"
-  
-  const onNodeClick = useCallback(
-    () => {
-      if (!isStartOrEndNode) {
-        openNodeDetails(id)
-      }
-    },
-    [id, openNodeDetails, isStartOrEndNode]
-  )
+  const isStartOrEndNode =
+    data?.title === "Initial Node" || data?.title === "Output Node"
+
+  const onNodeClick = useCallback(() => {
+    if (!isStartOrEndNode) {
+      openNodeDetails(id)
+    }
+  }, [id, openNodeDetails, isStartOrEndNode])
 
   const handleTitleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -132,6 +130,17 @@ function WorkflowNode({
 
   const IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
+  // derive a clean, human-readable model name (Stripe-like chip)
+  const displayModelName = (() => {
+    const full = data?.modelName || ""
+    if (!full) return null
+    const raw = full.includes("/") ? full.split("/")[1] : full
+    return raw
+      .split("-")
+      .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+      .join(" ")
+  })()
+
   const totalTools =
     (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
   const connectionCount = data?.handOffs?.length || 0
@@ -144,8 +153,8 @@ function WorkflowNode({
     <NodeStatusIndicator status={data?.status}>
       <BaseNode
         className={`bg-white border border-gray-200 rounded-lg shadow-sm transition-shadow p-4 group focus:outline-none ${
-          isStartOrEndNode 
-            ? "cursor-default opacity-75" 
+          isStartOrEndNode
+            ? "cursor-default opacity-75"
             : "cursor-pointer hover:shadow-md focus:ring-2 focus:ring-blue-300"
         }`}
         style={{ ...NODE_SIZE }}
@@ -168,17 +177,25 @@ function WorkflowNode({
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <h3
-              className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
-                isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
-              }`}
-              onDoubleClick={handleTitleDoubleClick}
-            >
-              {data?.nodeId}
-              {!isStartOrEndNode && (
-                <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
+            <div className="flex flex-col gap-1">
+              <h3
+                className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
+                  isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
+                }`}
+                onDoubleClick={handleTitleDoubleClick}
+              >
+                {data?.nodeId}
+                {!isStartOrEndNode && (
+                  <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
+                )}
+              </h3>
+              {!isStartOrEndNode && displayModelName && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                  {displayModelName}
+                </span>
               )}
-            </h3>
+            </div>
           )}
 
           <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">

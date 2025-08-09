@@ -90,6 +90,8 @@ export class WorkflowConfigHandler {
       memory: config.memory || undefined,
       nodes: config.nodes.map((node: any) => ({
         ...node,
+        // Normalize legacy casing if present
+        handOffType: node.handOffType,
         memory: node.memory || undefined,
       })),
     }
@@ -189,7 +191,7 @@ export class WorkflowConfigHandler {
       const path = await import("path")
       const fs = await import("fs")
 
-      // Normalize path to runtime/setup folder
+      // Normalize path to absolute runtime/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
       const filename = path.basename(filePath)
       const normalizedPath = path.join(setupFolderPath, filename)
@@ -276,6 +278,7 @@ export class WorkflowConfigHandler {
           entryNodeId: workflowConfig.entryNodeId,
           nodeCount: workflowConfig.nodes.length,
           hasToolsInfo: !!workflowConfig.toolsInformation,
+          filePath: normalizedPath,
         }
       )
 

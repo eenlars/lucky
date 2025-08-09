@@ -1,5 +1,5 @@
-import type { NodeLog } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI"
+import type { AgentStep } from "@core/messages/types/AgentStep.types"
 import {
   toolUsageToString,
   type StrategyResult,
@@ -22,7 +22,7 @@ const verboseOverride = true
 export type SelectToolStrategyOptions<T extends ToolSet> = {
   tools: T
   messages: CoreMessage[]
-  nodeLogs: NodeLog<unknown>[]
+  agentSteps: AgentStep[]
   roundsLeft: number
   systemMessage: string
   model: ModelName
@@ -37,7 +37,7 @@ export type SelectToolStrategyOptions<T extends ToolSet> = {
 export async function selectToolStrategyV2<T extends ToolSet>(
   options: SelectToolStrategyOptions<T>
 ): Promise<StrategyResult<T>> {
-  const { tools, messages, nodeLogs, roundsLeft, systemMessage, model } =
+  const { tools, messages, agentSteps, roundsLeft, systemMessage, model } =
     options
 
   if (isNir(tools) || Object.keys(tools).length === 0) {
@@ -62,7 +62,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
     plan: z.string().optional().describe("only if using a tool"),
   })
 
-  const toolUsage = toolUsageToString(nodeLogs, 1000)
+  const agentStepsString = toolUsageToString(agentSteps, 1000)
 
   // Analysis prompt
   const analysisMessages: CoreMessage[] = [
@@ -105,10 +105,10 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       # the context of the current node
 
       ${
-        !isNir(nodeLogs)
+        !isNir(agentSteps)
           ? `
       #these were the past calls (NOTE: if you see repeated calls, you should either terminate or do something else.):
-      ${toolUsage}`
+      ${agentStepsString}`
           : "no past calls"
       }
     `,
@@ -141,17 +141,17 @@ export async function selectToolStrategyV2<T extends ToolSet>(
     if (success && decision) {
       if (decision.plan && (verbose || verboseOverride)) {
         console.log(chalk.bold("decision:", JSON.stringify(decision, null, 2)))
-        console.log(
-          chalk.bold(
-            "analysisMessages:",
-            JSON.stringify(analysisMessages, null, 2)
-          )
-        )
+        // console.log(
+        //   chalk.bold(
+        //     "analysisMessages:",
+        //     JSON.stringify(analysisMessages, null, 2)
+        //   )
+        // )
         // console.log(chalk.blueBright.bold("plan:", decision.plan))
         // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
         // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
 
-        // console.log(chalk.yellow.bold("toolUsage:", toolUsage))
+        // console.log(chalk.yellow.bold("agentSteps:", agentSteps))
         // console.log(chalk.cyan.bold("model:", model))
         // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
       }

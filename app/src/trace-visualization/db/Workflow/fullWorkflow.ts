@@ -1,6 +1,9 @@
 "use server"
 import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type {
+  AgentStep,
+  AgentSteps,
+} from "@core/messages/types/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { Tables } from "@core/utils/clients/supabase/types"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
@@ -13,9 +16,14 @@ export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {
   outputs: Tables<"Message">[]
 }
 
+type AgentStepsLegacy = {
+  outputs: AgentStep[]
+  totalCost: number
+}
+
 export interface NodeInvocationExtras {
   message_id?: string
-  toolUsage?: NodeLogs
+  agentSteps?: AgentSteps | AgentStepsLegacy
   updatedMemory?: Record<string, string>
 }
 

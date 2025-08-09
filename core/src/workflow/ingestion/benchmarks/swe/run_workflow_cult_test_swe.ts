@@ -19,7 +19,7 @@ const SWEBENCH_IDS = [
   "django__django-12453",
   "sympy__sympy-20154",
   "scikit-learn__scikit-learn-13496",
-]
+] as const
 
 async function runCulturalTest() {
   const randomId = SWEBENCH_IDS[Math.floor(Math.random() * SWEBENCH_IDS.length)]
@@ -50,7 +50,7 @@ async function runCulturalTest() {
       toolContext: {},
     })
 
-    await workflow.prepareWorkflow(evaluationInput)
+    await workflow.prepareWorkflow(evaluationInput, "ai")
     const result = await evaluator.evaluate(workflow)
 
     if (!result.success) {

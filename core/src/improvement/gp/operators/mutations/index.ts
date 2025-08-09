@@ -211,9 +211,12 @@ export class MutationCoordinator {
         }
       }
 
-      default:
+      default: {
+        const _exhaustiveCheck: never = mutationType
+        void _exhaustiveCheck
         lgg.warn(`Unknown mutation type: ${mutationType}`)
         return 0
+      }
     }
   }
 }

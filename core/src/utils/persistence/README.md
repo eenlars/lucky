@@ -238,7 +238,7 @@ const nodeInvocation = await saveNodeInvocationToDB({
   nodeId: "data-processor",
   output: {
     content: "Analysis complete: Found 3 key insights...",
-    toolUsage: [
+    agentSteps: [
       { tool: "csvReader", cost: 0.001, calls: 2 },
       { tool: "contextHandler", cost: 0.0005, calls: 1 },
     ],
