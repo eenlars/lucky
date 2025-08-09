@@ -39,19 +39,21 @@ bun dev
 The system treats AI agent workflows as evolvable data structures. Instead of manually coding agent interactions, you define workflows in JSON that the system can automatically improve through:
 
 1. **Cultural Learning**: Iterative analysis and improvement of individual workflows
-2. **Genetic Programming**: Population-based evolution with crossover and mutation  
+2. **Genetic Programming**: Population-based evolution with crossover and mutation
 3. **Agent Handoffs**: Automatic routing between specialized agents based on task context
 4. **Tool Integration**: Automatic discovery and use of 17+ tool categories
 
 ## Architecture
 
 ### Core Module
+
 - **Workflow Engine**: Graph-based execution with message passing
 - **Node Network**: Autonomous AI agents with tool access
 - **Tool Registry**: Unified interface for code tools and external services
 - **Memory Manager**: Context preservation and data summarization
 
-### Optimization Module  
+### Optimization Module
+
 - **Genetic Programming**: Population-based workflow evolution
 - **Cultural Learning**: Knowledge preservation across generations
 - **Fitness Evaluator**: Multi-dimensional performance assessment (accuracy, cost, time)
@@ -71,7 +73,7 @@ const workflow = await Workflow.create({
       tools: ["browserAutomation", "locationDataManager"],
     },
     {
-      name: "validator", 
+      name: "validator",
       systemPrompt: "You validate extracted data quality",
       tools: ["locationDataManager"],
     },
@@ -85,10 +87,41 @@ const result = await workflow.execute("https://example-bcorp.com")
 
 ```bash
 bun dev              # Start web interface
-bun run flow         # Run workflow engine  
 bun run test         # Run test suite
 bun run tsc          # TypeScript checking
 ```
+
+## Roadmap for Robustness
+
+[ ] Run partial workflows from dashboard (1)
+[ ] Message contracts (2)
+[ ]
+
+## Roadmap for Observability and debugging
+
+[ ] View/download full node trace as JSONL (1)
+[ ] Run a single node (3)
+[ ] Opentelemetry Observability (4)
+
+## Roadmap for Dashboard use
+
+[ ] Parallel-sending nodes can send multiple, different messages to connected nodes
+[ ] Visual dashboard 3-second MCP tool integration
+
+## Roadmap for Tools
+
+[ ] Shared tool knowledge base
+
+## Roadmap for Self-improving capabilities
+
+[ ] Support bandit search algorithms
+[ ] Tweak evo algorithm to mutate effectively
+[ ] Tweak evo algorithm to allow for fine grained analysis
+
+## Roadmap for nice features
+
+[ ] Deterministic nodes
+[ ] A workflow becomes an MCP
 
 ## Research Contribution
 
