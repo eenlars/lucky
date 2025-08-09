@@ -22,6 +22,7 @@ export const agentDescriptionsWithTools = {
   mcpTools: `MCP external tools (${mcpToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
   codeTools: `Code internal tools (${codeToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,
+  handOffType: AGENT_KEY_EXPLANATIONS.handOffType,
   memory: AGENT_KEY_EXPLANATIONS.memory,
   systemPrompt: AGENT_KEY_EXPLANATIONS.systemPrompt,
 } as const

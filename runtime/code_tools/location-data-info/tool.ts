@@ -164,8 +164,11 @@ const locationDataInfo = defineTool({
         }
       }
 
-      default:
+      default: {
+        const _exhaustiveCheck: never = action
+        void _exhaustiveCheck
         throw new Error(`unknown action: ${action}`)
+      }
     }
   },
 })

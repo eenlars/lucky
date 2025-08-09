@@ -16,8 +16,8 @@ export const extractToolLogs = (
     return processedResponse.content
   }
 
-  if (isToolProcessed(processedResponse) && processedResponse.toolUsage) {
-    return processedResponse.toolUsage.outputs
+  if (isToolProcessed(processedResponse) && processedResponse.agentSteps) {
+    return processedResponse.agentSteps
       .map((o) => `${o.type}: ${o.return}`)
       .join("\n")
   }

@@ -32,7 +32,7 @@ export async function chooseHandoffSequential({
   workflowMessage,
   handOffs,
   content,
-  toolUsage,
+  agentSteps,
   memory,
 }: ChooseHandoffOpts): Promise<HandoffResult> {
   if (handOffs.length === 0) {
@@ -79,7 +79,7 @@ export async function chooseHandoffSequential({
     })
   }
 
-  const usageContext = toolUsage ? toolUsageToString(toolUsage.outputs) : ""
+  const usageContext = agentSteps ? toolUsageToString(agentSteps) : ""
 
   const memoryContext =
     memory && Object.keys(memory).length > 0

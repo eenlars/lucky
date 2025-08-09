@@ -13,7 +13,7 @@ export async function chooseHandoffHierarchical({
   workflowMessage,
   handOffs,
   content,
-  toolUsage,
+  agentSteps,
   workflowConfig,
 }: ChooseHandoffOpts): Promise<HandoffResult> {
   // Get the current node's role based on workflow structure
@@ -30,7 +30,7 @@ export async function chooseHandoffHierarchical({
   const isFromStart = workflowMessage.fromNodeId === "start"
   const targets = handOffs.join(", ")
 
-  const usageContext = toolUsage ? toolUsageToString(toolUsage.outputs) : ""
+  const usageContext = agentSteps ? toolUsageToString(agentSteps) : ""
 
   let prompt = "you are "
 

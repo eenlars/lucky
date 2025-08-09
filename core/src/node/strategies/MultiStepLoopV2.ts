@@ -25,7 +25,7 @@ export async function runMultiStepLoopV2Helper(
   const {
     ctx,
     tools,
-    toolUsage,
+    agentSteps,
     maxRounds,
     verbose,
     addCost,
@@ -52,12 +52,12 @@ export async function runMultiStepLoopV2Helper(
     },
   ]
 
-  // todo-memoryleak: toolUsage array grows unbounded in long-running processes
+  // todo-memoryleak: agentSteps array grows unbounded in long-running processes
   for (let round = 0; round < maxRounds; round++) {
     const strategy = await selectToolStrategyV2({
       tools,
       messages: currentMessages,
-      nodeLogs: toolUsage,
+      agentSteps: agentSteps,
       roundsLeft: maxRounds - round,
       systemMessage: ctx.nodeSystemPrompt,
       model: ctx.model,
@@ -70,20 +70,20 @@ export async function runMultiStepLoopV2Helper(
 
     // base case: terminate the loop.
     if (strategy.type === "terminate" || isLastRound) {
-      toolUsage.push({
+      agentSteps.push({
         type: "reasoning",
         return: strategy.reasoning,
       })
 
       // Check if we have any actionable outputs before termination
-      const hasActionableOutputs = toolUsage.some(
+      const hasActionableOutputs = agentSteps.some(
         (log) =>
           log.type === "tool" || log.type === "text" || log.type === "terminate"
       )
 
       if (!hasActionableOutputs) {
         // Agent reasoned but produced no output - create explicit "no action" result
-        toolUsage.push({
+        agentSteps.push({
           type: "text",
           return: "No action taken based on analysis: " + strategy.reasoning,
         })
@@ -91,7 +91,7 @@ export async function runMultiStepLoopV2Helper(
 
       const summary = await quickSummaryNull(
         `
-            Show the results of all the work that was done, and what you produced. ${toolUsageToString(toolUsage)}
+            Show the results of all the work that was done, and what you produced. ${toolUsageToString(agentSteps)}
             do it in plain english. show what tools you used, what you produced. max 200 characters. use specific details, but not too specific.
             for example: if you just handled a lot of files, you can say who, what, where, when, why, how. don't talk about only one file.
             `,
@@ -103,15 +103,15 @@ export async function runMultiStepLoopV2Helper(
           nodeId: ctx.nodeId,
           type: "error",
           message: "i had an error processing my findings after 2 retries.",
-          toolUsage: { outputs: toolUsage, totalCost: getTotalCost() },
+          agentSteps,
           cost: getTotalCost(),
         }
       }
 
-      const finalOutput = getFinalOutputNodeInvocation(toolUsage)
+      const finalOutput = getFinalOutputNodeInvocation(agentSteps)
 
       const learningResult = await makeLearning({
-        toolLogs: toolUsageToString(toolUsage),
+        toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeSystemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
       })
@@ -123,9 +123,9 @@ export async function runMultiStepLoopV2Helper(
         lgg.error("learningResult", learningResult)
       }
 
-      toolUsage.push(learningResult.learning)
+      agentSteps.push(learningResult.learning)
 
-      toolUsage.push({
+      agentSteps.push({
         type: "terminate",
         return: finalOutput,
         summary: summary,
@@ -137,7 +137,7 @@ export async function runMultiStepLoopV2Helper(
       return {
         nodeId: ctx.nodeId,
         type: "tool",
-        toolUsage: { outputs: toolUsage, totalCost: getTotalCost() },
+        agentSteps,
         cost,
         summary: summary ?? "an error occurred. no summary found.",
         learnings: learningResult.learning.return,
@@ -145,7 +145,7 @@ export async function runMultiStepLoopV2Helper(
     }
 
     if (strategy.type === "error") {
-      toolUsage.push({
+      agentSteps.push({
         type: "error",
         return: strategy.reasoning,
       })
@@ -153,7 +153,7 @@ export async function runMultiStepLoopV2Helper(
     }
 
     // strategy must be to use a tool now.
-    toolUsage.push({
+    agentSteps.push({
       type: "reasoning",
       return: strategy.reasoning + " " + strategy.plan,
     })
@@ -207,7 +207,7 @@ export async function runMultiStepLoopV2Helper(
     addCost(usdCost ?? 0)
 
     if (!success) {
-      toolUsage.push({
+      agentSteps.push({
         type: "error",
         return: error ?? "tool execution failed",
       })
@@ -222,9 +222,9 @@ export async function runMultiStepLoopV2Helper(
 
     // we need this, it helps parse the json output of the tool.
     if (isToolProcessed(processed)) {
-      toolUsage.push(...processed.toolUsage.outputs)
+      agentSteps.push(...processed.agentSteps)
     } else if (isTextProcessed(processed)) {
-      toolUsage.push({
+      agentSteps.push({
         type: "text",
         return: processed.content,
       })
@@ -232,12 +232,12 @@ export async function runMultiStepLoopV2Helper(
       const details = processed.details
         ? " details:" + truncater(JSON.stringify(processed.details), 100)
         : ""
-      toolUsage.push({
+      agentSteps.push({
         type: "error",
         return: processed.message + details,
       })
     } else {
-      toolUsage.push({
+      agentSteps.push({
         type: "text",
         return: "unknown type of output: " + JSON.stringify(processed),
       })
@@ -247,8 +247,8 @@ export async function runMultiStepLoopV2Helper(
   return {
     nodeId: ctx.nodeId,
     type: "tool",
-    toolUsage: { outputs: toolUsage, totalCost: getTotalCost() },
+    agentSteps,
     cost: getTotalCost(),
-    summary: getFinalOutputNodeInvocation(toolUsage) ?? "no summary found",
+    summary: getFinalOutputNodeInvocation(agentSteps) ?? "no summary found",
   }
 }

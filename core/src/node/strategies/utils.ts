@@ -1,4 +1,4 @@
-import type { NodeLog } from "@core/messages/api/processResponse"
+import type { AgentStep } from "@core/messages/types/AgentStep.types"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
@@ -8,7 +8,7 @@ import type { NodeInvocationCallContext } from "../InvocationPipeline"
 export interface MultiStepLoopContext {
   ctx: NodeInvocationCallContext
   tools: ToolSet
-  toolUsage: NodeLog<unknown>[]
+  agentSteps: AgentStep[]
   model: ModelName
   maxRounds: number
   verbose: boolean
@@ -18,7 +18,7 @@ export interface MultiStepLoopContext {
 }
 
 export const toolUsageToString = (
-  usage: NodeLog<unknown>[],
+  usage: AgentStep[],
   truncate = 100
 ): string => {
   if (!usage) {
@@ -48,8 +48,11 @@ export const toolUsageToString = (
           return `plan:${u.return}`
         case "learning":
           return `learning:${u.return}`
-        default:
+        default: {
+          const _exhaustiveCheck: never = u
+          void _exhaustiveCheck
           return ""
+        }
       }
     })
     .join("\n")

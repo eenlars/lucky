@@ -1,13 +1,13 @@
 // src/core/node/response/responseHandler.ts
 
-import {
-  getResponseContent,
-  type NodeLogs,
-} from "@core/messages/api/processResponse"
+import { getResponseContent } from "@core/messages/api/processResponse"
 import { type ProcessedResponse } from "@core/messages/api/processResponse.types"
 import { chooseHandoff } from "@core/messages/handoffs/main"
 import { formatSummary } from "@core/messages/summaries"
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 // todo-circulardep: responseHandler imports from InvocationPipeline which imports back from responseHandler
+import { HandoffMessageHandler } from "@core/messages/handoffs/HandoffMessageHandler"
+import { extractPromptFromPayload } from "@core/messages/MessagePayload"
 import type { NodeInvocationCallContext } from "@core/node/InvocationPipeline"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
@@ -25,26 +25,23 @@ export async function handleSuccess(
   debugPrompts: string[],
   extraCost?: number,
   updatedMemory?: Record<string, string> | null,
-  toolUsage?: NodeLogs
+  agentSteps?: AgentSteps
 ): Promise<NodeInvocationResult> {
   if (!response) {
     return handleError({
       context,
       errorMessage: "no response 1",
       summary: "no response 1",
-      toolUsage: {
-        outputs: [{ type: "text", return: "no response 1" }],
-        totalCost: 0,
-      },
+      agentSteps: [{ type: "text", return: "no response 1" }],
       debugPrompts,
     })
   }
 
   // Debug logging for tool calls
-  if (response.toolUsage) {
+  if (response.agentSteps) {
     lgg.onlyIf(
       CONFIG.logging.override.Tools,
-      `[handleSuccess] Tool calls found: ${response.toolUsage.outputs.length} outputs`
+      `[handleSuccess] Tool calls found: ${response.agentSteps.length} outputs`
     )
   } else {
     lgg.onlyIf(
@@ -61,6 +58,16 @@ export async function handleSuccess(
 
   // Compute full output string for validation and storage
   const finalNodeInvocationOutput = getResponseContent(response) ?? ""
+  // Ensure we always have non-empty text to hand off to the next node
+  const incomingPrompt = extractPromptFromPayload(
+    context.workflowMessageIncoming.payload
+  )
+  const baseTextForNext =
+    (finalNodeInvocationOutput && finalNodeInvocationOutput.trim().length > 0
+      ? finalNodeInvocationOutput
+      : incomingPrompt && incomingPrompt.trim().length > 0
+        ? incomingPrompt
+        : context.nodeSystemPrompt) || ""
 
   // Validate output before handoff decision
   const { shouldProceed, validationError, validationCost } =
@@ -78,57 +85,87 @@ export async function handleSuccess(
       context,
       errorMessage: validationError,
       summary: "validation error",
-      toolUsage: response.toolUsage ?? {
-        outputs: [{ type: "error", return: validationError }],
-        totalCost: 0,
-      },
+      agentSteps: response.agentSteps ?? [
+        { type: "error", return: validationError },
+      ],
       debugPrompts,
     })
   }
 
-  // Check if this is a node that should send to multiple targets (parallel processing)
-  // Only enable parallel processing if handOffType is explicitly set to "parallel"
-  const isParallelNode =
-    context.handOffType === "parallel" &&
-    context.handOffs.length > 1 &&
-    !context.handOffs.includes("end")
+  // Prefer using HandoffMessageHandler to create outgoing messages (minimal + effective)
+  let outgoingMessages:
+    | {
+        toNodeId: string
+        payload: import("@core/messages/MessagePayload").Payload
+      }[]
+    | undefined
+  try {
+    const nodeConfig = context.workflowConfig?.nodes.find(
+      (n) => n.nodeId === context.nodeId
+    )
+    if (nodeConfig) {
+      const handler = new HandoffMessageHandler(nodeConfig)
+      outgoingMessages = handler.buildMessages(agentSteps, {
+        currentOutputText: baseTextForNext,
+        // kind defaults to coordinationType; no override needed here
+      })
+    }
+  } catch (e) {
+    lgg.onlyIf(
+      CONFIG.logging.override.Messaging,
+      `[handleSuccess] HandoffMessageHandler failed, falling back: ${String(e)}`
+    )
+  }
 
   let nextIds: string[]
   let handoffCost = 0
   // todo-typesafety: replace 'any' with proper message type - violates CLAUDE.md "we hate any"
   let replyMessage: any
 
-  if (isParallelNode) {
-    // For parallel processing, send to all handoffs directly
-    nextIds = context.handOffs
-    replyMessage = {
-      kind:
-        CONFIG.coordinationType === "sequential" ? "sequential" : "delegation",
-      prompt: finalNodeInvocationOutput,
-      context: "",
-    }
-    handoffCost = 0
+  if (outgoingMessages && outgoingMessages.length > 0) {
+    nextIds = outgoingMessages.map((m) => m.toNodeId)
+    // Keep replyMessage for backward compatibility (will be overridden per-target in queueRun)
+    replyMessage = outgoingMessages[0].payload
   } else {
-    // Use normal handoff logic for single target
-    const {
-      handoff: nextNodeId,
-      usdCost: cost,
-      replyMessage: reply,
-    } = await chooseHandoff({
-      systemPrompt: context.nodeSystemPrompt,
-      workflowMessage: context.workflowMessageIncoming,
-      handOffs: context.handOffs,
-      content:
-        CONFIG.workflow.handoffContent === "full"
-          ? finalNodeInvocationOutput
-          : truncater(finalNodeInvocationOutput, 500),
-      toolUsage: toolUsage ?? undefined,
-      workflowConfig: context.workflowConfig,
-    })
+    // Fallback: existing selection logic
+    // Check if this is a node that should send to multiple targets (parallel processing)
+    const isParallelNode =
+      context.handOffType === "parallel" &&
+      context.handOffs.length > 1 &&
+      !context.handOffs.includes("end")
 
-    nextIds = [nextNodeId]
-    handoffCost = cost
-    replyMessage = reply
+    if (isParallelNode) {
+      nextIds = context.handOffs
+      replyMessage = {
+        kind:
+          CONFIG.coordinationType === "sequential"
+            ? "sequential"
+            : "delegation",
+        prompt: baseTextForNext,
+        context: "",
+      }
+      handoffCost = 0
+    } else {
+      const {
+        handoff: nextNodeId,
+        usdCost: cost,
+        replyMessage: reply,
+      } = await chooseHandoff({
+        systemPrompt: context.nodeSystemPrompt,
+        workflowMessage: context.workflowMessageIncoming,
+        handOffs: context.handOffs,
+        content:
+          CONFIG.workflow.handoffContent === "full"
+            ? baseTextForNext
+            : truncater(baseTextForNext, 500),
+        agentSteps: agentSteps ?? undefined,
+        workflowConfig: context.workflowConfig,
+      })
+
+      nextIds = [nextNodeId]
+      handoffCost = cost
+      replyMessage = reply
+    }
   }
 
   const totalUsdCost =
@@ -147,7 +184,7 @@ export async function handleSuccess(
       usdCost: response.cost,
       output: finalNodeInvocationOutput,
       workflowInvocationId: context.workflowInvocationId,
-      toolUsage: response.toolUsage,
+      agentSteps: response.agentSteps,
       summary: response.summary ?? "",
       files: filesUsed.length > 0 ? filesUsed : undefined,
       workflowVersionId: context.workflowVersionId,
@@ -163,11 +200,11 @@ export async function handleSuccess(
     usdCost: totalUsdCost,
     nextIds: nextIds,
     replyMessage,
+    outgoingMessages,
     summaryWithInfo: formatSummary(response.summary ?? "", context.nodeId),
-    toolUsage: response.toolUsage ?? {
-      outputs: [{ type: "text", return: finalNodeInvocationOutput }],
-      totalCost: 0,
-    },
+    agentSteps: response.agentSteps ?? [
+      { type: "text", return: finalNodeInvocationOutput },
+    ],
     updatedMemory: updatedMemory ?? undefined,
     debugPrompts,
   }
@@ -178,13 +215,13 @@ export async function handleError({
   context,
   errorMessage,
   summary,
-  toolUsage,
+  agentSteps,
   debugPrompts,
 }: {
   context: NodeInvocationCallContext
   errorMessage: string
   summary: string
-  toolUsage?: NodeLogs
+  agentSteps?: AgentSteps
   debugPrompts: string[]
 }): Promise<NodeInvocationResult> {
   lgg.error(errorMessage)
@@ -201,7 +238,7 @@ export async function handleError({
     usdCost: 0,
     output: errorMessage,
     workflowInvocationId: context.workflowInvocationId,
-    toolUsage,
+    agentSteps,
     summary,
     files: filesUsed.length > 0 ? filesUsed : undefined,
     workflowVersionId: context.workflowVersionId,
@@ -231,10 +268,7 @@ export async function handleError({
     },
     summaryWithInfo,
     replyMessage,
-    toolUsage: toolUsage ?? {
-      outputs: [{ type: "text", return: errorMessage }],
-      totalCost: 0,
-    },
+    agentSteps: agentSteps ?? [{ type: "text", return: errorMessage }],
     debugPrompts,
   }
 }

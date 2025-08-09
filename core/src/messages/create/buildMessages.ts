@@ -97,8 +97,14 @@ export function buildMessages({
       context = `${payloadContext} | Aggregated results from multiple workers`
       break
 
-    default:
-      throw new Error(`Unsupported payload type: ${payload.kind}`)
+    default: {
+      throw new Error(
+        `Unsupported payload type: ${
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (payload as any)?.kind ?? "unknown"
+        }`
+      )
+    }
   }
 
   return buildSimpleMessage({

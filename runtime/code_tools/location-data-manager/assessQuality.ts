@@ -2,7 +2,7 @@ import { DataQuality, type LocationData } from "@runtime/schemas/location.types"
 
 // utility function to assess location data quality
 export function assessDataQuality(data: LocationData): DataQuality {
-  const requiredFields = ["name"]
+  const requiredFields = ["name"] as const
 
   // check if required fields are present
   const hasRequiredFields = requiredFields.every(
@@ -20,7 +20,7 @@ export function assessDataQuality(data: LocationData): DataQuality {
   if (hasCoordinates) return DataQuality.COMPLETE
 
   // check other detail fields
-  const detailFields = ["address", "city", "country", "postcode"]
+  const detailFields = ["address", "city", "country", "postcode"] as const
   const detailFieldCount = detailFields.filter(
     (field) => !!data[field as keyof LocationData]
   ).length

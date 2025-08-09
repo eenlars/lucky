@@ -24,6 +24,7 @@ export const baseWorkflowNodeConfigShape = {
   ),
   systemPrompt: z.string(),
   handOffs: z.array(z.string()),
+  handOffType: z.enum(["conditional", "sequential", "parallel"]).optional(),
   memory: MemorySchemaOptional,
 } as const satisfies ZodRawShape
 
@@ -55,4 +56,6 @@ export const AGENT_KEY_EXPLANATIONS = {
   memory: `Memory storage for workflow node insights: ${memoryInstructions}`,
   modelName: `Model enum (${ACTIVE_MODEL_NAMES_WITH_INFO})`,
   handOffs: "Permitted hand-off workflow node IDs",
+  handOffType:
+    "Optional handoff strategy for this node: 'sequential' (default), 'parallel' (fan-out to all handOffs), or 'conditional' (model decides one).",
 }

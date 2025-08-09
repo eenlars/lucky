@@ -1,6 +1,7 @@
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { describe, expect, it, vi } from "vitest"
-import { processModelResponse, type NodeLogs } from "../processResponse"
+import { processModelResponse } from "../processResponse"
 import toolResponseMultipleSteps from "./resources/toolResponseMultipleSteps.json"
 import toolResponseNoToolUsed from "./resources/toolResponseNoToolUsed.json"
 
@@ -24,19 +25,19 @@ describe("processModelResponse", () => {
 
     // Assert
     expect(result.type).toBe("tool")
-    expect(result).toHaveProperty("toolUsage")
+    expect(result).toHaveProperty("agentSteps")
     expect(result).toHaveProperty("cost")
 
-    // Check toolUsage structure - proper typing based on NodeLogs interface
-    if (result.type === "tool" && result.toolUsage) {
-      const toolUsage: NodeLogs = result.toolUsage
-      expect(toolUsage).toHaveProperty("outputs")
-      expect(toolUsage).toHaveProperty("totalCost")
-      expect(Array.isArray(toolUsage.outputs)).toBe(true)
-      expect(toolUsage.outputs.length).toBeGreaterThan(0)
+    // Check agentSteps structure - proper typing based on AgentStep interface
+    if (result.type === "tool" && result.agentSteps) {
+      const agentSteps: AgentSteps = result.agentSteps
+      expect(agentSteps).toHaveProperty("outputs")
+      expect(agentSteps).toHaveProperty("totalCost")
+      expect(Array.isArray(agentSteps)).toBe(true)
+      expect(agentSteps.length).toBeGreaterThan(0)
 
       // Check first output structure - correct property names per NodeLog interface
-      const firstOutput = toolUsage.outputs[0]
+      const firstOutput = agentSteps[0]
       expect(firstOutput).toHaveProperty("type", "tool")
       if (firstOutput.type === "tool") {
         expect(firstOutput).toHaveProperty("name")
@@ -56,19 +57,18 @@ describe("processModelResponse", () => {
 
     // Assert - text responses are processed as tool type with text NodeLog
     expect(result.type).toBe("tool")
-    expect(result).toHaveProperty("toolUsage")
+    expect(result).toHaveProperty("agentSteps")
     expect(result).toHaveProperty("cost")
 
-    // Check toolUsage structure (should have text output) - proper typing
-    if (result.toolUsage) {
-      const toolUsage: NodeLogs = result.toolUsage
-      expect(toolUsage).toHaveProperty("outputs")
-      expect(toolUsage).toHaveProperty("totalCost")
-      expect(Array.isArray(toolUsage.outputs)).toBe(true)
-      expect(toolUsage.outputs.length).toBe(1)
+    // Check agentSteps structure (should have text output) - proper typing
+    if (result.agentSteps) {
+      const agentSteps: AgentSteps = result.agentSteps
+      expect(agentSteps).toHaveProperty("totalCost")
+      expect(Array.isArray(agentSteps)).toBe(true)
+      expect(agentSteps.length).toBe(1)
 
       // Check the text output structure - correct property names per NodeLog interface
-      const textOutput = toolUsage.outputs[0]
+      const textOutput = agentSteps[0]
       expect(textOutput).toHaveProperty("type", "text")
       if (textOutput.type === "text") {
         expect(textOutput.name).toBeUndefined()

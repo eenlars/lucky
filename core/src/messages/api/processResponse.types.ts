@@ -1,4 +1,4 @@
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 
 // this is the language of how nodes interact with each other.
@@ -16,7 +16,7 @@ export type ProcessedResponseWithSummary = ProcessedResponse & {
 interface AnyProcessed {
   readonly nodeId: string
   readonly cost: number
-  readonly toolUsage: NodeLogs<any>
+  readonly agentSteps: AgentSteps
   readonly summary?: string
 }
 
@@ -28,7 +28,7 @@ export interface TextProcessed extends AnyProcessed {
 
 export interface ToolProcessed extends AnyProcessed {
   readonly type: "tool"
-  readonly toolUsage: NodeLogs<any>
+  readonly agentSteps: AgentSteps
   readonly learnings?: string
 }
 

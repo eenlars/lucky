@@ -5,6 +5,7 @@ import {
 import { sendAI } from "@core/messages/api/sendAI"
 import { processStepsV2 } from "@core/messages/api/stepProcessor"
 import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
+import type { AgentStep } from "@core/messages/types/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -14,54 +15,7 @@ import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
 import { R, type RS } from "@core/utils/types"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { GenerateTextResult, ToolSet } from "ai"
-export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is called.
-
-    | {
-        type: "tool"
-        name: string
-        args: unknown // type is the args of the tool
-        return: TOOL_CALL_OUTPUT_TYPE // type is the result of the tool
-        summary?: string // summary of the tool call
-      }
-    | {
-        type: "text"
-        name?: never
-        args?: never
-        return: string
-      }
-    | {
-        type: "reasoning"
-        name?: never
-        args?: never
-        return: string // reasoning
-      }
-    | {
-        type: "terminate"
-        name?: never
-        args?: never
-        summary: string // summary of the tool call
-        return: TOOL_CALL_OUTPUT_TYPE | string // data, or message if no data
-      }
-    | {
-        type: "plan"
-        name?: never
-        args?: never
-        return: string // plan
-      }
-    | {
-        type: "error"
-        name?: never
-        args?: never
-        return: string // error message
-      }
-    | {
-        type: "learning"
-        name?: never
-        args?: never
-        return: string // learning message
-      }
 
 /*
  * represents a single tool execution from the vercel ai sdk response
@@ -75,16 +29,6 @@ export type NodeLog<TOOL_CALL_OUTPUT_TYPE> = // output depends on which tool is 
  * see: StepResult<ToolSet>[] in vercel ai sdk types.
  * example: @ai-sdk/openai -> createOpenAI() -> parallelToolCalls parameter
  */
-export interface NodeLogs<T = unknown> {
-  outputs: NodeLog<T>[]
-  totalCost: number
-}
-
-export const NodeLogsJustResponse = <T>(
-  toolUsage: NodeLogs<T>
-): (T | string)[] => {
-  return toolUsage.outputs.map((output) => output.return)
-}
 
 export const generateSummary = async (content: string): Promise<RS<string>> => {
   try {
@@ -159,7 +103,7 @@ export const processVercelResponse = async ({
       success,
       data: summaryResult,
       usdCost,
-    } = await generateSummary(JSON.stringify(processed.toolUsage))
+    } = await generateSummary(JSON.stringify(processed.agentSteps))
     processed = {
       ...processed,
       summary: success ? summaryResult : "error generating summary",
@@ -195,10 +139,7 @@ export function processModelResponse({
       details: response,
       cost: 0,
       type: "error",
-      toolUsage: {
-        outputs: [{ type: "error", return: "Invalid response format" }],
-        totalCost: 0,
-      },
+      agentSteps: [{ type: "error", return: "Invalid response format" }],
     }
   }
 
@@ -207,17 +148,14 @@ export function processModelResponse({
     modelUsed
   )
 
-  // process steps if they exist (now returns NodeLogs)
-  const processedSteps: NodeLogs | undefined = processStepsV2(
-    response.steps,
-    modelUsed
-  )
+  // process steps if they exist (now returns AgentSteps)
+  const processedSteps = processStepsV2(response.steps, modelUsed)
 
   // if any real tool interaction happened, return as a tool response
-  if (processedSteps && processedSteps.outputs.length > 0) {
+  if (processedSteps && processedSteps.agentSteps.length > 0) {
     return {
       nodeId,
-      toolUsage: processedSteps,
+      agentSteps: processedSteps.agentSteps,
       cost,
       summary,
       type: "tool",
@@ -232,10 +170,7 @@ export function processModelResponse({
       cost,
       summary,
       type: "text",
-      toolUsage: {
-        outputs: [{ type: "text", return: response.text }],
-        totalCost: 0,
-      },
+      agentSteps: [{ type: "text", return: response.text }],
     }
   }
 
@@ -246,10 +181,7 @@ export function processModelResponse({
     details: response,
     cost: 0,
     type: "error",
-    toolUsage: {
-      outputs: [{ type: "error", return: "Unrecognized response format" }],
-      totalCost: 0,
-    },
+    agentSteps: [{ type: "error", return: "Unrecognized response format" }],
   }
 }
 
@@ -268,7 +200,7 @@ export const getResponseContent = (
     )
 
   if (CONFIG.logging.override.Tools && response.type === "tool") {
-    lgg.log("🔍 Tool response:", JSONN.show(response))
+    lgg.log("🔍 Tool response:", JSON.stringify(response))
   }
 
   // original logic
@@ -276,21 +208,22 @@ export const getResponseContent = (
     case "text":
       return response.content
     case "tool":
-      return (
-        getFinalOutputNodeInvocation(response.toolUsage?.outputs ?? []) ?? null
-      )
-    default:
+      return getFinalOutputNodeInvocation(response.agentSteps ?? []) ?? null
+    default: {
+      const _exhaustiveCheck: never = response
+      void _exhaustiveCheck
       throw new Error(`Unknown response type: keys:${Object.keys(response)}`)
+    }
   }
 }
 
-// start from the end of a nodelog.
+// start from the end of a agentStep.
 // most likely, the last node is a terminal node.
 // so it has a summary and a response. based on the settings in constants,
 // it returns the summary, or the full output.
 // if the last node is not a terminal node, it looks for the last summary, if not found, it returns null.
 export const getFinalOutputNodeInvocation = (
-  response: NodeLog<unknown>[]
+  response: AgentStep[]
 ): string | null => {
   if (isNir(response)) return null
 
@@ -335,7 +268,10 @@ export const getFinalOutputNodeInvocation = (
   for (let i = filterActionableSteps.length - 1; i >= 0; i--) {
     const output = filterActionableSteps[i]
     if (output.type === "text") {
-      return output.return
+      const text = typeof output.return === "string" ? output.return : ""
+      if (text.trim().length > 0) return text
+      // skip empty text outputs and continue searching earlier steps
+      continue
     }
     if (output.type === "tool") {
       return typeof output.return === "string"
@@ -344,9 +280,43 @@ export const getFinalOutputNodeInvocation = (
     }
   }
 
+  // If configured to prefer summaries and we captured one earlier, return it
+  if (lastContent && lastContent.trim().length > 0) {
+    return lastContent
+  }
+
+  // Fallbacks: try to surface helpful content even if no actionable step returned output
+  // 1) Return last non-empty reasoning/plan/learning content
+  for (let i = response.length - 1; i >= 0; i--) {
+    const output = response[i]
+    if (
+      output.type === "reasoning" ||
+      output.type === "plan" ||
+      output.type === "learning"
+    ) {
+      const text =
+        typeof (output as { return: unknown }).return === "string"
+          ? (output as { return: string }).return
+          : ""
+      if (text.trim().length > 0) return text
+    }
+  }
+
+  // 2) As a last resort, expose the latest error message if any
+  for (let i = response.length - 1; i >= 0; i--) {
+    const output = response[i]
+    if (output.type === "error") {
+      const text =
+        typeof (output as { return: unknown }).return === "string"
+          ? (output as { return: string }).return
+          : ""
+      if (text.trim().length > 0) return text
+    }
+  }
+
   lgg.warn(
-    "getResponseContentNodeLogs did not find a terminal node or text",
-    response
+    "getResponseContentagentSteps did not find a terminal node, text, or reasoning",
+    JSON.stringify(response)
   )
 
   return null
@@ -380,7 +350,7 @@ export const getResponseInformation = (
     }
 
   if (CONFIG.logging.override.Tools && response.type === "tool") {
-    lgg.log("🔍 Tool response:", JSONN.show(response))
+    lgg.log("🔍 Tool response:", JSON.stringify(response))
   }
 
   const nodeInvocationFullOutput = getResponseContent(response)

@@ -124,7 +124,7 @@ export class SupabaseContextStore implements ContextStore {
               upsert: true,
             }
           ),
-      ]
+      ] as const
 
       const results = await Promise.allSettled(uploads)
       const errors = results.filter((r) => r.status === "rejected")

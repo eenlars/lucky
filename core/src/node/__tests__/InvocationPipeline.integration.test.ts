@@ -24,12 +24,10 @@ describe("InvocationPipeline Real Integration", () => {
     pipeline: InvocationPipeline,
     pipelineResult: NodeInvocationResult
   ): TestResult => {
-    const toolUsage = pipeline.getToolUsage()
-    const toolCalls = toolUsage.outputs.filter(
-      (output: any) => output.type === "tool"
-    )
-    const toolsUsed = toolCalls.map((call: any) => call.name)
-    const toolExecutionOrder = toolsUsed.map((tool: string, index: number) => ({
+    const agentSteps = pipeline.getAgentSteps()
+    const toolCalls = agentSteps.filter((output) => output.type === "tool")
+    const toolsUsed = toolCalls.map((call) => call.name)
+    const toolExecutionOrder = toolsUsed.map((tool, index) => ({
       tool,
       sequence: index,
     }))
@@ -43,10 +41,10 @@ describe("InvocationPipeline Real Integration", () => {
           ? replyPayload.message
           : JSON.stringify(replyPayload) || ""
 
-    const reasoningSteps = toolUsage.outputs.filter(
+    const reasoningSteps = agentSteps.filter(
       (o: any) => o.type === "reasoning"
     ).length
-    const terminationOccurred = toolUsage.outputs.some(
+    const terminationOccurred = agentSteps.some(
       (o: any) => o.type === "terminate"
     )
 
@@ -54,7 +52,7 @@ describe("InvocationPipeline Real Integration", () => {
       toolsUsed,
       toolExecutionOrder,
       finalResponse,
-      cost: toolUsage.totalCost,
+      cost: 0,
       reasoningSteps,
       terminationOccurred,
     }

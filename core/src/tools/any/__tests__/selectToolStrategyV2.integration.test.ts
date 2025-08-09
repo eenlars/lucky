@@ -1,4 +1,4 @@
-import type { NodeLog } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { CoreMessage, ToolSet } from "ai"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -54,7 +54,7 @@ const mockTools: ToolSet = {
 
 describe("selectToolStrategyV2 Integration Tests", () => {
   let messages: CoreMessage[]
-  let nodeLogs: NodeLog<unknown>[]
+  let agentSteps: AgentSteps
   const model = getDefaultModels().medium
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
           "Please create a simple todo list with items: buy groceries, walk the dog, finish project",
       },
     ]
-    nodeLogs = []
+    agentSteps = []
   })
 
   it("should select todoWrite tool for todo creation task", async () => {
@@ -75,7 +75,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages,
-      nodeLogs,
+      agentSteps,
       roundsLeft: 5,
       systemMessage,
       model,
@@ -94,7 +94,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       "You are a helpful assistant that manages todo lists. Create and manage todo items as requested."
 
     // Simulate having already used todoWrite and todoRead
-    const completedNodeLogs: NodeLog<unknown>[] = [
+    const completedagentSteps: AgentSteps = [
       {
         type: "tool",
         name: "todoWrite",
@@ -128,7 +128,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages,
-      nodeLogs: completedNodeLogs,
+      agentSteps: completedagentSteps,
       roundsLeft: 1, // Only 1 round left
       systemMessage,
       model,
@@ -144,7 +144,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const systemMessage = "You are a helpful assistant. Read the todo list."
 
     // Simulate having already read todos multiple times
-    const duplicateNodeLogs: NodeLog<unknown>[] = [
+    const duplicateagentSteps: AgentSteps = [
       {
         type: "tool",
         name: "todoRead",
@@ -171,7 +171,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages,
-      nodeLogs: duplicateNodeLogs,
+      agentSteps: duplicateagentSteps,
       roundsLeft: 2,
       systemMessage,
       model,
@@ -198,7 +198,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages: locationMessages,
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 5,
       systemMessage,
       model,
@@ -220,7 +220,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: emptyTools,
       messages,
-      nodeLogs,
+      agentSteps,
       roundsLeft: 5,
       systemMessage: "Help with todo management",
       model,
@@ -246,7 +246,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages: actionMessages,
-      nodeLogs: [],
+      agentSteps: [],
       roundsLeft: 5,
       systemMessage: actionSystemMessage,
       model,
@@ -264,7 +264,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     const result = await selectToolStrategyV2({
       tools: mockTools,
       messages: messages,
-      nodeLogs: nodeLogs,
+      agentSteps,
       roundsLeft: 1, // Only 1 round left
       systemMessage: "Create a todo list",
       model,

@@ -137,11 +137,14 @@ const contextHandler = defineTool({
           })
         }
 
-        default:
+        default: {
+          const _exhaustiveCheck: never = operation
+          void _exhaustiveCheck
           return Tools.createFailure("contextHandler", {
             location: "contextHandler:unknownOperation",
             error: `Unknown operation: ${operation}`,
           })
+        }
       }
     } catch (error) {
       lgg.error("contextHandler error:", error)

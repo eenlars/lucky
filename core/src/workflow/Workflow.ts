@@ -1,6 +1,9 @@
 // src/core/workflow/Workflow.ts
 import { improveNodesCulturallyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
-import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
+import {
+  prepareProblem,
+  type PrepareProblemMethod,
+} from "@core/improvement/behavioral/prepare/workflow/prepareMain"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { zodToJson } from "@core/messages/utils/zodToJson"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
@@ -162,10 +165,13 @@ export class Workflow {
   }
 
   public async prepareWorkflow(
-    evaluationInput: EvaluationInput
+    evaluationInput: EvaluationInput,
+    problemAnalysisMethod: PrepareProblemMethod
   ): Promise<void> {
-    const { newGoal, workflowIO, problemAnalysis } =
-      await prepareProblem(evaluationInput)
+    const { newGoal, workflowIO, problemAnalysis } = await prepareProblem(
+      evaluationInput,
+      problemAnalysisMethod
+    )
 
     this.workflowIO = workflowIO
     this.mainGoal = newGoal

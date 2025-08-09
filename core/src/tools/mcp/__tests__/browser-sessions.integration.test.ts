@@ -170,7 +170,7 @@ describe("browser session persistence tests", () => {
     )
 
     // Check if we got content extraction
-    const extractResults = processedSteps?.outputs.filter(
+    const extractResults = processedSteps?.agentSteps.filter(
       (output) =>
         output.type === "tool" && output.name === "browser_extract_content"
     )

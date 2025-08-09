@@ -31,12 +31,7 @@ describe("calculateFitness", () => {
 
   it("should calculate fitness correctly with known inputs", async () => {
     const { success, data, error } = await calculateFitness({
-      nodeOutputs: [
-        {
-          outputs: [{ type: "text", return: "test transcript" }],
-          totalCost: 0.002,
-        },
-      ],
+      agentSteps: [{ type: "text", return: "test transcript" }],
       totalTime: 3000, // 3 seconds
       totalCost: 0.002,
       evaluation: "test evaluation",

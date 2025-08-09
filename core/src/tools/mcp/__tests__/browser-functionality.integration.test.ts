@@ -224,7 +224,7 @@ describe("browser functionality tests", () => {
       getDefaultModels().default
     )
 
-    const stateResults = processedSteps?.outputs.filter(
+    const stateResults = processedSteps?.agentSteps.filter(
       (output) => output.type === "tool" && output.name === "browser_get_state"
     )
 
@@ -232,7 +232,8 @@ describe("browser functionality tests", () => {
       const result = stateResults[0]
       lgg.log("Tool result:", JSON.stringify(result, null, 2))
 
-      const content = typeof result.return === "object" ? result.return as any : null
+      const content =
+        typeof result.return === "object" ? (result.return as any) : null
       if (content && Array.isArray(content.content)) {
         const stateText = content.content
           .map((c: any) => c.text || "")

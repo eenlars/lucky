@@ -1,5 +1,5 @@
-import type { NodeLog } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI"
+import type { AgentStep } from "@core/messages/types/AgentStep.types"
 import { MemoryResponseSchema } from "@core/node/schemas/memorySchema"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -15,7 +15,7 @@ export const makeLearning = async ({
   nodeSystemPrompt: string
   currentMemory: Record<string, string>
 }): Promise<{
-  learning: NodeLog<any>
+  learning: AgentStep<any>
   updatedMemory: Record<string, string>
 }> => {
   const date = new Date().toISOString()

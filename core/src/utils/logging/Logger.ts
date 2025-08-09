@@ -36,6 +36,42 @@ class FileLogger {
     }
   }
 
+  private safeStringify(value: unknown): string {
+    try {
+      const seen = new WeakSet<object>()
+      return JSON.stringify(
+        value,
+        (key, val) => {
+          if (val instanceof Error) {
+            return { name: val.name, message: val.message, stack: val.stack }
+          }
+          if (typeof val === "object" && val !== null) {
+            if (seen.has(val)) return "[Circular]"
+            seen.add(val)
+          }
+          return val
+        },
+        2
+      )
+    } catch {
+      try {
+        return String(value)
+      } catch {
+        return "[Unserializable]"
+      }
+    }
+  }
+
+  private formatForFile(arg: unknown): string {
+    if (arg instanceof Error) {
+      return arg.stack ?? `${arg.name}: ${arg.message}`
+    }
+    if (typeof arg === "object") {
+      return this.safeStringify(arg)
+    }
+    return String(arg)
+  }
+
   async log(...args: any[]): Promise<void> {
     console.log(...args)
 
@@ -93,17 +129,16 @@ class FileLogger {
   }
 
   async error(...args: any[]): Promise<void> {
-    const message = args.map((arg) =>
-      typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-    )
-    console.error(chalk.red(message.join(" ")))
+    // Preserve Error objects for console so stack traces are printed
+    const consoleArgs = args.map((arg) => {
+      if (arg instanceof Error) return arg
+      if (typeof arg === "string") return chalk.red(arg)
+      return arg
+    })
+    console.error(...consoleArgs)
 
     if (this.logFile && this.isNodeEnv) {
-      const logMessage = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
-        .join(" ")
+      const logMessage = args.map((arg) => this.formatForFile(arg)).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] ERROR: ${logMessage}\n`
       await this.writeToFile(logEntry)

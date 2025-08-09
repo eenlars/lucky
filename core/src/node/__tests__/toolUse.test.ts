@@ -12,12 +12,12 @@ describe("toolUse", () => {
       return: { content: [], isError: false },
     }
 
-    const toolUsage = [toolOutputFirecrawlExampleOutputWrong]
+    const agentSteps = [toolOutputFirecrawlExampleOutputWrong]
 
     // const strategy = await selectToolStrategyV2(
     // //   TOOLS.mcp.firecrawl,
-    //   toolUsage,
-    //   toolUsage,
+    //   agentSteps,
+    //   agentSteps,
     //   "",
     //   0,
     //   ""

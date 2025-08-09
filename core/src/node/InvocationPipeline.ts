@@ -5,10 +5,7 @@ import {
   type Payload,
 } from "@core/messages/MessagePayload"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import {
-  processModelResponse,
-  type NodeLog,
-} from "@core/messages/api/processResponse"
+import { processModelResponse } from "@core/messages/api/processResponse"
 import {
   isErrorProcessed,
   isTextProcessed,
@@ -18,6 +15,10 @@ import {
 import { sendAI } from "@core/messages/api/sendAI"
 import { buildMessages } from "@core/messages/create/buildMessages"
 import { createSummary } from "@core/messages/summaries"
+import type {
+  AgentStep,
+  AgentSteps,
+} from "@core/messages/types/AgentStep.types"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"
@@ -73,7 +74,7 @@ export class InvocationPipeline {
   private processedResponse: ProcessedResponse | null = null
   private usdCost = 0
   private updatedMemory: Record<string, string> | null = null
-  private toolUsage: NodeLog<any>[] = []
+  private agentSteps: AgentStep<any>[] = []
   private debugPrompts: string[] = []
 
   constructor(
@@ -129,7 +130,7 @@ export class InvocationPipeline {
 
     if (prepareThinking && prepareThinking.text) {
       const reasoning = prepareThinking.text
-      this.toolUsage.push({
+      this.agentSteps.push({
         type: "reasoning",
         return: reasoning,
       })
@@ -171,10 +172,10 @@ export class InvocationPipeline {
           await this.runMultiStepLoopV2()
         }
 
-        // Sync the toolUsage and cost from multi-step loop result
-        if (this.processedResponse && this.processedResponse.toolUsage) {
-          // Sync both the toolUsage outputs and cost from the multi-step loop
-          this.toolUsage = this.processedResponse.toolUsage.outputs
+        // Sync the agentSteps and cost from multi-step loop result
+        if (this.processedResponse && this.processedResponse.agentSteps) {
+          // Sync both the agentSteps outputs and cost from the multi-step loop
+          this.agentSteps = this.processedResponse.agentSteps
           this.usdCost = this.processedResponse.cost || this.usdCost
         } else {
           lgg.error(
@@ -186,8 +187,8 @@ export class InvocationPipeline {
         this.processedResponse = await this.runSingleCall()
 
         // Add node logs for single call path BEFORE finalizeSummary
-        if (this.processedResponse && this.processedResponse.toolUsage) {
-          this.toolUsage.push(...this.processedResponse.toolUsage.outputs)
+        if (this.processedResponse && this.processedResponse.agentSteps) {
+          this.agentSteps.push(...this.processedResponse.agentSteps)
         }
 
         // Validate processedResponse before proceeding
@@ -252,7 +253,7 @@ export class InvocationPipeline {
         context: this.ctx,
         errorMessage: message,
         summary: message,
-        toolUsage: undefined,
+        agentSteps: undefined,
         debugPrompts: this.debugPrompts,
       })
     }
@@ -264,7 +265,7 @@ export class InvocationPipeline {
         context: this.ctx,
         errorMessage: response.message,
         summary: response.summary ?? "there was an error",
-        toolUsage: response.toolUsage,
+        agentSteps: response.agentSteps,
         debugPrompts: this.debugPrompts,
       })
     }
@@ -275,7 +276,7 @@ export class InvocationPipeline {
       this.debugPrompts,
       this.usdCost,
       this.updatedMemory,
-      { outputs: this.toolUsage, totalCost: this.usdCost }
+      this.agentSteps
     )
 
     return result
@@ -318,11 +319,23 @@ export class InvocationPipeline {
 
     this.addCost(res.usdCost ?? 0)
 
-    const processed = processModelResponse({
-      response: res.data as GenerateTextResult<ToolSet, any>,
-      modelUsed: this.model,
-      nodeId: this.ctx.nodeId,
-    })
+    // Graceful handling: if sendAI failed, create a proper error ProcessedResponse
+    let processed: ProcessedResponse = res.success
+      ? processModelResponse({
+          response: res.data as GenerateTextResult<ToolSet, any>,
+          modelUsed: this.model,
+          nodeId: this.ctx.nodeId,
+        })
+      : {
+          nodeId: this.ctx.nodeId,
+          type: "error",
+          message: res.error ?? "Tool call failed",
+          details: res.debug_output,
+          cost: res.usdCost ?? 0,
+          agentSteps: [
+            { type: "error", return: res.error ?? "Tool call failed" },
+          ],
+        }
 
     if (verbose) {
       const ts = Date.now()
@@ -355,7 +368,7 @@ export class InvocationPipeline {
     const processedResponse = await runMultiStepLoopV2Helper({
       ctx: this.ctx,
       tools: this.tools,
-      toolUsage: this.toolUsage,
+      agentSteps: this.agentSteps,
       model: this.model,
       maxRounds,
       verbose,
@@ -373,7 +386,7 @@ export class InvocationPipeline {
     const { processedResponse, debugPrompts } = await runMultiStepLoopV3Helper({
       ctx: this.ctx,
       tools: this.tools,
-      toolUsage: this.toolUsage,
+      agentSteps: this.agentSteps,
       model: this.model,
       maxRounds,
       verbose,
@@ -429,7 +442,7 @@ export class InvocationPipeline {
       summary: finalSummary,
       learnings: learningsString,
       cost: this.usdCost,
-      toolUsage: { outputs: this.toolUsage, totalCost: this.usdCost },
+      agentSteps: this.agentSteps,
     }
   }
 
@@ -437,8 +450,8 @@ export class InvocationPipeline {
     this.usdCost += c
   }
 
-  public getToolUsage(): { outputs: NodeLog<any>[]; totalCost: number } {
-    return { outputs: this.toolUsage, totalCost: this.usdCost }
+  public getAgentSteps(): AgentSteps {
+    return this.agentSteps
   }
 
   public getUpdatedMemory(): Record<string, string> | null {
