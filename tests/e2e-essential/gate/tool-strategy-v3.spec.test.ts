@@ -1,4 +1,4 @@
-import * as sendAIModule from "@core/messages/api/sendAI"
+import * as sendAIModule from "@core/messages/api/sendAI/sendAI"
 import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
 import type { ToolSet } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
