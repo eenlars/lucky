@@ -1,8 +1,11 @@
 import * as sendAIModule from "@core/messages/api/sendAI/sendAI"
 import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
+import { getDefaultModels } from "@runtime/settings/models"
 import type { ToolSet } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
+
+const MODEL = getDefaultModels().default
 
 describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   const tools: ToolSet = {
@@ -19,7 +22,6 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   }
 
   const systemMessage = "Choose the correct tool for the user request."
-  const messages = [{ role: "user", content: "please add 2 and 3" }] as const
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -48,11 +50,11 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
 
     const { strategyResult, debugPrompt } = await selectToolStrategyV3({
       tools,
-      messages: messages as any,
+      identityPrompt: "Please add 2 and 3",
       agentSteps: [],
       roundsLeft: 1,
       systemMessage,
-      model: "default" as any,
+      model: MODEL,
     })
 
     expect(typeof debugPrompt).toBe("string")

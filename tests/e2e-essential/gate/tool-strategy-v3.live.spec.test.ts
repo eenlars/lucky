@@ -32,7 +32,6 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
   }
 
   const systemMessage = "Choose the correct tool for the user request."
-  const messages = [{ role: "user", content: "please add 2 and 3" }] as const
 
   const runner = hasRealOpenRouterKey ? it : it.skip
 
@@ -41,11 +40,11 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
     async () => {
       const { strategyResult, debugPrompt } = await selectToolStrategyV3({
         tools,
-        messages: messages as any,
+        identityPrompt: "Please add 2 and 3",
         agentSteps: [],
         roundsLeft: 1,
         systemMessage,
-        model: MODEL as any, // type-safe via getDefaultModels; cast for generic
+        model: MODEL,
       })
 
       expect(typeof debugPrompt).toBe("string")
