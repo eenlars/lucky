@@ -1,6 +1,25 @@
-// Crossover.ts
 /**
- * llm-based crossover operations for prompt evolution
+ * Crossover - LLM-based genetic crossover operations for workflow evolution
+ *
+ * This class implements sophisticated crossover strategies that combine successful
+ * elements from two parent workflows to create potentially superior offspring:
+ *
+ * Crossover strategies:
+ * - behavioralBlend: Combines decision-making and error handling patterns
+ * - structureCrossover: Merges workflow structures (branching, parallelism)
+ * - patternFusion: Fuses successful tool usage and processing patterns
+ * - hybrid: Combines elements from all three strategies
+ *
+ * Key features:
+ * - LLM-driven crossover using natural language instructions
+ * - Fitness and feedback-aware combination strategies
+ * - Memory preservation across crossover operations
+ * - Robust validation and error handling with failure tracking
+ * - Integration with workflow formalization and verification systems
+ *
+ * TODO: implement crossover success metrics and strategy adaptation
+ * TODO: add crossover diversity measures to prevent convergence
+ * TODO: implement multi-parent crossover for complex trait combinations
  */
 
 import type { Genome } from "@core/improvement/gp/Genome"
@@ -41,11 +60,25 @@ export class Crossover {
       easyModelNames: true,
     }
 
-    // needs work: error messages should include parent identifiers for debugging
+    // Safely stringify fitness; parents may not have been evaluated yet
+    const safeFitnessString = (genome: Genome): string => {
+      try {
+        return JSON.stringify(genome.getFitness())
+      } catch {
+        return "null"
+      }
+    }
+
+    // TODO: improve error messages with parent identifiers for debugging
+    // TODO: implement fallback strategies when feedback is missing
     if (!parent1.getFeedback() && operatorsWithFeedback)
-      lgg.error("Crossover not going well: parent1 has no feedback")
+      lgg.error(
+        `Crossover not going well: parent1 ${parent1.getWorkflowVersionId()} has no feedback`
+      )
     if (!parent2.getFeedback() && operatorsWithFeedback)
-      lgg.error("Crossover not going well: parent2 has no feedback")
+      lgg.error(
+        `Crossover not going well: parent2 ${parent2.getWorkflowVersionId()} has no feedback`
+      )
 
     return `Create a new workflow by performing crossover between these two parent workflows:
 
@@ -62,7 +95,7 @@ ${parent1.getFeedback()}`
 }
 
 ### Fitness of first parent after evaluation
-${JSON.stringify(parent1.getFitness())}
+${safeFitnessString(parent1)}
 
 # PARENT 2:
 
@@ -77,7 +110,7 @@ ${parent2.getFeedback()}`
 }
 
 ### Fitness of second parent after evaluation
-${JSON.stringify(parent2.getFitness())}
+${safeFitnessString(parent2)}
 
 CROSSOVER OPERATION: ${crossoverType}
 AGGRESSION LEVEL (how subtle the crossover is): ${aggression}
@@ -132,9 +165,9 @@ Focus on creating a functional workflow rather than exact JSON structure.`
       throw new Error("Crossover failed: insufficient parents")
     }
 
-    // needs work: comments reference undefined pseudocode - should be more specific
-    // follow pseudocode: child = deepClone(parent1)
-    // choose crossover plan based on aggression (weighted choice from pseudocode)
+    // TODO: document crossover algorithm pseudocode or remove references
+    // TODO: implement adaptive crossover type selection based on parent fitness
+    // Select crossover strategy and intensity based on evolutionary context
     const crossoverType = selectCrossoverType()
     const { aggressiveness, intensity } = getCrossoverVariability()
 
@@ -172,6 +205,11 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         - Balance changes across behaviors, structures, and patterns
         - Use aggression level to control overall modification intensity`
         break
+      default: {
+        const _exhaustiveCheck: never = crossoverType
+        void _exhaustiveCheck
+        break
+      }
     }
 
     // Use formalizeWorkflow approach like in Mutations.ts to avoid schema issues
@@ -265,8 +303,11 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         error
       )
       failureTracker.trackCrossoverFailure() // Track exception failure
-      // needs work: error should include actual error details
-      return R.error("Crossover failed: error", 0)
+      // TODO: include specific error details in error message for debugging
+      return R.error(
+        `Crossover failed: ${error instanceof Error ? error.message : String(error)}`,
+        0
+      )
     }
   }
 }

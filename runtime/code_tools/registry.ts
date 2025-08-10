@@ -54,4 +54,4 @@ export const ALL_TOOLS = [
   todoRead,
   todoWrite,
   expectedOutputHandler,
-]
+] as const

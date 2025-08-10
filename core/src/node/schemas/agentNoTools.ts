@@ -15,6 +15,7 @@ const agentDescriptions = {
   handOffs:
     "Which other workflow nodes this node is allowed to hand off to (NOT ALLOWED TO EDIT)",
   systemPrompt: AGENT_KEY_EXPLANATIONS.systemPrompt,
+  handOffType: AGENT_KEY_EXPLANATIONS.handOffType,
   memory: AGENT_KEY_EXPLANATIONS.memory,
 } as const
 

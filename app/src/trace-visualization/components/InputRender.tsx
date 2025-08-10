@@ -8,21 +8,12 @@ import {
 } from "@/react-flow-visualization/components/ui/dialog"
 import { CodeInput } from "@/ui/code"
 import {
-  isControlPayload,
+  extractTextFromPayload,
   isDelegationPayload,
-  isErrorPayload,
   isSequentialPayload,
-  isShowWorkPayload,
 } from "@core/messages/MessagePayload"
 import type { Json } from "@core/utils/clients/supabase/types"
-import {
-  AlertCircle,
-  CheckCircle,
-  Maximize2,
-  MessageSquare,
-  Settings,
-  Users,
-} from "lucide-react"
+import { Maximize2, MessageSquare, Users } from "lucide-react"
 import { useState } from "react"
 
 interface PayloadRenderProps {
@@ -122,7 +113,9 @@ export const PayloadRender = ({
 
   // handle delegation payload
   if (isDelegationPayload(payload)) {
-    const parsedData: Json | string = tryParseJson(payload.prompt)
+    const parsedData: Json | string = tryParseJson(
+      extractTextFromPayload(payload)
+    )
 
     const content = (
       <div className="flex flex-col gap-2" key={msgId}>
@@ -139,14 +132,7 @@ export const PayloadRender = ({
             {JSON.stringify(parsedData, null, 2)}
           </CodeInput>
         )}
-        {payload.context && (
-          <>
-            <p className="text-sm font-medium text-gray-500">context</p>
-            <CodeInput block className="text-xs leading-[18px]">
-              {payload.context}
-            </CodeInput>
-          </>
-        )}
+        {/* context field removed in new payload schema */}
       </div>
     )
 
@@ -180,150 +166,11 @@ export const PayloadRender = ({
     return content
   }
 
-  // handle result/show work payload
-  if (isShowWorkPayload(payload)) {
-    const content = (
-      <div className="flex flex-col gap-2" key={msgId}>
-        <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <div className="text-sm font-medium text-green-600">output</div>
-        </div>
-        <div className="text-sm break-all whitespace-pre-wrap">
-          {payload.workDone}
-        </div>
-      </div>
-    )
-
-    if (inspectable) {
-      return (
-        <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
-            {content}
-            <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Maximize2 className="h-3 w-3" />
-            </div>
-          </div>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
-              <DialogHeader>
-                <DialogTitle>Output Result</DialogTitle>
-              </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
-      )
-    }
-
-    return content
-  }
-
-  // handle error payload
-  if (isErrorPayload(payload)) {
-    const content = (
-      <div className="flex flex-col gap-2" key={msgId}>
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 text-red-500" />
-          <div className="text-sm font-medium text-red-600">error</div>
-        </div>
-        <div className="text-sm break-all text-red-700">{payload.message}</div>
-        {payload.stack && (
-          <>
-            <p className="text-sm font-medium text-gray-500">stack trace</p>
-            <CodeInput block className="text-xs leading-[18px] bg-red-50">
-              {payload.stack}
-            </CodeInput>
-          </>
-        )}
-      </div>
-    )
-
-    if (inspectable) {
-      return (
-        <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
-            {content}
-            <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Maximize2 className="h-3 w-3" />
-            </div>
-          </div>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
-              <DialogHeader>
-                <DialogTitle>Error Details</DialogTitle>
-              </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
-      )
-    }
-
-    return content
-  }
-
-  // handle control payload
-  if (isControlPayload(payload)) {
-    const content = (
-      <div className="flex flex-col gap-2" key={msgId}>
-        <div className="flex items-center gap-2">
-          <Settings className="h-4 w-4 text-purple-500" />
-          <div className="text-sm font-medium text-purple-600">control</div>
-        </div>
-        <div className="text-sm">
-          <span className="font-medium">flag: </span>
-          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
-            {payload.flag}
-          </span>
-        </div>
-      </div>
-    )
-
-    if (inspectable) {
-      return (
-        <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
-            {content}
-            <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Maximize2 className="h-3 w-3" />
-            </div>
-          </div>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
-              <DialogHeader>
-                <DialogTitle>Control Signal</DialogTitle>
-              </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
-      )
-    }
-
-    return content
-  }
-
   // handle any payload
   if (isSequentialPayload(payload)) {
-    const parsedData: Json | string = tryParseJson(payload.prompt)
+    const parsedData: Json | string = tryParseJson(
+      extractTextFromPayload(payload)
+    )
 
     const content = (
       <div className="flex flex-col gap-2" key={msgId}>
@@ -340,14 +187,7 @@ export const PayloadRender = ({
             {JSON.stringify(parsedData, null, 2)}
           </CodeInput>
         )}
-        {payload.context && (
-          <>
-            <p className="text-sm font-medium text-gray-500">context</p>
-            <CodeInput block className="text-xs leading-[18px]">
-              {payload.context}
-            </CodeInput>
-          </>
-        )}
+        {/* context field removed in new payload schema */}
       </div>
     )
 

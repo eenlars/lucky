@@ -11,7 +11,10 @@ import {
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type {
+  AgentSteps,
+  AgentStepsLegacy,
+} from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
@@ -69,6 +72,18 @@ interface TimelineEntryProps {
   isLastNode?: boolean
 }
 
+export const getAgentSteps = (
+  extras: NodeInvocationExtras | null
+): AgentSteps | undefined => {
+  const agentSteps: AgentSteps | AgentStepsLegacy | undefined =
+    extras?.agentSteps
+  if (agentSteps && "totalCost" in agentSteps) {
+    //legacy
+    return agentSteps.outputs as unknown as AgentSteps
+  }
+  return agentSteps
+}
+
 export const TimelineEntry = ({
   entry,
   index,
@@ -81,7 +96,7 @@ export const TimelineEntry = ({
 
   // Extract tool usage from invocation extras with proper typing
   const extras = invocation.extras as NodeInvocationExtras | null
-  const NodeLogs: NodeLogs | undefined = extras?.toolUsage
+  const agentSteps = getAgentSteps(extras)
   const updatedMemory = extras?.updatedMemory
 
   const durationMs: number | null = invocation.end_time
@@ -573,7 +588,7 @@ export const TimelineEntry = ({
       <div className="px-4 pb-3 space-y-3">
         {/* Tools section with usage indicator and summaries */}
         {((nodeDefinition?.tools && nodeDefinition.tools.length > 0) ||
-          NodeLogs?.outputs?.some((output) => output.type === "tool")) && (
+          agentSteps?.some((output) => output.type === "tool")) && (
           <div className="space-y-2">
             {/* Tool usage badges */}
             <div className="flex flex-wrap gap-1">
@@ -581,7 +596,7 @@ export const TimelineEntry = ({
                 // Get all unique tools (available + used)
                 const availableTools = nodeDefinition?.tools || []
                 const usedTools =
-                  NodeLogs?.outputs
+                  agentSteps
                     ?.filter((output) => output.type === "tool")
                     .map((output) => output.name) || []
                 const allTools = Array.from(
@@ -627,7 +642,7 @@ export const TimelineEntry = ({
             </div>
 
             {/* Tool summaries - show quick overview of what tools accomplished */}
-            {NodeLogs?.outputs
+            {agentSteps
               ?.filter((output) => output.type === "tool")
               .filter(
                 (toolOutput) =>
@@ -655,11 +670,11 @@ export const TimelineEntry = ({
         )}
 
         {/* Tool execution details */}
-        {NodeLogs && NodeLogs.outputs && NodeLogs.outputs.length > 0 && (
+        {agentSteps && agentSteps.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="text-sm font-medium text-gray-600 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 pb-2 flex-1">
-                Execution Steps ({NodeLogs.outputs?.length || 0})
+                Execution Steps ({agentSteps?.length || 0} )
               </div>
               <div className="flex items-center gap-1 ml-2">
                 <Tooltip>
@@ -694,7 +709,10 @@ export const TimelineEntry = ({
                 </Tooltip>
               </div>
             </div>
-            <ToolCallsDisplay toolUsage={NodeLogs} expandAll={expandAllLogs} />
+            <ToolCallsDisplay
+              agentSteps={agentSteps}
+              expandAll={expandAllLogs}
+            />
           </div>
         )}
 

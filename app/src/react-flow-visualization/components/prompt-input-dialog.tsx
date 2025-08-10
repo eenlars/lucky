@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import {
   Dialog,
@@ -11,6 +10,7 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+import { useState } from "react"
 
 interface PromptInputDialogProps {
   open: boolean
@@ -24,9 +24,9 @@ export function PromptInputDialog({
   onOpenChange,
   onExecute,
   loading = false,
-}: PromptInputDialogProps) {
+  logs = [],
+}: PromptInputDialogProps & { logs?: string[] }) {
   const [prompt, setPrompt] = useState("")
-
 
   const handleExecute = () => {
     if (prompt.trim()) {
@@ -41,6 +41,8 @@ export function PromptInputDialog({
     }
   }
 
+  const isExecuting = loading || logs.length > 0
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -52,18 +54,31 @@ export function PromptInputDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <Textarea
-            placeholder="Enter your prompt here..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="min-h-[120px] resize-none"
-            disabled={loading}
-            autoFocus
-          />
-          <p className="text-xs text-muted-foreground">
-            Press Cmd/Ctrl + Enter to execute
-          </p>
+          {!isExecuting && (
+            <>
+              <Textarea
+                placeholder="Enter your prompt here..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="min-h-[120px] resize-none"
+                disabled={loading}
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground">
+                Press Cmd/Ctrl + Enter to execute
+              </p>
+            </>
+          )}
+          {logs.length > 0 && (
+            <div className="max-h-60 overflow-auto rounded border p-2 text-xs font-mono bg-muted/30">
+              {logs.map((m, i) => (
+                <p key={i} className="break-words">
+                  {m}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button

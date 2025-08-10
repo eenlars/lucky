@@ -43,6 +43,7 @@ describe("humanApproval tool", () => {
     await expect(async () => {
       await humanApproval.execute(invalidParams as any, {
         workflowInvocationId: "test-workflow",
+        workflowVersionId: "test-v1",
         workflowFiles: [],
         expectedOutputType: undefined,
         mainWorkflowGoal: "test goal",
@@ -59,6 +60,7 @@ describe("humanApproval tool", () => {
 
     const context = {
       workflowInvocationId: "test-workflow-123",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       mainWorkflowGoal: "test goal",
@@ -105,6 +107,7 @@ describe("humanApproval tool", () => {
 
     const context = {
       workflowInvocationId: "test-workflow-456",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       mainWorkflowGoal: "test goal",

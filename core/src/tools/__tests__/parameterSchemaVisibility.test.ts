@@ -1,12 +1,12 @@
-import { selectToolStrategyV2 } from "@core/tools/any/selectToolStrategyV2"
+import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import { tool } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
-// Mock sendAI to control the response
-vi.mock("@core/messages/api/sendAI", () => ({
+// Mock sendAI to control the response (match the actual import path used by code/tests)
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
     data: {
@@ -51,12 +51,12 @@ describe("Parameter Schema Visibility", () => {
   it("should include parameter schemas when enabled", async () => {
     ;(CONFIG.tools as any).showParameterSchemas = true
 
-    const { sendAI } = await import("@core/messages/api/sendAI")
+    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     await selectToolStrategyV2({
       tools: mockTools,
-      messages: [],
-      nodeLogs: [],
+      identityPrompt: "",
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -75,12 +75,12 @@ describe("Parameter Schema Visibility", () => {
   it("should hide parameter schemas when disabled", async () => {
     ;(CONFIG.tools as any).showParameterSchemas = false
 
-    const { sendAI } = await import("@core/messages/api/sendAI")
+    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     await selectToolStrategyV2({
       tools: mockTools,
-      messages: [],
-      nodeLogs: [],
+      identityPrompt: "",
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -117,12 +117,12 @@ describe("Parameter Schema Visibility", () => {
 
     const complexTools = { complexTool }
 
-    const { sendAI } = await import("@core/messages/api/sendAI")
+    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     await selectToolStrategyV2({
       tools: complexTools,
-      messages: [],
-      nodeLogs: [],
+      identityPrompt: "",
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,
@@ -165,12 +165,12 @@ describe("Parameter Schema Visibility", () => {
 
     const mixedTools = { zodTool, vercelTool }
 
-    const { sendAI } = await import("@core/messages/api/sendAI")
+    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     await selectToolStrategyV2({
       tools: mixedTools as any,
-      messages: [],
-      nodeLogs: [],
+      identityPrompt: "",
+      agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
       model: getDefaultModels().default,

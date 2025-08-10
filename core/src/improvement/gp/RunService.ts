@@ -1,12 +1,25 @@
 /**
- * RunService - Database persistence for EvolutionRun and Generation tracking
+ * RunService - Database persistence and lifecycle management for evolution runs
  *
- * This service integrates with the existing EvolutionEngine to provide
- * database persistence according to the write-time protocol:
- * - Creates EvolutionRun entries when engine starts
- * - Creates Generation entries for each generation
- * - Updates Generation.best_workflow_version_id on completion
- * - Updates EvolutionRun.end_time & status on termination
+ * This service provides comprehensive database integration for the genetic programming
+ * system, managing the complete lifecycle of evolution runs and generations:
+ *
+ * Core responsibilities:
+ * - Creates and manages EvolutionRun database entries with configuration tracking
+ * - Handles Generation creation, completion, and best genome tracking
+ * - Provides evolution context (run ID, generation ID, numbers) to other components
+ * - Implements robust retry logic for database operations with exponential backoff
+ * - Supports run resumption from specific generations for long evolutions
+ *
+ * Database write protocol:
+ * 1. Create EvolutionRun entry when evolution begins
+ * 2. Create Generation entry for each generation start
+ * 3. Update Generation with best genome on completion
+ * 4. Update EvolutionRun with final status and timing on termination
+ *
+ * TODO: implement run checkpointing for disaster recovery
+ * TODO: add run analytics and performance metrics tracking
+ * TODO: implement run comparison and genealogy visualization support
  */
 
 import type {
@@ -45,6 +58,8 @@ export class RunService {
     this.verbose = verbose
     this.runId = restartRunId
     this.evolutionMode = evolutionMode
+    // TODO: validate restartRunId exists in database if provided
+    // TODO: initialize run metrics tracking
   }
 
   getEvolutionMode(): FlowEvolutionMode {

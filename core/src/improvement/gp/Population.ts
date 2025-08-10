@@ -1,5 +1,28 @@
-// population management for genetic programming evolution
-// handles population-level operations, statistics, and diversity metrics
+/**
+ * Population - Manages collections of genomes for genetic programming evolution
+ *
+ * This class handles all population-level operations including:
+ * - Population initialization (random, baseWorkflow, prepared methods)
+ * - Genome lifecycle management (evaluation, removal, replacement)
+ * - Population statistics and diversity metrics calculation
+ * - Dynamic population replenishment to maintain minimum viable size
+ *
+ * Key features:
+ * - Multiple initialization strategies based on CONFIG settings
+ * - Automatic removal of unevaluated/failed genomes with replenishment
+ * - Population statistics tracking (best/worst fitness, diversity measures)
+ * - Memory-efficient operations through generator functions and filtering
+ *
+ * Population lifecycle:
+ * 1. Initialize with random/prepared/baseWorkflow genomes
+ * 2. Evaluate genomes through external evaluator
+ * 3. Remove failed evaluations, replenish if below threshold
+ * 4. Calculate generation statistics and select for breeding
+ * 5. Create next generation through selection, crossover, mutation
+ *
+ * @see Genome - Individual workflow genomes managed by this population
+ * @see EvolutionEngine - Orchestrates population evolution across generations
+ */
 
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
@@ -50,7 +73,8 @@ export class Population {
     this._baseWorkflow = _baseWorkflow
     this.problemAnalysis = problemAnalysis
 
-    // needs work: code duplication between random and baseWorkflow cases
+    // TODO: refactor to eliminate code duplication between initialization methods
+    // TODO: consider using factory pattern for population initialization strategies
     switch (initialPopulationMethod as "random" | "baseWorkflow" | "prepared") {
       case "random":
         const population1 = await this.initializePopulationHelper({
@@ -164,7 +188,8 @@ export class Population {
     )
   }
 
-  // needs work: should use getValidGenomes() like getBest() for consistency
+  // TODO: refactor to use getValidGenomes() like getBest() for consistency
+  // TODO: add validation that population contains evaluated genomes
   // get the genome with lowest fitness
   getWorst(): Genome {
     guard(this.genomes, "Population is empty")
@@ -473,7 +498,8 @@ export class Population {
         failures.map((f) => f.error)
       )
 
-      // needs work: hardcoded threshold 0.5 should be configurable
+      // TODO: make minimum viable population threshold configurable
+      // TODO: add recovery strategies for extreme population loss scenarios
       if (genomes.length < config.populationSize * 0.5) {
         lgg.error(
           `Critical: Only ${genomes.length} out of ${config.populationSize} genomes created successfully`

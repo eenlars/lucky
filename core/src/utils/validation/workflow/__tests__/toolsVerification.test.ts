@@ -1,5 +1,8 @@
 import { getDefaultModels } from "@runtime/settings/models"
-import type { ModelNameV2, AllowedModelName } from "@core/utils/spending/models.types"
+import type {
+  ModelNameV2,
+  AllowedModelName,
+} from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
 import { verifyModelNameExists, verifyNoDuplicateHandoffs } from "../index"

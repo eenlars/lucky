@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"

@@ -1,8 +1,8 @@
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 
 export const exampleToolProcessed = {
   type: "tool",
-  toolUsage: [
+  agentSteps: [
     {
       toolName: "locationDataInfo",
       args: [
@@ -67,43 +67,40 @@ export const exampleToolProcessed = {
   cost: 0.0003504,
 }
 
-export const exampleResultExtracted: NodeLogs = {
-  totalCost: 0.0003504,
-  outputs: [
-    {
-      type: "tool",
-      name: "locationDataInfo",
-      args: {
-        action: "verify",
-        includeDetails: true,
-        workflowInvocationId: "fe9fb958",
-      },
-      return: {
-        totalLocations: 0,
-        qualityStats: {},
-        missingDataCounts: {
-          address: 0,
-          city: 0,
-          coordinates: 0,
-          phone: 0,
-          email: 0,
-        },
-        completenessPercentage: null,
-      },
+export const exampleResultExtracted: AgentSteps<any> = [
+  {
+    type: "tool",
+    name: "locationDataInfo",
+    args: {
+      action: "verify",
+      includeDetails: true,
+      workflowInvocationId: "fe9fb958",
     },
-    {
-      type: "tool",
-      name: "locationDataInfo",
-      args: {
-        action: "summary",
-        includeDetails: true,
-        workflowInvocationId: "fe9fb958",
+    return: {
+      totalLocations: 0,
+      qualityStats: {},
+      missingDataCounts: {
+        address: 0,
+        city: 0,
+        coordinates: 0,
+        phone: 0,
+        email: 0,
       },
-      return: {
-        totalLocations: 0,
-        qualityStats: {},
-        summary: "no locations found",
-      },
+      completenessPercentage: null,
     },
-  ],
-}
+  },
+  {
+    type: "tool",
+    name: "locationDataInfo",
+    args: {
+      action: "summary",
+      includeDetails: true,
+      workflowInvocationId: "fe9fb958",
+    },
+    return: {
+      totalLocations: 0,
+      qualityStats: {},
+      summary: "no locations found",
+    },
+  },
+]

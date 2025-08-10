@@ -1,8 +1,8 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/WorkFlowNode.ts
 
 import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/node/selfImproveHelper"
-import type { NodeLogs } from "@core/messages/api/processResponse"
 import type { Payload } from "@core/messages/MessagePayload"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
@@ -16,10 +16,8 @@ import type {
 } from "@core/workflow/schema/workflow.types"
 import chalk from "chalk"
 import { createHash } from "crypto"
-import {
-  InvocationPipeline,
-  type NodeInvocationCallContext,
-} from "./InvocationPipeline"
+import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
+import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
 import { ToolManager } from "./toolManager"
 
 export interface NodeInvocationResult {
@@ -28,12 +26,14 @@ export interface NodeInvocationResult {
   summaryWithInfo: InvocationSummary //todo-summary: allow null later
   replyMessage: Payload
   nextIds: readonly string[]
+  /** Optional: when present, use these to enqueue exact per-target messages */
+  outgoingMessages?: { toNodeId: string; payload: Payload }[]
   usdCost: number
   error?: {
     message: string
     stack?: string
   }
-  toolUsage: NodeLogs
+  agentSteps: AgentSteps
   updatedMemory?: Record<string, string>
   debugPrompts: string[]
 }
@@ -47,7 +47,7 @@ export class WorkFlowNode {
   private readonly config: WorkflowNodeConfig
   private readonly toolManager: ToolManager
   private readonly persistenceManager: NodePersistenceManager
-  private toolUsage: NodeLogs | null = null
+  private agentSteps: AgentSteps | null = null
 
   /**
    * Private constructor: no async work, no runtime‐only wiring.
@@ -200,33 +200,23 @@ export class WorkFlowNode {
 
       // Create invocation context
       const context: NodeInvocationCallContext = {
-        nodeId: this.nodeId,
-        startTime: new Date().toISOString(),
+        nodeConfig: this.config,
+        nodeMemory: this.getMemory(),
         workflowMessageIncoming,
         workflowInvocationId,
-        handOffs: this.config.handOffs,
-        handOffType: this.config.handOffType,
-        nodeDescription: this.config.description,
-        nodeSystemPrompt: this.config.systemPrompt,
-        nodeMemory: this.getMemory(),
-        replyMessage: null,
-        workflowFiles,
         workflowVersionId,
+        workflowId,
+        workflowFiles,
         expectedOutputType,
         mainWorkflowGoal,
-        workflowId,
-        workflowConfig, // Added for hierarchical role inference
-        model: this.config.modelName,
+        startTime: new Date().toISOString(),
+        workflowConfig,
         skipDatabasePersistence,
+        toolStrategyOverride: "v3" as const,
       }
 
       // Create pipeline
-      const pipeline = new InvocationPipeline(
-        context,
-        this.toolManager,
-        this.config.modelName,
-        true
-      )
+      const pipeline = new InvocationPipeline(context, this.toolManager, true)
 
       // Execute pipeline steps sequentially
       await pipeline.prepare()
@@ -237,7 +227,7 @@ export class WorkFlowNode {
         throw new Error(`[WorkFlowNode] no summary with info`)
       }
 
-      this.toolUsage = result.toolUsage ?? null
+      this.agentSteps = result.agentSteps ?? null
 
       // Update memory if provided
       if (result.updatedMemory) {

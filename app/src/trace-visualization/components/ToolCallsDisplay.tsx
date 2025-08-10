@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/ui/card"
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import {
   AlertCircle,
@@ -35,19 +35,19 @@ const getReactJsonTheme = () => {
 }
 
 interface ToolCallsDisplayProps {
-  toolUsage?: NodeLogs
+  agentSteps?: AgentSteps
   expandAll?: boolean | null
 }
 
 export const ToolCallsDisplay = ({
-  toolUsage,
+  agentSteps,
   expandAll,
 }: ToolCallsDisplayProps) => {
   const [expandedCalls, setExpandedCalls] = useState<Set<number>>(new Set())
   const [collapsedCalls, setCollapsedCalls] = useState<Set<number>>(() => {
     // Collapse reasoning, planning, and tool boxes by default, but keep terminate expanded
     const initialCollapsed = new Set<number>()
-    toolUsage?.outputs?.forEach((output, index) => {
+    agentSteps?.forEach((output, index) => {
       if (
         output.type === "reasoning" ||
         output.type === "plan" ||
@@ -63,19 +63,19 @@ export const ToolCallsDisplay = ({
   >({})
   const resultRefs = useRef<Record<number, HTMLDivElement | null>>({})
 
-  // Debug logging to see what toolUsage we receive
-  console.log("[ToolCallsDisplay] Received toolUsage:", {
-    hasToolUsage: !!toolUsage,
-    toolUsageStructure: toolUsage
+  // Debug logging to see what agentSteps we receive
+  console.log("[ToolCallsDisplay] Received agentSteps:", {
+    hasToolUsage: !!agentSteps,
+    toolUsageStructure: agentSteps
       ? {
-          hasOutputs: !!toolUsage.outputs,
-          outputsLength: toolUsage.outputs?.length || 0,
-          outputsTypes: toolUsage.outputs?.map((o) => o.type) || [],
-          outputsNames: toolUsage.outputs?.map((o) => o.name) || [],
-          fullOutputs: toolUsage.outputs,
+          hasOutputs: !!agentSteps,
+          outputsLength: agentSteps?.length || 0,
+          outputsTypes: agentSteps?.map((o) => o.type) || [],
+          outputsNames: agentSteps?.map((o) => o.name) || [],
+          fullOutputs: agentSteps,
         }
       : null,
-    rawToolUsage: toolUsage,
+    rawToolUsage: agentSteps,
   })
 
   // Check if results need expand/collapse buttons
@@ -87,29 +87,29 @@ export const ToolCallsDisplay = ({
       }
     })
     _setShowResultButton(newShowButtons)
-  }, [toolUsage])
+  }, [agentSteps])
 
   // Handle expand/collapse all
   useEffect(() => {
-    if (expandAll === null || !toolUsage?.outputs) return
+    if (expandAll === null || !agentSteps) return
 
     if (expandAll) {
       // Expand all: clear collapsed set, expand all calls
       setCollapsedCalls(new Set())
-      setExpandedCalls(new Set(toolUsage.outputs.map((_, index) => index)))
+      setExpandedCalls(new Set(agentSteps.map((_, index) => index)))
     } else {
       // Collapse all: set all to collapsed, clear expanded
-      setCollapsedCalls(new Set(toolUsage.outputs.map((_, index) => index)))
+      setCollapsedCalls(new Set(agentSteps.map((_, index) => index)))
       setExpandedCalls(new Set())
     }
-  }, [expandAll, toolUsage])
+  }, [expandAll, agentSteps])
 
-  if (!toolUsage || !toolUsage.outputs || toolUsage.outputs.length === 0) {
+  if (!agentSteps || agentSteps.length === 0) {
     return null
   }
 
   // Normalize legacy data format to new format
-  const normalizedOutputs = toolUsage.outputs.map((output: any) => {
+  const normalizedOutputs = agentSteps.map((output: any) => {
     if (output.type === "tool") {
       // Handle legacy format: toolArgs, toolName, toolResponse
       if (

@@ -1,5 +1,5 @@
-import type { NodeLogs } from "@core/messages/api/processResponse"
-import { normalizeModelName } from "@core/messages/api/sendAI"
+import { normalizeModelName } from "@core/messages/api/sendAI/sendAI"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { llmify } from "@core/utils/common/llmify"
@@ -15,7 +15,7 @@ type SaveNodeInvocationOpts = {
   usdCost: number
   output: string
   workflowInvocationId: string
-  toolUsage?: NodeLogs
+  agentSteps?: AgentSteps
   summary: string
   files?: string[]
   workflowVersionId: string
@@ -30,7 +30,7 @@ export const saveNodeInvocationToDB = async ({
   usdCost,
   output,
   workflowInvocationId,
-  toolUsage,
+  agentSteps,
   summary,
   files,
   workflowVersionId,
@@ -40,7 +40,7 @@ export const saveNodeInvocationToDB = async ({
   // Debug logging for tool calls
   lgg.onlyIf(
     CONFIG.logging.override.Tools,
-    `[saveNodeInvocation] Saving toolUsage: ${toolUsage?.outputs.length} outputs`
+    `[saveNodeInvocation] Saving agentSteps: ${agentSteps?.length} outputs`
   )
 
   const contentToSave = JSONN.isJSON(output)
@@ -57,8 +57,8 @@ export const saveNodeInvocationToDB = async ({
     usd_cost: usdCost,
     extras: {
       message_id: messageId,
-      ...(toolUsage && {
-        toolUsage: toolUsage,
+      ...(agentSteps && {
+        agentSteps: agentSteps,
       }),
       ...(updatedMemory && {
         updatedMemory: updatedMemory,

@@ -1,5 +1,37 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+// Force all ContextStore usage to in-memory during this focused test and
+// ensure a single shared instance per workflowInvocationId so tools see
+// the same state across calls (write -> read)
+vi.mock("@core/utils/persistence/memory/ContextStore", async () => {
+  const actual = await vi.importActual<
+    typeof import("@core/utils/persistence/memory/ContextStore")
+  >("@core/utils/persistence/memory/ContextStore")
+  const { InMemoryContextStore } = await import(
+    "@core/utils/persistence/memory/MemoryStore"
+  )
+
+  const stores = new Map<string, InstanceType<typeof InMemoryContextStore>>()
+
+  function createContextStore(
+    _backend: "memory" | "supabase",
+    workflowInvocationId: string
+  ) {
+    if (!stores.has(workflowInvocationId)) {
+      stores.set(
+        workflowInvocationId,
+        new InMemoryContextStore(workflowInvocationId)
+      )
+    }
+    return stores.get(workflowInvocationId)!
+  }
+
+  return {
+    ...actual,
+    createContextStore,
+  }
+})
+
 describe("InvocationPipeline Focused Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -19,7 +51,7 @@ describe("InvocationPipeline Focused Integration", () => {
 
     const toolContext = {
       workflowInvocationId,
-      nodeId: "focused-test-node",
+      workflowVersionId: "focused-test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       workflowId: "focused-test-workflow",
@@ -45,7 +77,12 @@ describe("InvocationPipeline Focused Integration", () => {
       toolContext
     )
 
+    // Outer RS envelope is success
     expect(writeResult.success).toBe(true)
+    // Tool-level result is success
+    expect(writeResult.data?.success).toBe(true)
+    // And the tool payload also reports success
+    // (this mirrors the structure of CodeToolResult<T>)
     expect(writeResult.data?.output?.success).toBe(true)
     console.log(
       "✅ Step 1 - todoWrite executed:",
@@ -56,6 +93,7 @@ describe("InvocationPipeline Focused Integration", () => {
     const readResult = await todoRead.default.execute({}, toolContext)
 
     expect(readResult.success).toBe(true)
+    expect(readResult.data?.success).toBe(true)
     expect(readResult.data?.output?.todos).toBeDefined()
     expect(readResult.data?.output?.todos.length).toBe(1)
     expect(readResult.data?.output?.todos[0].content).toBe(

@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"

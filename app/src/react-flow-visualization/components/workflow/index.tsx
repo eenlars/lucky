@@ -9,7 +9,7 @@ import { NodeDetailsDialog } from "@/react-flow-visualization/components/node-de
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
-import { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
+import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
 import { useAppStore } from "@/react-flow-visualization/store"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
@@ -68,7 +68,9 @@ export default function Workflow({
         console.log("Loading specific workflow version:", workflowVersionId)
         loadWorkflowVersion(workflowVersionId)
       } else {
-        console.log("Loading default workflow config (includes layout organization)")
+        console.log(
+          "Loading default workflow config (includes layout organization)"
+        )
         loadWorkflowConfig()
       }
     }
@@ -88,7 +90,8 @@ export default function Workflow({
     setPromptDialogOpen,
     executeWorkflowWithPrompt,
     isRunning,
-  } = useWorkflowRunner()
+    logMessages,
+  } = useWorkflowRunnerContext()
 
   const proOptions = {
     // passing in the account property will enable hiding the attribution
@@ -161,7 +164,9 @@ export default function Workflow({
       {selectedNode && (
         <NodeDetailsDialog
           open={nodeDetailsOpen}
-          onOpenChange={closeNodeDetails}
+          onOpenChange={(open) => {
+            if (!open) closeNodeDetails()
+          }}
           nodeData={selectedNode.data}
           onSave={updateNode}
         />
@@ -172,6 +177,7 @@ export default function Workflow({
         onOpenChange={setPromptDialogOpen}
         onExecute={executeWorkflowWithPrompt}
         loading={isRunning}
+        logs={logMessages}
       />
     </>
   )

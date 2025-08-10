@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -77,7 +77,7 @@ Recommend "escalate" for fundamental failures (scores <4).
 `)
 
   try {
-    const { data, error, usdCost } = await Messages.sendAI({
+    const { data, error, usdCost } = await sendAI({
       messages: [{ role: "user", content: prompt }],
       model: getDefaultModels().nano,
       mode: "structured",

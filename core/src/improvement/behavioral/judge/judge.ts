@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { spliceNode2 } from "@core/node/splice"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"
@@ -194,7 +194,10 @@ export async function judge(
     case "doNothing":
       return R.success(workflow, response.usdCost)
 
-    default:
+    default: {
+      const _exhaustiveCheck: never = action as never
+      void _exhaustiveCheck
       return R.error(`Unknown action: ${action}`, response.usdCost)
+    }
   }
 }

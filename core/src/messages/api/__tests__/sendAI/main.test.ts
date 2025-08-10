@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { generateText } from "ai"
 import { vi } from "vitest"

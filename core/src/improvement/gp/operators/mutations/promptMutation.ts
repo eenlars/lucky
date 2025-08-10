@@ -3,7 +3,7 @@
  */
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"

@@ -346,10 +346,13 @@ export class LocationDataManager {
                 }
               })
               break
-            default:
+            default: {
+              const _exhaustiveCheck: never = updateStrategy
+              void _exhaustiveCheck
               throw new LocationDataManagerError(
                 `unknown update strategy: ${updateStrategy}`
               )
+            }
           }
 
           if (

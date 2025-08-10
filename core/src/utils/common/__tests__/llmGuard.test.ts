@@ -1,9 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { llmGuard } from "../llmGuard"
-import { sendAI } from "@core/messages/api/sendAI"
 
-vi.mock("@core/messages/api/sendAI")
+// Mock the exact module that exports sendAI
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
+  sendAI: vi.fn(),
+}))
+
+const mockSendAI = vi.mocked(sendAI)
 
 /**
  * Unit tests for llmGuard function
@@ -17,9 +22,9 @@ describe("llmGuard", () => {
   })
 
   it("should validate news content and return valid result", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "OK", reasoning: undefined } as any,
+      data: { status: "OK" } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -39,9 +44,12 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should reject non-news content and provide reason", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "ERROR", reasoning: "Content contains cooking recipes, not news content" } as any,
+      data: {
+        status: "ERROR",
+        reason: "Content contains cooking recipes, not news content",
+      } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -63,9 +71,9 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should validate technical content correctly", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "OK", reasoning: undefined } as any,
+      data: { status: "OK" } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -85,9 +93,13 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should reject inappropriate content with detailed reason", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "ERROR", reasoning: "Content contains advertisements and sales pitches, not educational material" } as any,
+      data: {
+        status: "ERROR",
+        reason:
+          "Content contains advertisements and sales pitches, not educational material",
+      } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -109,9 +121,12 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should handle whitespace-only content", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "ERROR", reasoning: "Content contains only whitespace characters" } as any,
+      data: {
+        status: "ERROR",
+        reason: "Content contains only whitespace characters",
+      } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -130,9 +145,9 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should validate Dutch news content specifically", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "OK", reasoning: undefined } as any,
+      data: { status: "OK" } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -152,9 +167,12 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should provide specific reason for language mismatch", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
-      data: { text: "ERROR", reasoning: "Content is in English, but only Dutch language is allowed" } as any,
+      data: {
+        status: "ERROR",
+        reason: "Content is in English, but only Dutch language is allowed",
+      } as any,
       usdCost: 0.001,
       error: null,
       debug_input: [],
@@ -176,7 +194,7 @@ describe("llmGuard", () => {
   }, 10000)
 
   it("should default to valid when API call fails", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: false,
       data: undefined as any,
       error: "API call failed",
@@ -191,7 +209,7 @@ describe("llmGuard", () => {
   })
 
   it("should handle missing data in successful response", async () => {
-    vi.mocked(sendAI).mockResolvedValue({
+    mockSendAI.mockResolvedValue({
       success: true,
       data: null as any,
       usdCost: 0,

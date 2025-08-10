@@ -1,3 +1,4 @@
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateNodeOutput } from "./validateNodeOutput"
@@ -41,19 +42,11 @@ export async function validateAndDecide({
   let originalTask = "No specific task provided"
   const payload = workflowMessage.payload
 
-  if (payload.kind === "delegation" || payload.kind === "sequential") {
-    originalTask = payload.prompt
-  } else if (payload.kind === "error" || payload.kind === "result-error") {
-    originalTask = payload.message
-  } else if (payload.kind === "result") {
-    originalTask = payload.workDone
-  } else if (payload.kind === "control") {
-    originalTask = `Control signal: ${payload.flag}`
-  }
+  originalTask = extractTextFromPayload(payload)
 
   const { validation, error, usdCost } = await validateNodeOutput({
     nodeOutput,
-    originalTask,
+    originalTask: originalTask,
     systemPrompt,
     nodeId,
   })

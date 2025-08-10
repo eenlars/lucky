@@ -1,6 +1,31 @@
-// select.ts
 /**
- * Simple selection mechanisms for prompt evolution
+ * Select - Genetic selection mechanisms for workflow evolution
+ *
+ * This class implements various selection strategies for choosing parent genomes
+ * for the next generation and orchestrating the creation of offspring:
+ *
+ * Selection strategies:
+ * - Tournament selection with configurable tournament size
+ * - Elite selection to preserve top-performing genomes
+ * - Random selection for genetic diversity maintenance
+ *
+ * Key features:
+ * - Fitness-based parent selection with diversity pressure
+ * - Next generation creation through selection, crossover, and mutation
+ * - Robust error handling for population edge cases
+ * - Integration with crossover and mutation operators
+ * - Validation of population fitness before selection operations
+ *
+ * Selection pipeline:
+ * 1. Filter valid genomes with positive fitness scores
+ * 2. Apply elite selection to preserve best performers
+ * 3. Use tournament selection for remaining parent slots
+ * 4. Create offspring through crossover and mutation
+ * 5. Replace population with new generation
+ *
+ * TODO: implement diversity-aware selection to prevent premature convergence
+ * TODO: add adaptive selection pressure based on population fitness distribution
+ * TODO: implement multi-objective selection for complex fitness landscapes
  */
 
 import { Genome } from "@core/improvement/gp/Genome"
@@ -38,6 +63,7 @@ export class Select {
       throw new Error("No valid genomes in population to select from")
 
     if (amount > validGenomes.length) {
+      // TODO: implement smart parent reuse strategies for small populations
       throw new Error(
         `Cannot select ${amount} parents from ${validGenomes.length} valid genomes. ` +
           `Population has only ${validGenomes.length} valid genomes, but requires at least ${amount}.`
@@ -85,6 +111,7 @@ export class Select {
       lgg.error(
         "[Select] No valid genomes with fitness scores found in population"
       )
+      // TODO: implement population recovery strategies for total evaluation failure
       throw new Error(
         "No valid genomes with fitness scores found in population"
       )

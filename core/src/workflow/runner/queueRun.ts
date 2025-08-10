@@ -1,10 +1,10 @@
 // src/core/workflow/queueRun.ts
 
-import type { NodeLogs } from "@core/messages/api/processResponse"
 import type {
   AggregatedPayload,
   MessageType,
 } from "@core/messages/MessagePayload"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
@@ -31,7 +31,7 @@ export type QueueRunParams = {
 // Fix to use ProcessedResponse
 export type QueueRunResult = {
   success: boolean
-  nodeOutputs: NodeLogs[]
+  agentSteps: AgentSteps
   finalWorkflowOutput: string
   error?: string
   totalTime: number
@@ -39,7 +39,7 @@ export type QueueRunResult = {
 }
 
 export type EvaluationResult = {
-  transcript: NodeLogs[]
+  transcript: AgentSteps
   summaries: InvocationSummary[]
   fitness: FitnessOfWorkflow
   feedback: string
@@ -81,7 +81,7 @@ export async function queueRun({
 
   lgg.onlyIf(verbose, `[queueRun] Workflow has ${nodes.length} nodes`)
 
-  const nodeOutputs: NodeLogs[] = []
+  const agentSteps: AgentSteps = []
   let seq = 0
   let totalCost = 0
   let nodeInvocations = 0
@@ -107,7 +107,12 @@ export async function queueRun({
     seq: seq++,
     payload: {
       kind: messageType,
-      prompt: workflowInput.replace(/\n/g, " ").replace(/\s+/g, " "),
+      berichten: [
+        {
+          type: "text",
+          text: workflowInput.replace(/\n/g, " ").replace(/\s+/g, " "),
+        },
+      ],
     },
     wfInvId: workflowInvocationId,
   })
@@ -182,6 +187,12 @@ export async function queueRun({
       // All messages received, create aggregated message
       const aggregatedPayload: AggregatedPayload = {
         kind: "aggregated",
+        berichten: [
+          {
+            type: "text",
+            text: "Just aggregating messages.",
+          },
+        ],
         messages: receivedMessages.map((msg) => ({
           fromNodeId: msg.fromNodeId,
           payload: msg.payload,
@@ -248,13 +259,13 @@ export async function queueRun({
       nodeInvocationId,
       replyMessage,
       nextIds,
+      outgoingMessages,
       error,
       summaryWithInfo,
       updatedMemory,
-      toolUsage,
+      agentSteps,
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
-      workflowVersionId,
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
       ...toolContext,
     })
@@ -268,7 +279,8 @@ export async function queueRun({
 
     if (error) {
       lgg.error(
-        `[queueRun] Node invocation error for ${targetNode.nodeId}: ${error}`
+        `[queueRun] Node invocation error for ${targetNode.nodeId}`,
+        error
       )
     }
 
@@ -278,8 +290,6 @@ export async function queueRun({
       target_invocation_id: nodeInvocationId,
     })
 
-    // Collect NodeLogs objects from node invocations
-    nodeOutputs.push(toolUsage)
     totalCost += usdCost
 
     summaries.push(summaryWithInfo)
@@ -312,54 +322,72 @@ export async function queueRun({
       }
     }
 
-    // Add next messages to the queue
-    for (const nextId of nextIds) {
-      // Create per-target customized messages for parallel processing
-      // todo-typesafety: replace 'any' with proper payload type - violates CLAUDE.md "we hate any"
-      let messagePayload: any
-      if (error) {
-        messagePayload = {
-          kind: "error",
-          message: error.message,
-          stack: error.stack,
-        }
-      } else if (nextIds.length > 1 && !nextIds.includes("end")) {
-        // Branched processing - customize message for each target (processed sequentially)
-        // todo-typesafety: replace 'any' parameter with proper message type - violates CLAUDE.md "we hate any"
-        const getMessageContent = (msg: any) => {
-          if (msg.prompt) return msg.prompt
-          if (msg.workDone) return msg.workDone
-          return ""
-        }
-
-        messagePayload = {
-          ...replyMessage,
-          prompt: `[Task for ${nextId}]: ${getMessageContent(replyMessage)}`,
-          context: `Branched delegation to ${nextId}: ${getMessageContent(replyMessage)}`,
-        }
-        if (verbose) {
-          lgg.log(
-            `[queueRun] Branched delegation to ${nextId}: ${messagePayload.prompt.substring(0, 50)}...`
-          )
-        }
-      } else {
-        // Single target - use original message
-        messagePayload = replyMessage
+    // Add next messages to the queue (prefer exact per-target payloads if provided)
+    if (outgoingMessages && outgoingMessages.length > 0) {
+      for (const om of outgoingMessages) {
+        const nextMessage = new WorkflowMessage({
+          originInvocationId: nodeInvocationId,
+          fromNodeId: targetNode.nodeId,
+          toNodeId: om.toNodeId,
+          seq: seq++,
+          payload: om.payload,
+          wfInvId: workflowInvocationId,
+        })
+        messageQueue.push(nextMessage)
+        lgg.onlyIf(
+          verbose,
+          `[queueRun] Added message to queue (handler): ${targetNode.nodeId} -> ${om.toNodeId}`
+        )
       }
+    } else {
+      for (const nextId of nextIds) {
+        // Create per-target customized messages for parallel processing
+        // todo-typesafety: replace 'any' with proper payload type - violates CLAUDE.md "we hate any"
+        let messagePayload: any
+        if (error) {
+          messagePayload = {
+            kind: "error",
+            message: error.message,
+            stack: error.stack,
+          }
+        } else if (nextIds.length > 1 && !nextIds.includes("end")) {
+          // Branched processing - customize message for each target (processed sequentially)
+          // todo-typesafety: replace 'any' parameter with proper message type - violates CLAUDE.md "we hate any"
+          const getMessageContent = (msg: any) => {
+            if (msg.prompt) return msg.prompt
+            if (msg.workDone) return msg.workDone
+            return ""
+          }
 
-      const nextMessage = new WorkflowMessage({
-        originInvocationId: nodeInvocationId,
-        fromNodeId: targetNode.nodeId,
-        toNodeId: nextId,
-        seq: seq++,
-        payload: messagePayload,
-        wfInvId: workflowInvocationId,
-      })
-      messageQueue.push(nextMessage)
-      lgg.onlyIf(
-        verbose,
-        `[queueRun] Added message to queue: ${targetNode.nodeId} -> ${nextId}`
-      )
+          messagePayload = {
+            ...replyMessage,
+            prompt: `[Task for ${nextId}]: ${getMessageContent(replyMessage)}`,
+            context: `Branched delegation to ${nextId}: ${getMessageContent(replyMessage)}`,
+          }
+          if (verbose) {
+            lgg.log(
+              `[queueRun] Branched delegation to ${nextId}: ${messagePayload.prompt.substring(0, 50)}...`
+            )
+          }
+        } else {
+          // Single target - use original message
+          messagePayload = replyMessage
+        }
+
+        const nextMessage = new WorkflowMessage({
+          originInvocationId: nodeInvocationId,
+          fromNodeId: targetNode.nodeId,
+          toNodeId: nextId,
+          seq: seq++,
+          payload: messagePayload,
+          wfInvId: workflowInvocationId,
+        })
+        messageQueue.push(nextMessage)
+        lgg.onlyIf(
+          verbose,
+          `[queueRun] Added message to queue: ${targetNode.nodeId} -> ${nextId}`
+        )
+      }
     }
   }
 
@@ -373,7 +401,7 @@ export async function queueRun({
 
   lgg.onlyIf(
     verbose,
-    `[queueRun] Got ${summaries.length} summaries, ${nodeOutputs.length} outputs`
+    `[queueRun] Got ${summaries.length} summaries, ${agentSteps.length} outputs`
   )
 
   // Persist memory updates to database if any nodes updated their memory
@@ -405,7 +433,7 @@ export async function queueRun({
 
   return {
     success: true,
-    nodeOutputs,
+    agentSteps,
     totalTime: Date.now() - startTime,
     totalCost: totalCost,
     finalWorkflowOutput: lastNodeOutput,
@@ -426,7 +454,7 @@ export const evaluateQueueRun = async ({
   const evaluationInput = workflow.getEvaluationInput()
 
   const fitnessResult = await calculateFitness({
-    nodeOutputs: queueRunResult.nodeOutputs,
+    agentSteps: queueRunResult.agentSteps,
     totalTime: queueRunResult.totalTime,
     totalCost: queueRunResult.totalCost,
     evaluation: evaluation,
@@ -437,7 +465,7 @@ export const evaluateQueueRun = async ({
   let feedbackResult: RS<string> | null = null
   if (CONFIG.improvement.flags.operatorsWithFeedback) {
     feedbackResult = await calculateFeedback({
-      nodeOutputs: queueRunResult.nodeOutputs,
+      agentSteps: queueRunResult.agentSteps,
       evaluation: evaluation,
     })
     if (!feedbackResult.success) {
@@ -459,7 +487,7 @@ export const evaluateQueueRun = async ({
     fitness: fitnessResult as unknown as Json,
     extras: {
       evaluation: JSONN.show(evaluation),
-      actualOutput: JSONN.show(queueRunResult.nodeOutputs),
+      actualOutput: JSONN.show(queueRunResult.agentSteps),
     },
     workflow_output: evaluation as unknown as Json,
     expected_output:
@@ -474,12 +502,11 @@ export const evaluateQueueRun = async ({
   return {
     success: true,
     data: {
-      transcript: queueRunResult.nodeOutputs,
-      summaries: queueRunResult.nodeOutputs.map((output, index) => ({
+      transcript: queueRunResult.agentSteps,
+      summaries: queueRunResult.agentSteps.map((output, index) => ({
         timestamp: Date.now(),
         nodeId: `node-${index}`,
-        summary: output.outputs[0]?.return?.toString() || "",
-        info: { cost: output.totalCost },
+        summary: output.return?.toString() || "", // todo-wrong
       })),
       fitness: fitness,
       feedback: feedbackResult?.data ?? "",

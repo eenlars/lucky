@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"
@@ -23,6 +23,7 @@ export async function formalizeWorkflow(
   prompt: string,
   options: GenerationOptions & AfterGenerationOptions
 ): Promise<RS<WorkflowConfig>> {
+  console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))
   const normalizedConfigNodes = options.workflowConfig?.nodes.map((node) => {
     return {
       ...node,

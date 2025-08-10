@@ -1,5 +1,5 @@
 import { getSelfImprovePrompt } from "@core/improvement/behavioral/self-improve/node/selfImprovement.p"
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
 import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
@@ -77,7 +77,7 @@ export async function selfImproveHelper({
   })
 
   lgg.log("🔄 improving workflow node ", n.nodeId)
-  const { data, success, error, usdCost } = await Messages.sendAI({
+  const { data, success, error, usdCost } = await sendAI({
     messages: [{ role: "user", content: prompt }],
     model: n.getModelName(),
     mode: "structured",

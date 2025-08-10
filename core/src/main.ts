@@ -204,7 +204,10 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
               : undefined,
           })
 
-          await runner.prepareWorkflow(SELECTED_QUESTION)
+          await runner.prepareWorkflow(
+            SELECTED_QUESTION,
+            CONFIG.workflow.prepareProblemMethod
+          )
           const {
             success,
             error,
@@ -358,8 +361,10 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     immigrantInterval: 5,
   })
 
-  const { problemAnalysis, workflowIO, newGoal } =
-    await prepareProblem(SELECTED_QUESTION)
+  const { problemAnalysis, workflowIO, newGoal } = await prepareProblem(
+    SELECTED_QUESTION,
+    CONFIG.workflow.prepareProblemMethod
+  )
 
   // create evaluator with all workflow cases, and evaluate.
   // returns the fitness and feedback for each genome.

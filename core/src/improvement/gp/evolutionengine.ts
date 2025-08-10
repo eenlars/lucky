@@ -1,4 +1,30 @@
-// EvolutionEngine.ts
+/**
+ * EvolutionEngine - Orchestrates genetic programming evolution process
+ *
+ * This is the main coordinator for evolutionary workflow optimization:
+ * - Manages complete evolution lifecycle from initialization to completion
+ * - Coordinates Population, RunService, StatsTracker, and evaluation systems
+ * - Implements the core genetic programming loop with proper error handling
+ * - Provides database persistence and metrics tracking throughout evolution
+ *
+ * Core evolution process:
+ * 1. Initialize population with random/prepared genomes
+ * 2. Evaluate all genomes in parallel with retry logic
+ * 3. Record generation statistics and update database
+ * 4. Create next generation through selection, crossover, mutation
+ * 5. Reset genome states and repeat until termination criteria met
+ *
+ * Key features:
+ * - Parallel genome evaluation with configurable concurrency limits
+ * - Robust error handling with retry mechanisms and failure tracking
+ * - Comprehensive logging and metrics collection for analysis
+ * - Database integration for run persistence and genealogy tracking
+ * - Early stopping based on convergence or resource constraints
+ *
+ * @see Population - Manages genome collections and population-level operations
+ * @see RunService - Handles database persistence and run tracking
+ * @see EvolutionEvaluator - External genome evaluation interface
+ */
 
 import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
 import { Population } from "@core/improvement/gp/Population"
@@ -58,9 +84,14 @@ export class EvolutionEngine {
     lgg.info(evolutionSettingsToString(this.evolutionSettings))
   }
 
-  // needs work: improve comment specificity
-  // This is the main function.
-  // It handles the evolution process.
+  /**
+   * Main evolution orchestration method - runs complete genetic programming evolution
+   *
+   * TODO: add early stopping based on fitness plateau detection
+   * TODO: implement checkpoint/resume capability for long-running evolutions
+   * TODO: add dynamic population sizing based on diversity metrics
+   * TODO: implement parallel generation evaluation for faster convergence
+   */
   async evolve({
     evaluationInput,
     evaluator,
@@ -88,18 +119,17 @@ export class EvolutionEngine {
     this.statsTracker.logEvolutionStart()
 
     try {
-      // needs work: comments should explain why, not what
-      // This is the base case for setting up the population.
+      // Initialize population with diverse genomes to establish genetic foundation
       await this.population.initialize(
         evaluationInput,
         _baseWorkflow,
         problemAnalysis
       )
 
-      // We run it one time.
+      // Evaluate initial population to establish baseline fitness measurements
       await this.evaluatePopulation(evaluator)
 
-      // We need to remove the unevaluated genomes from the population.
+      // Remove failed evaluations to maintain population quality for breeding
       await this.population.removeUnevaluated()
 
       const initialStats = this.statsTracker.recordGenerationStats()
@@ -117,15 +147,14 @@ export class EvolutionEngine {
       ) {
         if (this.statsTracker.shouldStop()) break
 
-        // Create a new generation.
-        // This updates the generation count and handles database insertions.
+        // Advance to next generation and update database tracking
         await this.runService.createNewGeneration()
 
-        // Sync the population's generation number with the run service
+        // Keep population and service generation counters synchronized
         this.population.incrementGenerationNumber()
 
-        // Here, we create a new generation. It resets the genomes to initial state.
-        // It also reselects the genomes that have proven successful in the last generation.
+        // Apply genetic operators (selection, crossover, mutation) to create offspring
+        // This replaces low-fitness genomes with potentially improved variants
         await Select.createNextGeneration({
           population: this.population,
           config: this.evolutionSettings,
@@ -135,14 +164,14 @@ export class EvolutionEngine {
           problemAnalysis,
         })
 
-        // Before we run the next generation, we need to reset the genomes.
-        // The genomes that were re-selected still have fitness and feedback set, which we do not want.
+        // Clear fitness/feedback from selected genomes to force re-evaluation
+        // This prevents using stale fitness data from previous generations
         this.population.resetGenomes()
 
-        // Run and evaluate the population with the evaluator.
+        // Evaluate new generation to measure improvement from genetic operations
         await this.evaluatePopulation(evaluator)
 
-        // We need to remove the unevaluated genomes from the population.
+        // Maintain population quality by removing evaluation failures
         await this.population.removeUnevaluated()
 
         // Log the stats for the just evaluated generation.

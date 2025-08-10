@@ -82,7 +82,7 @@ describe("Population Basic Tests", () => {
 
   it("should instantiate with proper configuration", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -103,7 +103,7 @@ describe("Population Basic Tests", () => {
 
   it("should support basic population operations", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -112,7 +112,7 @@ describe("Population Basic Tests", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 5 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Create proper mock genomes that match Population class expectations
     const mockGenome1 = {
       getWorkflowVersionId: () => "genome1",
@@ -121,17 +121,17 @@ describe("Population Basic Tests", () => {
       isEvaluated: true,
     }
     const mockGenome2 = {
-      getWorkflowVersionId: () => "genome2", 
+      getWorkflowVersionId: () => "genome2",
       getFitness: () => ({ score: 0.6 }),
       getFitnessScore: () => 0.6,
       isEvaluated: true,
     }
-    
+
     // Test setPopulation and size
     population.setPopulation([mockGenome1, mockGenome2] as any)
     expect(population.size()).toBe(2)
     expect(population.getGenomes()).toHaveLength(2)
-    
+
     // Test addGenome
     const mockGenome3 = {
       getWorkflowVersionId: () => "genome3",
@@ -141,18 +141,18 @@ describe("Population Basic Tests", () => {
     }
     population.addGenome(mockGenome3 as any)
     expect(population.size()).toBe(3)
-    
+
     // Test getBest/getWorst
     const best = population.getBest()
     expect(best.getFitnessScore()).toBe(0.9)
-    
+
     const worst = population.getWorst()
     expect(worst.getFitnessScore()).toBe(0.6)
-    
+
     // Test removeGenome
     expect(population.removeGenome("genome2")).toBe(true)
     expect(population.size()).toBe(2)
-    
+
     // Test clear
     population.clear()
     expect(population.size()).toBe(0)
@@ -160,7 +160,7 @@ describe("Population Basic Tests", () => {
 
   it("should handle genome filtering correctly", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -169,7 +169,7 @@ describe("Population Basic Tests", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 5 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Mix of evaluated and unevaluated genomes
     const evaluatedGenome = {
       getWorkflowVersionId: () => "evaluated",
@@ -183,18 +183,18 @@ describe("Population Basic Tests", () => {
       getFitnessScore: () => 0,
       isEvaluated: false,
     }
-    
+
     population.setPopulation([evaluatedGenome, unevaluatedGenome] as any)
-    
+
     // Test filtering methods
     const validGenomes = population.getValidGenomes()
     expect(validGenomes).toHaveLength(1)
     expect(validGenomes[0].getWorkflowVersionId()).toBe("evaluated")
-    
+
     const unevaluated = population.getUnevaluated()
     expect(unevaluated).toHaveLength(1)
     expect(unevaluated[0].getWorkflowVersionId()).toBe("unevaluated")
-    
+
     // Test getTop sorting
     const anotherGenome = {
       getWorkflowVersionId: () => "another",
@@ -203,7 +203,7 @@ describe("Population Basic Tests", () => {
       isEvaluated: true,
     }
     population.addGenome(anotherGenome as any)
-    
+
     const top2 = population.getTop(2)
     expect(top2).toHaveLength(2)
     expect(top2[0].getFitnessScore()).toBe(0.8) // Highest first
@@ -212,7 +212,7 @@ describe("Population Basic Tests", () => {
 
   it("should handle error cases properly", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -221,16 +221,16 @@ describe("Population Basic Tests", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 0 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Test empty population error cases
     expect(() => population.getBest()).toThrow("Population is empty")
     expect(() => population.getWorst()).toThrow("Population is empty")
     expect(() => population.getStats()).toThrow("Population is empty")
-    
+
     // Test successful edge cases
     expect(population.removeGenome("non-existent")).toBe(false)
     expect(population.getTop(5)).toEqual([])
-    
+
     // Test single genome case
     const genome = {
       getWorkflowVersionId: () => "single",
@@ -238,7 +238,7 @@ describe("Population Basic Tests", () => {
       getFitnessScore: () => 0.5,
       isEvaluated: true,
     }
-    
+
     population.addGenome(genome as any)
     expect(population.getBest()).toBe(genome)
     expect(population.getWorst()).toBe(genome)

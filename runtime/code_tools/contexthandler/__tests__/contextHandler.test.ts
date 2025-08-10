@@ -6,6 +6,7 @@ describe("contextHandler Tool", () => {
   const mockWorkflowInvocationId = "test-workflow-123"
   const mockToolExecutionContext: ToolExecutionContext = {
     workflowInvocationId: mockWorkflowInvocationId,
+    workflowVersionId: "test-v1",
     workflowFiles: [],
     expectedOutputType: undefined,
     mainWorkflowGoal: "test-goal",
@@ -42,6 +43,7 @@ describe("contextHandler Tool", () => {
       },
       {
         workflowInvocationId: mockWorkflowInvocationId,
+        workflowVersionId: "test-v1",
         workflowFiles: [],
         expectedOutputType: undefined,
         mainWorkflowGoal: "test-goal",

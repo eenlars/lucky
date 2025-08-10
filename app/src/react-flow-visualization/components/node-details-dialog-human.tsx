@@ -1,16 +1,13 @@
 "use client"
 
 import { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
-import { Badge } from "@/react-flow-visualization/components/ui/badge"
-import { Button } from "@/react-flow-visualization/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
-import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
+import { Input } from "@/react-flow-visualization/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -19,16 +16,22 @@ import {
   SelectValue,
 } from "@/react-flow-visualization/components/ui/select"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ACTIVE_CODE_TOOL_NAMES,
+  ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES,
+  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
-import { getActiveModelNames } from "@core/utils/spending/functions"
-import type { AllowedModelName } from "@core/utils/spending/models.types"
-import { X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
+import type {
+  AllowedModelName,
+  ModelPricingV2,
+} from "@core/utils/spending/models.types"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 export interface NodeDetailsDialogProps {
   open: boolean
@@ -44,23 +47,34 @@ export function NodeDetailsDialog({
   onSave,
 }: NodeDetailsDialogProps) {
   const [data, setData] = useState(nodeData)
-  const [newHandoff, setNewHandoff] = useState("")
-  const IconComponent = nodeData?.icon ? iconMapping[nodeData.icon] : undefined
+  const [isEditingId, setIsEditingId] = useState(false)
+  const [nodeIdDraft, setNodeIdDraft] = useState(nodeData.nodeId || "")
+  const edges = useAppStore((s) => s.edges)
 
-  // Auto-save on any change
+  // Prevent auto-save loop when props refresh local state
+  const skipNextAutosaveRef = useRef(false)
+
+  // Auto-save on user edits only
   useEffect(() => {
-    if (onSave && JSON.stringify(data) !== JSON.stringify(nodeData)) {
-      const timeoutId = setTimeout(() => {
-        onSave(nodeData.nodeId, data)
-      }, 500) // Debounce 500ms
-      return () => clearTimeout(timeoutId)
+    if (!onSave) return
+    if (skipNextAutosaveRef.current) {
+      skipNextAutosaveRef.current = false
+      return
     }
+    if (JSON.stringify(data) === JSON.stringify(nodeData)) return
+    const timeoutId = setTimeout(() => {
+      onSave(nodeData.nodeId, data)
+    }, 500)
+    return () => clearTimeout(timeoutId)
   }, [data, nodeData, onSave])
 
   // Reset when node changes
   useEffect(() => {
+    skipNextAutosaveRef.current = true
     setData(nodeData)
-  }, [nodeData.nodeId])
+    setNodeIdDraft(nodeData.nodeId || "")
+    setIsEditingId(false)
+  }, [nodeData])
 
   const addMcpTool = (toolName: string) => {
     if (
@@ -102,127 +116,246 @@ export function NodeDetailsDialog({
     }))
   }
 
-  const addHandoff = () => {
-    if (newHandoff.trim()) {
-      setData((prev) => ({
-        ...prev,
-        handOffs: [...(prev.handOffs || []), newHandoff.trim()],
-      }))
-      setNewHandoff("")
+  const toggleMcpTool = (toolName: string) => {
+    const idx = (data.mcpTools || []).indexOf(toolName as MCPToolName)
+    if (idx === -1) {
+      addMcpTool(toolName)
+    } else {
+      removeMcpTool(idx)
     }
   }
 
-  const removeHandoff = (index: number) => {
-    setData((prev) => ({
-      ...prev,
-      handOffs: prev.handOffs?.filter((_, i) => i !== index) || [],
-    }))
+  const toggleCodeTool = (toolName: string) => {
+    const idx = (data.codeTools || []).indexOf(toolName as CodeToolName)
+    if (idx === -1) {
+      addCodeTool(toolName)
+    } else {
+      removeCodeTool(idx)
+    }
+  }
+
+  const outEdgeCount = useMemo(
+    () => edges.filter((e) => e.source === nodeData.nodeId).length,
+    [edges, nodeData.nodeId]
+  )
+  const canSetHandOffType = (data.handOffs?.length || 0) > 1 || outEdgeCount > 1
+
+  // const addHandoff = () => {
+  //   if (newHandoff.trim()) {
+  //     setData((prev) => ({
+  //       ...prev,
+  //       handOffs: [...(prev.handOffs || []), newHandoff.trim()],
+  //     }))
+  //     setNewHandoff("")
+  //   }
+  // }
+
+  // const removeHandoff = (index: number) => {
+  //   setData((prev) => ({
+  //     ...prev,
+  //     handOffs: prev.handOffs?.filter((_, i) => i !== index) || [],
+  //   }))
+  // }
+
+  const selectedModelPricing: ModelPricingV2 | null = useMemo(() => {
+    if (!data?.modelName) return null
+    try {
+      return getModelV2(data.modelName)
+    } catch {
+      return null
+    }
+  }, [data?.modelName])
+
+  const formatDollars = (value?: number | null) => {
+    if (value === null || value === undefined) return "-"
+    return `$${new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 3,
+    }).format(value)}`
+  }
+
+  const commitNodeId = () => {
+    const trimmed = nodeIdDraft.trim()
+    if (trimmed && trimmed !== data.nodeId) {
+      setData((prev) => ({ ...prev, nodeId: trimmed }))
+    }
+    setIsEditingId(false)
+  }
+
+  const cancelNodeIdEdit = () => {
+    setNodeIdDraft(data.nodeId || "")
+    setIsEditingId(false)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden">
-        <DialogHeader className="pb-6">
-          <div className="flex items-center gap-4">
-            {IconComponent && (
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50">
-                <IconComponent className="h-6 w-6" />
-              </div>
-            )}
-            <div className="flex-1 space-y-1">
-              <DialogTitle className="text-xl">
-                {nodeData.title || "Node Configuration"}
-              </DialogTitle>
-              <DialogDescription className="text-base">
-                Configure how this node behaves and what tools it can use
-              </DialogDescription>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden">
+        <DialogHeader className="pb-4">
+          <div className="flex justify-center -mt-1">
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
+              Node editor
+            </span>
+          </div>
+          <VisuallyHidden>
+            <DialogTitle>Node settings</DialogTitle>
+          </VisuallyHidden>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              {isEditingId ? (
+                <Input
+                  value={nodeIdDraft}
+                  onChange={(e) => setNodeIdDraft(e.target.value)}
+                  onBlur={commitNodeId}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commitNodeId()
+                    if (e.key === "Escape") cancelNodeIdEdit()
+                  }}
+                  autoFocus
+                  placeholder="Node ID"
+                  className="h-10 text-base"
+                />
+              ) : (
+                <div
+                  className="h-10 flex items-center text-base text-slate-900 cursor-text"
+                  onClick={() => {
+                    setNodeIdDraft(data.nodeId || "")
+                    setIsEditingId(true)
+                  }}
+                  title="Click to edit ID"
+                >
+                  {data.nodeId}
+                </div>
+              )}
             </div>
           </div>
         </DialogHeader>
 
-        <div className="flex gap-16 h-full overflow-hidden">
+        <div className="grid grid-cols-2 gap-6 h-full overflow-hidden">
           {/* Left: Core Configuration */}
-          <div className="flex-1 space-y-12">
-            <div className="space-y-8">
-              <div className="space-y-3">
-                <h3 className="text-base font-normal">Description</h3>
-                <Textarea
-                  value={data.description || ""}
-                  onChange={(e) =>
-                    setData((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="What should this node do?"
-                  className="min-h-[80px] resize-none border-gray-200 text-sm leading-relaxed px-4 py-4 focus-visible:ring-offset-2"
-                />
-              </div>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm text-gray-700">Description</label>
+              <Textarea
+                value={data.description || ""}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="What should this node do?"
+                className="min-h-[64px] resize-none border-gray-200 text-sm leading-relaxed px-3 py-2 [text-indent:0] focus:border-gray-400"
+              />
+            </div>
 
-              <div className="space-y-3">
-                <h3 className="text-base font-normal">Instructions</h3>
-                <Textarea
-                  value={data.systemPrompt || ""}
-                  onChange={(e) =>
-                    setData((prev) => ({
-                      ...prev,
-                      systemPrompt: e.target.value,
-                    }))
-                  }
-                  placeholder="How should it accomplish this?"
-                  className="min-h-[160px] resize-none border-gray-200 text-sm leading-relaxed px-4 py-4 focus-visible:ring-offset-2"
-                />
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-700">Instructions</label>
+              <Textarea
+                value={data.systemPrompt || ""}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    systemPrompt: e.target.value,
+                  }))
+                }
+                placeholder="How should it accomplish this?"
+                className="min-h-[120px] resize-none border-gray-200 text-sm leading-relaxed px-3 py-2 [text-indent:0] focus:border-gray-400"
+              />
+            </div>
 
-              <div className="space-y-3">
-                <h3 className="text-base font-normal">Model</h3>
-                <Select
-                  value={data.modelName}
-                  onValueChange={(value) =>
-                    setData((prev) => ({
-                      ...prev,
-                      modelName: value as AllowedModelName,
-                    }))
-                  }
-                >
-                  <SelectTrigger className="w-full border-gray-200 focus-visible:ring-offset-2">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getActiveModelNames().map((modelName: string) => {
-                      const parts = modelName.split("/")
-                      const displayName = parts.length > 1 
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-700 w-20">Model</label>
+              <Select
+                value={data.modelName}
+                onValueChange={(value) =>
+                  setData((prev) => ({
+                    ...prev,
+                    modelName: value as AllowedModelName,
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full h-9 text-sm border-gray-200 focus:ring-0 focus:outline-none">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {getActiveModelNames().map((modelName: string) => {
+                    const parts = modelName.split("/")
+                    const displayName =
+                      parts.length > 1
                         ? parts[1]
                             .split("-")
-                            .map((word: string) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
+                            .map(
+                              (word: string) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
                             )
                             .join(" ")
                         : modelName
-                      return (
-                        <SelectItem key={modelName} value={modelName}>
-                          {displayName}
-                        </SelectItem>
-                      )
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
+                    return (
+                      <SelectItem key={modelName} value={modelName}>
+                        {displayName}
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
             </div>
+            {selectedModelPricing && (
+              <div className="pl-20 text-xs text-slate-600">
+                <span>
+                  Input {formatDollars(selectedModelPricing.input)}/1M
+                </span>
+                <span className="mx-2">•</span>
+                <span>
+                  Output {formatDollars(selectedModelPricing.output)}/1M
+                </span>
+              </div>
+            )}
 
-            <div className="space-y-6">
-              <h3 className="text-base font-normal">Connections</h3>
-              <div className="space-y-2">
-                {data.handOffs?.map((handoff, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded text-sm text-gray-500"
+            {canSetHandOffType && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-gray-700 w-20">Handoff</label>
+                  <Select
+                    value={data.handOffType || "sequential"}
+                    onValueChange={(value) =>
+                      setData((prev) => ({
+                        ...prev,
+                        handOffType:
+                          value === "parallel"
+                            ? ("parallel" as const)
+                            : undefined,
+                      }))
+                    }
                   >
-                    <span className="font-mono">{handoff}</span>
-                  </div>
+                    <SelectTrigger className="w-full h-9 text-sm border-gray-200 focus:ring-0 focus:outline-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sequential">
+                        Sequential (default)
+                      </SelectItem>
+                      <SelectItem value="parallel">
+                        Parallel (fan-out)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="text-sm text-gray-700">Connections</label>
+              <div className="flex flex-wrap gap-1.5">
+                {data.handOffs?.map((handoff, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] text-gray-700"
+                    title={handoff}
+                  >
+                    {handoff}
+                  </span>
                 ))}
                 {(!data.handOffs || data.handOffs.length === 0) && (
-                  <div className="p-3 border border-gray-200 rounded text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     Connections are managed in the graph view
                   </div>
                 )}
@@ -231,95 +364,129 @@ export function NodeDetailsDialog({
           </div>
 
           {/* Right: Tools */}
-          <div className="flex-1 space-y-8 border-l pl-16">
-            <div className="space-y-6">
+          <div className="space-y-4 border-l pl-6">
+            <div className="flex items-center justify-between">
               <h3 className="text-base font-normal">Tools</h3>
+            </div>
 
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <h4 className="text-sm text-gray-600">Web & API</h4>
-                  <div className="space-y-3">
-                    {/* Selected tools as pills */}
-                    {data.mcpTools && data.mcpTools.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {data.mcpTools.map((tool, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="bg-green-50 text-green-800 border border-green-100 hover:bg-green-100 cursor-pointer"
-                            onClick={() => removeMcpTool(index)}
+            <div className="space-y-6">
+              {/* MCP tools */}
+              <div className="space-y-2">
+                <h4 className="text-sm text-gray-600">Web & API</h4>
+                <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
+                  {ACTIVE_MCP_TOOL_NAMES.map((tool) => {
+                    const selected = data.mcpTools?.includes(tool)
+                    const description =
+                      ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                    return (
+                      <button
+                        key={tool}
+                        type="button"
+                        onClick={() => toggleMcpTool(tool)}
+                        aria-pressed={selected}
+                        className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
+                          selected
+                            ? "bg-slate-50"
+                            : "bg-white hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div
+                            className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
+                              selected
+                                ? "bg-slate-600 border-slate-600"
+                                : "bg-white border-gray-300"
+                            }`}
                           >
-                            {tool}
-                            <X className="h-3 w-3 ml-1" />
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Available tools as buttons */}
-                    <div className="flex flex-wrap gap-2">
-                      {ACTIVE_MCP_TOOL_NAMES.filter(
-                        (tool) => !data.mcpTools?.includes(tool)
-                      ).map((tool) => (
-                        <Button
-                          key={tool}
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => addMcpTool(tool)}
-                          className="text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-6 px-2 cursor-pointer"
-                        >
-                          {tool}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+                            {selected && (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="3"
+                                className="h-3 w-3"
+                              >
+                                <path d="M20 6 9 17l-5-5" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-slate-800">
+                              {tool}
+                            </div>
+                            <div className="text-xs text-slate-600 line-clamp-2">
+                              {description}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
+              </div>
 
-                <div className="space-y-3">
-                  <h4 className="text-sm text-gray-600">Code & Files</h4>
-                  <div className="space-y-3">
-                    {/* Selected tools as pills */}
-                    {data.codeTools && data.codeTools.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {data.codeTools.map((tool, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="bg-green-50 text-green-800 border border-green-100 hover:bg-green-100 cursor-pointer"
-                            onClick={() => removeCodeTool(index)}
+              {/* Code tools */}
+              <div className="space-y-2">
+                <h4 className="text-sm text-gray-600">Code & Files</h4>
+                <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
+                  {ACTIVE_CODE_TOOL_NAMES.map((tool) => {
+                    const selected = data.codeTools?.includes(tool)
+                    const description =
+                      ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                    return (
+                      <button
+                        key={tool}
+                        type="button"
+                        onClick={() => toggleCodeTool(tool)}
+                        aria-pressed={selected}
+                        className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
+                          selected
+                            ? "bg-slate-50"
+                            : "bg-white hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div
+                            className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
+                              selected
+                                ? "bg-slate-600 border-slate-600"
+                                : "bg-white border-gray-300"
+                            }`}
                           >
-                            {tool}
-                            <X className="h-3 w-3 ml-1" />
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Available tools as buttons */}
-                    <div className="flex flex-wrap gap-2">
-                      {ACTIVE_CODE_TOOL_NAMES.filter(
-                        (tool) => !data.codeTools?.includes(tool)
-                      ).map((tool) => (
-                        <Button
-                          key={tool}
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => addCodeTool(tool)}
-                          className="text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-6 px-2 cursor-pointer"
-                        >
-                          {tool}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+                            {selected && (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="3"
+                                className="h-3 w-3"
+                              >
+                                <path d="M20 6 9 17l-5-5" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-slate-800">
+                              {tool}
+                            </div>
+                            <div className="text-xs text-slate-600 line-clamp-2">
+                              {description}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </div>
 
             {data.status && data.status !== "initial" && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <h3 className="text-base font-normal">Status</h3>
-                <div className="p-3 border border-gray-200 rounded">
+                <div className="p-2.5 border border-gray-200 rounded">
                   <div className="text-sm capitalize">
                     {data.status || "ready"}
                   </div>
@@ -334,7 +501,7 @@ export function NodeDetailsDialog({
           </div>
         </div>
 
-        <div className="pt-4 border-t">
+        <div className="pt-3 border-t">
           <p className="text-xs text-muted-foreground text-center">
             Changes are saved automatically
           </p>

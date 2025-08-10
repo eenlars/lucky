@@ -121,19 +121,19 @@ vi.mock("@runtime/settings/constants", () => ({
     fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
+    root: "/tmp/together-test-root",
+    app: "/tmp/together-test-app",
+    runtime: "/tmp/together-test-runtime",
+    codeTools: "/tmp/together-test-codeTools",
+    setupFile: "/tmp/together-setupfile-test.json",
+    improver: "/tmp/together-test-improver.json",
     node: {
-      logging: "/test/node/logging",
+      logging: "/tmp/together-test-logging",
       memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
+        root: "/tmp/together-test-memory",
+        workfiles: "/tmp/together-test-workfiles",
       },
-      error: "/test/node/error",
+      error: "/tmp/together-test-error",
     },
   },
 }))
@@ -144,18 +144,26 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
+          single: vi
+            .fn()
+            .mockResolvedValue({ error: null, data: { id: "test-id" } }),
         }),
       }),
-      upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      upsert: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-      update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      update: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       delete: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       not: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
+      single: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: { id: "test-id" } }),
     }),
   },
 }))

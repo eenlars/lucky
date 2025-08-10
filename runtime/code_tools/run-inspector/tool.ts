@@ -313,12 +313,15 @@ const runInspector = defineTool({
             error: null,
           }
 
-        default:
+        default: {
+          const _exhaustiveCheck: never = action
+          void _exhaustiveCheck
           return {
             success: false,
             error: `Unknown action: ${action}`,
             data: null,
           }
+        }
       }
     } catch (error) {
       lgg.error("runInspector error:", error)

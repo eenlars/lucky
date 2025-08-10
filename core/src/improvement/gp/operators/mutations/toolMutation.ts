@@ -3,7 +3,7 @@
  */
 
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,

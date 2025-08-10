@@ -11,12 +11,14 @@ import { z, type ZodSchema, type ZodTypeAny } from "zod"
 // some run settings that might otherwise not be available.
 // quite handy!
 export interface ToolExecutionContext {
+  workflowId: string
+  workflowVersionId: string
   workflowInvocationId: string
   workflowFiles: WorkflowFile[]
   expectedOutputType: ExpectedOutputSchema | undefined
   mainWorkflowGoal: string
-  workflowId: string
 }
+export type InvocationContext = ToolExecutionContext
 
 /**
  * Configuration for the unified tool creation function
@@ -26,7 +28,7 @@ export interface DefineToolConfig<TParams = any, TResult = any> {
   params: ZodSchema<TParams>
   execute: (
     params: TParams,
-    externalContext?: ToolExecutionContext
+    externalContext: ToolExecutionContext
   ) => Promise<TResult> | TResult
 }
 

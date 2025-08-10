@@ -1,6 +1,6 @@
 // /core/node/generate/from-text.ts
 
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { AgentDescriptionsWithToolsSchema } from "@core/node/schemas/agentWithTools"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"

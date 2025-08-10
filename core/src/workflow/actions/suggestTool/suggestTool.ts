@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SuggestToolPrompts } from "@core/workflow/actions/suggestTool/suggestTool.p"
 import type { Workflow } from "@core/workflow/Workflow"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -14,7 +14,7 @@ export async function suggestNewTool(
     data: newTool,
     success,
     usdCost,
-  } = await Messages.sendAI({
+  } = await sendAI({
     messages: SuggestToolPrompts.suggestNewTool({
       problemDescription: bottleneck,
       workflowDescription: workflow.toString({ easyModelNames: true }),

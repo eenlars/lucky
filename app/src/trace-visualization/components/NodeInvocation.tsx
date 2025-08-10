@@ -7,10 +7,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
+import { getAgentSteps } from "@/trace-visualization/components/TimelineEntry"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
@@ -47,7 +48,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
   >(new Set())
 
   const extras = invocation.extras as NodeInvocationExtras | null
-  const NodeLogs: NodeLogs | undefined = extras?.toolUsage
+  const agentSteps: AgentSteps | undefined = getAgentSteps(extras)
   const updatedMemory = extras?.updatedMemory
 
   const durationMs: number | null = invocation.end_time
@@ -67,7 +68,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
       : { summary: "No input", original: null, isTruncated: false }
 
   const allToolOutputs =
-    NodeLogs?.outputs?.filter((output) => output.type === "tool") || []
+    agentSteps?.filter((output) => output.type === "tool") || []
   const availableTools = nodeDefinition?.tools || []
   const usedTools = allToolOutputs.map((output) => output.name) || []
   const allTools = Array.from(new Set([...availableTools, ...usedTools]))
@@ -375,7 +376,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
       <div className="w-1/3 border-r border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 overflow-y-auto">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Execution Steps ({NodeLogs?.outputs?.length || 0})
+            Execution Steps ({agentSteps?.length || 0})
           </h2>
         </div>
 
@@ -422,7 +423,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
               </div>
             )}
 
-          {NodeLogs?.outputs?.map((step, index) => {
+          {agentSteps?.map((step, index) => {
             const getStepIcon = (type: string) => {
               switch (type) {
                 case "tool":
@@ -578,7 +579,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             )
           })}
 
-          {(!NodeLogs?.outputs || NodeLogs.outputs.length === 0) && (
+          {(!agentSteps || agentSteps.length === 0) && (
             <div className="text-center text-gray-500 dark:text-gray-400 py-8">
               No execution steps recorded
             </div>
@@ -691,7 +692,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                           const stepIndex = parseInt(
                             selectedTool.replace("terminate-", "")
                           )
-                          const terminateStep = NodeLogs?.outputs?.[stepIndex]
+                          const terminateStep = agentSteps?.[stepIndex]
                           return terminateStep || {}
                         }
                         return (

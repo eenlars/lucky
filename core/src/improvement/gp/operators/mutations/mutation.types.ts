@@ -96,8 +96,11 @@ export function getEvolutionMutations(
       return ["cultural"]
     case "GP":
       return ["model", "prompt", "tool", "structure", "addNode", "deleteNode"]
-    default:
+    default: {
+      const _exhaustiveCheck: never = evolutionMode
+      void _exhaustiveCheck
       return []
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/models"
 import { SWEBenchLoader } from "./SWEBenchLoader"
 
@@ -22,7 +22,7 @@ const SAMPLE_INSTANCE_IDS = [
   "django__django-13230",
   "requests__requests-2835",
   "django__django-12747",
-]
+] as const
 
 // Extended SWE-bench instance interface based on the complete schema
 interface SWEBenchInstanceFull {

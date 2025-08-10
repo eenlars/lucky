@@ -13,11 +13,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [tsconfigPaths()],
     test: {
-      exclude: [
-        ...configDefaults.exclude,
-        "**/e2e/**",
-        "**/*.integration.test.ts",
-      ],
+      exclude: [...configDefaults.exclude, "**/e2e/**", "**/*.spec.test.ts"],
       environment: "node",
       globals: true,
       setupFiles: ["./src/test-setup.ts"],

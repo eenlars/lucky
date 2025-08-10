@@ -38,7 +38,7 @@ export default function AppContextMenu({ children }: { children: ReactNode }) {
               : undefined
             return (
               <button
-                key={item.title}
+                key={item.displayName}
                 onClick={() => onItemClick(item.id)}
                 className="w-full"
               >
@@ -46,7 +46,7 @@ export default function AppContextMenu({ children }: { children: ReactNode }) {
                   {IconComponent ? (
                     <IconComponent aria-label={item?.icon} />
                   ) : null}
-                  <span>New {item.title}</span>
+                  <span>New {item.displayName}</span>
                 </ContextMenuItem>
               </button>
             )

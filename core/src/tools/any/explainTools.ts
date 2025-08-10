@@ -1,20 +1,22 @@
-import { zodToJson } from "@core/messages/utils/zodToJson"
 import {
   isVercelAIStructure,
   isZodSchema,
 } from "@core/tools/utils/schemaDetection"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
+import { zodToJson } from "@core/utils/zod/zodToJson"
 import { CONFIG } from "@runtime/settings/constants"
 import type { ToolSet } from "ai"
-
-const argsEnabled = CONFIG.tools.showParameterSchemas
-const descriptionEnabled = false
 
 export function explainTools(tools: ToolSet): string {
   if (isNir(tools)) {
     return "No tools provided"
   }
+
+  // Read configuration at call-time so tests can toggle it between runs
+  const argsEnabled = CONFIG.tools.showParameterSchemas
+  // Always include description per tests/UX
+  const descriptionEnabled = true
 
   const toolKeys = Object.keys(tools) as (keyof ToolSet)[]
   const fullToolListWithArgs = toolKeys
@@ -29,7 +31,8 @@ export function explainTools(tools: ToolSet): string {
         } else if (isZodSchema(params)) {
           argsString = zodToJson(params)
         } else {
-          argsString = JSON.stringify(params)
+          // Gracefully handle missing params
+          argsString = params ? JSON.stringify(params) : "{}"
         }
       }
 

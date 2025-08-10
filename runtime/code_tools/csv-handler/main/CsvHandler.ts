@@ -433,8 +433,11 @@ export class CsvHandler {
           numValue4 <= compareValue4
         )
 
-      default:
+      default: {
+        const _exhaustiveCheck: never = condition.operator
+        void _exhaustiveCheck
         return false
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
@@ -33,7 +33,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
       content: `my malformed JSON response is: ${response}`,
     },
   ]
-  const result = await Messages.sendAI({
+  const result = await sendAI({
     messages,
     model: getDefaultModels().nano,
     mode: "text", // avoid circular dependency with structured mode

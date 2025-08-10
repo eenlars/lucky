@@ -1,15 +1,17 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   toolUsageToString,
   type StrategyResult,
-} from "@core/node/strategies/utils"
+} from "@core/messages/pipeline/agentStepLoop/utils"
+import type { SelectToolStrategyOptions } from "@core/messages/pipeline/selectTool/toolstrategy.types"
 import { explainTools } from "@core/tools/any/explainTools"
-import type { SelectToolStrategyOptions } from "@core/tools/any/selectToolStrategyV2"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
+import { obs } from "@core/utils/observability/obs"
 import { CONFIG } from "@runtime/settings/constants"
 import type { CoreMessage, ToolSet } from "ai"
 import chalk from "chalk"
+import { createHash } from "crypto"
 import { z } from "zod"
 
 const verbose = CONFIG.logging.override.Tools
@@ -29,220 +31,267 @@ export async function selectToolStrategyV3<T extends ToolSet>(
   strategyResult: StrategyResult<T> // the result of the strategy
   debugPrompt: string // debugprompt is to check what has been sent to the model.
 }> {
-  const { tools, messages, nodeLogs, roundsLeft, systemMessage, model } =
-    options
+  const {
+    tools,
+    identityPrompt,
+    agentSteps,
+    roundsLeft,
+    systemMessage,
+    model,
+  } = options
 
-  if (isNir(tools) || Object.keys(tools).length === 0) {
-    // this should never happen.
-    lgg.error("No tools available.", { tools, messages, roundsLeft })
-    return {
-      strategyResult: {
-        type: "terminate",
-        reasoning: "No tools available.",
-        usdCost: 0,
-      },
-      debugPrompt: "",
-    }
-  }
+  const shortHash = (s: string) =>
+    createHash("sha256").update(s).digest("hex").slice(0, 8)
 
-  const toolKeys = Object.keys(tools) as (keyof T)[]
-
-  // Use provided system message as primary directive
-  const primaryInstruction = systemMessage
-
-  // Define schema for structured output (V3 with mutation observer support)
-  const DecisionSchemaV3 = z.object({
-    type: z.enum(["tool", "terminate"]),
-    toolName:
-      toolKeys.length > 0
-        ? z
-            .enum(toolKeys as [string, ...string[]])
-            .optional()
-            .describe("only if using a tool")
-        : z.string().optional().describe("only if using a tool"),
-    reasoning: z.string(),
-    plan: z.string().optional().describe("only if using a tool"),
-    check: z
-      .string()
-      .nullable()
-      .optional()
-      .describe("What will I look for to know I succeeded?"),
-    expectsMutation: z
-      .boolean()
-      .optional()
-      .describe(
-        "Will this tool change the environment in a way that needs observation before taking more action?"
-      ),
-  })
-
-  // Check if previous reasoning indicated mutation expectation
-  let previousToolExpectedMutation = false
-  if (nodeLogs && nodeLogs.length > 0) {
-    const lastReasoningLog = nodeLogs.findLast(
-      (log) => log.type === "reasoning"
-    )
-    if (lastReasoningLog?.return.includes("[EXPECTS_MUTATION]")) {
-      previousToolExpectedMutation = true
-    }
-  }
-
-  // Analysis prompt
-  const analysisMessages: CoreMessage[] = [
-    {
-      role: "system",
-      content: `
-      #decide
-      Decide the next action:
-      - If the task is complete or no more tools needed, use {type: "terminate", reasoning: "..."}
-      - If a specific tool should be used next, use {type: "tool", toolName: "...", reasoning: "...", plan: "..."} and describe the plan
-      
-      #progress
-      Rounds left: ${roundsLeft}. Do not call the same tool twice in a row with the same intent unless the environment has changed or a new observation is strictly required.
-
-      #action-oriented tasks
-      Consider these as actionable tasks that require tools:
-      - Any instruction containing action verbs (ask, search, write, get, find, etc.) requires tool usage
-
-      #plan
-      In the plan, show what you want to do with the tool, and specifically how you want to use the tool.
-      you are given the the parameters of the tool, use them to plan your next action and say how you want to use the tool.
-      be very specific in your plan. think: would it be good to do a plan if i already tried it and it did not work?
-
-      #reasoning
-      In the reasoning, explain why you chose the tool and the plan.
-      Choose ONLY ONE tool if needed. Provide clear reasoning.
-
-      #tool calls
-      never run tool calls that are duplicate, or don't add value. you can also stop if you think it is necessary.
-      - if you have never used a tool before, you should probably use it
-      - if you do not want to use it, you should explain in reasoning why you think you should not use it
-      
-      #PRIMARY INSTRUCTION (MOST IMPORTANT)
-      This is the node's core instruction that MUST be followed:
-      ${primaryInstruction}
-      
-      CRITICAL: If the primary instruction contains action verbs (ask, find, search, write, create, etc.), 
-      you MUST use the appropriate tool. Do NOT terminate if there are explicit action instructions.
-      
-      If the primary instruction includes a sequence like "read/check THEN write/create", and you have already performed the read/check step (see past calls), you should select a write/create tool next to make progress.
-
-      RULE X: If the immediately preceding tool had sideEffect 'mutate', your next explicit choice should almost always be an 'observe' tool unless you can prove the observation is already in messages or there is no reason to observe.
-      ${previousToolExpectedMutation ? "\n      IMPORTANT: The previous tool execution indicated it would mutate the environment. You should strongly consider using an observation tool next to check the state before proceeding with further actions." : ""}
-
-      #conversation history (supporting context)
-      ${JSON.stringify(messages, null, 2)}
-
-      # the context of the current node
-      ${
-        !isNir(nodeLogs)
-          ? `
-      #these were the past calls (NOTE: if you see repeated calls, you should either terminate or do something else.):
-      ${toolUsageToString(nodeLogs, 1000)}`
-          : "no past calls"
+  return obs.span(
+    "strategy.selectTool.v3",
+    { model: String(model), rounds_left: roundsLeft ?? 0 },
+    async () => {
+      if (isNir(tools) || Object.keys(tools).length === 0) {
+        // this should never happen.
+        lgg.error("No tools available.", { tools, identityPrompt, roundsLeft })
+        const result: StrategyResult<T> = {
+          type: "terminate",
+          reasoning: "No tools available.",
+          usdCost: 0,
+        }
+        obs.event("strategy.selectTool:decision", {
+          type: result.type,
+          cost_usd: result.usdCost,
+        })
+        return { strategyResult: result, debugPrompt: "" }
       }
+
+      const toolKeys = Object.keys(tools) as (keyof T)[]
+
+      // Use provided system message as primary directive
+      const primaryInstruction = systemMessage
+
+      // Define schema for structured output (V3 with mutation observer support)
+      const DecisionSchemaV3 = z.object({
+        type: z.enum(["tool", "terminate"]),
+        toolName:
+          toolKeys.length > 0
+            ? z
+                .enum(toolKeys as [string, ...string[]])
+                .optional()
+                .describe("only if using a tool")
+            : z.string().optional().describe("only if using a tool"),
+        reasoning: z.string(),
+        plan: z.string().optional().describe("only if using a tool"),
+        check: z
+          .string()
+          .nullable()
+          .optional()
+          .describe("What will I look for to know I succeeded?"),
+        expectsMutation: z
+          .boolean()
+          .optional()
+          .describe(
+            "Will this tool change the environment in a way that needs observation before taking more action?"
+          ),
+      })
+
+      // Check if previous reasoning indicated mutation expectation
+      let previousToolExpectedMutation = false
+      if (agentSteps && agentSteps.length > 0) {
+        const lastReasoningLog = agentSteps.findLast(
+          (log) => log.type === "reasoning"
+        )
+        if (lastReasoningLog?.return.includes("[EXPECTS_MUTATION]")) {
+          previousToolExpectedMutation = true
+        }
+      }
+
+      const agentStepsString = !isNir(agentSteps)
+        ? toolUsageToString(agentSteps, 1000)
+        : "no past calls"
+
+      // Analysis prompt
+      const analysisMessages: CoreMessage[] = [
+        {
+          role: "system",
+          content: `
+      DECIDE NEXT ACTION
+      - Output must be JSON and match the schema (see "Structured Output Rules").
+      - Choose exactly one: {type: "tool"} or {type: "terminate"}.
+
+      OBJECTIVE
+      - Follow the Primary Instruction strictly.
+
+      PRIMARY INSTRUCTION
+      ${primaryInstruction}
+
+      CONTEXT
+      - Rounds left: ${roundsLeft}
+      - Conversation history:
+      ${identityPrompt}
+      - Past calls:
+      ${agentStepsString}
+      ${
+        previousToolExpectedMutation
+          ? `
+          - Note: previous tool expected mutation. Prefer an observation tool next.
+            Only skip if observation is already present or unnecessary, and justify.
+          `
+          : ""
+      }
+
+      GUIDELINES
+      - Use a tool for actionable requests (ask/search/get/find/write/etc.).
+      - Do not repeat the same tool with the same intent unless something changed
+        or a new observation is strictly required.
+      - Select only ONE tool when using a tool.
+      - Provide clear reasoning.
+      - Provide a concrete plan with explicit parameters.
+      - If a read/check step already happened, choose a write/create tool next.
+
+      DIAGNOSE & ADAPT (GENERIC)
+      - From recent outputs/logs, infer likely issues:
+        range constraints, required fields, type mismatches, quota/rate,
+        auth/state, or other.
+      - If a constraint is suspected, prefer one of:
+        (a) parameter-tuning with concrete argument changes,
+        (b) decomposition into smaller subgoals,
+        (c) observation/validation,
+        (d) termination with reasoning.
+      - Do not guess hidden values; base parameter changes on evidence.
+
+      STRUCTURED OUTPUT RULES
+      - Respond ONLY with raw JSON matching the schema.
+      - No wrappers (e.g., <json>).
+      - No commentary.
+      - No extra fields.
     `,
-    },
-    {
-      role: "user",
-      content: `
+        },
+        {
+          role: "user",
+          content: `
       Available tools:\n${explainTools(tools)}
     `,
-    },
-  ]
-
-  const debugPrompt = analysisMessages.map((m) => m.content).join("\n")
-
-  try {
-    const {
-      success,
-      data: decision,
-      usdCost,
-      error,
-    } = await sendAI({
-      model,
-      messages: analysisMessages,
-      mode: "structured",
-      schema: DecisionSchemaV3,
-      opts: {
-        reasoning: true,
-      },
-    })
-
-    if (success && decision) {
-      if (decision.plan && (verbose || verboseOverride)) {
-        console.log(chalk.bold("decision:", JSON.stringify(decision, null, 2)))
-        // console.log(chalk.blueBright.bold("plan:", decision.plan))
-        // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
-        // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
-
-        // console.log(chalk.yellow.bold("toolUsage:", toolUsage))
-        // console.log(chalk.cyan.bold("model:", model))
-        // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
-      }
-
-      if (decision.type === "terminate") {
-        return {
-          strategyResult: {
-            type: "terminate",
-            reasoning: decision.reasoning,
-            usdCost: usdCost ?? 0,
-          },
-          debugPrompt,
-        }
-      }
-
-      //likely bug: toolKeys.includes() check may fail due to type casting issues
-      if (
-        decision.type === "tool" &&
-        decision.toolName &&
-        String(decision.toolName) in tools
-      ) {
-        return {
-          strategyResult: {
-            type: "tool",
-            toolName: decision.toolName as keyof T,
-            reasoning: decision.reasoning,
-            plan: decision.plan || "",
-            check: decision.check || undefined,
-            expectsMutation: decision.expectsMutation,
-            usdCost: usdCost ?? 0,
-          },
-          debugPrompt,
-        }
-      }
-
-      // Invalid toolName
-      return {
-        strategyResult: {
-          type: "terminate",
-          reasoning: "Invalid tool selected: " + decision.toolName,
-          usdCost: usdCost ?? 0,
         },
-        debugPrompt,
+      ]
+
+      const debugPrompt = analysisMessages.map((m) => m.content).join("\n")
+      obs.event("strategy.selectTool:prompt", {
+        length: debugPrompt.length,
+        hash: shortHash(debugPrompt),
+      })
+
+      try {
+        const {
+          success,
+          data: decision,
+          usdCost,
+          error,
+        } = await sendAI({
+          model,
+          messages: analysisMessages,
+          mode: "structured",
+          schema: DecisionSchemaV3,
+          opts: {
+            reasoning: false,
+          },
+        })
+
+        if (success && decision) {
+          if (decision.plan && (verbose || verboseOverride)) {
+            console.log(
+              chalk.bold("decision:", JSON.stringify(decision, null, 2))
+            )
+            // console.log(chalk.blueBright.bold("plan:", decision.plan))
+            // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
+            // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
+
+            // console.log(chalk.yellow.bold("agentSteps:", agentSteps))
+            // console.log(chalk.cyan.bold("model:", model))
+            // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
+          }
+
+          if (decision.type === "terminate") {
+            const result: StrategyResult<T> = {
+              type: "terminate",
+              reasoning: decision.reasoning,
+              usdCost: usdCost ?? 0,
+            }
+            obs.event("strategy.selectTool:decision", {
+              type: result.type,
+              cost_usd: result.usdCost,
+            })
+            return { strategyResult: result, debugPrompt }
+          }
+
+          //likely bug: toolKeys.includes() check may fail due to type casting issues
+          if (
+            decision.type === "tool" &&
+            decision.toolName &&
+            String(decision.toolName) in tools
+          ) {
+            const result: StrategyResult<T> = {
+              type: "tool",
+              toolName: decision.toolName as keyof T,
+              reasoning: decision.reasoning,
+              plan: decision.plan || "",
+              check: decision.check || undefined,
+              expectsMutation: decision.expectsMutation,
+              usdCost: usdCost ?? 0,
+            }
+            obs.event("strategy.selectTool:decision", {
+              type: result.type,
+              tool: (result as any).toolName,
+              cost_usd: (result as any).usdCost ?? 0,
+            })
+            return { strategyResult: result, debugPrompt }
+          }
+
+          // Invalid toolName
+          {
+            const result: StrategyResult<T> = {
+              type: "terminate",
+              reasoning: "Invalid tool selected: " + decision.toolName,
+              usdCost: usdCost ?? 0,
+            }
+            obs.event("strategy.selectTool:decision", {
+              type: result.type,
+              cost_usd: result.usdCost,
+            })
+            return { strategyResult: result, debugPrompt }
+          }
+        }
+
+        // Handle failed request case
+        {
+          const result: StrategyResult<T> = {
+            type: "error",
+            reasoning: error ?? "Unknown error",
+            usdCost: usdCost ?? 0,
+          }
+          obs.event("strategy.selectTool:decision", {
+            type: result.type,
+            cost_usd: result.usdCost,
+          })
+          return { strategyResult: result, debugPrompt }
+        }
+      } catch (error) {
+        lgg.error("Error in selectToolStrategyV3:", error)
+        let message = "Error in strategy selection."
+        if (typeof error === "string") {
+          message = error
+        }
+        if (error instanceof Error) {
+          message = error.message
+        }
+        const result: StrategyResult<T> = {
+          type: "error",
+          reasoning: message,
+          usdCost: 0,
+        }
+        obs.event("strategy.selectTool:decision", {
+          type: result.type,
+          cost_usd: result.usdCost,
+        })
+        return { strategyResult: result, debugPrompt }
       }
     }
-
-    // Handle failed request case
-    return {
-      strategyResult: {
-        type: "error",
-        reasoning: error ?? "Unknown error",
-        usdCost: usdCost ?? 0,
-      },
-      debugPrompt,
-    }
-  } catch (error) {
-    lgg.error("Error in selectToolStrategyV3:", error)
-    let message = "Error in strategy selection."
-    if (typeof error === "string") {
-      message = error
-    }
-    if (error instanceof Error) {
-      message = error.message
-    }
-    return {
-      strategyResult: { type: "error", reasoning: message, usdCost: 0 },
-      debugPrompt,
-    }
-  }
+  )
 }

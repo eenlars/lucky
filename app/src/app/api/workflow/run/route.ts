@@ -41,13 +41,21 @@ export async function POST(req: NextRequest) {
       }
     )
 
+    if (!invokeResponse.ok) {
+      const errorText = await invokeResponse.text()
+      throw new Error(
+        `Workflow invoke failed: ${invokeResponse.status} - ${errorText}`
+      )
+    }
+
     const result = await invokeResponse.json()
     return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to run workflow",
+        error:
+          error instanceof Error ? error.message : "Failed to run workflow",
         data: undefined,
         usdCost: 0,
       },

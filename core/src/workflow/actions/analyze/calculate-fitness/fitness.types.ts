@@ -1,4 +1,4 @@
-import type { NodeLogs } from "@core/messages/api/processResponse"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { z } from "zod"
 
@@ -45,7 +45,7 @@ export const FitnessOfWorkflowSchema = z.object({
 })
 
 export type FitnessFunctionInput = {
-  nodeOutputs: NodeLogs[]
+  agentSteps: AgentSteps
   finalWorkflowOutput: string
   totalTime: number
   totalCost: number

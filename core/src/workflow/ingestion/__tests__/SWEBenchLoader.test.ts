@@ -35,7 +35,9 @@ describe("SWEBenchLoader", () => {
 
     // verify fetch was called with correct URL components
     const fetchCall = vi.mocked(global.fetch).mock.calls[0]
-    expect(fetchCall[0]).toContain("https://datasets-server.huggingface.co/rows")
+    expect(fetchCall[0]).toContain(
+      "https://datasets-server.huggingface.co/rows"
+    )
     expect(fetchCall[0]).toContain("dataset=princeton-nlp%2FSWE-bench")
     expect(fetchCall[0]).toContain("split=test")
 
@@ -158,7 +160,8 @@ describe("SWEBenchLoader", () => {
 
     // verify fetch was called with dev split
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("split=dev")
+      expect.stringContaining("split=dev"),
+      expect.anything()
     )
   })
 

@@ -2,7 +2,7 @@
  * Comprehensive test proving the complete fix for searchGoogleMaps validation error
  */
 
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
@@ -92,7 +92,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
 
   it("should show that parameter schemas are now visible to AI models", async () => {
     // Import zodToJson to test schema conversion
-    const { zodToJson } = await import("@core/messages/utils/zodToJson")
+    const { zodToJson } = await import("@core/utils/zod/zodToJson")
 
     // Test with the actual commonSchemas.resultCount used by searchGoogleMaps
     const resultCountSchema = z.number().max(20).default(10).nullish()

@@ -15,6 +15,7 @@ describe("setupCodeToolsForNode", () => {
     // Provide proper toolExecutionContext as required by the function
     const mockContext: ToolExecutionContext = {
       workflowInvocationId: "test-invocation-id",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       mainWorkflowGoal: "test goal",

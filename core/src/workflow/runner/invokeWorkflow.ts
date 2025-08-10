@@ -81,7 +81,10 @@ export async function invokeWorkflow(
     })
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
-    await workflow.prepareWorkflow(evalInput)
+    await workflow.prepareWorkflow(
+      evalInput,
+      CONFIG.workflow.prepareProblemMethod
+    )
 
     const { success, error, data: runResults, usdCost } = await workflow.run()
 

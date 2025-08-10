@@ -1,6 +1,6 @@
 {
   "cost": 0.004576,
-  "toolUsage": [
+  "agentSteps": [
     {
       "args": [
         {

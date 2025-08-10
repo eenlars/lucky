@@ -1,9 +1,9 @@
-import { sendAI } from "@core/messages/api/sendAI"
-import { zodToJson } from "@core/messages/utils/zodToJson"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
+import { zodToJson } from "@core/utils/zod/zodToJson"
 import {
   FitnessOfWorkflowSchema,
   type FitnessFunctionInput,
@@ -17,14 +17,14 @@ import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 
 export async function calculateFitness({
-  nodeOutputs,
+  agentSteps,
   totalTime,
   totalCost,
   evaluation,
   expectedOutputSchema,
   finalWorkflowOutput,
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
-  if (isNir(nodeOutputs) || isNir(finalWorkflowOutput)) {
+  if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
     lgg.warn("No outputs found")
     return R.error("No outputs to evaluate", 0)
   }
@@ -34,7 +34,7 @@ export async function calculateFitness({
     : undefined
 
   const outputStr =
-    llmify(JSON.stringify(nodeOutputs)) + "\n\n" + finalWorkflowOutput
+    llmify(JSON.stringify(agentSteps)) + "\n\n" + finalWorkflowOutput
   const systemPrompt = `
 You are an expert evaluator for data-extraction tasks.
 

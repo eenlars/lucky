@@ -229,17 +229,20 @@ mockFn.mockRejectedValue(new Error("test error"))
 // ❌ Fighting global mocks - fragile and complex
 vi.unmock("../Population") // May not work if paths don't match
 
-// ✅ Isolated minimal mocking - robust and clear  
+// ✅ Isolated minimal mocking - robust and clear
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: { info: vi.fn(), log: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }))
 vi.mock("@runtime/settings/constants", () => ({
-  CONFIG: { /* minimal config needed */ },
+  CONFIG: {
+    /* minimal config needed */
+  },
 }))
 // Only mock what the class actually needs
 ```
 
 **Fix for Select.test.ts specifically:** Use separate test file or doMock pattern:
+
 ```typescript
 // Use dynamic imports with doMock for conflicting modules
 beforeEach(async () => {

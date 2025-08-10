@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { rcaPrompt } from "@core/prompts/rca"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
@@ -11,17 +11,17 @@ import {
 import { getDefaultModels } from "@runtime/settings/models"
 
 export async function calculateFeedback({
-  nodeOutputs,
+  agentSteps,
   evaluation,
 }: Omit<
   FitnessFunctionInput,
   "totalTime" | "totalCost" | "finalWorkflowOutput"
 >): Promise<RS<string>> {
-  if (isNir(nodeOutputs)) {
+  if (isNir(agentSteps)) {
     lgg.warn("No outputs found")
     return R.error("No outputs to evaluate", 0)
   }
-  const outputStr = llmify(JSON.stringify(nodeOutputs))
+  const outputStr = llmify(JSON.stringify(agentSteps))
   const systemPrompt = `.
     ${rcaPrompt}
 

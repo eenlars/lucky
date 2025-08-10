@@ -3,7 +3,7 @@ import {
   isTextProcessed,
   isToolProcessed,
   type ProcessedResponse,
-} from "@core/messages/api/processResponse.types"
+} from "@core/messages/api/vercel/processResponse.types"
 
 /**
  * Extracts tool logs from a ProcessedResponse in a format suitable for makeLearning
@@ -16,8 +16,8 @@ export const extractToolLogs = (
     return processedResponse.content
   }
 
-  if (isToolProcessed(processedResponse) && processedResponse.toolUsage) {
-    return processedResponse.toolUsage.outputs
+  if (isToolProcessed(processedResponse) && processedResponse.agentSteps) {
+    return processedResponse.agentSteps
       .map((o) => `${o.type}: ${o.return}`)
       .join("\n")
   }

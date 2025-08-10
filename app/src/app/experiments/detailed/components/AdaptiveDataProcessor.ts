@@ -1,4 +1,5 @@
 // Note: JSON import will be handled by dynamic loading
+import type { Condition } from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/types"
 
 export interface AdaptiveBehavior {
   initialFailure: boolean
@@ -20,7 +21,7 @@ export interface ToolCall {
 export interface AdaptiveResult {
   model: string
   scenario: string
-  condition: "vague" | "clear"
+  condition: Condition
   toolCalls: ToolCall[]
   finalResponse: string
   success: boolean
@@ -31,7 +32,7 @@ export interface ProcessedData {
   results: AdaptiveResult[]
   models: string[]
   scenarios: string[]
-  conditions: ["vague", "clear"]
+  conditions: Condition[]
   successRateMatrix: Array<{
     model: string
     vague: number
@@ -41,7 +42,7 @@ export interface ProcessedData {
   behaviorMetrics: Array<{
     model: string
     scenario: string
-    condition: string
+    condition: Condition
     retryAttempts: number
     toolCalls: number
     success: boolean
@@ -49,7 +50,7 @@ export interface ProcessedData {
   }>
   toolSequenceData: Array<{
     model: string
-    condition: string
+    condition: Condition
     sequence: string[]
     success: boolean
     pattern: "successful_chunking" | "repeated_failures" | "immediate_success"
@@ -64,7 +65,7 @@ export function processAdaptiveData(): ProcessedData {
   // Extract unique values
   const models = Array.from(new Set(results.map((r) => r.model)))
   const scenarios = Array.from(new Set(results.map((r) => r.scenario)))
-  const conditions: ["vague", "clear"] = ["vague", "clear"]
+  const conditions: Condition[] = ["vague", "clear"]
 
   // Calculate success rate matrix
   const successRateMatrix = models.map((model) => {
