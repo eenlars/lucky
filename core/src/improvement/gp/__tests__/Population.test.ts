@@ -50,7 +50,7 @@ vi.mock("@core/improvement/gp/resources/utils", () => ({
 // Clear any existing Population mock from other test files
 vi.unmock("../Population")
 
-// Mock Genome class to avoid complex genome creation  
+// Mock Genome class to avoid complex genome creation
 vi.mock("../Genome", () => ({
   Genome: {
     createRandom: vi.fn().mockImplementation(async () => ({
@@ -92,7 +92,7 @@ const createMockEvaluationInputGeneric = () => ({
   type: "text" as const,
   goal: "test evolution goal",
   question: "test question",
-  answer: "test evaluation criteria", 
+  answer: "test evaluation criteria",
   workflowId: "test-workflow-id",
 })
 
@@ -115,7 +115,7 @@ describe("Population", () => {
 
   it("should initialize population container correctly", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -133,20 +133,20 @@ describe("Population", () => {
     })
 
     const population = new Population(config, mockRunService as any)
-    
+
     // Test basic population setup (before initialization)
     expect(population.size()).toBe(0)
     expect(population.getGenomes()).toEqual([])
     expect(population.getGenerationNumber()).toBe(0)
-    
-    // Test that we can add genomes manually to simulate initialization 
+
+    // Test that we can add genomes manually to simulate initialization
     const mockGenomes = Array.from({ length: 5 }, (_, i) => ({
       getWorkflowVersionId: () => `genome${i}`,
       getFitness: () => ({ score: 0.5, valid: true }),
       getFitnessScore: () => 0.5,
       isEvaluated: true,
     }))
-    
+
     population.setPopulation(mockGenomes as any)
     expect(population.size()).toBe(5)
     expect(population.getGenomes()).toHaveLength(5)
@@ -154,7 +154,7 @@ describe("Population", () => {
 
   it("should handle population setup with different configurations", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -168,11 +168,11 @@ describe("Population", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 3 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Test configuration is stored correctly
     expect(population.size()).toBe(0)
     expect(population.getGenomes()).toEqual([])
-    
+
     // Test that we can manually set population size to match config
     const mockGenomes = Array.from({ length: 3 }, (_, i) => ({
       getWorkflowVersionId: () => `workflow-genome${i}`,
@@ -180,7 +180,7 @@ describe("Population", () => {
       getFitnessScore: () => 0.6 + i * 0.1,
       isEvaluated: true,
     }))
-    
+
     population.setPopulation(mockGenomes as any)
     expect(population.size()).toBe(3)
     expect(population.getGenomes()).toHaveLength(3)
@@ -188,7 +188,7 @@ describe("Population", () => {
 
   it("should handle comprehensive genome operations", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -197,7 +197,7 @@ describe("Population", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 10 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Create realistic test genomes
     const genomes = [
       {
@@ -222,30 +222,30 @@ describe("Population", () => {
         setFitnessAndFeedback: vi.fn(),
       },
     ]
-    
+
     population.setPopulation(genomes as any)
-    
+
     // Test basic operations
     expect(population.size()).toBe(3)
     expect(population.getGenomes()).toHaveLength(3)
-    
+
     // Test getBest/getWorst
     const best = population.getBest()
     expect(best.getFitnessScore()).toBe(0.9)
-    
+
     const worst = population.getWorst()
     expect(worst.getFitnessScore()).toBe(0.5)
-    
+
     // Test getTop sorting
     const top2 = population.getTop(2)
     expect(top2).toHaveLength(2)
     expect(top2[0].getFitnessScore()).toBe(0.9) // Highest first
     expect(top2[1].getFitnessScore()).toBe(0.7)
-    
+
     // Test getValidGenomes
     const validGenomes = population.getValidGenomes()
     expect(validGenomes).toHaveLength(3) // All are evaluated
-    
+
     // Test statistics
     const stats = population.getStats()
     expect(stats).toBeDefined()
@@ -256,7 +256,7 @@ describe("Population", () => {
 
   it("should handle unevaluated genomes correctly", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -265,7 +265,7 @@ describe("Population", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 5 })
     const population = new Population(config, mockRunService as any)
-    
+
     const genomes = [
       {
         getWorkflowVersionId: () => "evaluated",
@@ -280,14 +280,14 @@ describe("Population", () => {
         isEvaluated: false,
       },
     ]
-    
+
     population.setPopulation(genomes as any)
-    
+
     // Test filtering methods
     const validGenomes = population.getValidGenomes()
     expect(validGenomes).toHaveLength(1)
     expect(validGenomes[0].getWorkflowVersionId()).toBe("evaluated")
-    
+
     const unevaluated = population.getUnevaluated()
     expect(unevaluated).toHaveLength(1)
     expect(unevaluated[0].getWorkflowVersionId()).toBe("unevaluated")
@@ -295,7 +295,7 @@ describe("Population", () => {
 
   it("should support diversity operations safely", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -304,18 +304,18 @@ describe("Population", () => {
 
     const config = createMockEvolutionSettings({ populationSize: 5 })
     const population = new Population(config, mockRunService as any)
-    
+
     // Test diversity methods exist and don't crash with empty population
     expect(typeof population.findSimilarGenomes).toBe("function")
     expect(typeof population.pruneSimilar).toBe("function")
-    
+
     expect(() => population.pruneSimilar(0.1)).not.toThrow()
     expect(population.size()).toBe(0)
   })
 
   it("should handle edge cases and errors comprehensively", async () => {
     const { Population } = await import("@core/improvement/gp/Population")
-    
+
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
       getCurrentGenerationId: vi.fn().mockReturnValue(0),
@@ -324,24 +324,24 @@ describe("Population", () => {
 
     // Test zero population size
     const zeroPopulation = new Population(
-      createMockEvolutionSettings({ populationSize: 0 }), 
+      createMockEvolutionSettings({ populationSize: 0 }),
       mockRunService as any
     )
     expect(zeroPopulation.size()).toBe(0)
     expect(zeroPopulation.getGenomes()).toEqual([])
-    
+
     // Test error cases
     expect(() => zeroPopulation.getBest()).toThrow("Population is empty")
-    expect(() => zeroPopulation.getWorst()).toThrow("Population is empty") 
+    expect(() => zeroPopulation.getWorst()).toThrow("Population is empty")
     expect(() => zeroPopulation.getStats()).toThrow("Population is empty")
-    
+
     // Test successful edge cases
     expect(zeroPopulation.removeGenome("non-existent")).toBe(false)
     expect(zeroPopulation.getTop(10)).toEqual([])
-    
+
     // Test single genome case
     const singlePopulation = new Population(
-      createMockEvolutionSettings({ populationSize: 1 }), 
+      createMockEvolutionSettings({ populationSize: 1 }),
       mockRunService as any
     )
     const genome = {
@@ -350,7 +350,7 @@ describe("Population", () => {
       getFitnessScore: () => 0.5,
       isEvaluated: true,
     }
-    
+
     singlePopulation.addGenome(genome as any)
     expect(singlePopulation.getBest()).toBe(genome)
     expect(singlePopulation.getWorst()).toBe(genome)

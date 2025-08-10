@@ -2,8 +2,8 @@ import { lgg } from "@core/utils/logging/Logger" // src/core/node/WorkFlowNode.t
 
 import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/node/selfImproveHelper"
 import type { Payload } from "@core/messages/MessagePayload"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
@@ -16,10 +16,8 @@ import type {
 } from "@core/workflow/schema/workflow.types"
 import chalk from "chalk"
 import { createHash } from "crypto"
-import {
-  InvocationPipeline,
-  type NodeInvocationCallContext,
-} from "./InvocationPipeline"
+import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
+import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
 import { ToolManager } from "./toolManager"
 
 export interface NodeInvocationResult {
@@ -202,33 +200,23 @@ export class WorkFlowNode {
 
       // Create invocation context
       const context: NodeInvocationCallContext = {
-        nodeId: this.nodeId,
-        startTime: new Date().toISOString(),
+        nodeConfig: this.config,
+        nodeMemory: this.getMemory(),
         workflowMessageIncoming,
         workflowInvocationId,
-        handOffs: this.config.handOffs,
-        handOffType: this.config.handOffType,
-        nodeDescription: this.config.description,
-        nodeSystemPrompt: this.config.systemPrompt,
-        nodeMemory: this.getMemory(),
-        replyMessage: null,
-        workflowFiles,
         workflowVersionId,
+        workflowId,
+        workflowFiles,
         expectedOutputType,
         mainWorkflowGoal,
-        workflowId,
-        workflowConfig, // Added for hierarchical role inference
-        model: this.config.modelName,
+        startTime: new Date().toISOString(),
+        workflowConfig,
         skipDatabasePersistence,
+        toolStrategyOverride: "v3" as const,
       }
 
       // Create pipeline
-      const pipeline = new InvocationPipeline(
-        context,
-        this.toolManager,
-        this.config.modelName,
-        true
-      )
+      const pipeline = new InvocationPipeline(context, this.toolManager, true)
 
       // Execute pipeline steps sequentially
       await pipeline.prepare()

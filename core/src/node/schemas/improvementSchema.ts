@@ -1,10 +1,10 @@
 import { memoryInstructions } from "@core/node/schemas/memoryInstructions.p"
-import { MemorySchemaOptional } from "@core/node/schemas/memorySchema"
 import {
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
 import { llmify } from "@core/utils/common/llmify"
+import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import {
   ACTIVE_MODEL_NAMES,
   ACTIVE_MODEL_NAMES_WITH_INFO,

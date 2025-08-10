@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("ai", () => ({

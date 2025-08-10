@@ -1,6 +1,21 @@
 // genome.ts
 /**
- * Simple Genome implementation for prompt evolution
+ * Genome - Core abstraction for workflow genomes in genetic programming
+ *
+ * This class extends Workflow to provide genetic programming capabilities:
+ * - Manages workflow configurations as genomes that can be evolved
+ * - Handles fitness evaluation and feedback from workflow execution
+ * - Supports creation of random/prepared genomes for initial population
+ * - Provides genome-specific operations like hashing and reset
+ *
+ * Key responsibilities:
+ * - WorkflowGenome persistence and conversion to/from WorkflowConfig
+ * - Fitness and feedback management from evaluation results
+ * - Database integration for workflow version tracking
+ * - Evolution context management across generations
+ *
+ * @see Workflow - Base class providing workflow execution capabilities
+ * @see WorkflowGenome - Raw genome representation structure
  */
 
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
@@ -35,6 +50,10 @@ import type { EvolutionContext } from "./resources/types"
 /**
  * A Genome *is* a workflow: it carries the workflow-level behaviour supplied by
  * `Workflow` and adds every genome-specific helper we already had.
+ *
+ * TODO: Consider separating genome-specific logic from workflow execution logic
+ * TODO: Add genome validation before operations (fitness assignment, crossover)
+ * TODO: Implement genome serialization/deserialization for checkpointing
  */
 export class Genome extends Workflow {
   /** Persist the native representation so fingerprinting & hashing stay simple */
@@ -144,8 +163,8 @@ export class Genome extends Workflow {
     evolutionMode: FlowEvolutionMode
   }): Promise<RS<Genome>> {
     try {
-      // needs work: typo "bassed" should be "based"
-      // do the randomness based on poisson distribution
+      // TODO: fix typo "bassed" -> "based" in comment above
+      // apply poisson distribution for mutation aggression randomness
       const randomness = EvolutionUtils.poisson(1, 4, 5)
       if (CONFIG.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
@@ -181,7 +200,8 @@ export class Genome extends Workflow {
         return formalizedWorkflow
       }
       const activeModels = getActiveModelNames()
-      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
+      const randomModel =
+        activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `
@@ -214,8 +234,8 @@ export class Genome extends Workflow {
       genome.addCost(generatedWorkflowForGenomeFromIdea.usdCost || 0)
       return R.success(genome, usdCost)
     } catch (e) {
-      // needs work: use lgg.error instead of console.error for consistency
-      //likely bug: using console.error instead of lgg.error breaks logging consistency
+      // TODO: implement proper error handling with lgg.error throughout
+      // TODO: add metrics tracking for random genome generation failures
       lgg.error(
         "failed to create random genome",
         e,
@@ -259,7 +279,8 @@ export class Genome extends Workflow {
       const enhancedAnalysis = problemAnalysis
 
       const activeModels = getActiveModelNames()
-      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
+      const randomModel =
+        activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `
@@ -335,7 +356,9 @@ export class Genome extends Workflow {
     return this.genome
   }
 
-  //todo-leak :: Genome stores evaluation results that persist through improvement operations
+  // TODO: fix memory leak - genome evaluation results persist through improvement operations
+  // TODO: implement proper cleanup of evaluation results between generations
+  // TODO: consider using WeakMap for storing transient evaluation data
   setFitnessAndFeedback({
     fitness,
     feedback,
@@ -391,6 +414,10 @@ export class Genome extends Workflow {
 
   /**
    * Reset genome for new generation - extends Workflow.reset() to also reset genomeEvaluationResults
+   *
+   * TODO: ensure all genome state is properly cleared (check for missed fields)
+   * TODO: add validation that reset was successful
+   * TODO: consider implementing a genome state snapshot/restore mechanism
    */
   reset(newEvolutionContext: EvolutionContext): void {
     super.reset(newEvolutionContext)

@@ -1,7 +1,7 @@
-import type { ProcessedResponse } from "@core/messages/api/processResponse.types"
+import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
-import type { NodeInvocationCallContext } from "../InvocationPipeline"
+import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { handleSuccess } from "../responseHandler"
 
 // Mock dependencies
@@ -55,7 +55,6 @@ describe("responseHandler - Parallel Handoff Logic", () => {
     handOffType?: "conditional" | "sequential" | "parallel",
     handOffs: string[] = ["node1", "node2"]
   ): NodeInvocationCallContext => ({
-    nodeId: "test-node",
     startTime: new Date().toISOString(),
     workflowMessageIncoming: {
       messageId: "test-message-id",
@@ -64,17 +63,24 @@ describe("responseHandler - Parallel Handoff Logic", () => {
       payload: { kind: "sequential", prompt: "test" },
     } as any,
     workflowInvocationId: "test-workflow-invocation-id",
-    handOffs,
-    handOffType,
-    nodeDescription: "test description",
-    nodeSystemPrompt: "test system prompt",
-    replyMessage: null,
     workflowVersionId: "test-version-id",
+    nodeConfig: {
+      nodeId: "test-node",
+      handOffs,
+      handOffType,
+      description: "test description",
+      systemPrompt: "test system prompt",
+      modelName: getDefaultModels().default,
+      mcpTools: [],
+      codeTools: [],
+      waitingFor: [],
+    },
+    nodeMemory: {},
     mainWorkflowGoal: "test goal",
-    model: getDefaultModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",
+    workflowConfig: undefined,
   })
 
   const createMockResponse = (): ProcessedResponse => ({

@@ -64,7 +64,12 @@ export async function invokeNode(
       seq: 0,
       payload: {
         kind: "sequential",
-        prompt: prompt,
+        berichten: [
+          {
+            type: "text",
+            text: prompt,
+          },
+        ],
       },
       wfInvId: workflowInvocationId,
       skipDatabasePersistence,
@@ -73,6 +78,7 @@ export async function invokeNode(
     // Create tool execution context
     const toolContext: ToolExecutionContext = {
       workflowInvocationId,
+      workflowVersionId,
       workflowFiles,
       expectedOutputType,
       mainWorkflowGoal,
@@ -86,7 +92,6 @@ export async function invokeNode(
     // Invoke node
     const result = await node.invoke({
       workflowMessageIncoming: message,
-      workflowVersionId,
       skipDatabasePersistence,
       ...toolContext,
     })

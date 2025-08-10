@@ -1,10 +1,23 @@
-import { sendAI } from "@core/messages/api/sendAI"
-import type { AgentStep } from "@core/messages/types/AgentStep.types"
-import { MemoryResponseSchema } from "@core/node/schemas/memorySchema"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import {
+  MemoryResponseSchema,
+  type NodeMemory,
+} from "@core/utils/memory/memorySchema"
 import { getDefaultModels } from "@runtime/settings/models"
 import { isNir } from "../utils/common/isNir"
+
+export const MEMORY_FORMAT = `
+  <concise_label>: "<type_of_memory>:<one_sentence_insight>:<usage_count>:<timestamp>:<rating>",  ...
+  example:
+  {
+    "google_scholar": "tool_usage:user used the google scholar tool:7:2025-07-20T12:00:00Z:5",
+    "weather_lookup": "tool_limitation:do not use it, it is not accurate:1:2025-07-19T12:00:00Z:-2",
+    ...
+  }
+`
 
 export const makeLearning = async ({
   toolLogs,
@@ -13,10 +26,10 @@ export const makeLearning = async ({
 }: {
   toolLogs: string
   nodeSystemPrompt: string
-  currentMemory: Record<string, string>
+  currentMemory: NodeMemory
 }): Promise<{
-  learning: AgentStep<any>
-  updatedMemory: Record<string, string>
+  agentStep: AgentStep
+  updatedMemory: NodeMemory
 }> => {
   const date = new Date().toISOString()
   // Ask AI to extract memory updates
@@ -40,19 +53,13 @@ ${JSON.stringify(toolLogs, null, 2)}
 • Insights must be true and non-trivial; omit guesses or hallucinations.
 
 there are different types of memories:
-- tool_limitation
+- tool_limitation: when a tool is not useful for the task
+- tool_usage: when a tool is used to solve the task
+- ...
+
 
 # FORMAT
-{
-  <concise_label>: "<type_of_memory>:<one_sentence_insight>:<usage_count>:<timestamp>:<rating>",  ...
-}
-
-example:
-{
-  "google_scholar": "tool_usage:user used the google scholar tool:7:2025-07-20T12:00:00Z:5",
-  "weather_lookup": "tool_limitation:do not use it, it is not accurate:1:2025-07-19T12:00:00Z:-2",
-  ...
-}
+${MEMORY_FORMAT}
 
 the current date is ${date}
 
@@ -97,7 +104,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
             .join("\n")
         : ""
       return {
-        learning: {
+        agentStep: {
           type: "learning",
           return: learningString,
         },
@@ -105,7 +112,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
       }
     }
     return {
-      learning: {
+      agentStep: {
         type: "error",
         return:
           "error when making learning" + JSON.stringify(memoryResponse.error),
@@ -115,7 +122,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
   } catch (error) {
     lgg.error("Error making learning", error)
     return {
-      learning: {
+      agentStep: {
         type: "error",
         return: "error when making learning" + JSON.stringify(error),
       },

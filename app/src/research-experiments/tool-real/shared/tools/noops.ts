@@ -7,7 +7,7 @@ import { tool } from "ai"
 
 const NoopParams = z.object({})
 
-export const noopSpecs = Array.from({ length: 100 }, (_, i) => 
+export const noopSpecs = Array.from({ length: 100 }, (_, i) =>
   tool({
     description: `Does nothing useful #${i}`,
     parameters: NoopParams,

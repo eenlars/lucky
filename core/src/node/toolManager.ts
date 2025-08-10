@@ -42,12 +42,13 @@ export class ToolManager {
     }
 
     try {
-      const [mcp, code] = await Promise.all([
-        setupMCPForNode(this.mcpToolNames, this.workflowVersionId),
-        setupCodeToolsForNode(this.codeToolNames), // todo-this will never execute because we are not passing in a toolExecutionContext
-      ])
+      // Initialize MCP tools eagerly; defer code tools until per-invocation context is available
+      const mcp = await setupMCPForNode(
+        this.mcpToolNames,
+        this.workflowVersionId
+      )
       this.mcpTools = mcp
-      this.codeTools = code
+      this.codeTools = {}
       this.toolsInitialized = true
 
       const mcpToolNames = Object.keys(this.mcpTools)

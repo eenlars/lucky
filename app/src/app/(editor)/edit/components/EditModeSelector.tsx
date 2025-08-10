@@ -15,6 +15,8 @@ import {
   WorkflowRunnerProvider,
   useWorkflowRunnerContext,
 } from "@/react-flow-visualization/hooks/workflow-runner-context"
+import { Button } from "@/ui/button"
+import { Play } from "lucide-react"
 import JSONEditor from "./JSONEditor"
 
 type EditMode = "graph" | "json"
@@ -118,118 +120,90 @@ export default function EditModeSelector({
       const { setPromptDialogOpen } = useWorkflowRunnerContext()
       return (
         <div className="flex items-center space-x-2 ml-3">
-          <button
+          <Button
             onClick={() => setPromptDialogOpen(true)}
-            className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
+            className="cursor-pointer px-2"
           >
-            ▶️ Run with prompt
-          </button>
+            <Play /> Run with Prompt
+          </Button>
         </div>
       )
     }
 
+    const HeaderRight = (
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={organizeLayout}
+          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
+        >
+          📐 Organize
+        </button>
+        <GraphHeaderButtons />
+        <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+          <button
+            onClick={() => handleModeChange("graph")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${"bg-white text-gray-900 shadow-sm"}`}
+          >
+            🔗 Graph Mode
+          </button>
+          <button
+            onClick={() => handleModeChange("json")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
+          >
+            📝 JSON Mode
+          </button>
+        </div>
+      </div>
+    )
+
     return (
       <WorkflowRunnerProvider>
-        <div className="h-full flex flex-col">
-          <div className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Workflow Editor
-                </h1>
-                {workflowVersion && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    Version: {workflowVersion.wf_version_id}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={organizeLayout}
-                  className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
-                >
-                  📐 Organize
-                </button>
-
-                <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-                  <button
-                    onClick={() => handleModeChange("graph")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${"bg-white text-gray-900 shadow-sm"}`}
-                  >
-                    🔗 Graph Mode
-                  </button>
-                  <button
-                    onClick={() => handleModeChange("json")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-                  >
-                    📝 JSON Mode
-                  </button>
-                </div>
-
-                <GraphHeaderButtons />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-hidden">
-            <ReactFlowProvider>
-              <SidebarLayout>
-                <AppContextMenu>
-                  <Workflow
-                    workflowVersionId={workflowVersion?.wf_version_id}
-                  />
-                </AppContextMenu>
-              </SidebarLayout>
-            </ReactFlowProvider>
-          </div>
-        </div>
+        <ReactFlowProvider>
+          <SidebarLayout
+            title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
+            right={HeaderRight}
+          >
+            <AppContextMenu>
+              <Workflow workflowVersionId={workflowVersion?.wf_version_id} />
+            </AppContextMenu>
+          </SidebarLayout>
+        </ReactFlowProvider>
       </WorkflowRunnerProvider>
     )
   }
 
   // JSON mode
-  return (
-    <div className="h-full flex flex-col">
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Workflow Editor
-            </h1>
-            {workflowVersion && (
-              <p className="text-sm text-gray-600 mt-1">
-                Version: {workflowVersion.wf_version_id}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-              <button
-                onClick={() => handleModeChange("graph")}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-              >
-                🔗 Graph Mode
-              </button>
-              <button
-                onClick={() => handleModeChange("json")}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
-              >
-                📝 JSON Mode
-              </button>
-            </div>
-          </div>
-        </div>
+  const JsonHeaderRight = (
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+        <button
+          onClick={() => handleModeChange("graph")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
+        >
+          🔗 Graph Mode
+        </button>
+        <button
+          onClick={() => handleModeChange("json")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
+        >
+          📝 JSON Mode
+        </button>
       </div>
+    </div>
+  )
 
-      <div className="flex-1 overflow-hidden">
+  return (
+    <ReactFlowProvider>
+      <SidebarLayout
+        title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
+        right={JsonHeaderRight}
+      >
         <JSONEditor
           workflowVersion={workflowVersion}
           initialContent={workflowJSON}
           onContentChange={handleJSONChange}
         />
-      </div>
-    </div>
+      </SidebarLayout>
+    </ReactFlowProvider>
   )
 }

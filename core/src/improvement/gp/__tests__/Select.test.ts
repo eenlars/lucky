@@ -18,9 +18,17 @@ describe("Select", () => {
 
   describe("selectRandomParents", () => {
     it("should select parents with fitness > 0", async () => {
-      const validGenome = await createMockGenome(0, [], createMockWorkflowScore(0.8))
-      const invalidGenome = await createMockGenome(0, [], createMockWorkflowScore(0))
-      
+      const validGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.8)
+      )
+      const invalidGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0)
+      )
+
       validGenome.getFitnessScore.mockReturnValue(0.8)
       invalidGenome.getFitnessScore.mockReturnValue(0)
 
@@ -64,12 +72,15 @@ describe("Select", () => {
       // Mock CONFIG to enable verbose mode
       const { CONFIG } = await import("@runtime/settings/constants")
       const originalVerbose = CONFIG.evolution.GP.verbose
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: true, writable: true })
-      
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: true,
+        writable: true,
+      })
+
       const mockPopulation = {
         getGenomes: vi.fn().mockReturnValue([]),
       }
-      
+
       const config = createMockEvolutionSettings({ populationSize: 4 })
 
       const result = await Select.selectParents({
@@ -79,26 +90,44 @@ describe("Select", () => {
 
       expect(result).toHaveLength(1)
       expect(result[0]).toBeDefined()
-      
+
       // Restore original value
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: originalVerbose, writable: true })
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: originalVerbose,
+        writable: true,
+      })
     })
 
     it("should perform elite + tournament selection in non-verbose mode", async () => {
       // Ensure verbose mode is off
       const { CONFIG } = await import("@runtime/settings/constants")
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: false, writable: true })
-      
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: false,
+        writable: true,
+      })
+
       // Create genomes with different fitness scores
-      const bestGenome = await createMockGenome(0, [], createMockWorkflowScore(0.9))
-      const goodGenome = await createMockGenome(0, [], createMockWorkflowScore(0.7))
-      const okGenome = await createMockGenome(0, [], createMockWorkflowScore(0.5))
-      
+      const bestGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.9)
+      )
+      const goodGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.7)
+      )
+      const okGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.5)
+      )
+
       // Set up proper fitness and evaluation status
       bestGenome.getFitnessScore.mockReturnValue(0.9)
       goodGenome.getFitnessScore.mockReturnValue(0.7)
       okGenome.getFitnessScore.mockReturnValue(0.5)
-      
+
       bestGenome.isEvaluated = true
       goodGenome.isEvaluated = true
       okGenome.isEvaluated = true
@@ -106,11 +135,11 @@ describe("Select", () => {
       const mockPopulation = {
         getGenomes: vi.fn().mockReturnValue([bestGenome, goodGenome, okGenome]),
       }
-      
-      const config = createMockEvolutionSettings({ 
-        populationSize: 4, 
+
+      const config = createMockEvolutionSettings({
+        populationSize: 4,
         eliteSize: 1,
-        tournamentSize: 2
+        tournamentSize: 2,
       })
 
       const result = await Select.selectParents({
@@ -126,29 +155,48 @@ describe("Select", () => {
 
     it("should throw when no evaluated genomes exist", async () => {
       const { CONFIG } = await import("@runtime/settings/constants")
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: false, writable: true })
-      
-      const unevaluatedGenome = await createMockGenome(0, [], createMockWorkflowScore(0.8))
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: false,
+        writable: true,
+      })
+
+      const unevaluatedGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.8)
+      )
       unevaluatedGenome.isEvaluated = false
 
       const mockPopulation = {
         getGenomes: vi.fn().mockReturnValue([unevaluatedGenome]),
       }
-      
+
       const config = createMockEvolutionSettings({ populationSize: 4 })
 
-      await expect(Select.selectParents({
-        population: mockPopulation as any,
-        config,
-      })).rejects.toThrow("No valid genomes with fitness scores found in population")
+      await expect(
+        Select.selectParents({
+          population: mockPopulation as any,
+          config,
+        })
+      ).rejects.toThrow(
+        "No valid genomes with fitness scores found in population"
+      )
     })
   })
 
   describe("tournamentSelection", () => {
     it("should select winner from tournament", async () => {
-      const highFitnessGenome = await createMockGenome(0, [], createMockWorkflowScore(0.9))
-      const lowFitnessGenome = await createMockGenome(0, [], createMockWorkflowScore(0.3))
-      
+      const highFitnessGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.9)
+      )
+      const lowFitnessGenome = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.3)
+      )
+
       highFitnessGenome.getFitnessScore.mockReturnValue(0.9)
       lowFitnessGenome.getFitnessScore.mockReturnValue(0.3)
 
@@ -180,10 +228,21 @@ describe("Select", () => {
       // Mock CONFIG to enable verbose mode
       const { CONFIG } = await import("@runtime/settings/constants")
       const originalVerbose = CONFIG.evolution.GP.verbose
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: true, writable: true })
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: true,
+        writable: true,
+      })
 
-      const mockParent = await createMockGenome(0, [], createMockWorkflowScore(0.7))
-      const mockOffspring = await createMockGenome(1, [], createMockWorkflowScore(0.6))
+      const mockParent = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.7)
+      )
+      const mockOffspring = await createMockGenome(
+        1,
+        [],
+        createMockWorkflowScore(0.6)
+      )
       const config = createMockEvolutionSettings({ populationSize: 2 })
 
       const result = await Select.selectSurvivors({
@@ -194,19 +253,41 @@ describe("Select", () => {
 
       expect(result).toBeDefined()
       expect(Array.isArray(result)).toBe(true)
-      
+
       // Restore original value
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: originalVerbose, writable: true })
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: originalVerbose,
+        writable: true,
+      })
     })
 
     it("should combine and sort parents and offspring by fitness", async () => {
       const { CONFIG } = await import("@runtime/settings/constants")
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: false, writable: true })
-      
-      const parent1 = await createMockGenome(0, [], createMockWorkflowScore(0.8))
-      const parent2 = await createMockGenome(0, [], createMockWorkflowScore(0.7))
-      const offspring1 = await createMockGenome(1, [], createMockWorkflowScore(0.9))
-      const offspring2 = await createMockGenome(1, [], createMockWorkflowScore(0.6))
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: false,
+        writable: true,
+      })
+
+      const parent1 = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.8)
+      )
+      const parent2 = await createMockGenome(
+        0,
+        [],
+        createMockWorkflowScore(0.7)
+      )
+      const offspring1 = await createMockGenome(
+        1,
+        [],
+        createMockWorkflowScore(0.9)
+      )
+      const offspring2 = await createMockGenome(
+        1,
+        [],
+        createMockWorkflowScore(0.6)
+      )
 
       parent1.getFitnessScore.mockReturnValue(0.8)
       parent1.isEvaluated = true
@@ -234,8 +315,11 @@ describe("Select", () => {
 
     it("should handle empty parents and offspring", async () => {
       const { CONFIG } = await import("@runtime/settings/constants")
-      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, 'verbose', { value: false, writable: true })
-      
+      Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
+        value: false,
+        writable: true,
+      })
+
       const config = createMockEvolutionSettings({ populationSize: 0 })
 
       const result = await Select.selectSurvivors({

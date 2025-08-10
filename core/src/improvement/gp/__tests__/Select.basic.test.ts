@@ -25,9 +25,17 @@ describe("Select - Basic Functionality", () => {
   })
 
   it("should select valid parents from population", async () => {
-    const validGenome = await createMockGenome(0, [], createMockWorkflowScore(0.8))
-    const invalidGenome = await createMockGenome(0, [], createMockWorkflowScore(0))
-    
+    const validGenome = await createMockGenome(
+      0,
+      [],
+      createMockWorkflowScore(0.8)
+    )
+    const invalidGenome = await createMockGenome(
+      0,
+      [],
+      createMockWorkflowScore(0)
+    )
+
     validGenome.getFitnessScore.mockReturnValue(0.8)
     invalidGenome.getFitnessScore.mockReturnValue(0)
 
@@ -47,7 +55,7 @@ describe("Select - Basic Functionality", () => {
   it("should handle tournament selection", async () => {
     const genome1 = await createMockGenome(0, [], createMockWorkflowScore(0.9))
     const genome2 = await createMockGenome(0, [], createMockWorkflowScore(0.3))
-    
+
     genome1.getFitnessScore.mockReturnValue(0.9)
     genome2.getFitnessScore.mockReturnValue(0.3)
 

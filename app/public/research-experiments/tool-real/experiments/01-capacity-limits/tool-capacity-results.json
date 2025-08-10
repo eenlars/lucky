@@ -8,14 +8,7 @@
       "google/gemini-2.5-flash-lite",
       "openai/gpt-4.1-nano"
     ],
-    "toolCounts": [
-      5,
-      8,
-      16,
-      32,
-      64,
-      128
-    ],
+    "toolCounts": [5, 8, 16, 32, 64, 128],
     "runsPerConfig": 5,
     "totalPrompts": 5
   },

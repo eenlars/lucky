@@ -1,5 +1,5 @@
 import { AGENT_KEY_EXPLANATIONS } from "@core/node/schemas/improvementSchema"
-import { MemorySchemaOptional } from "@core/node/schemas/memorySchema"
+import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import { z, type ZodRawShape } from "zod"

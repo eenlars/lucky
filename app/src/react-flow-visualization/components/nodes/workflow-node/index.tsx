@@ -11,7 +11,6 @@ import {
   WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes/"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
-import { Input } from "@/react-flow-visualization/components/ui/input"
 import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
 import { useAppStore } from "@/react-flow-visualization/store"
 import {
@@ -32,11 +31,9 @@ function WorkflowNode({
   data: WorkflowNodeData
   children?: React.ReactNode
 }) {
-  const { runWorkflow, setPromptDialogOpen } = useWorkflowRunnerContext()
+  const { setPromptDialogOpen } = useWorkflowRunnerContext()
   const openNodeDetails = useAppStore((state) => state.openNodeDetails)
   const updateNode = useAppStore((state) => state.updateNode)
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [tempTitle, setTempTitle] = useState(data?.title || "")
   const [isToolSelectorOpen, setIsToolSelectorOpen] = useState(false)
 
   const onRunClick = useCallback(
@@ -49,9 +46,9 @@ function WorkflowNode({
     [setPromptDialogOpen]
   )
 
-  // check if this is a start or end node
+  // check if this is a start or end node by type
   const isStartOrEndNode =
-    data?.title === "Initial Node" || data?.title === "Output Node"
+    data?.nodeType === "initial-node" || data?.nodeType === "output-node"
 
   const onNodeClick = useCallback(() => {
     if (!isStartOrEndNode) {
@@ -59,39 +56,7 @@ function WorkflowNode({
     }
   }, [id, openNodeDetails, isStartOrEndNode])
 
-  const handleTitleDoubleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
-      if (!isStartOrEndNode) {
-        setIsEditingTitle(true)
-        setTempTitle(data?.title || "")
-      }
-    },
-    [data?.title, isStartOrEndNode]
-  )
-
-  const handleTitleSave = useCallback(() => {
-    if (tempTitle.trim() !== data?.title) {
-      updateNode(data.nodeId, { title: tempTitle.trim() })
-    }
-    setIsEditingTitle(false)
-  }, [tempTitle, data?.title, data.nodeId, updateNode])
-
-  const handleTitleCancel = useCallback(() => {
-    setTempTitle(data?.title || "")
-    setIsEditingTitle(false)
-  }, [data?.title])
-
-  const handleTitleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        handleTitleSave()
-      } else if (e.key === "Escape") {
-        handleTitleCancel()
-      }
-    },
-    [handleTitleSave, handleTitleCancel]
-  )
+  // Node ID is edited in the Node Details dialog; inline editing removed
 
   const handleToolSelect = useCallback(
     (toolName: string) => {
@@ -164,39 +129,27 @@ function WorkflowNode({
         role="button"
         aria-label={`Node ${data?.nodeId}`}
       >
-        {/* Title + Controls */}
+        {/* Header + Controls */}
         <div className="flex justify-between items-start mb-2">
-          {isEditingTitle ? (
-            <Input
-              value={tempTitle}
-              onChange={(e) => setTempTitle(e.target.value)}
-              onBlur={handleTitleSave}
-              onKeyDown={handleTitleKeyDown}
-              className="text-lg font-medium p-1 border-0 shadow-none bg-transparent focus-visible:ring-1"
-              autoFocus
-              onClick={(e) => e.stopPropagation()}
-            />
-          ) : (
-            <div className="flex flex-col gap-1">
-              <h3
-                className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
-                  isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
-                }`}
-                onDoubleClick={handleTitleDoubleClick}
-              >
-                {data?.nodeId}
-                {!isStartOrEndNode && (
-                  <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
-                )}
-              </h3>
-              {!isStartOrEndNode && displayModelName && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                  {displayModelName}
-                </span>
+          <div className="flex flex-col gap-1">
+            <h3
+              className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
+                isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
+              }`}
+              onDoubleClick={onNodeClick}
+            >
+              {data?.nodeId}
+              {!isStartOrEndNode && (
+                <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
               )}
-            </div>
-          )}
+            </h3>
+            {!isStartOrEndNode && displayModelName && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                {displayModelName}
+              </span>
+            )}
+          </div>
 
           <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button

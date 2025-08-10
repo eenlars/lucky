@@ -59,7 +59,7 @@ describe("Schema Detection", () => {
       expect(isZodSchema({ constructor: null })).toBe(false)
       expect(isZodSchema({ parse: "not a function" })).toBe(false)
       expect(isZodSchema({ safeParse: () => {} })).toBe(false) // missing parse
-      
+
       // Objects that might throw on property access
       const problematicObject = Object.create(null)
       expect(isZodSchema(problematicObject)).toBe(false)
@@ -69,7 +69,7 @@ describe("Schema Detection", () => {
       // Pattern from commonSchemas in toolFactory
       const querySchema = z.string().describe("Search query or input text")
       const resultCountSchema = z.number().max(20).default(10).nullish()
-      
+
       expect(isZodSchema(querySchema)).toBe(true)
       expect(isZodSchema(resultCountSchema)).toBe(true)
     })
@@ -78,7 +78,7 @@ describe("Schema Detection", () => {
   describe("isVercelAIStructure", () => {
     it("should detect Vercel AI structure with jsonSchema", () => {
       const vercelStructure = {
-        jsonSchema: { type: "object", properties: {} }
+        jsonSchema: { type: "object", properties: {} },
       }
       expect(isVercelAIStructure(vercelStructure)).toBe(true)
     })
@@ -105,10 +105,10 @@ describe("Schema Detection", () => {
     it("should properly differentiate between Zod and Vercel AI structures", () => {
       const zodSchema = z.object({ query: z.string() })
       const vercelStructure = { jsonSchema: { type: "object" } }
-      
+
       expect(isZodSchema(zodSchema)).toBe(true)
       expect(isVercelAIStructure(zodSchema)).toBe(false)
-      
+
       expect(isZodSchema(vercelStructure)).toBe(false)
       expect(isVercelAIStructure(vercelStructure)).toBe(true)
     })
@@ -117,7 +117,11 @@ describe("Schema Detection", () => {
       // Simulate the tool parameter processing flow
       const toolParameters = z.object({
         query: z.string().describe("Search query"),
-        maxResultCount: z.number().max(20).default(10).describe("Number of results"),
+        maxResultCount: z
+          .number()
+          .max(20)
+          .default(10)
+          .describe("Number of results"),
       })
 
       // This simulates what happens in selectToolStrategy

@@ -59,7 +59,7 @@ export function useWorkflowRunner() {
   const processNode = useCallback(
     async (node: AppNode) => {
       updateNodeStatus(node.id, "loading")
-      setLogMessages((prev) => [...prev, `${node.data.title} processing...`])
+      setLogMessages((prev) => [...prev, `${node.data.nodeId} processing...`])
 
       await new Promise((resolve) => setTimeout(resolve, 2000))
 

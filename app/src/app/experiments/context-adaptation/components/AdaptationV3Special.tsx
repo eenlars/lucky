@@ -321,7 +321,7 @@ function PointShape({ cx, cy, payload, size = 80, modelOrder }: any) {
     strokeWidth: p.condition === "vague" ? 2 : 1,
     fill: p.condition === "vague" ? "white" : color,
     fillOpacity: p.condition === "vague" ? 0.95 : 0.9,
-  } as any
+  }
 
   switch (shape) {
     case "triangle":

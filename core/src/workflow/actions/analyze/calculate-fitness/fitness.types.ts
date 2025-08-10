@@ -1,4 +1,4 @@
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { z } from "zod"
 

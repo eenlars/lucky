@@ -164,7 +164,9 @@ export default function Workflow({
       {selectedNode && (
         <NodeDetailsDialog
           open={nodeDetailsOpen}
-          onOpenChange={closeNodeDetails}
+          onOpenChange={(open) => {
+            if (!open) closeNodeDetails()
+          }}
           nodeData={selectedNode.data}
           onSave={updateNode}
         />

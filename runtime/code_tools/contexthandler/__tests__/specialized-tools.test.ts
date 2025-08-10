@@ -10,6 +10,7 @@ describe("Specialized Context Tools", () => {
   const mockWorkflowInvocationId = "550e8400-e29b-41d4-a716-446655440000"
   const mockToolExecutionContext: ToolExecutionContext = {
     workflowInvocationId: mockWorkflowInvocationId,
+    workflowVersionId: "test-v1",
     workflowFiles: [],
     expectedOutputType: undefined,
     mainWorkflowGoal: "test-goal",

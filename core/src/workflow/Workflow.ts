@@ -5,7 +5,6 @@ import {
   type PrepareProblemMethod,
 } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import { zodToJson } from "@core/messages/utils/zodToJson"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import { INACTIVE_TOOLS } from "@core/tools/tool.types"
@@ -29,6 +28,7 @@ import {
   verifyWorkflowConfig,
   verifyWorkflowConfigStrict,
 } from "@core/utils/validation/workflow"
+import { zodToJson } from "@core/utils/zod/zodToJson"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import {
@@ -521,6 +521,7 @@ export class Workflow {
     const context: ToolExecutionContext = {
       expectedOutputType: this.toolContext?.expectedOutputType,
       workflowInvocationId: workflowInvocationId,
+      workflowVersionId: this.workflowVersionId,
       workflowFiles: files,
       mainWorkflowGoal: this.mainGoal,
       workflowId: this.workflowId,

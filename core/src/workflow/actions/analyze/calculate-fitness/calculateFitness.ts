@@ -1,9 +1,9 @@
-import { sendAI } from "@core/messages/api/sendAI"
-import { zodToJson } from "@core/messages/utils/zodToJson"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
+import { zodToJson } from "@core/utils/zod/zodToJson"
 import {
   FitnessOfWorkflowSchema,
   type FitnessFunctionInput,

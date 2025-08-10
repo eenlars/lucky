@@ -42,7 +42,7 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
         </div>
         <SidebarMenu>
           {Object.values(nodesConfig).map((item) => (
-            <DraggableItem key={item.title} {...item} />
+            <DraggableItem key={item.displayName} {...item} />
           ))}
         </SidebarMenu>
       </SidebarHeader>
@@ -146,7 +146,7 @@ function DraggableItem(props: NodeConfig) {
       onDragEnd={onDragEnd}
       onClick={onClick}
       draggable
-      key={props.title}
+      key={props.displayName}
     >
       {isDragging && (
         <span
@@ -158,7 +158,7 @@ function DraggableItem(props: NodeConfig) {
       )}
       <SidebarMenuButton className="bg-card cursor-grab active:cursor-grabbing">
         {IconComponent ? <IconComponent aria-label={props?.icon} /> : null}
-        <span>{props.title}</span>
+        <span>{props.displayName}</span>
         <GripVertical className="ml-auto" />
       </SidebarMenuButton>
     </SidebarMenuItem>

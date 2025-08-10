@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type {
@@ -46,6 +46,16 @@ export const prepareProblem = async (
     question: task.type === "text" ? task.question : undefined,
     method,
   })
+
+  // For prompt-only ingestion, skip enhancement entirely
+  if (task.type === "prompt-only") {
+    lgg.info("[prepareProblem] Skipping enhancement for prompt-only input")
+    return {
+      newGoal: task.goal,
+      workflowIO: await IngestionLayer.convert(task),
+      problemAnalysis: "",
+    }
+  }
 
   // New workflow invocation method
   if (method === "workflow") {

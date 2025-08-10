@@ -25,6 +25,7 @@ describe("codeToolsSetup bug demonstration", () => {
     const toolNames: CodeToolName[] = ["todoWrite", "todoRead"]
     const context: ToolExecutionContext = {
       workflowInvocationId: "test-123",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       workflowId: "workflow-123",
@@ -50,6 +51,7 @@ describe("codeToolsSetup bug demonstration", () => {
     // Step 2: What ToolManager.getAllTools() does
     const context: ToolExecutionContext = {
       workflowInvocationId: "test-456",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: undefined,
       workflowId: "workflow-456",

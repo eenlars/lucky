@@ -67,7 +67,11 @@ export async function getLatestFileByPrefixes(
 
 export async function readJsonLocal<T>(absolutePath: string): Promise<T> {
   const raw = await fs.readFile(absolutePath, "utf-8")
-  return JSON.parse(raw) as T
+  try {
+    return JSON.parse(raw)
+  } catch (error) {
+    throw new Error(`Invalid JSON in file ${absolutePath}: ${error}`)
+  }
 }
 
 export async function readJsonRemote<T>(url: string): Promise<T> {
@@ -76,7 +80,11 @@ export async function readJsonRemote<T>(url: string): Promise<T> {
     throw new Error(`HTTP ${res.status}`)
   }
   const text = await res.text()
-  return JSON.parse(text) as T
+  try {
+    return JSON.parse(text)
+  } catch (error) {
+    throw new Error(`Invalid JSON from URL ${url}: ${error}`)
+  }
 }
 
 export async function loadJsonProdOrLocal<T>(

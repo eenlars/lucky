@@ -15,7 +15,6 @@ import { TransformNode } from "./transform-node"
 
 export type WorkflowNodeData = WorkflowNodeConfig & {
   // visualization-specific additions only
-  title?: string
   label?: string
   icon?: keyof typeof iconMapping
   status?: "loading" | "success" | "error" | "initial"
@@ -31,7 +30,7 @@ export type WorkflowNodeProps = NodeProps<Node<WorkflowNodeData>> & {
 
 export type NodeConfig = {
   id: AppNodeType
-  title: string
+  displayName: string
   status?: "loading" | "success" | "error" | "initial"
   handles: NonNullable<Node["handles"]>
   icon: keyof typeof iconMapping
@@ -43,7 +42,7 @@ export const COMPACT_NODE_SIZE = { width: 72, height: 72 }
 const nodesConfig: Record<AppNodeType, NodeConfig> = {
   "initial-node": {
     id: "initial-node",
-    title: "Initial Node",
+    displayName: "Initial Node",
     status: "initial",
     handles: [
       {
@@ -57,7 +56,7 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
   },
   "transform-node": {
     id: "transform-node",
-    title: "Transform Node",
+    displayName: "Transform Node",
     handles: [
       {
         type: "source",
@@ -76,7 +75,7 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
   },
   "join-node": {
     id: "join-node",
-    title: "Join Node",
+    displayName: "Join Node",
     status: "initial",
     handles: [
       {
@@ -104,7 +103,7 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
   },
   "branch-node": {
     id: "branch-node",
-    title: "Branch Node",
+    displayName: "Branch Node",
     status: "initial",
     handles: [
       {
@@ -132,7 +131,7 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
   },
   "output-node": {
     id: "output-node",
-    title: "Output Node",
+    displayName: "Output Node",
     handles: [
       {
         type: "target",
@@ -174,6 +173,7 @@ export function createNodeByType({
     data: {
       // Core WorkflowNodeConfig properties
       nodeId: data?.nodeId || nodeId,
+      nodeType: type,
       description: data?.description ?? "",
       systemPrompt: data?.systemPrompt ?? "",
       modelName: data?.modelName ?? MODELS.default,
@@ -183,8 +183,6 @@ export function createNodeByType({
       memory: data?.memory ?? {},
       // Spread any additional data
       ...data,
-      // visualization-specific (override if needed)
-      title: node.title,
       status: node.status,
       icon: node.icon,
     },

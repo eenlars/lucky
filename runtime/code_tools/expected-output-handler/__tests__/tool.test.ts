@@ -36,6 +36,7 @@ describe("expectedOutputHandler", () => {
     // Mock context with the schema
     const mockContext: ToolExecutionContext = {
       workflowInvocationId: "test-id",
+      workflowVersionId: "test-v1",
       workflowFiles: [],
       expectedOutputType: expectedSchema,
       mainWorkflowGoal: "test-goal",

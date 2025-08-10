@@ -2,6 +2,7 @@
 
 import type { Tables } from "@core/utils/clients/supabase/types"
 import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
+import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import RunnerPanel from "./RunnerPanel"
@@ -146,8 +147,14 @@ export default function WorkflowRunner({
     setExecutionResults(null)
 
     try {
+      // Convert JSON DSL to WorkflowConfig type safely
+      const workflowConfig = toWorkflowConfig(workflowVersion.dsl)
+      if (!workflowConfig) {
+        throw new Error("Invalid workflow DSL structure")
+      }
+
       // Validate and normalize the DSL before execution
-      const validatedConfig = await loadFromDSLClient(workflowVersion.dsl as any)
+      const validatedConfig = await loadFromDSLClient(workflowConfig)
 
       // Start workflow execution and get invocation ID immediately
       const startResult = await startWorkflowExecution(

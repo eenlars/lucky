@@ -1,20 +1,17 @@
+import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
+import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import {
   isVercelTextResponse,
   type ProcessedResponse,
-} from "@core/messages/api/processResponse.types"
-import { sendAI } from "@core/messages/api/sendAI"
-import { processStepsV2 } from "@core/messages/api/stepProcessor"
+} from "@core/messages/api/vercel/processResponse.types"
+import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
+import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
-import type { AgentStep } from "@core/messages/types/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ModelName } from "@core/utils/spending/models.types"
-import { type VercelUsage } from "@core/utils/spending/vercel/calculatePricing"
-import { calculateUsageCost } from "@core/utils/spending/vercel/vercelUsage"
-import { R, type RS } from "@core/utils/types"
 import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /*
@@ -29,97 +26,7 @@ import type { GenerateTextResult, ToolSet } from "ai"
  * see: StepResult<ToolSet>[] in vercel ai sdk types.
  * example: @ai-sdk/openai -> createOpenAI() -> parallelToolCalls parameter
  */
-
-export const generateSummary = async (content: string): Promise<RS<string>> => {
-  try {
-    const result = await sendAI({
-      messages: [
-        {
-          role: "user",
-          content: `
-          Generate a summary of the following text, and be specific about what this includes. 
-          It should inform someone who has 0 knowledge about the content: ${truncater(
-            content,
-            1000
-          )}, maximum 150 characters.`,
-        },
-      ],
-      model: getDefaultModels().summary,
-      mode: "text",
-    })
-    return R.success(result.data?.text ?? "", result.usdCost ?? 0)
-  } catch (error) {
-    lgg.error("Error generating summary", error)
-    return R.error("error generating summary", 0)
-  }
-}
-
-export const processVercelResponse = async ({
-  response,
-  model,
-  summary,
-  nodeId,
-}: {
-  response: GenerateTextResult<ToolSet, unknown>
-  model: ModelName
-  summary?: string
-  nodeId: string
-}): Promise<ProcessedResponse> => {
-  let processed: ProcessedResponse | null = null
-  processed = processModelResponse({
-    response: response,
-    modelUsed: model,
-    summary,
-    nodeId: nodeId,
-  })
-
-  // no summary necessary for short text responses
-  if (
-    processed.type === "text" &&
-    processed.content.length < 100 &&
-    processed.content.length > 5
-  ) {
-    processed = {
-      ...processed,
-      summary: processed.content ?? "Tool executed successfully",
-    }
-    return processed
-  } else if (processed.type === "text" && processed.content.length < 5) {
-    lgg.warn(
-      "Tool executed successfully, but the content is too short",
-      processed
-    )
-    processed = {
-      ...processed,
-      summary: processed.content ?? "Tool executed successfully",
-    }
-    return processed
-  }
-
-  // if the summary is not generated, generate it
-  if (isNir(processed.summary)) {
-    // the experimentalMultiStepLoop already generates a summary
-    const {
-      success,
-      data: summaryResult,
-      usdCost,
-    } = await generateSummary(JSON.stringify(processed.agentSteps))
-    processed = {
-      ...processed,
-      summary: success ? summaryResult : "error generating summary",
-      cost: (processed.cost ?? 0) + (success ? (usdCost ?? 0) : 0),
-    }
-  }
-  return processed
-}
-
-/**
- * Process a model response into a standardized format.
- *
- * @param response - Raw response from the model API
- * @returns Processed response with clear type discrimination
- */
-export function processModelResponse({
+export function processResponseVercel({
   response,
   modelUsed,
   nodeId,
@@ -143,22 +50,46 @@ export function processModelResponse({
     }
   }
 
-  const cost = calculateUsageCost(
-    response.usage as Partial<VercelUsage>,
-    modelUsed
-  )
-
-  // process steps if they exist (now returns AgentSteps)
+  // process steps if they exist (now returns AgentSteps) and derive cost deterministically
   const processedSteps = processStepsV2(response.steps, modelUsed)
+  const cost =
+    processedSteps?.usdCost ??
+    calculateUsageCost(response.usage as Partial<VercelUsage>, modelUsed)
 
-  // if any real tool interaction happened, return as a tool response
+  // If steps exist, decide whether it's a tool or pure text response
   if (processedSteps && processedSteps.agentSteps.length > 0) {
+    const hasAnyToolStep = processedSteps.agentSteps.some(
+      (s) => s.type === "tool"
+    )
+
+    if (hasAnyToolStep) {
+      // At least one tool call occurred → treat as tool response
+      return {
+        nodeId,
+        agentSteps: processedSteps.agentSteps,
+        cost,
+        summary,
+        type: "tool",
+      }
+    }
+
+    // No tool calls at all → treat as text response, keep agentSteps for downstream consumers
+    const aggregatedText = processedSteps.agentSteps.find(
+      (s) => s.type === "text"
+    )
+    const content = isVercelTextResponse(response)
+      ? response.text
+      : typeof aggregatedText?.return === "string"
+        ? aggregatedText.return
+        : ""
+
     return {
       nodeId,
-      agentSteps: processedSteps.agentSteps,
+      content,
       cost,
       summary,
-      type: "tool",
+      type: "text",
+      agentSteps: processedSteps.agentSteps,
     }
   }
 
@@ -173,6 +104,11 @@ export function processModelResponse({
       agentSteps: [{ type: "text", return: response.text }],
     }
   }
+
+  lgg.error(
+    "Unrecognized response format",
+    truncater(JSON.stringify(response), 1000)
+  )
 
   // No known pattern matched
   return {

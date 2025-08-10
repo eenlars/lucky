@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import type {
   AgentSteps,
   AgentStepsLegacy,
-} from "@core/messages/types/AgentStep.types"
+} from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"

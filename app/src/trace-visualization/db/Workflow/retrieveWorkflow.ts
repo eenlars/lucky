@@ -6,6 +6,7 @@ import type {
   TablesUpdate,
 } from "@core/utils/clients/supabase/types"
 import { genShortId } from "@core/utils/common/utils"
+import { lgg } from "@core/utils/logging/Logger"
 
 export const retrieveWorkflowInvocation = async (
   invocationId: string
@@ -22,7 +23,7 @@ export const retrieveWorkflowInvocation = async (
 
   // Log sample data to help debug scoring issues
   if (data) {
-    console.log("Retrieved single invocation with scores:", {
+    lgg.log("Retrieved single invocation with scores:", {
       id: data.wf_invocation_id,
       accuracy: data.accuracy,
       novelty: data.novelty,

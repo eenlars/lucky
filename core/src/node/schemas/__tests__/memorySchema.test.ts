@@ -1,12 +1,11 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 import {
+  MemoryResponseSchema,
   MemorySchema,
   MemorySchemaOptional,
-  MemoryResponseSchema,
-  validateMemory,
-  validateMemoryOptional,
   sanitizeNodeMemory,
-} from "../memorySchema"
+  validateMemory,
+} from "../../../utils/memory/memorySchema"
 
 describe("Memory Schema", () => {
   describe("MemorySchema", () => {

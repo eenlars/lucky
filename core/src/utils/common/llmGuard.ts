@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/models"
 import { z } from "zod"
 

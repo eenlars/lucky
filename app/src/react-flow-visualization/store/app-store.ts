@@ -427,8 +427,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         const workflowNodes = nodes
           .filter((node) => node.id !== "start" && node.id !== "end")
           .map((node) => {
-            const { title, label, icon, status, messageCount, ...coreData } =
-              node.data
+            const { label, icon, status, messageCount, ...coreData } = node.data
             return {
               ...coreData,
               nodeId: node.id, // Ensure nodeId matches the graph node id
@@ -488,14 +487,65 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       },
 
       updateNode: (nodeId, updates) => {
-        // Update in-memory state
-        set({
-          nodes: get().nodes.map((node) =>
-            node.id === nodeId
-              ? { ...node, data: { ...node.data, ...updates } }
-              : node
-          ),
-        })
+        const currentNodes = get().nodes
+        const currentEdges = get().edges
+        const targetNode = currentNodes.find((n) => n.id === nodeId)
+        if (!targetNode) return
+
+        const requestedNewId = updates.nodeId && updates.nodeId.trim()
+        const isRename = !!requestedNewId && requestedNewId !== nodeId
+
+        if (isRename) {
+          // Prevent renaming special nodes
+          if (
+            targetNode.type === "initial-node" ||
+            targetNode.type === "output-node"
+          ) {
+            console.warn("Renaming is disabled for initial/output nodes")
+          } else if (currentNodes.some((n) => n.id === requestedNewId)) {
+            console.error(
+              "Cannot rename: node ID already exists:",
+              requestedNewId
+            )
+          } else {
+            const newId = requestedNewId as string
+            // Update nodes and edges to reflect new ID
+            const nextNodes = currentNodes.map((n) =>
+              n.id === nodeId
+                ? {
+                    ...n,
+                    id: newId,
+                    data: { ...n.data, ...updates, nodeId: newId },
+                  }
+                : n
+            )
+            const nextEdges = currentEdges.map((e) => {
+              const newSource = e.source === nodeId ? newId : e.source
+              const newTarget = e.target === nodeId ? newId : e.target
+              const newEdgeId = `${newSource}-${e.sourceHandle ?? ""}-${newTarget}-${e.targetHandle ?? ""}`
+              return {
+                ...e,
+                id: newEdgeId,
+                source: newSource,
+                target: newTarget,
+              }
+            })
+
+            set({
+              nodes: nextNodes,
+              edges: nextEdges,
+              selectedNodeId:
+                get().selectedNodeId === nodeId ? newId : get().selectedNodeId,
+            })
+          }
+        } else {
+          // Simple data update
+          set({
+            nodes: currentNodes.map((n) =>
+              n.id === nodeId ? { ...n, data: { ...n.data, ...updates } } : n
+            ),
+          })
+        }
 
         // Save to database in background if we have a workflow ID
         const workflowId = get().currentWorkflowId
@@ -505,7 +555,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
           saveWorkflowVersion({
             dsl: workflow,
-            commitMessage: `Updated node ${nodeId}`,
+            commitMessage: isRename
+              ? `Renamed node ${nodeId} -> ${updates.nodeId}`
+              : `Updated node ${nodeId}`,
             workflowId,
             iterationBudget: 50,
             timeBudgetSeconds: 3600,

@@ -1,11 +1,11 @@
 import { z } from "zod"
 
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
-import { MemorySchemaOptional } from "@core/node/schemas/memorySchema"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
+import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import type { ModelNameV2 } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"

@@ -3,9 +3,10 @@ import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type {
   AgentStep,
   AgentSteps,
-} from "@core/messages/types/AgentStep.types"
+} from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { Tables } from "@core/utils/clients/supabase/types"
+import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { nanoid } from "nanoid"
 import { cache } from "react"
@@ -24,7 +25,7 @@ type AgentStepsLegacy = {
 export interface NodeInvocationExtras {
   message_id?: string
   agentSteps?: AgentSteps | AgentStepsLegacy
-  updatedMemory?: Record<string, string>
+  updatedMemory?: NodeMemory
 }
 
 export interface NodeGroup {

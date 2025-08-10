@@ -5,9 +5,9 @@
  *  - chatWithTools: thin wrapper over sendAI(mode:"tool") that returns a RunTrace-like shape
  */
 
-import { processVercelResponse } from "@core/messages/api/processResponse"
-import { sendAI } from "@core/messages/api/sendAI"
-import type { AgentStep } from "@core/messages/types/AgentStep.types"
+import { processResponseVercel } from "@core/messages/api/processResponse"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import type { CoreMessage, Tool, ToolSet } from "ai"
 
 // Basic tools
@@ -100,9 +100,9 @@ export async function chatWithTools(
   const usdCost = response.success ? response.usdCost : undefined
 
   // Use the shared response processor to normalize tool executions
-  const processed = await processVercelResponse({
+  const processed = processResponseVercel({
     response: data,
-    model,
+    modelUsed: model,
     nodeId: "capacity-experiment",
   })
 

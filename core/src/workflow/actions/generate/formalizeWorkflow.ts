@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"

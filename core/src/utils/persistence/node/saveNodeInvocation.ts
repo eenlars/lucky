@@ -1,5 +1,5 @@
-import { normalizeModelName } from "@core/messages/api/sendAI"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
+import { normalizeModelName } from "@core/messages/api/sendAI/sendAI"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { llmify } from "@core/utils/common/llmify"

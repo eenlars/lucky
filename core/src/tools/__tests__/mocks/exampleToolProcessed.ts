@@ -1,4 +1,4 @@
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 
 export const exampleToolProcessed = {
   type: "tool",

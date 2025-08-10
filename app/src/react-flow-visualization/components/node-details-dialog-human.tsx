@@ -47,8 +47,8 @@ export function NodeDetailsDialog({
   onSave,
 }: NodeDetailsDialogProps) {
   const [data, setData] = useState(nodeData)
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [titleDraft, setTitleDraft] = useState(nodeData.title || "")
+  const [isEditingId, setIsEditingId] = useState(false)
+  const [nodeIdDraft, setNodeIdDraft] = useState(nodeData.nodeId || "")
   const edges = useAppStore((s) => s.edges)
 
   // Prevent auto-save loop when props refresh local state
@@ -72,8 +72,8 @@ export function NodeDetailsDialog({
   useEffect(() => {
     skipNextAutosaveRef.current = true
     setData(nodeData)
-    setTitleDraft(nodeData.title || "")
-    setIsEditingTitle(false)
+    setNodeIdDraft(nodeData.nodeId || "")
+    setIsEditingId(false)
   }, [nodeData])
 
   const addMcpTool = (toolName: string) => {
@@ -173,51 +173,56 @@ export function NodeDetailsDialog({
     }).format(value)}`
   }
 
-  const commitTitle = () => {
-    const trimmed = titleDraft.trim()
-    if (trimmed !== data.title) {
-      setData((prev) => ({ ...prev, title: trimmed }))
+  const commitNodeId = () => {
+    const trimmed = nodeIdDraft.trim()
+    if (trimmed && trimmed !== data.nodeId) {
+      setData((prev) => ({ ...prev, nodeId: trimmed }))
     }
-    setIsEditingTitle(false)
+    setIsEditingId(false)
   }
 
-  const cancelTitleEdit = () => {
-    setTitleDraft(data.title || "")
-    setIsEditingTitle(false)
+  const cancelNodeIdEdit = () => {
+    setNodeIdDraft(data.nodeId || "")
+    setIsEditingId(false)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden">
         <DialogHeader className="pb-4">
+          <div className="flex justify-center -mt-1">
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
+              Node editor
+            </span>
+          </div>
           <VisuallyHidden>
             <DialogTitle>Node settings</DialogTitle>
           </VisuallyHidden>
           <div className="flex items-center gap-3">
             <div className="flex-1">
-              {isEditingTitle ? (
+              {isEditingId ? (
                 <Input
-                  value={titleDraft}
-                  onChange={(e) => setTitleDraft(e.target.value)}
-                  onBlur={commitTitle}
+                  value={nodeIdDraft}
+                  onChange={(e) => setNodeIdDraft(e.target.value)}
+                  onBlur={commitNodeId}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") commitTitle()
-                    if (e.key === "Escape") cancelTitleEdit()
+                    if (e.key === "Enter") commitNodeId()
+                    if (e.key === "Escape") cancelNodeIdEdit()
                   }}
                   autoFocus
-                  placeholder="Node name"
+                  placeholder="Node ID"
                   className="h-10 text-base"
                 />
               ) : (
                 <div
                   className="h-10 flex items-center text-base text-slate-900 cursor-text"
                   onClick={() => {
-                    setTitleDraft(data.title || "")
-                    setIsEditingTitle(true)
+                    setNodeIdDraft(data.nodeId || "")
+                    setIsEditingId(true)
                   }}
-                  title="Click to edit name"
+                  title="Click to edit ID"
                 >
-                  {data.title || "Untitled node"}
+                  {data.nodeId}
                 </div>
               )}
             </div>

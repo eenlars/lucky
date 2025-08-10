@@ -26,9 +26,13 @@ interface MCPConfig {
 
 function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   try {
-    const configPath = path.join(PATHS.runtime, "mcp-secret.json")
+    const configPath = process.env.MCP_SECRET_PATH
+      ? path.resolve(process.env.MCP_SECRET_PATH)
+      : path.join(PATHS.runtime, "mcp-secret.json")
     if (!fs.existsSync(configPath)) {
-      return {}
+      throw new Error(
+        "mcp-secret.json does not exist. Please create it in the runtime folder."
+      )
     }
 
     const configContent = fs.readFileSync(configPath, "utf-8")
@@ -40,6 +44,8 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
       )
       return {}
     }
+
+    console.log("configPath", configPath)
 
     // Validate each MCP server config
     const validatedServers: MCPConfig["mcpServers"] = {}
@@ -146,6 +152,8 @@ export async function setupMCPForNode(
 
   // 2. Fetch each client's tool set
   const toolSets = await Promise.all(clients.map((client) => client.tools()))
+
+  console.log(toolSets)
 
   // 3. Merge all tool definitions into one flat object
   const tools = Object.assign({}, ...toolSets)

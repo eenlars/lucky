@@ -1,7 +1,7 @@
 import type { ModelNameV2 } from "@core/utils/spending/models.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
-import { processStepsV2 } from "../stepProcessor"
+import { processStepsV2 } from "../vercel/vercelStepProcessor"
 
 describe("processStepsV2", () => {
   const testModel: ModelNameV2 = getDefaultModels().default

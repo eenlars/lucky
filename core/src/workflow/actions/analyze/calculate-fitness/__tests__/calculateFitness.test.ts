@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { calculateFitness } from "../calculateFitness"
 

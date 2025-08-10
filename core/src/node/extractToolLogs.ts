@@ -3,7 +3,7 @@ import {
   isTextProcessed,
   isToolProcessed,
   type ProcessedResponse,
-} from "@core/messages/api/processResponse.types"
+} from "@core/messages/api/vercel/processResponse.types"
 
 /**
  * Extracts tool logs from a ProcessedResponse in a format suitable for makeLearning

@@ -13,7 +13,6 @@ vi.mock("../benchmarks/gaia/GAIALocalLoader", () => ({
   },
 }))
 
-
 describe("GAIALoader", () => {
   beforeEach(() => {
     vi.clearAllMocks()

@@ -1,4 +1,7 @@
 // vitest setup file
+import fs from "fs"
+import os from "os"
+import path from "path"
 import { beforeEach, vi } from "vitest"
 
 // Make vi globally available
@@ -25,11 +28,11 @@ process.env.WEBSHARE_API_KEY = "test-webshare-key"
 
 // Universal mocks for all tests - applied at the top level to prevent import issues
 
-// Mock environment variables to prevent validation failures  
+// Mock environment variables to prevent validation failures
 vi.mock("@core/utils/env.mjs", () => ({
   envi: {
     GOOGLE_API_KEY: "test-google-key",
-    OPENAI_API_KEY: "test-openai-key", 
+    OPENAI_API_KEY: "test-openai-key",
     SERPAPI_API_KEY: "test-serp-key",
     ANTHROPIC_API_KEY: "test-anthropic-key",
     TAVILY_API_KEY: "test-tavily-key",
@@ -45,7 +48,14 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
-// Mock runtime constants to prevent import resolution issues
+// Compute safe temp directories for filesystem paths during tests
+const TEST_TMP_ROOT = path.join(os.tmpdir(), "together-tests")
+const TEST_LOGGING_DIR = path.join(TEST_TMP_ROOT, "node", "logging")
+const TEST_MEMORY_ROOT = path.join(TEST_TMP_ROOT, "memory", "root")
+const TEST_MEMORY_WORKFILES = path.join(TEST_TMP_ROOT, "memory", "workfiles")
+const TEST_ERROR_DIR = path.join(TEST_TMP_ROOT, "node", "error")
+
+// Mock runtime constants to prevent import resolution issues and avoid writing to root
 vi.mock("@runtime/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
@@ -147,37 +157,54 @@ vi.mock("@runtime/settings/constants", () => ({
     fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
+    root: TEST_TMP_ROOT,
+    app: path.join(TEST_TMP_ROOT, "app"),
+    runtime: path.join(TEST_TMP_ROOT, "runtime"),
+    codeTools: path.join(TEST_TMP_ROOT, "codeTools"),
+    setupFile: path.join(TEST_TMP_ROOT, "setup.json"),
+    improver: path.join(TEST_TMP_ROOT, "improver"),
     node: {
-      logging: "/test/node/logging",
+      logging: TEST_LOGGING_DIR,
       memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
+        root: TEST_MEMORY_ROOT,
+        workfiles: TEST_MEMORY_WORKFILES,
       },
-      error: "/test/node/error",
+      error: TEST_ERROR_DIR,
     },
   },
 }))
+
+// Point MCP loader to the real mcp-secret.json if it exists; otherwise leave unset
+try {
+  const REPO_ROOT = path.resolve(__dirname, "../../../..")
+  const SRC_SECRET = path.join(REPO_ROOT, "runtime", "mcp-secret.json")
+  if (fs.existsSync(SRC_SECRET)) {
+    process.env.MCP_SECRET_PATH = SRC_SECRET
+  }
+} catch {}
 
 // Mock Supabase client to prevent database connection issues
 vi.mock("@core/utils/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
-      insert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
-      upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      insert: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      upsert: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-      update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      update: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       delete: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       not: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
+      single: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: { id: "test-id" } }),
     }),
   },
 }))

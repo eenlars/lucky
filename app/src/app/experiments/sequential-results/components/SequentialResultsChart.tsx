@@ -45,7 +45,7 @@ export default function SequentialResultsChart({
         />
         <Legend
           content={(props) => {
-            const { payload } = props as any
+            const { payload } = props
             if (!payload) return null
 
             // Sort payload to match chains order

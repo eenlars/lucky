@@ -2,8 +2,8 @@
  * sequentialRunner.ts - Modified runner for sequential tool execution tracking
  * Tracks execution order, timestamps, and data flow between tools
  */
-import { processModelResponse } from "@core/messages/api/processResponse"
-import { sendAI } from "@core/messages/api/sendAI"
+import { processResponseVercel } from "@core/messages/api/processResponse"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { CoreMessage, ToolSet } from "ai"
@@ -68,8 +68,8 @@ export async function runSequentialTools(
     }
 
     // Normalize via core response processor to capture step tool args/returns
-    const processed = processModelResponse({
-      response: resp.data as any,
+    const processed = processResponseVercel({
+      response: resp.data,
       modelUsed: model,
       nodeId: "sequential-runner",
     })

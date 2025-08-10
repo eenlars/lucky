@@ -31,7 +31,7 @@ export function AppDropdownMenu({
               : undefined
             return (
               <button
-                key={item.title}
+                key={item.displayName}
                 onClick={() => onAddNode(item.id)}
                 className="w-full"
               >
@@ -39,7 +39,7 @@ export function AppDropdownMenu({
                   {IconComponent ? (
                     <IconComponent aria-label={item?.icon} />
                   ) : null}
-                  <span>New {item.title}</span>
+                  <span>New {item.displayName}</span>
                 </DropdownMenuItem>
               </button>
             )

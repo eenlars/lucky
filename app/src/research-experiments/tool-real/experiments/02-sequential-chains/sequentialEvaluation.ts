@@ -22,10 +22,13 @@ export function validateSequentialExecution(
 
   // 1a. Strictness – no extra tools and no repeats
   const extraTools = calledTools.filter((t) => !expectedChain.includes(t))
-  const toolUseCounts = calledTools.reduce((acc, t) => {
-    acc[t] = (acc[t] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const toolUseCounts = calledTools.reduce(
+    (acc, t) => {
+      acc[t] = (acc[t] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
   const repeatedTools = Object.entries(toolUseCounts)
     .filter(([t, c]) => expectedChain.includes(t) && c > 1)
     .map(([t]) => t)
@@ -105,30 +108,34 @@ export function validateSequentialExecution(
 
     // Check if the current output matches any of the next tool's input parameters
     // This handles both single and multi-parameter tools
-    const outputMatchesInput = nextInputValues.some(
-      (inputValue) => {
-        // Direct equality check first
-        if (inputValue === currentOutput) return true
-        
-        // For objects, use deep equality with proper null/undefined handling
-        if (typeof inputValue === 'object' && typeof currentOutput === 'object') {
-          if (inputValue === null && currentOutput === null) return true
-          if (inputValue === null || currentOutput === null) return false
-          
-          try {
-            // Sort object keys for consistent comparison
-            const sortedInput = JSON.stringify(inputValue, Object.keys(inputValue as Record<string, unknown>).sort())
-            const sortedOutput = JSON.stringify(currentOutput, Object.keys(currentOutput as Record<string, unknown>).sort())
-            return sortedInput === sortedOutput
-          } catch {
-            return false
-          }
+    const outputMatchesInput = nextInputValues.some((inputValue) => {
+      // Direct equality check first
+      if (inputValue === currentOutput) return true
+
+      // For objects, use deep equality with proper null/undefined handling
+      if (typeof inputValue === "object" && typeof currentOutput === "object") {
+        if (inputValue === null && currentOutput === null) return true
+        if (inputValue === null || currentOutput === null) return false
+
+        try {
+          // Sort object keys for consistent comparison
+          const sortedInput = JSON.stringify(
+            inputValue,
+            Object.keys(inputValue as Record<string, unknown>).sort()
+          )
+          const sortedOutput = JSON.stringify(
+            currentOutput,
+            Object.keys(currentOutput as Record<string, unknown>).sort()
+          )
+          return sortedInput === sortedOutput
+        } catch {
+          return false
         }
-        
-        // Fallback to string comparison
-        return String(inputValue) === String(currentOutput)
       }
-    )
+
+      // Fallback to string comparison
+      return String(inputValue) === String(currentOutput)
+    })
 
     if (!outputMatchesInput) {
       dataFlowCorrect = false
@@ -215,7 +222,9 @@ export function validateSequentialExecution(
   }
 }
 
-export function analyzeExperimentResults(results: ExperimentResult[]): ExperimentAnalysis {
+export function analyzeExperimentResults(
+  results: ExperimentResult[]
+): ExperimentAnalysis {
   const byModel = results.reduce(
     (acc, result) => {
       if (!acc[result.model]) acc[result.model] = []

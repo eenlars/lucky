@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { type CodeToolName } from "@core/tools/tool.types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
@@ -38,7 +38,7 @@ export async function improveWorkflowUnified(
   guard(feedback, "Feedback not set")
 
   // step 4: llm judge with full json input/output
-  const { data, success, error, usdCost } = await Messages.sendAI({
+  const { data, success, error, usdCost } = await sendAI({
     // watch out: this is without the easyModelNames option!
     messages: WorkflowEvolutionPrompts.createJudgePrompt(
       config,

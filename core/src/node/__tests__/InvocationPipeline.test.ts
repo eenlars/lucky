@@ -9,8 +9,8 @@ vi.mock("@core/utils/logging/Logger", () => ({
     trace: vi.fn().mockResolvedValue(undefined),
     onlyIf: vi
       .fn()
-      .mockImplementation((decider: boolean) =>
-        decider ? Promise.resolve() : null
+      .mockImplementation((decider: boolean, ...args: any[]) =>
+        decider ? Promise.resolve(args) : null
       ),
     logAndSave: vi.fn().mockResolvedValue(undefined),
     finalizeWorkflowLog: vi.fn().mockResolvedValue(null),
@@ -22,10 +22,8 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import {
-  InvocationPipeline,
-  type NodeInvocationCallContext,
-} from "../InvocationPipeline"
+import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
+import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { ToolManager } from "../toolManager"
 
 // Mock runtime constants using standard approach
@@ -159,13 +157,13 @@ vi.mock("../../../runtime/code_tools/file-saver/save", () => ({
 // Logger already mocked at top of file
 
 // mock external dependencies with simple implementations
-vi.mock("@core/messages/api/sendAI", () => ({
+// Mock sendAI from the actual import path used in code
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
     data: {
       text: "AI response",
-      toolCalls: [],
-      finishReason: "stop",
+      // minimal shape to keep downstream logic happy in text mode
       usage: { promptTokens: 10, completionTokens: 20, totalTokens: 30 },
     },
     usdCost: 0.01,
@@ -173,36 +171,20 @@ vi.mock("@core/messages/api/sendAI", () => ({
   normalizeModelName: vi.fn().mockReturnValue("openai/gpt-4.1-mini"),
 }))
 
+// Align processResponse mock with actual exported names and shapes
 vi.mock("@core/messages/api/processResponse", () => ({
-  processModelResponse: vi.fn().mockReturnValue({
+  processResponseVercel: vi.fn().mockReturnValue({
     nodeId: "test-node",
     type: "text",
-    content: "test response",
+    content: "response content",
+    cost: 0.01,
     summary: "test summary",
+    agentSteps: [{ type: "text", return: "response content" }],
   }),
-  processVercelResponse: vi.fn().mockResolvedValue({
-    nodeId: "test-node",
-    type: "tool",
-    agentSteps: {
-      outputs: [
-        {
-          type: "tool",
-          name: "jsExecutor",
-          args: {},
-          return: "tool execution result",
-        },
-      ],
-      totalCost: 0.01,
-    },
-  }),
-  getFinalOutputNodeInvocation: vi.fn().mockReturnValue({
-    nodeId: "test-node",
-    type: "text",
-    content: "final output",
-    summary: "final summary",
-  }),
+  getFinalOutputNodeInvocation: vi.fn().mockReturnValue("final output"),
   getResponseContentagentSteps: vi.fn().mockReturnValue("response content"),
   getResponseContent: vi.fn().mockReturnValue("response content"),
+  formatSummary: vi.fn().mockReturnValue("formatted test summary"),
 }))
 
 vi.mock("@core/messages/summaries", () => ({
@@ -217,7 +199,8 @@ vi.mock("@core/tools/any/selectToolStrategy", () => ({
   selectToolStrategy: vi.fn().mockResolvedValue("auto"),
 }))
 
-vi.mock("@core/tools/any/selectToolStrategyV2", () => ({
+// Use the actual path used by MultiStepLoopV2Helper
+vi.mock("@core/messages/pipeline/selectTool/selectToolStrategyV2", () => ({
   selectToolStrategyV2: vi.fn().mockResolvedValue({
     type: "terminate",
     reasoning: "test reasoning",
@@ -225,43 +208,36 @@ vi.mock("@core/tools/any/selectToolStrategyV2", () => ({
   }),
 }))
 
-vi.mock("@core/node/strategies/MultiStepLoopV2", () => ({
-  runMultiStepLoopV2: vi.fn().mockResolvedValue({
+// Mock the actual helpers used by InvocationPipeline
+vi.mock("@core/messages/pipeline/agentStepLoop/MultiStepLoopV2", () => ({
+  runMultiStepLoopV2Helper: vi.fn().mockResolvedValue({
     nodeId: "test-node",
     type: "tool",
-    agentSteps: {
-      outputs: [
-        { type: "reasoning", return: "test reasoning" },
-        {
-          type: "text",
-          return: "No action taken based on analysis: test reasoning",
-        },
-        { type: "learning", return: "test learning" },
-        {
-          type: "terminate",
-          return: {
-            nodeId: "test-node",
-            type: "text",
-            content: "final output",
-            summary: "final summary",
-          },
-          summary: "test quick summary",
-        },
-      ],
-      totalCost: 0.02,
-    },
+    agentSteps: [
+      { type: "reasoning", return: "test reasoning" },
+      {
+        type: "text",
+        return: "No action taken based on analysis: test reasoning",
+      },
+      { type: "learning", return: "test learning" },
+      {
+        type: "terminate",
+        return: "final output",
+        summary: "test quick summary",
+      },
+    ],
     cost: 0.02,
     summary: "test quick summary",
     learnings: "test learning",
   }),
 }))
 
-vi.mock("@core/node/strategies/MultiStepLoopV3", () => ({
-  runMultiStepLoopV3: vi.fn().mockResolvedValue({
-    nodeId: "test-node",
-    type: "tool",
-    agentSteps: {
-      outputs: [
+vi.mock("@core/messages/pipeline/agentStepLoop/MultiStepLoopV3", () => ({
+  runMultiStepLoopV3Helper: vi.fn().mockResolvedValue({
+    processedResponse: {
+      nodeId: "test-node",
+      type: "tool",
+      agentSteps: [
         { type: "reasoning", return: "test reasoning" },
         {
           type: "text",
@@ -270,20 +246,16 @@ vi.mock("@core/node/strategies/MultiStepLoopV3", () => ({
         { type: "learning", return: "test learning" },
         {
           type: "terminate",
-          return: {
-            nodeId: "test-node",
-            type: "text",
-            content: "final output",
-            summary: "final summary",
-          },
+          return: "final output",
           summary: "test quick summary",
         },
       ],
-      totalCost: 0.02,
+      cost: 0.02,
+      summary: "test quick summary",
+      learnings: "test learning",
     },
-    cost: 0.02,
-    summary: "test quick summary",
-    learnings: "test learning",
+    debugPrompts: ["debug prompt"],
+    updatedMemory: { learned: "something new" },
   }),
 }))
 
@@ -308,26 +280,101 @@ vi.mock("@core/messages/api/genObject", () => ({
   quickSummaryNull: vi.fn().mockResolvedValue("test quick summary"),
 }))
 
+// Stub response handler to avoid deep logging/handoff and Logger.onlyIf issues
+vi.mock("@core/node/responseHandler", () => ({
+  handleSuccess: vi
+    .fn()
+    .mockImplementation(
+      (
+        _context: any,
+        response: any,
+        debugPrompts: string[] = [],
+        extraCost = 0,
+        updatedMemory: any = null,
+        agentSteps: any[] = []
+      ) =>
+        Promise.resolve({
+          nodeInvocationId: "test-invocation-id",
+          nodeInvocationFinalOutput: "final output",
+          usdCost: (response?.cost ?? 0) + (extraCost ?? 0),
+          nextIds: ["end"],
+          replyMessage: {
+            kind: "result",
+            berichten: [{ type: "text", text: "ok" }],
+          },
+          summaryWithInfo: "summary",
+          agentSteps: agentSteps?.length
+            ? agentSteps
+            : (response?.agentSteps ?? [{ type: "text", return: "ok" }]),
+          updatedMemory: updatedMemory ?? undefined,
+          debugPrompts,
+        })
+    ),
+  handleError: vi
+    .fn()
+    .mockImplementation(
+      ({
+        errorMessage,
+        debugPrompts,
+      }: {
+        errorMessage: string
+        debugPrompts: string[]
+      }) =>
+        Promise.resolve({
+          nodeInvocationId: "error-id",
+          nodeInvocationFinalOutput: errorMessage,
+          usdCost: 0,
+          nextIds: ["end"],
+          error: { message: errorMessage },
+          summaryWithInfo: errorMessage,
+          replyMessage: {
+            kind: "result",
+            berichten: [{ type: "text", text: errorMessage }],
+          },
+          agentSteps: [{ type: "text", return: errorMessage }],
+          debugPrompts: debugPrompts ?? [],
+        })
+    ),
+}))
+
+// Avoid deep handoff logic in error path
+vi.mock("@core/messages/handoffs/main", () => ({
+  chooseHandoff: vi.fn().mockResolvedValue({
+    handoff: "end",
+    usdCost: 0,
+    replyMessage: { kind: "result", berichten: [{ type: "text", text: "" }] },
+  }),
+}))
+
 describe("InvocationPipeline", () => {
   const baseContext: NodeInvocationCallContext = {
-    nodeId: "test-node",
     workflowMessageIncoming: new WorkflowMessage({
       fromNodeId: "start",
       toNodeId: "test-node",
       seq: 1,
-      payload: { kind: "sequential", prompt: "test prompt" },
+      payload: {
+        kind: "sequential",
+        berichten: [{ type: "text", text: "test prompt" }],
+      },
       wfInvId: "wf1",
       originInvocationId: null,
+      skipDatabasePersistence: true,
     }),
     workflowInvocationId: "wf1",
+    workflowVersionId: "test-v1",
     startTime: new Date().toISOString(),
-    handOffs: ["node1"],
-    nodeDescription: "test node description",
-    nodeSystemPrompt: "test system prompt",
-    replyMessage: null,
-    workflowVersionId: "v1",
+    nodeConfig: {
+      nodeId: "test-node",
+      handOffs: ["node1"],
+      description: "test node description",
+      systemPrompt: "test system prompt",
+      modelName: getDefaultModels().default,
+      codeTools: [],
+      mcpTools: [],
+      waitingFor: [],
+    },
+    nodeMemory: {},
     mainWorkflowGoal: "test workflow goal",
-    model: getDefaultModels().default,
     workflowFiles: [],
     expectedOutputType: undefined,
     workflowId: "test-workflow-id",
@@ -340,19 +387,15 @@ describe("InvocationPipeline", () => {
   describe("prepare()", () => {
     it("initializes pipeline successfully", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       const agentSteps = pipeline.getAgentSteps()
 
-      // prepare() calls sendAI for reasoning step, which adds a reasoning output
+      // prepare() adds a prepare step with model analysis
       expect(agentSteps).toContainEqual(
         expect.objectContaining({
-          type: "reasoning",
+          type: "prepare",
           return: expect.stringMatching(/AI response/),
         })
       )
@@ -365,11 +408,7 @@ describe("InvocationPipeline", () => {
         ["jsExecutor", "saveFileLegacy"],
         "v1"
       )
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       expect(pipeline).toBeDefined()
@@ -384,11 +423,7 @@ describe("InvocationPipeline", () => {
         ["jsExecutor", "saveFileLegacy"],
         "v1"
       )
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       await pipeline.execute()
@@ -403,29 +438,13 @@ describe("InvocationPipeline", () => {
     })
 
     it("multi-step loop executes tool strategy and terminates properly", async () => {
-      const { selectToolStrategyV2 } = await import(
-        "@core/tools/any/selectToolStrategyV2"
-      )
-
-      // mock a tool execution strategy followed by termination
-      const mockStrategy = selectToolStrategyV2 as any
-      mockStrategy.mockResolvedValueOnce({
-        type: "terminate",
-        reasoning: "task completed immediately",
-        usdCost: 0.005,
-      })
-
       const toolManager = new ToolManager(
         "test",
         [],
         ["jsExecutor", "saveFileLegacy"],
         "v1"
       )
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       await pipeline.execute()
@@ -451,11 +470,7 @@ describe("InvocationPipeline", () => {
 
     it("executes successfully with single call mode", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       await pipeline.execute()
@@ -464,19 +479,16 @@ describe("InvocationPipeline", () => {
     })
 
     it("handles execution errors gracefully", async () => {
-      const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      // Force single-call path by having zero tools available
+      const toolManager = new ToolManager("test", [], [], "v1")
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
 
       // Mock sendAI to fail during execute phase
-      const { sendAI } = await import("@core/messages/api/sendAI")
-      const mockSendAI = vi.mocked(sendAI)
-      mockSendAI.mockRejectedValueOnce(new Error("AI service error"))
+      const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
+      const mockSendAI = sendAI as unknown as ReturnType<typeof vi.fn>
+      ;(mockSendAI as any).mockRejectedValueOnce(new Error("AI service error"))
 
       await expect(pipeline.execute()).rejects.toThrow(
         "Execution error: AI service error"
@@ -487,11 +499,7 @@ describe("InvocationPipeline", () => {
   describe("process()", () => {
     it("processes results after execution", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
       await pipeline.execute()
@@ -504,11 +512,7 @@ describe("InvocationPipeline", () => {
 
     it("handles processing without execution", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       const result = await pipeline.process()
 
@@ -526,11 +530,7 @@ describe("InvocationPipeline", () => {
       }
 
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        contextWithMemory,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(contextWithMemory, toolManager)
 
       await pipeline.prepare()
       await pipeline.execute()
@@ -546,11 +546,7 @@ describe("InvocationPipeline", () => {
   describe("full pipeline flow", () => {
     it("completes prepare → execute → process successfully", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
-      const pipeline = new InvocationPipeline(
-        baseContext,
-        toolManager,
-        getDefaultModels().default
-      )
+      const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       // complete full pipeline
       await pipeline.prepare()

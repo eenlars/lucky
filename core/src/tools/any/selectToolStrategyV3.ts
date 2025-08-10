@@ -1,10 +1,10 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   toolUsageToString,
   type StrategyResult,
-} from "@core/node/strategies/utils"
+} from "@core/messages/pipeline/agentStepLoop/utils"
+import type { SelectToolStrategyOptions } from "@core/messages/pipeline/selectTool/toolstrategy.types"
 import { explainTools } from "@core/tools/any/explainTools"
-import type { SelectToolStrategyOptions } from "@core/tools/any/selectToolStrategyV2"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
@@ -31,8 +31,14 @@ export async function selectToolStrategyV3<T extends ToolSet>(
   strategyResult: StrategyResult<T> // the result of the strategy
   debugPrompt: string // debugprompt is to check what has been sent to the model.
 }> {
-  const { tools, messages, agentSteps, roundsLeft, systemMessage, model } =
-    options
+  const {
+    tools,
+    identityPrompt,
+    agentSteps,
+    roundsLeft,
+    systemMessage,
+    model,
+  } = options
 
   const shortHash = (s: string) =>
     createHash("sha256").update(s).digest("hex").slice(0, 8)
@@ -43,7 +49,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
     async () => {
       if (isNir(tools) || Object.keys(tools).length === 0) {
         // this should never happen.
-        lgg.error("No tools available.", { tools, messages, roundsLeft })
+        lgg.error("No tools available.", { tools, identityPrompt, roundsLeft })
         const result: StrategyResult<T> = {
           type: "terminate",
           reasoning: "No tools available.",
@@ -119,7 +125,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
       CONTEXT
       - Rounds left: ${roundsLeft}
       - Conversation history:
-      ${JSON.stringify(messages, null, 2)}
+      ${identityPrompt}
       - Past calls:
       ${agentStepsString}
       ${

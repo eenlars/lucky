@@ -29,7 +29,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to formalize workflow",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to formalize workflow",
         data: null,
       },
       { status: 500 }

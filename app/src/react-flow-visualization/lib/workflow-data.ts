@@ -43,7 +43,6 @@ export const initialSetupConfig = (
       handOffs: node.handOffs || [],
       handOffType: node.handOffType,
       memory: node.memory || {},
-      title: node.nodeId,
       label: node.description,
       messageCount: 0,
       status: "initial",

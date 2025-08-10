@@ -1,5 +1,5 @@
+import type { TextContent } from "@core/messages/pipeline/mcp.types"
 import type { Enums } from "@core/utils/clients/supabase/types"
-
 // collaboration Types
 
 // OFFLOAD
@@ -15,48 +15,23 @@ import type { Enums } from "@core/utils/clients/supabase/types"
 // consensus_request: the source node will ask the target node for consensus on a task
 
 // src/core/messages/types.ts
-export type MessageType =
-  | Enums<"MessageRole">
-  | "clarification_request"
-  | "clarification_response"
-  | "aggregated"
+export type MessageType = Enums<"MessageRole">
 
 export interface BasePayload {
   kind: MessageType
+  berichten: TextContent[] // todo-payload change name after the aggregated payload is renamed
 }
 
 export interface SequentialPayload extends BasePayload {
   kind: "sequential"
-  prompt: string
-  context?: string
 }
 
 export interface DelegationPayload extends BasePayload {
   kind: "delegation"
-  prompt: string
-  context?: string
 }
 
-export interface ShowWorkPayload extends BasePayload {
-  kind: "result"
-  workDone: string
-}
-
-export interface ResultErrorPayload extends BasePayload {
-  kind: "result-error"
-  message: string
-  workDone?: string
-}
-
-export interface ErrorPayload extends BasePayload {
-  kind: "error"
-  message: string
-  stack?: string
-}
-
-export interface ControlPayload extends BasePayload {
-  kind: "control"
-  flag: "data" | "error" | "feedback"
+export interface ReplyPayload extends BasePayload {
+  kind: "result" //todo-payload change name to reply
 }
 
 export interface AggregatedPayload extends BasePayload {
@@ -72,24 +47,6 @@ export const isDelegationPayload = (
 ): payload is DelegationPayload => {
   return (payload as DelegationPayload).kind === "delegation"
 }
-export const isShowWorkPayload = (
-  payload: unknown
-): payload is ShowWorkPayload => {
-  return (payload as ShowWorkPayload).kind === "result"
-}
-export const isResultErrorPayload = (
-  payload: unknown
-): payload is ResultErrorPayload => {
-  return (payload as ResultErrorPayload).kind === "result-error"
-}
-export const isErrorPayload = (payload: unknown): payload is ErrorPayload => {
-  return (payload as ErrorPayload).kind === "error"
-}
-export const isControlPayload = (
-  payload: unknown
-): payload is ControlPayload => {
-  return (payload as ControlPayload).kind === "control"
-}
 
 export const isSequentialPayload = (
   payload: unknown
@@ -100,19 +57,41 @@ export const isSequentialPayload = (
 
 export type Payload =
   | DelegationPayload
-  | ShowWorkPayload
-  | ResultErrorPayload
-  | ErrorPayload
-  | ControlPayload
   | SequentialPayload
   | AggregatedPayload
+  | ReplyPayload
 
-export const extractPromptFromPayload = (payload: Payload): string => {
-  if ("prompt" in payload && payload.prompt) return payload.prompt
-  if ("workDone" in payload && payload.workDone) return payload.workDone
-  if ("message" in payload && payload.message) return payload.message
-  if ("messages" in payload && payload.messages) {
-    return payload.messages.map((m) => m.payload).join("\n")
+const joinBerichtenTexts = (items: TextContent[] | undefined): string =>
+  Array.isArray(items)
+    ? items
+        .map((b) => (typeof b.text === "string" ? b.text : ""))
+        .filter(Boolean)
+        .join("\n")
+    : ""
+
+export const extractTextFromPayload = (payload: Payload): string => {
+  switch (payload.kind) {
+    case "aggregated": {
+      const agg = payload as AggregatedPayload
+      return agg.messages
+        .map((m) => extractTextFromPayload(m.payload))
+        .filter(Boolean)
+        .join("\n")
+    }
+    case "delegation":
+    case "sequential":
+    case "result": {
+      // Base payloads read directly from berichten
+      const base = payload as
+        | DelegationPayload
+        | SequentialPayload
+        | ReplyPayload
+      return joinBerichtenTexts(base.berichten)
+    }
+    default: {
+      const _exhaustiveCheck: never = payload as never
+      void _exhaustiveCheck
+      return ""
+    }
   }
-  return ""
 }

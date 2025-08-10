@@ -1,0 +1,466 @@
+{
+  "text": "",
+  "files": [],
+  "reasoningDetails": [],
+  "toolCalls": [
+    {
+      "type": "tool-call",
+      "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+      "toolName": "testTool",
+      "args": {
+        "text": "another example"
+      }
+    }
+  ],
+  "toolResults": [
+    {
+      "type": "tool-result",
+      "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+      "toolName": "testTool",
+      "args": {
+        "text": "another example"
+      },
+      "result": "another example"
+    }
+  ],
+  "finishReason": "tool-calls",
+  "usage": {
+    "promptTokens": 249,
+    "completionTokens": 18,
+    "totalTokens": 267
+  },
+  "warnings": [],
+  "request": {},
+  "response": {
+    "id": "gen-1754786138-9KeU5LdOdQArNAtga5zo",
+    "timestamp": "2025-08-10T00:35:38.980Z",
+    "modelId": "openai/gpt-4.1-nano",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "cf-ray": "96cb6a156b9eb8ed-AMS",
+      "connection": "keep-alive",
+      "content-encoding": "gzip",
+      "content-type": "application/json",
+      "date": "Sun, 10 Aug 2025 00:35:38 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "transfer-encoding": "chunked",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff"
+    },
+    "messages": [
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool-call",
+            "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+            "toolName": "testTool",
+            "args": {
+              "text": "sample input"
+            }
+          }
+        ],
+        "id": "msg-yELgo8bCHFksU103Tj6e4N69"
+      },
+      {
+        "role": "tool",
+        "id": "msg-2dEikVdwrKQttQMG0tO7cp6l",
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+            "toolName": "testTool",
+            "result": "sample input"
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool-call",
+            "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+            "toolName": "testTool",
+            "args": {
+              "text": "random input"
+            }
+          }
+        ],
+        "id": "msg-2FYiZmriTR11FOCkiL0dDhFy"
+      },
+      {
+        "role": "tool",
+        "id": "msg-5C6ogPRApqpiiEs9pahUZJwP",
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+            "toolName": "testTool",
+            "result": "random input"
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool-call",
+            "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+            "toolName": "testTool",
+            "args": {
+              "text": "another example"
+            }
+          }
+        ],
+        "id": "msg-XzjBL0uKHuiv8qWgNFubwMIQ"
+      },
+      {
+        "role": "tool",
+        "id": "msg-BJgMWNAYXC6unEADIsfcikXF",
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+            "toolName": "testTool",
+            "result": "another example"
+          }
+        ]
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stepType": "initial",
+      "text": "",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [
+        {
+          "type": "tool-call",
+          "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+          "toolName": "testTool",
+          "args": {
+            "text": "sample input"
+          }
+        }
+      ],
+      "toolResults": [
+        {
+          "type": "tool-result",
+          "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+          "toolName": "testTool",
+          "args": {
+            "text": "sample input"
+          },
+          "result": "sample input"
+        }
+      ],
+      "finishReason": "tool-calls",
+      "usage": {
+        "promptTokens": 56,
+        "completionTokens": 6,
+        "totalTokens": 62
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754786137-uMa2lZSlY7AFiDvACv7X",
+        "timestamp": "2025-08-10T00:35:37.821Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "96cb6a0e3c42b8ed-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Sun, 10 Aug 2025 00:35:37 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "args": {
+                  "text": "sample input"
+                }
+              }
+            ],
+            "id": "msg-yELgo8bCHFksU103Tj6e4N69"
+          },
+          {
+            "role": "tool",
+            "id": "msg-2dEikVdwrKQttQMG0tO7cp6l",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "result": "sample input"
+              }
+            ]
+          }
+        ]
+      },
+      "isContinued": false
+    },
+    {
+      "stepType": "tool-result",
+      "text": "",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [
+        {
+          "type": "tool-call",
+          "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+          "toolName": "testTool",
+          "args": {
+            "text": "random input"
+          }
+        }
+      ],
+      "toolResults": [
+        {
+          "type": "tool-result",
+          "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+          "toolName": "testTool",
+          "args": {
+            "text": "random input"
+          },
+          "result": "random input"
+        }
+      ],
+      "finishReason": "tool-calls",
+      "usage": {
+        "promptTokens": 83,
+        "completionTokens": 6,
+        "totalTokens": 89
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754786137-WYTgVP8ofUdlO29SBvao",
+        "timestamp": "2025-08-10T00:35:38.417Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "96cb6a11afb3b8ed-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Sun, 10 Aug 2025 00:35:38 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "args": {
+                  "text": "sample input"
+                }
+              }
+            ],
+            "id": "msg-yELgo8bCHFksU103Tj6e4N69"
+          },
+          {
+            "role": "tool",
+            "id": "msg-2dEikVdwrKQttQMG0tO7cp6l",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "result": "sample input"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+                "toolName": "testTool",
+                "args": {
+                  "text": "random input"
+                }
+              }
+            ],
+            "id": "msg-2FYiZmriTR11FOCkiL0dDhFy"
+          },
+          {
+            "role": "tool",
+            "id": "msg-5C6ogPRApqpiiEs9pahUZJwP",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+                "toolName": "testTool",
+                "result": "random input"
+              }
+            ]
+          }
+        ]
+      },
+      "isContinued": false
+    },
+    {
+      "stepType": "tool-result",
+      "text": "",
+      "reasoningDetails": [],
+      "files": [],
+      "sources": [],
+      "toolCalls": [
+        {
+          "type": "tool-call",
+          "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+          "toolName": "testTool",
+          "args": {
+            "text": "another example"
+          }
+        }
+      ],
+      "toolResults": [
+        {
+          "type": "tool-result",
+          "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+          "toolName": "testTool",
+          "args": {
+            "text": "another example"
+          },
+          "result": "another example"
+        }
+      ],
+      "finishReason": "tool-calls",
+      "usage": {
+        "promptTokens": 110,
+        "completionTokens": 6,
+        "totalTokens": 116
+      },
+      "warnings": [],
+      "request": {},
+      "response": {
+        "id": "gen-1754786138-9KeU5LdOdQArNAtga5zo",
+        "timestamp": "2025-08-10T00:35:38.980Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "96cb6a156b9eb8ed-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Sun, 10 Aug 2025 00:35:38 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "args": {
+                  "text": "sample input"
+                }
+              }
+            ],
+            "id": "msg-yELgo8bCHFksU103Tj6e4N69"
+          },
+          {
+            "role": "tool",
+            "id": "msg-2dEikVdwrKQttQMG0tO7cp6l",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_Sj99k18mNxNOfkbGCHuO3ejW",
+                "toolName": "testTool",
+                "result": "sample input"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+                "toolName": "testTool",
+                "args": {
+                  "text": "random input"
+                }
+              }
+            ],
+            "id": "msg-2FYiZmriTR11FOCkiL0dDhFy"
+          },
+          {
+            "role": "tool",
+            "id": "msg-5C6ogPRApqpiiEs9pahUZJwP",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_Uh5pjvuLqbLmaigbWcm076zA",
+                "toolName": "testTool",
+                "result": "random input"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+                "toolName": "testTool",
+                "args": {
+                  "text": "another example"
+                }
+              }
+            ],
+            "id": "msg-XzjBL0uKHuiv8qWgNFubwMIQ"
+          },
+          {
+            "role": "tool",
+            "id": "msg-BJgMWNAYXC6unEADIsfcikXF",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_coVRvytwpy5vGpicsgdaWybH",
+                "toolName": "testTool",
+                "result": "another example"
+              }
+            ]
+          }
+        ]
+      },
+      "isContinued": false
+    }
+  ],
+  "sources": []
+}

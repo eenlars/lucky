@@ -4,7 +4,7 @@ import type {
   Payload,
   SequentialPayload,
 } from "@core/messages/MessagePayload"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 
@@ -84,7 +84,10 @@ export class HandoffMessageHandler {
       return [
         {
           toNodeId: "end",
-          payload: { kind: "result", workDone: derivedPrompt },
+          payload: {
+            kind: "result",
+            berichten: [{ type: "text", text: derivedPrompt }],
+          },
         },
       ]
     }
@@ -100,17 +103,25 @@ export class HandoffMessageHandler {
         defaultKind === "delegation"
           ? {
               kind: "delegation",
-              prompt,
-              context: useParallel
-                ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                : "",
+              berichten: [
+                {
+                  type: "text",
+                  text: useParallel
+                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
+                    : "",
+                },
+              ],
             }
           : {
               kind: "sequential",
-              prompt,
-              context: useParallel
-                ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                : "",
+              berichten: [
+                {
+                  type: "text",
+                  text: useParallel
+                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
+                    : "",
+                },
+              ],
             }
 
       return { toNodeId, payload: base as Payload }

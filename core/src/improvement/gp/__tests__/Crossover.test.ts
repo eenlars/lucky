@@ -177,7 +177,6 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-
 vi.mock("@core/improvement/GP/OperatorRegistry", () => ({
   OperatorRegistry: {
     registerCrossover: mockRegisterCrossover,
@@ -440,9 +439,11 @@ describe("Crossover", () => {
 
       const params = createMockCrossoverParams({ verbose: false })
       const response = await Crossover.crossover(params)
-      
+
       expect(response.success).toBe(false)
-      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
+      expect(response.error).toContain(
+        "formalizeWorkflow returned no valid workflow"
+      )
     })
 
     it("should handle verification failure", async () => {
@@ -464,9 +465,11 @@ describe("Crossover", () => {
 
       const params = createMockCrossoverParams({ verbose: false })
       const response = await Crossover.crossover(params)
-      
+
       expect(response.success).toBe(false)
-      expect(response.error).toContain("Crossover failed: invalid workflow after verifying")
+      expect(response.error).toContain(
+        "Crossover failed: invalid workflow after verifying"
+      )
     })
 
     it("should use crossover strategy in prompt", async () => {
@@ -548,9 +551,11 @@ describe("Crossover", () => {
 
       const params = createMockCrossoverParams({ verbose: false })
       const response = await Crossover.crossover(params)
-      
+
       expect(response.success).toBe(false)
-      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
+      expect(response.error).toContain(
+        "formalizeWorkflow returned no valid workflow"
+      )
     })
 
     it("should handle AI request timeout", async () => {
@@ -564,7 +569,7 @@ describe("Crossover", () => {
 
       const params = createMockCrossoverParams({ verbose: false })
       const response = await Crossover.crossover(params)
-      
+
       expect(response.success).toBe(false)
       expect(response.error).toContain("Crossover failed: error")
     })

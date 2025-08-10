@@ -18,6 +18,16 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
+import os from "os"
+import path from "path"
+
+// Safe temp directories for this test
+const TEST_TMP_ROOT = path.join(os.tmpdir(), "together-tests")
+const TEST_LOGGING_DIR = path.join(TEST_TMP_ROOT, "node", "logging")
+const TEST_MEMORY_ROOT = path.join(TEST_TMP_ROOT, "memory", "root")
+const TEST_MEMORY_WORKFILES = path.join(TEST_TMP_ROOT, "memory", "workfiles")
+const TEST_ERROR_DIR = path.join(TEST_TMP_ROOT, "node", "error")
+
 // Mock runtime constants - comprehensive CONFIG
 vi.mock("@runtime/settings/constants", () => ({
   CONFIG: {
@@ -121,19 +131,19 @@ vi.mock("@runtime/settings/constants", () => ({
     fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
+    root: TEST_TMP_ROOT,
+    app: path.join(TEST_TMP_ROOT, "app"),
+    runtime: path.join(TEST_TMP_ROOT, "runtime"),
+    codeTools: path.join(TEST_TMP_ROOT, "codeTools"),
+    setupFile: path.join(TEST_TMP_ROOT, "setup.json"),
+    improver: path.join(TEST_TMP_ROOT, "improver"),
     node: {
-      logging: "/test/node/logging",
+      logging: TEST_LOGGING_DIR,
       memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
+        root: TEST_MEMORY_ROOT,
+        workfiles: TEST_MEMORY_WORKFILES,
       },
-      error: "/test/node/error",
+      error: TEST_ERROR_DIR,
     },
   },
 }))
@@ -144,18 +154,26 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
+          single: vi
+            .fn()
+            .mockResolvedValue({ error: null, data: { id: "test-id" } }),
         }),
       }),
-      upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      upsert: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-      update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      update: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       delete: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       not: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
+      single: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: { id: "test-id" } }),
     }),
   },
 }))

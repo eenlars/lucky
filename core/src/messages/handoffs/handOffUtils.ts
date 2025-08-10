@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { Payload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { llmify } from "@core/utils/common/llmify"
@@ -6,6 +6,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { truncate } from "lodash"
 import z from "zod"
 
 /** Single place to call the LLM so both modes stay identical. */
@@ -24,7 +25,7 @@ export async function callModelHandoff({
   you should choose the best handoff for the next task.
   `
 
-  const { data, error, usdCost } = await Messages.sendAI({
+  const { data, error, usdCost } = await sendAI({
     messages: [
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(prompt) },
@@ -83,9 +84,10 @@ export function buildResultHandoff({
       handoff: "end",
       usdCost: usdCost ?? 0,
       replyMessage: {
-        kind: "result-error",
-        message: "No handoff data received from model",
-        workDone: content,
+        kind: "result",
+        berichten: [
+          { type: "text", text: "No handoff data received from model" },
+        ],
       },
     }
   }
@@ -99,9 +101,10 @@ export function buildResultHandoff({
       handoff: "end",
       usdCost: usdCost ?? 0,
       replyMessage: {
-        kind: "result-error",
-        message: "Invalid handoff response from model",
-        workDone: content,
+        kind: "result",
+        berichten: [
+          { type: "text", text: "Invalid handoff response from model" },
+        ],
       },
     }
   }
@@ -116,7 +119,10 @@ export function buildResultHandoff({
     return {
       handoff: data.handoff,
       usdCost: usdCost ?? 0,
-      replyMessage: { kind: "result", workDone: content },
+      replyMessage: {
+        kind: "result",
+        berichten: [{ type: "text", text: content }],
+      },
     }
   }
 
@@ -126,9 +132,13 @@ export function buildResultHandoff({
       handoff: "end",
       usdCost: usdCost ?? 0,
       replyMessage: {
-        kind: "result-error",
-        message: data.error,
-        workDone: content,
+        kind: "result",
+        berichten: [
+          {
+            type: "text",
+            text: truncate(String(data.error), { length: 1000 }),
+          },
+        ],
       },
     }
   }

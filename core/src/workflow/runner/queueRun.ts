@@ -4,8 +4,8 @@ import type {
   AggregatedPayload,
   MessageType,
 } from "@core/messages/MessagePayload"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import type { Json } from "@core/utils/clients/supabase/types"
@@ -107,7 +107,12 @@ export async function queueRun({
     seq: seq++,
     payload: {
       kind: messageType,
-      prompt: workflowInput.replace(/\n/g, " ").replace(/\s+/g, " "),
+      berichten: [
+        {
+          type: "text",
+          text: workflowInput.replace(/\n/g, " ").replace(/\s+/g, " "),
+        },
+      ],
     },
     wfInvId: workflowInvocationId,
   })
@@ -182,6 +187,12 @@ export async function queueRun({
       // All messages received, create aggregated message
       const aggregatedPayload: AggregatedPayload = {
         kind: "aggregated",
+        berichten: [
+          {
+            type: "text",
+            text: "Just aggregating messages.",
+          },
+        ],
         messages: receivedMessages.map((msg) => ({
           fromNodeId: msg.fromNodeId,
           payload: msg.payload,
@@ -255,7 +266,6 @@ export async function queueRun({
       agentSteps,
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
-      workflowVersionId,
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
       ...toolContext,
     })
@@ -269,7 +279,8 @@ export async function queueRun({
 
     if (error) {
       lgg.error(
-        `[queueRun] Node invocation error for ${targetNode.nodeId}: ${error}`
+        `[queueRun] Node invocation error for ${targetNode.nodeId}`,
+        error
       )
     }
 

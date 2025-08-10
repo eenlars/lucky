@@ -1,17 +1,18 @@
 // src/core/node/response/responseHandler.ts
 
 import { getResponseContent } from "@core/messages/api/processResponse"
-import { type ProcessedResponse } from "@core/messages/api/processResponse.types"
+import { type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { chooseHandoff } from "@core/messages/handoffs/main"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { formatSummary } from "@core/messages/summaries"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
 // todo-circulardep: responseHandler imports from InvocationPipeline which imports back from responseHandler
 import { HandoffMessageHandler } from "@core/messages/handoffs/HandoffMessageHandler"
-import { extractPromptFromPayload } from "@core/messages/MessagePayload"
-import type { NodeInvocationCallContext } from "@core/node/InvocationPipeline"
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
+import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
 import { validateAndDecide } from "@core/utils/validation/message"
 import { CONFIG } from "@runtime/settings/constants"
@@ -24,9 +25,10 @@ export async function handleSuccess(
   response: ProcessedResponse,
   debugPrompts: string[],
   extraCost?: number,
-  updatedMemory?: Record<string, string> | null,
+  updatedMemory?: NodeMemory | null,
   agentSteps?: AgentSteps
 ): Promise<NodeInvocationResult> {
+  const { nodeConfig, workflowFiles, workflowConfig } = context
   if (!response) {
     return handleError({
       context,
@@ -52,14 +54,14 @@ export async function handleSuccess(
 
   // Collect files used by this node invocation
   const filesUsed: string[] = []
-  if (context.workflowFiles) {
-    filesUsed.push(...context.workflowFiles.map((file) => file.filePath))
+  if (workflowFiles) {
+    filesUsed.push(...workflowFiles.map((file) => file.filePath))
   }
 
   // Compute full output string for validation and storage
   const finalNodeInvocationOutput = getResponseContent(response) ?? ""
   // Ensure we always have non-empty text to hand off to the next node
-  const incomingPrompt = extractPromptFromPayload(
+  const incomingPrompt = extractTextFromPayload(
     context.workflowMessageIncoming.payload
   )
   const baseTextForNext =
@@ -67,15 +69,15 @@ export async function handleSuccess(
       ? finalNodeInvocationOutput
       : incomingPrompt && incomingPrompt.trim().length > 0
         ? incomingPrompt
-        : context.nodeSystemPrompt) || ""
+        : nodeConfig.systemPrompt) || ""
 
   // Validate output before handoff decision
   const { shouldProceed, validationError, validationCost } =
     await validateAndDecide({
       nodeOutput: finalNodeInvocationOutput,
       workflowMessage: context.workflowMessageIncoming,
-      systemPrompt: context.nodeSystemPrompt,
-      nodeId: context.nodeId,
+      systemPrompt: nodeConfig.systemPrompt,
+      nodeId: nodeConfig.nodeId,
     })
 
   // Handle validation blocking
@@ -100,9 +102,6 @@ export async function handleSuccess(
       }[]
     | undefined
   try {
-    const nodeConfig = context.workflowConfig?.nodes.find(
-      (n) => n.nodeId === context.nodeId
-    )
     if (nodeConfig) {
       const handler = new HandoffMessageHandler(nodeConfig)
       outgoingMessages = handler.buildMessages(agentSteps, {
@@ -130,12 +129,12 @@ export async function handleSuccess(
     // Fallback: existing selection logic
     // Check if this is a node that should send to multiple targets (parallel processing)
     const isParallelNode =
-      context.handOffType === "parallel" &&
-      context.handOffs.length > 1 &&
-      !context.handOffs.includes("end")
+      nodeConfig.handOffType === "parallel" &&
+      nodeConfig.handOffs.length > 1 &&
+      !nodeConfig.handOffs.includes("end")
 
     if (isParallelNode) {
-      nextIds = context.handOffs
+      nextIds = nodeConfig.handOffs
       replyMessage = {
         kind:
           CONFIG.coordinationType === "sequential"
@@ -151,9 +150,9 @@ export async function handleSuccess(
         usdCost: cost,
         replyMessage: reply,
       } = await chooseHandoff({
-        systemPrompt: context.nodeSystemPrompt,
+        systemPrompt: nodeConfig.systemPrompt,
         workflowMessage: context.workflowMessageIncoming,
-        handOffs: context.handOffs,
+        handOffs: nodeConfig.handOffs,
         content:
           CONFIG.workflow.handoffContent === "full"
             ? baseTextForNext
@@ -175,10 +174,10 @@ export async function handleSuccess(
   let nodeInvocationId: string
   if (context.skipDatabasePersistence) {
     // Skip database save and use mock ID
-    nodeInvocationId = `mock-invocation-${context.nodeId}-${Date.now()}`
+    nodeInvocationId = `mock-invocation-${nodeConfig.nodeId}-${Date.now()}`
   } else {
     const result = await saveNodeInvocationToDB({
-      nodeId: context.nodeId,
+      nodeId: nodeConfig.nodeId,
       start_time: context.startTime,
       messageId: context.workflowMessageIncoming.messageId,
       usdCost: response.cost,
@@ -188,7 +187,7 @@ export async function handleSuccess(
       summary: response.summary ?? "",
       files: filesUsed.length > 0 ? filesUsed : undefined,
       workflowVersionId: context.workflowVersionId,
-      model: context.model,
+      model: context.nodeConfig.modelName,
       updatedMemory: updatedMemory || undefined,
     })
     nodeInvocationId = result.nodeInvocationId
@@ -201,7 +200,7 @@ export async function handleSuccess(
     nextIds: nextIds,
     replyMessage,
     outgoingMessages,
-    summaryWithInfo: formatSummary(response.summary ?? "", context.nodeId),
+    summaryWithInfo: formatSummary(response.summary ?? "", nodeConfig.nodeId),
     agentSteps: response.agentSteps ?? [
       { type: "text", return: finalNodeInvocationOutput },
     ],
@@ -232,7 +231,7 @@ export async function handleError({
   }
 
   const { nodeInvocationId } = await saveNodeInvocationToDB({
-    nodeId: context.nodeId,
+    nodeId: context.nodeConfig.nodeId,
     start_time: context.startTime,
     messageId: context.workflowMessageIncoming.messageId,
     usdCost: 0,
@@ -242,7 +241,7 @@ export async function handleError({
     summary,
     files: filesUsed.length > 0 ? filesUsed : undefined,
     workflowVersionId: context.workflowVersionId,
-    model: context.model,
+    model: context.nodeConfig.modelName,
   })
 
   const {
@@ -250,13 +249,13 @@ export async function handleError({
     usdCost,
     replyMessage,
   } = await chooseHandoff({
-    systemPrompt: context.nodeSystemPrompt,
+    systemPrompt: context.nodeConfig.systemPrompt,
     workflowMessage: context.workflowMessageIncoming,
-    handOffs: context.handOffs,
+    handOffs: context.nodeConfig.handOffs,
     content: `error: ${truncater(errorMessage, 1000)}`,
   })
 
-  const summaryWithInfo = formatSummary(summary, context.nodeId)
+  const summaryWithInfo = formatSummary(summary, context.nodeConfig.nodeId)
 
   return {
     nodeInvocationId,

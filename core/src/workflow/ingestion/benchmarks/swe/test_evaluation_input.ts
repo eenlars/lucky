@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import { listFiles } from "@huggingface/hub"

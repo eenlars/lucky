@@ -4,7 +4,7 @@ import { CONFIG } from "@runtime/settings/constants"
 
 import type { HandoffResult } from "@core/messages/handoffs/handOffUtils"
 import { chooseHandoffHierarchical } from "@core/messages/handoffs/types/hierarchical"
-import type { AgentSteps } from "@core/messages/types/AgentStep.types"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { chooseHandoffSequential } from "./types/sequential"
 
 export type ChooseHandoffOpts = {

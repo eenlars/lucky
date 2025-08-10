@@ -6,8 +6,7 @@ import {
 } from "@core/messages/handoffs/handOffUtils"
 import type { ChooseHandoffOpts } from "@core/messages/handoffs/main"
 import type { Payload } from "@core/messages/MessagePayload"
-import { toolUsageToString } from "@core/node/strategies/utils"
-import { truncater } from "@core/utils/common/llmify"
+import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 
 /**
   Current node State & requirements
@@ -52,9 +51,7 @@ export async function chooseHandoffSequential({
       usdCost: 0,
       replyMessage: {
         kind: "sequential",
-        prompt: `${truncater(content, 1000)}
-        `,
-        context: content, // Include the actual output from the current node
+        berichten: [{ type: "text", text: content }],
       },
       content,
       workflowMessage,
@@ -72,7 +69,7 @@ export async function chooseHandoffSequential({
       usdCost: 0,
       replyMessage: {
         kind: "result",
-        workDone: content,
+        berichten: [{ type: "text", text: content }],
       },
       content,
       workflowMessage,
@@ -120,10 +117,14 @@ export async function chooseHandoffSequential({
 
   const replyMessage: Payload = {
     kind: "sequential",
-    prompt:
-      data?.handoffContext ??
-      `hey, i just did my part of the workflow. could you continue with your part? + ${handOffsContext}`,
-    context: content, // Include the actual output from the current node
+    berichten: [
+      {
+        type: "text",
+        text:
+          data?.handoffContext ??
+          `hey, i just did my part of the workflow. could you continue with your part? + ${handOffsContext}`,
+      },
+    ],
   }
 
   return buildResultHandoff({

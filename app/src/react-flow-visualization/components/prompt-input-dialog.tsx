@@ -41,6 +41,8 @@ export function PromptInputDialog({
     }
   }
 
+  const isExecuting = loading || logs.length > 0
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -52,18 +54,22 @@ export function PromptInputDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <Textarea
-            placeholder="Enter your prompt here..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="min-h-[120px] resize-none"
-            disabled={loading}
-            autoFocus
-          />
-          <p className="text-xs text-muted-foreground">
-            Press Cmd/Ctrl + Enter to execute
-          </p>
+          {!isExecuting && (
+            <>
+              <Textarea
+                placeholder="Enter your prompt here..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="min-h-[120px] resize-none"
+                disabled={loading}
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground">
+                Press Cmd/Ctrl + Enter to execute
+              </p>
+            </>
+          )}
           {logs.length > 0 && (
             <div className="max-h-60 overflow-auto rounded border p-2 text-xs font-mono bg-muted/30">
               {logs.map((m, i) => (

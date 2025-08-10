@@ -1,4 +1,4 @@
-import { Messages } from "@core/messages"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   isErrorProcessed,
   isTextProcessed,
@@ -6,7 +6,7 @@ import {
   type ProcessedResponse,
   type TextProcessed,
   type ToolProcessed,
-} from "@core/messages/api/processResponse.types"
+} from "@core/messages/api/vercel/processResponse.types"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { isNir } from "@core/utils/common/isNir"
@@ -43,8 +43,8 @@ const createAISummary = async (
     })
 
     const result = schema
-      ? await Messages.sendAI({ messages, model, mode: "structured", schema })
-      : await Messages.sendAI({ messages, model, mode: "text" })
+      ? await sendAI({ messages, model, mode: "structured", schema })
+      : await sendAI({ messages, model, mode: "text" })
 
     if (result.success) {
       const summary = schema ? result.data.summary : result.data?.text

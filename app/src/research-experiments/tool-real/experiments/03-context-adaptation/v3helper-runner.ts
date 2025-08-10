@@ -6,12 +6,13 @@
  * MultiStep3.integration.test while remaining self-contained for this experiment.
  */
 
+import { WorkflowMessage } from "@core/messages/WorkflowMessage"
+import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
+import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
+import type { ModelName } from "@core/utils/spending/models.types"
+import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { CONFIG } from "@runtime/settings/constants"
 import type { ToolSet } from "ai"
-import { WorkflowMessage } from "../../../../../../core/src/messages/WorkflowMessage"
-import type { NodeInvocationCallContext } from "../../../../../../core/src/node/InvocationPipeline"
-import { runMultiStepLoopV3Helper } from "../../../../../../core/src/node/strategies/MultiStepLoopV3"
-import type { ModelName } from "../../../../../../core/src/utils/spending/models.types"
-import { CONFIG } from "../../../../../../runtime/settings/constants"
 
 import { adaptiveTools } from "../../shared/tools/adaptive/adaptiveTools"
 import type { ToolExecution } from "../02-sequential-chains/types"
@@ -64,7 +65,12 @@ export async function runMultiToolV3(
     seq: 1,
     payload: {
       kind: "sequential" as const,
-      prompt: userTask,
+      berichten: [
+        {
+          type: "text",
+          text: userTask,
+        },
+      ],
     },
     wfInvId: workflowInvocationId,
     originInvocationId: null,
@@ -72,25 +78,33 @@ export async function runMultiToolV3(
   })
 
   // Minimal mock for the helper – mirrors MultiStep3.integration.test
-  const ctx: NodeInvocationCallContext = {
+  const nodeConfig: WorkflowNodeConfig = {
     nodeId,
-    workflowMessageIncoming,
-    workflowInvocationId,
-    startTime: new Date().toISOString(),
+    description: "Context adaptation experiment node (v3)",
+    systemPrompt: nodeSystemPrompt,
+    modelName: model,
+    mcpTools: [],
+    codeTools: [],
     handOffs: ["end"],
-    nodeDescription: "Context adaptation experiment node (v3)",
-    nodeSystemPrompt,
-    replyMessage: null,
+    memory: initialMemory,
+  }
+
+  const ctx: NodeInvocationCallContext = {
+    // InvocationContext fields
+    workflowId: "wf-prompt-test",
     workflowVersionId,
-    // Provide the concrete user goal here so the strategy sees the exact request
-    mainWorkflowGoal: userTask,
-    model,
+    workflowInvocationId,
     workflowFiles: [],
     expectedOutputType: undefined,
-    workflowId: "wf-prompt-test",
+    mainWorkflowGoal: userTask,
+
+    // NodeInvocationCallContext fields
+    startTime: new Date().toISOString(),
+    workflowMessageIncoming,
+    nodeConfig,
     nodeMemory: initialMemory,
-    skipDatabasePersistence: true,
     workflowConfig: undefined,
+    skipDatabasePersistence: true,
     toolStrategyOverride: "v3",
   }
 

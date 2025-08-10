@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { spliceNode2 } from "@core/node/splice"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"

@@ -10,6 +10,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  type LegendPayload,
 } from "recharts"
 
 type Row = Record<string, number | string>
@@ -44,23 +45,26 @@ export default function PerfectRateChart({
         />
         <Legend
           content={(props) => {
-            const { payload } = props as any
+            const { payload } = props as { payload?: LegendPayload[] }
             if (!payload) return null
 
             // Sort payload to match chains order
             const sortedPayload = chains
-              .map((chain) => payload.find((p: any) => p.dataKey === chain))
-              .filter(Boolean)
+              .map((chain) => payload.find((p) => p.dataKey === chain))
+              .filter((p): p is LegendPayload => Boolean(p))
 
             return (
               <div className="flex justify-center gap-4 mt-4">
-                {sortedPayload.map((entry: any) => (
-                  <div key={entry.dataKey} className="flex items-center gap-2">
+                {sortedPayload.map((entry, idx) => (
+                  <div
+                    key={String(entry.dataKey ?? idx)}
+                    className="flex items-center gap-2"
+                  >
                     <div
                       className="w-3 h-3"
-                      style={{ backgroundColor: entry.color }}
+                      style={{ backgroundColor: String(entry.color) }}
                     />
-                    <span className="text-sm">{entry.value}</span>
+                    <span className="text-sm">{String(entry.value)}</span>
                   </div>
                 ))}
               </div>

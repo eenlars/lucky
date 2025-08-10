@@ -1,4 +1,4 @@
-import { sendAI } from "@core/messages/api/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { tool } from "ai"
 import { describe, expect, it, vi } from "vitest"
@@ -96,7 +96,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
       maxResultCount: z.number().max(20).default(10),
     })
 
-    const { zodToJson } = await import("@core/messages/utils/zodToJson")
+    const { zodToJson } = await import("@core/utils/zod/zodToJson")
     const jsonSchema = zodToJson(schema)
 
     console.log("Generated JSON Schema:", jsonSchema)
