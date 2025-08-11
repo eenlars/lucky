@@ -95,3 +95,8 @@ mcp/*
 
 # NPM pack output
 *.tgz
+
+/resilience/
+**/resilience/**
+**/resilience/
+resilience/
