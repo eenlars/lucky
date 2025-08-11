@@ -1,5 +1,6 @@
 // core test utilities and mocks - consolidated mock file
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type {
   GenomeEvaluationResults,
@@ -12,7 +13,6 @@ import type {
   FullFlowRuntimeConfig,
 } from "@core/types"
 import type { RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   EvaluationCSV,
   EvaluationInput,
@@ -1120,7 +1120,7 @@ export const mockPopulationClass = () => {
 }
 
 export const mockEvaluatorClass = () => {
-  vi.mock("@core/improvement/evaluators/EvolutionEvaluator", () => ({
+  vi.mock("@core/evaluation/evaluators/EvolutionEvaluator", () => ({
     EvolutionEvaluator: vi.fn().mockImplementation(() => mockEvaluatorInstance),
   }))
   return mockEvaluatorInstance

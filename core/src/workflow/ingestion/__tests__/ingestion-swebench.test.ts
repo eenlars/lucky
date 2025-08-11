@@ -1,10 +1,13 @@
+import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
+import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
+import type {
+  SWEBenchInput,
+  SWEBenchInstance,
+} from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { IngestionLayer } from "../IngestionLayer"
-import { SWEBenchLoader } from "../benchmarks/swe/SWEBenchLoader"
-import type { SWEBenchInput, SWEBenchInstance } from "../ingestion.types"
 
 // mock the SWEBenchLoader
-vi.mock("../SWEBenchLoader")
+vi.mock("@core/evaluation/benchmarks/swe/SWEBenchLoader")
 
 describe("IngestionLayer - SWE-bench", () => {
   const mockInstance: SWEBenchInstance = {

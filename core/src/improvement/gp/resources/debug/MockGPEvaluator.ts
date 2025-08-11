@@ -1,4 +1,4 @@
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Genome } from "@core/improvement/gp/Genome"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"

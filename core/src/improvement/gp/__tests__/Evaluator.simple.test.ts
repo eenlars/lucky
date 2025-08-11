@@ -8,7 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Simple inline mocks - no external variables
-vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: class {
     evaluate = vi.fn().mockResolvedValue({
       success: true,
@@ -65,7 +65,7 @@ describe("GPEvaluatorAdapter", () => {
 
   it("evaluates genome successfully", async () => {
     const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
     const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],
@@ -87,11 +87,11 @@ describe("GPEvaluatorAdapter", () => {
 
   it("handles evaluation failure", async () => {
     const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
 
     // Override mock for this test by re-mocking the module
-    vi.doMock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+    vi.doMock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
       AggregatedEvaluator: class {
         evaluate = vi.fn().mockRejectedValue(new Error("eval failed"))
         protected aggregateFitness = vi.fn()
@@ -117,7 +117,7 @@ describe("GPEvaluatorAdapter", () => {
 
   it("uses prompt-only path when configured", async () => {
     const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
     const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],
@@ -143,7 +143,7 @@ describe("GPEvaluatorAdapter", () => {
 
   it("calls genome methods correctly", async () => {
     const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
     const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],

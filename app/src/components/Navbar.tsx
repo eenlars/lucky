@@ -9,7 +9,7 @@ export default function Navbar() {
   const navItems = [
     { href: "/", label: "Home", icon: "🏠" },
     { href: "/edit", label: "Editor", icon: "🔧" },
-    { href: "/runner", label: "Runner", icon: "▶️" },
+    // Runner removed
     { href: "/invocations", label: "Traces", icon: "📊" },
     { href: "/structures", label: "Structures", icon: "🏗️" },
     { href: "/evolution", label: "Evolution", icon: "🧬" },

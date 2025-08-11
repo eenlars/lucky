@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { Workflow } from "@core/workflow/Workflow"
-import { calculateFitness } from "@core/workflow/actions/analyze/calculate-fitness/calculateFitness"
+import { calculateFitness } from "@core/evaluation/calculate-fitness/calculateFitness"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { Workflow } from "@core/workflow/Workflow"
 import { getDefaultModels } from "@runtime/settings/models"
 
 // Integration test: 2-step prompt-only math workflow

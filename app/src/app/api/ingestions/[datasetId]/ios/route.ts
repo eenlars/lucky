@@ -3,12 +3,10 @@ import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 import type { WorkflowIO } from "../../_lib/types"
 
 function uuid(): string {
-  // @ts-expect-error node global may not expose crypto in type, but runtime has it
   if (
     typeof crypto !== "undefined" &&
     typeof crypto.randomUUID === "function"
   ) {
-    // @ts-expect-error
     return crypto.randomUUID()
   }
   return "io_" + Math.random().toString(36).slice(2)

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 // core/scripts/runOnce.ts
 
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
-import { NoEvaluator } from "@core/improvement/evaluators/NoEvaluator"
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
+import { NoEvaluator } from "@core/evaluation/evaluators/NoEvaluator"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { WorkflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"

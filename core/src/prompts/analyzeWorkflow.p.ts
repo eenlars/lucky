@@ -1,7 +1,7 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { llmify } from "@core/utils/common/llmify"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { CoreMessage } from "ai"
 

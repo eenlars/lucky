@@ -1,10 +1,10 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowAnalysisPrompts } from "@core/prompts/analyzeWorkflow.p"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { Workflow } from "@core/workflow/Workflow"
 import { z } from "zod"
 

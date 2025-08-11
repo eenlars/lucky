@@ -1,6 +1,5 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type {
-  AllowedModelName,
   ModelPricingV2,
   StandardModels,
 } from "@core/utils/spending/models.types"
@@ -31,7 +30,7 @@ export const DEFAULT_MODELS = {
     medium: "openai/gpt-4.1-mini",
     high: "google/gemini-2.5-pro-preview",
     default: "openai/gpt-4.1-nano",
-    fitness: "google/gemini-2.5-pro-preview",
+    fitness: "openai/gpt-4.1-mini",
     reasoning: "anthropic/claude-sonnet-4",
     fallback: "switchpoint/router",
   },

@@ -1,5 +1,5 @@
+import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { beforeAll, describe, expect, it, vi } from "vitest"
-import { GAIALoader } from "../benchmarks/gaia/GAIALoader"
 
 // Mock fetch for integration tests to avoid network calls
 const mockFetch = vi.fn()

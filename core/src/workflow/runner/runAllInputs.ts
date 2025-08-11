@@ -1,10 +1,10 @@
-import { isNir } from "@core/utils/common/isNir"
-import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
 import {
   calculateAverageFeedback,
   calculateAverageFitness,
-} from "@core/workflow/actions/analyze/calculate-fitness/average"
+} from "@core/evaluation/calculate-fitness/average"
+import { isNir } from "@core/utils/common/isNir"
+import { lgg } from "@core/utils/logging/Logger"
+import { R, type RS } from "@core/utils/types"
 import {
   evaluateQueueRun,
   queueRun,

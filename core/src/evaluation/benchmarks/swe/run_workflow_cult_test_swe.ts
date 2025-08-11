@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Simple iterative evolution test on random SWE-bench evaluation
 
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import {

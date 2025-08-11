@@ -38,6 +38,7 @@
   "exclude": [
     "node_modules",
     "src/runtime/logging_folder",
-    "src/experiments-2/*"
+    "src/experiments-2/*",
+    ".next/**"
   ]
 }

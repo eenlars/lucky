@@ -1,4 +1,5 @@
 // src/core/workflow/Workflow.ts
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import {
   prepareProblem,
@@ -29,7 +30,6 @@ import {
   verifyWorkflowConfigStrict,
 } from "@core/utils/validation/workflow"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import {
   workflowToString,

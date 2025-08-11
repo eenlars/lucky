@@ -2,8 +2,8 @@
  * Simplified GP types focused on prompt evolution research
  */
 
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 /**

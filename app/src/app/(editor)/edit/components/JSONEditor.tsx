@@ -294,7 +294,7 @@ export default function JSONEditor({
 
               {workflowVersion && (
                 <Link
-                  href={`/runner/${workflowVersion.wf_version_id}`}
+                  href={`/`}
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2"
                 >
                   <span>▶️</span>

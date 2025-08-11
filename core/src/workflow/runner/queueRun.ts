@@ -1,5 +1,8 @@
 // src/core/workflow/queueRun.ts
 
+import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateFeedback"
+import { calculateFitness } from "@core/evaluation/calculate-fitness/calculateFitness"
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type {
   AggregatedPayload,
   MessageType,
@@ -14,9 +17,6 @@ import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/work
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { R, type RS } from "@core/utils/types"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import { calculateFeedback } from "@core/workflow/actions/analyze/calculate-fitness/calculateFeedback"
-import { calculateFitness } from "@core/workflow/actions/analyze/calculate-fitness/calculateFitness"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"

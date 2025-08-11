@@ -1,5 +1,5 @@
+import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { SWEBenchLoader } from "../benchmarks/swe/SWEBenchLoader"
 
 // mock global fetch
 global.fetch = vi.fn()

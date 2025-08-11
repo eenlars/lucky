@@ -1,5 +1,5 @@
+import { WebArenaLoader } from "@core/evaluation/benchmarks/webarena/WebArenaLoader"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { WebArenaLoader } from "../benchmarks/webarena/WebArenaLoader"
 
 // mock global fetch
 global.fetch = vi.fn()

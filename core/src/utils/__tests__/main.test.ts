@@ -125,7 +125,7 @@ vi.mock("@core/workflow/schema/errorMessages", () => ({
   }),
 }))
 
-vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       success: true,
@@ -138,7 +138,7 @@ vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
   })),
 }))
 
-vi.mock("@core/improvement/evaluators/GPEvaluatorAdapter", () => ({
+vi.mock("@core/evaluation/evaluators/GPEvaluatorAdapter", () => ({
   GPEvaluatorAdapter: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       fitness: { score: 0.9 },

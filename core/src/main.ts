@@ -1,8 +1,8 @@
 // src/core/main.ts
 
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
+import { GPEvaluatorAdapter } from "@core/evaluation/evaluators/GPEvaluatorAdapter"
 import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
-import { GPEvaluatorAdapter } from "@core/improvement/evaluators/GPEvaluatorAdapter"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
 import type { IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
 import {

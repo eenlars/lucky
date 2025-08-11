@@ -1,13 +1,13 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesSelfImprovement } from "@core/improvement/behavioral/judge/improveNode"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
 import { judge } from "@core/improvement/behavioral/judge/judge"
 import { parseCliArguments } from "@core/utils/cli/argumentParser"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
-import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 
 /**

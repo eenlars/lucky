@@ -1,11 +1,11 @@
 // app/src/core/invocation/invokeWorkflow.ts
 
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { isNir } from "@core/utils/common/isNir"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import {
   needsEvaluation,
   type EvaluationInput,

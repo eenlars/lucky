@@ -1,6 +1,6 @@
 // evaluator that runs workflow once with all questions combined
 
-import type { WorkflowEvaluationResult } from "@core/improvement/evaluators/WorkflowEvaluator"
+import type { WorkflowEvaluationResult } from "@core/evaluation/evaluators/WorkflowEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { guard } from "@core/workflow/schema/errorMessages"

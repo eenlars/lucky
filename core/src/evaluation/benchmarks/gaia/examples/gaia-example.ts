@@ -1,5 +1,8 @@
-import { IngestionLayer } from "../../../IngestionLayer"
-import type { EvaluationInput, WorkflowIO } from "../../../ingestion.types"
+import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
+import type {
+  EvaluationInput,
+  WorkflowIO,
+} from "@core/workflow/ingestion/ingestion.types"
 import { GAIALocalLoader } from "../GAIALocalLoader"
 
 /**

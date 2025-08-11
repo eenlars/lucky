@@ -1,13 +1,13 @@
+import {
+  feedbackPrompt,
+  type FitnessFunctionInput,
+} from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { rcaPrompt } from "@core/prompts/rca"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import {
-  feedbackPrompt,
-  type FitnessFunctionInput,
-} from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { getDefaultModels } from "@runtime/settings/models"
 
 export async function calculateFeedback({

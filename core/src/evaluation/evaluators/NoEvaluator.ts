@@ -1,6 +1,6 @@
 // evaluator that runs workflow without evaluation for prompt-only flows
 
-import type { WorkflowEvaluationResult } from "@core/improvement/evaluators/WorkflowEvaluator"
+import type { WorkflowEvaluationResult } from "@core/evaluation/evaluators/WorkflowEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import type { Workflow } from "@core/workflow/Workflow"

@@ -1,8 +1,9 @@
 "use client"
 
+import type { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
 import { createContext, useContext, type ReactNode } from "react"
 
-import { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
+// runner removed
 
 type WorkflowRunnerContextValue = ReturnType<typeof useWorkflowRunner>
 
@@ -11,12 +12,7 @@ const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(
 )
 
 export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
-  const runner = useWorkflowRunner()
-  return (
-    <WorkflowRunnerContext.Provider value={runner}>
-      {children}
-    </WorkflowRunnerContext.Provider>
-  )
+  return <>{children}</>
 }
 
 export function useWorkflowRunnerContext() {

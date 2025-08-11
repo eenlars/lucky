@@ -1,7 +1,7 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { workflowToStringFromConfig } from "@core/workflow/actions/generate/workflowToString"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 

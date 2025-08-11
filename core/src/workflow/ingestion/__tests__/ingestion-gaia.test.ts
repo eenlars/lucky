@@ -1,9 +1,9 @@
+import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
+import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { IngestionLayer } from "../IngestionLayer"
-import { GAIALoader } from "../benchmarks/gaia/GAIALoader"
-import type { EvaluationInput } from "../ingestion.types"
 
-vi.mock("../benchmarks/gaia/GAIALoader")
+vi.mock("@core/workflow/ingestion/benchmarks/gaia/GAIALoader")
 
 describe("IngestionLayer - GAIA", () => {
   // FAILING: These tests are failing because they require authentication tokens

@@ -1,3 +1,5 @@
+import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
+import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -5,8 +7,6 @@ import { guard } from "@core/workflow/schema/errorMessages"
 import { CONFIG } from "@runtime/settings/constants"
 import { CSVLoader } from "@shared/utils/files/csv/CSVLoader"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
-import { GAIALoader } from "./benchmarks/gaia/GAIALoader"
-import { SWEBenchLoader } from "./benchmarks/swe/SWEBenchLoader"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**

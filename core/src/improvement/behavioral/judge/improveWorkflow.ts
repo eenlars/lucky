@@ -1,7 +1,7 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { type CodeToolName } from "@core/tools/tool.types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"

@@ -1,6 +1,6 @@
 // adapter to use AggregatedEvaluator in genetic programming
 
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { Genome } from "@core/improvement/gp/Genome"
 import { MockGPEvaluator } from "@core/improvement/gp/resources/debug/MockGPEvaluator"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"

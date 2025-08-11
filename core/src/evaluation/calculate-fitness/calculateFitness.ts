@@ -1,18 +1,18 @@
+import {
+  FitnessOfWorkflowSchema,
+  type FitnessFunctionInput,
+  type FitnessOfWorkflow,
+} from "@core/evaluation/calculate-fitness/fitness.types"
+import {
+  normalizeCost,
+  normalizeTime,
+} from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import {
-  FitnessOfWorkflowSchema,
-  type FitnessFunctionInput,
-  type FitnessOfWorkflow,
-} from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import {
-  normalizeCost,
-  normalizeTime,
-} from "@core/workflow/actions/analyze/calculate-fitness/fitnessNormalize"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 

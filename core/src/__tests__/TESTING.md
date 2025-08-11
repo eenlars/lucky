@@ -46,7 +46,7 @@ describe("MyEvaluator", () => {
 
   it("should evaluate successfully", async () => {
     const { AggregatedEvaluator } = await import(
-      "@core/improvement/evaluators/AggregatedEvaluator"
+      "@core/evaluation/evaluators/AggregatedEvaluator"
     )
     vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
       evaluate: vi.fn().mockResolvedValue({

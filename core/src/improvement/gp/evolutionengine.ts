@@ -26,7 +26,7 @@
  * @see EvolutionEvaluator - External genome evaluation interface
  */
 
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Population } from "@core/improvement/gp/Population"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import { evolutionSettingsToString } from "@core/improvement/gp/resources/evolution-types"

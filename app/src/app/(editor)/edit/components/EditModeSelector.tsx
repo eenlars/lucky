@@ -11,12 +11,6 @@ import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar
 import Workflow from "@/react-flow-visualization/components/workflow"
 import { useAppStore } from "@/react-flow-visualization/store"
 
-import {
-  WorkflowRunnerProvider,
-  useWorkflowRunnerContext,
-} from "@/react-flow-visualization/hooks/workflow-runner-context"
-import { Button } from "@/ui/button"
-import { Play } from "lucide-react"
 import JSONEditor from "./JSONEditor"
 
 // Eval mode (IO table) + config helpers
@@ -63,8 +57,11 @@ export default function EditModeSelector({
   const [ios, setIos] = useState<WorkflowIO[]>([])
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set())
   const [resultsById, setResultsById] = useState<
-    Record<string, { fitness?: any; output?: string; error?: string }>
+    Record<string, { fitness?: any; output?: any; error?: string }>
   >({})
+  const controllersRef = useState<Map<string, AbortController>>(
+    () => new Map()
+  )[0]
 
   const createIO = useCallback(
     async (payload: { input: string; expected: string }) => {
@@ -106,6 +103,8 @@ export default function EditModeSelector({
   const runIO = useCallback(
     async (io: WorkflowIO) => {
       setBusyIds((s) => new Set(s).add(io.id))
+      const controller = new AbortController()
+      controllersRef.set(io.id, controller)
       try {
         // Always export latest edits (graph or json) to JSON
         const json = exportToJSON()
@@ -121,6 +120,7 @@ export default function EditModeSelector({
             dslConfig: cfg,
             cases: [{ workflowInput: io.input, workflowOutput: io.expected }],
           }),
+          signal: controller.signal,
         })
 
         const out = await resp.json()
@@ -131,6 +131,8 @@ export default function EditModeSelector({
             [io.id]: {
               fitness: first?.data?.[0]?.fitness,
               output: first?.data?.[0]?.finalWorkflowOutputs,
+              feedback: first?.data?.[0]?.feedback,
+              wfInvocationId: first?.data?.[0]?.workflowInvocationId,
             },
           }))
         } else {
@@ -142,9 +144,13 @@ export default function EditModeSelector({
       } catch (e: any) {
         setResultsById((m) => ({
           ...m,
-          [io.id]: { error: e?.message || "Error" },
+          [io.id]: {
+            error:
+              e?.name === "AbortError" ? "Canceled" : e?.message || "Error",
+          },
         }))
       } finally {
+        controllersRef.delete(io.id)
         setBusyIds((s) => {
           const next = new Set(s)
           next.delete(io.id)
@@ -152,7 +158,15 @@ export default function EditModeSelector({
         })
       }
     },
-    [exportToJSON]
+    [exportToJSON, controllersRef]
+  )
+
+  const cancelIO = useCallback(
+    (id: string) => {
+      const controller = controllersRef.get(id)
+      if (controller) controller.abort()
+    },
+    [controllersRef]
   )
 
   // Note: runner context is consumed inside a child component to avoid
@@ -217,19 +231,7 @@ export default function EditModeSelector({
   }
 
   if (mode === "graph") {
-    const GraphHeaderButtons = () => {
-      const { setPromptDialogOpen } = useWorkflowRunnerContext()
-      return (
-        <div className="flex items-center space-x-2 ml-3">
-          <Button
-            onClick={() => setPromptDialogOpen(true)}
-            className="cursor-pointer px-2"
-          >
-            <Play /> Run with Prompt
-          </Button>
-        </div>
-      )
-    }
+    const GraphHeaderButtons = () => null
 
     const HeaderRight = (
       <div className="flex items-center space-x-2">
@@ -264,18 +266,16 @@ export default function EditModeSelector({
     )
 
     return (
-      <WorkflowRunnerProvider>
-        <ReactFlowProvider>
-          <SidebarLayout
-            title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
-            right={HeaderRight}
-          >
-            <AppContextMenu>
-              <Workflow workflowVersionId={workflowVersion?.wf_version_id} />
-            </AppContextMenu>
-          </SidebarLayout>
-        </ReactFlowProvider>
-      </WorkflowRunnerProvider>
+      <ReactFlowProvider>
+        <SidebarLayout
+          title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
+          right={HeaderRight}
+        >
+          <AppContextMenu>
+            <Workflow workflowVersionId={workflowVersion?.wf_version_id} />
+          </AppContextMenu>
+        </SidebarLayout>
+      </ReactFlowProvider>
     )
   }
 
@@ -379,6 +379,7 @@ export default function EditModeSelector({
               onUpdate={updateIO}
               onDelete={deleteIO}
               onRun={runIO}
+              onCancel={cancelIO}
             />
           </div>
         </SidebarLayout>
