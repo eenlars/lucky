@@ -4,10 +4,13 @@ export type WorkflowIO = {
   // this will be the input of a workflow.
   workflowInput: string
   // this may be an object, a number .. this is the correct answer what a workflow has to return.
-  expectedWorkflowOutput: any
+  workflowOutput: {
+    output: any // follows MCP property
+    outputSchema?: OutputSchema // follows MCP property
+  }
 }
 
-export type ExpectedOutputSchema = ZodTypeAny
+export type OutputSchema = ZodTypeAny
 
 // this is the input of a workflow, or genome.
 // we can take an input for a workflow which might be a csv or a text question.
@@ -23,7 +26,7 @@ export type EvaluationCSV = {
   type: "csv"
   evaluation?: `column:${string}` // the column name of the expected output.
   inputFile?: string
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
   onlyIncludeInputColumns?: string[]
 } & MainGoal
 
@@ -31,17 +34,17 @@ export type EvaluationText = {
   type: "text"
   question: string
   answer: string
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
 } & MainGoal
 
 export type PromptOnly = {
   type: "prompt-only"
-  expectedOutputSchema?: never
+  outputSchema?: never
 } & MainGoal
 
 export type SWEBenchInput = {
   type: "swebench"
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
 } & MainGoal
 
 export type GAIAInput = {
@@ -49,7 +52,7 @@ export type GAIAInput = {
   taskId: string
   level?: 1 | 2 | 3
   split?: "validation" | "test"
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
 } & MainGoal
 
 export type WebArenaInput = {
@@ -57,7 +60,7 @@ export type WebArenaInput = {
   taskId?: number
   sites?: string[]
   limit?: number
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
 } & MainGoal
 
 // gaia dataset instance structure

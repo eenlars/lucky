@@ -1,5 +1,5 @@
 export type FlowCoordinationType = "sequential" | "hierarchical"
-export type FlowEvolutionMode = "cultural" | "GP"
+export type FlowEvolutionMode = "iterative" | "GP"
 
 export interface FlowCallCost {
   usdCost: number
@@ -89,7 +89,7 @@ export type FlowRuntimeConfig = {
     readonly enforceFileLimit: boolean
   }
   readonly evolution: {
-    readonly culturalIterations: number
+    readonly iterativeIterations: number
     readonly GP: {
       readonly generations: number
       readonly populationSize: number

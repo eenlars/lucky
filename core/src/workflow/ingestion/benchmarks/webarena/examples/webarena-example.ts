@@ -35,7 +35,7 @@ async function main() {
       lgg.info("Input:")
       lgg.info(workflow.workflowInput.substring(0, 200) + "...")
       lgg.info("Expected Output:")
-      lgg.info(workflow.expectedWorkflowOutput.substring(0, 200) + "...")
+      lgg.info(workflow.workflowOutput.output.substring(0, 200) + "...")
     })
 
     // fetch tasks filtered by specific sites

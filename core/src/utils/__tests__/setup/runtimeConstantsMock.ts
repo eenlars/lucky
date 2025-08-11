@@ -4,7 +4,7 @@ export const mockRuntimeConstants = () => ({
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
     evolution: {
-      culturalIterations: 3,
+      iterativeIterations: 3,
       GP: {
         verbose: false,
         populationSize: 5,

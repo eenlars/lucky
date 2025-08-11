@@ -50,11 +50,11 @@ Requires login: ${task.require_login ? "Yes" : "No"}
 Please complete this task by interacting with the specified websites.`
 
         // the expected output contains the evaluation criteria and reference answers
-        let expectedWorkflowOutput = `Evaluation criteria:
+        let workflowOutput = `Evaluation criteria:
 - Evaluation types: ${task.eval.eval_types.join(", ")}`
 
         if (task.eval.reference_answers.exact_match) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 - Expected exact match: "${task.eval.reference_answers.exact_match}"`
         }
 
@@ -62,7 +62,7 @@ Please complete this task by interacting with the specified websites.`
           task.eval.reference_answers.must_include &&
           task.eval.reference_answers.must_include.length > 0
         ) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 - Must include: ${JSON.stringify(task.eval.reference_answers.must_include, null, 2)}`
         }
 
@@ -70,13 +70,15 @@ Please complete this task by interacting with the specified websites.`
           task.eval.reference_answers.fuzzy_match &&
           task.eval.reference_answers.fuzzy_match.length > 0
         ) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 - Fuzzy match options: ${JSON.stringify(task.eval.reference_answers.fuzzy_match, null, 2)}`
         }
 
         const workflowCase: WorkflowIO = {
           workflowInput,
-          expectedWorkflowOutput,
+          workflowOutput: {
+            output: workflowOutput,
+          },
         }
 
         return workflowCase

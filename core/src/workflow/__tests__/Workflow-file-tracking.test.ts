@@ -45,9 +45,9 @@ describe("Workflow File Tracking", () => {
   const mockWorkflow = createMockWorkflow({
     config: mockConfigWithContextFile,
     evaluationInput: mockGoalEval,
-    toolContext: mockGoalEval.expectedOutputSchema
+    toolContext: mockGoalEval.outputSchema
       ? {
-          expectedOutputType: mockGoalEval.expectedOutputSchema,
+          expectedOutputType: mockGoalEval.outputSchema,
         }
       : undefined,
   })
@@ -64,9 +64,9 @@ describe("Workflow File Tracking", () => {
     const workflow = createMockWorkflow({
       config: mockConfigWithoutContextFile,
       evaluationInput: mockGoalEval,
-      toolContext: mockGoalEval.expectedOutputSchema
+      toolContext: mockGoalEval.outputSchema
         ? {
-            expectedOutputType: mockGoalEval.expectedOutputSchema,
+            expectedOutputType: mockGoalEval.outputSchema,
           }
         : undefined,
     })

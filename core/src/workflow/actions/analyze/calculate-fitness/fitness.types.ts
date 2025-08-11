@@ -1,5 +1,5 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { z } from "zod"
 
 export interface FitnessOfWorkflow {
@@ -50,5 +50,5 @@ export type FitnessFunctionInput = {
   totalTime: number
   totalCost: number
   evaluation: string
-  expectedOutputSchema?: ExpectedOutputSchema
+  outputSchema?: OutputSchema
 }

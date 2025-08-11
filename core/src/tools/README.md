@@ -58,7 +58,7 @@ the context is the following:
 interface ToolExecutionContext {
 workflowInvocationId: string
 workflowFiles: WorkflowFile[]
-expectedOutputType: ExpectedOutputSchema | undefined
+expectedOutputType: OutputSchema | undefined
 mainWorkflowGoal: string
 workflowId: string
 }

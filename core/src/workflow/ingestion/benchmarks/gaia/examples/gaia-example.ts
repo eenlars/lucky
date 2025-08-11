@@ -64,7 +64,7 @@ async function runGAIAExample() {
     console.log("Input keys:", Object.keys(workflowCases[0].workflowInput))
     console.log(
       "Expected output keys:",
-      Object.keys(workflowCases[0].expectedWorkflowOutput)
+      Object.keys(workflowCases[0].workflowOutput)
     )
     console.log()
   }

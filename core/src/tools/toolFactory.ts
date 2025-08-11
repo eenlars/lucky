@@ -2,7 +2,7 @@ import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { CodeToolName } from "@core/tools/tool.types"
 import { R, type RS } from "@core/utils/types"
-import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { TOOLS } from "@runtime/settings/tools"
 import { tool, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
@@ -15,7 +15,7 @@ export interface ToolExecutionContext {
   workflowVersionId: string
   workflowInvocationId: string
   workflowFiles: WorkflowFile[]
-  expectedOutputType: ExpectedOutputSchema | undefined
+  expectedOutputType: OutputSchema | undefined
   mainWorkflowGoal: string
 }
 export type InvocationContext = ToolExecutionContext

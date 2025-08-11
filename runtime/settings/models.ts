@@ -69,15 +69,6 @@ export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
   return DEFAULT_MODELS[provider]
 }
 
-export const getActiveModelNames = (): AllowedModelName<
-  typeof MODEL_CONFIG.provider
->[] => {
-  const provider = MODEL_CONFIG.provider
-  return Object.keys(DEFAULT_MODELS[provider]) as AllowedModelName<
-    typeof MODEL_CONFIG.provider
-  >[]
-}
-
 export const experimentalModels = {
   gpt35turbo: providersV2[MODEL_CONFIG.provider]["openai/gpt-3.5-turbo"],
   gpt41: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1"],

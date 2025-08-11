@@ -38,7 +38,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
         `[GPEvaluatorAdapter] First case input: ${workflowCases[0]?.workflowInput.substring(0, 100)}`
       )
       lgg.log(
-        `[GPEvaluatorAdapter] First case output: ${JSON.stringify(workflowCases[0]?.expectedWorkflowOutput).substring(0, 100)}`
+        `[GPEvaluatorAdapter] First case output: ${JSON.stringify(workflowCases[0]?.workflowOutput).substring(0, 100)}`
       )
     }
   }

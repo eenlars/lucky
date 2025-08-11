@@ -37,8 +37,8 @@ export const mockGetWorkflowSetup = vi.fn()
 export const mockEvolutionEngineRun = vi.fn()
 export const mockEvolutionEngineInit = vi.fn()
 
-// cultural evolution mocks
-export const mockCulturalEvolutionMain = vi.fn()
+// iterative evolution mocks
+export const mockIterativeEvolutionMain = vi.fn()
 
 // supabase client mocks
 export const mockSupabaseInsert = vi.fn()
@@ -233,7 +233,9 @@ export const createMockEvaluationInput = (): EvaluationInput => ({
 
 export const createMockWorkflowIO = (): WorkflowIO => ({
   workflowInput: "test workflow input",
-  expectedWorkflowOutput: "test expected output",
+  workflowOutput: {
+    output: "test expected output",
+  },
 })
 
 export const createMockSupabaseClient = (): any => ({
@@ -275,7 +277,7 @@ export const createMockEvolutionEngine = (): any => ({
   getTotalCost: vi.fn().mockReturnValue(0.1),
 })
 
-export const createMockCulturalResult = (): any => ({
+export const createMockIterativeResult = (): any => ({
   results: [
     {
       iteration: 1,
@@ -305,7 +307,7 @@ export const setupCoreMocks = (): void => {
   mockSaveWorkflowConfig.mockResolvedValue(undefined)
   mockDisplayResults.mockReturnValue(undefined)
 
-  mockCulturalEvolutionMain.mockResolvedValue(createMockCulturalResult())
+  mockIterativeEvolutionMain.mockResolvedValue(createMockIterativeResult())
 
   // supabase defaults
   mockSupabaseInsert.mockReturnValue({
@@ -361,7 +363,7 @@ export const resetCoreMocks = (): void => {
   mockGetWorkflowSetup.mockReset()
   mockEvolutionEngineRun.mockReset()
   mockEvolutionEngineInit.mockReset()
-  mockCulturalEvolutionMain.mockReset()
+  mockIterativeEvolutionMain.mockReset()
   mockSupabaseInsert.mockReset()
   mockSupabaseUpdate.mockReset()
   mockSupabaseSelect.mockReset()
@@ -422,10 +424,9 @@ export const createMockWorkflow = (
     options = {
       config: createMockWorkflowConfig(),
       evaluationInput: createMockEvaluationInput(),
-      toolContext: createMockEvaluationInput().expectedOutputSchema
+      toolContext: createMockEvaluationInput().outputSchema
         ? {
-            expectedOutputType:
-              createMockEvaluationInput().expectedOutputSchema,
+            expectedOutputType: createMockEvaluationInput().outputSchema,
           }
         : undefined,
     }
@@ -752,7 +753,7 @@ export const createMockFullFlowRuntimeConfig = (
       },
     },
     evolution: {
-      culturalIterations: 3,
+      iterativeIterations: 3,
       GP: {
         populationSize: 4,
         generations: 3,
@@ -886,7 +887,7 @@ export const createMockRuntimeConstants = () => ({
       enforceFileLimit: true,
     },
     evolution: {
-      culturalIterations: 50,
+      iterativeIterations: 50,
       GP: {
         generations: 40,
         populationSize: 10,
@@ -1005,16 +1006,16 @@ export const mockRuntimeConstantsForGP = (
   }
 }
 
-export const mockRuntimeConstantsForCultural = (
+export const mockRuntimeConstantsForIterative = (
   overrides: {
-    culturalIterations?: number
+    iterativeIterations?: number
     [key: string]: unknown
   } = {}
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
   console.warn(
-    "mockRuntimeConstantsForCultural called but runtime constants need to be mocked at top level"
+    "mockRuntimeConstantsForIterative called but runtime constants need to be mocked at top level"
   )
 }
 

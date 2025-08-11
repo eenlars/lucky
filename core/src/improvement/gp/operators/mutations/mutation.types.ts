@@ -39,7 +39,7 @@ export type MutationType =
   | "structure"
   | "addNode"
   | "deleteNode"
-  | "cultural"
+  | "iterative"
 
 export interface MutationWeight {
   type: MutationType
@@ -64,9 +64,9 @@ export const MUTATION_WEIGHTS: MutationWeight[] = [
     description: "Add, remove, or move tools between nodes",
   },
   {
-    type: "cultural",
+    type: "iterative",
     weight: 0.15,
-    description: "Cultural improvement via unified approach",
+    description: "Iterative improvement via unified approach",
   },
   {
     type: "structure",
@@ -92,8 +92,8 @@ export function getEvolutionMutations(
   evolutionMode: FlowEvolutionMode
 ): MutationType[] {
   switch (evolutionMode) {
-    case "cultural":
-      return ["cultural"]
+    case "iterative":
+      return ["iterative"]
     case "GP":
       return ["model", "prompt", "tool", "structure", "addNode", "deleteNode"]
     default: {

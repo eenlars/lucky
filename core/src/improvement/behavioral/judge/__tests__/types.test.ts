@@ -1,7 +1,7 @@
-// tests for cultural evolution types and interfaces
+// tests for iterative evolution types and interfaces
 import { describe, it, expect } from "vitest"
 
-describe("Cultural Evolution Types", () => {
+describe("Iterative Evolution Types", () => {
   describe("NodeSelfImprovementParams Interface", () => {
     it("should have required properties", () => {
       const params = {

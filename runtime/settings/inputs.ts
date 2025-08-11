@@ -1,5 +1,5 @@
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { ExpectedOutputSchema } from "@runtime/schemas/output.types"
+import { OutputSchema } from "@runtime/schemas/output.types"
 
 const QUESTIONS = {
   albertHeijn: {
@@ -99,7 +99,7 @@ const QUESTIONS = {
       "other_countries_of_operation",
     ],
 
-    expectedOutputSchema: ExpectedOutputSchema,
+    outputSchema: OutputSchema,
     workflowId: "wf-b-corp-empty-response",
   },
   tonys: {
@@ -138,7 +138,7 @@ const QUESTIONS = {
       "other_countries_of_operation",
     ],
 
-    // expectedOutputSchema: ExpectedOutputSchema,
+    // outputSchema: OutputSchema,
     workflowId: "wf-b-corp-simple",
   },
   hardCsv: {
@@ -166,7 +166,7 @@ const QUESTIONS = {
       "website",
       "other_countries_of_operation",
     ],
-    expectedOutputSchema: ExpectedOutputSchema,
+    outputSchema: OutputSchema,
     workflowId: "wf-b-corp-sample",
   },
   extremeCsv: {
@@ -194,7 +194,7 @@ const QUESTIONS = {
       "website",
       "other_countries_of_operation",
     ],
-    expectedOutputSchema: ExpectedOutputSchema,
+    outputSchema: OutputSchema,
     workflowId: "wf-b-corp-sample",
   },
   promptOnly: {

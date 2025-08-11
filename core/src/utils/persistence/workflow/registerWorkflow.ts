@@ -196,9 +196,29 @@ export const updateWorkflowVersionWithIO = async ({
   workflowVersionId: string
   allWorkflowIO: WorkflowIO[]
 }): Promise<void> => {
+  // Ensure we only store JSON-serializable data in the DB.
+  // Drop non-serializable fields like outputSchema (ZodTypeAny).
+  const jsonSafeWorkflowIO: Json[] = allWorkflowIO.map((io) => {
+    const output = io.workflowOutput?.output
+    let jsonSafeOutput: unknown = null
+    try {
+      // Remove functions/symbols/circular refs by round-tripping when needed
+      jsonSafeOutput = JSON.parse(JSON.stringify(output ?? null))
+    } catch {
+      // Fallback to string representation if somehow non-serializable
+      jsonSafeOutput = typeof output === "string" ? output : String(output)
+    }
+
+    return {
+      workflowInput: io.workflowInput,
+      workflowOutput: {
+        output: jsonSafeOutput,
+      },
+    } as unknown as Json
+  })
+
   const insertable: TablesUpdate<"WorkflowVersion"> = {
-    all_workflow_io: allWorkflowIO,
-    wf_version_id: workflowVersionId,
+    all_workflow_io: jsonSafeWorkflowIO,
     updated_at: new Date().toISOString(),
   }
 

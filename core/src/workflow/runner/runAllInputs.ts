@@ -126,7 +126,7 @@ export async function evaluateRuns(
     const evaluationResult = await evaluateQueueRun({
       workflow,
       queueRunResult: runResult.queueRunResult,
-      evaluation: workflowIO.expectedWorkflowOutput,
+      evaluation: workflowIO.workflowOutput.output,
       workflowInvocationId: runResult.workflowInvocationId,
     })
     if (!evaluationResult.success) {

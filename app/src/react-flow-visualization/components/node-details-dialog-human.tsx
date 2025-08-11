@@ -1,6 +1,7 @@
 "use client"
 
 import { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
+// Button no longer used for model chooser
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,7 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Input } from "@/react-flow-visualization/components/ui/input"
+// Removed custom Popover-based chooser; using simple Select instead
 import {
   Select,
   SelectContent,
@@ -31,7 +33,7 @@ import type {
   ModelPricingV2,
 } from "@core/utils/spending/models.types"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 export interface NodeDetailsDialogProps {
   open: boolean
@@ -54,6 +56,109 @@ export function NodeDetailsDialog({
   // Prevent auto-save loop when props refresh local state
   const skipNextAutosaveRef = useRef(false)
 
+  const addMcpTool = useCallback(
+    (toolName: string) => {
+      if (
+        toolName &&
+        ACTIVE_MCP_TOOL_NAMES.includes(toolName as MCPToolName) &&
+        !data.mcpTools?.includes(toolName as MCPToolName)
+      ) {
+        setData((prev) => ({
+          ...prev,
+          mcpTools: [...(prev.mcpTools || []), toolName as MCPToolName],
+        }))
+      }
+    },
+    [data.mcpTools]
+  )
+
+  const removeMcpTool = useCallback((index: number) => {
+    setData((prev) => ({
+      ...prev,
+      mcpTools: prev.mcpTools?.filter((_, i) => i !== index) || [],
+    }))
+  }, [])
+
+  const addCodeTool = useCallback(
+    (toolName: string) => {
+      if (
+        toolName &&
+        ACTIVE_CODE_TOOL_NAMES.includes(toolName as CodeToolName) &&
+        !data.codeTools?.includes(toolName as CodeToolName)
+      ) {
+        setData((prev) => ({
+          ...prev,
+          codeTools: [...(prev.codeTools || []), toolName as CodeToolName],
+        }))
+      }
+    },
+    [data.codeTools]
+  )
+
+  const removeCodeTool = useCallback((index: number) => {
+    setData((prev) => ({
+      ...prev,
+      codeTools: prev.codeTools?.filter((_, i) => i !== index) || [],
+    }))
+  }, [])
+
+  const toggleMcpTool = useCallback(
+    (toolName: string) => {
+      const idx = (data.mcpTools || []).indexOf(toolName as MCPToolName)
+      if (idx === -1) {
+        addMcpTool(toolName)
+      } else {
+        removeMcpTool(idx)
+      }
+    },
+    [data.mcpTools, addMcpTool, removeMcpTool]
+  )
+
+  const toggleCodeTool = useCallback(
+    (toolName: string) => {
+      const idx = (data.codeTools || []).indexOf(toolName as CodeToolName)
+      if (idx === -1) {
+        addCodeTool(toolName)
+      } else {
+        removeCodeTool(idx)
+      }
+    },
+    [data.codeTools, addCodeTool, removeCodeTool]
+  )
+
+  // keyboard shortcuts for tool selection
+  useEffect(() => {
+    if (!open) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // only when alt/option key is held
+      if (!e.altKey) return
+
+      // prevent default browser shortcuts
+      e.preventDefault()
+
+      // number keys 1-9 for quick tool toggle
+      const num = parseInt(e.key)
+      if (num >= 1 && num <= 9) {
+        // tools in order: first mcp, then code
+        const allTools = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES]
+        const toolIndex = num - 1
+
+        if (toolIndex < allTools.length) {
+          const tool = allTools[toolIndex]
+          if (ACTIVE_MCP_TOOL_NAMES.includes(tool as MCPToolName)) {
+            toggleMcpTool(tool)
+          } else {
+            toggleCodeTool(tool)
+          }
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [open, data.mcpTools, data.codeTools, toggleCodeTool, toggleMcpTool])
+
   // Auto-save on user edits only
   useEffect(() => {
     if (!onSave) return
@@ -75,64 +180,6 @@ export function NodeDetailsDialog({
     setNodeIdDraft(nodeData.nodeId || "")
     setIsEditingId(false)
   }, [nodeData])
-
-  const addMcpTool = (toolName: string) => {
-    if (
-      toolName &&
-      ACTIVE_MCP_TOOL_NAMES.includes(toolName as MCPToolName) &&
-      !data.mcpTools?.includes(toolName as MCPToolName)
-    ) {
-      setData((prev) => ({
-        ...prev,
-        mcpTools: [...(prev.mcpTools || []), toolName as MCPToolName],
-      }))
-    }
-  }
-
-  const removeMcpTool = (index: number) => {
-    setData((prev) => ({
-      ...prev,
-      mcpTools: prev.mcpTools?.filter((_, i) => i !== index) || [],
-    }))
-  }
-
-  const addCodeTool = (toolName: string) => {
-    if (
-      toolName &&
-      ACTIVE_CODE_TOOL_NAMES.includes(toolName as CodeToolName) &&
-      !data.codeTools?.includes(toolName as CodeToolName)
-    ) {
-      setData((prev) => ({
-        ...prev,
-        codeTools: [...(prev.codeTools || []), toolName as CodeToolName],
-      }))
-    }
-  }
-
-  const removeCodeTool = (index: number) => {
-    setData((prev) => ({
-      ...prev,
-      codeTools: prev.codeTools?.filter((_, i) => i !== index) || [],
-    }))
-  }
-
-  const toggleMcpTool = (toolName: string) => {
-    const idx = (data.mcpTools || []).indexOf(toolName as MCPToolName)
-    if (idx === -1) {
-      addMcpTool(toolName)
-    } else {
-      removeMcpTool(idx)
-    }
-  }
-
-  const toggleCodeTool = (toolName: string) => {
-    const idx = (data.codeTools || []).indexOf(toolName as CodeToolName)
-    if (idx === -1) {
-      addCodeTool(toolName)
-    } else {
-      removeCodeTool(idx)
-    }
-  }
 
   const outEdgeCount = useMemo(
     () => edges.filter((e) => e.source === nodeData.nodeId).length,
@@ -165,6 +212,42 @@ export function NodeDetailsDialog({
       return null
     }
   }, [data?.modelName])
+
+  const activeModels: string[] = useMemo(
+    () => getActiveModelNames().map((m) => String(m)),
+    []
+  )
+
+  const formatModelDisplayName = (modelName?: string) => {
+    if (!modelName) return ""
+    const parts = modelName.split("/")
+    const raw = parts.length > 1 ? parts[1] : parts[0]
+    return raw
+      .replace(/(\d)-(\d)/g, "$1.$2")
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ")
+  }
+
+  const getProviderName = (modelName?: string) => {
+    if (!modelName) return ""
+    const p = (modelName.split("/")[0] || "").toLowerCase()
+    if (p === "openai") return "OpenAI"
+    if (p === "openrouter") return "OpenRouter"
+    if (p === "anthropic") return "Anthropic"
+    if (p === "mistralai") return "Mistral"
+    if (p === "meta-llama") return "Meta Llama"
+    if (p === "x-ai") return "xAI"
+    if (p === "google") return "Google"
+    if (p === "groq") return "Groq"
+    if (p === "moonshotai") return "Moonshot"
+    return p.charAt(0).toUpperCase() + p.slice(1)
+  }
+
+  // Keep helpers in case we reintroduce richer display; unused for simple dropdown
+  const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
+  const _pricingToCredits = (_pricing?: "low" | "medium" | "high" | null) =>
+    undefined
 
   const formatDollars = (value?: number | null) => {
     if (value === null || value === undefined) return "-"
@@ -265,7 +348,7 @@ export function NodeDetailsDialog({
             <div className="flex items-center gap-3">
               <label className="text-sm text-gray-700 w-20">Model</label>
               <Select
-                value={data.modelName}
+                value={data.modelName || ""}
                 onValueChange={(value) =>
                   setData((prev) => ({
                     ...prev,
@@ -273,28 +356,15 @@ export function NodeDetailsDialog({
                   }))
                 }
               >
-                <SelectTrigger className="w-full h-9 text-sm border-gray-200 focus:ring-0 focus:outline-none">
-                  <SelectValue />
+                <SelectTrigger className="w-full h-9 text-sm border-gray-200">
+                  <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
-                <SelectContent>
-                  {getActiveModelNames().map((modelName: string) => {
-                    const parts = modelName.split("/")
-                    const displayName =
-                      parts.length > 1
-                        ? parts[1]
-                            .split("-")
-                            .map(
-                              (word: string) =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            )
-                            .join(" ")
-                        : modelName
-                    return (
-                      <SelectItem key={modelName} value={modelName}>
-                        {displayName}
-                      </SelectItem>
-                    )
-                  })}
+                <SelectContent position="popper">
+                  {activeModels.map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {getProviderName(model)} / {formatModelDisplayName(model)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -374,7 +444,7 @@ export function NodeDetailsDialog({
               <div className="space-y-2">
                 <h4 className="text-sm text-gray-600">Web & API</h4>
                 <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
-                  {ACTIVE_MCP_TOOL_NAMES.map((tool) => {
+                  {ACTIVE_MCP_TOOL_NAMES.map((tool, index) => {
                     const selected = data.mcpTools?.includes(tool)
                     const description =
                       ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
@@ -412,8 +482,15 @@ export function NodeDetailsDialog({
                             )}
                           </div>
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-slate-800">
-                              {tool}
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-slate-800">
+                                {tool}
+                              </span>
+                              {index + 1 <= 9 && (
+                                <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
+                                  ⌥{index + 1}
+                                </kbd>
+                              )}
                             </div>
                             <div className="text-xs text-slate-600 line-clamp-2">
                               {description}
@@ -430,7 +507,7 @@ export function NodeDetailsDialog({
               <div className="space-y-2">
                 <h4 className="text-sm text-gray-600">Code & Files</h4>
                 <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
-                  {ACTIVE_CODE_TOOL_NAMES.map((tool) => {
+                  {ACTIVE_CODE_TOOL_NAMES.map((tool, index) => {
                     const selected = data.codeTools?.includes(tool)
                     const description =
                       ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
@@ -468,8 +545,16 @@ export function NodeDetailsDialog({
                             )}
                           </div>
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-slate-800">
-                              {tool}
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-slate-800">
+                                {tool}
+                              </span>
+                              {ACTIVE_MCP_TOOL_NAMES.length + index + 1 <=
+                                9 && (
+                                <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
+                                  ⌥{ACTIVE_MCP_TOOL_NAMES.length + index + 1}
+                                </kbd>
+                              )}
                             </div>
                             <div className="text-xs text-slate-600 line-clamp-2">
                               {description}

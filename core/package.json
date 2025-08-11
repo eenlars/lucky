@@ -10,7 +10,7 @@
     "list": "node scripts/dev.js list",
     "once": "bun run scripts/runOnce.ts",
     "gp": "node scripts/run-gp.js",
-    "cult": "rm -rf src/runtime/logging_folder && bun run src/main.ts --mode=cultural",
+    "iterative": "rm -rf src/runtime/logging_folder && bun run src/main.ts --mode=iterative",
     "clean": "bun run scripts/cleanup.ts",
     "test": "bunx vitest --project unit",
     "test:core": "bunx vitest --project unit",

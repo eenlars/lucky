@@ -59,7 +59,7 @@ describe("IngestionLayer - SWE-bench", () => {
     )
 
     // verify workflow output is the patch
-    expect(workflowCase.expectedWorkflowOutput).toBe(mockInstance.patch)
+    expect(workflowCase.workflowOutput).toBe(mockInstance.patch)
   })
 
   it("should handle errors when fetching SWE-bench instance", async () => {

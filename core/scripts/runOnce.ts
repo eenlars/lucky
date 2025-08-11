@@ -32,8 +32,8 @@ async function runOnce(setupFilePath?: string) {
     lgg.log(JSONN.show(setup, 2))
 
     const toolContext: Partial<ToolExecutionContext> | undefined =
-      SELECTED_QUESTION.expectedOutputSchema
-        ? { expectedOutputType: SELECTED_QUESTION.expectedOutputSchema }
+      SELECTED_QUESTION.outputSchema
+        ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
         : undefined
 
     // create workflow

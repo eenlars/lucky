@@ -7,7 +7,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants.client"
 import type { z } from "zod"
 
 // dynamically generate tool descriptions from active tools only

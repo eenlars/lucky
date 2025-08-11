@@ -179,7 +179,7 @@ class FileLogger {
     if (!this.logFile || !this.isNodeEnv) return null
 
     await this.writeToFile(
-      `=== Cultural Evolution Workflow Completed: ${new Date().toISOString()} ===\n`
+      `=== Iterative Evolution Workflow Completed: ${new Date().toISOString()} ===\n`
     )
     const logPath = this.logFile
     this.logFile = null

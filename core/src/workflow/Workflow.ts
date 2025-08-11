@@ -1,5 +1,5 @@
 // src/core/workflow/Workflow.ts
-import { improveNodesCulturallyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
+import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import {
   prepareProblem,
   type PrepareProblemMethod,
@@ -385,11 +385,11 @@ export class Workflow {
         configFiles: this.config.contextFile ? [this.config.contextFile] : [],
         workflowIOIndex: index,
       },
-      expectedOutputType: this.evaluationInput.expectedOutputSchema
-        ? zodToJson(this.evaluationInput.expectedOutputSchema)
+      expectedOutputType: this.evaluationInput.outputSchema
+        ? zodToJson(this.evaluationInput.outputSchema)
         : null,
       workflowInput: workflowIO.workflowInput as any,
-      workflowOutput: workflowIO.expectedWorkflowOutput as any,
+      workflowOutput: workflowIO.workflowOutput as any,
     })
 
     this.workflowInvocationIds.set(index, workflowInvocationId)
@@ -543,11 +543,11 @@ export class Workflow {
     return this.workflowFiles.size < CONFIG.context.maxFilesPerWorkflow
   }
 
-  async improveNodesCulturally(params: {
+  async improveNodesIteratively(params: {
     _fitness: FitnessOfWorkflow
     workflowInvocationId: string
   }): Promise<WorkflowImprovementResult> {
-    const result = await improveNodesCulturallyImpl(this, {
+    const result = await improveNodesIterativelyImpl(this, {
       _fitness: params._fitness,
       workflowInvocationId: params.workflowInvocationId,
     })

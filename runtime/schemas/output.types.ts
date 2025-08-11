@@ -47,8 +47,8 @@ export const SkipReasonSchema = z.object({
     .describe("Reason why no store data was found or why it was skipped"),
 })
 
-export const ExpectedOutputSchema = z.union([StoreSchema, SkipReasonSchema])
+export const OutputSchema = z.union([StoreSchema, SkipReasonSchema])
 
 export type Store = z.infer<typeof StoreSchema>
 export type SkipReason = z.infer<typeof SkipReasonSchema>
-export type ExpectedOutput = z.infer<typeof ExpectedOutputSchema>
+export type ExpectedOutput = z.infer<typeof OutputSchema>

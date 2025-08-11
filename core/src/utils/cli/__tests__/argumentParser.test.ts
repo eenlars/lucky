@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest"
 import { parseCliArguments, ArgumentParsingError } from "../argumentParser"
 
 describe("parseCliArguments", () => {
-  it("parses valid cultural mode with generations", () => {
-    const result = parseCliArguments(["--mode=cultural", "--generations=5"])
-    expect(result).toEqual({ mode: "cultural", generations: 5 })
+  it("parses valid iterative mode with generations", () => {
+    const result = parseCliArguments(["--mode=iterative", "--generations=5"])
+    expect(result).toEqual({ mode: "iterative", generations: 5 })
   })
 
   it("parses valid GP mode with population", () => {
@@ -58,7 +58,7 @@ describe("parseCliArguments", () => {
       ArgumentParsingError
     )
     expect(() => parseCliArguments(["--mode=invalid"])).toThrow(
-      "Invalid mode: invalid. Valid: cultural, GP, genetic"
+      "Invalid mode: invalid. Valid: iterative, GP, genetic"
     )
   })
 
@@ -99,7 +99,7 @@ describe("parseCliArguments", () => {
   })
 
   it("throws error for duplicate arguments", () => {
-    expect(() => parseCliArguments(["--mode=cultural", "--mode=GP"])).toThrow(
+    expect(() => parseCliArguments(["--mode=iterative", "--mode=GP"])).toThrow(
       "Duplicate argument: --mode"
     )
   })
@@ -108,8 +108,8 @@ describe("parseCliArguments", () => {
     expect(() => parseCliArguments(["--mode"])).toThrow(
       "Invalid format: --mode. Use --key=value"
     )
-    expect(() => parseCliArguments(["mode=cultural"])).toThrow(
-      "Invalid format: mode=cultural. Use --key=value"
+    expect(() => parseCliArguments(["mode=iterative"])).toThrow(
+      "Invalid format: mode=iterative. Use --key=value"
     )
   })
 
@@ -125,8 +125,8 @@ describe("parseCliArguments", () => {
   })
 
   it("handles partial arguments", () => {
-    const result = parseCliArguments(["--mode=cultural", "--generations=5"])
-    expect(result).toEqual({ mode: "cultural", generations: 5 })
+    const result = parseCliArguments(["--mode=iterative", "--generations=5"])
+    expect(result).toEqual({ mode: "iterative", generations: 5 })
   })
 
   it("trims whitespace from file paths", () => {

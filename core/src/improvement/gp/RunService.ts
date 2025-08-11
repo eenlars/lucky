@@ -23,7 +23,7 @@
  */
 
 import type {
-  CulturalConfig,
+  IterativeConfig,
   EvolutionSettings,
 } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
@@ -131,7 +131,7 @@ export class RunService {
    */
   async createRun(
     inputText: string,
-    config: EvolutionSettings | CulturalConfig,
+    config: EvolutionSettings | IterativeConfig,
     continueRunId?: string
   ): Promise<void> {
     if (continueRunId) {
@@ -150,8 +150,8 @@ export class RunService {
     }
     return RunService.withRetry(async () => {
       let notes = ""
-      if (config.mode === "cultural") {
-        notes = `Cultural Evolution Run - Iter: ${config.iterations}`
+      if (config.mode === "iterative") {
+        notes = `Iterative Evolution Run - Iter: ${config.iterations}`
       } else {
         notes = `GP Evolution Run - Pop: ${config.populationSize}, Gen: ${config.generations}`
       }

@@ -44,7 +44,7 @@ describe("IngestionLayer - GAIA", () => {
     expect(result[0].workflowInput).toContain("Task ID: test-123")
     expect(result[0].workflowInput).toContain("Level: 1")
     expect(result[0].workflowInput).toContain("What is 2 + 2?")
-    expect(result[0].expectedWorkflowOutput).toBe("4")
+    expect(result[0].workflowOutput).toBe("4")
 
     // verify GAIALoader was called correctly
     expect(GAIALoader.fetchById).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe("IngestionLayer - GAIA", () => {
 
     const result = await IngestionLayer.convert(evaluation)
 
-    expect(result[0].expectedWorkflowOutput).toBe("")
+    expect(result[0].workflowOutput).toBe("")
   })
 
   it("should handle different difficulty levels", async () => {

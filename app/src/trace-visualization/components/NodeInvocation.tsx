@@ -285,12 +285,15 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             inputSummaryResult.summary !== "No input" && (
               <div>
                 <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Incoming
+                  Incoming {inputs.length > 1 && `(${inputs.length} messages)`}
                 </h4>
                 {inputSummaryResult.isTruncated ? (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
+                        <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
+                          From: {inputs[0]?.from_node_id || "Initial"}
+                        </div>
                         <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
                           <span>{inputSummaryResult.summary}</span>
                           <Eye
@@ -305,6 +308,9 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                         <DialogTitle>Full Incoming Message</DialogTitle>
                       </DialogHeader>
                       <div className="mt-4">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          From Node: {inputs[0]?.from_node_id || "Initial"}
+                        </div>
                         <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                           <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
                             {inputSummaryResult.original ||
@@ -315,7 +321,10 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     </DialogContent>
                   </Dialog>
                 ) : (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 shadow-sm">
+                    <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
+                      From: {inputs[0]?.from_node_id || "Initial"}
+                    </div>
                     <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
                       {inputSummaryResult.summary}
                     </div>
@@ -381,47 +390,95 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
         </div>
 
         <div className="p-6 space-y-4">
-          {/* Show incoming message as first step if it exists */}
-          {inputs.length > 0 &&
-            inputSummaryResult.summary &&
-            inputSummaryResult.summary !== "No input" && (
-              <div className="py-2 border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                    Incoming Message
-                  </span>
-                </div>
-                <div className="text-sm text-gray-700 dark:text-gray-300">
-                  <div className="whitespace-pre-wrap">
-                    {inputSummaryResult.isTruncated ? (
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <button className="text-left hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors w-full">
-                            {inputSummaryResult.summary}
-                            <span className="text-blue-600 dark:text-blue-400 ml-2">
-                              (click to expand)
-                            </span>
-                          </button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle>Full Incoming Message</DialogTitle>
-                          </DialogHeader>
-                          <div className="mt-4">
-                            <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
-                              {inputSummaryResult.original ||
-                                inputSummaryResult.summary}
-                            </pre>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    ) : (
-                      inputSummaryResult.summary
-                    )}
-                  </div>
-                </div>
+          {/* Show incoming messages prominently */}
+          {inputs.length > 0 && (
+            <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 mb-6 bg-blue-50 dark:bg-blue-900/20">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                  Incoming Message{inputs.length > 1 ? "s" : ""} ({inputs.length})
+                </span>
+                <span className="text-xs text-blue-700 dark:text-blue-300">
+                  from {inputs[0]?.from_node_id || "Initial"}
+                </span>
               </div>
-            )}
+              
+              {/* Show primary message */}
+              {inputSummaryResult.summary && inputSummaryResult.summary !== "No input" ? (
+                <div className="text-sm text-blue-800 dark:text-blue-200">
+                  {inputSummaryResult.isTruncated ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 p-2 -m-2 rounded transition-colors">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="flex-1">{inputSummaryResult.summary}</span>
+                            <Eye
+                              size={14}
+                              className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
+                            />
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Full Incoming Message</DialogTitle>
+                        </DialogHeader>
+                        <div className="mt-4">
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            From Node: {inputs[0]?.from_node_id || "Initial"}
+                          </div>
+                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
+                            {inputSummaryResult.original ||
+                              inputSummaryResult.summary}
+                          </pre>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{inputSummaryResult.summary}</div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-sm text-blue-600 dark:text-blue-400 italic">
+                  No message content
+                </div>
+              )}
+              
+              {/* Show if there are additional messages */}
+              {inputs.length > 1 && (
+                <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-xs text-blue-700 dark:text-blue-300 hover:underline">
+                        View all {inputs.length} messages
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>All Incoming Messages</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-4 space-y-4">
+                        {inputs.map((input, idx) => {
+                          const summary = extractInputSummary(input.payload)
+                          return (
+                            <div key={idx} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Message {idx + 1} from {input.from_node_id || "Initial"}
+                              </div>
+                              <pre className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto">
+                                {typeof input.payload === "string" 
+                                  ? input.payload 
+                                  : JSON.stringify(input.payload, null, 2)}
+                              </pre>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
+            </div>
+          )}
 
           {agentSteps?.map((step, index) => {
             const getStepIcon = (type: string) => {

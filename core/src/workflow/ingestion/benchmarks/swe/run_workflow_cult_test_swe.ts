@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Simple cultural evolution test on random SWE-bench evaluation
+// Simple iterative evolution test on random SWE-bench evaluation
 
 import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
@@ -21,7 +21,7 @@ const SWEBENCH_IDS = [
   "scikit-learn__scikit-learn-13496",
 ] as const
 
-async function runCulturalTest() {
+async function runIterativeTest() {
   const randomId = SWEBENCH_IDS[Math.floor(Math.random() * SWEBENCH_IDS.length)]
 
   const evaluationInput: EvaluationInput = {
@@ -33,15 +33,15 @@ async function runCulturalTest() {
 
   lgg.log(`🎲 Testing SWE-bench ID: ${randomId}`)
   lgg.log(
-    `🧬 Running ${CONFIG.evolution.culturalIterations} cultural iterations`
+    `🧬 Running ${CONFIG.evolution.iterativeIterations} iterative iterations`
   )
 
   const evaluator = new AggregatedEvaluator()
   let workflowPath = PATHS.setupFile
   const results = []
 
-  for (let i = 1; i <= CONFIG.evolution.culturalIterations; i++) {
-    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.culturalIterations}`)
+  for (let i = 1; i <= CONFIG.evolution.iterativeIterations; i++) {
+    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.iterativeIterations}`)
 
     const setup = await loadSingleWorkflow(workflowPath)
     const workflow = Workflow.create({
@@ -63,7 +63,7 @@ async function runCulturalTest() {
     lgg.log(`✅ Fitness: ${fitness.score}, Cost: $${cost.toFixed(4)}`)
 
     // Save for next iteration
-    const nextPath = `${PATHS.node.logging}/cultural/workflow_${i}.json`
+    const nextPath = `${PATHS.node.logging}/iterative/workflow_${i}.json`
     await saveWorkflowConfig(workflow.getConfig(), nextPath)
     workflowPath = `output/${nextPath}`
   }
@@ -81,5 +81,5 @@ async function runCulturalTest() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  runCulturalTest().catch(console.error)
+  runIterativeTest().catch(console.error)
 }

@@ -21,7 +21,7 @@ export async function calculateFitness({
   totalTime,
   totalCost,
   evaluation,
-  expectedOutputSchema,
+  outputSchema,
   finalWorkflowOutput,
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
   if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
@@ -29,8 +29,8 @@ export async function calculateFitness({
     return R.error("No outputs to evaluate", 0)
   }
 
-  const expectedOutputSchemaStr: string | undefined = expectedOutputSchema
-    ? zodToJson(expectedOutputSchema)
+  const eutputSchemaStr: string | undefined = outputSchema
+    ? zodToJson(outputSchema)
     : undefined
 
   const outputStr =
@@ -64,7 +64,7 @@ Workflow Final Output:
 ${outputStr}
 </output>
 
-${expectedOutputSchemaStr ? `expected output schema: ${expectedOutputSchemaStr}` : ""}
+${eutputSchemaStr ? `expected output schema: ${eutputSchemaStr}` : ""}
 
 Evaluate how well the workflow's final output matches the expected ground truth solution, considering the evaluation criteria above.
 if not good, you need to give examples why it's not good.

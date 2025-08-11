@@ -4,8 +4,8 @@
 
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 
-export interface CulturalConfig {
-  mode: "cultural"
+export interface IterativeConfig {
+  mode: "iterative"
   iterations: number
   question: EvaluationInput
 }

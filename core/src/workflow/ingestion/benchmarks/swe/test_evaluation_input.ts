@@ -472,13 +472,13 @@ async function testSWEBenchEvaluationInput(
       console.log("Input length:", workflowCase.workflowInput.length)
       console.log(
         "Expected output length:",
-        workflowCase.expectedWorkflowOutput.length
+        workflowCase.workflowOutput.output.length
       )
 
       // Step 3: Solve with AI
       const aiResponse = await solveWithAI(
         workflowCase.workflowInput,
-        workflowCase.expectedWorkflowOutput
+        workflowCase.workflowOutput.output
       )
       aiSolutions.push(aiResponse)
       totalCost += aiResponse.usdCost || 0
@@ -501,7 +501,7 @@ async function testSWEBenchEvaluationInput(
         console.log("\n🎯 Ground Truth Solution:")
         console.log("-".repeat(50))
         console.log(
-          workflowCase.expectedWorkflowOutput.substring(0, 500) + "..."
+          workflowCase.workflowOutput.output.substring(0, 500) + "..."
         )
 
         if (instance.test_patch) {

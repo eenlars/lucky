@@ -1,7 +1,7 @@
 import type { FlowEvolutionMode } from "@core/types"
 import { lgg } from "@core/utils/logging/Logger"
 
-type CulturalResult = {
+type IterativeResult = {
   results: Array<{
     iteration: number
     fitness: { score: number }
@@ -29,25 +29,25 @@ type GeneticResult = {
  */
 export function displayResults(
   type: FlowEvolutionMode,
-  evolutionResults: CulturalResult | GeneticResult
+  evolutionResults: IterativeResult | GeneticResult
 ) {
   const { totalCost } = evolutionResults
 
-  lgg.log(`\n✅ ${type === "cultural" ? "Cultural" : "GP"} Evolution Complete`)
+  lgg.log(`\n✅ ${type === "iterative" ? "Iterative" : "GP"} Evolution Complete`)
   lgg.log(`💰 Total Cost: $${totalCost.toFixed(2)}`)
 
-  if (type === "cultural") {
-    const culturalResults = evolutionResults as CulturalResult
-    if (culturalResults.results.length === 0) {
+  if (type === "iterative") {
+    const iterativeResults = evolutionResults as IterativeResult
+    if (iterativeResults.results.length === 0) {
       lgg.log("🚨 No results found")
       return
     }
     const finalFitness =
-      culturalResults.results[culturalResults.results.length - 1].fitness.score
+      iterativeResults.results[iterativeResults.results.length - 1].fitness.score
     lgg.log(`🏆 Final Fitness: ${finalFitness.toFixed(3)}`)
 
     lgg.log("\n📊 Iteration Summary:")
-    culturalResults.results.forEach((result, index) => {
+    iterativeResults.results.forEach((result, index) => {
       lgg.log(
         `${index + 1}: Fitness ${result.fitness.score.toFixed(3)}, Cost $${result.cost.toFixed(3)}`
       )

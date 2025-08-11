@@ -17,6 +17,7 @@ import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
 import { calculateFeedback } from "@core/workflow/actions/analyze/calculate-fitness/calculateFeedback"
 import { calculateFitness } from "@core/workflow/actions/analyze/calculate-fitness/calculateFitness"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
+import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
@@ -451,14 +452,16 @@ export const evaluateQueueRun = async ({
   evaluation: string
   workflowInvocationId: string
 }): Promise<RS<EvaluationResult>> => {
-  const evaluationInput = workflow.getEvaluationInput()
+  const workflowIO = workflow.getWorkflowIO()
+
+  guard(workflowIO.length > 0, "Evaluation input is empty")
 
   const fitnessResult = await calculateFitness({
     agentSteps: queueRunResult.agentSteps,
     totalTime: queueRunResult.totalTime,
     totalCost: queueRunResult.totalCost,
     evaluation: evaluation,
-    expectedOutputSchema: evaluationInput.expectedOutputSchema,
+    outputSchema: workflowIO[0].workflowOutput.outputSchema, //todo what if there are multiple IOs?
     finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
   })
 

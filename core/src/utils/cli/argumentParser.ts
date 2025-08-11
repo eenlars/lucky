@@ -46,7 +46,7 @@ function parseBoolean(value: string): boolean {
   )
 }
 
-const VALID_MODES = ["cultural", "GP", "genetic"] as const
+const VALID_MODES = ["iterative", "GP", "genetic"] as const
 const VALID_IMPROVEMENT_TYPES = ["judge", "unified"] as const
 
 export function parseCliArguments(args: string[]): ParsedArgs {

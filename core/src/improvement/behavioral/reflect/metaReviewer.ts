@@ -3,7 +3,7 @@ import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
 import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { FitnessOfWorkflowSchema } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 
@@ -26,7 +26,7 @@ export const evaluateCritiqueQuality = async ({
   totalTime: number
   totalCost: number
   evaluation: string
-  expectedOutputTypeOfWorkflow?: ExpectedOutputSchema
+  expectedOutputTypeOfWorkflow?: OutputSchema
 }): Promise<RS<FitnessOfWorkflow>> => {
   const critique = criticWorkflowOutput
 

@@ -77,7 +77,7 @@ vi.mock("@runtime/settings/constants", () => ({
       enforceFileLimit: true,
     },
     evolution: {
-      culturalIterations: 50,
+      iterativeIterations: 50,
       GP: {
         verbose: false,
         populationSize: 5,

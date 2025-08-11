@@ -187,11 +187,11 @@ export class MutationCoordinator {
         await NodeOperations.deleteNode.execute(config)
         return 0
 
-      case "cultural": {
+      case "iterative": {
         try {
           const fitness = parent.getFitness()
           if (!fitness) {
-            lgg.warn("Cultural mutation skipped: no fitness available")
+            lgg.warn("Iterative mutation skipped: no fitness available")
             return 0
           }
           const result = await improveWorkflowUnified({
@@ -206,7 +206,7 @@ export class MutationCoordinator {
           }
           return result.cost
         } catch (error) {
-          lgg.error("Cultural mutation failed:", error)
+          lgg.error("Iterative mutation failed:", error)
           return 0
         }
       }

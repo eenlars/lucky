@@ -59,12 +59,12 @@ ${instance.hints_text}`
         }
 
         // the expected output contains ALL evaluation materials
-        let expectedWorkflowOutput = `Expected patch:
+        let workflowOutput = `Expected patch:
 ${instance.patch}`
 
         // Add test patch if available
         if (instance.test_patch) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 
 Test patch:
 ${instance.test_patch}`
@@ -72,14 +72,14 @@ ${instance.test_patch}`
 
         // Add test information to the output (evaluation materials)
         if (instance.FAIL_TO_PASS && instance.FAIL_TO_PASS.length > 0) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 
 Tests that should pass after fix:
 ${JSON.stringify(instance.FAIL_TO_PASS, null, 2)}`
         }
 
         if (instance.PASS_TO_PASS && instance.PASS_TO_PASS.length > 0) {
-          expectedWorkflowOutput += `
+          workflowOutput += `
 
 Tests that should continue passing:
 ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
@@ -87,7 +87,9 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
 
         const workflowCase: WorkflowIO = {
           workflowInput,
-          expectedWorkflowOutput,
+          workflowOutput: {
+            output: workflowOutput,
+          },
         }
 
         return workflowCase

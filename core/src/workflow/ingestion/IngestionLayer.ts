@@ -62,7 +62,9 @@ export class IngestionLayer {
   ): WorkflowIO[] {
     const workflowCase: WorkflowIO = {
       workflowInput: evaluation.question,
-      expectedWorkflowOutput: evaluation.answer,
+      workflowOutput: {
+        output: evaluation.answer,
+      },
     }
 
     lgg.onlyIf(
@@ -78,7 +80,9 @@ export class IngestionLayer {
     return [
       {
         workflowInput: evaluation.goal,
-        expectedWorkflowOutput: "everything is correct, always return 100%",
+        workflowOutput: {
+          output: "everything is correct, always return 100%",
+        },
       },
     ]
   }
@@ -132,7 +136,7 @@ export class IngestionLayer {
 
         return {
           workflowInput,
-          expectedWorkflowOutput: workflowOutput,
+          workflowOutput: workflowOutput,
         }
       })
 
@@ -310,7 +314,9 @@ The file content should be processed as part of solving this task.`
 
         return {
           workflowInput,
-          expectedWorkflowOutput: workflowOutput,
+          workflowOutput: {
+            output: workflowOutput,
+          },
         }
       })
 
@@ -340,7 +346,9 @@ The file content should be processed as part of solving this task.`
 Note: GAIA dataset requires authentication. Please set HF_TOKEN or HUGGING_FACE_API_KEY environment variable to access real GAIA tasks.
 
 Fallback Question: What is 2 + 2?`,
-          expectedWorkflowOutput: "4",
+          workflowOutput: {
+            output: "4",
+          },
         }
         return [fallbackCase]
       }

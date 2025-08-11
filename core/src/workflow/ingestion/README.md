@@ -118,7 +118,7 @@ const workflowCases = await IngestionLayer.convert(evaluation)
 
 // each case contains:
 // - workflowInput: the formatted input for the workflow
-// - expectedWorkflowOutput: the expected output for evaluation
+// - workflowOutput: the expected output for evaluation
 ```
 
 ## Architecture

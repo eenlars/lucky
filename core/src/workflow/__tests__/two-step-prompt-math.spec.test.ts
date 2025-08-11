@@ -79,7 +79,7 @@ describe("prompt-only 2-step math workflow", () => {
         `The correct final numeric answer is ${expected}. ` +
         `Award accuracy 100 ONLY if the final output equals ${expected} as a bare integer (ignoring whitespace). ` +
         `If incorrect, award 0.`,
-      expectedOutputSchema: undefined,
+      outputSchema: undefined,
       finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
     })
 

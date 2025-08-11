@@ -86,7 +86,7 @@ vi.mock("@runtime/settings/constants", () => ({
       enforceFileLimit: true,
     },
     evolution: {
-      culturalIterations: 50,
+      iterativeIterations: 50,
       GP: {
         generations: 40,
         populationSize: 10,
@@ -206,9 +206,9 @@ describe("ContextFile End-to-End Integration", () => {
     const workflow = Workflow.create({
       config: configWithContextFile,
       evaluationInput: goalEval,
-      toolContext: goalEval.expectedOutputSchema
+      toolContext: goalEval.outputSchema
         ? {
-            expectedOutputType: goalEval.expectedOutputSchema,
+            expectedOutputType: goalEval.outputSchema,
           }
         : undefined,
     })

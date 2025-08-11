@@ -2,15 +2,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   getMockLogger,
-  mockCulturalEvolutionMain,
   mockDisplayResults,
   mockGetWorkflowSetup,
+  mockIterativeEvolutionMain,
   mockSaveWorkflowConfig,
   setupCoreTest,
 } from "./setup/coreMocks"
 
 // Set up process.argv before any imports
-process.argv = ["node", "main.js", "--mode=cultural"]
+process.argv = ["node", "main.js", "--mode=iterative"]
 
 // Mock the main dependencies
 
@@ -57,7 +57,7 @@ vi.mock("@core/workflow/Workflow", () => ({
       getWorkflowIO: vi
         .fn()
         .mockReturnValue([{ input: "test", output: "result" }]),
-      improveNodesCulturally: vi.fn().mockResolvedValue({
+      improveNodesIteratively: vi.fn().mockResolvedValue({
         newConfig: { nodes: [], entryNodeId: "test-node" },
         cost: 0.02,
       }),
@@ -187,13 +187,13 @@ vi.mock("@runtime/settings/constants", () => ({
       prepareProblemWorkflowVersionId: "a1373554",
     },
     evolution: {
-      mode: "cultural",
+      mode: "iterative",
       GP: {
         generations: 3,
         populationSize: 4,
         initialPopulationFile: "/test/initial.json",
       },
-      culturalIterations: 3,
+      iterativeIterations: 3,
     },
     limits: {
       enableSpendingLimits: false,
@@ -230,14 +230,14 @@ const mockProcessExit = vi.fn()
 const originalProcess = process
 vi.stubGlobal("process", {
   ...originalProcess,
-  argv: ["node", "main.js", "--mode=cultural"],
+  argv: ["node", "main.js", "--mode=iterative"],
   exit: mockProcessExit,
   env: originalProcess.env,
 })
 
 // Mock CLI argument parser - must be set up before any imports
 const mockParseCliArguments = vi.fn().mockReturnValue({
-  mode: "cultural",
+  mode: "iterative",
   generations: 3,
   populationSize: 4,
   setupFile: "/test/setup.json",
@@ -260,12 +260,12 @@ vi.mock("@runtime/setup/inputs", () => ({
 const mocks = {
   CONFIG: {
     evolution: {
-      mode: "cultural",
+      mode: "iterative",
     },
   },
   displayResults: mockDisplayResults,
   lggError: mockLogger.error,
-  culturalEvolutionMain: mockCulturalEvolutionMain,
+  iterativeEvolutionMain: mockIterativeEvolutionMain,
   evolutionEngineRun: mockEvolutionEngine.evolve,
   getWorkflowSetup: mockGetWorkflowSetup,
   saveWorkflowConfig: mockSaveWorkflowConfig,
@@ -288,17 +288,17 @@ describe("main.ts", () => {
     mockProcessExit.mockClear()
   })
 
-  describe("Cultural Evolution Mode", () => {
+  describe("Iterative Evolution Mode", () => {
     beforeEach(() => {
       mockParseCliArguments.mockReturnValue({
-        mode: "cultural",
+        mode: "iterative",
         generations: 3,
         populationSize: 4,
         setupFile: "/test/setup.json",
       })
     })
 
-    it("should run cultural evolution successfully", async () => {
+    it("should run iterative evolution successfully", async () => {
       // IMPROVEMENT NEEDED: This test fails because the main function hits error paths due to missing mocks
       // The test expects process.exit(0) but gets process.exit(1), indicating unhandled errors
       // Need to properly mock all dependencies including RunService, AggregatedEvaluator, and persistence layers
@@ -308,7 +308,7 @@ describe("main.ts", () => {
 
       expect(mockProcessExit).toHaveBeenCalledWith(1) // currently failing - should be 0 after fixing mocks
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.objectContaining({
       //     results: expect.any(Array),
       //     totalCost: expect.any(Number),
@@ -316,12 +316,12 @@ describe("main.ts", () => {
       // )
     })
 
-    it("should handle cultural evolution errors gracefully", async () => {
-      // IMPROVEMENT NEEDED: culturalEvolutionMain is not used in the actual main.ts file
-      // The main function runs evolution directly, not through culturalEvolutionMain
+    it("should handle iterative evolution errors gracefully", async () => {
+      // IMPROVEMENT NEEDED: iterativeEvolutionMain is not used in the actual main.ts file
+      // The main function runs evolution directly, not through iterativeEvolutionMain
       // Mock setup needs to align with actual implementation structure
-      mocks.culturalEvolutionMain.mockRejectedValue(
-        new Error("cultural evolution failed")
+      mocks.iterativeEvolutionMain.mockRejectedValue(
+        new Error("iterative evolution failed")
       )
 
       const { default: main } = await import("@core/main")
@@ -335,8 +335,8 @@ describe("main.ts", () => {
       // )
     })
 
-    it("should display cultural results correctly", async () => {
-      // IMPROVEMENT NEEDED: Similar to above - culturalEvolutionMain is not called from main.ts
+    it("should display iterative results correctly", async () => {
+      // IMPROVEMENT NEEDED: Similar to above - iterativeEvolutionMain is not called from main.ts
       // The displayResults call depends on successful completion of runEvolution()
       // Test fails because runEvolution() throws due to missing mocks
       const mockResult = {
@@ -351,14 +351,14 @@ describe("main.ts", () => {
         totalCost: 0.05,
         logFilePath: "/test/log/path",
       }
-      mocks.culturalEvolutionMain.mockResolvedValue(mockResult)
+      mocks.iterativeEvolutionMain.mockResolvedValue(mockResult)
 
       const { default: main } = await import("@core/main")
 
       await main()
 
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.any(Object)
       // )
     })
@@ -375,7 +375,7 @@ describe("main.ts", () => {
     })
 
     it("should run genetic programming successfully", async () => {
-      // IMPROVEMENT NEEDED: Test expects GP mode but parseCliArguments returns 'cultural' mode in beforeEach
+      // IMPROVEMENT NEEDED: Test expects GP mode but parseCliArguments returns 'iterative' mode in beforeEach
       // Need to properly mock parseCliArguments to return GP mode for this test
       const { default: main } = await import("@core/main")
 
@@ -392,7 +392,7 @@ describe("main.ts", () => {
     })
 
     it("should handle GP initialization errors", async () => {
-      // IMPROVEMENT NEEDED: Test runs in cultural mode due to CLI arg mocking
+      // IMPROVEMENT NEEDED: Test runs in iterative mode due to CLI arg mocking
       // Should throw GP error but won't reach GP code path
       mocks.evolutionEngineRun.mockRejectedValue(
         new Error("GP initialization failed")
@@ -404,7 +404,7 @@ describe("main.ts", () => {
     })
 
     it("should create evolution engine with correct config", async () => {
-      // IMPROVEMENT NEEDED: EvolutionEngine not called in cultural mode
+      // IMPROVEMENT NEEDED: EvolutionEngine not called in iterative mode
       const { default: main } = await import("@core/main")
       const { EvolutionEngine } = await import(
         "@core/improvement/gp/evolutionengine"
@@ -416,7 +416,7 @@ describe("main.ts", () => {
     })
 
     it("should save best workflow to file", async () => {
-      // IMPROVEMENT NEEDED: saveWorkflowConfig not called in cultural mode path
+      // IMPROVEMENT NEEDED: saveWorkflowConfig not called in iterative mode path
       const { default: main } = await import("@core/main")
 
       await main()
@@ -527,7 +527,7 @@ describe("main.ts", () => {
   describe("Result Display", () => {
     it("should format genetic results correctly", async () => {
       // IMPROVEMENT NEEDED: CONFIG.evolution.mode doesn't control mode - CLI args do
-      // Running in cultural mode, not GP mode, so displayResults won't be called with GP results
+      // Running in iterative mode, not GP mode, so displayResults won't be called with GP results
       mocks.CONFIG.evolution.mode = "GP"
       const mockGPResult = {
         bestGenome: { getWorkflowVersionId: () => "best-test" },
@@ -577,7 +577,7 @@ describe("main.ts", () => {
       await main()
 
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.objectContaining({
       //     totalCost: expect.any(Number),
       //   })
