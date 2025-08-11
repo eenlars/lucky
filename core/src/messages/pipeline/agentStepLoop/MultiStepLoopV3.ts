@@ -116,7 +116,7 @@ export async function runMultiStepLoopV3Helper(
 
       agentSteps.push({
         type: "terminate",
-        return: finalOutput,
+        return: finalOutput ?? summary ?? "",
         summary: summary,
       })
 
@@ -252,15 +252,66 @@ export async function runMultiStepLoopV3Helper(
     }
   }
 
+  // If we reached here, the loop completed without hitting the early termination return.
+  // We still want to guarantee a terminal step for downstream consumers.
+  const fallbackSummary = await quickSummaryNull(
+    `
+            Show the results of all the work that was done, and what you produced. ${toolUsageToString(agentSteps)}
+            do it in plain english. show what tools you used, what you produced. max 200 characters. use specific details, but not too specific.
+            for example: if you just handled a lot of files, you can say who, what, where, when, why, how. don't talk about only one file.
+            `,
+    2
+  )
+
+  if (!fallbackSummary) {
+    return {
+      processedResponse: {
+        nodeId: ctx.nodeConfig.nodeId,
+        type: "error",
+        message: "i had an error processing my findings after 2 retries.",
+        agentSteps,
+        cost: getTotalCost(),
+      },
+      debugPrompts,
+      updatedMemory: ctx.nodeMemory ?? {},
+    }
+  }
+
+  const fallbackFinalOutput = getFinalOutputNodeInvocation(agentSteps)
+
+  const fallbackLearning = await makeLearning({
+    toolLogs: toolUsageToString(agentSteps),
+    nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
+    currentMemory: ctx.nodeMemory ?? {},
+  })
+
+  if (fallbackLearning.agentStep.type !== "error") {
+    setUpdatedMemory(fallbackLearning.updatedMemory)
+  } else {
+    lgg.error("learningResult", fallbackLearning.agentStep.return)
+  }
+
+  agentSteps.push(fallbackLearning.agentStep)
+
+  agentSteps.push({
+    type: "terminate",
+    return: fallbackFinalOutput ?? fallbackSummary ?? "",
+    summary: fallbackSummary,
+  })
+
   return {
     processedResponse: {
       nodeId: ctx.nodeConfig.nodeId,
       type: "tool",
       agentSteps,
       cost: getTotalCost(),
-      summary: getFinalOutputNodeInvocation(agentSteps) ?? "no summary found",
+      summary: fallbackSummary ?? "an error occurred. no summary found.",
+      learnings:
+        fallbackLearning.agentStep.type === "learning"
+          ? fallbackLearning.agentStep.return
+          : "",
     },
     debugPrompts,
-    updatedMemory: ctx.nodeMemory ?? {},
+    updatedMemory: fallbackLearning.updatedMemory,
   }
 }

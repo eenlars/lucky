@@ -264,7 +264,7 @@ export async function queueRun({
       error,
       summaryWithInfo,
       updatedMemory,
-      agentSteps,
+      agentSteps: nodeAgentSteps,
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
@@ -286,6 +286,11 @@ export async function queueRun({
     }
 
     nodeInvocations++
+
+    // Aggregate agent steps from this node invocation into the run-level transcript
+    if (Array.isArray(nodeAgentSteps) && nodeAgentSteps.length > 0) {
+      agentSteps.push(...nodeAgentSteps)
+    }
 
     currentMessage.updateMessage({
       target_invocation_id: nodeInvocationId,
