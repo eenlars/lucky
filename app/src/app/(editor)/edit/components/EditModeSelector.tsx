@@ -251,7 +251,49 @@ export default function EditModeSelector({
   }
 
   if (mode === "graph") {
-    const GraphHeaderButtons = () => null
+    const GraphHeaderButtons = () => {
+      return (
+        <button
+          onClick={async () => {
+            const prompt = window.prompt("Enter a prompt to run the workflow:")
+            if (prompt) {
+              // Export current workflow
+              const json = exportToJSON()
+              const parsed = JSON.parse(json)
+              const cfgMaybe = toWorkflowConfig(parsed)
+              if (!cfgMaybe) {
+                alert("Invalid workflow configuration")
+                return
+              }
+              
+              try {
+                const cfg = await loadFromDSLClient(cfgMaybe)
+                const response = await fetch("/api/workflow/invoke", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    dslConfig: cfg,
+                    question: prompt,
+                  }),
+                })
+                
+                const result = await response.json()
+                if (result.success) {
+                  alert(`Result: ${result.data?.response || "No response"}`)
+                } else {
+                  alert(`Error: ${result.error || "Unknown error"}`)
+                }
+              } catch (error) {
+                alert(`Error: ${error}`)
+              }
+            }
+          }}
+          className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors duration-75 cursor-pointer"
+        >
+          Run with Prompt
+        </button>
+      )
+    }
 
     const HeaderRight = (
       <div className="flex items-center space-x-2">
@@ -311,19 +353,19 @@ export default function EditModeSelector({
           onClick={() => handleModeChange("graph")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
         >
-          🔗 Graph Mode
+          Graph Mode
         </button>
         <button
           onClick={() => handleModeChange("json")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
         >
-          📝 JSON Mode
+          JSON Mode
         </button>
         <button
           onClick={() => handleModeChange("eval")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
         >
-          🧪 Run & Evaluate
+          Run & Evaluate
         </button>
       </div>
     </div>
@@ -355,19 +397,19 @@ export default function EditModeSelector({
           onClick={() => handleModeChange("graph")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
         >
-          🔗 Graph Mode
+          Graph Mode
         </button>
         <button
           onClick={() => handleModeChange("json")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
         >
-          📝 JSON Mode
+          JSON Mode
         </button>
         <button
           onClick={() => handleModeChange("eval")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
         >
-          🧪 Run & Evaluate
+          Run & Evaluate
         </button>
       </div>
     </div>

@@ -1,20 +1,28 @@
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import {
-  loadFromDatabaseForDisplay,
-  loadSingleWorkflow,
-} from "@core/workflow/setup/WorkflowLoader"
-import { PATHS } from "@runtime/settings/constants"
+  loadLiveWorkflowConfig,
+  saveLiveWorkflowConfig,
+} from "@core/utils/persistence/liveConfig"
+import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextResponse } from "next/server"
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const workflowConfig = await loadSingleWorkflow(PATHS.setupFile)
+    const { searchParams } = new URL(req.url)
+    const wfVersionId = searchParams.get("wf_version_id") || undefined
+    const workflowId = searchParams.get("workflow_id") || undefined
 
+    // Storage-adapter: file locally, DB in production.
+    // Supports querying a specific version or the latest per workflow.
+    const workflowConfig = await loadLiveWorkflowConfig(undefined as any, {
+      wfVersionId,
+      workflowId,
+    })
     return NextResponse.json(workflowConfig)
   } catch (error) {
     console.error("Failed to load workflow config:", error)
 
-    // In production, fallback to loading the latest trace from Supabase
+    // Fallback: latest from DB (kept for resilience)
     if (process.env.NODE_ENV === "production") {
       try {
         console.log(
@@ -49,6 +57,38 @@ export async function GET() {
 
     return NextResponse.json(
       { error: "Failed to load workflow configuration" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    const dsl = body?.dsl ?? body?.workflow ?? body
+    if (!dsl || typeof dsl !== "object") {
+      return NextResponse.json(
+        { error: "Invalid DSL payload" },
+        { status: 400 }
+      )
+    }
+
+    // Optional metadata for DB mode
+    const opts = {
+      workflowId: body?.workflowId as string | undefined,
+      commitMessage: body?.commitMessage as string | undefined,
+      parentVersionId: body?.parentVersionId as string | undefined,
+      iterationBudget: body?.iterationBudget as number | undefined,
+      timeBudgetSeconds: body?.timeBudgetSeconds as number | undefined,
+    }
+
+    const result = await saveLiveWorkflowConfig(dsl, opts)
+
+    return NextResponse.json({ success: true, ...result })
+  } catch (error) {
+    console.error("Failed to save live workflow config:", error)
+    return NextResponse.json(
+      { error: "Failed to save live workflow configuration" },
       { status: 500 }
     )
   }

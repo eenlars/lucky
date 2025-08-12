@@ -23,6 +23,7 @@ export const agentDescriptionsWithTools = {
   codeTools: `Code internal tools (${codeToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,
   handOffType: AGENT_KEY_EXPLANATIONS.handOffType,
+  waitFor: AGENT_KEY_EXPLANATIONS.waitFor,
   memory: AGENT_KEY_EXPLANATIONS.memory,
   systemPrompt: AGENT_KEY_EXPLANATIONS.systemPrompt,
 } as const

@@ -10,14 +10,6 @@ export interface FitnessOfWorkflow {
   totalTimeSeconds: number
 }
 
-export const feedbackPrompt = `
-Provide comprehensive feedback analyzing the workflow execution, including:
-- accuracy justification,
-- identified strengths and weaknesses,
-- detailed analysis of what went wrong or is missing (considering the input question, execution environment, tools used, configuration, and output), 
-- estimated impact analysis of the current implementation.
-`
-
 // simplified schema - only validate what the AI is asked to output
 export const FitnessOfWorkflowSchema = z.object({
   accuracy: z

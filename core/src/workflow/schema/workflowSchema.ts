@@ -24,6 +24,8 @@ export const WorkflowNodeConfigSchema = z.object({
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)),
   handOffs: z.array(z.string()),
   handOffType: z.enum(["conditional", "sequential", "parallel"]).optional(),
+  // enable async joins by allowing nodes to specify required predecessors
+  waitFor: z.array(z.string()).optional(),
   memory: MemorySchemaOptional,
 })
 
@@ -44,6 +46,7 @@ export const WorkflowNodeConfigSchemaDisplay = z.object({
   codeTools: z.array(z.string()), // Allow any string for legacy tools
   handOffs: z.array(z.string()),
   handOffType: z.enum(["conditional", "sequential", "parallel"]).optional(),
+  waitFor: z.array(z.string()).optional(),
   memory: MemorySchemaOptional,
 })
 
@@ -65,6 +68,8 @@ export const WorkflowNodeConfigSchemaEasy = z.object({
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)),
   handOffs: z.array(z.string()),
   handOffType: z.enum(["conditional", "sequential", "parallel"]).optional(),
+  // expose waitFor in the easy schema so the generator can produce async joins
+  waitFor: z.array(z.string()).optional(),
 })
 
 export const WorkflowConfigSchemaEasy = z.object({

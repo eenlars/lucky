@@ -163,6 +163,14 @@ export const updateWorkflowInvocationInDatabase = async ({
     ...fields,
   }
 
+  // Ensure integer columns are saved as integers (DB uses smallint)
+  if (typeof updatePayload.accuracy === "number") {
+    updatePayload.accuracy = Math.round(updatePayload.accuracy)
+  }
+  if (typeof updatePayload.fitness_score === "number") {
+    updatePayload.fitness_score = Math.round(updatePayload.fitness_score)
+  }
+
   // push the update and return the new row
   const { data, error } = await supabase
     .from("WorkflowInvocation")

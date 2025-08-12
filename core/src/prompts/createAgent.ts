@@ -17,7 +17,7 @@ this is an example of a very basic agent. you can make it more complex by adding
     codeTools: CodeToolName[] // code tools to use.
     handOffs: string[] // node-id
     memory?: Record<string, string> | null
-    ${includeWaitFor ? "waitFor?: string[]  // wait for node-id, or more than one node-id to finish" : ""}
+    ${includeWaitFor ? "waitFor?: string[]  // wait for node-id, or more than one node-id to finish: important: if you're aggregating this needs to be set!" : ""}
     ${includeHandOffType ? "handOffType?: 'conditional' | 'sequential' | 'parallel'" : ""}
 }
 

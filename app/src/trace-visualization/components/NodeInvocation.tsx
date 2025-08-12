@@ -7,10 +7,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
+import { PayloadRender } from "@/trace-visualization/components/InputRender"
 import { getAgentSteps } from "@/trace-visualization/components/TimelineEntry"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
@@ -312,10 +314,11 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                           From Node: {inputs[0]?.from_node_id || "Initial"}
                         </div>
                         <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
-                            {inputSummaryResult.original ||
-                              inputSummaryResult.summary}
-                          </pre>
+                          <PayloadRender
+                            payload={inputs[0]?.payload}
+                            msgId={`incoming-${inputs[0]?.msg_id}`}
+                            inspectable
+                          />
                         </div>
                       </div>
                     </DialogContent>
@@ -325,8 +328,20 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
                       From: {inputs[0]?.from_node_id || "Initial"}
                     </div>
-                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
-                      {inputSummaryResult.summary}
+                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed whitespace-pre-wrap">
+                      {(() => {
+                        try {
+                          const text = extractTextFromPayload(
+                            inputs[0]?.payload as any
+                          )
+                          if (text) {
+                            return text.length > 300
+                              ? text.substring(0, 300) + "..."
+                              : text
+                          }
+                        } catch {}
+                        return inputSummaryResult.summary
+                      })()}
                     </div>
                   </div>
                 )}
@@ -360,10 +375,11 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       </DialogHeader>
                       <div className="mt-4">
                         <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
-                            {outputSummaryResult.original ||
-                              outputSummaryResult.summary}
-                          </pre>
+                          <PayloadRender
+                            payload={output.payload}
+                            msgId={`outgoing-${output.msg_id}`}
+                            inspectable
+                          />
                         </div>
                       </div>
                     </DialogContent>
@@ -395,22 +411,26 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 mb-6 bg-blue-50 dark:bg-blue-900/20">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                  Incoming Message{inputs.length > 1 ? "s" : ""} ({inputs.length})
+                  Incoming Message{inputs.length > 1 ? "s" : ""} (
+                  {inputs.length})
                 </span>
                 <span className="text-xs text-blue-700 dark:text-blue-300">
                   from {inputs[0]?.from_node_id || "Initial"}
                 </span>
               </div>
-              
+
               {/* Show primary message */}
-              {inputSummaryResult.summary && inputSummaryResult.summary !== "No input" ? (
+              {inputSummaryResult.summary &&
+              inputSummaryResult.summary !== "No input" ? (
                 <div className="text-sm text-blue-800 dark:text-blue-200">
                   {inputSummaryResult.isTruncated ? (
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 p-2 -m-2 rounded transition-colors">
                           <div className="flex items-start justify-between gap-2">
-                            <span className="flex-1">{inputSummaryResult.summary}</span>
+                            <span className="flex-1">
+                              {inputSummaryResult.summary}
+                            </span>
                             <Eye
                               size={14}
                               className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
@@ -434,7 +454,9 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       </DialogContent>
                     </Dialog>
                   ) : (
-                    <div className="whitespace-pre-wrap">{inputSummaryResult.summary}</div>
+                    <div className="whitespace-pre-wrap">
+                      {inputSummaryResult.summary}
+                    </div>
                   )}
                 </div>
               ) : (
@@ -442,7 +464,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                   No message content
                 </div>
               )}
-              
+
               {/* Show if there are additional messages */}
               {inputs.length > 1 && (
                 <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
@@ -458,15 +480,19 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       </DialogHeader>
                       <div className="mt-4 space-y-4">
                         {inputs.map((input, idx) => {
-                          const summary = extractInputSummary(input.payload)
+                          const _summary = extractInputSummary(input.payload)
                           return (
-                            <div key={idx} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                            <div
+                              key={idx}
+                              className="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
+                            >
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Message {idx + 1} from {input.from_node_id || "Initial"}
+                                Message {idx + 1} from{" "}
+                                {input.from_node_id || "Initial"}
                               </div>
                               <pre className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto">
-                                {typeof input.payload === "string" 
-                                  ? input.payload 
+                                {typeof input.payload === "string"
+                                  ? input.payload
                                   : JSON.stringify(input.payload, null, 2)}
                               </pre>
                             </div>
@@ -813,6 +839,31 @@ function extractInputSummary(payload: any): {
   }
 
   if (typeof payload === "object") {
+    if ((payload as any).kind === "sequential") {
+      const anyPayload: any = payload
+      const msgs = anyPayload.messages ?? anyPayload.berichten
+      const count = Array.isArray(msgs) ? msgs.length : 0
+      if (Array.isArray(msgs) && count > 0) {
+        const first = msgs[0]
+        const text: string | undefined =
+          typeof first?.text === "string"
+            ? first.text
+            : typeof first?.message === "string"
+              ? first.message
+              : undefined
+        if (text && text.trim().length > 0) {
+          const original = text
+          const _summary =
+            text.length > 80 ? text.substring(0, 80) + "..." : text
+          return { summary: _summary, original, isTruncated: text.length > 80 }
+        }
+        return {
+          summary: `Aggregated input from ${count} message${count !== 1 ? "s" : ""}`,
+          original: JSON.stringify(payload, null, 2),
+          isTruncated: false,
+        }
+      }
+    }
     if (payload.kind === "aggregated" && payload.messages) {
       const messageCount = Array.isArray(payload.messages)
         ? payload.messages.length
@@ -842,7 +893,7 @@ function extractInputSummary(payload: any): {
       return null
     }
 
-    const fields = ["task", "query", "question", "message", "prompt"]
+    const fields = ["task", "query", "question", "message", "prompt", "text"]
     for (const field of fields) {
       if (!payload.kind || field === "task") {
         const result = extractField(field)

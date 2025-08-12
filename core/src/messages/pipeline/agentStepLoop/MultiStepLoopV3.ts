@@ -3,6 +3,7 @@ import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { responseToAgentSteps } from "@core/messages/api/vercel/responseToAgentSteps"
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { llmify } from "@core/utils/common/llmify"
@@ -27,10 +28,14 @@ export async function runMultiStepLoopV3Helper(
     getTotalCost,
   } = context
 
+  const incomingText = extractTextFromPayload(
+    ctx.workflowMessageIncoming.payload
+  )
   const identityPrompt = `
         How you should act: ${ctx.nodeConfig.systemPrompt}
         You are a node within a workflow helping with the main goal: ${ctx.mainWorkflowGoal}
         this is your memory: ${ctx.nodeMemory ? JSON.stringify(ctx.nodeMemory) : "none"}
+        incoming_input: ${incomingText || "<no user input provided>"}
         `
 
   // todo-memoryleak: agentSteps array grows unbounded in long-running processes

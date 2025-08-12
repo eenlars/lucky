@@ -11,11 +11,13 @@ export async function updateWorkflowInvocationScores(
   scores: InvocationScores
 ): Promise<void> {
   try {
+    const roundedAccuracy = Math.round(scores.accuracy)
+    const roundedFitness = Math.round(scores.fitness_score)
     const { error } = await supabase
       .from("WorkflowInvocation")
       .update({
-        accuracy: scores.accuracy,
-        fitness_score: scores.fitness_score,
+        accuracy: roundedAccuracy,
+        fitness_score: roundedFitness,
         updated_at: new Date().toISOString(),
       })
       .eq("wf_invocation_id", invocationId)

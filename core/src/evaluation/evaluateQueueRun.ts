@@ -68,8 +68,8 @@ export const evaluateQueueRun = async ({
       typeof evaluation === "string" ? evaluation : JSON.stringify(evaluation),
     actual_output: queueRunResult.finalWorkflowOutput,
     feedback: feedbackResult?.data ?? "",
-    fitness_score: fitness.score,
-    accuracy: fitness.accuracy,
+    fitness_score: Math.round(fitness.score),
+    accuracy: Math.round(fitness.accuracy),
   })
 
   return {

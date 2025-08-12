@@ -1,7 +1,7 @@
 "use client"
 
 import type { useWorkflowRunner } from "@/react-flow-visualization/hooks/use-workflow-runner"
-import { createContext, useContext, type ReactNode } from "react"
+import { createContext, useContext, useState, type ReactNode } from "react"
 
 // runner removed
 
@@ -12,7 +12,26 @@ const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(
 )
 
 export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>
+  const [promptDialogOpen, setPromptDialogOpen] = useState(false)
+  
+  const value = {
+    promptDialogOpen,
+    setPromptDialogOpen,
+    // Add other required methods as stubs
+    logMessages: [],
+    runWorkflow: async () => {},
+    stopWorkflow: () => {},
+    isRunning: false,
+    pendingStartNodeId: undefined,
+    setPendingStartNodeId: () => {},
+    executeWorkflowWithPrompt: async () => {},
+  }
+  
+  return (
+    <WorkflowRunnerContext.Provider value={value}>
+      {children}
+    </WorkflowRunnerContext.Provider>
+  )
 }
 
 export function useWorkflowRunnerContext() {

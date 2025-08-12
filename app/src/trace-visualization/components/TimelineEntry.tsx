@@ -8,9 +8,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
+import { PayloadRender } from "@/trace-visualization/components/InputRender"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type {
   AgentSteps,
   AgentStepsLegacy,
@@ -22,9 +24,6 @@ import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import ReactMarkdown from "react-markdown"
-import rehypeHighlight from "rehype-highlight"
-import remarkGfm from "remark-gfm"
 import { STATUS_TO_COLOR, formatCost } from "./constants"
 import { ToolCallsDisplay } from "./ToolCallsDisplay"
 
@@ -299,14 +298,12 @@ export const TimelineEntry = ({
                     <div className="mt-4 space-y-4">
                       {(() => {
                         const payload = inputs[0]?.payload
-                        if (
-                          typeof payload === "object" &&
-                          payload &&
-                          "messages" in payload &&
-                          Array.isArray(payload.messages)
-                        ) {
-                          return payload.messages.map(
-                            (msg: any, idx: number) => (
+                        if (typeof payload === "object" && payload) {
+                          const anyPayload: any = payload
+                          const msgs =
+                            anyPayload.messages ?? anyPayload.berichten
+                          if (Array.isArray(msgs)) {
+                            return msgs.map((msg: any, idx: number) => (
                               <div
                                 key={idx}
                                 className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
@@ -321,8 +318,8 @@ export const TimelineEntry = ({
                                   {JSON.stringify(msg, null, 2)}
                                 </pre>
                               </div>
-                            )
-                          )
+                            ))
+                          }
                         }
                         return (
                           <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -357,74 +354,11 @@ export const TimelineEntry = ({
                     </DialogHeader>
                     <div className="mt-4">
                       <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {(() => {
-                            const fullContent =
-                              inputSummaryResult.original || inputSummary
-                            return isMarkdownContent(fullContent) ? (
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeHighlight]}
-                                components={{
-                                  pre: ({ children }) => (
-                                    <pre className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 overflow-x-auto text-xs">
-                                      {children}
-                                    </pre>
-                                  ),
-                                  code: ({ children, className }) => {
-                                    const isInline = !className
-                                    return isInline ? (
-                                      <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs">
-                                        {children}
-                                      </code>
-                                    ) : (
-                                      <code className={className}>
-                                        {children}
-                                      </code>
-                                    )
-                                  },
-                                  p: ({ children }) => (
-                                    <p className="mb-2 last:mb-0">{children}</p>
-                                  ),
-                                  h1: ({ children }) => (
-                                    <h1 className="text-lg font-bold mb-2">
-                                      {children}
-                                    </h1>
-                                  ),
-                                  h2: ({ children }) => (
-                                    <h2 className="text-base font-bold mb-2">
-                                      {children}
-                                    </h2>
-                                  ),
-                                  h3: ({ children }) => (
-                                    <h3 className="text-sm font-bold mb-1">
-                                      {children}
-                                    </h3>
-                                  ),
-                                  ul: ({ children }) => (
-                                    <ul className="list-disc pl-4 mb-2">
-                                      {children}
-                                    </ul>
-                                  ),
-                                  ol: ({ children }) => (
-                                    <ol className="list-decimal pl-4 mb-2">
-                                      {children}
-                                    </ol>
-                                  ),
-                                  li: ({ children }) => (
-                                    <li className="mb-1">{children}</li>
-                                  ),
-                                }}
-                              >
-                                {fullContent}
-                              </ReactMarkdown>
-                            ) : (
-                              <pre className="whitespace-pre-wrap overflow-x-auto">
-                                {fullContent}
-                              </pre>
-                            )
-                          })()}
-                        </div>
+                        <PayloadRender
+                          payload={inputs[0]?.payload}
+                          msgId={`input-${index}`}
+                          inspectable
+                        />
                       </div>
                     </div>
                   </DialogContent>
@@ -435,62 +369,20 @@ export const TimelineEntry = ({
                     Incoming message from previous node
                   </div>
                   <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
-                    {isMarkdownContent(inputSummary) ? (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
-                        components={{
-                          pre: ({ children }) => (
-                            <pre className="bg-blue-100 dark:bg-blue-800 rounded-lg p-3 overflow-x-auto text-xs">
-                              {children}
-                            </pre>
-                          ),
-                          code: ({ children, className }) => {
-                            const isInline = !className
-                            return isInline ? (
-                              <code className="bg-blue-100 dark:bg-blue-800 px-1 py-0.5 rounded text-xs">
-                                {children}
-                              </code>
-                            ) : (
-                              <code className={className}>{children}</code>
-                            )
-                          },
-                          p: ({ children }) => (
-                            <p className="mb-2 last:mb-0">{children}</p>
-                          ),
-                          h1: ({ children }) => (
-                            <h1 className="text-lg font-bold mb-2">
-                              {children}
-                            </h1>
-                          ),
-                          h2: ({ children }) => (
-                            <h2 className="text-base font-bold mb-2">
-                              {children}
-                            </h2>
-                          ),
-                          h3: ({ children }) => (
-                            <h3 className="text-sm font-bold mb-1">
-                              {children}
-                            </h3>
-                          ),
-                          ul: ({ children }) => (
-                            <ul className="list-disc pl-4 mb-2">{children}</ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol className="list-decimal pl-4 mb-2">
-                              {children}
-                            </ol>
-                          ),
-                          li: ({ children }) => (
-                            <li className="mb-1">{children}</li>
-                          ),
-                        }}
-                      >
-                        {inputSummary}
-                      </ReactMarkdown>
-                    ) : (
-                      inputSummary
-                    )}
+                    {(() => {
+                      // Prefer canonical text extraction for preview; fall back to summary
+                      try {
+                        const text = extractTextFromPayload(
+                          inputs[0]?.payload as any
+                        )
+                        if (text && typeof text === "string") {
+                          return text.length > 300
+                            ? text.substring(0, 300) + "..."
+                            : text
+                        }
+                      } catch {}
+                      return inputSummary
+                    })()}
                   </div>
                 </div>
               )}
@@ -782,6 +674,33 @@ function extractInputSummary(payload: any): {
 
   // handle object payload
   if (typeof payload === "object") {
+    // handle sequential payloads and non-English arrays
+    if ((payload as any).kind === "sequential") {
+      const anyPayload: any = payload
+      const msgs = anyPayload.messages ?? anyPayload.berichten
+      const messageCount = Array.isArray(msgs) ? msgs.length : 0
+      if (messageCount > 0) {
+        const first = msgs[0]
+        const text: string | undefined =
+          typeof first?.text === "string"
+            ? first.text
+            : typeof first?.message === "string"
+              ? first.message
+              : undefined
+        if (text && text.trim()) {
+          const original = text
+          const summary =
+            text.length > 80 ? text.substring(0, 80) + "..." : text
+          return { summary, original, isTruncated: text.length > 80 }
+        }
+        return {
+          summary: `Aggregated input from ${messageCount} message${messageCount !== 1 ? "s" : ""}`,
+          original: JSON.stringify(payload, null, 2),
+          isTruncated: false,
+        }
+      }
+    }
+
     // handle specific payload kinds first (most specific)
     if (payload.kind === "aggregated" && payload.messages) {
       const messageCount = Array.isArray(payload.messages)
@@ -814,7 +733,7 @@ function extractInputSummary(payload: any): {
     }
 
     // Check each field in priority order
-    const fields = ["task", "query", "question", "message", "prompt"]
+    const fields = ["task", "query", "question", "message", "prompt", "text"]
     for (const field of fields) {
       if (!payload.kind || field === "task") {
         // only check task if not a specific kind

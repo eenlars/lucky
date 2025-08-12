@@ -39,6 +39,7 @@ export async function runMultiStepLoopV2Helper(
         How you should act: ${ctx.nodeConfig.systemPrompt}
         You are a node within a workflow helping with the main goal: ${ctx.mainWorkflowGoal}
         this is your memory: ${ctx.nodeMemory ? JSON.stringify(ctx.nodeMemory) : "none"}
+        incoming_input: ${userMessage || "<no user input provided>"}
         `
 
   // todo-memoryleak: agentSteps array grows unbounded in long-running processes

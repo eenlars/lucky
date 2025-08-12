@@ -13,7 +13,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-import SyntaxHighlightedEditor from "../[wf_version_id]/components/SyntaxHighlightedEditor"
+import ImprovedJSONEditor from "../[wf_version_id]/components/ImprovedJSONEditor"
 
 interface JSONEditorProps {
   workflowVersion?: Tables<"WorkflowVersion">
@@ -353,7 +353,7 @@ export default function JSONEditor({
         )}
 
         <div className="flex-1 overflow-hidden">
-          <SyntaxHighlightedEditor
+          <ImprovedJSONEditor
             content={workflowJSON}
             onChange={handleDslChange}
             isLoading={isLoading}
@@ -378,6 +378,12 @@ export default function JSONEditor({
               <textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !isOptimizing && feedback.trim()) {
+                    e.preventDefault()
+                    handleOptimize()
+                  }
+                }}
                 placeholder="Describe what you want to improve in the JSON structure..."
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={4}

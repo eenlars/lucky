@@ -185,5 +185,13 @@ describe("Parallel handoff integration", () => {
     const combined = aggregatedTexts.join("\n")
     expect(combined).toMatch(/ALPHA/i)
     expect(combined).toMatch(/BETA/i)
+
+    // Critical: waitFor must cause a single invocation of the join node (no premature invocations)
+    expect(joinInvocations.length).toBe(1)
+
+    // Sanity: upstream nodes should each invoke exactly once
+    expect((callArgsByNode["start"] ?? []).length).toBe(1)
+    expect((callArgsByNode["workerA"] ?? []).length).toBe(1)
+    expect((callArgsByNode["workerB"] ?? []).length).toBe(1)
   }, 5_000)
 })
