@@ -17,26 +17,36 @@ import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitn
  */
 export async function calculateFitness(
   input: FitnessFunctionInput,
-  rounds: number = 5
+  numRounds: number = 1,
+  numModels: number = 2
 ): Promise<RS<FitnessOfWorkflow>> {
   const models = [
     getDefaultModels().fitness,
-    getDefaultModels().high,
+    getDefaultModels().nano,
     getDefaultModels().reasoning,
   ]
     // de-duplicate in case multiple keys map to same underlying model id
     .filter((value, index, self) => self.indexOf(value) === index)
 
+  // Create all promises upfront for parallel execution
+  const promises = models
+    .slice(0, numModels)
+    .flatMap((model) =>
+      Array.from({ length: numRounds }, () =>
+        baseCalculateFitness({ ...input, overrideModel: model })
+      )
+    )
+
+  // Execute all fitness calculations in parallel
+  const allResults = await Promise.all(promises)
+
   const results: FitnessOfWorkflow[] = []
   let totalUsdCost = 0
 
-  for (const model of models) {
-    for (let i = 0; i < rounds; i++) {
-      const res = await baseCalculateFitness({ ...input, overrideModel: model })
-      totalUsdCost += res.usdCost ?? 0
-      if (res.success) {
-        results.push(res.data)
-      }
+  for (const res of allResults) {
+    totalUsdCost += res.usdCost ?? 0
+    if (res.success) {
+      results.push(res.data)
     }
   }
 

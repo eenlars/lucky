@@ -257,9 +257,12 @@ export default function EditModeSelector({
       <div className="flex items-center space-x-2">
         <button
           onClick={organizeLayout}
-          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
+          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-all duration-150 cursor-pointer group relative"
         >
-          📐 Organize
+          <span className="opacity-60 group-hover:opacity-100">Organize</span>
+          <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 bg-gray-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+            Cmd+L
+          </span>
         </button>
         <GraphHeaderButtons />
         <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
@@ -267,19 +270,19 @@ export default function EditModeSelector({
             onClick={() => handleModeChange("graph")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${"bg-white text-gray-900 shadow-sm"}`}
           >
-            🔗 Graph Mode
+            Graph Mode
           </button>
           <button
             onClick={() => handleModeChange("json")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
           >
-            📝 JSON Mode
+            JSON Mode
           </button>
           <button
             onClick={() => handleModeChange("eval")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
           >
-            🧪 Run & Evaluate
+            Run & Evaluate
           </button>
         </div>
       </div>
@@ -290,6 +293,7 @@ export default function EditModeSelector({
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
           right={HeaderRight}
+          showToggle={true}
         >
           <AppContextMenu>
             <Workflow workflowVersionId={workflowVersion?.wf_version_id} />
@@ -331,6 +335,7 @@ export default function EditModeSelector({
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
           right={JsonHeaderRight}
+          showToggle={false}
         >
           <JSONEditor
             workflowVersion={workflowVersion}
@@ -374,54 +379,59 @@ export default function EditModeSelector({
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
           right={EvalHeaderRight}
+          showToggle={false}
         >
-          <div className="flex flex-col gap-4 p-4">
-            <div className="flex items-end justify-between gap-4">
-              <div className="flex-1">
-                <h2 className="text-lg font-medium mb-2">
-                  Run and evaluate a workflow
-                </h2>
-                <label className="block text-sm text-gray-600 mb-1">Goal</label>
+          <div className="p-4">
+            {/* Header Section */}
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div className="flex-1 flex items-center gap-4">
                 <input
                   type="text"
-                  className="w-full border rounded p-2"
-                  placeholder="What should this workflow accomplish?"
+                  className="flex-1 border rounded px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+                  placeholder="Goal (optional)"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <button
-                  className="px-3 py-2 border rounded hover:bg-gray-50"
+                  className={`px-4 py-1 rounded text-sm font-medium ${
+                    !ios.length
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-black text-white hover:bg-gray-800 cursor-pointer"
+                  }`}
                   onClick={async () => {
                     for (const io of ios) await runIO(io)
                   }}
                   disabled={!ios.length}
                 >
-                  Run All
+                  Run All ({ios.length})
                 </button>
               </div>
             </div>
 
-            <WorkflowIOTable
-              ios={ios}
-              resultsById={resultsById}
-              busyIds={busyIds}
-              onUpdate={updateIO}
-              onDelete={deleteIO}
-              onRun={runIO}
-              onCancel={cancelIO}
-            />
+            {/* Test Cases Section */}
+            <div className="bg-white rounded border border-gray-200">
+              <WorkflowIOTable
+                ios={ios}
+                resultsById={resultsById}
+                busyIds={busyIds}
+                onUpdate={updateIO}
+                onDelete={deleteIO}
+                onRun={runIO}
+                onCancel={cancelIO}
+              />
 
-            <div className="flex items-center justify-between">
-              <button
-                className="px-3 py-2 border rounded hover:bg-gray-50"
-                onClick={() => createIO({ input: "", expected: "" })}
-              >
-                + Add new case
-              </button>
-              <div className="text-sm text-gray-600">
-                Edits save automatically. Click Run on a row to evaluate.
+              <div className="p-3 border-t flex items-center justify-between">
+                <button
+                  className="text-sm text-gray-600 hover:text-black cursor-pointer"
+                  onClick={() => createIO({ input: "", expected: "" })}
+                >
+                  + Add Test
+                </button>
+                <div className="text-xs text-gray-400">
+                  Tab = Next · Enter = Run
+                </div>
               </div>
             </div>
           </div>

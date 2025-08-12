@@ -1,6 +1,8 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
+import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Workflow } from "@core/workflow/Workflow"
 
 /**
@@ -78,12 +80,12 @@ export interface RunResult {
  * - dslConfig: pass a config object directly
  */
 export type InvocationInput = {
-  evalInput: import("@core/workflow/ingestion/ingestion.types").EvaluationInput
+  evalInput: EvaluationInput
 } & (
   | { workflowVersionId: string; filename?: never; dslConfig?: never }
   | { filename: string; workflowVersionId?: never; dslConfig?: never }
   | {
-      dslConfig: import("@core/workflow/schema/workflow.types").WorkflowConfig
+      dslConfig: WorkflowConfig
       workflowVersionId?: never
       filename?: never
     }
