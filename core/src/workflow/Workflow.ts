@@ -39,13 +39,15 @@ import type {
   EvaluationInput,
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
-import type { AggregateEvaluationResult } from "@core/workflow/runner/queueRun"
 import {
   aggregateResults,
   evaluateRuns,
   runAllIO,
-  type RunResult,
 } from "@core/workflow/runner/runAllInputs"
+import type {
+  AggregateEvaluationResult,
+  RunResult,
+} from "@core/workflow/runner/types"
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import type {
   WorkflowConfig,
@@ -693,7 +695,12 @@ export class Workflow {
   }
 }
 
-export type WorkflowImprovementResult = {
+/**
+ * Result returned by node-improvement operators.
+ */
+export interface WorkflowImprovementResult {
+  /** Updated workflow configuration after improvements */
   newConfig: WorkflowConfig
+  /** Additional USD cost incurred by the improvement process */
   cost: number
 }

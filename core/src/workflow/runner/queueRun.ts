@@ -1,6 +1,5 @@
 // src/core/workflow/queueRun.ts
 
-import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type {
   AggregatedPayload,
   MessageType,
@@ -12,40 +11,11 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 import chalk from "chalk"
+import type { QueueRunParams, QueueRunResult } from "./types"
 
-export type QueueRunParams = {
-  workflow: Workflow
-  workflowInput: string
-  workflowInvocationId: string
-}
-
-// Fix to use ProcessedResponse
-export type QueueRunResult = {
-  success: boolean
-  agentSteps: AgentSteps
-  finalWorkflowOutput: string
-  error?: string
-  totalTime: number
-  totalCost: number
-}
-
-export type EvaluationResult = {
-  transcript: AgentSteps
-  summaries: InvocationSummary[]
-  fitness: FitnessOfWorkflow
-  feedback: string
-  finalWorkflowOutput: string
-}
-
-export type AggregateEvaluationResult = {
-  results: EvaluationResult[]
-  totalCost: number
-  averageFitness: FitnessOfWorkflow
-  averageFeedback: string
-}
+// Types are centralized in ./types to avoid circular imports and keep the API surface stable.
 
 const coordinationType = CONFIG.coordinationType
 const verbose = CONFIG.logging.override.Memory ?? false

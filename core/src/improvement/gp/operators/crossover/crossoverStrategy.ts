@@ -1,9 +1,10 @@
 /**
- * Crossover strategy types and selection
+ * Crossover selection describing the operator and its aggressiveness level.
  */
-
-export type CrossoverType = {
+export interface CrossoverType {
+  /** Strategy to use for combining parent genomes */
   type: "behavioralBlend" | "structureCrossover" | "patternFusion" | "hybrid"
+  /** Degree of structural change to apply during crossover */
   aggressiveness: "aggressive" | "moderate" | "minimal"
 }
 

@@ -4,18 +4,37 @@
 
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 
+/**
+ * Configuration for iterative (non-GP) improvement mode.
+ * Runs a fixed number of iterations refining a single workflow.
+ */
+/**
+ * Configuration for iterative (non-GP) improvement mode.
+ * Runs a fixed number of iterations refining a single workflow.
+ */
 export interface IterativeConfig {
   mode: "iterative"
   iterations: number
   question: EvaluationInput
 }
 
+/**
+ * Tunables passed to mutation operators.
+ */
+/**
+ * Tunables passed to mutation operators.
+ */
 export interface _MutationParams {
   mutationInstructions: string
 }
 
 /**
- * Comprehensive evolution configuration with optional advanced features
+ * Configuration for genetic programming evolution.
+ * Controls population sizing, selection, mutation, crossover and resource limits.
+ */
+/**
+ * Configuration for genetic programming evolution.
+ * Controls population sizing, selection, mutation, crossover and resource limits.
  */
 export interface EvolutionSettings {
   mode: "GP"
@@ -43,7 +62,6 @@ export interface EvolutionSettings {
   offspringCount: number // number of offspring to produce (lambda)
   numberOfParentsCreatingOffspring: number // number of parents participating in creating offspring (usually 2, rho)
 
-  noveltyWeight?: number // Weight for novelty vs performance (0-1)
   immigrantRate?: number // immigrants per N generations
   immigrantInterval?: number // how often to add immigrants
 }
@@ -57,7 +75,6 @@ export function evolutionSettingsToString(settings: EvolutionSettings): string {
   Mutation rate: ${settings.mutationRate}
   Parents: ${settings.numberOfParentsCreatingOffspring}
   Offspring count: ${settings.offspringCount}
-  Novelty weight: ${settings.noveltyWeight}
   Immigrant rate: ${settings.immigrantRate}
   Immigrant interval: ${settings.immigrantInterval}
   Evaluation dataset: ${settings.evaluationDataset}

@@ -3,7 +3,7 @@
 import type { Tables } from "@core/utils/clients/supabase/types"
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
@@ -62,6 +62,7 @@ export default function EditModeSelector({
   const controllersRef = useState<Map<string, AbortController>>(
     () => new Map()
   )[0]
+  const [goal, setGoal] = useState<string>("")
 
   const createIO = useCallback(
     async (payload: { input: string; expected: string }) => {
@@ -119,6 +120,7 @@ export default function EditModeSelector({
           body: JSON.stringify({
             dslConfig: cfg,
             cases: [{ workflowInput: io.input, workflowOutput: io.expected }],
+            goal: goal?.trim() || undefined,
           }),
           signal: controller.signal,
         })
@@ -179,6 +181,24 @@ export default function EditModeSelector({
     },
     [updateWorkflowJSON]
   )
+
+  // Auto-organize once on initial mount for /edit (no workflowVersion)
+  // Guarded to run only once even if nodes change multiple times
+  const organizedOnceRef = useRef(false)
+  useEffect(() => {
+    if (
+      !workflowVersion &&
+      _nodes &&
+      _nodes.length > 0 &&
+      !organizedOnceRef.current
+    ) {
+      organizedOnceRef.current = true
+      // Defer to next tick to ensure ReactFlow is mounted
+      setTimeout(() => {
+        organizeLayout()
+      }, 0)
+    }
+  }, [workflowVersion, _nodes, organizeLayout])
 
   useEffect(() => {
     const modeFromParams = searchParams.get("mode")
@@ -259,7 +279,7 @@ export default function EditModeSelector({
             onClick={() => handleModeChange("eval")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
           >
-            🧪 Eval Mode
+            🧪 Run & Evaluate
           </button>
         </div>
       </div>
@@ -299,7 +319,7 @@ export default function EditModeSelector({
           onClick={() => handleModeChange("eval")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
         >
-          🧪 Eval Mode
+          🧪 Run & Evaluate
         </button>
       </div>
     </div>
@@ -342,7 +362,7 @@ export default function EditModeSelector({
           onClick={() => handleModeChange("eval")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
         >
-          🧪 Eval Mode
+          🧪 Run & Evaluate
         </button>
       </div>
     </div>
@@ -356,11 +376,23 @@ export default function EditModeSelector({
           right={EvalHeaderRight}
         >
           <div className="flex flex-col gap-4 p-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium">Workflow IO (editable)</h2>
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex-1">
+                <h2 className="text-lg font-medium mb-2">
+                  Run and evaluate a workflow
+                </h2>
+                <label className="block text-sm text-gray-600 mb-1">Goal</label>
+                <input
+                  type="text"
+                  className="w-full border rounded p-2"
+                  placeholder="What should this workflow accomplish?"
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                />
+              </div>
               <div className="flex gap-2">
                 <button
-                  className="px-3 py-1 border rounded hover:bg-gray-50"
+                  className="px-3 py-2 border rounded hover:bg-gray-50"
                   onClick={async () => {
                     for (const io of ios) await runIO(io)
                   }}
@@ -375,12 +407,23 @@ export default function EditModeSelector({
               ios={ios}
               resultsById={resultsById}
               busyIds={busyIds}
-              onCreate={createIO}
               onUpdate={updateIO}
               onDelete={deleteIO}
               onRun={runIO}
               onCancel={cancelIO}
             />
+
+            <div className="flex items-center justify-between">
+              <button
+                className="px-3 py-2 border rounded hover:bg-gray-50"
+                onClick={() => createIO({ input: "", expected: "" })}
+              >
+                + Add new case
+              </button>
+              <div className="text-sm text-gray-600">
+                Edits save automatically. Click Run on a row to evaluate.
+              </div>
+            </div>
           </div>
         </SidebarLayout>
       </ReactFlowProvider>

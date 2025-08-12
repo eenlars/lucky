@@ -8,12 +8,20 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 
-export type OutgoingHandoffMessage = {
+/**
+ * Message emitted when handing off work to another node.
+ * - toNodeId: recipient node identifier
+ * - payload: message payload delivered to the recipient
+ */
+export interface OutgoingHandoffMessage {
   toNodeId: string
   payload: Payload
 }
 
-export type HandoffMessageHandlerOptions = {
+/**
+ * Optional knobs to influence how handoff messages are built.
+ */
+export interface HandoffMessageHandlerOptions {
   /**
    * Optional override for which targets to send to. If omitted, the handler will
    * derive targets from the node config:

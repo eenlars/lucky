@@ -18,8 +18,17 @@ import { JSONN } from "@shared/utils/files/json/jsonParse"
 import chalk from "chalk"
 import z from "zod"
 
-export type SummaryResult = { summary: string; usdCost: number }
-export type InvocationSummary = {
+/**
+ * Result object returned by summary helpers.
+ */
+export interface SummaryResult {
+  summary: string
+  usdCost: number
+}
+/**
+ * Minimal, persistable invocation summary shape.
+ */
+export interface InvocationSummary {
   summary: string
   timestamp: number
   nodeId: string

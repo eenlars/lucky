@@ -51,7 +51,10 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
     guard(averageFitness, "No fitness found")
 
     // get combined transcript and summaries from all results
-    const combinedTranscript = results.map((r) => r.transcript).join("\n\n")
+    // results: EvaluationResult[] from queueRun evaluate; build string transcript
+    const combinedTranscript = results
+      .map((r) => JSON.stringify(r.transcript))
+      .join("\n\n")
     const combinedSummaries = results.flatMap((r) => r.summaries)
 
     return {

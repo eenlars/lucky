@@ -8,15 +8,25 @@ import { R, type RS } from "@core/utils/types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { z } from "zod"
 
-export type GenerateWorkflowIdeaRequest = {
+/**
+ * Input to request a single workflow idea from the LLM.
+ */
+export interface GenerateWorkflowIdeaRequest {
   prompt: string
-  randomness: number // 1-10, 1 = no randomness, 10 = full randomness
+  /** 1-10; 1 = deterministic, 10 = highly diverse */
+  randomness: number
   model?: ModelName
 }
 
-export type GenerateWorkflowIdeaData = {
+/**
+ * Structured result of a generated workflow idea.
+ */
+export interface GenerateWorkflowIdeaData {
+  /** Workflow adjacency-list like description */
   workflow: string
+  /** Tool names referenced by the idea */
   tools: string[]
+  /** Number of nodes suggested by the idea */
   amountOfNodes: number
 }
 

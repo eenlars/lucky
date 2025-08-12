@@ -35,8 +35,8 @@ export class NoEvaluator extends WorkflowEvaluator {
       )
       .join("\n\n")
 
-    const summaries = runResults.flatMap((r, caseIndex) =>
-      r.queueRunResult.agentSteps.map((output, nodeIndex) => ({
+    const summaries = runResults.flatMap((r, caseIndex: number) =>
+      r.queueRunResult.agentSteps.map((output: any, nodeIndex: number) => ({
         timestamp: Date.now(),
         nodeId: `case-${caseIndex + 1}-node-${nodeIndex + 1}`,
         summary:

@@ -5,8 +5,8 @@ import type {
   EvaluationInput,
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
-import type { InvocationInput } from "@core/workflow/runner/invokeWorkflow"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
+import type { InvocationInput } from "@core/workflow/runner/types"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import { JSONN } from "@shared/utils/files/json/jsonParse"

@@ -7,7 +7,10 @@ import { chooseHandoffHierarchical } from "@core/messages/handoffs/types/hierarc
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { chooseHandoffSequential } from "./types/sequential"
 
-export type ChooseHandoffOpts = {
+/**
+ * Inputs required to choose the next handoff target.
+ */
+export interface ChooseHandoffOpts {
   systemPrompt: string
   workflowMessage: WorkflowMessage
   handOffs: string[]

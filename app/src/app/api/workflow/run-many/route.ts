@@ -6,9 +6,10 @@ import { NextRequest, NextResponse } from "next/server"
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { dslConfig, cases } = body as {
+    const { dslConfig, cases, goal } = body as {
       dslConfig: WorkflowConfig
       cases: { workflowInput: string; workflowOutput: any }[]
+      goal?: string
     }
 
     if (!dslConfig || !Array.isArray(cases) || cases.length === 0) {
@@ -29,7 +30,10 @@ export async function POST(req: NextRequest) {
           typeof c.workflowOutput === "string"
             ? c.workflowOutput
             : JSON.stringify(c.workflowOutput),
-        goal: "UI batch run",
+        goal:
+          goal && typeof goal === "string" && goal.trim().length > 0
+            ? goal
+            : "UI batch run",
         workflowId: "adhoc-ui",
       }
 

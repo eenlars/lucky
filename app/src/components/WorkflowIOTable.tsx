@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 
 export type WorkflowIO = { id: string; input: string; expected: string }
 
@@ -16,7 +16,6 @@ type Props = {
   ios: WorkflowIO[]
   resultsById?: Record<string, RunResult>
   busyIds?: Set<string>
-  onCreate: (io: { input: string; expected: string }) => Promise<void>
   onUpdate: (ioId: string, patch: Partial<WorkflowIO>) => Promise<void>
   onDelete: (ioId: string) => Promise<void>
   onRun: (io: WorkflowIO) => Promise<void>
@@ -27,7 +26,6 @@ export default function WorkflowIOTable({
   ios,
   resultsById = {},
   busyIds,
-  onCreate,
   onUpdate,
   onDelete,
   onRun,
@@ -36,8 +34,6 @@ export default function WorkflowIOTable({
   const [edits, setEdits] = useState<
     Record<string, { input: string; expected: string }>
   >({})
-  const [composer, setComposer] = useState({ input: "", expected: "" })
-  const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [openFitnessForId, setOpenFitnessForId] = useState<string | null>(null)
 
   const isDirty = (io: WorkflowIO) => {
@@ -82,13 +78,14 @@ export default function WorkflowIOTable({
             const busy = busyIds?.has(io.id)
             const dirty = isDirty(io)
             const res = resultsById[io.id]
+            const canRun = Boolean(String(getValue(io, "input") ?? "").trim())
             return (
               <tr key={io.id} className="border-b align-top">
                 <td className="py-3 pr-4 text-gray-500">{i + 1}</td>
                 <td className="py-3 pr-4">
                   <textarea
                     className="w-full border rounded p-2 resize-y"
-                    rows={4}
+                    rows={3}
                     value={getValue(io, "input")}
                     onChange={(e) =>
                       setEdits((m) => ({
@@ -111,7 +108,7 @@ export default function WorkflowIOTable({
                 <td className="py-3 pr-4">
                   <textarea
                     className="w-full border rounded p-2 resize-y"
-                    rows={5}
+                    rows={3}
                     value={getValue(io, "expected")}
                     onChange={(e) =>
                       setEdits((m) => ({
@@ -215,6 +212,7 @@ export default function WorkflowIOTable({
                           await onRun({ ...io, ...(edits[io.id] ?? {}) })
                         }
                       }}
+                      disabled={!canRun}
                     >
                       {busy ? "Cancel Run" : "Run"}
                     </button>
@@ -230,70 +228,6 @@ export default function WorkflowIOTable({
               </tr>
             )
           })}
-
-          <tr className="align-top">
-            <td className="py-3 pr-4 text-gray-500">+</td>
-            <td className="py-3 pr-4">
-              <textarea
-                ref={inputRef}
-                className="w-full border rounded p-2 resize-y"
-                rows={4}
-                placeholder="New input…"
-                value={composer.input}
-                onChange={(e) =>
-                  setComposer((c) => ({ ...c, input: e.target.value }))
-                }
-                onKeyDown={async (e) => {
-                  const can = composer.input.trim() && composer.expected.trim()
-                  if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && can) {
-                    e.preventDefault()
-                    await onCreate(composer)
-                    setComposer({ input: "", expected: "" })
-                    inputRef.current?.focus()
-                  }
-                }}
-              />
-            </td>
-            <td className="py-3 pr-4">
-              <textarea
-                className="w-full border rounded p-2 resize-y"
-                rows={5}
-                placeholder="New expected…"
-                value={composer.expected}
-                onChange={(e) =>
-                  setComposer((c) => ({ ...c, expected: e.target.value }))
-                }
-                onKeyDown={async (e) => {
-                  const can = composer.input.trim() && composer.expected.trim()
-                  if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && can) {
-                    e.preventDefault()
-                    await onCreate(composer)
-                    setComposer({ input: "", expected: "" })
-                    inputRef.current?.focus()
-                  }
-                }}
-              />
-            </td>
-            <td className="py-3 pr-4">
-              <span className="text-gray-400">—</span>
-            </td>
-            <td className="py-3 pr-4">
-              <span className="text-gray-400">—</span>
-            </td>
-            <td className="py-3 pr-4">
-              <button
-                className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
-                disabled={!(composer.input.trim() && composer.expected.trim())}
-                onClick={async () => {
-                  await onCreate(composer)
-                  setComposer({ input: "", expected: "" })
-                  inputRef.current?.focus()
-                }}
-              >
-                Add
-              </button>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>

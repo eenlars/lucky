@@ -264,7 +264,10 @@ export const getFinalOutputNodeInvocation = (
 export const getResponseCost = (response: ProcessedResponse): number =>
   !response || response.type === "error" ? 0 : response.cost
 
-export type ResponseInformation = {
+/**
+ * Consolidated details extracted from a processed response.
+ */
+export interface ResponseInformation {
   nodeInvocationFullOutput: string | null
   summary: InvocationSummary
   cost: number

@@ -4,7 +4,10 @@ import { workflowToAdjacencyList } from "@core/workflow/actions/generate/toAdjac
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Workflow } from "@core/workflow/Workflow"
 
-export type SimplifyOptions = {
+/**
+ * Options for converting a `Workflow` to a readable string.
+ */
+export interface SimplifyOptions {
   easyModelNames: boolean
   includeToolExplanations?: boolean
   includeAdjacencyList?: boolean

@@ -2,6 +2,9 @@ import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
 
+/**
+ * Declarative configuration for a single workflow node.
+ */
 export interface WorkflowNodeConfig {
   nodeId: string
   description: string
@@ -19,7 +22,7 @@ export interface WorkflowNodeConfig {
 /**
  * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
  */
-export type WorkflowConfig = {
+export interface WorkflowConfig {
   nodes: WorkflowNodeConfig[]
   entryNodeId: string
   contextFile?: string | null

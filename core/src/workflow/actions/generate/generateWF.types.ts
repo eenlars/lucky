@@ -1,5 +1,5 @@
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { ModelName } from "@core/utils/spending/models.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 export interface GenerationOptions {
   /**
@@ -13,11 +13,17 @@ export interface GenerationOptions {
   modelOverride?: ModelName
 }
 
+/**
+ * Result of a workflow generation batch.
+ */
 export type GenerateWorkflowsResult = {
   workflows: WorkflowConfig[]
   usdCost: number
 } | null
 
+/**
+ * Options controlling validation/repair after generation.
+ */
 export type AfterGenerationOptions =
   | {
       verifyWorkflow: "none"

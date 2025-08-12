@@ -159,7 +159,10 @@ export const createHandoffSchema = (handOffs: string[]) =>
       .describe("what should the other node have to know? (plain english)"),
   })
 
-export type HandoffResult = {
+/**
+ * Result of choosing a handoff target along with reply payload and cost.
+ */
+export interface HandoffResult {
   handoff: string
   usdCost: number
   replyMessage: Payload

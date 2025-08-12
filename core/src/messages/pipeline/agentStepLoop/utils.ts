@@ -6,6 +6,9 @@ import type { ModelName } from "@core/utils/spending/models.types"
 import type { CoreMessage, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../input.types"
 
+/**
+ * Mutable context used by the multi-step loop while iterating over agent steps.
+ */
 export interface MultiStepLoopContext {
   ctx: NodeInvocationCallContext
   tools: ToolSet
@@ -81,15 +84,4 @@ export const system = (content: string): CoreMessage[] => {
   ]
 }
 
-export type StrategyResult<T> =
-  | {
-      type: "tool"
-      toolName: keyof T
-      reasoning: string
-      plan: string
-      check?: string
-      expectsMutation?: boolean
-      usdCost: number
-    }
-  | { type: "terminate"; reasoning: string; usdCost: number }
-  | { type: "error"; reasoning: string; usdCost: number }
+// moved StrategyResult to selectTool/toolstrategy.types.ts for cohesion

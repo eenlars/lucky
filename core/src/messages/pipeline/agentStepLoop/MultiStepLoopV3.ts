@@ -239,7 +239,7 @@ export async function runMultiStepLoopV3Helper(
 
       // More robust validation - check for key indicators from the check string
       const checkKeywords = strategy.check.toLowerCase().match(/\d+|\w+/g) || []
-      const hasExpectedContent = checkKeywords.some((keyword) =>
+      const hasExpectedContent = checkKeywords.some((keyword: string) =>
         outputContent.toLowerCase().includes(keyword)
       )
 

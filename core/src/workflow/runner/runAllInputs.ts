@@ -6,20 +6,20 @@ import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import {
-  queueRun,
-  type AggregateEvaluationResult,
-  type EvaluationResult,
-  type QueueRunResult,
-} from "@core/workflow/runner/queueRun"
+import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
+import type {
+  AggregateEvaluationResult,
+  EvaluationResult,
+  RunResult,
+} from "./types"
 
-export type RunResult = {
-  workflowInvocationId: string
-  queueRunResult: QueueRunResult
-}
+/**
+ * Run result for a single workflow IO case.
+ */
+// RunResult interface is centralized in ./types
 
 const verbose = false
 

@@ -1,19 +1,27 @@
 import type { ZodTypeAny } from "zod"
 
-export type WorkflowIO = {
-  // this will be the input of a workflow.
+/**
+ * Single IO case used to run and evaluate a workflow.
+ */
+export interface WorkflowIO {
+  /** Starting input to the workflow */
   workflowInput: string
-  // this may be an object, a number .. this is the correct answer what a workflow has to return.
+  /** Expected output and optional schema for validation */
   workflowOutput: {
-    output: any // follows MCP property
-    outputSchema?: OutputSchema // follows MCP property
+    /** The expected value (shape follows MCP output) */
+    output: any
+    /** Optional zod schema for validating the output */
+    outputSchema?: OutputSchema
   }
 }
 
+/** Zod schema representing the expected output type. */
 export type OutputSchema = ZodTypeAny
 
-// this is the input of a workflow, or genome.
-// we can take an input for a workflow which might be a csv or a text question.
+/**
+ * Supported evaluation input formats to drive a workflow.
+ * This union enumerates all ingestion formats supported by the ingestion layer.
+ */
 export type EvaluationInput =
   | EvaluationCSV
   | EvaluationText
@@ -22,46 +30,53 @@ export type EvaluationInput =
   | GAIAInput
   | WebArenaInput
 
-export type EvaluationCSV = {
+/** CSV-backed evaluation input definition. */
+export interface EvaluationCSV extends MainGoal {
   type: "csv"
-  evaluation?: `column:${string}` // the column name of the expected output.
+  /** the column name of the expected output */
+  evaluation?: `column:${string}`
   inputFile?: string
   outputSchema?: OutputSchema
   onlyIncludeInputColumns?: string[]
-} & MainGoal
+}
 
-export type EvaluationText = {
+/** Plain text Q/A evaluation input. */
+export interface EvaluationText extends MainGoal {
   type: "text"
   question: string
   answer: string
   outputSchema?: OutputSchema
-} & MainGoal
+}
 
-export type PromptOnly = {
+/** Prompt-only input; used when no ground-truth evaluation is needed. */
+export interface PromptOnly extends MainGoal {
   type: "prompt-only"
   outputSchema?: never
-} & MainGoal
+}
 
-export type SWEBenchInput = {
+/** SWE-bench evaluation input, configured by goal and optional schema. */
+export interface SWEBenchInput extends MainGoal {
   type: "swebench"
   outputSchema?: OutputSchema
-} & MainGoal
+}
 
-export type GAIAInput = {
+/** GAIA evaluation input referencing a dataset task. */
+export interface GAIAInput extends MainGoal {
   type: "gaia"
   taskId: string
   level?: 1 | 2 | 3
   split?: "validation" | "test"
   outputSchema?: OutputSchema
-} & MainGoal
+}
 
-export type WebArenaInput = {
+/** WebArena evaluation input definition. */
+export interface WebArenaInput extends MainGoal {
   type: "webarena"
   taskId?: number
   sites?: string[]
   limit?: number
   outputSchema?: OutputSchema
-} & MainGoal
+}
 
 // gaia dataset instance structure
 export interface GAIAInstance {
@@ -99,6 +114,7 @@ export interface WebArenaInstance {
   }
 }
 
+/** True if the input type implies an evaluation phase is possible. */
 export const needsEvaluation = (evaluation: EvaluationInput) => {
   return evaluation.type !== "prompt-only"
 }
@@ -106,11 +122,16 @@ export const needsEvaluation = (evaluation: EvaluationInput) => {
 // the goal of this is to convert the evaluation to an array of WorkflowIO.
 // one workflow has to work on many types of evaluations, so we need to
 // convert the input to a format that every workflow can understand.
+/** Function type for converting evaluation inputs into workflow IO cases. */
 export type EvaluationToWorkflowIO = (
   evaluations: EvaluationInput
 ) => WorkflowIO[]
 
+/**
+ * Shared goal and workflow identifier used by all evaluation inputs.
+ * Note: `workflowId` refers to the logical workflow, not an invocation id.
+ */
 export interface MainGoal {
   goal: string
-  workflowId: string // not invocationId!
+  workflowId: string
 }
