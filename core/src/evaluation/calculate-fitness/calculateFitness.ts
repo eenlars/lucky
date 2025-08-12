@@ -23,6 +23,7 @@ export async function calculateFitness({
   evaluation,
   outputSchema,
   finalWorkflowOutput,
+  overrideModel,
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
   if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
     lgg.warn("No outputs found")
@@ -74,7 +75,7 @@ if not good, you need to give examples why it's not good.
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    model: getDefaultModels().fitness,
+    model: overrideModel || getDefaultModels().fitness,
     mode: "structured",
     schema: FitnessOfWorkflowSchema,
     opts: {

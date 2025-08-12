@@ -1,8 +1,12 @@
+import {
+  extractTextFromPayload,
+  type AggregatedPayload,
+} from "@core/messages/MessagePayload"
+import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it, vi } from "vitest"
-import { WorkFlowNode } from "@core/node/WorkFlowNode"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.
 // No mocks; will hit real sendAI according to configured environment.
@@ -27,7 +31,8 @@ describe("Parallel handoff integration", () => {
         {
           nodeId: "workerA",
           description: "Worker A",
-          systemPrompt: "Handle part A",
+          systemPrompt:
+            "Handle part A. Secret information for A is 'ALPHA'. Reply with a short answer that includes ALPHA.",
           modelName: getDefaultModels().nano,
           mcpTools: [],
           codeTools: [],
@@ -36,7 +41,8 @@ describe("Parallel handoff integration", () => {
         {
           nodeId: "workerB",
           description: "Worker B",
-          systemPrompt: "Handle part B",
+          systemPrompt:
+            "Handle part B. Secret information for B is 'BETA'. Reply with a short answer that includes BETA.",
           modelName: getDefaultModels().nano,
           mcpTools: [],
           codeTools: [],
@@ -84,17 +90,25 @@ describe("Parallel handoff integration", () => {
     expect(typeof first.finalWorkflowOutput).toBe("string")
 
     // Verify that the join node received an aggregated payload from both workers
-    const joinCall = invokeSpy.mock.calls.find(
-      ([args]) => args?.workflowMessageIncoming?.toNodeId === "join"
-    )
+    const joinCall = invokeSpy.mock.calls.find((args) => {
+      const [arg] = args as Parameters<WorkFlowNode["invoke"]>
+      return arg?.workflowMessageIncoming?.toNodeId === "join"
+    }) as Parameters<WorkFlowNode["invoke"]> | undefined
     expect(joinCall).toBeTruthy()
 
-    const joinIncoming = joinCall![0].workflowMessageIncoming
-    const payload: any = joinIncoming.payload
+    const joinIncoming = (joinCall![0] as Parameters<WorkFlowNode["invoke"]>[0])
+      .workflowMessageIncoming
+    const payload = joinIncoming.payload as AggregatedPayload
     expect(payload?.kind).toBe("aggregated")
-    const fromIds = Array.isArray(payload?.messages)
-      ? payload.messages.map((m: any) => m.fromNodeId)
-      : []
+    const fromIds = payload.messages.map((m) => m.fromNodeId)
     expect(fromIds.sort()).toEqual(["workerA", "workerB"].sort())
+
+    // Also verify the aggregated payload contains the secret info from both workers
+    const aggregatedTexts = payload.messages.map((m) =>
+      extractTextFromPayload(m.payload)
+    )
+    const combined = aggregatedTexts.join("\n")
+    expect(combined).toMatch(/ALPHA/i)
+    expect(combined).toMatch(/BETA/i)
   })
 })

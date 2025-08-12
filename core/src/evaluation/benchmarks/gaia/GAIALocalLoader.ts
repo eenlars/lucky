@@ -30,7 +30,7 @@ export class GAIALocalLoader {
 
     if (!existsSync(filePath)) {
       throw new Error(
-        `GAIA ${split} data not found. Please run: python src/core/workflow/ingestion/benchmarks/gaia/download_gaia.py`
+        `GAIA ${split} data not found. Please run: bun tsx core/src/evaluation/benchmarks/gaia/download_gaia.ts`
       )
     }
 

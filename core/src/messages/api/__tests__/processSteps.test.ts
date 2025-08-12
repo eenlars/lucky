@@ -1,4 +1,4 @@
-import type { ModelNameV2 } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../vercel/vercelStepProcessor"
@@ -7,7 +7,7 @@ import { processStepsV2 } from "../vercel/vercelStepProcessor"
 // TODO: No tests for error propagation from underlying functions
 
 describe("processStepsV2", () => {
-  const testModel: ModelNameV2 = getDefaultModels().default
+  const testModel: ModelName = getDefaultModels().default
 
   describe("invalid inputs", () => {
     it("should return empty result for non-array input", () => {

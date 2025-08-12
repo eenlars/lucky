@@ -6,7 +6,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
-import type { ModelNameV2 } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type {
@@ -87,7 +87,7 @@ export const handleWorkflowCompletion = (
       const oldNode = oldWorkflow?.nodes?.find(
         (n) => n.nodeId === partialNode.nodeId
       )
-      const modelName: ModelNameV2 =
+      const modelName: ModelName =
         partialNode.modelName === "medium"
           ? getDefaultModels().medium
           : partialNode.modelName === "high"

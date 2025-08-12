@@ -95,8 +95,8 @@ export class HandoffMessageHandler {
     // Build payloads per target
     const payloads = targets.map((toNodeId) => {
       // For parallel fan-out, add light per-target templating (minimal & compatible)
-      const prompt = useParallel
-        ? `[Task for ${toNodeId}]: ${derivedPrompt}`
+      const textForBerichten = useParallel
+        ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
         : derivedPrompt
 
       const base: DelegationPayload | SequentialPayload =
@@ -106,9 +106,7 @@ export class HandoffMessageHandler {
               berichten: [
                 {
                   type: "text",
-                  text: useParallel
-                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                    : "",
+                  text: textForBerichten,
                 },
               ],
             }
@@ -117,9 +115,7 @@ export class HandoffMessageHandler {
               berichten: [
                 {
                   type: "text",
-                  text: useParallel
-                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                    : "",
+                  text: textForBerichten,
                 },
               ],
             }

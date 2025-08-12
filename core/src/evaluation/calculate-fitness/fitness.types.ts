@@ -1,4 +1,5 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { z } from "zod"
 
@@ -51,4 +52,5 @@ export type FitnessFunctionInput = {
   totalCost: number
   evaluation: string
   outputSchema?: OutputSchema
+  overrideModel?: ModelName
 }

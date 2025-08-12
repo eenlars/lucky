@@ -31,7 +31,7 @@ export type AnyModelName = {
   [P in LuckyProvider]: keyof (typeof providersV2)[P]
 }[LuckyProvider]
 
-export type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> = {
+type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> = {
   [P in LuckyProvider]: keyof (typeof providersV2)[P]
 }[T]
 

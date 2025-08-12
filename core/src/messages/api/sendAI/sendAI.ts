@@ -35,7 +35,7 @@ import type {
   TextRequest,
   ToolRequest,
 } from "@core/messages/api/sendAI/types"
-import type { ModelNameV2 } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -205,7 +205,7 @@ export const sendAI: SendAI = async (
 // TODO: add model name validation against known models
 // TODO: implement model name alias resolution
 // TODO: add deprecation warnings for old model names
-export const normalizeModelName = (modelName: ModelNameV2): string => {
+export const normalizeModelName = (modelName: ModelName): string => {
   // ensure consistent string format and trim any whitespace
   return String(modelName).trim()
 }
