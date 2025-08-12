@@ -3,7 +3,6 @@ import { lgg } from "@core/utils/logging/Logger"
 
 export interface InvocationScores {
   accuracy: number
-  novelty: number
   fitness_score: number
 }
 
@@ -16,7 +15,6 @@ export async function updateWorkflowInvocationScores(
       .from("WorkflowInvocation")
       .update({
         accuracy: scores.accuracy,
-        novelty: scores.novelty,
         fitness_score: scores.fitness_score,
         updated_at: new Date().toISOString(),
       })

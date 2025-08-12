@@ -45,7 +45,6 @@ const runEvolution = async () => {
             totalCostUsd: 0.01,
             totalTimeSeconds: 1,
             accuracy: 0.9,
-            novelty: 0.9,
           },
           hasBeenEvaluated: true,
           evaluatedAt: new Date().toISOString(),

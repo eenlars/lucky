@@ -255,7 +255,6 @@ const mockGenomeForEvolution = {
   getFitness: vi.fn().mockReturnValue({
     score: 0.8,
     accuracy: 80,
-    novelty: 80,
     totalCostUsd: 0.01,
     totalTimeSeconds: 1.5,
   }),
@@ -270,8 +269,7 @@ vi.mock("../Population", () => ({
       getFitness: () => ({
         score: 0.8,
         accuracy: 80,
-        novelty: 80,
-        totalCostUsd: 0.01,
+            totalCostUsd: 0.01,
         totalTimeSeconds: 1.5,
       }),
       getWorkflowVersionId: () => "best-genome-id",
@@ -564,7 +562,6 @@ describe("EvolutionEngine", () => {
             fitness: {
               score: 0.8,
               accuracy: 80,
-              novelty: 80,
               totalCostUsd: 0.001,
               totalTimeSeconds: 1,
             },
@@ -659,7 +656,6 @@ describe("EvolutionEngine", () => {
           fitness: {
             score: 0.7,
             accuracy: 70,
-            novelty: 70,
             totalCostUsd: 0.02,
             totalTimeSeconds: 5,
           },
@@ -745,7 +741,6 @@ describe("EvolutionEngine", () => {
           totalCostUsd: 0.005,
           totalTimeSeconds: 3,
           accuracy: 0.95,
-          novelty: 0.95,
         }),
       }
 
@@ -801,7 +796,6 @@ describe("EvolutionEngine", () => {
           fitness: {
             score: 0,
             accuracy: 0,
-            novelty: 0,
             totalCostUsd: 0,
             totalTimeSeconds: 0,
           },

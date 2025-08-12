@@ -33,7 +33,6 @@ export class MockGPEvaluator implements EvolutionEvaluator {
           totalCostUsd: 0.01,
           totalTimeSeconds: mockTime,
           accuracy: Math.random(),
-          novelty: Math.random(),
         },
         hasBeenEvaluated: true,
         evaluatedAt: new Date().toISOString(),

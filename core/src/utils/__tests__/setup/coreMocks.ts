@@ -437,7 +437,6 @@ export const createMockWorkflow = (
 export const createMockWorkflowScore = (score = 0.8): FitnessOfWorkflow => ({
   score,
   accuracy: 80,
-  novelty: 80,
   totalCostUsd: 0.01,
   totalTimeSeconds: 1.5,
 })
@@ -488,7 +487,6 @@ export const createMockGenomeEvaluationResults = (
   fitness: {
     score,
     accuracy: 80,
-    novelty: 80,
     totalCostUsd: 0.01,
     totalTimeSeconds: 1.5,
   },
@@ -616,7 +614,6 @@ export const createMockEvaluator = (): EvolutionEvaluator => {
         totalCostUsd: 0.01,
         totalTimeSeconds: 10,
         accuracy: 0.8,
-        novelty: 0.8,
       },
       feedback: "test feedback",
     },

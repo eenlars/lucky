@@ -423,7 +423,6 @@ describe("Genome Basic Tests", () => {
         totalCostUsd: 0.01,
         totalTimeSeconds: 10,
         accuracy: 0.8,
-        novelty: 0.8,
       }
 
       genome.setFitnessAndFeedback({ fitness, feedback: "test feedback" })
@@ -439,7 +438,6 @@ describe("Genome Basic Tests", () => {
         totalCostUsd: 0,
         totalTimeSeconds: 0,
         accuracy: 0,
-        novelty: 0,
       }
 
       genome.setFitnessAndFeedback({ fitness, feedback: "test feedback" })

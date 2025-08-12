@@ -93,7 +93,6 @@ export const TEST_CONSTANTS = {
     totalCostUsd: 0.01,
     totalTimeSeconds: 10,
     accuracy: 0.8,
-    novelty: 0.8,
     workflowVersionId: "test-genome-id",
     valid: true,
     evaluatedAt: new Date().toISOString(),

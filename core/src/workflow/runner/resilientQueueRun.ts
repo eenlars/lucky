@@ -1,6 +1,6 @@
 import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateFeedback"
-import { calculateFitness } from "@core/evaluation/calculate-fitness/calculateFitness"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
 import type {
   AggregatedPayload,
   MessageType,
@@ -31,8 +31,16 @@ import {
   WorkflowCheckpoint,
   type CheckpointData,
 } from "@core/resilience"
-
-export type QueueRunParams = {
+/**
+ * Parameters controlling a resilient workflow run.
+ * - workflow: the instantiated `Workflow` to execute
+ * - workflowInput: starting input string for the entry node
+ * - workflowInvocationId: unique id for this run (used in logs/persistence)
+ * - resumeFromCheckpoint: when true, attempts to restore prior progress
+ * - enableCheckpointing: periodically persists progress to resume later
+ * - enableHealthMonitoring: enables component health checks during the run
+ */
+export interface QueueRunParams {
   workflow: Workflow
   workflowInput: string
   workflowInvocationId: string
@@ -41,7 +49,16 @@ export type QueueRunParams = {
   enableHealthMonitoring?: boolean
 }
 
-export type QueueRunResult = {
+/**
+ * Result summary of a resilient workflow run.
+ * - agentSteps: concatenated per-node transcripts
+ * - finalWorkflowOutput: last produced output from the run
+ * - totalTime: wall-clock time in ms
+ * - totalCost: cost in USD (approximate)
+ * - checkpointUsed: indicates whether a checkpoint was resumed
+ * - nodeFailures: per-node failure counts (if any)
+ */
+export interface QueueRunResult {
   success: boolean
   agentSteps: AgentSteps
   finalWorkflowOutput: string
@@ -52,7 +69,15 @@ export type QueueRunResult = {
   nodeFailures?: Map<string, number>
 }
 
-export type EvaluationResult = {
+/**
+ * Evaluation artifacts computed after a resilient run completes.
+ * - transcript: full run-level transcript
+ * - summaries: per-invocation summaries for debugging/UX
+ * - fitness: computed fitness of the workflow for this input
+ * - feedback: optional qualitative feedback signal
+ * - finalWorkflowOutput: final output string returned by the workflow
+ */
+export interface EvaluationResult {
   transcript: AgentSteps
   summaries: InvocationSummary[]
   fitness: FitnessOfWorkflow
@@ -690,7 +715,6 @@ export const evaluateResilientQueueRun = async ({
       actual_output: queueRunResult.finalWorkflowOutput,
       feedback: feedbackResult?.data ?? "",
       fitness_score: fitness.score,
-      novelty: fitness.novelty,
       accuracy: fitness.accuracy,
     })
   })

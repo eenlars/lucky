@@ -18,8 +18,7 @@ vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
           totalCostUsd: 0.05,
           totalTimeSeconds: 1.5,
           accuracy: 0.85,
-          novelty: 0.85,
-        },
+            },
         feedback: "test feedback",
       },
       usdCost: 0.05,
@@ -30,7 +29,6 @@ vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
       totalCostUsd: 0.05,
       totalTimeSeconds: 1.5,
       accuracy: 0.85,
-      novelty: 0.85,
     })
   },
 }))

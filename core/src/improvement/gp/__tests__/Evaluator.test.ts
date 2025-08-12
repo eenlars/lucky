@@ -23,7 +23,6 @@ vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
           totalCostUsd: 0.05,
           totalTimeSeconds: 1.5,
           accuracy: 0.85,
-          novelty: 0.85,
         },
         feedback: "test feedback",
       },
@@ -285,7 +284,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.05,
             totalTimeSeconds: 1.5,
             accuracy: -1,
-            novelty: -1,
           },
           feedback: "test feedback",
         },
@@ -334,7 +332,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.15,
             totalTimeSeconds: 2.0,
             accuracy: 0.95,
-            novelty: 0.95,
           },
           feedback: "test feedback",
         },
@@ -368,7 +365,7 @@ describe("Evaluator", () => {
   describe("evaluation metrics", () => {
     // TODO: Superficial test - only checks timestamp format, not evaluation metrics
     // - Should test actual fitness metric calculations
-    // - Should test how accuracy, novelty, and other metrics are computed
+    // - Should test how accuracy and other metrics are computed
     // - Missing tests for metric aggregation and weighting
     it("should generate valid timestamps", async () => {
       const { GPEvaluatorAdapter } = await import(
@@ -410,7 +407,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0,
             totalTimeSeconds: 0.5,
             accuracy: 0.75,
-            novelty: 0.75,
           },
           feedback: "test feedback",
         },
@@ -458,7 +454,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.02,
             totalTimeSeconds: 0.8,
             accuracy: 0.98,
-            novelty: 0.98,
           },
           feedback: "test feedback",
         },
@@ -506,7 +501,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.1,
             totalTimeSeconds: 30.0,
             accuracy: 0.65,
-            novelty: 0.65,
           },
           feedback: "test feedback",
         },
@@ -675,7 +669,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.03,
             totalTimeSeconds: 1.2,
             accuracy: 0.9,
-            novelty: 0.9,
           },
           feedback: "test feedback",
         },
@@ -704,7 +697,6 @@ describe("Evaluator", () => {
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.score).toBe(0.85)
       expect(result.data?.fitness?.accuracy).toBe(0.9)
-      expect(result.data?.fitness?.novelty).toBe(0.9)
     })
   })
 
@@ -770,7 +762,6 @@ describe("Evaluator", () => {
               totalCostUsd: 0.1,
               totalTimeSeconds: 2.0,
               accuracy: 0.6,
-              novelty: 0.6,
             },
             feedback: "test feedback 1",
           },
@@ -784,8 +775,7 @@ describe("Evaluator", () => {
               totalCostUsd: 0.02,
               totalTimeSeconds: 0.8,
               accuracy: 0.95,
-              novelty: 0.95,
-            },
+              },
             feedback: "test feedback 2",
           },
           usdCost: 0.02,

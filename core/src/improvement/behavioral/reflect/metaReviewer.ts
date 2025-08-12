@@ -39,10 +39,6 @@ Accuracy 1-100:
 - Give partial credit: if 2/4 of the expected criteria are met, give 50% credit.
 - If there is no good answer, give 0% credit.
 
-# novelty
-Novelty 1-100: 
-- How innovative the critique's suggestions are.
-
 # criteria
 - Issue identification (40%)
 - Feedback quality (30%)
@@ -59,7 +55,7 @@ ${typeof originalOutput === "string" ? originalOutput : llmify(JSONN.show(origin
 
 Ground Truth: ${evaluation}
 
-Respond with JSON: {"accuracy": 1-100, "novelty": 1-100, "feedback": "comprehensive analysis"}
+Respond with JSON: {"accuracy": 1-100, "feedback": "comprehensive analysis"}
 
 In your feedback, include: critique quality justification, specific weaknesses and strengths of the critique (bullet points), 2-3 improvement suggestions with priorities, and estimated impact (potential improvement 0-100, cost change decrease/increase/neutral).
   `
@@ -87,7 +83,6 @@ In your feedback, include: critique quality justification, specific weaknesses a
       totalCostUsd: totalCost + response.usdCost,
       totalTimeSeconds: totalTime / 1000,
       accuracy: response.data.accuracy,
-      novelty: response.data.novelty,
     },
     response.usdCost
   )

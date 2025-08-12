@@ -18,14 +18,12 @@ export const calculateAverageFitness = (
   let totalCostUsd = 0
   let totalTimeSeconds = 0
   let totalAccuracy = 0
-  let totalNovelty = 0
 
   for (const fitness of fitnesses) {
     totalScore += fitness.score
     totalCostUsd += fitness.totalCostUsd
     totalTimeSeconds += fitness.totalTimeSeconds
     totalAccuracy += fitness.accuracy
-    totalNovelty += fitness.novelty
   }
 
   return {
@@ -33,7 +31,6 @@ export const calculateAverageFitness = (
     totalCostUsd: totalCostUsd / count,
     totalTimeSeconds: totalTimeSeconds / count,
     accuracy: totalAccuracy / count,
-    novelty: totalNovelty / count,
   }
 }
 

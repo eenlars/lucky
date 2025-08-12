@@ -95,7 +95,6 @@ export class Genome extends Workflow {
         totalCostUsd: 0,
         totalTimeSeconds: 0,
         accuracy: 0,
-        novelty: 0,
       },
       costOfEvaluation: 0,
       errors: [],
@@ -210,7 +209,7 @@ export class Genome extends Workflow {
           this was an analysis of the problem: ${problemAnalysis}
           `,
         randomness,
-        model: randomModel, // creates novelty, ensemble method.
+        model: randomModel, // ensemble method.
       })
       lgg.onlyIf(
         Genome.verbose,
@@ -431,7 +430,6 @@ export class Genome extends Workflow {
         totalCostUsd: 0,
         totalTimeSeconds: 0,
         accuracy: 0,
-        novelty: 0,
       },
       costOfEvaluation: 0,
       errors: [],

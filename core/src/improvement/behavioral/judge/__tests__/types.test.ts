@@ -16,7 +16,6 @@ describe("Iterative Evolution Types", () => {
           totalCostUsd: 0.02,
           totalTimeSeconds: 15,
           accuracy: 0.85,
-          novelty: 0.85,
         },
         setup: {
           nodes: [

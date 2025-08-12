@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { calculateFitness } from "@core/evaluation/calculate-fitness/calculateFitness"
+import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -70,18 +70,21 @@ describe("prompt-only 2-step math workflow", () => {
     expect(typeof queueRunResult.finalWorkflowOutput).toBe("string")
 
     // LLM-based verification (no mocks): grade the final output against ground truth
-    const judge = await calculateFitness({
-      agentSteps: queueRunResult.agentSteps,
-      totalTime: queueRunResult.totalTime,
-      totalCost: queueRunResult.totalCost,
-      // Provide strict expected answer in the evaluation text for the judge
-      evaluation:
-        `The correct final numeric answer is ${expected}. ` +
-        `Award accuracy 100 ONLY if the final output equals ${expected} as a bare integer (ignoring whitespace). ` +
-        `If incorrect, award 0.`,
-      outputSchema: undefined,
-      finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
-    })
+    const judge = await calculateFitness(
+      {
+        agentSteps: queueRunResult.agentSteps,
+        totalTime: queueRunResult.totalTime,
+        totalCost: queueRunResult.totalCost,
+        // Provide strict expected answer in the evaluation text for the judge
+        evaluation:
+          `The correct final numeric answer is ${expected}. ` +
+          `Award accuracy 100 ONLY if the final output equals ${expected} as a bare integer (ignoring whitespace). ` +
+          `If incorrect, award 0.`,
+        outputSchema: undefined,
+        finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
+      },
+      1
+    )
 
     expect(judge.success).toBe(true)
     // Expect perfect score when the model follows instructions precisely

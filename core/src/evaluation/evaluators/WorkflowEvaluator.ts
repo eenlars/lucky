@@ -47,15 +47,12 @@ export abstract class WorkflowEvaluator {
     const totalTime = fitnesses.reduce((sum, f) => sum + f.totalTimeSeconds, 0)
     const avgAccuracy =
       fitnesses.reduce((sum, f) => sum + f.accuracy, 0) / fitnesses.length
-    const avgNovelty =
-      fitnesses.reduce((sum, f) => sum + f.novelty, 0) / fitnesses.length
 
     return {
       score: Math.round(avgScore),
       totalCostUsd: totalCost,
       totalTimeSeconds: totalTime,
       accuracy: Math.round(avgAccuracy),
-      novelty: Math.round(avgNovelty),
     }
   }
 }

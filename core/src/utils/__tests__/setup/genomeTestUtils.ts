@@ -81,5 +81,4 @@ export const createMockWorkflowScore = (): FitnessOfWorkflow => ({
   totalCostUsd: 0.1,
   totalTimeSeconds: 5,
   accuracy: 0.9,
-  novelty: 0.7,
 })

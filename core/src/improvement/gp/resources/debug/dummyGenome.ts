@@ -100,7 +100,6 @@ export const createDummyGenome = (
         fitness: {
           score: 0.7,
           accuracy: 70,
-          novelty: 70,
           totalCostUsd: 0.01,
           totalTimeSeconds: 2.0,
         },

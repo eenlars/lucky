@@ -63,7 +63,6 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
           // still some bias in here, if requests are stalled.
           totalTimeSeconds: averageFitness.totalTimeSeconds,
           accuracy: averageFitness.accuracy,
-          novelty: averageFitness.novelty,
         },
         feedback: averageFeedback,
         transcript: combinedTranscript,

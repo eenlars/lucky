@@ -68,7 +68,6 @@ export class NoEvaluator extends WorkflowEvaluator {
           totalCostUsd: totalCost,
           totalTimeSeconds,
           accuracy: 1.0,
-          novelty: 1.0,
         },
         feedback: "Prompt-only workflow - no evaluation performed",
         transcript,

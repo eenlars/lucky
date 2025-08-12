@@ -47,7 +47,7 @@ const baseSchema = {
   improvementSuggestions: z
     .string()
     .describe(
-      "feedback, weaknesses, strengths, improvement suggestions, novelty score, estimated impact,novelty score of the suggestions, estimated impact of the suggestions, improvement suggestions, novelty score of the suggestions, estimated impact of the suggestions"
+      "feedback, weaknesses, strengths, improvement suggestions, estimated impact"
     ),
 }
 

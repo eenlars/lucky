@@ -356,7 +356,6 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     offspringCount: Math.floor(GP_POPULATION_SIZE * 0.8),
     maxCostUSD: CONFIG.limits.maxCostUsdPerRun,
     maxEvaluationsPerHour: 500,
-    noveltyWeight: 0.5,
     immigrantRate: 3,
     immigrantInterval: 5,
   })
