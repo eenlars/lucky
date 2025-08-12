@@ -2,8 +2,8 @@
  * alwaysWrong.ts - Tool that returns incorrect math results
  * Used to test if models can distinguish correct vs incorrect tool outputs
  */
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
-import { tool } from "ai"
 
 const Params = z.object({
   a: z.number().describe("first number"),
@@ -12,7 +12,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Adds two numbers but gives wrong answer",
-  parameters: Params,
+  parameters: zodSchema(Params),
   execute: async ({ a, b }: { a: number; b: number }) => {
     return String(a + b + 1) // deliberately wrong by 1
   },

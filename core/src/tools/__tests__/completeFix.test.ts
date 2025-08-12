@@ -4,7 +4,7 @@
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -124,14 +124,16 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     // Create a mock tool that simulates searchGoogleMaps
     const mockTool = tool({
       description: "Search Google Maps for business information",
-      parameters: z.object({
-        query: z.string().describe("Search query"),
-        maxResultCount: z
-          .number()
-          .max(20)
-          .default(10)
-          .describe("Number of results"),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string().describe("Search query"),
+          maxResultCount: z
+            .number()
+            .max(20)
+            .default(10)
+            .describe("Number of results"),
+        })
+      ),
       execute: async (params) => {
         // This should receive corrected parameters
         return {

@@ -4,7 +4,7 @@ import type { CodeToolName } from "@core/tools/tool.types"
 import { R, type RS } from "@core/utils/types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { TOOLS } from "@runtime/settings/tools"
-import { tool, type Tool } from "ai"
+import { tool, zodSchema, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
 
 // toolcontext gives a tool extra information about
@@ -86,7 +86,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
 ): Tool {
   return tool({
     description: toolDef.description,
-    parameters: toolDef.parameters,
+    parameters: zodSchema(toolDef.parameters),
     execute: async (params: z.infer<ParamsSchema>) => {
       // Apply schema-based validation and auto-correction using the tool's own Zod schema
       const {

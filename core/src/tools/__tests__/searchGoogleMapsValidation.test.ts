@@ -1,6 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -21,15 +21,17 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
     // Create the actual searchGoogleMaps tool schema as defined in the codebase
     const searchGoogleMapsTool = tool({
       description: "Search Google Maps for business information",
-      parameters: z.object({
-        query: z.string().describe("Search query"),
-        maxResultCount: z
-          .number()
-          .max(20)
-          .default(10)
-          .describe("Number of results to return"),
-        domainFilter: z.string().optional().describe("Filter by domain"),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string().describe("Search query"),
+          maxResultCount: z
+            .number()
+            .max(20)
+            .default(10)
+            .describe("Number of results to return"),
+          domainFilter: z.string().optional().describe("Filter by domain"),
+        })
+      ),
       execute: async () => "mock result",
     })
 

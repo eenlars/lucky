@@ -157,14 +157,14 @@ export default function ImprovedJSONEditor({
         <div className="flex items-center gap-2">
           <button
             onClick={handleFormat}
-            className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+            className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
             title="Format JSON (Cmd/Ctrl+Shift+F)"
           >
             Format
           </button>
           <button
             onClick={handleCopy}
-            className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5"
+            className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5 cursor-pointer"
             title="Copy JSON"
           >
             {isCopied ? (

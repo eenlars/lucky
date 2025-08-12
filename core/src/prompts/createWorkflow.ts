@@ -23,4 +23,4 @@ this is an example of a very basic workflow. you can make it more complex by add
   - the last node must have a handoff to 'end' (the end of the workflow)
   - the workflow must be a directed acyclic graph (no cycles allowed in the node connections)
   - the workflow must have at most 10 nodes
-`
+`.trim()

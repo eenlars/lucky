@@ -2,7 +2,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
-import { generateText, tool } from "ai"
+import { generateText, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -12,9 +12,11 @@ import { z } from "zod"
 // Should use meaningful names that clearly indicate test purpose
 const tool1 = tool({
   description: "nod-333",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return "555"
   },
@@ -22,9 +24,11 @@ const tool1 = tool({
 
 const tool2 = tool({
   description: "mod-888",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "555" ? "B" : "2"
   },
@@ -32,9 +36,11 @@ const tool2 = tool({
 
 const tool3 = tool({
   description: "rod-999",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "B" ? "9" : "C"
   },

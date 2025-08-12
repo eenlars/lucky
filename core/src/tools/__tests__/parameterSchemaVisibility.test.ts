@@ -1,7 +1,7 @@
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -25,14 +25,16 @@ describe("Parameter Schema Visibility", () => {
   // if the schema visibility actually affects AI behavior or tool selection quality.
   const mockSearchGoogleMapsTool = tool({
     description: "Search Google Maps for business information",
-    parameters: z.object({
-      query: z.string().describe("Search query"),
-      maxResultCount: z
-        .number()
-        .max(20)
-        .default(10)
-        .describe("Number of results to return"),
-    }),
+    parameters: zodSchema(
+      z.object({
+        query: z.string().describe("Search query"),
+        maxResultCount: z
+          .number()
+          .max(20)
+          .default(10)
+          .describe("Number of results to return"),
+      })
+    ),
     execute: async () => "mock result",
   })
 
@@ -116,16 +118,18 @@ describe("Parameter Schema Visibility", () => {
 
     const complexTool = tool({
       description: "Complex tool with various parameter types",
-      parameters: z.object({
-        query: z.string().describe("Search query"),
-        options: z.object({
-          maxResults: z.number().max(100).default(10),
-          includeMetadata: z.boolean().default(false),
-          tags: z.array(z.string()).optional(),
-        }),
-        mode: z.enum(["fast", "thorough"]).default("fast"),
-        filters: z.union([z.string(), z.array(z.string())]).optional(),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string().describe("Search query"),
+          options: z.object({
+            maxResults: z.number().max(100).default(10),
+            includeMetadata: z.boolean().default(false),
+            tags: z.array(z.string()).optional(),
+          }),
+          mode: z.enum(["fast", "thorough"]).default("fast"),
+          filters: z.union([z.string(), z.array(z.string())]).optional(),
+        })
+      ),
       execute: async () => "complex result",
     })
 
@@ -161,9 +165,11 @@ describe("Parameter Schema Visibility", () => {
 
     const zodTool = tool({
       description: "Tool with Zod parameters",
-      parameters: z.object({
-        query: z.string(),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string(),
+        })
+      ),
       execute: async () => "zod result",
     })
 

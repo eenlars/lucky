@@ -8,8 +8,7 @@
   "dependencies": {
     "@mendable/firecrawl-js": "^1.29.3",
     "nanoid": "^5.1.5",
-    "puppeteer": "^24.15.0",
-    "zod": "^4.0.14"
+    "puppeteer": "^24.15.0"
   },
   "devDependencies": {
     "@lucky/core": "workspace:*",

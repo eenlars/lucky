@@ -2,7 +2,7 @@
  * mathChain.ts - 2-step math processing chain with obfuscated function names
  * Tests sequential tool execution: data_collector → result_processor
  */
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
 
 // step 1: data_collector - extracts number from string input
@@ -12,7 +12,7 @@ const DataCollectorParams = z.object({
 
 export const dataCollectorSpec = tool({
   description: "Collects and processes initial data input for the pipeline",
-  parameters: DataCollectorParams,
+  parameters: zodSchema(DataCollectorParams),
   execute: async ({ input }: { input: string }) => {
     const parsed = parseInt(input.trim(), 10)
     if (isNaN(parsed)) {
@@ -29,7 +29,7 @@ const ResultProcessorParams = z.object({
 
 export const resultProcessorSpec = tool({
   description: "Processes collected data and generates final result",
-  parameters: ResultProcessorParams,
+  parameters: zodSchema(ResultProcessorParams),
   execute: async ({ value }: { value: number }) => {
     return String(value * 2)
   },
