@@ -13,6 +13,14 @@ import { CONFIG } from "@runtime/settings/constants"
 import { verifyHierarchicalStructure } from "../verifyHierarchical"
 
 describe("verifyHierarchicalStructure", () => {
+  // TODO: additional test coverage needed:
+  // 1. no tests for circular dependencies in hierarchical mode
+  // 2. no tests for orphaned nodes (nodes not reachable from entry)
+  // 3. no tests for multiple orchestrators (invalid hierarchy)
+  // 4. no tests for deeply nested hierarchies performance
+  // 5. no tests for self-referential nodes
+  // 6. no tests for complex branching hierarchies
+  // 7. no tests for worker nodes with multiple parents
   // Exact workflow from the error message
   const problemWorkflow: WorkflowConfig = {
     entryNodeId: "test-node-1",

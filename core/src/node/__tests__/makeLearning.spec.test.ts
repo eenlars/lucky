@@ -4,6 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { makeLearning } from "../../prompts/makeLearning"
 
 describe("makeLearning Integration Test", () => {
+  // TODO: this is labeled as integration test but actually mocks all AI calls,
+  // making it a unit test. the name is misleading. also, the test is tightly
+  // coupled to specific response format and doesn't test edge cases like
+  // malformed responses, partial data, or different memory structures.
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -34,6 +38,9 @@ describe("makeLearning Integration Test", () => {
     expect(result.agentStep.type).toBe("learning")
     expect(result.agentStep.return).toContain("physical_stores:")
 
+    // TODO: this assertion is too generic - using expect.any(Array) and expect.any(Object)
+    // doesn't verify the actual structure of messages or schema. should verify the
+    // content of messages and that schema matches expected memory structure.
     // Verify the schema was called correctly
     expect(sendAIModule.sendAI).toHaveBeenCalledWith({
       model: getDefaultModels().nano,

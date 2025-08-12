@@ -347,6 +347,10 @@ vi.mock("@core/messages/handoffs/main", () => ({
 }))
 
 describe("InvocationPipeline", () => {
+  // TODO: this test suite has extensive mocking that prevents testing real behavior.
+  // all AI calls, tool executions, and helper functions are mocked, so tests only
+  // verify that mocks are called, not that InvocationPipeline actually works.
+  // should consider integration tests with fewer mocks to test real behavior.
   const baseContext: NodeInvocationCallContext = {
     workflowMessageIncoming: new WorkflowMessage({
       fromNodeId: "start",
@@ -386,6 +390,10 @@ describe("InvocationPipeline", () => {
 
   describe("prepare()", () => {
     it("initializes pipeline successfully", async () => {
+      // TODO: this test only verifies that a mocked AI response is added to agentSteps.
+      // it doesn't test what prepare() actually does: tool strategy selection, context
+      // preparation, or error handling. the assertion is too generic (just checking for
+      // "AI response" string) and doesn't verify the quality of preparation.
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
@@ -469,6 +477,9 @@ describe("InvocationPipeline", () => {
     })
 
     it("executes successfully with single call mode", async () => {
+      // TODO: this test has no assertions! it runs the code but doesn't verify anything.
+      // should at least check that agentSteps contains expected outputs, that no errors
+      // occurred, or that the execution completed successfully.
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
@@ -511,6 +522,10 @@ describe("InvocationPipeline", () => {
     })
 
     it("handles processing without execution", async () => {
+      // TODO: this test assumes specific error message "empty processedResponse" but
+      // doesn't verify this is the actual error behavior. if implementation changes
+      // error message, test will fail for wrong reasons. should test error type or
+      // more generic error conditions rather than exact message matching.
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
@@ -524,6 +539,10 @@ describe("InvocationPipeline", () => {
 
   describe("memory and cost tracking", () => {
     it("tracks costs and memory updates", async () => {
+      // TODO: this test doesn't actually verify cost tracking or memory updates.
+      // it only checks that updatedMemory is defined, not that it contains expected
+      // values or that costs are calculated correctly. agentSteps variable is created
+      // but never used. should verify actual memory changes and cost accumulation.
       const contextWithMemory = {
         ...baseContext,
         nodeMemory: { existing: "memory" },

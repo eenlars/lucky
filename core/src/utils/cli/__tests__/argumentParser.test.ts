@@ -2,6 +2,13 @@ import { describe, it, expect } from "vitest"
 import { parseCliArguments, ArgumentParsingError } from "../argumentParser"
 
 describe("parseCliArguments", () => {
+  // TODO: additional test coverage improvements:
+  // 1. no test for combined valid arguments (e.g., --mode=GP --population=10 --generations=5)
+  // 2. no test for argument order independence
+  // 3. no test for very long argument values or argument count limits
+  // 4. no test for help/version flags if supported
+  // 5. no test for default values when no arguments provided
+  // 6. consider testing system limits (max string length, max arguments)
   it("parses valid iterative mode with generations", () => {
     const result = parseCliArguments(["--mode=iterative", "--generations=5"])
     expect(result).toEqual({ mode: "iterative", generations: 5 })

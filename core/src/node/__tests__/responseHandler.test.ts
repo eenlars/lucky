@@ -51,6 +51,10 @@ vi.mock("@runtime/settings/constants", () => ({
 }))
 
 describe("responseHandler - Parallel Handoff Logic", () => {
+  // TODO: this test has good structure and tests specific handoff logic scenarios.
+  // however, it only tests the happy path. missing tests for error conditions,
+  // validation failures, edge cases like empty handoffs array, or when chooseHandoff
+  // fails. also doesn't test the actual message content or cost calculations.
   const createMockContext = (
     handOffType?: "conditional" | "sequential" | "parallel",
     handOffs: string[] = ["node1", "node2"]

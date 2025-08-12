@@ -1,13 +1,36 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/models"
-import { generateObject } from "ai"
-import { vi } from "vitest"
+import type { ModelName } from "@core/utils/spending/models.types"
+import type { RS } from "@core/utils/types"
+import { R } from "@core/utils/types"
+import type { CoreMessage } from "ai"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
+
+// TODO: Complex mock setup indicates tight coupling between sendAI and genObject
+// Consider refactoring to use dependency injection
+// Set up mocks BEFORE importing modules under test
+type GenObjectMockFn = (args: {
+  messages: CoreMessage[]
+  schema: z.ZodSchema
+  model?: ModelName
+  opts?: { retries?: number; repair?: boolean }
+}) => Promise<RS<{ value: unknown; summary: string }>>
+
+vi.mock("@core/messages/api/genObject", () => {
+  const defaultImpl: GenObjectMockFn = async () =>
+    R.success(
+      {
+        value: { name: "John Doe", age: 30, email: "john@example.com" },
+        summary: "Test summary",
+      },
+      0.01
+    )
+  const genObject = vi.fn<GenObjectMockFn>(defaultImpl)
+  return { genObject }
+})
 
 // Mock the dependencies
 vi.mock("ai", () => ({
   generateText: vi.fn(),
-  generateObject: vi.fn(),
   APICallError: class APICallError extends Error {
     constructor(message: string) {
       super(message)
@@ -22,10 +45,14 @@ vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
 
 vi.mock("@core/utils/spending/SpendingTracker", () => ({
   SpendingTracker: {
-    getInstance: () => ({
-      canMakeRequest: () => true,
-      addCost: vi.fn(),
-    }),
+    getInstance: () =>
+      ({
+        canMakeRequest: () => true,
+        addCost: vi.fn(),
+      }) satisfies Pick<
+        import("@core/utils/spending/SpendingTracker").SpendingTracker,
+        "canMakeRequest" | "addCost"
+      >,
   },
 }))
 
@@ -37,48 +64,27 @@ vi.mock("@runtime/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
-vi.mock("@core/messages/api/genObject", () => ({
-  genObject: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      name: "John Doe",
-      age: 30,
-      email: "john@example.com",
-    },
-    usdCost: 0.01,
-  }),
-}))
+// Import after mocks so modules receive mocked versions
+import { genObject } from "@core/messages/api/genObject"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { getDefaultModels } from "@runtime/settings/models"
 
+// TODO: Missing tests for:
+// - Schema validation edge cases (nullable, union types)
+// - Retry behavior with structured output
+// - Performance with large schemas
 describe("sendAIRequest with structuredOutput", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it("should use generateObject for structured output", async () => {
-    const mockedGenerateObject = vi.mocked(generateObject)
-
-    // Define test schema
+  it("should use genObject for structured output and return validated data", async () => {
     const testSchema = z.object({
       name: z.string(),
       age: z.number().min(0).max(150),
       email: z.string().email(),
     })
 
-    // Mock successful response
-    mockedGenerateObject.mockResolvedValueOnce({
-      object: {
-        name: "John Doe",
-        age: 30,
-        email: "john@example.com",
-      },
-      usage: {
-        promptTokens: 100,
-        completionTokens: 50,
-        totalTokens: 150,
-      },
-    } as any)
-
-    // Call sendAIRequest with structuredOutput
     const result = await sendAI({
       messages: [
         {
@@ -89,38 +95,45 @@ describe("sendAIRequest with structuredOutput", () => {
       model: getDefaultModels().default,
       mode: "structured",
       schema: testSchema,
-      output: "object",
     })
 
-    // Verify success
     expect(result.success).toBe(true)
-    expect(result.debug_output).toEqual({
+    expect(result.data).toEqual({
       name: "John Doe",
       age: 30,
       email: "john@example.com",
     })
+    expect(result.debug_output).toEqual(
+      expect.objectContaining({
+        value: {
+          name: "John Doe",
+          age: 30,
+          email: "john@example.com",
+        },
+        summary: expect.any(String),
+      })
+    )
     expect(result.error).toBeNull()
   })
 
-  it("should support array output type", async () => {
-    const mockedGenerateObject = vi.mocked(generateObject)
-
+  it("should support array output via array schema", async () => {
     const itemSchema = z.object({
       id: z.string(),
       name: z.string(),
     })
 
-    mockedGenerateObject.mockResolvedValueOnce({
-      object: [
-        { id: "1", name: "Item 1" },
-        { id: "2", name: "Item 2" },
-      ],
-      usage: {
-        promptTokens: 100,
-        completionTokens: 50,
-        totalTokens: 150,
-      },
-    } as any)
+    vi.mocked(genObject).mockResolvedValueOnce(
+      R.success(
+        {
+          value: [
+            { id: "1", name: "Item 1" },
+            { id: "2", name: "Item 2" },
+          ],
+          summary: "List summary",
+        },
+        0.02
+      )
+    )
 
     const result = await sendAI({
       messages: [
@@ -131,30 +144,21 @@ describe("sendAIRequest with structuredOutput", () => {
       ],
       model: getDefaultModels().default,
       mode: "structured",
-      schema: itemSchema,
-      output: "array",
+      schema: z.array(itemSchema),
     })
 
     expect(result.success).toBe(true)
     expect(Array.isArray(result.data)).toBe(true)
-    expect(mockedGenerateObject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        output: "array",
-      })
-    )
+    expect(result.data).toEqual([
+      { id: "1", name: "Item 1" },
+      { id: "2", name: "Item 2" },
+    ])
   })
 
-  it("should support enum output type", async () => {
-    const mockedGenerateObject = vi.mocked(generateObject)
-
-    mockedGenerateObject.mockResolvedValueOnce({
-      object: "action",
-      usage: {
-        promptTokens: 100,
-        completionTokens: 50,
-        totalTokens: 150,
-      },
-    } as any)
+  it("should support enum output via z.enum schema", async () => {
+    vi.mocked(genObject).mockResolvedValueOnce(
+      R.success({ value: "action", summary: "Enum summary" }, 0.01)
+    )
 
     const result = await sendAI({
       messages: [
@@ -165,29 +169,21 @@ describe("sendAIRequest with structuredOutput", () => {
       ],
       model: getDefaultModels().default,
       mode: "structured",
-      schema: z.string(),
-      output: "object",
-      enum: ["action", "comedy", "drama", "horror", "sci-fi"],
+      schema: z.enum(["action", "comedy", "drama", "horror", "sci-fi"]),
     })
 
     expect(result.success).toBe(true)
     expect(result.data).toBe("action")
-    expect(mockedGenerateObject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        output: "enum",
-        enum: ["action", "comedy", "drama", "horror", "sci-fi"],
-      })
-    )
   })
 
-  it("should handle generateObject errors", async () => {
-    const mockedGenerateObject = vi.mocked(generateObject)
-
+  it("should handle genObject errors", async () => {
     const testSchema = z.object({
       name: z.string(),
     })
 
-    mockedGenerateObject.mockRejectedValueOnce(new Error("AI model error"))
+    // TODO: Only testing generic error - should test specific error types
+    // (network errors, validation errors, timeout errors, etc.)
+    vi.mocked(genObject).mockRejectedValueOnce(new Error("AI model error"))
 
     const result = await sendAI({
       messages: [

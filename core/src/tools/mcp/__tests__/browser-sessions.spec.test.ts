@@ -8,6 +8,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
 
 describe("browser session persistence tests", () => {
+  // TODO: More integration tests that depend on external services and browser automation.
+  // These should be in a separate test suite with proper test infrastructure.
   beforeAll(() => {
     clearMCPClientCache()
   })
@@ -86,6 +88,8 @@ describe("browser session persistence tests", () => {
         } else {
           lgg.log("❌ Browser session may not have persisted")
         }
+        // TODO: This test only logs results but doesn't assert anything.
+        // Should use expect() to verify session persistence behavior.
       }
     }
 
@@ -126,6 +130,7 @@ describe("browser session persistence tests", () => {
           extractedContent.toLowerCase().includes("news") ||
           extractedContent.toLowerCase().includes("article")
         lgg.log("Found news content in extracted content?", hasNewsContent)
+        // TODO: No assertions here either. Test logs information but doesn't verify behavior.
       }
     }
 
@@ -134,6 +139,7 @@ describe("browser session persistence tests", () => {
     )
     lgg.log("Persistent session test completed ✓")
   }, 120000)
+  // TODO: 2 minute timeout indicates very slow test
 
   it("should test if browser session persists between tool calls", async () => {
     lgg.log("testing browser session persistence...")
@@ -193,6 +199,7 @@ describe("browser session persistence tests", () => {
       } else {
         lgg.log("❌ Still getting 'No content extracted'")
       }
+      // TODO: Again, no assertions. Test should fail if content extraction doesn't work.
     }
 
     await cleanupBrowser(tools)
@@ -201,6 +208,8 @@ describe("browser session persistence tests", () => {
 })
 
 describe("advanced browser tests", () => {
+  // TODO: "Advanced" is vague. What makes these tests advanced?
+  // Better to describe what specific functionality is being tested.
   it("should get latest headline from nos.nl", async () => {
     lgg.log("testing browser to get latest headline from nos.nl...")
 
@@ -259,6 +268,8 @@ describe("advanced browser tests", () => {
 
     // Test passes if we got a headline
     expect(hasHeadline).toBe(true)
+    // TODO: Finally an assertion! But it's at the end after all the logging.
+    // Better to assert throughout the test to catch failures early.
   }, 120000)
 
   it("should debug why browser_extract_content fails", async () => {
@@ -268,6 +279,8 @@ describe("advanced browser tests", () => {
     const hasOpenAIKey = !!envi.OPENAI_API_KEY
     lgg.log("OPENAI_API_KEY available:", hasOpenAIKey)
     lgg.log("OPENAI_API_KEY length:", envi.OPENAI_API_KEY?.length || 0)
+    // TODO: Logging API key length could be a security concern in logs.
+    // Also, this is a debug test that doesn't assert anything - not a real test.
 
     const tools = await setupMCPForNode(
       ["browserUse"],
@@ -343,10 +356,13 @@ describe("advanced browser tests", () => {
     await cleanupBrowser(tools)
     lgg.log("debug test completed")
   }, 60000)
+  // TODO: This entire test is just for debugging, not testing functionality.
+  // Debug code should be removed or converted to proper tests with assertions.
 })
 
 // Helper function for browser cleanup
 async function cleanupBrowser(tools: any) {
+  // TODO: Using 'any' type. Should define proper tool types.
   lgg.log("closing browser...")
   try {
     await generateText({
@@ -363,5 +379,6 @@ async function cleanupBrowser(tools: any) {
     lgg.log("browser cleanup completed")
   } catch (error) {
     lgg.log("browser cleanup failed (this is okay):", error)
+    // TODO: Same issue as other file - ignoring cleanup failures can cause resource leaks.
   }
 }

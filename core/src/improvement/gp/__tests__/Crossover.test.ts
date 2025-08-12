@@ -224,6 +224,10 @@ const evolutionContext: EvolutionContext = {
 // Mock config is handled by consolidated mocks
 
 describe("Crossover", () => {
+  // TODO: Test file is overly complex with extensive mocking setup
+  // - Consider extracting mock setup to shared test utilities
+  // - Many mocks (e.g., environment variables) don't seem necessary for crossover tests
+  // - Mock CONFIG object is enormous but tests only use small parts of it
   let mockFormalizeWorkflow: any
 
   beforeEach(async () => {
@@ -256,6 +260,10 @@ describe("Crossover", () => {
   })
 
   describe("crossover", () => {
+    // TODO: Tests heavily rely on verbose/non-verbose mode distinction
+    // - Should test actual crossover logic, not just mode switching
+    // - No tests for different crossover strategies or their effects
+    // - No tests for parent genome trait inheritance
     it("should perform crossover in verbose mode", async () => {
       // Verbose mode will be set by runtime constants mock
 
@@ -285,6 +293,9 @@ describe("Crossover", () => {
       expect(mockFormalizeWorkflow).not.toHaveBeenCalled() // verbose mode skips AI
     })
 
+    // TODO: This test doesn't validate what happens with empty parents
+    // - Should test error handling or default behavior
+    // - Creating dummy genome with no parents seems like error-prone behavior
     it("should handle empty parents array in verbose mode", async () => {
       // Import the module after mocks are set up
       const CrossoverModule = await import(
@@ -384,6 +395,10 @@ describe("Crossover", () => {
       expect(response.data.genome.parentWorkflowVersionIds.length).toBe(2)
     })
 
+    // TODO: Test only validates that AI was called, not crossover quality
+    // - Should test that output combines parent features appropriately
+    // - Should test different crossover strategies produce different results
+    // - No validation of actual workflow config content after crossover
     it("should perform LLM-based crossover in non-verbose mode", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
@@ -518,6 +533,10 @@ describe("Crossover", () => {
   })
 
   describe("llmCrossover", () => {
+    // TODO: This test doesn't actually test operator registry compatibility
+    // - Should verify that crossover operator is properly registered
+    // - Should test that registry can invoke the crossover function
+    // - Current test is duplicate of verbose mode test above
     it("should be compatible with operator registry", async () => {
       // Verbose mode will be set by runtime constants mock
 
@@ -576,6 +595,11 @@ describe("Crossover", () => {
   })
 
   describe("Performance", () => {
+    // TODO: Performance test is too simplistic
+    // - 1000ms threshold is arbitrary and may fail on slow CI
+    // - Should test performance with different parent sizes
+    // - Should test memory usage, not just time
+    // - Verbose mode test doesn't reflect real LLM performance
     it("should complete crossover operation within reasonable time", async () => {
       // Verbose mode will be set by runtime constants mock
 

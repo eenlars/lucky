@@ -5,6 +5,9 @@ import { InMemoryContextStore } from "@core/utils/persistence/memory/MemoryStore
 import { SupabaseContextStore } from "@core/utils/persistence/memory/SupabaseStore"
 
 describe("ContextStore", () => {
+  // TODO: This test file is testing ContextStore from utils/persistence/memory, not from tools/context.
+  // It's in the wrong directory - should be in core/src/utils/persistence/memory/__tests__/
+  // This suggests poor test organization or a misunderstanding of the codebase structure.
   beforeEach(() => {
     setupCoreTest()
   })
@@ -29,6 +32,9 @@ describe("ContextStore", () => {
     })
 
     it("should provide summaries for stored data", async () => {
+      // TODO: This test doesn't actually verify that summaries are generated for large data.
+      // The comment says "Small data (<200 bytes) returns the data directly" but the test
+      // doesn't test large data that would actually generate summaries.
       const store = createContextStore("memory", "test-workflow")
 
       await store.set("workflow", "config", {
@@ -40,6 +46,8 @@ describe("ContextStore", () => {
       expect(summary).toContain("dark")
       // Small data (<200 bytes) returns the data directly, not a summary with "bytes"
       expect(summary).toBeTruthy()
+      // TODO: toBeTruthy() is a weak assertion. Should test the actual summary format/content.
+      // Also missing test for large data (>200 bytes) that would generate actual summaries.
     })
 
     it("should provide detailed file information", async () => {
@@ -60,6 +68,8 @@ describe("ContextStore", () => {
       expect(info.every((i) => i.created && i.modified && i.size > 0)).toBe(
         true
       )
+      // TODO: This doesn't test the actual values of created/modified timestamps.
+      // Should verify they're valid dates and that modified >= created.
     })
 
     it("should support delete operations", async () => {
@@ -95,10 +105,14 @@ describe("ContextStore", () => {
     it("should create supabase store for supabase", () => {
       const store = createContextStore("supabase", "test-workflow-123")
       expect(store).toBeInstanceOf(SupabaseContextStore)
+      // TODO: This only tests instance creation, not that the Supabase store actually works.
+      // Missing integration tests for Supabase operations (likely because they require setup).
     })
 
     it("should handle invalid backend", () => {
       expect(() => createContextStore("invalid" as any, "test")).toThrow()
+      // TODO: Using 'as any' to bypass TypeScript defeats the purpose of type safety.
+      // Also doesn't test the error message content to ensure it's helpful.
     })
   })
 })

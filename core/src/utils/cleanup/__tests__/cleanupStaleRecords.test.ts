@@ -21,6 +21,13 @@ import { lgg } from "@core/utils/logging/Logger"
 import { cleanupStaleRecords } from "../cleanupStaleRecords"
 
 describe("cleanupStaleRecords", () => {
+  // TODO: test coverage improvements needed:
+  // 1. only tests workflow invocation cleanup, but function might support other record types
+  // 2. no test for partial failures (some records cleaned, others fail)
+  // 3. no test for empty database scenario explicitly
+  // 4. no test for large batch cleanup performance
+  // 5. no test for concurrent cleanup operations
+  // 6. consider testing cleanup with different age thresholds if configurable
   const mockFrom = vi.mocked(supabase.from)
   const mockLgg = vi.mocked(lgg)
 

@@ -10,6 +10,8 @@ import {
 import { Select } from "@core/improvement/gp/Select"
 
 describe("Select - Basic Functionality", () => {
+  // TODO: this file duplicates tests from Select.test.ts without clear differentiation
+  // consider consolidating or clearly documenting the purpose of basic vs full tests
   beforeEach(() => {
     setupCoreTest()
     mockRuntimeConstantsForGP()
@@ -46,6 +48,8 @@ describe("Select - Basic Functionality", () => {
     const result = Select.selectRandomParents(mockPopulation as any, 1)
 
     expect(Array.isArray(result)).toBe(true)
+    // TODO: weak assertion - test could pass if result is empty or null
+    // should assert expectations directly without conditional logic
     if (result && result.length > 0) {
       expect(result).toHaveLength(1)
       expect(result[0]).toBe(validGenome)
@@ -61,6 +65,8 @@ describe("Select - Basic Functionality", () => {
 
     const winner = await Select.tournamentSelection([genome1, genome2], 2)
 
+    // TODO: weak assertion - only checks if winner exists, not selection logic
+    // should mock Math.random for deterministic test of tournament selection
     // In a tournament, either genome could win (due to randomness), but winner should be defined
     if (winner) {
       expect([genome1, genome2]).toContain(winner)

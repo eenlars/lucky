@@ -69,6 +69,8 @@ describe("Select", () => {
 
   describe("selectParents", () => {
     it("should return dummy genome in verbose mode", async () => {
+      // TODO: complex CONFIG mocking could be extracted to helper function
+      // this pattern is repeated multiple times across tests
       // Mock CONFIG to enable verbose mode
       const { CONFIG } = await import("@runtime/settings/constants")
       const originalVerbose = CONFIG.evolution.GP.verbose
@@ -148,6 +150,8 @@ describe("Select", () => {
       })
 
       expect(result.length).toBeGreaterThan(0)
+      // TODO: comment says "populationSize / 2" which would be 2 exactly
+      // but test uses toBeLessThanOrEqual(2) - should clarify or fix
       expect(result.length).toBeLessThanOrEqual(2) // populationSize / 2
       // Should include the elite (best genome)
       expect(result).toContain(bestGenome)
@@ -204,6 +208,8 @@ describe("Select", () => {
 
       const winner = await Select.tournamentSelection(population, 2)
 
+      // TODO: test allows either genome to win, making it non-deterministic
+      // should mock Math.random for deterministic test of selection bias
       expect(winner).toBeDefined()
       expect([highFitnessGenome, lowFitnessGenome]).toContain(winner)
     })

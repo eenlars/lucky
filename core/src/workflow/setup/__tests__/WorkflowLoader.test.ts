@@ -18,13 +18,49 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
-// Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => ({
-  CONFIG: {
-    coordinationType: "sequential" as const,
+import type {
+  FlowPathsConfig,
+  FlowRuntimeConfig,
+  FullFlowRuntimeConfig,
+} from "@core/types"
+import os from "os"
+import path from "path"
+
+// Mock runtime constants - typed and safe temp paths
+vi.mock("@runtime/settings/constants", () => {
+  const TEST_ROOT = path.join(os.tmpdir(), "together-tests", "workflowloader")
+  const RUNTIME = path.join(TEST_ROOT, "runtime")
+  const LOGGING = path.join(RUNTIME, "logging_folder")
+  const MEMORY_ROOT = path.join(LOGGING, "memory")
+  const SETUP_FILE = path.join(RUNTIME, "setup", "setupfile.json")
+
+  const PATHS_T: FlowPathsConfig = {
+    root: TEST_ROOT,
+    app: path.join(TEST_ROOT, "app"),
+    runtime: RUNTIME,
+    codeTools: path.join(RUNTIME, "code_tools"),
+    setupFile: SETUP_FILE,
+    improver: path.join(RUNTIME, "setup", "improve.json"),
+    node: {
+      logging: LOGGING,
+      memory: {
+        root: MEMORY_ROOT,
+        workfiles: path.join(MEMORY_ROOT, "workfiles"),
+      },
+      error: path.join(LOGGING, "error"),
+    },
+  }
+
+  const MODELS_T: FullFlowRuntimeConfig["MODELS"] = {
+    inactive: new Set<string>(),
+    provider: "openai",
+  }
+
+  const CONFIG_T: FlowRuntimeConfig = {
+    coordinationType: "sequential",
     newNodeProbability: 0.7,
     logging: {
-      level: "info" as const,
+      level: "info",
       override: {
         API: false,
         GP: false,
@@ -33,29 +69,31 @@ vi.mock("@runtime/settings/constants", () => ({
       },
     },
     workflow: {
+      parallelExecution: false,
+      asyncExecution: true,
       maxNodeInvocations: 14,
       maxNodes: 20,
-      handoffContent: "full" as const,
+      handoffContent: "full",
       prepareProblem: true,
-      prepareProblemMethod: "ai" as const,
+      prepareProblemMethod: "ai",
       prepareProblemWorkflowVersionId: "test-version-id",
-      parallelExecution: false,
     },
     tools: {
-      inactive: new Set(),
+      inactive: new Set<string>(),
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set(),
+      defaultTools: new Set<string>(),
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
       showParameterSchemas: true,
+      experimentalMultiStepLoopMaxRounds: 0,
     },
     models: {
-      provider: "openai" as const,
-      inactive: new Set(),
+      inactive: new Set<string>(),
+      provider: MODELS_T.provider,
     },
     improvement: {
       fitness: {
@@ -73,7 +111,7 @@ vi.mock("@runtime/settings/constants", () => ({
         editNodes: true,
         maxRetriesForWorkflowRepair: 4,
         useSummariesForImprovement: true,
-        improvementType: "judge" as const,
+        improvementType: "judge",
         operatorsWithFeedback: true,
       },
     },
@@ -91,52 +129,28 @@ vi.mock("@runtime/settings/constants", () => ({
         generations: 40,
         populationSize: 10,
         verbose: false,
-        initialPopulationMethod: "prepared" as const,
+        initialPopulationMethod: "prepared",
         initialPopulationFile: "",
         maximumTimeMinutes: 700,
       },
+    },
+    ingestion: {
+      taskLimit: 100,
     },
     limits: {
       maxConcurrentWorkflows: 2,
       maxConcurrentAIRequests: 30,
       maxCostUsdPerRun: 30.0,
       enableSpendingLimits: true,
-      rateWindowMs: 10000,
       maxRequestsPerWindow: 300,
+      rateWindowMs: 10000,
       enableStallGuard: true,
       enableParallelLimit: true,
     },
-  },
-  MODELS: {
-    summary: "google/gemini-2.0-flash-001",
-    nano: "google/gemini-2.0-flash-001",
-    default: "openai/gpt-4.1-mini",
-    free: "qwen/qwq-32b:free",
-    free2: "deepseek/deepseek-r1-0528:free",
-    low: "openai/gpt-4.1-nano",
-    medium: "openai/gpt-4.1-mini",
-    high: "anthropic/claude-sonnet-4",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "anthropic/claude-sonnet-4",
-    fallbackOpenRouter: "switchpoint/router",
-  },
-  PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
-    node: {
-      logging: "/test/node/logging",
-      memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
-      },
-      error: "/test/node/error",
-    },
-  },
-}))
+  }
+
+  return { CONFIG: CONFIG_T, MODELS: MODELS_T, PATHS: PATHS_T }
+})
 
 // Mock Supabase client
 vi.mock("@core/utils/clients/supabase/client", () => ({

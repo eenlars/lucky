@@ -4,6 +4,7 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
+// TODO: Test relies heavily on mocks - consider testing with real implementations
 // Mock summary generator to keep it deterministic
 vi.mock("@core/messages/api/genObject", () => ({
   quickSummaryNull: vi.fn().mockResolvedValue("quick summary stub"),
@@ -25,6 +26,8 @@ vi.mock("@core/messages/pipeline/selectTool/selectToolStrategyV3", () => ({
   }),
 }))
 
+// TODO: Only tests termination case - need tests for other multi-step scenarios
+// TODO: No tests for error handling in the multi-step loop
 describe("runMultiStepLoopV3Helper termination", () => {
   let ctx: NodeInvocationCallContext
 
@@ -93,6 +96,8 @@ describe("runMultiStepLoopV3Helper termination", () => {
     const { processedResponse } = await runMultiStepLoopV3Helper(context)
     const steps = processedResponse.agentSteps ?? []
 
+    // TODO: Using @ts-expect-error indicates type system doesn't match runtime
+    // Should fix types rather than suppressing errors
     // Ensure last step is terminate and includes a summary
     expect(steps.length).toBeGreaterThan(0)
     const last = steps[steps.length - 1]!

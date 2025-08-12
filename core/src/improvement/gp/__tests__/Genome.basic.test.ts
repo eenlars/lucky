@@ -1,4 +1,6 @@
 // basic tests for genome class without complex mocking
+// TODO: despite title "basic tests", still has extensive mock setup
+// consider using actual test utilities instead of inline mocks
 import {
   createMockEvaluationInputGeneric,
   setupCoreTest,
@@ -8,6 +10,8 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level - comprehensive mock to prevent undefined property errors
+// TODO: "cleaner mock setup" but still 100+ lines of CONFIG mock
+// most properties aren't used in these tests
 vi.mock("@runtime/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
@@ -364,6 +368,9 @@ describe("Genome Basic Tests", () => {
         evolutionMode: "GP",
       })
 
+      // TODO: test uses conditional logic that could silently pass
+      // if genomeResult.success is false, the main assertion is never tested
+      // should explicitly test both success and error paths separately
       if (genomeResult.success) {
         expect(genomeResult.data?.genome.parentWorkflowVersionIds.length).toBe(
           0
@@ -404,6 +411,8 @@ describe("Genome Basic Tests", () => {
       const evaluationInput = genome.getEvaluationInput()
 
       expect(evaluationInput.goal).toBe("test goal for evolution")
+      // TODO: comment says "CSV type evaluation input" but assertion doesn't verify CSV-specific structure
+      // should test CSV-specific properties like headers, data format, etc.
       // This is a CSV type evaluation input (default), so it doesn't have question/answer
       expect(evaluationInput.type).toBe("csv")
     })

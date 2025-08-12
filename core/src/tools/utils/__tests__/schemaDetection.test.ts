@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
 describe("Schema Detection", () => {
+  // TODO: This test suite is actually well-written! It has good coverage of edge cases,
+  // tests both positive and negative cases, and has clear assertions. However, it could
+  // benefit from testing the actual use of these detection functions in the tool system.
   describe("isZodSchema", () => {
     it("should detect basic Zod object schemas", () => {
       const schema = z.object({
@@ -98,10 +101,16 @@ describe("Schema Detection", () => {
       expect(isVercelAIStructure({ jsonSchema: null })).toBe(true)
       expect(isVercelAIStructure({ jsonSchema: {} })).toBe(true)
       expect(isVercelAIStructure({ jsonSchema: "string" })).toBe(true)
+      // TODO: Accepting any value for jsonSchema (including null and string) seems loose.
+      // Should validate that jsonSchema is actually a valid JSON Schema object.
     })
   })
 
   describe("Schema Detection Integration", () => {
+    // TODO: Good integration tests, but missing tests for:
+    // 1) What happens when detection functions are used in actual tool processing
+    // 2) Performance tests for complex/deeply nested schemas
+    // 3) Error handling when schemas are malformed
     it("should properly differentiate between Zod and Vercel AI structures", () => {
       const zodSchema = z.object({ query: z.string() })
       const vercelStructure = { jsonSchema: { type: "object" } }

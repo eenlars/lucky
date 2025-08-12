@@ -8,6 +8,11 @@ import {
 } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+// TODO: This test file primarily tests mock behavior rather than actual evaluation logic
+// - Tests verify that mocked AggregatedEvaluator returns expected values
+// - No tests for the actual fitness calculation algorithms
+// - No tests for how fitness scores are computed from workflow performance
+
 vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
@@ -58,6 +63,9 @@ describe("Evaluator", () => {
   })
 
   describe("GPEvaluatorAdapter", () => {
+    // TODO: This test only verifies that the mock returns expected values
+    // - Doesn't test actual evaluation logic or fitness calculation
+    // - Should test with real workflow execution results
     it("should evaluate genome successfully", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/evaluation/evaluators/GPEvaluatorAdapter"
@@ -106,6 +114,9 @@ describe("Evaluator", () => {
       })
     })
 
+    // TODO: This test only verifies mock interaction, not evaluation behavior
+    // - Should test that genome's workflow is actually executed
+    // - Should verify fitness is calculated based on workflow performance
     it("should call aggregated evaluator with genome", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/evaluation/evaluators/GPEvaluatorAdapter"
@@ -253,6 +264,10 @@ describe("Evaluator", () => {
       expect(result.error).toBe("Evaluation failed")
     })
 
+    // TODO: Poor test - it accepts invalid fitness scores without validation
+    // - Should test that evaluator rejects NaN/negative fitness scores
+    // - Should ensure fitness scores are normalized to [0, 1] range
+    // - Missing validation for fitness score bounds
     it("should handle invalid fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/evaluation/evaluators/GPEvaluatorAdapter"
@@ -351,6 +366,10 @@ describe("Evaluator", () => {
   })
 
   describe("evaluation metrics", () => {
+    // TODO: Superficial test - only checks timestamp format, not evaluation metrics
+    // - Should test actual fitness metric calculations
+    // - Should test how accuracy, novelty, and other metrics are computed
+    // - Missing tests for metric aggregation and weighting
     it("should generate valid timestamps", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/evaluation/evaluators/GPEvaluatorAdapter"
@@ -633,7 +652,12 @@ describe("Evaluator", () => {
     })
   })
 
+  // TODO: Missing critical multi-objective optimization tests
+  // - No tests for Pareto dominance between solutions
+  // - No tests for trade-offs between objectives (cost vs accuracy)
+  // - No tests for fitness normalization across different scales
   describe("multi-objective evaluation", () => {
+    // TODO: Only tests that mock returns multiple values, not actual multi-objective logic
     it("should support multiple fitness criteria", async () => {
       const { GPEvaluatorAdapter } = await import(
         "@core/evaluation/evaluators/GPEvaluatorAdapter"

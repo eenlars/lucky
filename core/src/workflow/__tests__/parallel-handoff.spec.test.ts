@@ -1,13 +1,17 @@
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
+import { WorkFlowNode } from "@core/node/WorkFlowNode"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.
 // No mocks; will hit real sendAI according to configured environment.
 
 describe("Parallel handoff integration", () => {
   it("fans out distinct messages to two workers and aggregates at join", async () => {
+    // Spy on node invocation to inspect the incoming message for the join node
+    const invokeSpy = vi.spyOn(WorkFlowNode.prototype, "invoke")
+
     const cfg: WorkflowConfig = {
       nodes: [
         {
@@ -78,5 +82,19 @@ describe("Parallel handoff integration", () => {
     // Ensure we progressed through multiple nodes and produced an output
     expect(first.agentSteps.length).toBeGreaterThan(0)
     expect(typeof first.finalWorkflowOutput).toBe("string")
+
+    // Verify that the join node received an aggregated payload from both workers
+    const joinCall = invokeSpy.mock.calls.find(
+      ([args]) => args?.workflowMessageIncoming?.toNodeId === "join"
+    )
+    expect(joinCall).toBeTruthy()
+
+    const joinIncoming = joinCall![0].workflowMessageIncoming
+    const payload: any = joinIncoming.payload
+    expect(payload?.kind).toBe("aggregated")
+    const fromIds = Array.isArray(payload?.messages)
+      ? payload.messages.map((m: any) => m.fromNodeId)
+      : []
+    expect(fromIds.sort()).toEqual(["workerA", "workerB"].sort())
   })
 })

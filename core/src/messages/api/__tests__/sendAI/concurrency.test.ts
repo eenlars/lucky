@@ -11,6 +11,10 @@ vi.mock("ai", () => ({
 
 afterEach(() => vi.restoreAllMocks())
 
+// TODO: Add test coverage for error handling in sendAI when generateText throws errors
+// TODO: Add test for rate limiting behavior when concurrency limit is exceeded
+// TODO: Add test for different message roles (system, assistant) not just user
+// TODO: Add test for model-specific behavior and fallback mechanisms
 describe("sendAI – text mode", () => {
   it("returns success=true on happy path", async () => {
     const res = await sendAI({
@@ -30,6 +34,8 @@ describe("sendAI – text mode", () => {
     expect(res.error).toMatch(/Input must have at least 1 token/)
   })
 
+  // TODO: This test doesn't actually verify concurrency limiting behavior
+  // It only checks that all calls succeed, not that they're rate-limited
   it("honours concurrency gate", async () => {
     const calls = 20
     const promises = Array.from({ length: calls }, () =>

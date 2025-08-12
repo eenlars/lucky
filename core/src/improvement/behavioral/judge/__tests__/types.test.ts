@@ -3,6 +3,11 @@ import { describe, it, expect } from "vitest"
 
 describe("Iterative Evolution Types", () => {
   describe("NodeSelfImprovementParams Interface", () => {
+    // TODO: This test only checks basic type properties but doesn't test actual interface contract
+    // - Should test against actual TypeScript interface definition
+    // - Should test that interface validation fails for missing required fields
+    // - Should test that extra properties are allowed/disallowed per interface spec
+    // - Consider using type guards or zod schemas for runtime validation testing
     it("should have required properties", () => {
       const params = {
         workflowInvocationId: "test-invocation-id",
@@ -38,6 +43,10 @@ describe("Iterative Evolution Types", () => {
   })
 
   describe("Workflow Analysis Concepts", () => {
+    // TODO: This test appears to test ad-hoc data structures rather than actual types
+    // - No actual type imports or interface definitions being tested
+    // - Should test against real workflow analysis types from the codebase
+    // - Tests are just validating arbitrary object shapes, not actual type contracts
     it("should validate workflow analysis data", () => {
       const analysisData = {
         nodePerformance: {
@@ -76,6 +85,11 @@ describe("Iterative Evolution Types", () => {
   })
 
   describe("Node Management Operations", () => {
+    // TODO: Tests mock node operations but don't test actual implementation
+    // - Should test real node operation types/functions from the codebase
+    // - Missing edge cases: what if targetNodeId doesn't exist?
+    // - Missing validation: what if new node ID conflicts with existing?
+    // - Should test actual side effects, not just object shapes
     it("should validate node addition data", () => {
       const addOperation = {
         type: "add",
@@ -189,6 +203,10 @@ describe("Iterative Evolution Types", () => {
   })
 
   describe("Validation Functions", () => {
+    // TODO: These tests implement validation logic inline rather than testing actual validators
+    // - Should import and test real validation functions from the codebase
+    // - The cycle detection algorithm is reimplemented here - should use actual implementation
+    // - Missing tests for complex scenarios: multiple entry points, isolated nodes, etc.
     it("should validate workflow connectivity", () => {
       const workflow = {
         nodes: [
@@ -213,6 +231,10 @@ describe("Iterative Evolution Types", () => {
       expect(nodeIds.includes(workflow.entryNodeId)).toBe(true)
     })
 
+    // TODO: This test reimplements cycle detection rather than using actual workflow validation
+    // - Should test against real WorkflowValidator or similar class
+    // - Algorithm doesn't handle all edge cases (self-loops, disconnected components)
+    // - No test for CONFIG.verification.allowCycles behavior
     it("should detect circular dependencies", () => {
       const circularWorkflow = {
         nodes: [
@@ -249,6 +271,10 @@ describe("Iterative Evolution Types", () => {
   })
 
   describe("Performance Tracking", () => {
+    // TODO: Tests calculate metrics inline rather than testing actual tracking system
+    // - Should test real performance tracking classes/functions
+    // - No tests for persistence of tracking data
+    // - Missing error cases: what if fitness decreases? negative times?
     it("should track improvement iterations", () => {
       const iterations = [
         { iteration: 1, fitness: 0.7, changes: 2, time: 10 },
@@ -269,6 +295,11 @@ describe("Iterative Evolution Types", () => {
       expect(trends.totalTime).toBe(30)
     })
 
+    // TODO: Test only checks happy path convergence scenario
+    // - Should test non-convergent cases
+    // - Should test oscillating fitness values
+    // - Should test against actual convergence detection implementation
+    // - Missing test for minimum iterations before declaring convergence
     it("should identify convergence", () => {
       const recentFitness = [0.85, 0.8501, 0.8501, 0.8501, 0.8501]
       const threshold = 0.001

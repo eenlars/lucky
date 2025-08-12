@@ -3,6 +3,10 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
+// TODO: These are integration tests that make real API calls - should be excluded from main test suite
+// TODO: Add proper test isolation - tests depend on external API availability
+// TODO: Add error case testing - what happens when API is down or returns errors?
+// TODO: Add timeout testing - tests have 30s timeout but no verification of timeout behavior
 describe("sendAIRequest integration tests with expectedOutput", () => {
   it("should successfully validate a simple schema response", async () => {
     // Define a simple schema
@@ -31,6 +35,8 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
 
     if (success) {
       expect(typeof data.answer).toBe("number")
+      // TODO: This assertion is too rigid - assumes AI will always calculate 25+17=42
+      // Should use more flexible assertions or mock the response
       expect(data.answer).toBe(42)
       expect(typeof data.explanation).toBe("string")
       expect(data.explanation.length).toBeGreaterThan(0)
@@ -152,6 +158,8 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       expect(data.title).toContain("code")
       expect(data.priority).toBe("high")
       expect(data.status).toBe("todo")
+      // TODO: This assumes AI will always return null for unassigned tasks
+      // Should handle both null and undefined cases
       expect(data.assignee).toBeNull()
     }
   }, 30000)

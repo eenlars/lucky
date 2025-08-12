@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
 describe("MCP Integration Tests", () => {
+  // TODO: Another integration test that makes real API calls. Should be in a separate
+  // integration test suite, not mixed with unit tests.
   it("should make a real AI call using tavily MCP tools", async () => {
+    // TODO: This test depends on external API availability and API keys.
+    // It can fail due to network issues, rate limits, or API changes.
+    // Also costs money to run (uses API credits).
     // Setup tavily MCP tools
     const tools = await setupMCPForNode(["tavily"], "integration-test-tavily")
 
@@ -14,6 +19,7 @@ describe("MCP Integration Tests", () => {
     expect(toolCount).toBeGreaterThan(0)
 
     lgg.log(`Loaded ${toolCount} tavily tools for integration test`)
+    // TODO: Using console.log for debugging instead of proper test output
 
     // Make an AI call using the tavily tools
     const response = await sendAI({
@@ -44,6 +50,7 @@ describe("MCP Integration Tests", () => {
         "AI response received:",
         response.data.text.substring(0, 200) + "..."
       )
+      // TODO: More logging for debugging
 
       // Check if tools were actually used
       if (response.data.steps && response.data.steps.length > 0) {
@@ -68,8 +75,12 @@ describe("MCP Integration Tests", () => {
       expect(response.data.text.toLowerCase()).toMatch(
         /artificial|intelligence|ai|2024|search|news|breakthrough/i
       )
+      // TODO: This assertion is brittle - it assumes the AI will use specific words.
+      // The AI might describe the same content using different terms.
+      // Also, this will fail in 2025 when "2024" is no longer recent.
     } else {
       throw new Error(`AI request failed: ${response.error}`)
     }
   }, 60000) // Longer timeout for integration test
+  // TODO: 60 second timeout confirms this is a slow integration test
 })

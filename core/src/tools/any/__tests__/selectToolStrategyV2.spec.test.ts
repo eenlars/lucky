@@ -5,6 +5,9 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { selectToolStrategyV2 } from "../../../messages/pipeline/selectTool/selectToolStrategyV2"
 
 // Mock tools for testing
+// TODO: These mock tools don't match the actual tool interface structure.
+// Real tools have 'execute' functions, but these mocks only have descriptions and parameters.
+// This means the test isn't testing against realistic tool structures.
 const mockTools: ToolSet = {
   todoWrite: {
     description: "Write a todo item to the todo list",
@@ -64,6 +67,9 @@ describe("selectToolStrategyV2 Integration Tests", () => {
   })
 
   it("should select todoWrite tool for todo creation task", async () => {
+    // TODO: This test doesn't verify HOW the tool is selected. It's essentially testing
+    // that the AI selects the right tool based on the task description, but this is
+    // non-deterministic and depends on the AI model. The test might pass/fail randomly.
     const systemMessage =
       "You are a helpful assistant that manages todo lists. Create and manage todo items as requested."
 
@@ -81,6 +87,8 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       expect(result.toolName).toBe("todoWrite")
       expect(result.reasoning).toBeTruthy()
       expect(result.plan).toBeTruthy()
+      // TODO: Weak assertions - toBeTruthy() doesn't verify content quality.
+      // Should test that reasoning/plan actually relate to the task and tool.
     }
   })
 
@@ -132,6 +140,8 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     expect(result.type).toBe("terminate")
     if (result.type === "terminate") {
       expect(result.reasoning).toContain("complete")
+      // TODO: This assumes the AI will use the word "complete" in its reasoning.
+      // AI responses are non-deterministic - it might say "finished", "done", etc.
     }
   })
 
@@ -177,9 +187,15 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     if (result.type === "tool") {
       expect(result.toolName).not.toBe("todoRead")
     }
+    // TODO: This test accepts multiple outcomes (terminate OR different tool).
+    // It's not actually testing a specific behavior - just that it doesn't repeat.
+    // Also relies on AI recognizing duplicate calls, which isn't guaranteed.
   })
 
   it("should handle locationDataManager tool properly", async () => {
+    // TODO: This test doesn't verify that the AI generates valid parameters for
+    // locationDataManager. Given the template string issues seen in other tests,
+    // this is a critical gap. Should test parameter generation quality.
     const identityPrompt =
       "Please insert some sample locations into the database"
 
@@ -220,10 +236,15 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     expect(result.type).toBe("terminate")
     if (result.type === "terminate") {
       expect(result.reasoning).toContain("No tools available")
+      // TODO: Assumes AI will say "No tools available" - it might phrase differently.
+      // Better to test the behavior (termination) rather than exact wording.
     }
   })
 
   it("should follow primary instruction with specific action verbs", async () => {
+    // TODO: This test name suggests testing "action verb" recognition, but the test
+    // doesn't actually verify this mechanism. It's just another tool selection test
+    // that relies on AI interpretation.
     const identityPrompt = "Write down these important tasks"
 
     const actionSystemMessage =
@@ -261,5 +282,8 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     if (result.type === "tool") {
       expect(result.toolName).toBe("todoWrite") // Most relevant for the task
     }
+    // TODO: Another test that accepts multiple outcomes. It's not clear what behavior
+    // we're actually testing - should it terminate or use a tool when rounds are low?
+    // The test doesn't enforce consistent behavior.
   })
 })

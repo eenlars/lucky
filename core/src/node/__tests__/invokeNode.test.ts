@@ -185,6 +185,11 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeNode } from "../invokeNode"
 
 describe("invokeNode", () => {
+  // TODO: this test makes real AI calls and should be marked as integration test.
+  // it also has very weak assertions - only checking that output exists and is
+  // non-empty string, not verifying the quality of response or that the node
+  // actually followed the system prompt. console.log suggests debugging output
+  // left in test.
   it("should invoke a simple node and return result", async () => {
     // Create a minimal node configuration
     const nodeConfig: WorkflowNodeConfig = {

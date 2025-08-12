@@ -4,6 +4,8 @@ import { generateText } from "ai"
 import { vi } from "vitest"
 import { z } from "zod"
 
+// TODO: Test setup is overly complex with too many mocks
+// Consider using a test factory or builder pattern to simplify
 // Mock the dependencies
 vi.mock("ai", () => ({
   generateText: vi.fn(),
@@ -70,6 +72,12 @@ vi.mock("@runtime/settings/constants", () => ({
   },
 }))
 
+// TODO: Missing tests for edge cases:
+// - Network errors and retries
+// - Malformed JSON responses
+// - Partial schema matches
+// - Timeout scenarios
+// - Different model providers
 describe("sendAIRequest with expectedOutput", () => {
   beforeEach(() => {
     vi.clearAllMocks()

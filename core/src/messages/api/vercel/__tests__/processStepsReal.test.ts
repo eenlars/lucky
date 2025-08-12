@@ -16,6 +16,8 @@ interface LocationDataManagerArgs {
 
 const testModel: ModelName = getDefaultModels().default
 
+// TODO: Test file is loading external JSON fixtures but not verifying their structure
+// TODO: No validation that test fixtures match current API response format
 describe("real world data", () => {
   it("should process complex multi-step response from responseMultiple.json", () => {
     const result = processStepsV2(responseMultiple.steps as any, testModel)
@@ -86,6 +88,8 @@ describe("real world data", () => {
 
     const result = processStepsV2(stepsWithVariations as any, testModel)
 
+    // TODO: This test reveals that alternative API response formats are not supported
+    // Should either support both formats or document which format is expected
     // Only the first step conforms to the supported shape and yields a tool call.
     // The alternative step uses unsupported keys (tool_calls/tool_results) and
     // therefore does not add an agent step.
@@ -95,6 +99,8 @@ describe("real world data", () => {
 
   it("should process toolResponseNoToolUsed.json", () => {
     const result = processStepsV2(responseNoToolUsed.steps as any, testModel)
+    // TODO: Hard-coded expected text "I understand. not possible." is brittle
+    // Should verify structure rather than exact text content
     const expected: AgentStep<unknown> = {
       type: "text",
       name: undefined,

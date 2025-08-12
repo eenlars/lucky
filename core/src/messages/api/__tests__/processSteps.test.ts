@@ -3,6 +3,9 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../vercel/vercelStepProcessor"
 
+// TODO: Missing tests for processStepsV1 if it still exists
+// TODO: No tests for error propagation from underlying functions
+
 describe("processStepsV2", () => {
   const testModel: ModelNameV2 = getDefaultModels().default
 
@@ -181,6 +184,8 @@ describe("processStepsV2", () => {
     })
   })
 
+  // TODO: Test name says "join with comma" but implementation returns individual steps
+  // Either fix test name or clarify expected behavior
   describe("tool name processing", () => {
     it("should join multiple tool names with comma", () => {
       const steps = [
@@ -380,6 +385,8 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
+      // TODO: Inconsistent behavior - some steps are silently ignored
+      // Should either process all steps or throw an error for unsupported formats
       // Only tool1 will be processed since tool_calls format isn't supported
       expect(result?.agentSteps).toHaveLength(1)
       expect(result?.agentSteps[0].name).toBe("tool1")

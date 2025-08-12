@@ -22,6 +22,10 @@ import { ToolManager } from "../toolManager"
 const model = getDefaultModels().medium
 
 describe("MultiStep2 integration - todoRead and todoWrite", () => {
+  // TODO: this test appears to be an integration test that makes real database calls
+  // and potentially real AI calls. it should be marked as integration test and not
+  // run with unit tests. also, it's testing multi-step execution but doesn't verify
+  // the quality of execution, just that tools were called in order.
   const setupTestWorkflow = async (
     workflowInvocationId: string,
     workflowVersionId: string,
@@ -131,6 +135,10 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
       throw new Error(`Pipeline execution failed: ${result.error.message}`)
     }
 
+    // TODO: this test only verifies tool execution order, not whether tools executed
+    // correctly or produced expected results. should verify that todoRead actually
+    // returned todo items and todoWrite actually created the specified todo.
+    // also doesn't test error cases or edge conditions.
     // extract tool usage
     const agentSteps = pipeline.getAgentSteps()
     const toolCalls = agentSteps.filter((output) => output.type === "tool")

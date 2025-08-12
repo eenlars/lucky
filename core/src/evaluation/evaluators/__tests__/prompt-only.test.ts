@@ -27,6 +27,15 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
   })
 
   it("should skip evaluation for prompt-only type", async () => {
+    // TODO: this test has issues:
+    // 1. the mock genome is incomplete - missing required methods like getWorkflowIO
+    //    - should either use a complete mock or test with actual Genome instance
+    // 2. the test verifies getWorkflowIO wasn't called, but this property doesn't exist on mockGenome
+    //    - the actual method is setWorkflowIO or setPrecomputedWorkflowData
+    // 3. missing verification that setPrecomputedWorkflowData is NOT called for prompt-only
+    // 4. should verify all the fields in the returned data structure match implementation
+    // 5. the test doesn't verify edge cases like CONFIG.evolution.GP.verbose behavior
+    
     // Mock the evaluation input to be prompt-only
     const promptOnlyInput: EvaluationInput = {
       type: "prompt-only",
@@ -54,6 +63,19 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
   })
 
   it("should proceed with normal evaluation for non-prompt-only types", async () => {
+    // TODO: this test is poorly designed:
+    // 1. relies on the test throwing an error instead of properly mocking dependencies
+    //    - should mock AggregatedEvaluator.evaluate to return a proper response
+    // 2. again, getWorkflowIO doesn't exist on the genome - it's setPrecomputedWorkflowData
+    // 3. doesn't test the actual flow - just verifies a non-existent method was called
+    // 4. should verify that setPrecomputedWorkflowData IS called with correct parameters
+    // 5. should test successful evaluation path, not just error cases
+    // 6. missing tests for:
+    //    - CONFIG.evolution.GP.verbose mode using MockGPEvaluator
+    //    - failureTracker.trackEvaluationAttempt() being called
+    //    - error handling and failureTracker.trackEvaluationFailure()
+    //    - proper fitness calculation and feedback
+    
     // Mock the evaluation input to be a different type
     const textInput: EvaluationInput = {
       type: "text",

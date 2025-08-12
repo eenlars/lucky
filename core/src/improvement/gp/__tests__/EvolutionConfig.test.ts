@@ -4,6 +4,11 @@ import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
 import { describe, expect, it } from "vitest"
 
 describe("EvolutionSettings", () => {
+  // TODO: missing test coverage for:
+  // - mutation rate validation (mentioned in line 149 but no actual test)
+  // - invalid configuration combinations (e.g., elite size > population)
+  // - error handling for bad configs
+  // - relationship validation between config parameters
   describe("createEvolutionSettingsWithConfig", () => {
     it("should create default config with valid values", () => {
       const config = createEvolutionSettingsWithConfig()
@@ -58,6 +63,8 @@ describe("EvolutionSettings", () => {
     it("should maintain consistency between related parameters", () => {
       const config = createEvolutionSettingsWithConfig()
 
+      // TODO: test only checks elite size >= 0 but comment suggests it could be > population
+      // should validate relationship between elite size and population size
       // elite size should be reasonable (could be higher than population in edge cases)
       expect(config.eliteSize).toBeGreaterThanOrEqual(0)
 
@@ -65,15 +72,23 @@ describe("EvolutionSettings", () => {
       expect(config.tournamentSize).toBeGreaterThan(0)
 
       // crossover rate should be valid
+      // TODO: contradictory test - checking > 0 here but line 81 tests = 0
+      // clarify validation logic for crossover rate
       expect(config.crossoverRate).toBeGreaterThan(0)
 
       // mu and lambda should be reasonable for evolution strategy
+      // TODO: testing >= 0 is too permissive for population/offspring
+      // these should likely be > 0 for meaningful evolution
       expect(config.populationSize).toBeGreaterThanOrEqual(0)
       expect(config.offspringCount).toBeGreaterThanOrEqual(0)
       expect(config.numberOfParentsCreatingOffspring).toBeGreaterThan(0)
     })
 
     it("should handle edge case overrides", () => {
+      // TODO: test doesn't validate edge cases are actually valid
+      // - crossoverRate=0 means no crossover, is this intended?
+      // - populationSize=4 with eliteSize=1 leaves little room for diversity
+      // - no validation that config creates viable evolution strategy
       const edgeOverrides: Partial<EvolutionSettings> = {
         populationSize: 4,
         generations: 1,
@@ -146,6 +161,9 @@ describe("EvolutionSettings", () => {
 
       expect(config.crossoverRate).toBeGreaterThanOrEqual(0)
       expect(config.crossoverRate).toBeLessThanOrEqual(1)
+      // TODO: missing test for mutationRate validation despite being mentioned in test name
+      // add: expect(config.mutationRate).toBeGreaterThanOrEqual(0)
+      // add: expect(config.mutationRate).toBeLessThanOrEqual(1)
     })
   })
 })

@@ -30,6 +30,22 @@ describe("calculateFitness", () => {
   })
 
   it("should calculate fitness correctly with known inputs", async () => {
+    // TODO: this test has several issues:
+    // 1. the mock returns { accuracy: 80, novelty: 70 } but expects accuracy: 1, novelty: 1
+    //    - the actual implementation sets novelty to hardcoded 1, not from AI response
+    //    - the test should verify the actual behavior, not incorrect expectations
+    // 2. the fitness calculation comments are confusing and incorrect:
+    //    - mentions "effective score = accuracy * 0.7 + novelty * 0.3" but implementation doesn't use novelty
+    //    - the actual implementation uses effectiveScore = accuracy only
+    //    - the weights calculation is also wrong - should check actual CONFIG values
+    // 3. expects score: 4 but the calculation logic doesn't match this expectation
+    //    - need to verify what the actual implementation returns with these inputs
+    // 4. the test doesn't verify the accuracy gating logic for time/cost bonuses
+    // 5. missing test cases for edge cases like:
+    //    - nil/empty agentSteps or finalWorkflowOutput (should return error)
+    //    - accuracy values outside 1-100 range (should be clamped)
+    //    - failed AI response (should return error with cost)
+    //    - outputSchema parameter usage
     const { success, data, error } = await calculateFitness({
       agentSteps: [{ type: "text", return: "test transcript" }],
       totalTime: 3000, // 3 seconds

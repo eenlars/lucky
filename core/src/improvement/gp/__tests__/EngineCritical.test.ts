@@ -87,11 +87,16 @@ vi.mock("@core/improvement/GP/operators/Mutations", () => ({
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
 describe("Engine Critical", () => {
+  // TODO: only one test case in this critical test file - needs comprehensive coverage
+  // missing tests for: evolution completion, early termination, error handling,
+  // population diversity, fitness improvement over generations, memory management
   beforeEach(() => {
     vi.clearAllMocks()
     mockRuntimeConstantsForGP()
     vi.spyOn(codeToolAutoDiscovery, "discoverTools").mockResolvedValue([])
 
+    // TODO: mocking critical workflow generation function prevents testing actual evolution
+    // should have integration tests that use real workflow generation
     vi.spyOn(Workflow, "ideaToWorkflow").mockResolvedValue({
       success: true,
       data: {
@@ -112,7 +117,12 @@ describe("Engine Critical", () => {
     })
   })
 
+  // TODO: test name is overly long and hard to understand
+  // consider breaking into multiple focused tests: "should resume from last completed generation",
+  // "should propagate generation IDs correctly", "should increment generation numbers"
   it("should resume from the correct generation and propagate generationIds & numbers", async () => {
+    // TODO: complex mock setup with multiple database chains is hard to follow and maintain
+    // consider extracting to test utilities or using a test database
     // Track generation insertions so we can assert on them later
     const insertedGenerations: any[] = []
     let insertCallCount = 0
@@ -232,7 +242,16 @@ describe("Engine Critical", () => {
 
     // Check that we're creating the correct generation number
     // The test expects generation 3 (after last completed generation 2)
+    // TODO: this test is asserting incorrect behavior (expects 0 but should be 3)
+    // the comment "Current behavior - will change after fix" indicates technical debt
+    // fix the implementation and update this test to expect the correct value
     expect(insertedGenerations[0].number).toBe(0) // Current behavior - will change after fix
+
+    // TODO: test doesn't verify actual evolution behavior:
+    // - no verification that genomes are evaluated
+    // - no check that fitness values are assigned
+    // - no validation of parent-child relationships
+    // - no assertion on selection/mutation/crossover operations
 
     // Verify we have stats for the generations that were actually run
     expect(result.stats.length).toBeGreaterThan(0)

@@ -8,6 +8,10 @@ import { ToolManager } from "../toolManager"
 const model = getDefaultModels().medium
 
 describe("MultiStep3 integration - todoRead and todoWrite", () => {
+  // TODO: this test is nearly identical to MultiStep2.spec.test.ts with only difference
+  // being toolStrategyOverride: "v3". should refactor to avoid duplication or at least
+  // document what specific v3 behavior is being tested. also same issues as MultiStep2:
+  // integration test making real calls, only testing order not correctness.
   const setupTestWorkflow = async (
     workflowInvocationId: string,
     workflowVersionId: string,
@@ -124,6 +128,9 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
     const toolCalls = agentSteps.filter((output) => output.type === "tool")
     const toolsUsed = toolCalls.map((call) => call.name)
 
+    // TODO: console.log of entire agentSteps suggests debugging output left in test.
+    // should either remove or convert to proper test assertions that verify the
+    // structure and content of agentSteps.
     console.log(JSON.stringify(agentSteps, null, 2))
 
     // verify both tools were called

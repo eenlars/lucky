@@ -1,6 +1,8 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { describe, expect, it, vi } from "vitest"
 
+// TODO: Extensive environment mocking indicates tight coupling to config
+// Consider dependency injection or test helpers
 // Minimal runtime mocks to prevent env/config imports from erroring in isolated runs
 vi.mock("@core/utils/env.mjs", () => ({
   envi: {
@@ -31,6 +33,8 @@ vi.mock("@runtime/settings/constants", () => ({
   },
 }))
 
+// TODO: Only tests happy path - need tests for error cases
+// TODO: No tests for empty steps array or all non-text steps
 describe("getFinalOutputNodeInvocation (preset AgentSteps)", () => {
   it("returns only the final text, ignoring any preceding prepare step", async () => {
     const { getFinalOutputNodeInvocation } = await import(
@@ -59,6 +63,8 @@ describe("getFinalOutputNodeInvocation (preset AgentSteps)", () => {
         args: { foo: "bar" },
         return: "tool result value",
       },
+      // TODO: Test reveals that whitespace-only text is considered empty
+      // Should document this behavior or make it configurable
       { type: "text", return: "   " }, // empty/whitespace → should be skipped
     ]
 

@@ -3,11 +3,94 @@ import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type {
   SWEBenchInput,
   SWEBenchInstance,
+  WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock the SWEBenchLoader
 vi.mock("@core/evaluation/benchmarks/swe/SWEBenchLoader")
+
+// typed mock for runtime CONFIG so CONFIG.ingestion.taskLimit exists
+vi.mock("@runtime/settings/constants", () => {
+  const mockConfig = {
+    coordinationType: "sequential",
+    newNodeProbability: 0.7,
+    logging: { level: "info", override: {} },
+    workflow: {
+      parallelExecution: true,
+      asyncExecution: true,
+      maxNodeInvocations: 20,
+      maxNodes: 20,
+      handoffContent: "full",
+      prepareProblem: false,
+      prepareProblemMethod: "ai",
+      prepareProblemWorkflowVersionId: "test",
+    },
+    tools: {
+      inactive: new Set<string>(),
+      uniqueToolsPerAgent: false,
+      uniqueToolSetsPerAgent: false,
+      maxToolsPerAgent: 3,
+      maxStepsVercel: 10,
+      defaultTools: new Set<string>(),
+      autoSelectTools: false,
+      usePrepareStepStrategy: false,
+      experimentalMultiStepLoop: false,
+      showParameterSchemas: false,
+      experimentalMultiStepLoopMaxRounds: 20,
+    },
+    models: {
+      inactive: new Set<string>(),
+      provider: "openai",
+    },
+    improvement: {
+      fitness: {
+        timeThresholdSeconds: 300,
+        baselineTimeSeconds: 60,
+        baselineCostUsd: 0.005,
+        costThresholdUsd: 0.01,
+        weights: { score: 0.7, time: 0.2, cost: 0.1 },
+      },
+      flags: {
+        selfImproveNodes: false,
+        addTools: false,
+        analyzeWorkflow: false,
+        removeNodes: false,
+        editNodes: false,
+        maxRetriesForWorkflowRepair: 3,
+        useSummariesForImprovement: false,
+        improvementType: "judge",
+        operatorsWithFeedback: false,
+      },
+    },
+    verification: { allowCycles: false, enableOutputValidation: false },
+    context: { maxFilesPerWorkflow: 1, enforceFileLimit: false },
+    evolution: {
+      iterativeIterations: 1,
+      GP: {
+        generations: 1,
+        populationSize: 1,
+        verbose: false,
+        initialPopulationMethod: "random",
+        initialPopulationFile: null,
+        maximumTimeMinutes: 1,
+      },
+    },
+    ingestion: { taskLimit: 10 },
+    limits: {
+      maxConcurrentWorkflows: 1,
+      maxConcurrentAIRequests: 1,
+      maxCostUsdPerRun: 1,
+      enableSpendingLimits: false,
+      maxRequestsPerWindow: 100,
+      rateWindowMs: 1000,
+      enableStallGuard: false,
+      enableParallelLimit: false,
+    },
+  } as const satisfies import("@core/types").FlowRuntimeConfig
+
+  return { CONFIG: mockConfig }
+})
 
 describe("IngestionLayer - SWE-bench", () => {
   const mockInstance: SWEBenchInstance = {
@@ -26,8 +109,26 @@ describe("IngestionLayer - SWE-bench", () => {
   })
 
   it("should convert SWE-bench evaluation to WorkflowIO", async () => {
-    // mock the fetchById method
-    vi.mocked(SWEBenchLoader.fetchById).mockResolvedValue(mockInstance)
+    // mock the fetchAsWorkflowIO method to return mapped WorkflowIO
+    const mockWorkflowIO: WorkflowIO[] = [
+      {
+        workflowInput: `Repository: ${mockInstance.repo}
+Base commit: ${mockInstance.base_commit}
+
+Problem statement:
+${mockInstance.problem_statement}
+
+Full issue text:
+${mockInstance.text}`,
+        workflowOutput: {
+          output: `Expected patch:
+${mockInstance.patch}`,
+        },
+      },
+    ]
+    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockResolvedValue(
+      mockWorkflowIO
+    )
 
     const evaluation: SWEBenchInput = {
       type: "swebench",
@@ -37,17 +138,14 @@ describe("IngestionLayer - SWE-bench", () => {
 
     const result = await IngestionLayer.convert(evaluation)
 
-    // verify SWEBenchLoader was called with correct parameters
-    expect(SWEBenchLoader.fetchById).toHaveBeenCalledWith(
-      "django__django-11099"
-    )
+    // verify SWEBenchLoader was called
+    expect(SWEBenchLoader.fetchAsWorkflowIO).toHaveBeenCalled()
 
     // verify result structure
     expect(result).toHaveLength(1)
     const workflowCase = result[0]
 
-    // verify workflow input contains all expected information
-    expect(workflowCase.workflowInput).toContain(evaluation.goal)
+    // verify workflow input contains all expected information from the instance
     expect(workflowCase.workflowInput).toContain(
       `Repository: ${mockInstance.repo}`
     )
@@ -62,12 +160,13 @@ describe("IngestionLayer - SWE-bench", () => {
     )
 
     // verify workflow output is the patch
-    expect(workflowCase.workflowOutput).toBe(mockInstance.patch)
+    // output contains the expected patch string
+    expect(workflowCase.workflowOutput.output).toContain(mockInstance.patch)
   })
 
   it("should handle errors when fetching SWE-bench instance", async () => {
-    // mock fetchById to throw an error
-    vi.mocked(SWEBenchLoader.fetchById).mockRejectedValue(
+    // mock fetchAsWorkflowIO to throw an error
+    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockRejectedValue(
       new Error("SWE-bench instance test-instance not found in split test")
     )
 
@@ -84,8 +183,8 @@ describe("IngestionLayer - SWE-bench", () => {
   })
 
   it("should handle network errors gracefully", async () => {
-    // mock fetchById to throw a network error
-    vi.mocked(SWEBenchLoader.fetchById).mockRejectedValue(
+    // mock fetchAsWorkflowIO to throw a network error
+    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockRejectedValue(
       new Error("Network error: Failed to fetch")
     )
 

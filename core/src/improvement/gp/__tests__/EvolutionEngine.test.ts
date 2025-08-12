@@ -1,4 +1,7 @@
 // comprehensive tests for evolution engine
+// TODO: excessive mocking setup (300+ lines) makes tests brittle and hard to maintain
+// consider extracting to test utilities or using higher-level test abstractions
+// many duplicate mock definitions and unused mocks throughout file
 
 // Mock environment variables
 vi.mock("@core/utils/env.mjs", () => ({
@@ -352,6 +355,12 @@ describe("EvolutionEngine", () => {
 
     describe("evolve", () => {
       it("should complete full evolution process", async () => {
+        // TODO: test only checks structure of result, not actual evolution behavior
+        // missing assertions for:
+        // - fitness improvements over generations
+        // - population diversity changes
+        // - selection pressure effects
+        // - actual workflow mutations/crossovers
         const result = await engine.evolve({
           evaluationInput,
           evaluator,
@@ -383,6 +392,8 @@ describe("EvolutionEngine", () => {
       })
 
       it("should emit run started event", async () => {
+        // TODO: test for "emit run started event" remains but event system removed
+        // either remove test or restore event system functionality
         await engine.evolve({
           evaluationInput,
           evaluator,
@@ -419,6 +430,8 @@ describe("EvolutionEngine", () => {
       })
 
       it("should emit generation events", async () => {
+        // TODO: test for "emit generation events" remains but event system removed
+        // either remove test or restore event system functionality
         await engine.evolve({
           evaluationInput,
           evaluator,
@@ -449,6 +462,8 @@ describe("EvolutionEngine", () => {
           usdCost: 0,
         })
 
+        // TODO: using resolves.not.toThrow() is redundant
+        // async functions that resolve don't throw - remove this pattern
         await expect(
           engine.evolve({
             evaluationInput,
@@ -504,6 +519,9 @@ describe("EvolutionEngine", () => {
       })
 
       it("should handle population initialization failure", async () => {
+        // TODO: comment says "validation catches invalid config at construction time"
+        // but test expects throw - no validation is actually tested
+        // either add validation or update test to match actual behavior
         // Test that validation catches invalid config at construction time
         expect(() => {
           const badConfig = { ...config, populationSize: 0 }
@@ -524,6 +542,8 @@ describe("EvolutionEngine", () => {
           problemAnalysis: "dummy-problem-analysis",
         })
 
+        // TODO: magic number 0.05 for tolerance without explanation
+        // tolerance should be documented or made configurable
         expect(result.totalCost).toBeLessThanOrEqual(
           costLimitConfig.maxCostUSD + 0.05
         ) // increased tolerance for test environment
@@ -587,6 +607,11 @@ describe("EvolutionEngine", () => {
 
   describe("Population Evaluation", () => {
     it("should evaluate genomes in batches", async () => {
+      // TODO: test name says "in batches" but test only verifies evaluate was called
+      // missing assertions for:
+      // - batch size limits are respected
+      // - concurrent evaluation limits
+      // - proper handling of partial batch failures
       // this tests the private evaluatePopulation method indirectly
       await engine.evolve({
         evaluationInput,
@@ -687,6 +712,8 @@ describe("EvolutionEngine", () => {
       })
       const endTime = Date.now()
 
+      // TODO: arbitrary 5-second timeout without justification
+      // this could fail on slow CI runners - consider removing or making configurable
       // should complete without hanging (rate limiting shouldn't be triggered in verbose mode)
       expect(endTime - startTime).toBeLessThan(5000)
     })
@@ -708,6 +735,9 @@ describe("EvolutionEngine", () => {
 
   describe("Integration", () => {
     it("should work with custom evaluator", async () => {
+      // TODO: custom evaluator returns incompatible response format
+      // returns {valid, score} but should return {success, data/error} format
+      // test passes only because mocked population ignores evaluation results
       const customEvaluator = {
         evaluate: vi.fn().mockResolvedValue({
           valid: true,
@@ -746,12 +776,16 @@ describe("EvolutionEngine", () => {
 
   describe("Edge Cases", () => {
     it("should handle zero generations", async () => {
+      // TODO: test admits it's "not valid" but still exists with dummy assertion
+      // either remove this test or implement proper edge case handling
       // This test is not valid as evolution requires at least 1 generation
       // Skip this test as it violates the system constraints
       expect(true).toBe(true)
     })
 
     it("should handle single genome population", async () => {
+      // TODO: test admits it's "not valid" but still exists with dummy assertion
+      // either remove this test or implement proper edge case handling
       // This test is not valid as GP requires at least 2 individuals for crossover
       // Skip this test as it violates the system constraints
       expect(true).toBe(true)

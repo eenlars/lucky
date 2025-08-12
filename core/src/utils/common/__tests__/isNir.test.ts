@@ -2,6 +2,13 @@ import { bunk, isNir } from "@core/utils/common/isNir"
 import { describe, expect, it } from "vitest"
 
 describe("isNir", () => {
+  // TODO: additional edge cases to consider:
+  // 1. no tests for complex nested empty structures (e.g., { a: { b: [] } })
+  // 2. no tests for special JavaScript values (NaN, Infinity, -0)
+  // 3. no tests for objects with only undefined/null values { a: undefined, b: null }
+  // 4. no tests for prototype pollution scenarios
+  // 5. no performance tests for deeply nested objects
+  // 6. could test WeakMap, WeakSet, Symbol edge cases
   it("should return true for an empty object", () => {
     expect(isNir({})).toBe(true)
   })

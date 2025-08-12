@@ -36,6 +36,11 @@ vi.mock("@core/utils/logging/Logger", () => ({
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
 describe("RunService", () => {
+  // TODO: missing test coverage for:
+  // - concurrent operations or race conditions
+  // - validating exact structure of data sent to database
+  // - integration tests with real database interactions
+  // - performance tests for large-scale operations
   beforeEach(() => {
     setupCoreTest()
     mockRuntimeConstantsForGP()
@@ -221,6 +226,8 @@ describe("RunService", () => {
         operator: "mutation",
       })
 
+      // TODO: assertion only checks if warn was called, not what was warned about
+      // should verify the specific warning message
       // should not call supabase methods without active generation
       expect(mockLggWarn).toHaveBeenCalled()
     })
@@ -252,6 +259,7 @@ describe("RunService", () => {
       await expect(
         service.completeGeneration({
           bestGenome: mockGenome,
+          // TODO: test passes undefined for stats but doesn't validate how code handles this
           stats: undefined,
           operator: "mutation",
         })
@@ -294,6 +302,8 @@ describe("RunService", () => {
       // completeRun should return early if no active run
       await service.completeRun("completed", 1.0)
 
+      // TODO: assertion only checks if warn was called, not the warning content
+      // should verify exact warning message about missing active run
       // should not call supabase methods without active run
       expect(mockLggWarn).toHaveBeenCalled()
     })

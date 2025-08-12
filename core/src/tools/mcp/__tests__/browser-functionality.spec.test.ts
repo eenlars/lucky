@@ -8,6 +8,9 @@ import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
 describe("browser functionality tests", () => {
+  // TODO: These are integration tests that require actual browser automation and internet access.
+  // They should be in a separate integration test suite, not mixed with unit tests.
+  // Also, they depend on external website (nos.nl) which can change and break tests.
   it("should extract headlines from nos.nl", async () => {
     lgg.log("setting up browserUse mcp for nos.nl headline extraction test...")
 
@@ -39,6 +42,8 @@ describe("browser functionality tests", () => {
 
     lgg.log("Navigation completed:", navResult.text)
     await new Promise((resolve) => setTimeout(resolve, 2000))
+    // TODO: Using arbitrary sleep times is unreliable. Should wait for specific page elements
+    // or use proper page load detection instead of hardcoded delays.
 
     // Test content extraction with different prompts
     lgg.log("Testing browser_extract_content for headline extraction...")
@@ -95,6 +100,8 @@ describe("browser functionality tests", () => {
 
     // Analyze results
     const analyzeExtraction = (result: any) => {
+      // TODO: Using 'any' type defeats TypeScript's purpose. Should define proper types
+      // for the result structure to ensure type safety.
       if (result?.toolResults?.length > 0) {
         const toolResult = result.toolResults[0]
         lgg.log(
@@ -147,6 +154,8 @@ describe("browser functionality tests", () => {
       allContent.toLowerCase().includes("breaking") ||
       allContent.toLowerCase().includes("live")
     lgg.log("Found news-related keywords?", foundNewsContent)
+    // TODO: This keyword search is language-specific (Dutch) and brittle.
+    // The test will fail if the website changes its content or language.
 
     expect(extractTest1.toolCalls?.length).toBeGreaterThan(0)
     expect(extractTest1.toolCalls?.[0]?.toolName).toBe(
@@ -157,6 +166,8 @@ describe("browser functionality tests", () => {
       lgg.log(
         "WARNING: browser_extract_content is returning 'No content extracted' for all attempts"
       )
+      // TODO: This test can pass even when no content is extracted! The test should fail
+      // if extraction doesn't work, not just log a warning.
     } else {
       expect(newsGuard.isValid).toBe(true)
     }
@@ -165,6 +176,8 @@ describe("browser functionality tests", () => {
     await cleanupBrowser(tools)
     lgg.log("nos.nl headline extraction test completed ✓")
   }, 60000)
+  // TODO: 60 second timeout suggests this test is slow and resource-intensive.
+  // Should be moved to E2E test suite with proper test infrastructure.
 
   it("should get page state from nos.nl", async () => {
     lgg.log("setting up browserUse mcp for nos.nl page state test...")
@@ -196,6 +209,7 @@ describe("browser functionality tests", () => {
 
     lgg.log("Navigation completed")
     await new Promise((resolve) => setTimeout(resolve, 3000))
+    // TODO: Another hardcoded sleep - 3 seconds this time. Inconsistent with 2 seconds above.
 
     // Get page state
     lgg.log("Getting page state...")
@@ -268,6 +282,8 @@ describe("browser functionality tests", () => {
         if (hasTextContent) {
           expect(stateNewsGuard.isValid).toBe(true)
         }
+        // TODO: This conditional expectation means the test can pass without actually
+        // validating anything if hasTextContent is false.
       } else {
         const stateText =
           typeof result.return === "string"
@@ -320,6 +336,7 @@ describe("browser functionality tests", () => {
     await cleanupBrowser(tools)
     lgg.log("nos.nl page state test completed ✓")
   }, 60000)
+  // TODO: Another 60 second timeout. Pattern of slow integration tests mixed with unit tests.
 
   it("should navigate and extract headlines in single session", async () => {
     lgg.log("Testing browser session functionality for headline extraction...")
@@ -374,10 +391,13 @@ describe("browser functionality tests", () => {
     await cleanupBrowser(tools)
     lgg.log("Headline extraction test completed")
   }, 120000)
+  // TODO: 120 second timeout! This is way too long for a regular test.
+  // Definitely belongs in a separate E2E/integration test suite.
 })
 
 // Helper function for browser cleanup
 async function cleanupBrowser(tools: any) {
+  // TODO: Using 'any' type again. Should define proper tool types.
   lgg.log("closing browser...")
   try {
     await generateText({
@@ -394,5 +414,7 @@ async function cleanupBrowser(tools: any) {
     lgg.log("browser cleanup completed")
   } catch (error) {
     lgg.log("browser cleanup failed (this is okay):", error)
+    // TODO: Silently ignoring cleanup failures can lead to resource leaks.
+    // Should at least track/report these failures for debugging.
   }
 }

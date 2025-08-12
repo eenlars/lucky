@@ -46,6 +46,11 @@ vi.mock("@runtime/settings/constants", () => ({
 }))
 
 describe("Complete Fix for SearchGoogleMaps Validation", () => {
+  // TODO: This test suite focuses on validation logic but doesn't test the actual searchGoogleMaps tool.
+  // It should test against the real tool implementation rather than mocking everything.
+  // Consider: 1) Testing the actual tool's parameter handling
+  //          2) Testing edge cases like null/undefined parameters
+  //          3) Testing the integration between the tool and validation layer
   it("should auto-correct invalid maxResultCount parameters using Zod schema", () => {
     // Create the actual schema used by searchGoogleMaps (from commonSchemas.resultCount)
     const schema = z.object({
@@ -91,6 +96,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
   })
 
   it("should show that parameter schemas are now visible to AI models", async () => {
+    // TODO: This test only verifies schema conversion but doesn't test if AI models actually receive
+    // and use these schemas. It should test the full flow of schema visibility to AI models,
+    // including how the schemas are passed to the AI and whether they influence tool calls.
     // Import zodToJson to test schema conversion
     const { zodToJson } = await import("@core/utils/zod/zodToJson")
 
@@ -104,9 +112,15 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     expect(schemaString).toContain("20")
 
     console.log("✅ Parameter schema conversion working:", jsonSchema)
+    // TODO: Console.log in tests is not a proper assertion. This should be replaced with
+    // actual test assertions that verify the schema structure comprehensively.
   })
 
   it("should demonstrate the complete fix workflow", async () => {
+    // TODO: This test creates a mock tool instead of testing the real searchGoogleMaps tool.
+    // It also mocks sendAI but never actually uses it in the test. The test should either:
+    // 1) Test the real workflow with actual tool execution, or
+    // 2) Remove unused mocks and focus on what it's actually testing (validateAndCorrectWithSchema)
     // Create a mock tool that simulates searchGoogleMaps
     const mockTool = tool({
       description: "Search Google Maps for business information",
@@ -174,9 +188,13 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     console.log(
       "✅ Complete fix workflow verified: Invalid params auto-corrected"
     )
+    // TODO: Another console.log instead of proper assertions. Also, this test doesn't actually
+    // verify the "complete workflow" - it only tests validateAndCorrectWithSchema in isolation.
   })
 
   it("should confirm CONFIG.tools.showParameterSchemas is enabled", async () => {
+    // TODO: This test is redundant - it's testing a mocked value (line 15) that we control.
+    // Testing mocked values provides no real value. Either test against real config or remove.
     const { CONFIG } = await import("@runtime/settings/constants")
     expect(CONFIG.tools.showParameterSchemas).toBe(true)
     console.log("✅ Parameter schema visibility enabled in config")

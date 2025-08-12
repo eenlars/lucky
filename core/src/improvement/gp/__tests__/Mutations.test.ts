@@ -1,4 +1,7 @@
 // tests for mutation operations
+// TODO: overly complex mocking setup makes tests brittle
+// CONFIG mock contains many properties not needed for mutation tests
+// consider extracting minimal mocks to test utilities
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -187,6 +190,9 @@ describe("Mutations", () => {
   })
 
   describe("mutateWorkflowGenome", () => {
+    // TODO: test descriptions like "should perform mutation in verbose mode"
+    // don't explain what behavior is expected - what makes verbose mode different?
+    // missing tests for specific mutation types (prompt, tool, structure mutations)
     it("should perform mutation in verbose mode", async () => {
       // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - CONFIG.limits is undefined
       const options = createMockOptions()
@@ -200,6 +206,8 @@ describe("Mutations", () => {
         evolutionMode: "GP",
       })
 
+      // TODO: weak assertion - only checks if result is "defined"
+      // should verify specific mutation outcomes (e.g., prompts changed, tools modified)
       expect(result).toBeDefined()
       // In verbose mode, formalizeWorkflow should not be called
       expect(vi.mocked(formalizeWorkflow)).not.toHaveBeenCalled()
@@ -252,6 +260,8 @@ describe("Mutations", () => {
         evolutionMode: "GP",
       })
 
+      // TODO: comment indicates uncertainty about expected behavior
+      // should have clear expectations for error cases
       // The actual implementation may still return a genome even on error, so let's be more flexible
       expect(result).toBeDefined()
     })
@@ -264,6 +274,8 @@ describe("Mutations", () => {
         evolutionMode: "GP",
       })
 
+      // TODO: another weak assertion with no meaningful validation
+      // test name suggests "handle mutation process" but doesn't verify handling
       // Just verify the mutation process completes successfully
       expect(result).toBeDefined()
     })
@@ -359,12 +371,19 @@ describe("Mutations", () => {
       })
       const endTime = Date.now()
 
+      // TODO: 10-second timeout is arbitrary and environment-dependent
+      // could fail on slow CI runners - consider removing or making configurable
       expect(endTime - startTime).toBeLessThan(10000)
       expect(result).toBeDefined()
     })
   })
 
   describe("Edge Cases", () => {
+    // TODO: missing critical edge cases:
+    // - concurrent mutations
+    // - memory constraints during mutation
+    // - mutation quality/diversity validation
+    // - invalid genome structures
     it("should handle mutation process without throwing", async () => {
       const options = createMockOptions()
 

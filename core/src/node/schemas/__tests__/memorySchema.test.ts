@@ -8,6 +8,10 @@ import {
 } from "../../../utils/memory/memorySchema"
 
 describe("Memory Schema", () => {
+  // TODO: this test suite is well-structured and tests schema validation properly.
+  // however, it could benefit from more edge cases like testing deeply nested
+  // objects, very long strings, special characters in keys, or memory objects
+  // with hundreds of keys to ensure performance at scale.
   describe("MemorySchema", () => {
     it("should validate valid memory objects", () => {
       const valid = {
@@ -46,6 +50,9 @@ describe("Memory Schema", () => {
 
   describe("MemoryResponseSchema", () => {
     it("should be the same as MemorySchema", () => {
+      // TODO: this test only verifies that two schemas parse the same way for one
+      // simple case. should test with more complex data structures to ensure the
+      // schemas truly remain equivalent across all cases.
       const data = { key: "value" }
 
       const memoryResult = MemorySchema.safeParse(data)

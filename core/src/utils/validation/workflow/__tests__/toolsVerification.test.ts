@@ -138,6 +138,14 @@ const duplicateHandoffsExample: WorkflowConfig = {
 }
 
 describe("verifyToolsUnique", () => {
+  // TODO: major test coverage issues:
+  // 1. main test is skipped - needs implementation to alter constants for testing
+  // 2. no tests for MCP tools validation
+  // 3. no tests for tool availability checking
+  // 4. no tests for tool parameter validation
+  // 5. no tests for mixed MCP and code tools in same node
+  // 6. no tests for empty tool arrays
+  // 7. no tests for tool configuration validation
   it.skip("should detect tools used by multiple nodes", async () => {
     // TODO: need to make we can alter constants from the test, otherwise we can't test this nicely.
     // Using the provided example with duplicate tool usage

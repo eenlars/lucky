@@ -16,6 +16,14 @@ vi.mock("@core/utils/clients/supabase/client", () => {
 })
 
 describe("retrieveNodeSummaries", () => {
+  // TODO: additional test coverage needed:
+  // 1. no tests for pagination or large result sets
+  // 2. no tests for filtering/sorting options if supported
+  // 3. no tests for partial data (missing fields in database records)
+  // 4. no tests for data type validation (e.g. invalid date formats, negative costs)
+  // 5. no tests for concurrent queries
+  // 6. no tests for malformed data from database
+  // 7. consider testing with different order/sort parameters if supported
   it("should retrieve node invocation summaries for a specific node", async () => {
     const mockData = [
       {
