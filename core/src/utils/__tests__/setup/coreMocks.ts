@@ -635,6 +635,11 @@ export const createMockCrossoverParams = (overrides = {}): any => {
     getFitness: vi.fn(() => mockFitness),
     getGoal: vi.fn(() => "test goal"),
     getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    // memory APIs expected by MemoryPreservation
+    getMemory: vi.fn(() => ({
+      node1: {},
+      node2: {},
+    })),
     genome: { generationNumber: 0, parentIds: [] },
   }
   const mockParent2 = {
@@ -644,6 +649,10 @@ export const createMockCrossoverParams = (overrides = {}): any => {
     getFitness: vi.fn(() => mockFitness),
     getGoal: vi.fn(() => "test goal"),
     getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    getMemory: vi.fn(() => ({
+      node1: {},
+      node2: {},
+    })),
     genome: { generation: 0, parentIds: [] },
   }
 

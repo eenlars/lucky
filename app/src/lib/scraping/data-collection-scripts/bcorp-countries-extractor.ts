@@ -6,7 +6,8 @@ import {
 import { lgg } from "@core/utils/logging/Logger"
 import { saveInLoc } from "@runtime/code_tools/file-saver/save"
 import { PATHS } from "@runtime/settings/constants"
-import { CSVLoader } from "@shared/utils/files/csv/CSVLoader"
+import { csv } from "@lucky/shared"
+const { CSVLoader } = csv
 import crypto from "crypto"
 import fs from "fs"
 

@@ -18,14 +18,15 @@
 // TODO: add tool execution workflow orchestration
 
 import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
+import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
+import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { APICallError, generateText, GenerateTextResult, ToolSet } from "ai"
+import { generateText, GenerateTextResult, ToolSet } from "ai"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
 import type { ToolRequest, TResponse } from "../types"
 
@@ -106,7 +107,6 @@ export async function execTool(
     // TODO: create tool error analytics and reporting
 
     // handle tool errors gracefully without dumping large stacks
-    let message = ""
     const isArgValidationError =
       typeof error?.name === "string" &&
       (error.name.includes("AI_InvalidToolArgumentsError") ||
@@ -129,35 +129,16 @@ export async function execTool(
 
     // TODO: implement structured error response parsing
     // TODO: add error response normalization
-    if (APICallError.isInstance(error)) {
-      if (error.responseBody) {
-        try {
-          const parsedError = JSON.parse(error.responseBody)
-          if (parsedError?.error?.metadata?.raw) {
-            message = JSON.parse(parsedError.error.metadata.raw)
-          } else if (parsedError?.error?.message) {
-            message = parsedError.error.message
-          } else {
-            message = parsedError?.message || error.message
-          }
-        } catch (parseError) {
-          message = error.message
-        }
-      } else {
-        message = error.message
-      }
-    } else {
-      message = error.message
-    }
+    const { message: errMessage, debug } = normalizeError(error)
 
     // TODO: add error context and debugging information
     // TODO: implement tool error recovery suggestions
     return {
       success: false,
       data: null,
-      error: message,
+      error: errMessage,
       debug_input: messages,
-      debug_output: error,
+      debug_output: debug,
     }
   }
 }

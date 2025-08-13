@@ -1,7 +1,8 @@
 "use client"
 
 import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"

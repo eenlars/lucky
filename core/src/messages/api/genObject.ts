@@ -9,9 +9,9 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
   return z.object({

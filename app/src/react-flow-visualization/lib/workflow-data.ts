@@ -1,16 +1,14 @@
-import {
-  createEdge,
-  type AppEdge,
-} from "@/react-flow-visualization/components/edges"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { createEdge, type AppEdge } from "../components/edges"
 import {
   createNodeByType,
   type AppNode,
   type WorkflowNodeData,
-} from "@/react-flow-visualization/components/nodes"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+} from "../components/nodes"
 
 /**
- * transform the nodes from the setup config to the nodes for the visualizer
+ * transform the nodes from the setup config to the nodes for the visualizer.
+ * IMPORTANT: the start node and the end node are created here, and they are not part of the workflowConfig.nodes array.
  */
 export const initialSetupConfig = (
   workflowConfig: WorkflowConfig
@@ -64,12 +62,34 @@ export const initialSetupConfig = (
 
   // create edges based on handOffs
   for (const node of workflowConfig.nodes || []) {
-    if (node.handOffs && node.handOffs.length > 0) {
-      for (const handOff of node.handOffs) {
-        edges.push(createEdge(node.nodeId, handOff))
-      }
+    const handoffs = node.handOffs || []
+    for (const handOff of handoffs) {
+      edges.push(createEdge(node.nodeId, handOff))
+    }
+  }
+
+  // Ensure sinks attach to end: any non-start/non-end node with no outgoing edge
+  const outBySource = new Map<string, number>()
+  for (const e of edges) {
+    outBySource.set(e.source, (outBySource.get(e.source) ?? 0) + 1)
+  }
+  for (const node of workflowConfig.nodes || []) {
+    const id = node.nodeId
+    if (id === "start" || id === "end") continue
+    if ((outBySource.get(id) ?? 0) === 0) {
+      edges.push(createEdge(id, "end"))
     }
   }
 
   return { edges, nodes }
+}
+
+/**
+ * Convert a Core WorkflowConfig into frontend React Flow graph primitives.
+ * Frontend naming: use this as the canonical transformer.
+ */
+export const toFrontendWorkflowConfig = (
+  workflowConfig: WorkflowConfig
+): { edges: AppEdge[]; nodes: AppNode[] } => {
+  return initialSetupConfig(workflowConfig)
 }

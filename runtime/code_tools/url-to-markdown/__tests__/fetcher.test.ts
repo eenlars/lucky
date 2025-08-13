@@ -3,7 +3,7 @@ import { fetcher } from "../fetcher"
 
 // Mock the global fetch function
 const mockFetch = vi.fn()
-global.fetch = mockFetch
+global.fetch = mockFetch as unknown as typeof fetch
 
 describe("resilient fetcher", () => {
   it("should handle invalid urls", async () => {

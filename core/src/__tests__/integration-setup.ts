@@ -12,9 +12,10 @@ global.vi = vi
 import dotenv from "dotenv"
 import path from "path"
 
-// Load environment variables from project root
-dotenv.config({ path: path.join(process.cwd(), ".env") })
-dotenv.config({ path: path.join(process.cwd(), ".env.local") })
+// Load environment variables from repo root using PATHS
+import { PATHS } from "@runtime/settings/constants"
+dotenv.config({ path: path.join(PATHS.root, ".env") })
+dotenv.config({ path: path.join(PATHS.root, ".env.local") })
 
 // Ensure required environment variables are set - error if missing
 const requiredEnvVars = [

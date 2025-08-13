@@ -190,6 +190,7 @@ export class WorkflowConfigHandler {
 
       const path = await import("path")
       const fs = await import("fs")
+      const { readText } = await import("@lucky/shared")
 
       // Normalize path to absolute runtime/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
@@ -206,7 +207,8 @@ export class WorkflowConfigHandler {
       let rawData: any
 
       try {
-        fileContent = fs.readFileSync(actualFilePath, "utf-8")
+        // Use shared helper to ensure module-relative reads are consistent
+        fileContent = await readText(actualFilePath, import.meta.url)
       } catch (error) {
         throw new FileSystemError("read", actualFilePath, error as Error)
       }
@@ -500,7 +502,7 @@ export class WorkflowConfigHandler {
     const fs = await import("fs/promises")
     const path = await import("path")
 
-    const filepath = path.join(process.cwd(), "output", filename)
+    const filepath = path.join(PATHS.node.logging, "output", filename)
     await fs.mkdir(path.dirname(filepath), { recursive: true })
     await fs.writeFile(filepath, JSON.stringify(config, null, 2))
 

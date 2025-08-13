@@ -9,8 +9,8 @@ import type {
 } from "@core/workflow/runner/types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/index"
 
 export const evaluateQueueRun = async ({
   workflow,

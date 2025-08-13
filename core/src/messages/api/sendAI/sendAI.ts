@@ -23,6 +23,7 @@
 // TODO: add request deduplication to prevent duplicate API calls
 // TODO: create comprehensive audit logging for all AI interactions
 
+import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { getDefaultModels } from "@runtime/settings/models"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
@@ -119,6 +120,13 @@ async function _sendAIInternal(
 }
 
 /**
+ * Normalizes various error shapes (plain Error, AI SDK errors, unknown) into a
+ * concise message plus a serializable debug object. Avoids JSON.stringify on
+ * raw Error instances (which drops details) and captures useful provider info.
+ */
+// moved to dedicated module ./errors
+
+/**
  * Main public interface for sending requests to AI models.
  *
  * This function provides error handling, caller tracking, and timing metrics
@@ -156,8 +164,7 @@ export const sendAI: SendAI = async (
       }
     }
   }
-  // extract
-  // EXAMPLE OUTPUT of callerFile => '    at Function.mutatePrompt (/Users/here/CODE_FOLDER/main-projects/thesis/together/app/src/core/improvement/gp/operators/Mutations.ts'
+  // extract (avoid logging absolute paths)
 
   try {
     const start = Date.now()
@@ -178,17 +185,16 @@ export const sendAI: SendAI = async (
     // TODO: replace console.error with proper logging system
     // TODO: add error categorization and severity levels
     // eslint-disable-next-line no-console
-    console.error(
-      `sendAI error ${extractedFileName} ${JSON.stringify(error).slice(0, 100)}`
-    )
-    return {
-      success: false,
-      data: null,
-      error:
-        (error as Error).message ||
-        `Unknown error in sendAI ${extractedFileName}`,
-      debug_input: req.messages ?? [],
-      debug_output: error,
+    {
+      const { message, debug } = normalizeError(error)
+      console.error(`sendAI error ${extractedFileName}: ${message}`)
+      return {
+        success: false,
+        data: null,
+        error: message || `Unknown error in sendAI ${extractedFileName}`,
+        debug_input: req.messages ?? [],
+        debug_output: debug,
+      }
     }
   }
 }

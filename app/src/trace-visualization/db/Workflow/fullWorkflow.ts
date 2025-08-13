@@ -5,7 +5,8 @@ import type {
   AgentSteps,
 } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { nanoid } from "nanoid"

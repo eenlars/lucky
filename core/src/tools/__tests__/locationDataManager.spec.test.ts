@@ -1,3 +1,5 @@
+import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
+import { codeToolRegistry } from "@core/tools/code/CodeToolRegistry"
 import { describe, expect, it } from "vitest"
 
 describe("LocationDataManager Tool Integration", () => {
@@ -5,10 +7,11 @@ describe("LocationDataManager Tool Integration", () => {
   // It should test through the actual tool discovery/registry system to ensure the tool is properly
   // integrated. Also, the absolute path import makes this test brittle and environment-specific.
   it("should reproduce the exact error we're seeing", async () => {
-    // Dynamically import to avoid path resolution issues
-    const { tool: locationDataManager } = await import(
-      "/Users/here/CODE_FOLDER/main-projects/thesis/together/runtime/code_tools/location-data-manager/tool"
-    )
+    // Discover tools via registry instead of deep-importing
+    await codeToolAutoDiscovery.setupCodeTools()
+    const locationDataManager = codeToolRegistry
+      .getAllTools()
+      .find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation",
@@ -62,9 +65,10 @@ describe("LocationDataManager Tool Integration", () => {
   })
 
   it("should work correctly with proper array data", async () => {
-    const { tool: locationDataManager } = await import(
-      "/Users/here/CODE_FOLDER/main-projects/thesis/together/runtime/code_tools/location-data-manager/tool"
-    )
+    await codeToolAutoDiscovery.setupCodeTools()
+    const locationDataManager = codeToolRegistry
+      .getAllTools()
+      .find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation-2",

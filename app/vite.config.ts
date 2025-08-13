@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import { fileURLToPath, URL } from "node:url"
 import { defineConfig, loadEnv } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 import { configDefaults } from "vitest/config"
@@ -10,8 +11,18 @@ export default defineConfig(({ mode }) => {
     ...env,
     NODE_ENV: mode as "test" | "development" | "production",
   }
+  const alias: { find: string; replacement: string }[] = []
+  if (mode === "test") {
+    alias.push({
+      find: "elkjs/lib/elk.bundled.js",
+      replacement: fileURLToPath(
+        new URL("./src/__tests__/mocks/elk.ts", import.meta.url)
+      ),
+    })
+  }
   return {
     plugins: [tsconfigPaths()],
+    resolve: { alias },
     test: {
       exclude: [...configDefaults.exclude, "**/e2e/**", "**/*.spec.test.ts"],
       environment: "node",

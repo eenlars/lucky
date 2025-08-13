@@ -7,7 +7,8 @@ import {
   saveWorkflowVersion,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { genShortId } from "@core/utils/common/utils"
 import Link from "next/link"
 import { useRouter } from "next/navigation"

@@ -3,7 +3,8 @@
   "workspaces": [
     "app",
     "core",
-    "runtime"
+    "runtime",
+    "shared"
   ],
   "dependencies": {
     "@mendable/firecrawl-js": "^1.29.3",
@@ -22,6 +23,6 @@
     "prepare": "husky",
     "test:smoke": "vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.ts",
     "test:gate": "vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.ts",
-    "tsc": "tsc --noEmit"
+    "tsc": "cd app && tsc --noEmit && cd ../core && tsc --noEmit && cd ../runtime && tsc --noEmit && cd ../shared && tsc --noEmit"
   }
 }

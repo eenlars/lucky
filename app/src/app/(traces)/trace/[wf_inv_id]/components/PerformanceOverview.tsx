@@ -1,6 +1,7 @@
 "use client"
 
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
 import Link from "next/link"

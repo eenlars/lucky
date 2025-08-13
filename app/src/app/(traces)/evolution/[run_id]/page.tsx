@@ -10,7 +10,8 @@ import {
   type WorkflowInvocationSubset,
 } from "@/trace-visualization/db/Evolution/retrieveEvolution"
 import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import dayjs from "dayjs"

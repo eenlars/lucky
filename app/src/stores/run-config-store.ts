@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
 
 import type { InvokeWorkflowResult } from "@core/workflow/runner/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -210,6 +210,7 @@ export const useRunConfigStore = create<RunConfigState>()(
     }),
     {
       name: "run-config/v1",
+      storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         datasetName: s.datasetName,
         goal: s.goal,

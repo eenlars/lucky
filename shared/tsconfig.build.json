@@ -1,43 +1,20 @@
 {
   "compilerOptions": {
-    // Module settings
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-
-    // Output settings
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "lib": ["ESNext"],
     "rootDir": "./src",
     "outDir": "./dist",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-
-    // Path resolution
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["./src/*"]
-    },
-
-    "target": "ES2020",
-    "lib": ["ESNext", "DOM"],
-
-    // Code quality
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "forceConsistentCasingInFileNames": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-
-    // Integration
+    "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "strict": true,
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "dist", "node_modules"]
 }

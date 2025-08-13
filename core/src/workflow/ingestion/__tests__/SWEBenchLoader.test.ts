@@ -2,7 +2,7 @@ import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock global fetch
-global.fetch = vi.fn()
+global.fetch = vi.fn() as unknown as typeof fetch
 
 describe("SWEBenchLoader", () => {
   beforeEach(() => {

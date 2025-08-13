@@ -23,8 +23,8 @@
  */
 
 import type {
-  IterativeConfig,
   EvolutionSettings,
+  IterativeConfig,
 } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
@@ -36,7 +36,7 @@ import type {
 } from "@core/utils/clients/supabase/types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 

@@ -1,6 +1,7 @@
 "use server"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { TablesUpdate } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type TablesUpdate<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Update"]
 
 export const retrieveNodeInvocations = async (workflowInvocationId: string) => {
   const { data, error: nodeInvocationError } = await supabase

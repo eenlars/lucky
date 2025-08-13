@@ -6,8 +6,8 @@ import { fileURLToPath } from "url"
 export interface CSVLoaderOptions {
   hasHeaders?: boolean
   skipEmptyLines?: boolean
-  columnMappings?: Record<string, string[]> // map target field to possible column names
-  onlyIncludeInputColumns?: string[] // only include these columns in output
+  columnMappings?: Record<string, string[]>
+  onlyIncludeInputColumns?: string[]
 }
 
 export class CSVLoader {
@@ -23,7 +23,6 @@ export class CSVLoader {
     }
   }
 
-  // load csv as raw string content
   async loadAsString(): Promise<string> {
     try {
       const csvContent = await this.loadContent()
@@ -41,7 +40,6 @@ export class CSVLoader {
     }
   }
 
-  // load csv as parsed json data with optional column mapping
   async loadAsJSON<T = Record<string, any>>(): Promise<T[]> {
     try {
       const csvContent = await this.loadContent()
@@ -54,7 +52,6 @@ export class CSVLoader {
       if (!this.options.hasHeaders) {
         let data = parsed.data as T[]
 
-        // if onlyIncludeInputColumns is provided and data is array of arrays, filter by index
         if (this.options.onlyIncludeInputColumns && Array.isArray(data[0])) {
           const columnIndices = this.options.onlyIncludeInputColumns
             .map((col) => parseInt(col))
@@ -81,7 +78,6 @@ export class CSVLoader {
     }
   }
 
-  // map columns based on column mappings
   private mapColumns(row: Record<string, any>): Record<string, any> {
     if (!this.options.columnMappings) {
       return row
@@ -94,7 +90,6 @@ export class CSVLoader {
     )) {
       let value = ""
 
-      // find first matching column name
       for (const name of possibleNames) {
         if (row[name] !== undefined && row[name] !== null && row[name] !== "") {
           value = row[name]
@@ -108,7 +103,6 @@ export class CSVLoader {
     return mapped
   }
 
-  // filter columns to only include specified columns
   private filterColumns(row: Record<string, any>): Record<string, any> {
     if (!this.options.onlyIncludeInputColumns) {
       return row
@@ -125,25 +119,21 @@ export class CSVLoader {
     return filtered
   }
 
-  // check if row has required data
   private isValidRow(item: Record<string, any>): boolean {
     if (!this.options.columnMappings) {
       return true
     }
 
-    // at least one mapped field should have a value
     return Object.keys(this.options.columnMappings).some(
       (field) => item[field] && item[field] !== ""
     )
   }
 
-  // helper method to load content from file or url
   private async loadContent(): Promise<string> {
     if (
       this.filePath.startsWith("http://") ||
       this.filePath.startsWith("https://")
     ) {
-      // fetch from url
       const response = await fetch(this.filePath)
       if (!response.ok) {
         throw new Error(
@@ -152,12 +142,10 @@ export class CSVLoader {
       }
       return await response.text()
     } else {
-      // read from local file
       return readFileSync(this.filePath, "utf-8")
     }
   }
 
-  // static factory method for creating loader with relative path to this module
   static fromRelativePath(
     relativePath: string,
     options?: CSVLoaderOptions

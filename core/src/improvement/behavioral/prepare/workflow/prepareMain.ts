@@ -7,9 +7,9 @@ import type {
 } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { z } from "zod"
 
 export type PrepareProblemMethod = "workflow" | "ai" | "none"

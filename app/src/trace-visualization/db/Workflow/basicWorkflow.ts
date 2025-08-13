@@ -1,6 +1,7 @@
 "use server"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { cache } from "react"
 
 export interface BasicWorkflowResult {

@@ -5,8 +5,8 @@ import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 type SaveNodeInvocationOpts = {
   nodeId: string

@@ -13,8 +13,8 @@ import {
   loadFromFile,
 } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**

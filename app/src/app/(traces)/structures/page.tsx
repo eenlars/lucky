@@ -2,7 +2,8 @@
 
 import { MODELS } from "@runtime/settings/constants.client"
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import {
   toWorkflowConfig,
   type WorkflowConfig,

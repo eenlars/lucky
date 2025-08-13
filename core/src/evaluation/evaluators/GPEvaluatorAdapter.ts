@@ -9,8 +9,8 @@ import { lgg } from "@core/utils/logging/Logger"
 import { R } from "@core/utils/types"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { EvolutionEvaluator } from "./EvolutionEvaluator"
 
 /**
@@ -89,7 +89,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
             totalCostUsd: 0,
             totalTimeSeconds: 0,
             accuracy: 1.0,
-            },
+          },
           costOfEvaluation: 0,
           errors: [],
           feedback: "Prompt-only workflow - evaluation skipped",

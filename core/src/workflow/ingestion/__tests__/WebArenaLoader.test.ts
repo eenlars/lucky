@@ -2,7 +2,7 @@ import { WebArenaLoader } from "@core/evaluation/benchmarks/webarena/WebArenaLoa
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock global fetch
-global.fetch = vi.fn()
+global.fetch = vi.fn() as unknown as typeof fetch
 
 describe("WebArenaLoader", () => {
   beforeEach(() => {

@@ -1,6 +1,7 @@
 "use client"
 
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -18,6 +19,7 @@ import WorkflowIOTable from "@/components/WorkflowIOTable"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
+import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 
 type EditMode = "graph" | "json" | "eval"
 
@@ -67,7 +69,8 @@ export default function EditModeSelector({
     runOne,
     runAll,
     cancel,
-  } = useRunConfigStore((s) => ({
+  } = useRunConfigStore(
+    useShallow((s) => ({
     cases: s.cases,
     busyIds: s.busyIds,
     resultsById: s.resultsById,
@@ -79,7 +82,8 @@ export default function EditModeSelector({
     runOne: s.runOne,
     runAll: s.runAll,
     cancel: s.cancel,
-  }))
+    }))
+  )
 
   const createCase = useCallback(
     async (payload: { input: string; expected: string }) => {
@@ -169,54 +173,85 @@ export default function EditModeSelector({
 
   if (mode === "graph") {
     const GraphHeaderButtons = () => {
-      return (
-        <button
-          onClick={async () => {
-            const prompt = window.prompt("Enter a prompt to run the workflow:")
-            if (prompt) {
-              // Export current workflow
-              const json = exportToJSON()
-              const parsed = JSON.parse(json)
-              const cfgMaybe = toWorkflowConfig(parsed)
-              if (!cfgMaybe) {
-                alert("Invalid workflow configuration")
-                return
-              }
-              
-              try {
-                const cfg = await loadFromDSLClient(cfgMaybe)
-                const response = await fetch("/api/workflow/invoke", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    dslConfig: cfg,
-                    evalInput: {
-                      type: "text",
-                      question: prompt,
-                      answer: "",
-                      goal: "Prompt run",
-                      workflowId: "adhoc-ui",
-                    },
-                  }),
-                })
+      const [promptDialogOpen, setPromptDialogOpen] = useState(false)
+      const [isRunning, setIsRunning] = useState(false)
+      const [logs, setLogs] = useState<string[]>([])
 
-                const result = await response.json()
-                if (result?.success) {
-                  const first = result?.data?.[0]
-                  const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
-                  alert(`Result: ${out || "No response"}`)
-                } else {
-                  alert(`Error: ${result?.error || "Unknown error"}`)
-                }
-              } catch (error) {
-                alert(`Error: ${error}`)
-              }
-            }
-          }}
-          className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors duration-75 cursor-pointer"
-        >
-          Run with Prompt
-        </button>
+      const handleExecuteWorkflow = async (prompt: string) => {
+        setIsRunning(true)
+        setLogs(["Starting workflow execution..."])
+        
+        try {
+          setLogs(prev => [...prev, "Exporting workflow configuration..."])
+          const json = exportToJSON()
+          const parsed = JSON.parse(json)
+          const cfgMaybe = toWorkflowConfig(parsed)
+          
+          if (!cfgMaybe) {
+            setLogs(prev => [...prev, "❌ Error: Invalid workflow configuration"])
+            return
+          }
+          
+          setLogs(prev => [...prev, "Loading workflow configuration..."])
+          const cfg = await loadFromDSLClient(cfgMaybe)
+          
+          setLogs(prev => [...prev, "Sending request to workflow API..."])
+          const response = await fetch("/api/workflow/invoke", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              dslConfig: cfg,
+              evalInput: {
+                type: "text",
+                question: prompt,
+                answer: "",
+                goal: "Prompt run",
+                workflowId: "adhoc-ui",
+              },
+            }),
+          })
+
+          setLogs(prev => [...prev, "Processing response..."])
+          const result = await response.json()
+          
+          if (result?.success) {
+            const first = result?.data?.[0]
+            const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
+            setLogs(prev => [...prev, "✅ Workflow completed successfully!", `Result: ${out || "No response"}`])
+          } else {
+            setLogs(prev => [...prev, `❌ Error: ${result?.error || "Unknown error"}`])
+          }
+        } catch (error) {
+          setLogs(prev => [...prev, `❌ Error: ${error}`])
+        } finally {
+          setIsRunning(false)
+        }
+      }
+
+      const handleDialogOpenChange = (open: boolean) => {
+        setPromptDialogOpen(open)
+        if (!open) {
+          setLogs([])
+        }
+      }
+
+      return (
+        <>
+          <button
+            onClick={() => setPromptDialogOpen(true)}
+            disabled={isRunning}
+            className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors duration-75 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isRunning ? "Running..." : "Run with Prompt"}
+          </button>
+          <PromptInputDialog
+            open={promptDialogOpen}
+            onOpenChange={handleDialogOpenChange}
+            onExecute={handleExecuteWorkflow}
+            loading={isRunning}
+            logs={logs}
+          />
+        </>
       )
     }
 

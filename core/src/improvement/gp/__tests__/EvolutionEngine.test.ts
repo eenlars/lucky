@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 // comprehensive tests for evolution engine
 // TODO: excessive mocking setup (300+ lines) makes tests brittle and hard to maintain
 // consider extracting to test utilities or using higher-level test abstractions
@@ -143,16 +145,18 @@ vi.mock("@runtime/settings/constants", () => ({
   },
 }))
 
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import type { GenomeEvaluationResults } from "@core/improvement/gp/resources/gp.types"
 import {
   createMockEvaluationInput,
   createMockEvaluator,
   createMockEvolutionSettings,
   createMockWorkflowConfig,
 } from "@core/utils/__tests__/setup/coreMocks"
+import type { RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Module-level mock instances
 const mockSupabaseChain = {
@@ -205,7 +209,7 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 
-vi.mock("@core/improvement/GP/RunService", () => ({
+vi.mock("@core/improvement/gp/RunService", () => ({
   RunService: vi.fn(() => mockRunService),
 }))
 
@@ -213,14 +217,14 @@ vi.mock("@core/workflow/validation/workflowVerificationCache", () => ({
   verificationCache: mockVerificationCache,
 }))
 
-vi.mock("@core/improvement/GP/Select", () => ({
+vi.mock("@core/improvement/gp/Select", () => ({
   Select: {
     createNextGeneration: vi.fn().mockResolvedValue(undefined),
   },
 }))
 
 // Mock StatsTracker
-vi.mock("@core/improvement/GP/resources/stats", () => ({
+vi.mock("@core/improvement/gp/resources/stats", () => ({
   StatsTracker: vi.fn(() => ({
     logEvolutionStart: vi.fn(),
     recordGenerationStats: vi.fn().mockReturnValue({
@@ -241,7 +245,7 @@ vi.mock("@core/improvement/GP/resources/stats", () => ({
 }))
 
 // Mock VerificationCache
-vi.mock("@core/improvement/GP/resources/wrappers", () => ({
+vi.mock("@core/improvement/gp/resources/wrappers", () => ({
   VerificationCache: vi.fn(() => ({
     verifyWithCache: vi.fn().mockResolvedValue({ valid: true }),
   })),
@@ -260,7 +264,7 @@ const mockGenomeForEvolution = {
   }),
 }
 
-vi.mock("../Population", () => ({
+vi.mock("@core/improvement/gp/Population", () => ({
   Population: vi.fn(() => ({
     initialize: vi.fn().mockResolvedValue(undefined),
     getUnevaluated: vi.fn().mockReturnValue([mockGenomeForEvolution]),
@@ -269,7 +273,7 @@ vi.mock("../Population", () => ({
       getFitness: () => ({
         score: 0.8,
         accuracy: 80,
-            totalCostUsd: 0.01,
+        totalCostUsd: 0.01,
         totalTimeSeconds: 1.5,
       }),
       getWorkflowVersionId: () => "best-genome-id",
@@ -285,7 +289,9 @@ vi.mock("../Population", () => ({
     }),
     getTotalCost: vi.fn().mockReturnValue(0.1),
     size: vi.fn().mockReturnValue(5),
-    getRunService: vi.fn().mockReturnValue({}),
+    getRunService: vi
+      .fn()
+      .mockReturnValue({ getEvolutionMode: vi.fn(() => "GP") }),
   })),
 }))
 
@@ -458,18 +464,19 @@ describe("EvolutionEngine", () => {
           success: false,
           error: "evaluation failed",
           usdCost: 0,
+          data: undefined,
         })
 
-        // TODO: using resolves.not.toThrow() is redundant
-        // async functions that resolve don't throw - remove this pattern
-        await expect(
-          engine.evolve({
-            evaluationInput,
-            evaluator,
-            _baseWorkflow: undefined,
-            problemAnalysis: "dummy-problem-analysis",
-          })
-        ).resolves.not.toThrow()
+        vi.useFakeTimers()
+        const p = engine.evolve({
+          evaluationInput,
+          evaluator,
+          _baseWorkflow: undefined,
+          problemAnalysis: "dummy-problem-analysis",
+        })
+        await vi.runAllTimersAsync()
+        await expect(p).resolves.toBeDefined()
+        vi.useRealTimers()
       })
 
       it("should complete run in database", async () => {
@@ -494,26 +501,24 @@ describe("EvolutionEngine", () => {
           new Error("evaluation failed")
         )
 
-        // The evolution should complete even with failed evaluations
-        // It will return genomes with zero fitness
-        const result = await engine.evolve({
+        vi.useFakeTimers()
+        const p = engine.evolve({
           evaluationInput,
           evaluator,
           _baseWorkflow: undefined,
           problemAnalysis: "dummy-problem-analysis",
         })
+        await vi.runAllTimersAsync()
+        const result = await p
 
-        // Should still return a result with best genome (mocked fitness remains)
         expect(result).toHaveProperty("bestGenome")
         expect(result.bestGenome.getFitness()?.score).toBe(0.8)
-
-        // The run should be marked as completed, not failed
-        // since the engine handles evaluation failures gracefully
         expect(mockRunService.completeRun).toHaveBeenCalledWith(
           expect.stringMatching(/completed|interrupted/),
           expect.any(Number),
           expect.any(Object)
         )
+        vi.useRealTimers()
       })
 
       it("should handle population initialization failure", async () => {
@@ -630,20 +635,23 @@ describe("EvolutionEngine", () => {
                   success: false,
                   error: "timeout",
                   usdCost: 0,
+                  data: undefined,
                 }),
               100
             )
           )
       )
 
-      await expect(
-        engine.evolve({
-          evaluationInput,
-          evaluator,
-          _baseWorkflow: undefined,
-          problemAnalysis: "dummy-problem-analysis",
-        })
-      ).resolves.not.toThrow()
+      vi.useFakeTimers()
+      const p = engine.evolve({
+        evaluationInput,
+        evaluator,
+        _baseWorkflow: undefined,
+        problemAnalysis: "dummy-problem-analysis",
+      })
+      await vi.runAllTimersAsync()
+      await expect(p).resolves.toBeDefined()
+      vi.useRealTimers()
     })
 
     it("should track evaluation costs and counts", async () => {
@@ -731,17 +739,28 @@ describe("EvolutionEngine", () => {
 
   describe("Integration", () => {
     it("should work with custom evaluator", async () => {
-      // TODO: custom evaluator returns incompatible response format
-      // returns {valid, score} but should return {success, data/error} format
-      // test passes only because mocked population ignores evaluation results
-      const customEvaluator = {
-        evaluate: vi.fn().mockResolvedValue({
-          valid: true,
-          score: 0.95,
-          totalCostUsd: 0.005,
-          totalTimeSeconds: 3,
-          accuracy: 0.95,
-        }),
+      const customEvaluator: EvolutionEvaluator = {
+        evaluate: vi.fn(
+          async (): Promise<RS<GenomeEvaluationResults>> => ({
+            success: true,
+            data: {
+              workflowVersionId: "test-genome-id",
+              hasBeenEvaluated: true,
+              evaluatedAt: new Date().toISOString(),
+              fitness: {
+                score: 0.95,
+                accuracy: 95,
+                totalCostUsd: 0.005,
+                totalTimeSeconds: 3,
+              },
+              costOfEvaluation: 0.005,
+              errors: [],
+              feedback: "ok",
+            },
+            usdCost: 0.005,
+            error: undefined,
+          })
+        ),
       }
 
       const result = await engine.evolve({

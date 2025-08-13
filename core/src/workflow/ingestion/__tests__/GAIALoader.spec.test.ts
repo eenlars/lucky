@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest"
 
 // Mock fetch for integration tests to avoid network calls
 const mockFetch = vi.fn()
-global.fetch = mockFetch
+global.fetch = mockFetch as unknown as typeof fetch
 
 /**
  * Integration tests for GAIALoader

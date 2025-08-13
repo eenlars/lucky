@@ -4,9 +4,9 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { JSONN } from "@lucky/shared"
+import { CSVLoader } from "@lucky/shared/csv"
 import { CONFIG } from "@runtime/settings/constants"
-import { CSVLoader } from "@shared/utils/files/csv/CSVLoader"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**
@@ -110,35 +110,37 @@ export class IngestionLayer {
       )
 
       // create workflow cases from CSV rows
-      const workflowCases: WorkflowIO[] = csvData.map((row, index) => {
-        // filter row data to only include specified columns if onlyIncludeInputColumns is provided
-        const filteredRow = evaluation.onlyIncludeInputColumns
-          ? Object.fromEntries(
-              Object.entries(row).filter(([key]) =>
-                evaluation.onlyIncludeInputColumns!.includes(key)
+      const workflowCases: WorkflowIO[] = csvData.map(
+        (row: Record<string, any>, index: number) => {
+          // filter row data to only include specified columns if onlyIncludeInputColumns is provided
+          const filteredRow = evaluation.onlyIncludeInputColumns
+            ? Object.fromEntries(
+                Object.entries(row).filter(([key]) =>
+                  evaluation.onlyIncludeInputColumns!.includes(key)
+                )
               )
-            )
-          : row
+            : row
 
-        // create input by combining goal with row data
-        const rowContext = Object.entries(filteredRow)
-          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-          .join("\n")
+          // create input by combining goal with row data
+          const rowContext = Object.entries(filteredRow)
+            .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+            .join("\n")
 
-        const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
+          const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
 
-        // determine expected output for this row
-        const workflowOutput = this.determineExpectedOutput(
-          row,
-          expectedOutputColumnName,
-          index
-        )
+          // determine expected output for this row
+          const workflowOutput = this.determineExpectedOutput(
+            row,
+            expectedOutputColumnName,
+            index
+          )
 
-        return {
-          workflowInput,
-          workflowOutput: workflowOutput,
+          return {
+            workflowInput,
+            workflowOutput: workflowOutput,
+          }
         }
-      })
+      )
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases", {
         count: workflowCases.length,

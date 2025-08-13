@@ -17,6 +17,7 @@
 // TODO: create schema-specific timeout configurations
 // TODO: implement structured output streaming for real-time updates
 
+import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { getDefaultModels } from "@runtime/settings/models"
 import pTimeout, { TimeoutError } from "p-timeout"
@@ -120,12 +121,13 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: add comprehensive error classification
     // TODO: implement error recovery mechanisms
     // TODO: add error reporting and analytics
+    const { message, debug } = normalizeError(err)
     return {
       success: false,
       data: null,
-      error: (err as Error).message || "Unknown error in execStructured",
+      error: message || "Unknown error in execStructured",
       debug_input: messages,
-      debug_output: err,
+      debug_output: debug,
     }
   }
 }

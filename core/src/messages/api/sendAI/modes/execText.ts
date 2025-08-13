@@ -18,6 +18,7 @@
 // TODO: add text output post-processing and formatting options
 
 import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
+import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { lgg } from "@core/utils/logging/Logger"
@@ -25,7 +26,7 @@ import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { APICallError, generateText, GenerateTextResult, ToolSet } from "ai"
+import { generateText, GenerateTextResult, ToolSet } from "ai"
 import {
   getFallbackModel,
   shouldUseModelFallback,
@@ -123,14 +124,8 @@ export async function execText(
     // TODO: implement comprehensive error classification system
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting
-    let message = ""
-    lgg.error("execText error", err)
-    if (APICallError.isInstance(err)) {
-      message = err.responseBody ?? err.message ?? "Unknown error in execText"
-    } else {
-      message = (err as Error).message
-    }
-    lgg.error("execText errorr", message)
+    const { message, debug } = normalizeError(err)
+    lgg.error("execText error", message)
 
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking
@@ -149,7 +144,7 @@ export async function execText(
       data: null,
       error: message,
       debug_input: messages,
-      debug_output: err,
+      debug_output: debug,
     }
   }
 }

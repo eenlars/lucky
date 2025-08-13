@@ -1,7 +1,8 @@
 "use client"
 
 import { cleanupStaleEvolutionRuns } from "@/trace-visualization/db/Evolution/retrieveEvolution"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"

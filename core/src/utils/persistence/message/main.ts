@@ -4,7 +4,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { TablesInsert } from "@core/utils/clients/supabase/types"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 
 export const Messages = {
   save: async (message: WorkflowMessage) => {

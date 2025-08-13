@@ -1,12 +1,17 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup"
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  dts: {
-    resolve: true,
+  entry: {
+    index: "src/index.ts",
+    "fs/index": "src/fs/index.ts",
+    "csv/index": "src/csv/index.ts",
   },
-  tsconfig: './tsconfig.build.json',
-  clean: true,
+  format: ["esm"],
+  dts: true,
   sourcemap: true,
+  clean: true,
+  splitting: false,
+  target: "node18",
+  tsconfig: "./tsconfig.build.json",
+  treeshake: true,
 })

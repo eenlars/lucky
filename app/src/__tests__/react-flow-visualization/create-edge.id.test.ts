@@ -9,7 +9,7 @@ describe("createEdge id format", () => {
     expect(e.targetHandle).toBe("h2")
   })
 
-  it("falls back to empty handle segments", () => {
+  it("omits handle segments when not provided", () => {
     const e = createEdge("a", "b")
     expect(e.id).toBe("a--b-")
     expect(e.sourceHandle).toBeUndefined()

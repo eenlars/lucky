@@ -1,4 +1,3 @@
-import { lgg } from "@core/utils/logging/Logger"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
@@ -21,19 +20,18 @@ import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"
 import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
+import { lgg } from "@core/utils/logging/Logger"
+import { JSONN } from "@lucky/shared"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
 // import resilience framework
 import {
+  CircuitBreakerFactory,
   ResilientExecutor,
   ResilientExecutorFactory,
-  RetryPolicies,
-  CircuitBreakerFactory,
-  type ExecutionResult,
 } from "@core/resilience"
 
 const maxRounds = CONFIG.tools.experimentalMultiStepLoopMaxRounds
@@ -50,7 +48,7 @@ export class ResilientInvocationPipeline {
   private updatedMemory: Record<string, string> | null = null
   private agentSteps: AgentStep<any>[] = []
   private debugPrompts: string[] = []
-  
+
   // resilience components
   private readonly aiExecutor: ResilientExecutor
   private readonly toolExecutor: ResilientExecutor
@@ -66,7 +64,9 @@ export class ResilientInvocationPipeline {
       `ai-${ctx.nodeConfig.nodeId}`,
       async () => {
         // fallback: return a simple error response
-        lgg.warn(`[ResilientInvocationPipeline] Using AI fallback for node ${ctx.nodeConfig.nodeId}`)
+        lgg.warn(
+          `[ResilientInvocationPipeline] Using AI fallback for node ${ctx.nodeConfig.nodeId}`
+        )
         return {
           type: "error",
           message: "AI service unavailable, using fallback",
@@ -212,7 +212,7 @@ export class ResilientInvocationPipeline {
       lgg.error(
         `[ResilientInvocationPipeline] Node context: ${this.ctx.nodeConfig.nodeId}`
       )
-      
+
       if (stack) {
         lgg.error(`[ResilientInvocationPipeline] Stack trace:`, stack)
       }
@@ -372,7 +372,10 @@ export class ResilientInvocationPipeline {
         details: aiResult.error?.stack,
         cost: this.usdCost,
         agentSteps: [
-          { type: "error", return: aiResult.error?.message ?? "AI call failed" },
+          {
+            type: "error",
+            return: aiResult.error?.message ?? "AI call failed",
+          },
         ],
       }
     }
@@ -433,9 +436,10 @@ export class ResilientInvocationPipeline {
       lgg.warn(
         `[ResilientInvocationPipeline] Summary generation failed: ${summaryResult.error?.message}`
       )
-      summary = summaryResult.fallbackUsed && summaryResult.data
-        ? summaryResult.data.summary
-        : processed.summary || ""
+      summary =
+        summaryResult.fallbackUsed && summaryResult.data
+          ? summaryResult.data.summary
+          : processed.summary || ""
     }
 
     this.addCost(summaryCost)
@@ -489,9 +493,15 @@ export class ResilientInvocationPipeline {
 
   public getCircuitBreakerStats() {
     return {
-      ai: CircuitBreakerFactory.get(`ai-${this.ctx.nodeConfig.nodeId}`)?.getStats(),
-      tools: CircuitBreakerFactory.get(`tools-${this.ctx.nodeConfig.nodeId}`)?.getStats(),
-      summary: CircuitBreakerFactory.get(`summary-${this.ctx.nodeConfig.nodeId}`)?.getStats(),
+      ai: CircuitBreakerFactory.get(
+        `ai-${this.ctx.nodeConfig.nodeId}`
+      )?.getStats(),
+      tools: CircuitBreakerFactory.get(
+        `tools-${this.ctx.nodeConfig.nodeId}`
+      )?.getStats(),
+      summary: CircuitBreakerFactory.get(
+        `summary-${this.ctx.nodeConfig.nodeId}`
+      )?.getStats(),
     }
   }
 }
