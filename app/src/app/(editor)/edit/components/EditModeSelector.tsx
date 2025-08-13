@@ -386,11 +386,15 @@ export default function EditModeSelector({
           <div className="p-4">
             {/* Header Section */}
             <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="flex-1 flex items-center gap-4">
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold text-gray-700 uppercase">Goal</label>
+                  <span className="text-xs text-gray-500 italic">(Define your evaluation objective)</span>
+                </div>
                 <input
                   type="text"
-                  className="flex-1 border rounded px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
-                  placeholder="Goal (optional)"
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none placeholder:text-gray-400"
+                  placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                 />
