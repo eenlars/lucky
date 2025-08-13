@@ -1228,7 +1228,6 @@ export const setupGPTestMocks = (
   const population = mockPopulationClass()
 
   mockRuntimeConstantsForGP(runtimeOverrides)
-  mockSelectClass()
   mockWorkflowGeneration()
   mockCrossoverClass()
   mockMutationsClass()

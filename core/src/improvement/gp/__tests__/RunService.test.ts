@@ -11,7 +11,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const mockSupabaseClient = {
   from: vi.fn(),
 }
-const mockGenShortId = vi.fn()
+// Initialize before hoisted vi.mock factory reads it
+const mockGenShortId = vi.fn(() => "short-test-id")
 const mockLggLog = vi.fn()
 const mockLggError = vi.fn()
 const mockLggWarn = vi.fn()

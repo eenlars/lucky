@@ -13,56 +13,57 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     name: "Basic Assistant",
     description: "Simple AI assistant workflow",
     workflow: {
+      entryNodeId: "assistant",
       nodes: [
         {
-          nodeId: "start",
+          nodeId: "assistant",
+          description: "Assistant",
           systemPrompt: "You are a helpful AI assistant.",
-          tools: [],
-          handoffs: [],
-          model: "claude-3.5-sonnet"
-        }
+          mcpTools: [],
+          codeTools: [],
+          handOffs: [],
+          modelName: "gpt-4o-mini",
+        },
       ],
-      edges: []
-    }
+    },
   },
   {
     id: "recipe",
     name: "Recipe Generator",
     description: "Generate recipes from ingredients",
     workflow: {
+      entryNodeId: "ingredient_parser",
       nodes: [
         {
           nodeId: "ingredient_parser",
-          systemPrompt: "You are an expert chef who analyzes ingredients and suggests recipes. Parse the user's available ingredients and understand dietary restrictions.",
-          tools: ["search"],
-          handoffs: ["recipe_generator"],
-          model: "claude-3.5-sonnet"
+          description: "Parse ingredients",
+          systemPrompt:
+            "You are an expert chef who analyzes ingredients and suggests recipes.",
+          mcpTools: ["search"],
+          codeTools: [],
+          handOffs: ["recipe_generator"],
+          modelName: "gpt-4o-mini",
         },
         {
-          nodeId: "recipe_generator", 
-          systemPrompt: "You are a creative chef who creates detailed recipes. Generate a complete recipe with ingredients, instructions, cooking time, and difficulty level based on the parsed ingredients.",
-          tools: ["search", "web_scrape"],
-          handoffs: ["nutrition_analyzer"],
-          model: "claude-3.5-sonnet"
+          nodeId: "recipe_generator",
+          description: "Generate a recipe",
+          systemPrompt:
+            "Generate a complete recipe based on parsed ingredients.",
+          mcpTools: ["search", "web_scrape"],
+          codeTools: [],
+          handOffs: ["nutrition_analyzer"],
+          modelName: "gpt-4o-mini",
         },
         {
           nodeId: "nutrition_analyzer",
-          systemPrompt: "You are a nutrition expert. Analyze the recipe and provide nutritional information, calorie count, and health benefits.",
-          tools: ["search"],
-          handoffs: [],
-          model: "claude-3.5-sonnet"
-        }
-      ],
-      edges: [
-        {
-          from: "ingredient_parser",
-          to: "recipe_generator"
+          description: "Analyze nutrition",
+          systemPrompt: "Analyze recipe and provide nutritional information.",
+          mcpTools: ["search"],
+          codeTools: [],
+          handOffs: [],
+          modelName: "gpt-4o-mini",
         },
-        {
-          from: "recipe_generator", 
-          to: "nutrition_analyzer"
-        }
-      ]
-    }
-  }
+      ],
+    },
+  },
 ]

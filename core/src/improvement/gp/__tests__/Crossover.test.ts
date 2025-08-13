@@ -201,7 +201,7 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
     })),
 }))
 
-vi.mock("@core/improvement/gp/operators/crossoverStrategy", () => ({
+vi.mock("@core/improvement/gp/operators/crossover/crossoverStrategy", () => ({
   getCrossoverVariability: vi.fn(() => ({
     aggressiveness: "medium",
     intensity: 0.5,
@@ -494,20 +494,19 @@ describe("Crossover", () => {
         "@core/improvement/gp/operators/crossover/Crossover"
       )
 
-      const strategy = "blend genetic features"
+      const strategy = "structureCrossover"
       mockFormalizeWorkflow.mockResolvedValue({
         data: createMockWorkflowConfig(),
         error: undefined,
       })
 
       const params = createMockCrossoverParams({
-        crossoverStrategy: strategy,
         verbose: false,
       })
       await Crossover.crossover(params)
 
       expect(mockFormalizeWorkflow).toHaveBeenCalledWith(
-        expect.stringContaining(strategy),
+        expect.stringContaining(`CROSSOVER OPERATION: ${strategy}`),
         expect.any(Object)
       )
     })
@@ -522,13 +521,9 @@ describe("Crossover", () => {
       const params = createMockCrossoverParams({
         parents: [],
       })
-      const response = await Crossover.crossover(params)
-
-      if (!response.success || !response.data) {
-        throw new Error("Crossover failed")
-      }
-
-      expect(response.data?.genome.parentWorkflowVersionIds).toEqual([])
+      await expect(Crossover.crossover(params)).rejects.toThrow(
+        /insufficient parents/
+      )
     })
   })
 
@@ -590,7 +585,7 @@ describe("Crossover", () => {
       const response = await Crossover.crossover(params)
 
       expect(response.success).toBe(false)
-      expect(response.error).toContain("Crossover failed: error")
+      expect(response.error).toContain("Crossover failed: Request timeout")
     })
   })
 

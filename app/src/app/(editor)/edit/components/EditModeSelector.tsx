@@ -13,8 +13,9 @@ import { useAppStore } from "@/react-flow-visualization/store"
 
 import JSONEditor from "./JSONEditor"
 
-// Eval mode (IO table) + config helpers
-import WorkflowIOTable, { type WorkflowIO } from "@/components/WorkflowIOTable"
+// Eval mode (table) + run store
+import WorkflowIOTable from "@/components/WorkflowIOTable"
+import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
 
@@ -53,122 +54,38 @@ export default function EditModeSelector({
     }))
   )
 
-  // Eval mode state
-  const [ios, setIos] = useState<WorkflowIO[]>([])
-  const [busyIds, setBusyIds] = useState<Set<string>>(new Set())
-  const [resultsById, setResultsById] = useState<
-    Record<string, { fitness?: any; output?: any; error?: string }>
-  >({})
-  const controllersRef = useState<Map<string, AbortController>>(
-    () => new Map()
-  )[0]
-  const [goal, setGoal] = useState<string>("")
+  // Eval mode state (shared store)
+  const {
+    cases,
+    busyIds,
+    resultsById,
+    goal,
+    setGoal,
+    addCase,
+    updateCase,
+    removeCase,
+    runOne,
+    runAll,
+    cancel,
+  } = useRunConfigStore((s) => ({
+    cases: s.cases,
+    busyIds: s.busyIds,
+    resultsById: s.resultsById,
+    goal: s.goal,
+    setGoal: s.setGoal,
+    addCase: s.addCase,
+    updateCase: s.updateCase,
+    removeCase: s.removeCase,
+    runOne: s.runOne,
+    runAll: s.runAll,
+    cancel: s.cancel,
+  }))
 
-  const createIO = useCallback(
+  const createCase = useCallback(
     async (payload: { input: string; expected: string }) => {
-      const id =
-        typeof crypto !== "undefined" &&
-        typeof (crypto as any).randomUUID === "function"
-          ? crypto.randomUUID()
-          : "io_" + Math.random().toString(36).slice(2)
-      setIos((prev) => [
-        ...prev,
-        { id, input: payload.input, expected: payload.expected },
-      ])
+      addCase({ input: payload.input, expected: payload.expected })
     },
-    []
-  )
-
-  const updateIO = useCallback(
-    async (id: string, patch: Partial<WorkflowIO>) => {
-      setIos((prev) =>
-        prev.map((x) => (x.id === id ? ({ ...x, ...patch } as WorkflowIO) : x))
-      )
-    },
-    []
-  )
-
-  const deleteIO = useCallback(async (id: string) => {
-    setIos((prev) => prev.filter((x) => x.id !== id))
-    setResultsById((m) => {
-      const { [id]: _drop, ...rest } = m
-      return rest
-    })
-    setBusyIds((s) => {
-      const next = new Set(s)
-      next.delete(id)
-      return next
-    })
-  }, [])
-
-  const runIO = useCallback(
-    async (io: WorkflowIO) => {
-      setBusyIds((s) => new Set(s).add(io.id))
-      const controller = new AbortController()
-      controllersRef.set(io.id, controller)
-      try {
-        // Always export latest edits (graph or json) to JSON
-        const json = exportToJSON()
-        const parsed = JSON.parse(json)
-        const cfgMaybe = toWorkflowConfig(parsed)
-        if (!cfgMaybe) throw new Error("Invalid workflow config")
-        const cfg = await loadFromDSLClient(cfgMaybe)
-
-        const resp = await fetch("/api/workflow/run-many", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            dslConfig: cfg,
-            cases: [{ workflowInput: io.input, workflowOutput: io.expected }],
-            goal: goal?.trim() || undefined,
-          }),
-          signal: controller.signal,
-        })
-
-        const out = await resp.json()
-        const first = out.results?.[0]
-        if (first?.success) {
-          setResultsById((m) => ({
-            ...m,
-            [io.id]: {
-              fitness: first?.data?.[0]?.fitness,
-              output: first?.data?.[0]?.finalWorkflowOutputs,
-              feedback: first?.data?.[0]?.feedback,
-              wfInvocationId: first?.data?.[0]?.workflowInvocationId,
-            },
-          }))
-        } else {
-          setResultsById((m) => ({
-            ...m,
-            [io.id]: { error: first?.error || "Failed" },
-          }))
-        }
-      } catch (e: any) {
-        setResultsById((m) => ({
-          ...m,
-          [io.id]: {
-            error:
-              e?.name === "AbortError" ? "Canceled" : e?.message || "Error",
-          },
-        }))
-      } finally {
-        controllersRef.delete(io.id)
-        setBusyIds((s) => {
-          const next = new Set(s)
-          next.delete(io.id)
-          return next
-        })
-      }
-    },
-    [exportToJSON, controllersRef]
-  )
-
-  const cancelIO = useCallback(
-    (id: string) => {
-      const controller = controllersRef.get(id)
-      if (controller) controller.abort()
-    },
-    [controllersRef]
+    [addCase]
   )
 
   // Note: runner context is consumed inside a child component to avoid
@@ -273,15 +190,23 @@ export default function EditModeSelector({
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     dslConfig: cfg,
-                    question: prompt,
+                    evalInput: {
+                      type: "text",
+                      question: prompt,
+                      answer: "",
+                      goal: "Prompt run",
+                      workflowId: "adhoc-ui",
+                    },
                   }),
                 })
-                
+
                 const result = await response.json()
-                if (result.success) {
-                  alert(`Result: ${result.data?.response || "No response"}`)
+                if (result?.success) {
+                  const first = result?.data?.[0]
+                  const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
+                  alert(`Result: ${out || "No response"}`)
                 } else {
-                  alert(`Error: ${result.error || "Unknown error"}`)
+                  alert(`Error: ${result?.error || "Unknown error"}`)
                 }
               } catch (error) {
                 alert(`Error: ${error}`)
@@ -438,16 +363,21 @@ export default function EditModeSelector({
               <div className="flex items-center gap-2">
                 <button
                   className={`px-4 py-1 rounded text-sm font-medium ${
-                    !ios.length
+                    !cases.length
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : "bg-black text-white hover:bg-gray-800 cursor-pointer"
                   }`}
                   onClick={async () => {
-                    for (const io of ios) await runIO(io)
+                    const json = exportToJSON()
+                    const parsed = JSON.parse(json)
+                    const cfgMaybe = toWorkflowConfig(parsed)
+                    if (!cfgMaybe) return alert("Invalid workflow config")
+                    const cfg = await loadFromDSLClient(cfgMaybe)
+                    await runAll(cfg)
                   }}
-                  disabled={!ios.length}
+                  disabled={!cases.length}
                 >
-                  Run All ({ios.length})
+                  Run All ({cases.length})
                 </button>
               </div>
             </div>
@@ -455,19 +385,26 @@ export default function EditModeSelector({
             {/* Test Cases Section */}
             <div className="bg-white rounded border border-gray-200">
               <WorkflowIOTable
-                ios={ios}
-                resultsById={resultsById}
+                ios={cases as any}
+                resultsById={resultsById as any}
                 busyIds={busyIds}
-                onUpdate={updateIO}
-                onDelete={deleteIO}
-                onRun={runIO}
-                onCancel={cancelIO}
+                onUpdate={async (id, patch) => updateCase(id, patch as any)}
+                onDelete={async (id) => removeCase(id)}
+                onRun={async (row) => {
+                  const json = exportToJSON()
+                  const parsed = JSON.parse(json)
+                  const cfgMaybe = toWorkflowConfig(parsed)
+                  if (!cfgMaybe) return alert("Invalid workflow config")
+                  const cfg = await loadFromDSLClient(cfgMaybe)
+                  await runOne(cfg, row as any)
+                }}
+                onCancel={(id) => cancel(id)}
               />
 
               <div className="p-3 border-t flex items-center justify-between">
                 <button
                   className="text-sm text-gray-600 hover:text-black cursor-pointer"
-                  onClick={() => createIO({ input: "", expected: "" })}
+                  onClick={() => createCase({ input: "", expected: "" })}
                 >
                   + Add Test
                 </button>

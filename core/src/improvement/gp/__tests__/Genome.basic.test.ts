@@ -338,7 +338,7 @@ describe("Genome Basic Tests", () => {
       const genome = new Genome(genomeData, evaluationInput, evolutionContext)
 
       expect(genome.getWorkflowVersionId()).toBeDefined()
-      expect(genome.genome).toEqual(genomeData)
+      expect(genome.getRawGenome()).toEqual(genomeData)
     })
 
     it("should initialize fitness as invalid", () => {
@@ -383,7 +383,7 @@ describe("Genome Basic Tests", () => {
     it("should convert genome to workflow config", () => {
       const genomeData = createTestGenomeData()
 
-      const config = Genome.toWorkflowConfig(genomeData)
+      const config = Genome.toWorkflowConfig(genomeData as any)
 
       expect(config.nodes).toEqual(genomeData.nodes)
       expect(config.entryNodeId).toBe(genomeData.entryNodeId)
