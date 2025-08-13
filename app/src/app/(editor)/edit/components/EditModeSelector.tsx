@@ -229,6 +229,7 @@ export default function EditModeSelector({
       }
 
       const handleDialogOpenChange = (open: boolean) => {
+        if (isRunning) return // prevent closing during execution
         setPromptDialogOpen(open)
         if (!open) {
           setLogs([])

@@ -86,11 +86,13 @@ export function PromptInputDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            Cancel
+            {logs.length > 0 && !loading ? "Close" : "Cancel"}
           </Button>
-          <Button onClick={handleExecute} disabled={!prompt.trim() || loading}>
-            {loading ? "Running..." : "Execute Workflow"}
-          </Button>
+          {!isExecuting && (
+            <Button onClick={handleExecute} disabled={!prompt.trim() || loading}>
+              Execute Workflow
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import type { InvokeWorkflowResult } from "@core/workflow/runner/types"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 import type { WorkflowIO } from "./WorkflowIOTable"
 
@@ -92,14 +92,51 @@ export default function WorkflowIOTableRow({
   const res = resultsById[io.id]
   const canRun = Boolean(task?.trim())
 
-  const handleSave = async () => {
+  const totalMaxPoints = criteria.reduce((sum, c) => sum + c.maxPoints, 0)
+  const totalAchievedPoints = criteria.reduce(
+    (sum, c) => sum + (c.achievedPoints || 0),
+    0
+  )
+  const hasResults = criteria.some((c) => c.achievedPoints !== null)
+
+  // Auto-save rubric when criteria change
+  useEffect(() => {
+    if (criteria.length === 0) return
+    
+    const rubricLines = criteria.map((criterion, index) => {
+      const name = criterion.name.trim() || `Criterion ${index + 1}`
+      return `${index + 1}. ${name} (${criterion.maxPoints} points)`
+    })
+    
+    const rubricString = `Evaluation Rubric (Total: ${totalMaxPoints} points):\n${rubricLines.join('\n')}\n\nPlease evaluate the response according to these criteria and provide specific feedback for each criterion.`
+    updateCase(io.id, { expected: rubricString })
+  }, [criteria, totalMaxPoints, io.id, updateCase])
+
+  const handleSave = () => {
+    const updates: Partial<WorkflowIO> = {}
+    
     if (task !== io.input) {
-      await updateCase(io.id, { input: task })
+      updates.input = task
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      updateCase(io.id, updates)
     }
   }
 
   const handleRun = async () => {
     if (!canRun) return
+
+    // Create the current rubric string and update the case
+    const rubricString = createRubricString()
+    const updatedCase: WorkflowIO = { 
+      ...io, 
+      input: task, 
+      expected: rubricString 
+    }
+    
+    // Save the updated case first
+    updateCase(io.id, { input: task, expected: rubricString })
 
     // Simulate metrics update
     const fakeOutputs = [
@@ -125,10 +162,11 @@ export default function WorkflowIOTableRow({
       }))
     )
 
+    // Run the workflow with task + rubric string
     if (onRun) {
-      await onRun({ ...io, input: task })
+      await onRun(updatedCase)
     } else if (workflowConfig) {
-      await runOne(workflowConfig, { ...io, input: task })
+      await runOne(workflowConfig, updatedCase)
     }
   }
 
@@ -155,12 +193,17 @@ export default function WorkflowIOTableRow({
     setCriteria((prev) => prev.filter((c) => c.id !== id))
   }
 
-  const totalMaxPoints = criteria.reduce((sum, c) => sum + c.maxPoints, 0)
-  const totalAchievedPoints = criteria.reduce(
-    (sum, c) => sum + (c.achievedPoints || 0),
-    0
-  )
-  const hasResults = criteria.some((c) => c.achievedPoints !== null)
+  // Convert rubric criteria to human-readable string
+  const createRubricString = () => {
+    if (criteria.length === 0) return ""
+    
+    const rubricLines = criteria.map((criterion, index) => {
+      const name = criterion.name.trim() || `Criterion ${index + 1}`
+      return `${index + 1}. ${name} (${criterion.maxPoints} points)`
+    })
+    
+    return `Evaluation Rubric (Total: ${totalMaxPoints} points):\n${rubricLines.join('\n')}\n\nPlease evaluate the response according to these criteria and provide specific feedback for each criterion.`
+  }
 
   const handleFeedbackSubmit = () => {
     // Mock feedback submission
