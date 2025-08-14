@@ -1,3 +1,6 @@
+echo "[husky] checking TypeScript types..."
+bun run tsc || exit 1
+
 echo "[husky] running smoke tests..."
 bun run test:smoke || exit 1
 
