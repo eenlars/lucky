@@ -28,7 +28,9 @@
       "@core/validation/*": ["./src/utils/validation/*"],
       "@core/improvement/*": ["./src/improvement/*"],
       "@runtime/*": ["../runtime/*"],
-      "@runtime/settings/*": ["../runtime/settings/*"]
+      "@runtime/settings/*": ["../runtime/settings/*"],
+      "@lucky/shared": ["../packages/shared/src/index.ts"],
+      "@lucky/shared/*": ["../packages/shared/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },

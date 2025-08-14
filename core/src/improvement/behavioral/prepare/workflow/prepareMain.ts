@@ -74,7 +74,7 @@ export const prepareProblem = async (
     const invocationInput: InvocationInput = {
       workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
       evalInput: {
-        type: "prompt-only",
+        type: "prompt-only", // no need to evaluate this.
         goal: task.goal,
         workflowId: task.workflowId,
       },
@@ -149,13 +149,15 @@ Guidelines:
 - Preserve the original intent and requirements
 - Add clarifying context where needed
 - Ensure the input is actionable and specific
-- Consider what additional information would be helpful for problem-solving`
+- Consider what additional information would be helpful for problem-solving
+- Output the problem analysis in 2 sentences.
+`
 
     // send a request to the AI to get the boundaries of the training input.
     const { data, success, error, usdCost } = await sendAI({
       mode: "structured",
       schema: ProblemAnalysisSchema,
-      model: getDefaultModels().high,
+      model: getDefaultModels().medium,
       messages: [
         {
           role: "system",
@@ -163,13 +165,13 @@ Guidelines:
         },
         {
           role: "user",
-          content: `Please analyze this workflow input to the very best of your ability:
+          content: `
+          Please analyze this workflow input to the very best of your ability:
+            Original Goal: ${task.goal}
+            Input Type: ${task.type}
 
-Original Goal: ${task.goal}
-Input Type: ${task.type}
-
-${sampleWorkflowIO.length > 1 ? samplesExplanation : ""}
-`,
+            ${sampleWorkflowIO.length > 1 ? samplesExplanation : ""}
+          `,
         },
       ],
       retries: 2,

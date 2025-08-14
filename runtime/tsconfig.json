@@ -15,7 +15,9 @@
     "incremental": true,
     "paths": {
       "@runtime/*": ["./*"],
-      "@core/*": ["../core/src/*"]
+      "@core/*": ["../core/src/*"],
+      "@lucky/shared": ["../packages/shared/src/index.ts"],
+      "@lucky/shared/*": ["../packages/shared/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },
