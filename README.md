@@ -1,4 +1,4 @@
-# Evolutionary Optimization of Multi-Agent Workflows
+# Self-evolving Agentic Workflows
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
@@ -161,7 +161,7 @@ The framework implements two primary optimization approaches:
 
 This framework provides the first research testbed for evolution-guided workflow discovery in non-sandboxed environments. Key contributions:
 
-- **Zero-Code Workflow Evolution**: JSON-based workflows that genetic programming can automatically optimize
+- **Zero-Code Agentic Workflow Evolution**: JSON-based workflows that genetic programming can automatically optimize
 - **Runtime Optimization**: Cultural evolution and genetic programming during execution
 - **Real-World Tool Integration**: Support for actual coding tools beyond sandboxed environments
 - **Comprehensive Research Infrastructure**: Genealogy tracking, fitness evaluation, and evolutionary analysis
