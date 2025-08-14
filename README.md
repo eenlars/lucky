@@ -1,4 +1,4 @@
-# Framework for Evolutionary Agentic Workflows
+# Evolutionary Optimization of Multi-Agent Workflows
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
@@ -8,15 +8,20 @@
 
 ![Evolutionary agentic workflows screenshot](docs/example.png)
 
-Large Language Model (LLM)-based agents use coding tools to overcome hallucinations by extending their knowledge beyond training data. Manually designing agentic workflows only works if the solution is already known, requiring time and maintenance that slows prototyping. Of the 8 largest multi-agent frameworks surveyed, all take at least 3 hours to set up; 7 frameworks lack native visualization dashboards; tool mechanisms are hard-coded, and all frameworks are designed for manual setup and maintenance.
+Current multi-agent frameworks require manual workflow design, taking hours to configure and lacking native optimization capabilities. This creates a bottleneck: you know what problem to solve but not how agents should collaborate to solve it efficiently.
 
-Research on automatic design of agentic workflows is limited to sandboxed environments, making findings difficult to transfer to real-world applications.
+This framework automatically discovers and optimizes multi-agent workflows through evolutionary algorithms, eliminating manual configuration while providing full observability of the optimization process.
 
-## Abstract
+## Three Core Differentiators
 
-This framework bridges the gap between research automation and practical optimization by supporting automatic design and maintenance of agentic workflows for any code tool. To find workflows that pass an evaluation set, we use a cultural evolution search loop that mutates and selects workflows by changing prompts, roles, tools, and workflow structure. This variant of genetic programming uses environmental feedback to perform evolutionary operations, assessing fitness on accuracy, cost, and time.
+**1. Built for Optimization**  
+Genetic programming and cultural evolution automatically discover optimal agent collaboration patterns, tool usage, and workflow structures.
 
-To our knowledge, this is the first framework that supports zero-code workflows using JSON, includes runtime optimization, and enables automated generation of workflow research in non-sandboxed environments.
+**2. 30-Second Deployment**  
+JSON-based workflow definitions enable immediate deployment without coding agent interactions or setting up complex infrastructures.
+
+**3. Complete Observability**  
+Real-time visualization of workflow execution, evolutionary progress, and performance metrics across all optimization dimensions.
 
 ## Installation
 
@@ -60,26 +65,52 @@ The system treats AI agent workflows as evolvable data structures. Instead of ma
 
 ## Usage
 
-```typescript
-import { Workflow } from "@/core/workflow/Workflow"
+Instead of manually designing workflows, provide a small dataset of question-answer pairs. The system automatically discovers optimal workflows through evolutionary optimization.
 
-const workflow = await Workflow.create({
-  goal: "Extract store locations from a website",
-  nodes: [
+```typescript
+import { Workflow } from "@core/workflow/Workflow"
+
+// Define a custom Tool
+const verifyLocation = (locationInput: string) => {
+  // Verify locations with external API
+  return API.call("location-verify", locationInput)
+}
+
+// Create workflow with training dataset
+const workflow = await Workflow.create(
+  {
+    goal: "Find all physical stores of a company",
+    customTools: [verifyLocation],
+    mcpTools: ["browserUse", "firecrawl"],
+  },
+  "JSON with store addresses and business details",
+  [
     {
-      name: "scraper",
-      systemPrompt: "You are a web scraping specialist",
-      tools: ["browserAutomation", "locationDataManager"],
+      question: "Find all Patagonia stores in the Netherlands",
+      expectedAnswer: {
+        addresses: ["Singel 465, Amsterdam"],
+      },
     },
-    {
-      name: "validator",
-      systemPrompt: "You validate extracted data quality",
-      tools: ["locationDataManager"],
-    },
-  ],
+  ]
+)
+
+// Train with different algorithms and budgets
+await workflow.train({
+  type: "genetic", // or iterative
+  budget: { generations: 10, populationSize: 20 },
 })
 
-const result = await workflow.execute("https://example.com")
+// Execute optimized workflow
+const result = await workflow.execute(
+  "Find all Tony Chocolonely locations in the Netherlands"
+)
+
+// Output:
+console.log(result)
+
+// {
+//   addresses: ["Oudebrugsteeg 15", "Danzigerkade 23B"],
+// }
 ```
 
 ## Development
@@ -91,43 +122,49 @@ cd app && bun dev
 # Run e2e/essential tests (from repo root)
 bun run test:gate
 
-# TypeScript checks across all workspaces (from repo root)
-bun run tsc
+# TypeScript type checking (from app/)
+cd app && bun run tsc
 
 # (Optional) Run app-specific unit tests
 cd app && bun run test
 ```
 
-## Roadmap for Robustness
+## Optimization Algorithms
 
-- [ ] Run partial workflows from dashboard (1)
-- [ ] Message contracts (2)
+The framework implements two primary optimization approaches:
 
-## Roadmap for Observability and debugging
+**Genetic Programming**: Population-based evolution with semantic crossover and mutation operations on workflow structures, agent prompts, and tool selections. Fitness evaluation across accuracy, cost, and execution time dimensions.
 
-- [ ] View/download full node trace as JSONL (1)
-- [ ] Run a single node (3)
-- [ ] Opentelemetry Observability (4)
+**Cultural Evolution**: Iterative improvement through analysis-driven mutations that preserve successful patterns while exploring variations in agent roles, tool usage, and inter-agent communication protocols.
 
-## Roadmap for Dashboard use
+## Development Roadmap
 
-- [ ] Parallel-sending nodes can send multiple, different messages to connected nodes
-- [ ] Visual dashboard 3-second MCP tool integration
+### System Robustness
 
-## Roadmap for Tools
+- [ ] Message contracts and validation (priority 2)
+- [ ] Partial workflow execution from dashboard (priority 1)
+- [ ] Deterministic node execution modes
 
-- [ ] Shared tool knowledge base
+### Observability Infrastructure
 
-## Roadmap for Self-improving capabilities
+- [ ] Full node trace export as JSONL (priority 1)
+- [ ] Single node execution and debugging (priority 3)
+- [ ] OpenTelemetry integration (priority 4)
+- [ ] Real-time evolutionary progress visualization
 
-- [ ] Support bandit search algorithms
-- [ ] Tweak evo algorithm to mutate effectively
-- [ ] Tweak evo algorithm to allow for fine grained analysis
+### Optimization Capabilities
 
-## Roadmap for nice features
+- [ ] Multi-armed bandit algorithms for exploration-exploitation balance
+- [ ] Fine-grained evolutionary analysis and mutation strategies
+- [ ] Semantic mutation effectiveness optimization
+- [ ] Cross-workflow knowledge transfer
 
-- [ ] Deterministic nodes
-- [ ] A workflow becomes an MCP
+### Tool Integration
+
+- [ ] Shared tool knowledge base across workflows
+- [ ] 3-second MCP tool integration via visual dashboard
+- [ ] Workflow-to-MCP conversion for composability
+- [ ] Parallel multi-message node communication
 
 ## Research Contribution
 

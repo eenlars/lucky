@@ -23,7 +23,9 @@
       "@/*": ["./src/*"],
       "@core/*": ["../core/src/*"],
       "@runtime/*": ["../runtime/*"],
-      "@experiments/*": ["../packages/experiments/src/*"]
+      "@experiments/*": ["../packages/experiments/src/*"],
+      "@lucky/shared": ["../packages/shared"],
+      "@lucky/shared/*": ["../packages/shared/*"]
     },
     "allowSyntheticDefaultImports": true
   },

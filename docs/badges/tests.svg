@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20" role="img" aria-label="tests: unknown">
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" role="img" aria-label="tests: no tests">
   <linearGradient id="smooth" x2="0" y2="100%">
     <stop offset="0" stop-color="#fff" stop-opacity=".7"/>
     <stop offset=".1" stop-opacity=".1"/>
@@ -7,17 +7,15 @@
     <stop offset="1" stop-opacity=".5"/>
   </linearGradient>
   <mask id="round">
-    <rect width="120" height="20" rx="3" fill="#fff"/>
+    <rect width="100" height="20" rx="3" fill="#fff"/>
   </mask>
   <g mask="url(#round)">
-    <rect width="50" height="20" fill="#555"/>
-    <rect x="50" width="70" height="20" fill="#9f9f9f"/>
-    <rect width="120" height="20" fill="url(#smooth)"/>
+    <rect width="40" height="20" fill="#555"/>
+    <rect x="40" width="60" height="20" fill="#9f9f9f"/>
+    <rect width="100" height="20" fill="url(#smooth)"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-    <text x="25" y="14">tests</text>
-    <text x="85" y="14">unknown</text>
+    <text x="20" y="14">tests</text>
+    <text x="70" y="14">no tests</text>
   </g>
 </svg>
-
-
