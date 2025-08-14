@@ -293,7 +293,10 @@ export const getResponseInformation = (
     }
 
   if (CONFIG.logging.override.Tools && response.type === "tool") {
-    lgg.log("🔍 Tool response:", JSON.stringify(response))
+    lgg.log(
+      "🔍 Tool response in getResponseInformation:",
+      JSON.stringify(response)
+    )
   }
 
   const nodeInvocationFullOutput = getResponseContent(response)

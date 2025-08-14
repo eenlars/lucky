@@ -1,4 +1,4 @@
-# Evolutionary Optimization of Multi-Agent Workflows
+# Self-evolving Agentic Workflows
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
@@ -10,14 +10,14 @@
 
 Current multi-agent frameworks require manual workflow design, taking hours to configure and lacking native optimization capabilities. This creates a bottleneck: you know what problem to solve but not how agents should collaborate to solve it efficiently.
 
-This framework automatically discovers and optimizes multi-agent workflows through evolutionary algorithms, eliminating manual configuration while providing full observability of the optimization process.
+This framework automatically discovers and optimizes multi-agent workflows through an evolutionary algorithm, eliminating manual configuration while providing full observability of the optimization process.
 
 ## Three Core Differentiators
 
 **1. Built for Optimization**  
-Genetic programming and cultural evolution automatically discover optimal agent collaboration patterns, tool usage, and workflow structures.
+The cultural evolution algorithm automatically discovers optimal agent collaboration patterns, tool usage, and workflow structures. Implements a tool-use algorithm letting less capable models use tools 29% more effectively than the baseline.
 
-**2. 30-Second Deployment**  
+**2. 30-Second Deployment**
 JSON-based workflow definitions enable immediate deployment without coding agent interactions or setting up complex infrastructures.
 
 **3. Complete Observability**  
@@ -69,73 +69,64 @@ Instead of manually designing workflows, provide a small dataset of question-ans
 
 ```typescript
 import { Workflow } from "@core/workflow/Workflow"
-
-// Define a custom Tool
-const verifyLocation = (locationInput: string) => {
-  // Verify locations with external API
-  return API.call("location-verify", locationInput)
-}
+import { CustomTools, MCPTools } from "./tools"
+import { dataset } from "./dataset"
 
 // Create workflow with training dataset
-const workflow = await Workflow.create(
-  {
-    goal: "Find all physical stores of a company",
-    customTools: [verifyLocation],
-    mcpTools: ["browserUse", "firecrawl"],
-  },
-  "JSON with store addresses and business details",
-  [
-    {
-      question: "Find all Patagonia stores in the Netherlands",
-      expectedAnswer: {
-        addresses: ["Singel 465, Amsterdam"],
-      },
-    },
-  ]
-)
-
-// Train with different algorithms and budgets
-await workflow.train({
-  type: "genetic", // or iterative
-  budget: { generations: 10, populationSize: 20 },
+const workflow = await Workflow.create({
+  goal: "Find all physical stores of a company",
+  tools: [MyTools, MCPTools],
+  evaluations,
 })
 
-// Execute optimized workflow
-const result = await workflow.execute(
-  "Find all Tony Chocolonely locations in the Netherlands"
+await workflow.train()
+```
+
+After training, you can return to execute it:
+
+```typescript
+import { Workflow } from "@core/workflow/Workflow"
+
+const workflow = await Workflow.getStats("123") // e.g. 98% accuracy.
+
+// use the workflow with a new, untrained input.
+const addresses = await Workflow.execute(
+  "123",
+  "Find all Tony Chocolonely stores"
 )
-
-// Output:
-console.log(result)
-
-// {
-//   addresses: ["Oudebrugsteeg 15", "Danzigerkade 23B"],
-// }
+// ["Oudebrugsteeg 15", "Danzigerkade 23B"]
 ```
 
 ## Development
 
 ```bash
-# Start the web app (from app/)
-cd app && bun dev
+# Install Bun (if not already installed)
+# Windows:
+powershell -c "irm bun.sh/install.ps1 | iex"
+# macOS/Linux:
+curl -fsSL https://bun.sh/install | bash
 
-# Run e2e/essential tests (from repo root)
-bun run test:gate
+# Install dependencies
+bun install
 
-# TypeScript type checking (from app/)
-cd app && bun run tsc
+# Add your OPENROUTER_API_KEY to .env
+cp .env.example .env
 
-# (Optional) Run app-specific unit tests
-cd app && bun run test
+# Run your first workflow:
+cd core && bun once
+
+# Or train your first workflow (iteratively):
+cd core && bun iterative
+
 ```
 
 ## Optimization Algorithms
 
 The framework implements two primary optimization approaches:
 
-**Genetic Programming**: Population-based evolution with semantic crossover and mutation operations on workflow structures, agent prompts, and tool selections. Fitness evaluation across accuracy, cost, and execution time dimensions.
+**Iterative Improvement**: Iterative improvement, using feedback from an LLM-evaluator and a root-cause analysis to improve itself.
 
-**Cultural Evolution**: Iterative improvement through analysis-driven mutations that preserve successful patterns while exploring variations in agent roles, tool usage, and inter-agent communication protocols.
+**Cultural Evolution (GP)**: Population-based evolution with LLM-guided crossover and mutation operations on workflow structures, agent prompts, tool use and more. Fitness is evaluated across accuracy, cost, and execution time. Selects the highest-performing workflows.
 
 ## Development Roadmap
 
@@ -170,7 +161,7 @@ The framework implements two primary optimization approaches:
 
 This framework provides the first research testbed for evolution-guided workflow discovery in non-sandboxed environments. Key contributions:
 
-- **Zero-Code Workflow Evolution**: JSON-based workflows that genetic programming can automatically optimize
+- **Zero-Code Agentic Workflow Evolution**: JSON-based workflows that genetic programming can automatically optimize
 - **Runtime Optimization**: Cultural evolution and genetic programming during execution
 - **Real-World Tool Integration**: Support for actual coding tools beyond sandboxed environments
 - **Comprehensive Research Infrastructure**: Genealogy tracking, fitness evaluation, and evolutionary analysis

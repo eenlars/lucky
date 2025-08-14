@@ -20,6 +20,7 @@
     "@types/node": "^24.2.0",
     "@types/papaparse": "^5.3.16",
     "@types/turndown": "^5.0.5",
+    "tavily-mcp": "0.2.7",
     "vite": "^7.0.6",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
