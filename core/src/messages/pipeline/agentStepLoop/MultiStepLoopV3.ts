@@ -1,3 +1,19 @@
+/**
+ * Multi-step agent loop implementation with tool orchestration and memory management.
+ * 
+ * This module implements the core execution loop for autonomous agents that can:
+ * - Execute multiple tools in sequence based on AI-driven decisions
+ * - Track and validate tool outputs with self-checking
+ * - Generate learnings and update memory after execution
+ * - Handle errors gracefully with fallback mechanisms
+ * - Provide detailed execution traces for debugging
+ * 
+ * The loop continues until either:
+ * - The AI decides to terminate (goal achieved)
+ * - Maximum rounds are reached
+ * - An unrecoverable error occurs
+ */
+
 import { quickSummaryNull } from "@core/messages/api/genObject"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
@@ -10,6 +26,32 @@ import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
 
+/**
+ * Executes a multi-step agent loop with tool orchestration and memory updates.
+ * 
+ * @param context - Execution context containing node configuration, tools, and state
+ * @returns Processed response with execution trace, debug info, and memory updates
+ * 
+ * @remarks
+ * Core execution flow:
+ * 1. **Strategy Selection**: AI decides next action (tool or terminate)
+ * 2. **Tool Execution**: Runs selected tool with generated parameters
+ * 3. **Validation**: Checks tool output against expected results
+ * 4. **Memory Update**: Generates learnings from execution
+ * 5. **Loop Control**: Continues until termination or max rounds
+ * 
+ * Memory management:
+ * - Tracks execution costs throughout the loop
+ * - Generates learnings after completion
+ * - Updates node memory with new insights
+ * - Handles memory persistence failures gracefully
+ * 
+ * Error handling:
+ * - Continues execution after tool failures
+ * - Provides fallback summaries on errors
+ * - Ensures terminal steps for downstream processing
+ * - Logs detailed error information for debugging
+ */
 export async function runMultiStepLoopV3Helper(
   context: MultiStepLoopContext
 ): Promise<{
@@ -39,6 +81,7 @@ export async function runMultiStepLoopV3Helper(
         `
 
   // todo-memoryleak: agentSteps array grows unbounded in long-running processes
+  // potential fix: implement circular buffer or periodic cleanup of old steps
   const debugPrompts: string[] = []
   for (let round = 0; round < maxRounds; round++) {
     const { strategyResult: strategy, debugPrompt } =
@@ -58,21 +101,24 @@ export async function runMultiStepLoopV3Helper(
 
     const isLastRound = round === maxRounds - 1
 
-    // base case: terminate the loop.
+    // base case: terminate the loop
+    // handles both explicit termination and max rounds reached
     if (strategy.type === "terminate" || isLastRound) {
       agentSteps.push({
         type: "reasoning",
         return: strategy.reasoning,
       })
 
-      // Check if we have any actionable outputs before termination
+      // check if we have any actionable outputs before termination
+      // prevents empty responses when agent only performs reasoning
       const hasActionableOutputs = agentSteps.some(
         (log) =>
           log.type === "tool" || log.type === "text" || log.type === "terminate"
       )
 
       if (!hasActionableOutputs) {
-        // Agent reasoned but produced no output - create explicit "no action" result
+        // agent reasoned but produced no output - create explicit "no action" result
+        // ensures downstream consumers always receive some output
         agentSteps.push({
           type: "text",
           return: "No action taken based on analysis: " + strategy.reasoning,
@@ -153,7 +199,8 @@ export async function runMultiStepLoopV3Helper(
       continue
     }
 
-    // strategy must be to use a tool now.
+    // strategy must be to use a tool now
+    // track mutation expectations for next iteration's strategy
     const mutationMarker = strategy.expectsMutation ? " [EXPECTS_MUTATION]" : ""
     agentSteps.push({
       type: "reasoning",
@@ -237,12 +284,14 @@ export async function runMultiStepLoopV3Helper(
 
     addCost(processedUsdCost)
 
-    // SELF-CHECK VALIDATION
+    // self-check validation
+    // validates tool output against expected results defined in strategy
     if (strategy.check && success) {
       const lastOutput = agentSteps[agentSteps.length - 1]
       const outputContent = String(lastOutput?.return || "")
 
-      // More robust validation - check for key indicators from the check string
+      // robust validation - check for key indicators from the check string
+      // extracts keywords/numbers and verifies their presence in output
       const checkKeywords = strategy.check.toLowerCase().match(/\d+|\w+/g) || []
       const hasExpectedContent = checkKeywords.some((keyword: string) =>
         outputContent.toLowerCase().includes(keyword)
@@ -257,8 +306,8 @@ export async function runMultiStepLoopV3Helper(
     }
   }
 
-  // If we reached here, the loop completed without hitting the early termination return.
-  // We still want to guarantee a terminal step for downstream consumers.
+  // fallback path: loop completed without explicit termination
+  // ensures proper cleanup and terminal step for downstream consumers
   const fallbackSummary = await quickSummaryNull(
     `
             Show the results of all the work that was done, and what you produced. ${toolUsageToString(agentSteps)}

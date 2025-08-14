@@ -1,5 +1,9 @@
 /**
- * prompt mutation operations
+ * Prompt mutation operations for evolving node system prompts.
+ * 
+ * This module provides mutations that modify the system prompts of workflow
+ * nodes using AI-driven variations. These mutations explore different
+ * prompting strategies and styles to improve node performance.
  */
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
@@ -15,7 +19,35 @@ import { getDefaultModels } from "@runtime/settings/models"
 import type { Genome } from "../../Genome"
 import type { IntensityLevel, MutationOperator } from "./mutation.types"
 
+/**
+ * Mutates node system prompts using AI-generated variations.
+ * 
+ * Applies semantic mutations to node prompts while preserving core functionality.
+ * The mutation intensity determines how dramatically the prompt changes, from
+ * minimal tweaks to extreme rewrites. Can optionally apply specific prompt
+ * patterns to guide the mutation process.
+ * 
+ * @remarks
+ * Prompt mutations are crucial for optimizing how nodes interpret and respond
+ * to tasks. They enable evolution of communication styles, instruction clarity,
+ * and task-specific optimizations.
+ */
 export class PromptMutation implements MutationOperator {
+  /**
+   * Executes prompt mutation on a randomly selected node.
+   * 
+   * @param mutatedConfig - The workflow configuration to mutate (modified in-place)
+   * @param parent - Parent genome providing context and goals
+   * @param intensity - Mutation strength (0.0-1.0) determining variation level
+   * @returns The cost in USD of the AI call for mutation
+   * 
+   * @remarks
+   * - Selects a random non-entry node for mutation
+   * - Uses intensity to determine mutation severity (minimal/moderate/extreme)
+   * - Has 70% chance to apply a specific prompt pattern
+   * - Uses fast AI model for cost-effective mutations
+   * - Tracks failures for evolution statistics
+   */
   async execute(
     mutatedConfig: WorkflowConfig,
     parent: Genome,
@@ -24,7 +56,9 @@ export class PromptMutation implements MutationOperator {
     const node = this.randomNonFrozenNode(mutatedConfig)
     if (!node) return 0
 
+    // select a prompt pattern that might guide the mutation
     const chosenPromptPattern = SharedWorkflowPrompts.randomPromptPattern()
+    // 70% chance to apply the pattern, 30% for free-form mutation
     const usePromptPatternLikelihood = Math.random()
 
     try {
@@ -68,12 +102,34 @@ export class PromptMutation implements MutationOperator {
     }
   }
 
+  /**
+   * Maps numerical intensity to semantic intensity levels.
+   * 
+   * @param intensity - Mutation strength (0.0-1.0)
+   * @returns Semantic intensity level for prompt variation
+   * 
+   * @remarks
+   * - 0.0-0.3: minimal changes (minor rewording, clarifications)
+   * - 0.3-0.6: moderate changes (restructuring, style changes)
+   * - 0.6-1.0: extreme changes (complete rewrites, paradigm shifts)
+   */
   private getIntensityLevel(intensity: number): IntensityLevel {
     if (intensity > 0.6) return "extreme"
     if (intensity > 0.3) return "moderate"
     return "minimal"
   }
 
+  /**
+   * Selects a random node eligible for prompt mutation.
+   * 
+   * @param workflow - The workflow configuration to search
+   * @returns A randomly selected node, or null if none available
+   * 
+   * @remarks
+   * - Prefers non-entry nodes to preserve workflow stability
+   * - Falls back to entry node for single-node workflows
+   * - Entry nodes are considered "frozen" in multi-node workflows
+   */
   private randomNonFrozenNode(
     workflow: WorkflowConfig
   ): WorkflowNodeConfig | null {
@@ -81,7 +137,7 @@ export class PromptMutation implements MutationOperator {
       (node: WorkflowNodeConfig) => node.nodeId !== workflow.entryNodeId
     )
 
-    // If no non-entry nodes exist, allow mutation of entry node (for single-node workflows)
+    // if no non-entry nodes exist, allow mutation of entry node (for single-node workflows)
     if (nonFrozenNodes.length === 0 && workflow.nodes.length === 1) {
       return workflow.nodes[0]
     }

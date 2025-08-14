@@ -1,5 +1,16 @@
 /**
- * main mutations coordinator
+ * MutationCoordinator - Central orchestrator for genetic programming mutations.
+ * 
+ * Handles various mutation strategies including:
+ * - Model mutations (changing AI models)
+ * - Prompt mutations (modifying system prompts)
+ * - Tool mutations (adding/removing tools)
+ * - Structure mutations (changing workflow topology)
+ * - Node operations (adding/deleting nodes)
+ * - Iterative mutations (using behavioral evolution)
+ * 
+ * Mutations are selected based on weighted probability distribution
+ * and preserve memory from parent genomes.
  */
 
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
@@ -33,7 +44,20 @@ export class MutationCoordinator {
   private static readonly structureMutation = new StructureMutation()
 
   /**
-   * Enhanced mutation for WorkflowGenome following pseudocode specification
+   * Mutates a workflow genome using various mutation strategies.
+   * 
+   * @param options - Mutation configuration including:
+   *   - parent: The genome to mutate
+   *   - intensity: Mutation strength (0.0-1.0), affects probability of additional changes
+   *   - evolutionMode: The evolution mode determining available mutation types
+   * 
+   * @returns Result containing the mutated genome or error with associated costs
+   * 
+   * @remarks
+   * - Selects mutation type based on weighted probability
+   * - Preserves memory from parent genome
+   * - Validates and repairs mutated workflow
+   * - Tracks mutation failures for evolution statistics
    */
   static async mutateWorkflowGenome(
     options: MutationOptions
@@ -66,11 +90,12 @@ export class MutationCoordinator {
         intensity
       )
 
-      // preserve memory from parent
+      // preserve memory from parent - ensures knowledge transfer across generations
       const { MemoryPreservation } = await import("../memoryPreservation")
       MemoryPreservation.preserveMutationMemory(mutatedConfig, parent)
 
       // enforce memory preservation - throw error if any parent memories were lost
+      // this is critical for maintaining learned knowledge across evolution
       MemoryPreservation.enforceMemoryPreservation(
         mutatedConfig,
         [parent],
@@ -78,6 +103,7 @@ export class MutationCoordinator {
       )
 
       // apply additional tweaks based on intensity level
+      // high intensity mutations (>0.6) have a chance to also mutate models
       if (intensity > 0.6 && Math.random() < intensity) {
         await this.modelMutation.execute(mutatedConfig)
       }
@@ -124,6 +150,16 @@ export class MutationCoordinator {
     }
   }
 
+  /**
+   * Selects a mutation type based on weighted probability distribution.
+   * 
+   * @param evolutionMode - The evolution mode that determines available mutations
+   * @returns The selected mutation type
+   * 
+   * @remarks
+   * Filters mutation weights to only include mutations valid for the evolution mode,
+   * then uses weighted random selection to choose a mutation type.
+   */
   private static selectMutationType(
     evolutionMode: FlowEvolutionMode
   ): MutationType {
@@ -141,11 +177,12 @@ export class MutationCoordinator {
       return "model"
     }
 
-    // normalize weights
+    // normalize weights for probability distribution
     const totalWeight = validWeights.reduce((sum, w) => sum + w.weight, 0)
     const rand = Math.random() * totalWeight
     let cumulativeWeight = 0
 
+    // weighted random selection using cumulative distribution
     for (const mutationWeight of validWeights) {
       cumulativeWeight += mutationWeight.weight
       if (rand < cumulativeWeight) {
@@ -153,11 +190,20 @@ export class MutationCoordinator {
       }
     }
 
-    // fallback to first available mutation
+    // fallback to first available mutation (should never reach here)
     lgg.warn("No mutation type selected, falling back to first available")
     return validWeights[0].type
   }
 
+  /**
+   * Executes a specific mutation type on the workflow configuration.
+   * 
+   * @param mutationType - The type of mutation to apply
+   * @param config - The workflow configuration to mutate (modified in-place)
+   * @param parent - The parent genome providing context
+   * @param intensity - Mutation strength affecting scope of changes
+   * @returns The cost in USD of executing the mutation
+   */
   private static async executeMutation(
     mutationType: MutationType,
     config: WorkflowConfig,
