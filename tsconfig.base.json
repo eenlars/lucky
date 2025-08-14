@@ -1,7 +1,7 @@
 {
   "references": [
     {
-      "path": "./shared/tsconfig.json"
+      "path": "./packages/shared/tsconfig.json"
     },
     {
       "path": "./core/tsconfig.json"

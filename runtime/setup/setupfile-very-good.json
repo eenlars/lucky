@@ -3,20 +3,22 @@
     {
       "nodeId": "workflow-node-starter",
       "description": "Describe the data and identify the target company and location",
-      "systemPrompt": "Describe the data and identify the target company and location for B2C certified B-Corps in the specified region.",
+      "systemPrompt": "Describe the data and identify the target company and location for B2C certified sustainable companies in the specified region.",
       "modelName": "google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
-      "handOffs": ["location_data_extractor"],
+      "handOffs": [
+        "location_data_extractor"
+      ],
       "memory": {
-        "B2C_B-Corp_focus": "search_strategy:Focus on B2C certified B-Corps for specific company information:71",
-        "target_location": "search_strategy:Target location for B-Corp searches:71",
-        "company_type": "search_strategy:Focus on specific industry companies when searching for B-Corps:71",
+        "B2C_B-Corp_focus": "search_strategy:Focus on B2C certified sustainable companies for specific company information:71",
+        "target_location": "search_strategy:Target location for sustainable company searches:71",
+        "company_type": "search_strategy:Focus on specific industry companies when searching for sustainable companies:71",
         "specific_company_focus": "search_strategy:Focus on finding physical store locations for a specific company:71",
-        "B_Corp_industry": "search_strategy:B-Corps in specific industries can be further refined:71",
-        "company_size": "search_strategy:B-Corps with specific employee counts are a relevant target size:70",
+        "B_Corp_industry": "search_strategy:Sustainable companies in specific industries can be further refined:71",
+        "company_size": "search_strategy:Sustainable companies with specific employee counts are a relevant target size:70",
         "target_company_focus": "search_strategy:Focus on finding physical store locations for target company:70",
-        "company_specialization": "search_strategy:When searching for B-Corps, specify company specialization to refine results:60"
+        "company_specialization": "search_strategy:When searching for sustainable companies, specify company specialization to refine results:60"
       }
     },
     {
@@ -24,9 +26,16 @@
       "description": "Extract comprehensive physical store locations using Google Maps searches with immediate tavily web search backup for complete data collection",
       "systemPrompt": "You are the primary data collection agent for finding ALL target company store locations in the specified region. Execute this comprehensive search strategy: PHASE 1 - GOOGLE MAPS: Perform searches using searchGoogleMaps with various search terms for the target company. For each search, immediately store ALL results using locationDataManager.insertLocations(). PHASE 2 - WEB SEARCH BACKUP: If Google Maps returns fewer than 5 locations OR any searches return empty results, immediately use tavily to search for store locations using various search terms. Extract ALL store information from web results and store using locationDataManager.insertLocations(). PHASE 3 - VALIDATION: Use locationDataManager.getLocations() to verify at least 5-10 locations were collected with addresses. CRITICAL: Always proceed to handoff even with partial data - downstream nodes will enrich it. Your goal is maximum location discovery using both Google Maps and web search to ensure comprehensive coverage.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["tavily"],
-      "codeTools": ["searchGoogleMaps", "locationDataManager"],
-      "handOffs": ["web_search_coordinator"],
+      "mcpTools": [
+        "tavily"
+      ],
+      "codeTools": [
+        "searchGoogleMaps",
+        "locationDataManager"
+      ],
+      "handOffs": [
+        "web_search_coordinator"
+      ],
       "memory": {}
     },
     {
@@ -35,8 +44,13 @@
       "systemPrompt": "Parse and consolidate raw search results from Google Maps into structured store data. Extract store names, addresses, coordinates, phone numbers, opening hours, and other relevant information from the Google Maps data stored by the previous node. Use locationDataManager to retrieve the stored Google Maps results and clean/structure this data. Validate addresses and fill missing coordinates using verifyLocation tool when needed. Create a unified dataset of ALL store locations for the target company found in Google Maps searches. Handle incomplete data by marking missing fields as null rather than attempting web searches. Focus on maximizing the value of existing Google Maps data. After consolidation, hand off to web_enrichment_agent for any additional data enrichment.",
       "modelName": "openai/gpt-4.1-mini",
       "mcpTools": [],
-      "codeTools": ["locationDataManager", "verifyLocation"],
-      "handOffs": ["fallback_data_enricher"],
+      "codeTools": [
+        "locationDataManager",
+        "verifyLocation"
+      ],
+      "handOffs": [
+        "fallback_data_enricher"
+      ],
       "memory": {
         "data_consolidation": "workflow:Consolidating data from Google Maps searches is crucial for complete and accurate store information:14",
         "location_validation": "workflow:Validating and cleaning location data, including coordinates, is essential for accuracy:14",
@@ -55,8 +69,13 @@
       "systemPrompt": "Transform the consolidated store location data into the exact JSON schema format required by the ground truth. Ensure each location has properly structured fields: 'name', 'address', 'city', 'postcode', 'coordinates' (as object with 'latitude' and 'longitude'), 'phone', 'opening_hours', 'website', 'owner_imgs' (as array), and 'images' (as array). Validate that all required fields are present and properly formatted. If any data is missing, mark it as null or empty array as appropriate. Ensure coordinates are properly extracted as separate latitude and longitude values, not as combined strings. If Google Maps data was incomplete or missing, trigger web_search_fallback to supplement data; otherwise, proceed to result_formatter.",
       "modelName": "openai/gpt-4.1-mini",
       "mcpTools": [],
-      "codeTools": ["locationDataManager"],
-      "handOffs": ["web_search_fallback", "result_formatter"],
+      "codeTools": [
+        "locationDataManager"
+      ],
+      "handOffs": [
+        "web_search_fallback",
+        "result_formatter"
+      ],
       "memory": {
         "data_transformation_error": "tool_limitation:Data transformation cannot proceed without a valid response format and data structure:20",
         "json_schema_formatting": "instruction:Ensure data is structured according to the correct JSON schema, paying close attention to required fields and formats, and handle any missing data appropriately:29",
@@ -64,7 +83,7 @@
         "web_search_fallback": "instruction:Use web search to supplement incomplete or missing Google Maps data:23",
         "data_validation": "instruction:Validate the data structure before processing to ensure it is in a usable format:17",
         "b2c_filter": "instruction:Filter data to include only B2C businesses with physical stores:15",
-        "hq_location_check": "instruction:Skip B-corps if their HQ is not in the target region and the countries of operation field is empty:14",
+        "hq_location_check": "instruction:Skip companies if their HQ is not in the target region and the countries of operation field is empty:14",
         "incomplete_data_handling": "instruction:Request complete data if the initial input is truncated or insufficient for processing:12",
         "error_debugging": "instruction:When an error occurs, request the tool name, input, output, and expected format for debugging:10",
         "invalid_response_handling": "instruction:If a previous step results in an invalid response format, request the tool name, input, output, and expected format for debugging:9",
@@ -83,9 +102,15 @@
       "description": "Fallback web search for store locations when Google Maps fails or data is incomplete",
       "systemPrompt": "When Google Maps search fails or returns incomplete results, perform comprehensive web searches for target company store locations in the specified region. Search for official website, store locators, business directories, and social media to extract store addresses, contact information, and opening hours. Focus on finding multiple store locations with as much detail as possible. Store the gathered data using locationDataManager and hand off to data_consolidator for parsing and validation.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["firecrawl"],
-      "codeTools": ["locationDataManager"],
-      "handOffs": ["data_consolidator"],
+      "mcpTools": [
+        "firecrawl"
+      ],
+      "codeTools": [
+        "locationDataManager"
+      ],
+      "handOffs": [
+        "data_consolidator"
+      ],
       "memory": {
         "google_maps_failure": "tool_limitation:When Google Maps fails for store locations, use comprehensive web searches including official websites, directories, and social media:4",
         "web_search_store_locations": "strategy:When Google Maps fails for store locations, prioritize web searches for official websites, store locators, business directories, and social media to extract store addresses, contact information, and opening hours:1"
@@ -96,13 +121,17 @@
       "description": "Comprehensive final data retrieval, enrichment, and formatting into structured JSON output",
       "systemPrompt": "Execute these steps to produce complete final JSON output: 1) Use locationDataManager.getLocations() to retrieve all stored location data for the target company. 2) If no data exists or data is incomplete, use tavily to comprehensively search for: '... store locations Netherlands', '... winkel adressen', '... shops Netherlands', '... Van Goeden Huize stores'. 3) For each location found, search for additional details: '[store address] opening hours phone', '[store name] contact information', '... [city] store details'. 4) Use verifyLocation to get precise coordinates for any addresses missing lat/lng. 5) Format each location into exact JSON schema: {'name': string, 'address': string, 'city': string, 'postcode': string, 'coordinates': {'latitude': number, 'longitude': number}, 'phone': string|null, 'opening_hours': string|null, 'website': string|null, 'owner_imgs': [], 'images': []}. 6) Ensure minimum 3-5 complete store locations with all available fields populated. 7) Use expectedOutputHandler to validate and return the complete JSON array. Return actual structured JSON data, not explanations or summaries.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["tavily"],
+      "mcpTools": [
+        "tavily"
+      ],
       "codeTools": [
         "locationDataManager",
         "verifyLocation",
         "expectedOutputHandler"
       ],
-      "handOffs": ["end"],
+      "handOffs": [
+        "end"
+      ],
       "memory": {}
     },
     {
@@ -110,13 +139,17 @@
       "description": "Systematically enrich location data by searching for missing information across multiple web sources and ensuring complete data validation",
       "systemPrompt": "You are responsible for enriching incomplete location data for the target company stores. For each location retrieved from locationDataManager: 1) Identify missing fields (phone, website, opening_hours, owner_imgs, images, coordinates). 2) Use tavily to search for the official target company website and extract store-specific details. 3) Search for each store address + 'opening hours' + 'contact' to find missing phone numbers and hours. 4) For locations missing coordinates, use verifyLocation to geocode the addresses and obtain precise latitude/longitude. 5) Look for social media pages and business listings for additional store locations not yet found. 6) Search for '... store images' and '... owner photos' to populate image arrays with actual URLs. 7) For any completely new store locations discovered, extract full details and add them. 8) Use locationDataManager to update existing records and insert new locations with complete data. 9) Use expectedOutputHandler to validate that all locations have complete required fields before handoff. 10) Ensure you've searched comprehensively - the goal is to find 10+ store locations with complete data including coordinates, images, and contact details. Focus on systematic data enrichment and validation to ensure 100% data completeness.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["tavily"],
+      "mcpTools": [
+        "tavily"
+      ],
       "codeTools": [
         "locationDataManager",
         "verifyLocation",
         "expectedOutputHandler"
       ],
-      "handOffs": ["json_structure_validator"],
+      "handOffs": [
+        "json_structure_validator"
+      ],
       "memory": {
         "target_company_enrichment": "task_strategy:Enriching location data involves identifying missing fields, using Tavily to find official websites and store details, searching for addresses with 'opening hours' and 'contact' for phone numbers and hours, looking for social media and business listings, and searching for store and owner images.:6",
         "Comprehensive Search": "task_strategy:The goal is to find 10+ store locations with complete data through systematic data enrichment.:6",
@@ -133,9 +166,16 @@
       "description": "Parse URLs from tavily search results to extract detailed store location information",
       "systemPrompt": "Parse and extract detailed store location information from URLs found in previous tavily search results. Use firecrawl to scrape content from official target company websites, store locator pages, and business directory listings. Extract store names, complete addresses, phone numbers, opening hours, coordinates, and image URLs. Focus on finding all missing store locations and enriching existing data with complete details. Store all extracted data using locationDataManager.insertLocations() and update existing records with locationDataManager.updateLocations(). Ensure each location has complete address, coordinates, contact information, and opening hours before proceeding to validation.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["firecrawl"],
-      "codeTools": ["locationDataManager", "verifyLocation"],
-      "handOffs": ["web_enrichment_agent"],
+      "mcpTools": [
+        "firecrawl"
+      ],
+      "codeTools": [
+        "locationDataManager",
+        "verifyLocation"
+      ],
+      "handOffs": [
+        "web_enrichment_agent"
+      ],
       "memory": {}
     },
     {
@@ -143,9 +183,16 @@
       "description": "Parse and extract structured location data from tavily search results and Google Maps data",
       "systemPrompt": "Parse tavily search results and Google Maps data to extract comprehensive store location information. For each search result: 1) Extract business names, addresses, phone numbers, and URLs from tavily results. 2) Parse Google Maps data for coordinates, opening hours, and additional details. 3) Use firecrawl to scrape official websites and store locator pages found in search results. 4) Extract complete address information, breaking down into street address, city, and postcode components. 5) Use verifyLocation to geocode any addresses missing coordinates. 6) Structure all extracted data into consistent format with fields: name, address, city, postcode, coordinates, phone, opening_hours, website. 7) Store all parsed locations using locationDataManager.insertLocations(). Focus on maximizing data extraction from search results to ensure comprehensive location coverage.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["firecrawl"],
-      "codeTools": ["locationDataManager", "verifyLocation"],
-      "handOffs": ["data_consolidator"],
+      "mcpTools": [
+        "firecrawl"
+      ],
+      "codeTools": [
+        "locationDataManager",
+        "verifyLocation"
+      ],
+      "handOffs": [
+        "data_consolidator"
+      ],
       "memory": {
         "location_data_extraction_workflow": "methodology:Extract location data by combining search results, Google Maps, and website scraping for comprehensive coverage:1",
         "address_parsing": "methodology:Break down addresses into street, city, and postcode components for structured data:1",
@@ -158,9 +205,15 @@
       "description": "Execute comprehensive web searches for the target company store locations when Google Maps data is insufficient",
       "systemPrompt": "Execute comprehensive web searches for the target company store locations in the target region when Google Maps data is insufficient. Use tavily to search: '... store locations Netherlands', '... winkel adressen Nederland', '... chocolate shops Netherlands', '... Van Goeden Huize stores', '... official website store locator'. Extract store names, addresses, phone numbers, opening hours, and website URLs from search results. Store all discovered locations using locationDataManager.insertLocations(). Focus on finding official websites and store locator pages that contain comprehensive location data. Ensure at least 5-10 store locations are collected before proceeding to parsing.",
       "modelName": "openai/gpt-4.1-mini",
-      "mcpTools": ["tavily"],
-      "codeTools": ["locationDataManager"],
-      "handOffs": ["search_result_parser"],
+      "mcpTools": [
+        "tavily"
+      ],
+      "codeTools": [
+        "locationDataManager"
+      ],
+      "handOffs": [
+        "search_result_parser"
+      ],
       "memory": {}
     },
     {
@@ -174,7 +227,9 @@
         "verifyLocation",
         "searchGoogleMaps"
       ],
-      "handOffs": ["url_content_parser"],
+      "handOffs": [
+        "url_content_parser"
+      ],
       "memory": null
     }
   ],

@@ -28,8 +28,7 @@
       "@core/validation/*": ["./src/utils/validation/*"],
       "@core/improvement/*": ["./src/improvement/*"],
       "@runtime/*": ["../runtime/*"],
-      "@runtime/settings/*": ["../runtime/settings/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@runtime/settings/*": ["../runtime/settings/*"]
     },
     "allowSyntheticDefaultImports": true
   },
@@ -39,7 +38,7 @@
     "src/**/*.js",
     "src/**/*.json",
     "../runtime/**/*.ts",
-    "../shared/**/*.ts",
+    "../packages/shared/**/*.ts",
     "../runtime/**/*.json",
     "scripts/runOnce.ts",
     "scripts/cleanup.ts"

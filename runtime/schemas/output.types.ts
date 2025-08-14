@@ -26,7 +26,7 @@ export const StoreSchema = z.array(
     bcorp_id: z
       .number()
       .int()
-      .describe("B Corp certification ID (optional)")
+      .describe("Certification ID (optional)")
       .nullish(),
     is_headquarters: z
       .boolean()

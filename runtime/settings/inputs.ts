@@ -50,7 +50,7 @@ const QUESTIONS = {
   },
   promptTest: {
     type: "prompt-only",
-    goal: "What are the most popular b-corps in the Netherlands?",
+    goal: "What are the most popular sustainable companies in the Netherlands?",
     workflowId: "wf-prompt-test",
   },
 
@@ -74,9 +74,9 @@ const QUESTIONS = {
   emptyResponseCSV: {
     type: "csv",
     goal: `
-    This is data of b-corporations. 
-    We need to find the physical stores of every certified b-corportation in the Netherlands.
-    If the HQ of the b-corp is not in the Netherlands AND the countries of operation field is empty, you can skip it.
+    This is data of sustainable companies.
+    We need to find the physical stores of every certified sustainable company in the Netherlands.
+    If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
     We only want the physical stores where customers can go to (B2C). if not, do not include it.
     `,
     evaluation: "column:expected_output",
@@ -113,9 +113,9 @@ const QUESTIONS = {
   simpleCsv: {
     type: "csv",
     goal: `
-    This is data of b-corporations. 
-    We need to find the physical stores of every certified b-corportation in the Netherlands.
-    If the HQ of the b-corp is not in the Netherlands AND the countries of operation field is empty, you can skip it.
+    This is data of sustainable companies.
+    We need to find the physical stores of every certified sustainable company in the Netherlands.
+    If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
     We only want the physical stores where customers can go to (B2C). if not, do not include it.
     `,
     evaluation: "column:expected_output",
@@ -144,9 +144,9 @@ const QUESTIONS = {
   hardCsv: {
     type: "csv",
     goal: `
-    This is data of b-corporations. 
-    We need to find the physical stores of every certified b-corportation in the Netherlands.
-    If the HQ of the b-corp is not in the Netherlands AND the countries of operation field is empty, you can skip it.
+    This is data of sustainable companies.
+    We need to find the physical stores of every certified sustainable company in the Netherlands.
+    If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
     We only want the physical stores where customers can go to (B2C). if not, do not include it.
     `,
     inputFile:
@@ -172,9 +172,9 @@ const QUESTIONS = {
   extremeCsv: {
     type: "csv",
     goal: `
-    This is data of b-corporations. 
-    We need to find the physical stores of every certified b-corportation in the Netherlands.
-    If the HQ of the b-corp is not in the Netherlands AND the countries of operation field is empty, you can skip it.
+    This is data of sustainable companies.
+    We need to find the physical stores of every certified sustainable company in the Netherlands.
+    If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
     We only want the physical stores where customers can go to (B2C). if not, do not include it.
     `,
     inputFile:

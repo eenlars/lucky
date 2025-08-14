@@ -15,8 +15,7 @@
     "incremental": true,
     "paths": {
       "@runtime/*": ["../../runtime/*"],
-      "@core/*": ["../../core/src/*"],
-      "@shared/*": ["../../shared/src/*"]
+      "@core/*": ["../../core/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },

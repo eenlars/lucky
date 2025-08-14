@@ -3,7 +3,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Json, TablesInsert } from "@lucky/shared"
-import { isJSON, JSONN } from "@shared/utils/files/json/jsonParse"
+import { isJSON, JSONN } from "@lucky/shared"
 
 export const saveNodeVersionToDB = async ({
   config,

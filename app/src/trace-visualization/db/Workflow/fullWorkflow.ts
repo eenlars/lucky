@@ -7,7 +7,7 @@ import type {
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { Tables } from "@lucky/shared"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import { nanoid } from "nanoid"
 import { cache } from "react"
 

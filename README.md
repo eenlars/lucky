@@ -3,7 +3,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](docs/badges/tests.svg)](docs/badges/tests.svg)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey)](LICENSE)
+
+![Evolutionary agentic workflows screenshot](docs/example.png)
 
 Large Language Model (LLM)-based agents use coding tools to overcome hallucinations by extending their knowledge beyond training data. Manually designing agentic workflows only works if the solution is already known, requiring time and maintenance that slows prototyping. Of the 8 largest multi-agent frameworks surveyed, all take at least 3 hours to set up; 7 frameworks lack native visualization dashboards; tool mechanisms are hard-coded, and all frameworks are designed for manual setup and maintenance.
 
@@ -18,17 +21,16 @@ To our knowledge, this is the first framework that supports zero-code workflows 
 ## Installation
 
 ```bash
-# Clone and install dependencies
+# Clone and install dependencies at the repo root
 git clone <repository-url>
-cd together/app
+cd lucky
 bun install
 
-# Configure environment
-cp .env.example .env
-# Edit .env with your API keys (OpenAI, Supabase, etc.)
+# (Optional) Create environment file(s) where needed
+# For the web app, create app/.env and set your API keys (e.g., OpenAI, Supabase)
 
-# Start web interface
-bun dev
+# Start the web interface (from app/)
+cd app && bun dev
 ```
 
 ## How It Works
@@ -62,7 +64,7 @@ The system treats AI agent workflows as evolvable data structures. Instead of ma
 import { Workflow } from "@/core/workflow/Workflow"
 
 const workflow = await Workflow.create({
-  goal: "Extract store locations from B-Corp website",
+  goal: "Extract store locations from a website",
   nodes: [
     {
       name: "scraper",
@@ -77,48 +79,55 @@ const workflow = await Workflow.create({
   ],
 })
 
-const result = await workflow.execute("https://example-bcorp.com")
+const result = await workflow.execute("https://example.com")
 ```
 
 ## Development
 
 ```bash
-bun dev              # Start web interface
-bun run test         # Run test suite
-bun run tsc          # TypeScript checking
+# Start the web app (from app/)
+cd app && bun dev
+
+# Run e2e/essential tests (from repo root)
+bun run test:gate
+
+# TypeScript checks across all workspaces (from repo root)
+bun run tsc
+
+# (Optional) Run app-specific unit tests
+cd app && bun run test
 ```
 
 ## Roadmap for Robustness
 
-[ ] Run partial workflows from dashboard (1)
-[ ] Message contracts (2)
-[ ]
+- [ ] Run partial workflows from dashboard (1)
+- [ ] Message contracts (2)
 
 ## Roadmap for Observability and debugging
 
-[ ] View/download full node trace as JSONL (1)
-[ ] Run a single node (3)
-[ ] Opentelemetry Observability (4)
+- [ ] View/download full node trace as JSONL (1)
+- [ ] Run a single node (3)
+- [ ] Opentelemetry Observability (4)
 
 ## Roadmap for Dashboard use
 
-[ ] Parallel-sending nodes can send multiple, different messages to connected nodes
-[ ] Visual dashboard 3-second MCP tool integration
+- [ ] Parallel-sending nodes can send multiple, different messages to connected nodes
+- [ ] Visual dashboard 3-second MCP tool integration
 
 ## Roadmap for Tools
 
-[ ] Shared tool knowledge base
+- [ ] Shared tool knowledge base
 
 ## Roadmap for Self-improving capabilities
 
-[ ] Support bandit search algorithms
-[ ] Tweak evo algorithm to mutate effectively
-[ ] Tweak evo algorithm to allow for fine grained analysis
+- [ ] Support bandit search algorithms
+- [ ] Tweak evo algorithm to mutate effectively
+- [ ] Tweak evo algorithm to allow for fine grained analysis
 
 ## Roadmap for nice features
 
-[ ] Deterministic nodes
-[ ] A workflow becomes an MCP
+- [ ] Deterministic nodes
+- [ ] A workflow becomes an MCP
 
 ## Research Contribution
 

@@ -2,7 +2,7 @@ import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
 import { defineTool } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import { z } from "zod"
 
 type KeyMetadata = {

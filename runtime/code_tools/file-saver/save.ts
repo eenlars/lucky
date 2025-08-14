@@ -1,7 +1,7 @@
 // save.ts
 import type { CodeToolResult } from "@core/tools/code/output.types"
+import { JSONN } from "@lucky/shared"
 import { PATHS } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import fs from "fs"
 import { nanoid } from "nanoid"
 import path from "path"

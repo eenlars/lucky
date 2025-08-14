@@ -35,8 +35,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/runtime/logging_folder/*
-/src/runtime/code_tools/googlescraper/output/*
-/output
 .cache
 
 # open-source cleanup

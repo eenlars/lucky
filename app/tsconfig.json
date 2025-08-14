@@ -21,7 +21,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["../shared/src/*"],
       "@core/*": ["../core/src/*"],
       "@runtime/*": ["../runtime/*"],
       "@experiments/*": ["../packages/experiments/src/*"]
