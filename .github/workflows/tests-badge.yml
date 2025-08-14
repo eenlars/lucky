@@ -24,14 +24,18 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run vitest (JSON)
-        run: bunx vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.ts --reporter=json > vitest-results.json || true
+      - name: Run core unit tests (JSON)
+        working-directory: core
+        run: bun test --reporter=json > ../vitest-results.json || true
 
       - name: Generate tests badge
         run: node .github/scripts/generate-tests-badge.mjs
 
       - name: Commit badge if changed
         uses: stefanzweifel/git-auto-commit-action@v5
+        env:
+          HUSKY: 0
         with:
           commit_message: "chore(ci): update tests badge"
           file_pattern: docs/badges/tests.svg
+          commit_options: "--no-verify"
