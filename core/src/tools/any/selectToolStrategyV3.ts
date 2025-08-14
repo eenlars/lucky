@@ -1,3 +1,17 @@
+/**
+ * Tool selection strategy V3 with mutation awareness and diagnostic capabilities.
+ * 
+ * This module implements an advanced AI-driven tool selection algorithm that:
+ * - Tracks environmental mutations to ensure proper observation sequences
+ * - Provides diagnostic reasoning for parameter adjustments
+ * - Outputs structured decisions with execution plans
+ * - Defines success criteria for validation
+ * - Prevents infinite loops and redundant tool calls
+ * 
+ * The strategy is the core decision-making component in multi-step agent loops,
+ * determining whether to continue with another tool or terminate execution.
+ */
+
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import type {
@@ -40,6 +54,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
     model,
   } = options
 
+  // utility to create short hash for debugging and observability
   const shortHash = (s: string) =>
     createHash("sha256").update(s).digest("hex").slice(0, 8)
 

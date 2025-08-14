@@ -1,5 +1,49 @@
 // src/core/main.ts
 
+/**
+ * Main entry point for the evolutionary workflow system.
+ * 
+ * ## Runtime Architecture
+ * 
+ * Orchestrates two evolution modes:
+ * - **Cultural Evolution**: Iterative self-improvement through analysis
+ * - **Genetic Programming**: Population-based evolution with crossover/mutation
+ * 
+ * ## Command Line Interface
+ * 
+ * ```bash
+ * tsx src/core/main.ts --mode=<cultural|GP> [options]
+ * ```
+ * 
+ * Options:
+ * - `--generations=<num>`: Override generation count for GP
+ * - `--population=<num>`: Override population size for GP
+ * - `--setup-file=<path>`: Use custom workflow setup file
+ * 
+ * ## Execution Flow
+ * 
+ * 1. **Initialization**: Parse CLI args, load configuration
+ * 2. **Mode Selection**: Route to cultural or GP evolution
+ * 3. **Evolution Loop**: Execute iterations with progress tracking
+ * 4. **Result Saving**: Persist evolved workflows incrementally
+ * 5. **Final Report**: Display performance metrics and costs
+ * 
+ * ## Robust Execution
+ * 
+ * Cultural evolution includes:
+ * - Retry mechanism for failed iterations (2 retries)
+ * - Circuit breaker for consecutive failures (10% tolerance)
+ * - Incremental saving of successful configurations
+ * - Rollback to last successful state on failure
+ * 
+ * ## Resource Management
+ * 
+ * - Spending limits enforced via SpendingTracker
+ * - Cost aggregation across all iterations
+ * - Early termination on budget exhaustion
+ * - Database tracking of evolution runs
+ */
+
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { GPEvaluatorAdapter } from "@core/evaluation/evaluators/GPEvaluatorAdapter"
 import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
@@ -98,6 +142,7 @@ type IterationConfig = {
   backoffMs: number
 }
 
+// configuration for robust iteration execution with failure recovery
 const ROBUST_CONFIG: IterationConfig = {
   maxRetries: 2,
   maxConsecutiveFailures: Math.max(
@@ -126,12 +171,15 @@ type GeneticResult = {
 }
 
 /**
- * Executes either iterative or genetic evolution depending on the configured mode.
+ * Executes either cultural or genetic evolution depending on the configured mode.
  * Both share a common logging and result-handling structure, so we unify them here.
+ * 
+ * Cultural evolution iteratively improves a single workflow through analysis.
+ * Genetic evolution maintains a population and uses crossover/mutation.
  */
 async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   /* ------------------------------------------------------------------
-   * ITERATIVE EVOLUTION
+   * CULTURAL EVOLUTION (ITERATIVE)
    * ------------------------------------------------------------------ */
   if (mode === "iterative") {
     const runService = new RunService(true, mode)
@@ -174,6 +222,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     let countIO = 0
 
     // robust iteration execution with failure recovery
+    // returns true if successful, false if all retries exhausted
     async function executeIteration(iterationIndex: number): Promise<boolean> {
       const iteration = iterationIndex + 1
 
@@ -183,7 +232,9 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             lgg.log(
               `🔄 Retry ${retry}/${ROBUST_CONFIG.maxRetries} for iteration ${iteration}`
             )
+            // rollback to last known good configuration
             setup = lastSuccessfulConfig
+            // exponential backoff for retry attempts
             await new Promise((resolve) =>
               setTimeout(resolve, ROBUST_CONFIG.backoffMs * retry)
             )

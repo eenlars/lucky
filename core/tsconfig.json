@@ -29,7 +29,8 @@
       "@core/improvement/*": ["./src/improvement/*"],
       "@runtime/*": ["../runtime/*"],
       "@runtime/settings/*": ["../runtime/settings/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@lucky/shared": ["../packages/shared/src/index.ts"],
+      "@lucky/shared/*": ["../packages/shared/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },
@@ -39,15 +40,10 @@
     "src/**/*.js",
     "src/**/*.json",
     "../runtime/**/*.ts",
-    "../shared/**/*.ts",
+    "../packages/shared/**/*.ts",
     "../runtime/**/*.json",
     "scripts/runOnce.ts",
     "scripts/cleanup.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "src/runtime/logging_folder",
-    "src/utils/env.mjs",
-    "src/resilience"
-  ]
+  "exclude": ["node_modules", "src/runtime/logging_folder", "src/utils/env.mjs"]
 }

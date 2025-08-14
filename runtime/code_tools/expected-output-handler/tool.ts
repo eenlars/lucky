@@ -4,8 +4,8 @@ import { defineTool } from "@core/tools/toolFactory"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { zodToJson } from "@core/utils/zod/zodToJson"
+import { JSONN } from "@lucky/shared"
 import { MODELS } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { z } from "zod"
 /**
  * Simple tool for handling LLM requests with expected output validation

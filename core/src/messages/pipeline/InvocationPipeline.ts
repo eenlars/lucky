@@ -36,6 +36,37 @@ const verbose = CONFIG.logging.override.InvocationPipeline
 /*                         🚀  INVOCATION  PIPELINE                           */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Core agent invocation pipeline that orchestrates message processing.
+ * 
+ * ## Architecture Overview
+ * 
+ * The pipeline implements a three-phase execution model:
+ * 1. **Prepare**: Tool initialization, message preparation, strategy selection
+ * 2. **Execute**: Single-call or multi-step loop execution with AI
+ * 3. **Process**: Response handling, memory extraction, result formatting
+ * 
+ * ## Execution Strategies
+ * 
+ * - **Single Call**: Direct AI invocation with optional tool use
+ * - **Multi-Step Loop V2**: Iterative tool execution with context accumulation
+ * - **Multi-Step Loop V3**: Advanced strategy with parallel tool execution
+ * 
+ * ## Runtime State Management
+ * 
+ * The pipeline maintains critical state throughout execution:
+ * - `sdkMessages`: Conversation history for AI context
+ * - `tools`: Available tools mapped by name
+ * - `agentSteps`: Detailed execution transcript
+ * - `usdCost`: Accumulated cost tracking
+ * - `updatedMemory`: Extracted learnings for persistence
+ * 
+ * ## Error Recovery
+ * 
+ * Errors during execution are captured and transformed into error responses
+ * rather than throwing, ensuring workflow continuity. Critical context is
+ * logged for debugging including node ID, workflow version, and available tools.
+ */
 export class InvocationPipeline {
   /* ------------------------------- state --------------------------------- */
   private sdkMessages: CoreMessage[] = []
@@ -58,6 +89,21 @@ export class InvocationPipeline {
   /*                              🛠  PREPARE                               */
   /* ---------------------------------------------------------------------- */
 
+  /**
+   * Prepares the pipeline for execution by initializing tools and messages.
+   * 
+   * Runtime operations:
+   * 1. Initializes all tools through ToolManager (MCP and code tools)
+   * 2. Prepares incoming message with context and memory
+   * 3. Determines tool selection strategy based on configuration
+   * 
+   * Strategy selection:
+   * - Multi-step loop: Defers tool choice to execution phase
+   * - Single tool: Forces that tool's usage
+   * - Multiple tools: Uses "auto" for AI-driven selection
+   * 
+   * @returns this instance for method chaining
+   */
   public async prepare(): Promise<this> {
     await this.toolManager.initializeTools()
     this.tools = await this.toolManager.getAllTools(this.ctx)
@@ -85,6 +131,32 @@ export class InvocationPipeline {
   /*                              🏃  EXECUTE                               */
   /* ---------------------------------------------------------------------- */
 
+  /**
+   * Executes the main invocation logic using the configured strategy.
+   * 
+   * ## Runtime Flow
+   * 
+   * ### Multi-Step Loop Path (when tools available):
+   * 1. Selects V2 or V3 strategy based on override
+   * 2. Runs iterative tool execution with AI guidance
+   * 3. Synchronizes agent steps and cost from result
+   * 
+   * ### Single Call Path (no tools or disabled):
+   * 1. Makes single AI call with optional tool use
+   * 2. Processes response and extracts agent steps
+   * 3. Finalizes summary with additional metadata
+   * 
+   * ## Error Handling
+   * 
+   * Catches all errors and transforms them into error responses.
+   * Logs critical context for debugging:
+   * - Node ID and workflow version
+   * - Model name and available tools
+   * - Full error stack trace
+   * 
+   * @returns this instance for method chaining
+   * @throws Never - errors are caught and transformed into responses
+   */
   public async execute(): Promise<this> {
     try {
       if (
@@ -97,9 +169,9 @@ export class InvocationPipeline {
           await this.runMultiStepLoopV2()
         }
 
-        // Sync the agentSteps and cost from multi-step loop result
+        // sync the agentSteps and cost from multi-step loop result
         if (this.processedResponse && this.processedResponse.agentSteps) {
-          // Sync both the agentSteps outputs and cost from the multi-step loop
+          // sync both the agentSteps outputs and cost from the multi-step loop
           this.agentSteps = this.processedResponse.agentSteps
           this.usdCost = this.processedResponse.cost || this.usdCost
         } else {
@@ -111,12 +183,12 @@ export class InvocationPipeline {
       } else {
         this.processedResponse = await this.runSingleCall()
 
-        // Add node logs for single call path BEFORE finalizeSummary
+        // add node logs for single call path BEFORE finalizeSummary
         if (this.processedResponse && this.processedResponse.agentSteps) {
           this.agentSteps.push(...this.processedResponse.agentSteps)
         }
 
-        // Validate processedResponse before proceeding
+        // validate processedResponse before proceeding
         if (!this.processedResponse) {
           throw new Error(
             "runSingleCall() returned null/undefined processedResponse"

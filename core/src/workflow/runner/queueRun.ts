@@ -17,6 +17,59 @@ import type { QueueRunParams, QueueRunResult } from "./types"
 
 // Types are centralized in ./types to avoid circular imports and keep the API surface stable.
 
+/**
+ * Core workflow execution engine using a message queue-based approach.
+ * 
+ * ## Runtime Architecture
+ * 
+ * This module implements the heart of workflow execution through an event-driven
+ * message queue system. Workflows are directed acyclic graphs (DAGs) where nodes
+ * communicate by passing messages.
+ * 
+ * ## Execution Flow
+ * 
+ * 1. **Initialization**: Creates initial message from workflow input to entry node
+ * 2. **Queue Processing**: Processes messages sequentially from the queue
+ * 3. **Node Invocation**: Each message triggers target node execution
+ * 4. **Message Routing**: Nodes produce new messages for downstream nodes
+ * 5. **Termination**: Execution ends when queue is empty or "end" node is reached
+ * 
+ * ## Message Aggregation
+ * 
+ * Nodes can wait for multiple upstream messages before executing using `waitingFor`.
+ * This enables fan-in patterns where a node processes results from multiple sources.
+ * Messages are collected until all required inputs arrive, then aggregated into
+ * a single message with all payloads.
+ * 
+ * ## Coordination Modes
+ * 
+ * - **Sequential**: Flexible routing where any node can message any other node
+ * - **Hierarchical**: Enforces orchestrator-worker patterns with validation rules:
+ *   - Workers cannot message other workers directly
+ *   - Only orchestrators can send delegation messages
+ *   - Workers communicate through the orchestrator
+ * 
+ * ## Memory Persistence
+ * 
+ * Terminal nodes (those routing to "end") trigger memory persistence. Updated
+ * memory from node execution is saved back to the workflow configuration and
+ * optionally persisted to the database for learning across invocations.
+ * 
+ * ## Error Handling
+ * 
+ * - Node invocation errors are captured but don't halt execution
+ * - Error messages are propagated downstream as error payloads
+ * - Max invocation limits prevent infinite loops
+ * - Memory persistence failures are logged but don't fail the run
+ * 
+ * ## Performance Considerations
+ * 
+ * - Sequential message processing ensures deterministic execution
+ * - Message aggregation minimizes redundant node invocations
+ * - Configurable max node invocations (default: 50) prevents runaway execution
+ * - Memory updates are batched and persisted at workflow completion
+ */
+
 const coordinationType = CONFIG.coordinationType
 const verbose = CONFIG.logging.override.Memory ?? false
 
@@ -29,6 +82,7 @@ export async function queueRun({
     `[queueRun] Starting for workflow ${workflow.getWorkflowVersionId()}, invocation ${workflowInvocationId}`
   )
 
+  // validate entry point exists - workflows must have a designated starting node
   const entryNodeId = workflow.getEntryNodeId()
   const currentNode = workflow.getNode(entryNodeId)
   if (!currentNode) {
@@ -45,19 +99,20 @@ export async function queueRun({
 
   lgg.onlyIf(verbose, `[queueRun] Workflow has ${nodes.length} nodes`)
 
+  // runtime state tracking
   const agentSteps: AgentSteps = []
-  let seq = 0
+  let seq = 0 // message sequence counter for ordering
   let totalCost = 0
   let nodeInvocations = 0
   const summaries: InvocationSummary[] = []
   const startTime = Date.now()
   const maxNodeInvocations = CONFIG.workflow.maxNodeInvocations
-  let lastNodeOutput = ""
+  let lastNodeOutput = "" // tracks final output for workflow result
 
-  // Message queue to process
+  // message queue to process - FIFO queue ensures deterministic execution order
   const messageQueue: WorkflowMessage[] = []
 
-  // Aggregation storage for nodes with waitingFor
+  // aggregation storage for nodes with waitingFor - collects messages until all dependencies arrive
   const waitingMessages = new Map<string, WorkflowMessage[]>()
 
   const messageType: MessageType =
@@ -120,21 +175,21 @@ export async function queueRun({
       `[queueRun] Found target node ${currentMessage.toNodeId}, invoking`
     )
 
-    // Check if this node is waiting for multiple messages
+    // check if this node is waiting for multiple messages (fan-in pattern)
     const nodeConfig = workflow
       .getConfig()
       .nodes.find((n) => n.nodeId === currentMessage.toNodeId)
     const waitingFor = nodeConfig?.waitingFor || nodeConfig?.waitFor
 
     if (waitingFor && waitingFor.length > 0) {
-      // Add message to waiting collection
+      // add message to waiting collection
       const waitingKey = currentMessage.toNodeId
       if (!waitingMessages.has(waitingKey)) {
         waitingMessages.set(waitingKey, [])
       }
       waitingMessages.get(waitingKey)!.push(currentMessage)
 
-      // Check if all required messages are received
+      // check if all required messages are received
       const receivedMessages = waitingMessages.get(waitingKey)!
       const receivedFromNodes = new Set(
         receivedMessages.map((m) => m.fromNodeId)
@@ -144,11 +199,11 @@ export async function queueRun({
       )
 
       if (!allReceived) {
-        // Still waiting for more messages, continue to next message
+        // still waiting for more messages, skip this node for now
         continue
       }
 
-      // All messages received, create aggregated message
+      // all messages received, create aggregated message containing all payloads
       const aggregatedPayload: AggregatedPayload = {
         kind: "aggregated",
         berichten: [
@@ -163,7 +218,7 @@ export async function queueRun({
         })),
       }
 
-      // Create new aggregated message
+      // create new aggregated message to replace individual messages
       const aggregatedMessage = new WorkflowMessage({
         originInvocationId: currentMessage.originInvocationId,
         fromNodeId: "aggregator",
@@ -173,10 +228,10 @@ export async function queueRun({
         wfInvId: currentMessage.wfInvId,
       })
 
-      // Replace current message with aggregated one
+      // replace current message with aggregated one
       currentMessage = aggregatedMessage
 
-      // Clean up waiting state
+      // clean up waiting state now that aggregation is complete
       waitingMessages.delete(waitingKey)
     }
 
@@ -291,8 +346,9 @@ export async function queueRun({
       }
     }
 
-    // Add next messages to the queue (prefer exact per-target payloads if provided)
+    // route messages to next nodes based on handoff decisions
     if (outgoingMessages && outgoingMessages.length > 0) {
+      // node provided specific messages for each target - use these exact payloads
       for (const om of outgoingMessages) {
         const nextMessage = new WorkflowMessage({
           originInvocationId: nodeInvocationId,
@@ -309,18 +365,21 @@ export async function queueRun({
         )
       }
     } else {
+      // generate messages for each target node based on handoff IDs
       for (const nextId of nextIds) {
-        // Create per-target customized messages for parallel processing
+        // create per-target customized messages for parallel processing
         // todo-typesafety: replace 'any' with proper payload type - violates CLAUDE.md "we hate any"
         let messagePayload: any
         if (error) {
+          // propagate error to downstream nodes
           messagePayload = {
             kind: "error",
             message: error.message,
             stack: error.stack,
           }
         } else if (nextIds.length > 1 && !nextIds.includes("end")) {
-          // Branched processing - customize message for each target (processed sequentially)
+          // branched processing - customize message for each target
+          // this enables parallel task delegation with context-specific instructions
           // todo-typesafety: replace 'any' parameter with proper message type - violates CLAUDE.md "we hate any"
           const getMessageContent = (msg: any) => {
             if (msg.prompt) return msg.prompt
@@ -339,7 +398,7 @@ export async function queueRun({
             )
           }
         } else {
-          // Single target - use original message
+          // single target - use original message without modification
           messagePayload = replyMessage
         }
 
@@ -373,7 +432,8 @@ export async function queueRun({
     `[queueRun] Got ${summaries.length} summaries, ${agentSteps.length} outputs`
   )
 
-  // Persist memory updates to database if any nodes updated their memory
+  // persist memory updates to database if any nodes updated their memory
+  // this enables learning across workflow invocations
   const hasMemoryUpdates = workflow
     .getConfig()
     .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
@@ -391,7 +451,8 @@ export async function queueRun({
     } catch (error) {
       // todo-errorhandling: silently swallowing persistence errors could mask critical failures
       lgg.error(`[queueRun] Failed to persist memory updates: ${error}`)
-      // Don't fail the entire run if memory persistence fails
+      // don't fail the entire run if memory persistence fails
+      // this ensures workflow completes even if learning can't be saved
     }
   }
 

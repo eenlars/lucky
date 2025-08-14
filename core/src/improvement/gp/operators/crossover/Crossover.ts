@@ -42,8 +42,19 @@ const operatorsWithFeedback = CONFIG.improvement.flags.operatorsWithFeedback
 
 export class Crossover {
   /**
-   * Build crossover prompt that describes the operation conceptually
-   * rather than expecting raw JSON generation
+   * Builds crossover prompt that describes the operation conceptually
+   * rather than expecting raw JSON generation.
+   * 
+   * @param parent1 - First parent genome
+   * @param parent2 - Second parent genome  
+   * @param crossoverType - Type of crossover operation
+   * @param aggression - Intensity level description
+   * @param instructions - Specific crossover instructions
+   * @returns Formatted prompt for LLM crossover
+   * 
+   * @remarks
+   * Creates natural language instructions for LLM to understand
+   * crossover goals without requiring JSON manipulation
    */
   private static buildCrossoverPrompt(
     parent1: Genome,
@@ -60,7 +71,8 @@ export class Crossover {
       easyModelNames: true,
     }
 
-    // Safely stringify fitness; parents may not have been evaluated yet
+    // safely stringify fitness; parents may not have been evaluated yet
+    // this prevents crashes when accessing fitness of unevaluated genomes
     const safeFitnessString = (genome: Genome): string => {
       try {
         return JSON.stringify(genome.getFitness())
@@ -132,7 +144,21 @@ Focus on creating a functional workflow rather than exact JSON structure.`
   }
 
   /**
-   * perform crossover between two parents using llm
+   * Performs crossover between two parent genomes using LLM.
+   * 
+   * @param parents - Array of parent genomes (requires exactly 2)
+   * @param verbose - Whether to use verbose/dummy mode
+   * @param evaluationInput - Input for workflow evaluation
+   * @param _evolutionContext - Evolution context for the offspring
+   * @returns Result containing offspring genome or error
+   * 
+   * @remarks
+   * - Selects crossover strategy dynamically
+   * - Uses LLM to generate conceptual crossover
+   * - Preserves memory from both parents
+   * - Validates offspring workflow before returning
+   * 
+   * @throws Error if fewer than 2 parents provided
    */
   static async crossover({
     parents,
@@ -236,7 +262,8 @@ Focus on creating a functional workflow rather than exact JSON structure.`
       )
 
       if (workflowConfig) {
-        // preserve memories from both parents
+        // preserve memories from both parents to maintain learned knowledge
+        // crossover should combine memories, not lose them
         const { MemoryPreservation } = await import("../memoryPreservation")
         MemoryPreservation.preserveCrossoverMemory(
           workflowConfig,
@@ -245,6 +272,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         )
 
         // enforce memory preservation - throw error if any memories were lost
+        // this is critical for maintaining knowledge across generations
         MemoryPreservation.enforceMemoryPreservation(
           workflowConfig,
           [parent1, parent2],

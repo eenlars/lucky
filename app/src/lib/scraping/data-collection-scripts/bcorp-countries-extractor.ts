@@ -4,12 +4,12 @@ import {
   toDomain,
 } from "@/lib/scraping/data-collection-scripts/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import { csv } from "@lucky/shared"
 import { saveInLoc } from "@runtime/code_tools/file-saver/save"
 import { PATHS } from "@runtime/settings/constants"
-import { csv } from "@lucky/shared"
-const { CSVLoader } = csv
 import crypto from "crypto"
 import fs from "fs"
+const { CSVLoader } = csv
 
 // how to run:
 // tsx src/lib/count-bcorps/bcorp-countries-extractor.ts
@@ -205,7 +205,9 @@ async function processBatch<T, R>(
 
 ;(async () => {
   /* 1️⃣  load the CSV ---------------------------------------------------------- */
-  lgg.log("countries-extractor: starting B-Corp countries extraction script.")
+  lgg.log(
+    "countries-extractor: starting sustainable company countries extraction script."
+  )
   const loader = new CSVLoader(INPUT_CSV)
 
   type Row = { company_name: string; website: string }
@@ -264,7 +266,7 @@ async function processBatch<T, R>(
       let result: CompanyCountryData
 
       try {
-        /* extract "operates in" countries from B-Corp page */
+        /* extract "operates in" countries from the certification directory page */
         lgg.log(
           `countries-extractor: extracting countries for ${company_name}...`
         )

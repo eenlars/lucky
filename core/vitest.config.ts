@@ -8,7 +8,6 @@ export default defineConfig({
     alias: {
       "@core": resolve(__dirname, "./src"),
       "@runtime": resolve(__dirname, "../runtime"),
-      "@shared": resolve(__dirname, "../shared/src"),
     },
   },
   test: {

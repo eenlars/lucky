@@ -1,3 +1,32 @@
+/**
+ * Unified tool framework for code and MCP tool integration.
+ * 
+ * ## Runtime Architecture
+ * 
+ * Provides a single interface for defining and executing tools with:
+ * - Type-safe parameter validation via Zod schemas
+ * - Automatic parameter correction for common AI mistakes
+ * - Context propagation to tools (workflow ID, files, goals)
+ * - Error handling and result wrapping
+ * 
+ * ## Tool Definition Pattern
+ * 
+ * All tools follow the same pattern:
+ * 1. Define parameters with Zod schema
+ * 2. Implement execute function with typed params
+ * 3. Convert to AI framework format for runtime use
+ * 
+ * ## Runtime Flow
+ * 
+ * 1. AI generates tool call with parameters
+ * 2. Parameters validated and auto-corrected
+ * 3. Tool executed with workflow context
+ * 4. Result wrapped in success/error envelope
+ * 5. Response returned to AI for processing
+ * 
+ * @module tools/toolFactory
+ */
+
 import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { CodeToolName } from "@core/tools/tool.types"
@@ -7,9 +36,8 @@ import { TOOLS } from "@runtime/settings/tools"
 import { tool, zodSchema, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
 
-// toolcontext gives a tool extra information about
-// some run settings that might otherwise not be available.
-// quite handy!
+// tool context provides runtime information about workflow execution
+// this enables tools to access files, understand goals, and coordinate
 export interface ToolExecutionContext {
   workflowId: string
   workflowVersionId: string
@@ -33,7 +61,25 @@ export interface DefineToolConfig<TParams = any, TResult = any> {
 }
 
 /**
- * 🔧 The one way to create tools!
+ * 🔧 The unified way to create tools with type safety and validation.
+ * 
+ * Runtime behavior:
+ * 1. Validates input parameters against Zod schema
+ * 2. Executes tool function with validated params and context
+ * 3. Wraps result in success/error envelope for consistent handling
+ * 
+ * @param config Tool configuration with name, params schema, and execute function
+ * @returns Tool definition ready for AI framework integration
+ * 
+ * @example
+ * const searchTool = defineTool({
+ *   name: "search",
+ *   params: z.object({ query: z.string() }),
+ *   execute: async (params, ctx) => {
+ *     // params are fully typed and validated
+ *     return await performSearch(params.query)
+ *   }
+ * })
  */
 export function defineTool<
   Schema extends ZodTypeAny, // the schema we get
@@ -78,7 +124,28 @@ export function defineTool<
 }
 
 /**
- * Convert a tool definition to the AI framework Tool type
+ * Convert a tool definition to the AI framework Tool type.
+ * 
+ * ## Runtime Processing
+ * 
+ * 1. **Parameter Validation**: AI-generated params validated against schema
+ * 2. **Auto-Correction**: Common AI mistakes corrected automatically
+ *    - Missing required fields filled with defaults
+ *    - Type mismatches coerced when possible
+ *    - Invalid values replaced with nearest valid option
+ * 3. **Execution**: Tool runs with corrected params and context
+ * 4. **Error Handling**: Failures return error messages, not exceptions
+ * 
+ * ## Auto-Correction Examples
+ * 
+ * - `null` → default value for optional params
+ * - String numbers → parsed numbers
+ * - Missing array → empty array
+ * - Invalid enum → first valid option
+ * 
+ * @param toolDef Tool definition from defineTool
+ * @param toolExecutionContext Runtime context for tool execution
+ * @returns AI framework compatible tool
  */
 export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
   toolDef: ReturnType<typeof defineTool<ParamsSchema, TResult>>,
@@ -88,7 +155,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
     description: toolDef.description,
     parameters: zodSchema(toolDef.parameters),
     execute: async (params: z.infer<ParamsSchema>) => {
-      // Apply schema-based validation and auto-correction using the tool's own Zod schema
+      // apply schema-based validation and auto-correction using the tool's own Zod schema
       const {
         params: correctedParams,
         corrected,
@@ -96,10 +163,10 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
       } = validateAndCorrectWithSchema(
         toolDef.name,
         params,
-        toolDef.parameters // Use the tool's Zod schema as single source of truth
+        toolDef.parameters // use the tool's Zod schema as single source of truth
       )
 
-      // Log any auto-corrections for debugging
+      // log any auto-corrections for debugging
       if (corrected) {
         console.log(`Auto-corrected parameters for ${toolDef.name}:`, {
           original: params,

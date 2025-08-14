@@ -311,6 +311,49 @@
         "vitest": "^3.2.4",
       },
     },
+    "packages/experiments": {
+      "name": "@lucky/experiments",
+      "version": "0.1.0",
+      "dependencies": {
+        "@lucky/shared": "workspace:*",
+        "axios": "^1.11.0",
+        "cheerio": "^1.1.2",
+        "merge-deep": "^3.0.3",
+        "nanoid": "^5.1.5",
+        "papaparse": "^5.5.3",
+        "puppeteer": "^24.15.0",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2",
+        "turndown": "^7.2.0",
+        "zod": "^3.25.73",
+      },
+      "devDependencies": {
+        "@types/node": "^24.2.0",
+        "@types/papaparse": "^5.3.16",
+        "@types/turndown": "^5.0.5",
+        "vite": "^7.0.6",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^3.2.4",
+      },
+    },
+    "packages/shared": {
+      "name": "@lucky/shared",
+      "version": "1.0.0",
+      "dependencies": {
+        "json5": "^2.2.3",
+        "papaparse": "^5.5.3",
+      },
+      "devDependencies": {
+        "@supabase/supabase-js": "^2.49.4",
+        "@types/bun": "latest",
+        "@types/papaparse": "^5.3.16",
+        "prettier": "^3.4.2",
+        "rimraf": "^5.0.10",
+        "tsup": "^8.0.1",
+        "typescript": "^5.0.0",
+        "vitest": "^3.2.4",
+      },
+    },
     "runtime": {
       "name": "@lucky/runtime",
       "version": "0.1.0",
@@ -333,24 +376,6 @@
         "@types/turndown": "^5.0.5",
         "vite": "^7.0.6",
         "vite-tsconfig-paths": "^5.1.4",
-        "vitest": "^3.2.4",
-      },
-    },
-    "shared": {
-      "name": "@lucky/shared",
-      "version": "1.0.0",
-      "dependencies": {
-        "json5": "^2.2.3",
-        "papaparse": "^5.5.3",
-      },
-      "devDependencies": {
-        "@supabase/supabase-js": "^2.49.4",
-        "@types/bun": "latest",
-        "@types/papaparse": "^5.3.16",
-        "prettier": "^3.4.2",
-        "rimraf": "^5.0.10",
-        "tsup": "^8.0.1",
-        "typescript": "^5.0.0",
         "vitest": "^3.2.4",
       },
     },
@@ -646,9 +671,11 @@
 
     "@lucky/core": ["@lucky/core@workspace:core"],
 
+    "@lucky/experiments": ["@lucky/experiments@workspace:packages/experiments"],
+
     "@lucky/runtime": ["@lucky/runtime@workspace:runtime"],
 
-    "@lucky/shared": ["@lucky/shared@workspace:shared"],
+    "@lucky/shared": ["@lucky/shared@workspace:packages/shared"],
 
     "@marijn/find-cluster-break": ["@marijn/find-cluster-break@1.0.2", "", {}, "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g=="],
 

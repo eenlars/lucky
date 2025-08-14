@@ -1,4 +1,16 @@
-// app/src/core/invocation/invokeWorkflow.ts
+/**
+ * Workflow invocation module - Entry point for executing workflows.
+ * 
+ * Supports three methods of workflow loading:
+ * - From database by workflow version ID
+ * - From local file by filename
+ * - From direct DSL configuration object
+ * 
+ * Handles workflow preparation, execution, evaluation, and memory persistence.
+ * Tracks spending limits and saves memory updates back to source when applicable.
+ * 
+ * @module workflow/runner/invokeWorkflow
+ */
 
 import { isNir } from "@core/utils/common/isNir"
 import { genShortId } from "@core/utils/common/utils"
@@ -26,6 +38,34 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
  */
 // InvocationInput and InvokeWorkflowResult centralized in ./types
 
+/**
+ * Invokes a workflow with the provided input configuration.
+ * 
+ * @param input - Invocation configuration containing evaluation input and one of:
+ *   - workflowVersionId: ID to load workflow from database
+ *   - filename: Path to load workflow from file
+ *   - dslConfig: Direct workflow configuration object
+ * 
+ * @returns Result containing array of invocation results with:
+ *   - queueRunResult: Raw execution results
+ *   - fitness: Evaluation score (if evaluation is needed)
+ *   - feedback: Evaluation feedback (if evaluation is needed)
+ *   - finalWorkflowOutputs: Final outputs from workflow
+ * 
+ * @throws Error if evalInput is missing or no valid workflow source provided
+ * 
+ * @example
+ * // Load from database
+ * const result = await invokeWorkflow({
+ *   workflowVersionId: "wf_123",
+ *   evalInput: { type: "text", input: "Hello", workflowId: "test" }
+ * })
+ * 
+ * @remarks
+ * - Automatically saves memory updates back to file-based workflows
+ * - Tracks spending limits when enabled in configuration
+ * - Evaluates results when answer/expectedOutput is provided
+ */
 export async function invokeWorkflow(
   input: InvocationInput
 ): Promise<RS<InvokeWorkflowResult[]>> {

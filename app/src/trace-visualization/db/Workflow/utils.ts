@@ -1,5 +1,4 @@
-import { Tables } from "@shared/types/database.types"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN, Tables } from "@lucky/shared"
 import { nanoid } from "nanoid"
 
 export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {

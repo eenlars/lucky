@@ -6,7 +6,7 @@ import { use, useEffect, useState } from "react"
 
 import { fullWorkflow } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import { StructureMiniMap } from "./StructureMiniMap"
 
 export default function WorkflowStructurePage({

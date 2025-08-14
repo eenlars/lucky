@@ -3,10 +3,10 @@ import {
   getLatestFileByPrefixes,
   loadJsonProdOrLocal,
 } from "@/lib/experiments/file-utils"
+import type { Condition } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
 import path from "path"
-import type { Condition } from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/types"
 
 type BaselineResult = {
   model: string

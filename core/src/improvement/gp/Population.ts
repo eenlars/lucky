@@ -121,6 +121,11 @@ export class Population {
     }
   }
 
+  /**
+   * Gets the run service managing evolution run state.
+   * 
+   * @returns The run service instance
+   */
   getRunService(): RunService {
     return this.runService
   }
@@ -142,12 +147,21 @@ export class Population {
     this.genomes = genomes
   }
 
-  // get all genomes in the current population
+  /**
+   * Gets all genomes in the current population.
+   * 
+   * @returns A copy of the genome array
+   */
   getGenomes(): Genome[] {
     return [...this.genomes]
   }
 
-  // get only the valid genomes from population
+  /**
+   * Gets only the successfully evaluated genomes from the population.
+   * 
+   * @returns Array of genomes that have been evaluated
+   * @throws Error if population is empty
+   */
   getValidGenomes(): Genome[] {
     if (isNir(this.genomes))
       throw new Error("Population is empty, could not get valid genomes.")
@@ -155,27 +169,49 @@ export class Population {
     return this.genomes.filter((genome) => genome.isEvaluated)
   }
 
-  // get current generation number
+  /**
+   * Gets the current generation ID from the run service.
+   * 
+   * @returns The generation ID string
+   */
   getGenerationId(): string {
     return this.runService.getCurrentGenerationId()
   }
 
-  // get current generation number
+  /**
+   * Gets the current generation number.
+   * 
+   * @returns The generation number (0-indexed)
+   */
   getGenerationNumber(): number {
     return this.generationNumber
   }
 
-  // increment generation number
+  /**
+   * Increments the generation number for the next evolution cycle.
+   */
   incrementGenerationNumber(): void {
     this.generationNumber++
   }
 
-  // get total population size
+  /**
+   * Gets the total population size.
+   * 
+   * @returns The number of genomes in the population
+   */
   size(): number {
     return this.genomes.length
   }
 
-  // get the genome with highest fitness
+  /**
+   * Gets the genome with the highest fitness score.
+   * 
+   * @returns The best performing genome
+   * @throws Error if population is empty
+   * 
+   * @remarks
+   * Only considers evaluated genomes
+   */
   getBest(): Genome {
     guard(this.genomes, "Population is empty")
 
@@ -188,9 +224,15 @@ export class Population {
     )
   }
 
-  // TODO: refactor to use getValidGenomes() like getBest() for consistency
-  // TODO: add validation that population contains evaluated genomes
-  // get the genome with lowest fitness
+  /**
+   * Gets the genome with the lowest fitness score.
+   * 
+   * @returns The worst performing genome
+   * @throws Error if population is empty
+   * 
+   * TODO: refactor to use getValidGenomes() like getBest() for consistency
+   * TODO: add validation that population contains evaluated genomes
+   */
   getWorst(): Genome {
     guard(this.genomes, "Population is empty")
 
@@ -199,14 +241,26 @@ export class Population {
     )
   }
 
-  // get top n genomes sorted by fitness
+  /**
+   * Gets the top N genomes sorted by fitness score (descending).
+   * 
+   * @param n - Number of top genomes to return
+   * @returns Array of top performing genomes
+   */
   getTop(n: number): Genome[] {
     return [...this.genomes]
       .sort((a, b) => b.getFitnessScore() - a.getFitnessScore())
       .slice(0, n)
   }
 
-  // reset all the genomes
+  /**
+   * Resets all genomes for a new generation.
+   * 
+   * @throws Error if population is empty
+   * 
+   * @remarks
+   * Marks all genomes as unevaluated and clears their fitness data
+   */
   resetGenomes(): void {
     if (isNir(this.genomes))
       throw new Error("Population is empty, could not reset.")
@@ -244,7 +298,8 @@ export class Population {
     this.genomes = this.genomes?.filter((genome) => genome.isEvaluated) ?? []
     const countAfter = this.genomes?.length ?? 0
 
-    // Dynamic Population Replenishment
+    // dynamic population replenishment to maintain genetic diversity
+    // minimum of 4 genomes needed for meaningful crossover operations
     const minViablePopulation = 4
     if (this.genomes.length < minViablePopulation) {
       const needed = minViablePopulation - this.genomes.length
@@ -252,6 +307,7 @@ export class Population {
         `[Population] Population below minimum viable size (${this.genomes.length}/${minViablePopulation}). Generating ${needed} new random genomes.`
       )
 
+      // generate new random genomes to replenish population
       const newGenomes = await this.generateRandomGenomes(needed)
       this.genomes.push(...newGenomes)
 
@@ -291,6 +347,12 @@ export class Population {
     return unevaluated
   }
 
+  /**
+   * Gets all genomes that have been successfully evaluated.
+   * 
+   * @returns Array of evaluated genomes
+   * @throws Error if population is empty
+   */
   getEvaluated(): Genome[] {
     const evaluated: Genome[] = []
     if (isNir(this.genomes))
@@ -302,7 +364,13 @@ export class Population {
     return evaluated
   }
 
-  // calculate population statistics
+  /**
+   * Calculates comprehensive population statistics.
+   * 
+   * @param additionalMetrics - Optional metrics to include in stats
+   * @returns Population statistics including fitness metrics and diversity
+   * @throws Error if population is empty
+   */
   getStats(additionalMetrics?: {
     evaluationCost?: number
     evaluationsPerHour?: number
@@ -324,7 +392,13 @@ export class Population {
     }
   }
 
-  // find genomes that are similar to target within threshold
+  /**
+   * Finds genomes that are structurally similar to the target.
+   * 
+   * @param target - The genome to compare against
+   * @param threshold - Similarity threshold (0=identical, higher=less similar)
+   * @returns Array of similar genomes
+   */
   findSimilarGenomes(target: Genome, threshold: number): Genome[] {
     return EvolutionUtils.findSimilarGenomes(this.genomes, target, threshold)
   }
@@ -362,12 +436,21 @@ export class Population {
     )
   }
 
-  // add a new genome to the population
+  /**
+   * Adds a new genome to the population.
+   * 
+   * @param genome - The genome to add
+   */
   addGenome(genome: Genome): void {
     this.genomes.push(genome)
   }
 
-  // remove a genome from the population by id
+  /**
+   * Removes a genome from the population by ID.
+   * 
+   * @param genomeId - The workflow version ID of the genome to remove
+   * @returns True if a genome was removed, false otherwise
+   */
   removeGenome(genomeId: string): boolean {
     const originalLength = this.genomes.length
     this.genomes = this.genomes.filter(
@@ -376,15 +459,24 @@ export class Population {
     return this.genomes.length < originalLength
   }
 
-  // clear all genomes and reset generation counter
+  /**
+   * Clears all genomes and resets the generation counter.
+   */
   clear(): void {
     this.genomes = []
     this.generationNumber = 0
   }
 
   /**
-   * Generate random genomes for population replenishment.
+   * Generates random genomes for population replenishment.
+   * 
+   * @param count - Number of genomes to generate
+   * @returns Array of newly generated genomes
+   * @throws Error if required context is not available
+   * 
+   * @remarks
    * Uses the same logic as initial population generation.
+   * Requires evaluationInput, problemAnalysis to be set from initialization.
    */
   async generateRandomGenomes(count: number): Promise<Genome[]> {
     if (count <= 0) return []
@@ -441,6 +533,11 @@ export class Population {
     return genomes
   }
 
+  /**
+   * Helper method to initialize population with random or base workflow genomes.
+   * 
+   * @private
+   */
   async initializePopulationHelper({
     config,
     evaluationInput,
@@ -509,6 +606,11 @@ export class Population {
     return population
   }
 
+  /**
+   * Initializes population with prepared genomes using deep problem analysis.
+   * 
+   * @private
+   */
   async initializePreparedPopulation({
     config,
     evaluationInput,

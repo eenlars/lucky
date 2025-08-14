@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import { CheckIcon, ClipboardIcon } from "lucide-react"
 import { useState } from "react"
 

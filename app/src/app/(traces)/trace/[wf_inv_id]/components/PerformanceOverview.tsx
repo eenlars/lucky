@@ -1,7 +1,7 @@
 "use client"
 
 import type { Tables } from "@lucky/shared"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"

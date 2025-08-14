@@ -5,8 +5,7 @@ import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { JSONN } from "@lucky/shared"
-import { CSVLoader } from "@lucky/shared/csv"
+import { JSONN, csv } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import type { WorkflowIO } from "./ingestion.types"
 
@@ -97,7 +96,7 @@ export class IngestionLayer {
     guard(evaluation.inputFile, "CSV evaluation type requires inputFile")
 
     try {
-      const csvLoader = new CSVLoader(evaluation.inputFile)
+      const csvLoader = new csv.CSVLoader(evaluation.inputFile)
       const csvData = await csvLoader.loadAsJSON<Record<string, any>>()
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] loaded CSV data", {

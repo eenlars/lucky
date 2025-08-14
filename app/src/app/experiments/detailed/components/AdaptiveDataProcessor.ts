@@ -1,5 +1,5 @@
 // Note: JSON import will be handled by dynamic loading
-import type { Condition } from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/types"
+import type { Condition } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 
 export interface AdaptiveBehavior {
   initialFailure: boolean

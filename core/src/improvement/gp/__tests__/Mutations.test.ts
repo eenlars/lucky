@@ -201,7 +201,38 @@ describe("Mutations", () => {
       const dummyGenome = createMockGenome("dummy")
       vi.mocked(createDummyGenome).mockReturnValue(dummyGenome)
 
-      const result = await Mutations.mutateWorkflowGenome({
+      // Re-mock CONFIG to enable verbose mode and dynamically import the module under test
+      vi.resetModules()
+      vi.doMock("@runtime/settings/constants", () => ({
+        CONFIG: {
+          evolution: {
+            GP: {
+              verbose: true,
+              populationSize: 5,
+              generations: 3,
+            },
+          },
+          tools: { inactive: new Set() },
+          models: { inactive: new Set(), provider: "openai" },
+          improvement: { flags: { maxRetriesForWorkflowRepair: 3 } },
+          logging: { level: "info", override: {} },
+          limits: { rateWindowMs: 1000, maxRequestsPerWindow: 100 },
+          workflow: { parallelExecution: false },
+          verification: { allowCycles: false },
+          coordinationType: "sequential",
+        },
+        MODELS: { default: "google/gemini-2.5-flash-lite" },
+        PATHS: {
+          root: "/test",
+          setupFile: "/test/setup.txt",
+          node: { logging: "/test/logging" },
+        },
+      }))
+      const { Mutations: MutationsVerbose } = await import(
+        "@core/improvement/gp/operators/Mutations"
+      )
+
+      const result = await MutationsVerbose.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })

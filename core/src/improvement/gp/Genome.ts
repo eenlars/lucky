@@ -66,10 +66,10 @@ export class Genome extends Workflow {
   /**
    * Create a `Genome` instance from an existing `WorkflowGenome` object.
    *
-   * @param genome raw structural genome
-   * @param evaluation text label that will be forwarded to `Workflow`
-   * @param goal       the main goal forwarded to `Workflow`
-   * @param workflowVersionId optional pre-existing workflow version ID
+   * @param genome - Raw structural genome representation
+   * @param evaluationInput - Input data for workflow evaluation including goal and context
+   * @param _evolutionContext - Evolution context including generation info and run details
+   * @param workflowVersionId - Optional pre-existing workflow version ID from database
    */
   constructor(
     genome: WorkflowGenome,
@@ -162,9 +162,11 @@ export class Genome extends Workflow {
     evolutionMode: FlowEvolutionMode
   }): Promise<RS<Genome>> {
     try {
-      // TODO: fix typo "bassed" -> "based" in comment above
       // apply poisson distribution for mutation aggression randomness
+      // poisson(1, 4, 5) generates values between 1-5 with bias towards lower values
       const randomness = EvolutionUtils.poisson(1, 4, 5)
+      
+      // in verbose mode, skip expensive workflow generation for testing
       if (CONFIG.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
         return R.success(
@@ -173,6 +175,7 @@ export class Genome extends Workflow {
         )
       }
 
+      // baseWorkflow method: start from existing workflow and mutate it
       if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
         if (!baseWorkflow) {
           return R.error(
@@ -190,6 +193,7 @@ export class Genome extends Workflow {
         if (!baseWorkflowGenome) {
           return R.error("Failed to create base workflow genome", 0)
         }
+        // apply random mutations to create diversity from base workflow
         const formalizedWorkflow = await Mutations.mutateWorkflowGenome({
           parent: baseWorkflowGenome,
           generationNumber: _evolutionContext.generationNumber,
@@ -198,6 +202,9 @@ export class Genome extends Workflow {
         })
         return formalizedWorkflow
       }
+      
+      // default method: generate completely new workflow from scratch
+      // select random model for diversity in initial population
       const activeModels = getActiveModelNames()
       const randomModel =
         activeModels[Math.floor(Math.random() * activeModels.length)]
@@ -335,6 +342,12 @@ export class Genome extends Workflow {
     }
   }
 
+  /**
+   * Converts a WorkflowGenome to a WorkflowConfig.
+   * 
+   * @param genome - The genome to convert
+   * @returns WorkflowConfig containing nodes and entry node ID
+   */
   static toWorkflowConfig(genome: WorkflowGenome): WorkflowConfig {
     return {
       nodes: genome.nodes,
@@ -342,22 +355,47 @@ export class Genome extends Workflow {
     }
   }
 
+  /**
+   * Gets the workflow configuration from this genome.
+   * 
+   * @returns The workflow configuration
+   */
   getWorkflowConfig(): WorkflowConfig {
     return Genome.toWorkflowConfig(this.genome)
   }
 
+  /**
+   * Gets the goal/objective for this genome's workflow.
+   * 
+   * @returns The workflow goal string
+   */
   getGoal(): string {
     return this.goal
   }
 
-  /** Convenience helper so callers can retrieve the raw genome again. */
+  /**
+   * Convenience helper so callers can retrieve the raw genome again.
+   * 
+   * @returns The raw WorkflowGenome structure
+   */
   getRawGenome(): WorkflowGenome {
     return this.genome
   }
 
-  // TODO: fix memory leak - genome evaluation results persist through improvement operations
-  // TODO: implement proper cleanup of evaluation results between generations
-  // TODO: consider using WeakMap for storing transient evaluation data
+  /**
+   * Sets the fitness score and feedback for this genome after evaluation.
+   * 
+   * @param fitness - The fitness metrics from workflow evaluation
+   * @param feedback - Human-readable feedback about performance
+   * 
+   * @remarks
+   * Updates both genomeEvaluationResults and base workflow properties.
+   * Marks the genome as evaluated.
+   * 
+   * TODO: fix memory leak - genome evaluation results persist through improvement operations
+   * TODO: implement proper cleanup of evaluation results between generations
+   * TODO: consider using WeakMap for storing transient evaluation data
+   */
   setFitnessAndFeedback({
     fitness,
     feedback,
@@ -386,16 +424,29 @@ export class Genome extends Workflow {
     this.isEvaluated = true
   }
 
+  /**
+   * Gets the complete evaluation results for this genome.
+   * 
+   * @returns Evaluation results including fitness, feedback, and metadata
+   */
   getFitnessAndFeedback(): GenomeEvaluationResults {
     return this.genomeEvaluationResults
   }
 
+  /**
+   * Adds to the cumulative evolution cost for this genome.
+   * 
+   * @param cost - The cost in USD to add
+   */
   addCost(cost: number): void {
     this.evolutionCost += cost
   }
 
   /**
-   * Get the evolution context from the workflow
+   * Get the evolution context from the workflow.
+   * 
+   * @returns The evolution context containing generation and run information
+   * @throws Error if evolution context is not set
    */
   getEvolutionContext(): EvolutionContext {
     guard(this.evolutionContext, "Evolution context not set")
@@ -403,7 +454,12 @@ export class Genome extends Workflow {
   }
 
   /**
-   * Generate hash for this genome for caching
+   * Generate a unique hash for this genome for caching and deduplication.
+   * 
+   * @returns SHA256 hash of the genome structure prefixed with workflow version ID
+   * 
+   * @remarks
+   * Used for caching evaluation results and detecting duplicate genomes
    */
   hash(): string {
     const genomeString = JSON.stringify(this.genome)

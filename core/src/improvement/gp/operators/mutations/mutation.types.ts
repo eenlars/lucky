@@ -8,12 +8,17 @@ import type { Genome } from "../../Genome"
 
 /**
  * Options describing the context for a mutation operation.
+ * 
+ * @property parent - The genome to mutate
+ * @property generationNumber - Current generation in evolution process
+ * @property intensity - Mutation strength (0-1), defaults to 0.3. Higher values increase mutation scope
+ * @property evolutionMode - Determines which mutation types are available (GP vs iterative)
  */
 export interface MutationOptions {
   parent: Genome
   generationNumber: number
-  intensity?: number // 0-1, 0.3 is default (renamed from aggression)
-  evolutionMode: FlowEvolutionMode // determines which mutations are available
+  intensity?: number
+  evolutionMode: FlowEvolutionMode
 }
 
 /**
@@ -104,7 +109,14 @@ export const MUTATION_WEIGHTS: MutationWeight[] = [
 ]
 
 /**
- * Get available mutations based on evolution mode
+ * Get available mutations based on evolution mode.
+ * 
+ * @param evolutionMode - The evolution mode (GP or iterative)
+ * @returns Array of mutation types available for the given mode
+ * 
+ * @remarks
+ * - Iterative mode only uses iterative mutations
+ * - GP mode uses all structural and behavioral mutations
  */
 export function getEvolutionMutations(
   evolutionMode: FlowEvolutionMode

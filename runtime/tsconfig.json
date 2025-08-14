@@ -16,7 +16,8 @@
     "paths": {
       "@runtime/*": ["./*"],
       "@core/*": ["../core/src/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@lucky/shared": ["../packages/shared/src/index.ts"],
+      "@lucky/shared/*": ["../packages/shared/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },

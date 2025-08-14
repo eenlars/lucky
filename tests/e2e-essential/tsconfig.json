@@ -14,8 +14,7 @@
     "baseUrl": ".",
     "paths": {
       "@core/*": ["../../core/src/*"],
-      "@runtime/*": ["../../runtime/*"],
-      "@shared/*": ["../../shared/src/*"]
+      "@runtime/*": ["../../runtime/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
