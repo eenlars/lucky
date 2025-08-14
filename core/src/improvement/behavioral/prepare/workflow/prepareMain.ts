@@ -15,16 +15,11 @@ import { z } from "zod"
 export type PrepareProblemMethod = "workflow" | "ai" | "none"
 
 const ProblemAnalysisSchema = z.object({
-  problemAnalysis: z.string().describe(
-    `The problem analysis of the workflow input 
-      The expected boundaries of the workflow input. 
-      The edge cases of the workflow input. 
-      The difficulty level of the workflow input.
-      The assumptions of the workflow input.
-      The reasoning of the problem analysis.
-      The expected output of the workflow input.
-      `
-  ),
+  problemAnalysis: z
+    .string()
+    .describe(
+      `Analysis of workflow input including boundaries, edge cases, difficulty level, assumptions, reasoning, and expected output.`
+    ),
   instructionsToNodes: z
     .string()
     .describe(

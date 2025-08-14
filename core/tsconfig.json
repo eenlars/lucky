@@ -45,10 +45,5 @@
     "scripts/runOnce.ts",
     "scripts/cleanup.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "src/runtime/logging_folder",
-    "src/utils/env.mjs",
-    "src/resilience"
-  ]
+  "exclude": ["node_modules", "src/runtime/logging_folder", "src/utils/env.mjs"]
 }
