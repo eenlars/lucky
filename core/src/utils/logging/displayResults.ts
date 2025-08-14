@@ -33,7 +33,9 @@ export function displayResults(
 ) {
   const { totalCost } = evolutionResults
 
-  lgg.log(`\n✅ ${type === "iterative" ? "Iterative" : "GP"} Evolution Complete`)
+  lgg.log(
+    `\n✅ ${type === "iterative" ? "Iterative" : "GP"} Evolution Complete`
+  )
   lgg.log(`💰 Total Cost: $${totalCost.toFixed(2)}`)
 
   if (type === "iterative") {
@@ -43,7 +45,8 @@ export function displayResults(
       return
     }
     const finalFitness =
-      iterativeResults.results[iterativeResults.results.length - 1].fitness.score
+      iterativeResults.results[iterativeResults.results.length - 1].fitness
+        .score
     lgg.log(`🏆 Final Fitness: ${finalFitness.toFixed(3)}`)
 
     lgg.log("\n📊 Iteration Summary:")

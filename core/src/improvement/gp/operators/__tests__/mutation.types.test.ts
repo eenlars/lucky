@@ -18,7 +18,9 @@ describe("Mutation Types", () => {
     })
 
     it("should include iterative mutation", () => {
-      const iterativeWeight = MUTATION_WEIGHTS.find((w) => w.type === "iterative")
+      const iterativeWeight = MUTATION_WEIGHTS.find(
+        (w) => w.type === "iterative"
+      )
 
       expect(iterativeWeight).toBeDefined()
       expect(iterativeWeight?.weight).toBe(0.15)

@@ -1,5 +1,6 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
+import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import {
   createWorkflowVersion,
@@ -14,10 +15,10 @@ import { PATHS } from "@runtime/settings/constants"
  * Defaults to DB in production, file locally.
  */
 export function useDbForLiveConfig(): boolean {
-  const mode = process.env.CONFIG_STORAGE_MODE
+  const mode = envi.CONFIG_STORAGE_MODE
   if (mode === "db") return true
   if (mode === "file") return false
-  return process.env.NODE_ENV === "production"
+  return envi.NODE_ENV === "production"
 }
 
 function makeDefaultConfig(): WorkflowConfig {

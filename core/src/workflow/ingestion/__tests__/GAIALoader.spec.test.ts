@@ -27,7 +27,7 @@ describe("GAIALoader Integration Tests", () => {
       )
     }
 
-    // Mock successful API response
+    // Mock successful API response (omit file_name so instance isn't filtered out)
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
@@ -38,8 +38,6 @@ describe("GAIALoader Integration Tests", () => {
               task_id: "test_task_1",
               Question: "What is the capital of France?",
               Final_answer: "Paris",
-              file_name: "test.png",
-              file_path: "/path/to/test.png",
               Level: 1,
               Annotator_Metadata: {
                 Steps: 3,

@@ -1,6 +1,7 @@
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { truncater } from "@core/utils/common/llmify"
+import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
@@ -270,8 +271,12 @@ export class IngestionLayer {
 
       lgg.info("[GAIALoader] Using local cached GAIA data")
 
-      // get HF token from environment if available
-      const authToken = process.env.HF_TOKEN || process.env.HUGGING_FACE_API_KEY
+      // get HF token from environment if available (prefer runtime env over test/static mock)
+      const authToken =
+        process.env.HF_TOKEN ||
+        process.env.HUGGING_FACE_API_KEY ||
+        envi.HF_TOKEN ||
+        envi.HUGGING_FACE_API_KEY
 
       if (!authToken) {
         lgg.warn(

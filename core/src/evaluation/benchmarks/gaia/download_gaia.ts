@@ -1,5 +1,6 @@
+import { envi } from "@core/utils/env.mjs"
 import { mkdirSync, writeFileSync } from "fs"
-import { join, dirname } from "path"
+import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 
 type GaiaRow = {
@@ -19,7 +20,7 @@ const __dirname = dirname(__filename)
 const OUTPUT_DIR = join(__dirname, "output")
 
 function getAuthToken(): string | undefined {
-  return process.env.HF_TOKEN || process.env.HUGGING_FACE_API_KEY
+  return envi.HF_TOKEN || envi.HUGGING_FACE_API_KEY
 }
 
 async function fetchBatch(
@@ -41,7 +42,9 @@ async function fetchBatch(
   const res = await fetch(url.toString(), { headers })
   if (!res.ok) {
     const body = await res.text().catch(() => "")
-    throw new Error(`HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`)
+    throw new Error(
+      `HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`
+    )
   }
   return res.json()
 }
@@ -128,7 +131,10 @@ export async function downloadGAIA({
     console.log(`GAIA downloaded to ${OUTPUT_DIR}`)
   } catch (err: any) {
     // eslint-disable-next-line no-console
-    console.error("Failed to download GAIA via datasets-server:", err?.message || err)
+    console.error(
+      "Failed to download GAIA via datasets-server:",
+      err?.message || err
+    )
     // Re-throw to allow caller to fallback (e.g., to direct method)
     throw err
   }
@@ -138,5 +144,3 @@ export async function downloadGAIA({
 if (import.meta.url === `file://${__filename}`) {
   downloadGAIA().catch(() => process.exit(1))
 }
-
-

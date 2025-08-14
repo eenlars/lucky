@@ -4,48 +4,43 @@ import { tool, zodSchema } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
-// Mock the sendAI function to avoid API calls
-vi.mock("@core/messages/api/sendAI", () => ({
+// Mock the sendAI function to avoid API calls (correct module path)
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn(),
 }))
-// TODO: The mock path doesn't match the import path. Import is from '@core/messages/api/sendAI/sendAI'
-// but mock is for '@core/messages/api/sendAI'. This might cause the mock to not work properly.
 
-const mockSendAI = sendAI as ReturnType<typeof vi.fn>
+const mockSendAI = vi.mocked(sendAI)
 
 describe("SearchGoogleMaps Parameter Validation Fix", () => {
   // TODO: This test creates its own searchGoogleMaps tool instead of testing the actual
   // implementation. It should import and test the real searchGoogleMaps tool to ensure
   // the actual tool has proper validation, not just a mock version.
   it("should validate maxResultCount parameter correctly and reject values > 20", async () => {
-    // Create the actual searchGoogleMaps tool schema as defined in the codebase
+    // Define schema separately so we can validate with zod directly
+    const paramsSchema = z.object({
+      query: z.string().describe("Search query"),
+      maxResultCount: z
+        .number()
+        .max(20)
+        .default(10)
+        .describe("Number of results to return"),
+      domainFilter: z.string().optional().describe("Filter by domain"),
+    })
     const searchGoogleMapsTool = tool({
       description: "Search Google Maps for business information",
-      parameters: zodSchema(
-        z.object({
-          query: z.string().describe("Search query"),
-          maxResultCount: z
-            .number()
-            .max(20)
-            .default(10)
-            .describe("Number of results to return"),
-          domainFilter: z.string().optional().describe("Filter by domain"),
-        })
-      ),
+      parameters: zodSchema(paramsSchema),
       execute: async () => "mock result",
     })
 
-    // Mock successful response
+    // Mock successful response shape used by tool mode processing
     mockSendAI.mockResolvedValue({
       success: true,
-      data: {
-        type: "tool",
-        toolName: "searchGoogleMaps",
-        reasoning: "Found coffee shops",
-        plan: "Search for coffee shops",
-      },
+      data: { text: "ok" },
       usdCost: 0.001,
-    })
+      error: null,
+      debug_input: [],
+      debug_output: {},
+    } as any)
     // TODO: This mock doesn't include any tool execution results or parameters.
     // It's mocking a tool selection response, not a tool execution response.
     // The test isn't actually testing parameter validation in execution.
@@ -74,30 +69,14 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
 
     // Test Case 2: Invalid parameter (should fail with validation error)
     // We'll directly test the validation by trying to create a tool call with invalid args
-    try {
-      await sendAI({
-        model: getDefaultModels().default,
-        mode: "tool",
-        messages: [
-          {
-            role: "user",
-            content: "Find 50 coffee shops", // This should trigger maxResultCount > 20
-          },
-        ],
-        opts: {
-          tools: { searchGoogleMaps: searchGoogleMapsTool },
-          toolChoice: { type: "tool", toolName: "searchGoogleMaps" },
-          maxSteps: 1,
-        },
-      })
-    } catch (error) {
-      // If the AI model respects the schema, it shouldn't generate invalid parameters
-      // If it does generate invalid parameters, our validation should catch it
-      if (error instanceof Error && error.message.includes("maxResultCount")) {
-        expect(error.message).toContain(
-          "Number must be less than or equal to 20"
-        )
-      }
+    // Directly validate schema rejects invalid param using underlying zod
+    const parsed = paramsSchema.safeParse({
+      query: "coffee",
+      maxResultCount: 50,
+    })
+    expect(parsed.success).toBe(false)
+    if (!parsed.success) {
+      expect(JSON.stringify(parsed.error.issues)).toContain("maximum")
     }
     // TODO: This test has multiple problems:
     // 1) The mocked sendAI never throws errors, so this catch block never executes

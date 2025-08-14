@@ -1,41 +1,36 @@
-import { Genome } from "@core/improvement/gp/Genome"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import {
+  createMockGenome,
+  mockRuntimeConstantsForGP,
+  setupCoreTest,
+} from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { GPEvaluatorAdapter } from "../GPEvaluatorAdapter"
 
 describe("GPEvaluatorAdapter prompt-only handling", () => {
-  let adapter: GPEvaluatorAdapter
-  let mockGenome: Genome
+  let adapter: any
+  let mockGenome: any
   let evolutionContext: EvolutionContext
 
   beforeEach(() => {
-    adapter = new GPEvaluatorAdapter([], "test goal", "test analysis")
+    setupCoreTest()
+    mockRuntimeConstantsForGP()
     evolutionContext = {
       generationId: "gen-1",
       generationNumber: 1,
       runId: "test-run",
     }
-
-    // Create a mock genome
-    mockGenome = {
-      getWorkflowVersionId: () => "test-wf-123",
-      getEvaluationInput: vi.fn(),
-      setWorkflowIO: vi.fn(),
-      nodes: [],
-    } as unknown as Genome
+    // Create a mock genome using typed factory
+    // Note: factory provides setPrecomputedWorkflowData
+    mockGenome = undefined
   })
 
   it("should skip evaluation for prompt-only type", async () => {
-    // TODO: this test has issues:
-    // 1. the mock genome is incomplete - missing required methods like getWorkflowIO
-    //    - should either use a complete mock or test with actual Genome instance
-    // 2. the test verifies getWorkflowIO wasn't called, but this property doesn't exist on mockGenome
-    //    - the actual method is setWorkflowIO or setPrecomputedWorkflowData
-    // 3. missing verification that setPrecomputedWorkflowData is NOT called for prompt-only
-    // 4. should verify all the fields in the returned data structure match implementation
-    // 5. the test doesn't verify edge cases like CONFIG.evolution.GP.verbose behavior
-    
+    // Dynamic module import so per-test mocks can apply if needed
+    const { GPEvaluatorAdapter } = await import("../GPEvaluatorAdapter")
+    adapter = new GPEvaluatorAdapter([], "test goal", "test analysis")
+    mockGenome = await createMockGenome()
+
     // Mock the evaluation input to be prompt-only
     const promptOnlyInput: EvaluationInput = {
       type: "prompt-only",
@@ -58,24 +53,35 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
       "Prompt-only workflow - evaluation skipped"
     )
 
-    // Verify setWorkflowIO was NOT called (since we skipped evaluation)
-    expect(mockGenome.getWorkflowIO).not.toHaveBeenCalled()
+    // Verify precomputed data setter was NOT called (since we skipped evaluation)
+    expect(mockGenome.setPrecomputedWorkflowData).not.toHaveBeenCalled()
   })
 
   it("should proceed with normal evaluation for non-prompt-only types", async () => {
-    // TODO: this test is poorly designed:
-    // 1. relies on the test throwing an error instead of properly mocking dependencies
-    //    - should mock AggregatedEvaluator.evaluate to return a proper response
-    // 2. again, getWorkflowIO doesn't exist on the genome - it's setPrecomputedWorkflowData
-    // 3. doesn't test the actual flow - just verifies a non-existent method was called
-    // 4. should verify that setPrecomputedWorkflowData IS called with correct parameters
-    // 5. should test successful evaluation path, not just error cases
-    // 6. missing tests for:
-    //    - CONFIG.evolution.GP.verbose mode using MockGPEvaluator
-    //    - failureTracker.trackEvaluationAttempt() being called
-    //    - error handling and failureTracker.trackEvaluationFailure()
-    //    - proper fitness calculation and feedback
-    
+    // Reset modules so our per-test mock takes effect
+    vi.resetModules()
+    vi.doMock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
+      AggregatedEvaluator: class {
+        evaluate = vi.fn().mockResolvedValue({
+          success: true,
+          data: {
+            fitness: {
+              score: 0.75,
+              totalCostUsd: 0.02,
+              totalTimeSeconds: 1.0,
+              accuracy: 0.8,
+            },
+            feedback: "ok",
+          },
+          usdCost: 0.02,
+        })
+      },
+    }))
+
+    const { GPEvaluatorAdapter } = await import("../GPEvaluatorAdapter")
+    adapter = new GPEvaluatorAdapter([], "test goal", "test analysis")
+    mockGenome = await createMockGenome()
+
     // Mock the evaluation input to be a different type
     const textInput: EvaluationInput = {
       type: "text",
@@ -86,15 +92,18 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
     }
 
     vi.mocked(mockGenome.getEvaluationInput).mockReturnValue(textInput)
-    vi.mocked(mockGenome.getWorkflowIO).mockResolvedValue([])
 
-    // Mock the aggregated evaluator to throw (since we don't have a full setup)
-    try {
-      await adapter.evaluate(mockGenome, evolutionContext)
-    } catch (error) {
-      // This is expected since we don't have full mock setup
-      // The important thing is that setWorkflowIO was called
-      expect(mockGenome.getWorkflowIO).toHaveBeenCalledWith(textInput)
-    }
+    const result = await adapter.evaluate(mockGenome, evolutionContext)
+
+    // Verify precomputed data was set with our constructor inputs
+    expect(mockGenome.setPrecomputedWorkflowData).toHaveBeenCalledWith({
+      workflowIO: [],
+      newGoal: "test goal",
+      problemAnalysis: "test analysis",
+    })
+
+    expect(result.success).toBe(true)
+    expect(result.data?.fitness?.score).toBe(0.75)
+    expect(result.usdCost).toBe(0.02)
   })
 })

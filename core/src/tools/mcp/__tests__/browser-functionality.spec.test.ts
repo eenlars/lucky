@@ -1,13 +1,13 @@
-import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"
+import { openrouter } from "@openrouter/ai-sdk-provider"
 import { getDefaultModels } from "@runtime/settings/models"
 import { generateText } from "ai"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
-describe("browser functionality tests", () => {
+describe.skip("browser functionality tests", () => {
   // TODO: These are integration tests that require actual browser automation and internet access.
   // They should be in a separate integration test suite, not mixed with unit tests.
   // Also, they depend on external website (nos.nl) which can change and break tests.
@@ -24,7 +24,7 @@ describe("browser functionality tests", () => {
     // Navigate to nos.nl
     lgg.log("Navigating to nos.nl...")
     const navResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -49,7 +49,7 @@ describe("browser functionality tests", () => {
     lgg.log("Testing browser_extract_content for headline extraction...")
 
     const extractTest1 = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -65,7 +65,7 @@ describe("browser functionality tests", () => {
     })
 
     const extractTest2 = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -82,7 +82,7 @@ describe("browser functionality tests", () => {
     })
 
     const extractTest3 = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -191,7 +191,7 @@ describe("browser functionality tests", () => {
 
     // Navigate to nos.nl
     const _navResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -214,7 +214,7 @@ describe("browser functionality tests", () => {
     // Get page state
     lgg.log("Getting page state...")
     const stateResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -298,7 +298,7 @@ describe("browser functionality tests", () => {
     // Try clicking around to see if content loads dynamically
     lgg.log("Checking for dynamic content...")
     const clickResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -315,7 +315,7 @@ describe("browser functionality tests", () => {
 
     // Get state again after interaction
     const _finalStateResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -347,7 +347,7 @@ describe("browser functionality tests", () => {
     )
 
     const result = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -401,7 +401,7 @@ async function cleanupBrowser(tools: any) {
   lgg.log("closing browser...")
   try {
     await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",

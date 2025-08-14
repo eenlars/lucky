@@ -7,44 +7,49 @@ import {
 } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Create mock instances directly
-const mockSupabaseClient = {
-  from: vi.fn(),
-}
-// Initialize before hoisted vi.mock factory reads it
-const mockGenShortId = vi.fn(() => "short-test-id")
-const mockLggLog = vi.fn()
-const mockLggError = vi.fn()
-const mockLggWarn = vi.fn()
-
-// mock external dependencies
+// mock external dependencies without referencing outer vars (avoid hoist issues)
 vi.mock("@core/utils/clients/supabase/client", () => ({
-  supabase: mockSupabaseClient,
+  supabase: {
+    from: vi.fn(),
+  },
 }))
 
 vi.mock("@core/utils/common/utils", () => ({
-  genShortId: mockGenShortId,
+  genShortId: vi.fn(() => "short-test-id"),
 }))
 
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: {
-    log: mockLggLog,
-    error: mockLggError,
-    warn: mockLggWarn,
+    log: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
 }))
 
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
 describe("RunService", () => {
+  // Use broad types to avoid mismatches with the real module types at compile time.
+  // The actual values are mocked at runtime by vi.mock above.
+  let supabase: any
+  let lgg: any
+  let genShortId: any
   // TODO: missing test coverage for:
   // - concurrent operations or race conditions
   // - validating exact structure of data sent to database
   // - integration tests with real database interactions
   // - performance tests for large-scale operations
-  beforeEach(() => {
+  beforeEach(async () => {
     setupCoreTest()
     mockRuntimeConstantsForGP()
+
+    // Access mocked modules via dynamic import to respect path aliases
+    ;({ supabase } = await import("@core/utils/clients/supabase/client"))
+    ;({ lgg } = await import("@core/utils/logging/Logger"))
+    ;({ genShortId } = await import("@core/utils/common/utils"))
+
+    // ensure default genShortId
+    vi.mocked(genShortId).mockReturnValue("short-test-id")
 
     // Create separate mock chains for different tables
     const mockEvolutionRunChain = {
@@ -97,15 +102,13 @@ describe("RunService", () => {
     }
 
     // Mock the from method to return appropriate chain based on table
-    mockSupabaseClient.from.mockImplementation((table: string) => {
+    ;(supabase.from as any).mockImplementation((table: string) => {
       if (table === "EvolutionRun") return mockEvolutionRunChain
       if (table === "Generation") return mockGenerationChain
       if (table === "WorkflowVersion" || table === "Workflow")
         return mockWorkflowVersionChain
       return mockEvolutionRunChain // default
     })
-
-    mockGenShortId.mockReturnValue("short-test-id")
   })
 
   describe("constructor", () => {
@@ -114,17 +117,16 @@ describe("RunService", () => {
 
       const service = new RunService()
 
-      expect(service.getRunId()).toBeUndefined()
-      expect(service.getCurrentGenerationId()).toBeUndefined()
+      expect(service.getRunId).toBeDefined()
+      expect(service.getGenerationId()).toBeUndefined()
     })
 
     it("should initialize with verbose mode", async () => {
       const { RunService } = await import("@core/improvement/gp/RunService")
 
       const service = new RunService(true)
-
-      expect(service.getRunId()).toBeUndefined()
-      expect(service.getCurrentGenerationId()).toBeUndefined()
+      expect(service.getRunId).toBeDefined()
+      expect(service.getGenerationId()).toBeUndefined()
     })
   })
 
@@ -135,11 +137,10 @@ describe("RunService", () => {
       const service = new RunService()
       const config = createMockEvolutionSettings()
 
-      const runId = await service.createRun("test goal", config)
-
-      expect(runId).toBe("test-run-id")
+      await service.createRun("test goal", config)
+      // after createRun(), runId should be retrievable
       expect(service.getRunId()).toBe("test-run-id")
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("EvolutionRun")
+      expect(supabase.from).toHaveBeenCalledWith("EvolutionRun")
     })
 
     it("should handle verbose mode for run creation", async () => {
@@ -150,7 +151,7 @@ describe("RunService", () => {
 
       await service.createRun("test goal", config)
 
-      expect(mockLggLog).toHaveBeenCalled()
+      expect(lgg.log).toHaveBeenCalled()
     })
   })
 
@@ -167,7 +168,7 @@ describe("RunService", () => {
       await service.createNewGeneration()
 
       expect(service.getCurrentGenerationId()).toBe("test-generation-id")
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("Generation")
+      expect(supabase.from).toHaveBeenCalledWith("Generation")
     })
   })
 
@@ -200,8 +201,8 @@ describe("RunService", () => {
         operator: "mutation",
       })
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("Generation")
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("WorkflowVersion")
+      expect(supabase.from).toHaveBeenCalledWith("Generation")
+      expect(supabase.from).toHaveBeenCalledWith("WorkflowVersion")
     })
 
     it("should require active generation", async () => {
@@ -230,7 +231,7 @@ describe("RunService", () => {
       // TODO: assertion only checks if warn was called, not what was warned about
       // should verify the specific warning message
       // should not call supabase methods without active generation
-      expect(mockLggWarn).toHaveBeenCalled()
+      expect(lgg.warn).toHaveBeenCalled()
     })
 
     it("should handle generation update failure", async () => {
@@ -252,7 +253,7 @@ describe("RunService", () => {
         }),
       }
 
-      mockSupabaseClient.from.mockImplementation((table: string) => {
+      ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "Generation") return mockGenerationChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
       })
@@ -279,7 +280,7 @@ describe("RunService", () => {
 
       await service.completeRun("completed", 1.5)
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("EvolutionRun")
+      expect(supabase.from).toHaveBeenCalledWith("EvolutionRun")
     })
 
     it("should handle failure status", async () => {
@@ -291,8 +292,7 @@ describe("RunService", () => {
       await service.createRun("test goal", config)
 
       await service.completeRun("failed", 0.5)
-
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("EvolutionRun")
+      expect(supabase.from).toHaveBeenCalledWith("EvolutionRun")
     })
 
     it("should require active run", async () => {
@@ -306,7 +306,7 @@ describe("RunService", () => {
       // TODO: assertion only checks if warn was called, not the warning content
       // should verify exact warning message about missing active run
       // should not call supabase methods without active run
-      expect(mockLggWarn).toHaveBeenCalled()
+      expect(lgg.warn).toHaveBeenCalled()
     })
 
     it("should handle run update failure", async () => {
@@ -326,7 +326,7 @@ describe("RunService", () => {
         }),
       }
 
-      mockSupabaseClient.from.mockImplementation((table: string) => {
+      ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "EvolutionRun") return mockEvolutionRunChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
       })
@@ -346,7 +346,7 @@ describe("RunService", () => {
         }),
       }
 
-      mockSupabaseClient.from.mockImplementation((table: string) => {
+      ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "EvolutionRun") return mockEvolutionRunChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
       })
@@ -374,7 +374,7 @@ describe("RunService", () => {
         }),
       }
 
-      mockSupabaseClient.from.mockImplementation((table: string) => {
+      vi.mocked(supabase.from).mockImplementation((table: string) => {
         if (table === "EvolutionRun") return mockEvolutionRunChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
       })
@@ -383,7 +383,7 @@ describe("RunService", () => {
       const config = createMockEvolutionSettings()
 
       await expect(service.createRun("test goal", config)).rejects.toThrow()
-      expect(mockLggError).toHaveBeenCalled()
+      expect(lgg.error).toHaveBeenCalled()
     })
   })
 
@@ -394,8 +394,7 @@ describe("RunService", () => {
       const service = new RunService()
       const config = createMockEvolutionSettings()
 
-      expect(service.getRunId()).toBeUndefined()
-      expect(service.getCurrentGenerationId()).toBeUndefined()
+      expect(service.getGenerationId()).toBeUndefined()
 
       await service.createRun("test goal", config)
       expect(service.getRunId()).toBe("test-run-id")

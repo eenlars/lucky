@@ -1,5 +1,6 @@
+import { envi } from "@core/utils/env.mjs"
 import { mkdirSync, writeFileSync } from "fs"
-import { join, dirname } from "path"
+import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 
 type GaiaRow = {
@@ -18,7 +19,7 @@ const __dirname = dirname(__filename)
 const OUTPUT_DIR = join(__dirname, "output")
 
 function getAuthToken(): string | undefined {
-  return process.env.HF_TOKEN || process.env.HUGGING_FACE_API_KEY
+  return envi.HF_TOKEN || envi.HUGGING_FACE_API_KEY
 }
 
 async function fetchText(url: string, authToken?: string): Promise<string> {
@@ -27,7 +28,9 @@ async function fetchText(url: string, authToken?: string): Promise<string> {
   const res = await fetch(url, { headers })
   if (!res.ok) {
     const body = await res.text().catch(() => "")
-    throw new Error(`HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`)
+    throw new Error(
+      `HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`
+    )
   }
   return res.text()
 }
@@ -44,7 +47,8 @@ function parseJsonlToArray(text: string): GaiaRow[] {
         Question: item.Question,
         Level: Number(item.Level ?? 0),
       }
-      if (item["Final answer"]) mapped["Final answer"] = String(item["Final answer"]) // keep key
+      if (item["Final answer"])
+        mapped["Final answer"] = String(item["Final answer"]) // keep key
       if (item.file_name) mapped.file_name = String(item.file_name)
       // Align with default behavior: skip instances with files
       if (!mapped.file_name && mapped.task_id !== "0-0-0-0-0") rows.push(mapped)
@@ -105,5 +109,3 @@ export async function downloadGAIADirect(): Promise<void> {
 if (import.meta.url === `file://${__filename}`) {
   downloadGAIADirect().catch(() => process.exit(1))
 }
-
-

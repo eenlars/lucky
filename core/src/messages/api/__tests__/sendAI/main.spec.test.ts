@@ -158,9 +158,10 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       expect(data.title).toContain("code")
       expect(data.priority).toBe("high")
       expect(data.status).toBe("todo")
-      // TODO: This assumes AI will always return null for unassigned tasks
-      // Should handle both null and undefined cases
-      expect(data.assignee).toBeNull()
+      // Accept both null and undefined for optional fields
+      expect(
+        data.assignee === null || typeof data.assignee === "undefined"
+      ).toBe(true)
     }
   }, 30000)
 })

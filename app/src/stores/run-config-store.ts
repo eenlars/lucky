@@ -12,9 +12,16 @@ export type CaseRow = {
   expected: string
 }
 
-export type RunOptions = { concurrency: number }
+export type RunOptions = {
+  concurrency: number
+  maxRetries?: number
+  timeoutMs?: number
+}
 
-type ResultsById = Record<string, InvokeWorkflowResult | { error: string }>
+export type ResultsById = Record<
+  string,
+  InvokeWorkflowResult | { error: string }
+>
 
 type RunConfigState = {
   datasetName?: string
@@ -85,9 +92,19 @@ export const useRunConfigStore = create<RunConfigState>()(
         })),
 
       updateCase: (id, patch) =>
-        set((s) => ({
-          cases: s.cases.map((x) => (x.id === id ? { ...x, ...patch } : x)),
-        })),
+        set((s) => {
+          let changed = false
+          const nextCases = s.cases.map((x) => {
+            if (x.id !== id) return x
+            const merged = { ...x, ...patch }
+            if (merged.input !== x.input || merged.expected !== x.expected) {
+              changed = true
+            }
+            return merged
+          })
+          if (!changed) return s
+          return { cases: nextCases }
+        }),
 
       removeCase: (id) =>
         set((s) => {
@@ -120,54 +137,83 @@ export const useRunConfigStore = create<RunConfigState>()(
         controllers.set(row.id, controller)
 
         const signal = externalSignal ?? controller.signal
+        const { maxRetries = 0, timeoutMs = 120000 } = get().options
 
-        try {
-          const resp = await fetch("/api/workflow/run-many", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              dslConfig: cfg,
-              cases: [
-                {
-                  workflowInput: row.input,
-                  workflowOutput: row.expected,
+        // Set timeout if configured
+        let timeoutId: NodeJS.Timeout | undefined
+        if (timeoutMs > 0 && !externalSignal) {
+          timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+        }
+
+        const attemptFetch = async (retryCount = 0): Promise<void> => {
+          try {
+            const resp = await fetch("/api/workflow/run-many", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                dslConfig: cfg,
+                cases: [
+                  {
+                    workflowInput: row.input,
+                    workflowOutput: row.expected,
+                  },
+                ],
+                goal: (goalOverride ?? get().goal)?.trim() || undefined,
+              }),
+              signal,
+            })
+
+            const out = await resp.json()
+            const first = out?.results?.[0]
+
+            if (first?.success && Array.isArray(first.data) && first.data[0]) {
+              const result: InvokeWorkflowResult = first.data[0]
+              set((s) => ({
+                resultsById: {
+                  ...s.resultsById,
+                  [row.id]: result,
                 },
-              ],
-              goal: (goalOverride ?? get().goal)?.trim() || undefined,
-            }),
-            signal,
-          })
+              }))
+            } else {
+              const error = first?.error || "Failed"
+              if (retryCount < maxRetries) {
+                // Exponential backoff: 1s, 2s, 4s...
+                await new Promise((r) =>
+                  setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000))
+                )
+                return attemptFetch(retryCount + 1)
+              }
+              set((s) => ({
+                resultsById: {
+                  ...s.resultsById,
+                  [row.id]: { error },
+                },
+              }))
+            }
+          } catch (e: any) {
+            const isAbort = e?.name === "AbortError"
+            const error = isAbort ? "Canceled" : e?.message || "Error"
 
-          const out = await resp.json()
-          const first = out?.results?.[0]
+            if (!isAbort && retryCount < maxRetries) {
+              await new Promise((r) =>
+                setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000))
+              )
+              return attemptFetch(retryCount + 1)
+            }
 
-          if (first?.success && Array.isArray(first.data) && first.data[0]) {
-            const result: InvokeWorkflowResult = first.data[0]
             set((s) => ({
               resultsById: {
                 ...s.resultsById,
-                [row.id]: result,
-              },
-            }))
-          } else {
-            set((s) => ({
-              resultsById: {
-                ...s.resultsById,
-                [row.id]: { error: first?.error || "Failed" },
+                [row.id]: { error },
               },
             }))
           }
-        } catch (e: any) {
-          set((s) => ({
-            resultsById: {
-              ...s.resultsById,
-              [row.id]: {
-                error:
-                  e?.name === "AbortError" ? "Canceled" : e?.message || "Error",
-              },
-            },
-          }))
+        }
+
+        try {
+          await attemptFetch()
         } finally {
+          if (timeoutId) clearTimeout(timeoutId)
           controllers.delete(row.id)
           set((s) => {
             const busy = new Set(s.busyIds)

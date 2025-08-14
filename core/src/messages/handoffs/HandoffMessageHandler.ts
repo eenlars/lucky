@@ -143,8 +143,11 @@ export class HandoffMessageHandler {
    */
   private selectDefaultTarget(handOffs: string[]): string[] {
     if (handOffs.length === 0) return []
-    if (handOffs.length === 1) return [handOffs[0]]
-    if (handOffs.length === 1 && handOffs[0] === "end") return ["end"]
+    // For single handoff, only auto-target when it's the terminal 'end';
+    // otherwise, defer selection to external chooser logic
+    if (handOffs.length === 1) {
+      return handOffs[0] === "end" ? ["end"] : []
+    }
     if (handOffs.length > 1 && handOffs.every((h) => h === "end"))
       return ["end"]
     // Multiple non-parallel targets present → selection should be done elsewhere (LLM/logic)

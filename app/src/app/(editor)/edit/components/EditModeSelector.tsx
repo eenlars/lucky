@@ -1,11 +1,12 @@
 "use client"
 
 import type { Database } from "@lucky/shared"
-type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
+type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"]
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"
@@ -16,10 +17,10 @@ import JSONEditor from "./JSONEditor"
 
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
+import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
-import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 
 type EditMode = "graph" | "json" | "eval"
 
@@ -71,17 +72,17 @@ export default function EditModeSelector({
     cancel,
   } = useRunConfigStore(
     useShallow((s) => ({
-    cases: s.cases,
-    busyIds: s.busyIds,
-    resultsById: s.resultsById,
-    goal: s.goal,
-    setGoal: s.setGoal,
-    addCase: s.addCase,
-    updateCase: s.updateCase,
-    removeCase: s.removeCase,
-    runOne: s.runOne,
-    runAll: s.runAll,
-    cancel: s.cancel,
+      cases: s.cases,
+      busyIds: s.busyIds,
+      resultsById: s.resultsById,
+      goal: s.goal,
+      setGoal: s.setGoal,
+      addCase: s.addCase,
+      updateCase: s.updateCase,
+      removeCase: s.removeCase,
+      runOne: s.runOne,
+      runAll: s.runAll,
+      cancel: s.cancel,
     }))
   )
 
@@ -177,25 +178,34 @@ export default function EditModeSelector({
       const [isRunning, setIsRunning] = useState(false)
       const [logs, setLogs] = useState<string[]>([])
 
+      const addLog = (message: string) => {
+        setLogs((prev) => [...prev, message])
+      }
+
       const handleExecuteWorkflow = async (prompt: string) => {
         setIsRunning(true)
-        setLogs(["Starting workflow execution..."])
-        
+        setLogs([])
+
         try {
-          setLogs(prev => [...prev, "Exporting workflow configuration..."])
+          addLog("Starting workflow execution...")
+          await new Promise((resolve) => setTimeout(resolve, 300))
+
+          addLog("Exporting workflow configuration...")
           const json = exportToJSON()
           const parsed = JSON.parse(json)
           const cfgMaybe = toWorkflowConfig(parsed)
-          
+
           if (!cfgMaybe) {
-            setLogs(prev => [...prev, "❌ Error: Invalid workflow configuration"])
+            addLog("❌ Error: Invalid workflow configuration")
             return
           }
-          
-          setLogs(prev => [...prev, "Loading workflow configuration..."])
+
+          await new Promise((resolve) => setTimeout(resolve, 200))
+          addLog("Loading workflow configuration...")
           const cfg = await loadFromDSLClient(cfgMaybe)
-          
-          setLogs(prev => [...prev, "Sending request to workflow API..."])
+
+          await new Promise((resolve) => setTimeout(resolve, 200))
+          addLog("Sending request to workflow API...")
           const response = await fetch("/api/workflow/invoke", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -211,18 +221,21 @@ export default function EditModeSelector({
             }),
           })
 
-          setLogs(prev => [...prev, "Processing response..."])
+          addLog("Processing response...")
           const result = await response.json()
-          
+
           if (result?.success) {
             const first = result?.data?.[0]
-            const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
-            setLogs(prev => [...prev, "✅ Workflow completed successfully!", `Result: ${out || "No response"}`])
+            const out =
+              first?.queueRunResult?.finalWorkflowOutput ??
+              first?.finalWorkflowOutputs
+            addLog("✅ Workflow completed successfully!")
+            addLog(`Result: ${out || "No response"}`)
           } else {
-            setLogs(prev => [...prev, `❌ Error: ${result?.error || "Unknown error"}`])
+            addLog(`❌ Error: ${result?.error || "Unknown error"}`)
           }
         } catch (error) {
-          setLogs(prev => [...prev, `❌ Error: ${error}`])
+          addLog(`❌ Error: ${error}`)
         } finally {
           setIsRunning(false)
         }
@@ -389,8 +402,12 @@ export default function EditModeSelector({
             <div className="flex items-center justify-between gap-3 mb-3">
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase">Goal</label>
-                  <span className="text-xs text-gray-500 italic">(Define your evaluation objective)</span>
+                  <label className="text-sm font-semibold text-gray-700 uppercase">
+                    Goal
+                  </label>
+                  <span className="text-xs text-gray-500 italic">
+                    (Define your evaluation objective)
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -425,18 +442,18 @@ export default function EditModeSelector({
             {/* Test Cases Section */}
             <div className="bg-white rounded border border-gray-200">
               <WorkflowIOTable
-                ios={cases as any}
-                resultsById={resultsById as any}
+                ios={cases}
+                resultsById={resultsById}
                 busyIds={busyIds}
-                onUpdate={async (id, patch) => updateCase(id, patch as any)}
-                onDelete={async (id) => removeCase(id)}
+                onUpdate={(id, patch) => updateCase(id, patch)}
+                onDelete={(id) => removeCase(id)}
                 onRun={async (row) => {
                   const json = exportToJSON()
                   const parsed = JSON.parse(json)
                   const cfgMaybe = toWorkflowConfig(parsed)
                   if (!cfgMaybe) return alert("Invalid workflow config")
                   const cfg = await loadFromDSLClient(cfgMaybe)
-                  await runOne(cfg, row as any)
+                  await runOne(cfg, row)
                 }}
                 onCancel={(id) => cancel(id)}
               />

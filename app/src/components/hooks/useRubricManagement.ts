@@ -1,10 +1,23 @@
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { RubricCriteria } from "../types/evaluation"
 import { DEFAULT_CRITERIA } from "../types/evaluation"
-import { createRubricString, calculateTotalMaxPoints, calculateTotalAchievedPoints, hasResults, generateFakeScores } from "../utils/rubric-utils"
+import {
+  calculateTotalAchievedPoints,
+  calculateTotalMaxPoints,
+  createRubricString,
+  generateFakeScores,
+  hasResults,
+} from "../utils/rubric-utils"
 
-export function useRubricManagement(ioId: string, updateCase: (id: string, updates: Record<string, unknown>) => void) {
+export function useRubricManagement(
+  ioId: string,
+  updateExpected: (id: string, expected: string) => void
+) {
   const [criteria, setCriteria] = useState<RubricCriteria[]>(DEFAULT_CRITERIA)
+  const updateExpectedRef = useRef(updateExpected)
+  useEffect(() => {
+    updateExpectedRef.current = updateExpected
+  }, [updateExpected])
 
   const totalMaxPoints = calculateTotalMaxPoints(criteria)
   const totalAchievedPoints = calculateTotalAchievedPoints(criteria)
@@ -13,31 +26,35 @@ export function useRubricManagement(ioId: string, updateCase: (id: string, updat
   // Auto-save rubric when criteria change
   useEffect(() => {
     if (criteria.length === 0) return
-    
     const rubricString = createRubricString(criteria)
-    updateCase(ioId, { expected: rubricString })
-  }, [criteria, ioId, updateCase])
+    updateExpectedRef.current(ioId, rubricString)
+  }, [criteria, ioId])
 
   const addCriteria = () => {
     const newId = String(criteria.length + 1)
-    setCriteria(prev => [...prev, {
-      id: newId,
-      name: "",
-      maxPoints: 5,
-      achievedPoints: null
-    }])
+    setCriteria((prev) => [
+      ...prev,
+      {
+        id: newId,
+        name: "",
+        maxPoints: 5,
+        achievedPoints: null,
+      },
+    ])
   }
 
   const updateCriteria = (id: string, updates: Partial<RubricCriteria>) => {
-    setCriteria(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c))
+    setCriteria((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
+    )
   }
 
   const removeCriteria = (id: string) => {
-    setCriteria(prev => prev.filter(c => c.id !== id))
+    setCriteria((prev) => prev.filter((c) => c.id !== id))
   }
 
   const simulateRubricResults = () => {
-    setCriteria(prev => generateFakeScores(prev))
+    setCriteria((prev) => generateFakeScores(prev))
   }
 
   return {
@@ -50,6 +67,6 @@ export function useRubricManagement(ioId: string, updateCase: (id: string, updat
     updateCriteria,
     removeCriteria,
     simulateRubricResults,
-    createRubricString: () => createRubricString(criteria)
+    createRubricString: () => createRubricString(criteria),
   }
 }

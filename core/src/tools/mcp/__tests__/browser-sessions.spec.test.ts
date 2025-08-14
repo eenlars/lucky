@@ -1,13 +1,13 @@
-import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
+import { openrouter } from "@openrouter/ai-sdk-provider"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { generateText } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
 
-describe("browser session persistence tests", () => {
+describe.skip("browser session persistence tests", () => {
   // TODO: More integration tests that depend on external services and browser automation.
   // These should be in a separate test suite with proper test infrastructure.
   beforeAll(() => {
@@ -29,7 +29,7 @@ describe("browser session persistence tests", () => {
     )
 
     const navResult = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -54,7 +54,7 @@ describe("browser session persistence tests", () => {
     )
 
     const stateResult = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -101,7 +101,7 @@ describe("browser session persistence tests", () => {
     )
 
     const extractResult = await generateText({
-      model: openai("gpt-4.1-mini"),
+      model: openrouter(getDefaultModels().medium),
       messages: [
         {
           role: "user",
@@ -152,7 +152,7 @@ describe("browser session persistence tests", () => {
     // Make multiple tool calls in a single generateText call to use the same session
     lgg.log("Making multiple tool calls in single session...")
     const result = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -207,7 +207,7 @@ describe("browser session persistence tests", () => {
   }, 60000)
 })
 
-describe("advanced browser tests", () => {
+describe.skip("advanced browser tests", () => {
   // TODO: "Advanced" is vague. What makes these tests advanced?
   // Better to describe what specific functionality is being tested.
   it("should get latest headline from nos.nl", async () => {
@@ -221,7 +221,7 @@ describe("advanced browser tests", () => {
     // Navigate to nos.nl
     lgg.log("Step 1: Navigating to nos.nl...")
     await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -239,7 +239,7 @@ describe("advanced browser tests", () => {
     // Extract the main headline
     lgg.log("Step 2: Extracting latest headline...")
     const headlineResult = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -290,7 +290,7 @@ describe("advanced browser tests", () => {
     // Navigate to a simple page first
     lgg.log("Step 1: Navigate to simple page...")
     await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -308,7 +308,7 @@ describe("advanced browser tests", () => {
 
     lgg.log("Step 2: Test browser_extract_content on simple page...")
     const extractResult = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -328,7 +328,7 @@ describe("advanced browser tests", () => {
     // Also test with explicit parameters
     lgg.log("Step 3: Test with different query...")
     const extractResult2 = await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",
@@ -366,7 +366,7 @@ async function cleanupBrowser(tools: any) {
   lgg.log("closing browser...")
   try {
     await generateText({
-      model: openai(getDefaultModels().default),
+      model: openrouter(getDefaultModels().default),
       messages: [
         {
           role: "user",

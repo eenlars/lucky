@@ -775,7 +775,7 @@ describe("Evaluator", () => {
               totalCostUsd: 0.02,
               totalTimeSeconds: 0.8,
               accuracy: 0.95,
-              },
+            },
             feedback: "test feedback 2",
           },
           usdCost: 0.02,

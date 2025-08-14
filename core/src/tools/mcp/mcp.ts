@@ -1,4 +1,5 @@
 import type { MCPToolName } from "@core/tools/tool.types"
+import { envi } from "@core/utils/env.mjs"
 import { PATHS } from "@runtime/settings/constants"
 import { experimental_createMCPClient, type ToolSet } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
@@ -8,7 +9,9 @@ import path from "path"
 // Environment variable substitution utility
 function substituteEnvVars(str: string): string {
   return str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
-    return process.env[varName] || match
+    return (
+      (envi as Record<string, any>)[varName] ?? process.env[varName] ?? match
+    )
   })
 }
 
@@ -26,8 +29,12 @@ interface MCPConfig {
 
 function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   try {
-    const configPath = process.env.MCP_SECRET_PATH
-      ? path.resolve(process.env.MCP_SECRET_PATH)
+    // Prefer process.env for tests that set MCP_SECRET_PATH dynamically,
+    // fallback to envi (mocked in tests), then to runtime default
+    const configuredPath =
+      process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
+    const configPath = configuredPath
+      ? path.resolve(configuredPath)
       : path.join(PATHS.runtime, "mcp-secret.json")
     if (!fs.existsSync(configPath)) {
       throw new Error(

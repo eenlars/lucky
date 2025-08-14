@@ -84,23 +84,22 @@ describe("GPEvaluatorAdapter", () => {
   })
 
   it("handles evaluation failure", async () => {
-    const { GPEvaluatorAdapter: GPEvaluatorAdapterPrompt } = await import(
-      "@core/evaluation/evaluators/GPEvaluatorAdapter"
-    )
+    // Reset module registry to ensure per-test mock overrides take effect
+    vi.resetModules()
 
-    // Override mock implementation at runtime
-    // Re-mock module with rejecting evaluate
+    // Override mock implementation at runtime for this test only
     vi.doMock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
       AggregatedEvaluator: class {
         evaluate = vi.fn().mockRejectedValue(new Error("eval failed"))
         protected aggregateFitness = vi.fn()
       },
     }))
+
     const { GPEvaluatorAdapter } = await import(
       "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
 
-    const evaluator = new GPEvaluatorAdapterPrompt(
+    const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],
       "test goal",
       "test analysis"

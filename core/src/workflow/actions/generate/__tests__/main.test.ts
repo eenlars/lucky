@@ -1,27 +1,29 @@
 import type { Workflow } from "@core/workflow/Workflow"
-import { describe, expect, it, vi } from "vitest"
-import { workflowToString } from "../workflowToString"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Create mock instances directly
-const mockExplainAgents = vi.fn().mockReturnValue("Agent explanations\n")
-const mockExplainSubsetOfTools = vi.fn().mockReturnValue("Tool explanations\n")
-const mockWorkflowToAdjacencyList = vi.fn().mockReturnValue("Adjacency list\n")
+let mockExplainAgents: ReturnType<typeof vi.fn>
+let mockExplainSubsetOfTools: ReturnType<typeof vi.fn>
+let mockWorkflowToAdjacencyList: ReturnType<typeof vi.fn>
 
-vi.mock("@core/workflow/actions/generate/utils/explainAgents", () => ({
-  explainAgents: mockExplainAgents,
-}))
+beforeEach(async () => {
+  vi.resetModules()
+  mockExplainAgents = vi.fn().mockReturnValue("Agent explanations\n")
+  mockExplainSubsetOfTools = vi.fn().mockReturnValue("Tool explanations\n")
+  mockWorkflowToAdjacencyList = vi.fn().mockReturnValue("Adjacency list\n")
 
-vi.mock("@core/workflow/actions/generate/utils/explainTools", () => ({
-  explainSubsetOfTools: mockExplainSubsetOfTools,
-}))
-
-vi.mock("@core/workflow/actions/generate/utils/toAdjacencyList", () => ({
-  workflowToAdjacencyList: mockWorkflowToAdjacencyList,
-}))
+  vi.doMock("@core/prompts/explainAgents", () => ({
+    explainAgents: mockExplainAgents,
+  }))
+  vi.doMock("@core/prompts/explainTools", () => ({
+    explainSubsetOfTools: mockExplainSubsetOfTools,
+  }))
+  vi.doMock("@core/workflow/actions/generate/toAdjacencyList", () => ({
+    workflowToAdjacencyList: mockWorkflowToAdjacencyList,
+  }))
+})
 
 describe("describeWorkflow", () => {
-  // FAILING: Test expects mocked return values but actual implementation returns different format (agent XML format)
-  it("should describe workflow with default options", () => {
+  it("should describe workflow with default options", async () => {
     const mockWorkflow: Workflow = {
       getConfig: vi.fn().mockReturnValue({
         nodes: [
@@ -36,6 +38,7 @@ describe("describeWorkflow", () => {
       }),
     } as unknown as Workflow
 
+    const { workflowToString } = await import("../workflowToString")
     const result = workflowToString(mockWorkflow, { easyModelNames: false })
 
     expect(result).toBe("Tool explanations\nAdjacency list\n")
