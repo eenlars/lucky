@@ -1,5 +1,5 @@
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
-import type { Enums } from "@core/utils/clients/supabase/types"
+import type { Enums } from "@lucky/shared"
 // collaboration Types
 
 // OFFLOAD

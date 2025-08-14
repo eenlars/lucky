@@ -1,10 +1,10 @@
 import { normalizeModelName } from "@core/messages/api/sendAI/sendAI"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Json, TablesInsert } from "@core/utils/clients/supabase/types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
+import type { Json, TablesInsert } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 

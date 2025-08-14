@@ -1,12 +1,10 @@
 "use client"
 
-import type { Database } from "@lucky/shared"
+import type { Tables } from "@lucky/shared"
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"
@@ -14,6 +12,7 @@ import Workflow from "@/react-flow-visualization/components/workflow"
 import { useAppStore } from "@/react-flow-visualization/store"
 
 import JSONEditor from "./JSONEditor"
+import ModeSwitcher from "./ModeSwitcher"
 
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
@@ -281,26 +280,7 @@ export default function EditModeSelector({
           </span>
         </button>
         <GraphHeaderButtons />
-        <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-          <button
-            onClick={() => handleModeChange("graph")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${"bg-white text-gray-900 shadow-sm"}`}
-          >
-            Graph Mode
-          </button>
-          <button
-            onClick={() => handleModeChange("json")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-          >
-            JSON Mode
-          </button>
-          <button
-            onClick={() => handleModeChange("eval")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-          >
-            Run & Evaluate
-          </button>
-        </div>
+        <ModeSwitcher mode={mode} onChange={handleModeChange} />
       </div>
     )
 
@@ -322,26 +302,7 @@ export default function EditModeSelector({
   // JSON mode
   const JsonHeaderRight = (
     <div className="flex items-center space-x-2">
-      <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-        <button
-          onClick={() => handleModeChange("graph")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-        >
-          Graph Mode
-        </button>
-        <button
-          onClick={() => handleModeChange("json")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
-        >
-          JSON Mode
-        </button>
-        <button
-          onClick={() => handleModeChange("eval")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-        >
-          Run & Evaluate
-        </button>
-      </div>
+      <ModeSwitcher mode={mode} onChange={handleModeChange} />
     </div>
   )
 
@@ -366,26 +327,7 @@ export default function EditModeSelector({
   // Eval mode
   const EvalHeaderRight = (
     <div className="flex items-center space-x-2">
-      <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-        <button
-          onClick={() => handleModeChange("graph")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-        >
-          Graph Mode
-        </button>
-        <button
-          onClick={() => handleModeChange("json")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50`}
-        >
-          JSON Mode
-        </button>
-        <button
-          onClick={() => handleModeChange("eval")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-white text-gray-900 shadow-sm`}
-        >
-          Run & Evaluate
-        </button>
-      </div>
+      <ModeSwitcher mode={mode} onChange={handleModeChange} />
     </div>
   )
 
@@ -443,10 +385,6 @@ export default function EditModeSelector({
             <div className="bg-white rounded border border-gray-200">
               <WorkflowIOTable
                 ios={cases}
-                resultsById={resultsById}
-                busyIds={busyIds}
-                onUpdate={(id, patch) => updateCase(id, patch)}
-                onDelete={(id) => removeCase(id)}
                 onRun={async (row) => {
                   const json = exportToJSON()
                   const parsed = JSON.parse(json)
@@ -455,7 +393,6 @@ export default function EditModeSelector({
                   const cfg = await loadFromDSLClient(cfgMaybe)
                   await runOne(cfg, row)
                 }}
-                onCancel={(id) => cancel(id)}
               />
 
               <div className="p-3 border-t flex items-center justify-between">

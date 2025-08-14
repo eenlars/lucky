@@ -1,11 +1,8 @@
 "use server"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Database } from "@lucky/shared"
-type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
-type TablesInsert<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Insert"]
-type TablesUpdate<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Update"]
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
 
 export const retrieveWorkflowInvocation = async (
   invocationId: string

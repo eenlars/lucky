@@ -7,9 +7,8 @@ import {
   saveWorkflowVersion,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
-import type { Database } from "@lucky/shared"
-type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import { genShortId } from "@core/utils/common/utils"
+import type { Tables } from "@lucky/shared"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -60,11 +59,11 @@ export default function JSONEditor({
     const diff = now.getTime() - date.getTime()
     const seconds = Math.floor(diff / 1000)
     const minutes = Math.floor(seconds / 60)
-    
+
     if (minutes < 1) return "just now"
     if (minutes === 1) return "1 min ago"
     if (minutes < 60) return `${minutes} mins ago`
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
   // Update store when initialContent prop changes
@@ -78,7 +77,7 @@ export default function JSONEditor({
     updateWorkflowJSON(newContent)
     setIsDirty(true)
     setVerificationResult(null)
-    
+
     // Validate JSON in real-time
     try {
       JSON.parse(newContent)
@@ -86,18 +85,21 @@ export default function JSONEditor({
     } catch (error) {
       setJsonParseError(error instanceof Error ? error.message : "Invalid JSON")
     }
-    
+
     onContentChange?.(newContent)
   }
 
   // Auto-save functionality with debounce
   useEffect(() => {
     if (!isDirty || !autoSaveEnabled || !workflowVersion) return
-    
+
     const autoSaveTimeout = setTimeout(() => {
       // Only auto-save if JSON is valid
       if (!jsonParseError) {
-        localStorage.setItem(`workflow_draft_${workflowVersion.wf_version_id}`, workflowJSON)
+        localStorage.setItem(
+          `workflow_draft_${workflowVersion.wf_version_id}`,
+          workflowJSON
+        )
         setLastSaved(new Date())
       }
     }, 2000) // 2 second debounce
@@ -108,7 +110,9 @@ export default function JSONEditor({
   // Load draft on mount
   useEffect(() => {
     if (workflowVersion?.wf_version_id) {
-      const draft = localStorage.getItem(`workflow_draft_${workflowVersion.wf_version_id}`)
+      const draft = localStorage.getItem(
+        `workflow_draft_${workflowVersion.wf_version_id}`
+      )
       if (draft && draft !== workflowJSON) {
         // Show option to restore draft
         const shouldRestore = window.confirm(
@@ -286,8 +290,10 @@ export default function JSONEditor({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if not in an input/textarea (except for save/verify)
-      const isInInput = ['INPUT', 'TEXTAREA'].includes((e.target as Element)?.tagName)
-      
+      const isInInput = ["INPUT", "TEXTAREA"].includes(
+        (e.target as Element)?.tagName
+      )
+
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
           case "s":
@@ -305,20 +311,26 @@ export default function JSONEditor({
           case "k":
             if (!isInInput) {
               e.preventDefault()
-              document.querySelector<HTMLTextAreaElement>('[placeholder*="Tell me what you want"]')?.focus()
+              document
+                .querySelector<HTMLTextAreaElement>(
+                  '[placeholder*="Tell me what you want"]'
+                )
+                ?.focus()
             }
             break
           case "d":
             if (!isInInput && workflowVersion) {
               e.preventDefault()
               // Clear local draft
-              localStorage.removeItem(`workflow_draft_${workflowVersion.wf_version_id}`)
+              localStorage.removeItem(
+                `workflow_draft_${workflowVersion.wf_version_id}`
+              )
               setLastSaved(null)
             }
             break
         }
       }
-      
+
       // Escape key handlers
       if (e.key === "Escape") {
         if (showSaveModal) {
@@ -333,7 +345,16 @@ export default function JSONEditor({
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isDirty, isLoading, jsonParseError, isVerifying, showSaveModal, verificationResult, workflowVersion, handleVerify])
+  }, [
+    isDirty,
+    isLoading,
+    jsonParseError,
+    isVerifying,
+    showSaveModal,
+    verificationResult,
+    workflowVersion,
+    handleVerify,
+  ])
 
   // Warning before leaving with unsaved changes
   useEffect(() => {
@@ -363,7 +384,9 @@ export default function JSONEditor({
                       : "New Workflow"}
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
-                    <span>{workflowVersion?.wf_version_id || "Not saved yet"}</span>
+                    <span>
+                      {workflowVersion?.wf_version_id || "Not saved yet"}
+                    </span>
                     {isDirty && (
                       <span className="text-amber-600 font-medium flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
@@ -372,16 +395,36 @@ export default function JSONEditor({
                     )}
                     {jsonParseError && (
                       <span className="text-red-600 font-medium flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                         JSON Error
                       </span>
                     )}
                     {lastSaved && autoSaveEnabled && (
                       <span className="text-green-600 font-medium flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                         Draft saved {formatTime(lastSaved)}
                       </span>
@@ -392,16 +435,30 @@ export default function JSONEditor({
             </div>
 
             <div className="flex items-center gap-3">
-
               {/* Run Button - Only show when saved */}
               {workflowVersion && (
                 <Link
                   href={`/`}
                   className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-sm cursor-pointer"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Run
                 </Link>
@@ -410,33 +467,57 @@ export default function JSONEditor({
               {/* Keyboard Shortcuts Help */}
               <div className="relative group">
                 <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </button>
                 <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                   <div className="p-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">Keyboard Shortcuts</h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">
+                      Keyboard Shortcuts
+                    </h4>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Save workflow</span>
-                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘S</kbd>
+                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
+                          ⌘S
+                        </kbd>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Validate workflow</span>
-                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘⇧Enter</kbd>
+                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
+                          ⌘⇧Enter
+                        </kbd>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Focus AI assistant</span>
-                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘K</kbd>
+                        <span className="text-gray-600">
+                          Focus AI assistant
+                        </span>
+                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
+                          ⌘K
+                        </kbd>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Clear draft</span>
-                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘D</kbd>
+                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
+                          ⌘D
+                        </kbd>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Close modals</span>
-                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">Esc</kbd>
+                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
+                          Esc
+                        </kbd>
                       </div>
                     </div>
                   </div>
@@ -450,31 +531,57 @@ export default function JSONEditor({
                 className={`
                   px-4 py-2 rounded-md font-medium text-sm
                   transition-all duration-200 flex items-center gap-2
-                  ${isDirty && !jsonParseError
-                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer" 
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ${
+                    isDirty && !jsonParseError
+                      ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   }
                 `}
                 title={
-                  jsonParseError 
-                    ? "Fix JSON errors before saving" 
-                    : isDirty 
-                    ? "Save changes (⌘S)" 
-                    : "No changes to save"
+                  jsonParseError
+                    ? "Fix JSON errors before saving"
+                    : isDirty
+                      ? "Save changes (⌘S)"
+                      : "No changes to save"
                 }
               >
                 {isLoading ? (
                   <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    <svg
+                      className="w-4 h-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Saving...
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"
+                      />
                     </svg>
                     Save
                   </>
@@ -491,12 +598,32 @@ export default function JSONEditor({
             <div className="flex items-start gap-3">
               <div className="mt-0.5">
                 {verificationResult.isValid ? (
-                  <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 ) : (
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 )}
               </div>
@@ -512,7 +639,10 @@ export default function JSONEditor({
                   verificationResult.errors.length > 0 && (
                     <ul className="mt-2 space-y-1">
                       {verificationResult.errors.map((error, index) => (
-                        <li key={index} className="text-sm text-red-700 flex items-start gap-2">
+                        <li
+                          key={index}
+                          className="text-sm text-red-700 flex items-start gap-2"
+                        >
                           <span className="text-red-400 mt-0.5">→</span>
                           <span className="leading-relaxed">{error}</span>
                         </li>
@@ -524,8 +654,18 @@ export default function JSONEditor({
                 onClick={() => setVerificationResult(null)}
                 className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -548,20 +688,42 @@ export default function JSONEditor({
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-medium text-gray-900 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
                 AI Assistant
               </h3>
               <span className="text-xs text-gray-500">
-                {feedback.length > 0 ? `${feedback.length} chars` : "Ready to help"}
+                {feedback.length > 0
+                  ? `${feedback.length} chars`
+                  : "Ready to help"}
               </span>
             </div>
 
             {optimizeError && (
               <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-start gap-2">
-                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{optimizeError}</span>
               </div>
@@ -573,7 +735,12 @@ export default function JSONEditor({
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !isOptimizing && feedback.trim()) {
+                    if (
+                      e.key === "Enter" &&
+                      (e.metaKey || e.ctrlKey) &&
+                      !isOptimizing &&
+                      feedback.trim()
+                    ) {
                       e.preventDefault()
                       handleOptimize()
                     }
@@ -583,7 +750,7 @@ export default function JSONEditor({
                   rows={4}
                 />
                 <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                  {(navigator.platform.indexOf('Mac') > -1 ? "⌘" : "Ctrl")}+Enter
+                  {navigator.platform.indexOf("Mac") > -1 ? "⌘" : "Ctrl"}+Enter
                 </div>
               </div>
 
@@ -593,24 +760,50 @@ export default function JSONEditor({
                 className={`
                   w-full px-4 py-2.5 rounded-lg font-medium text-sm
                   transition-all duration-200 flex items-center justify-center gap-2
-                  ${feedback.trim() && !isOptimizing
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm cursor-pointer" 
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ${
+                    feedback.trim() && !isOptimizing
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm cursor-pointer"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   }
                 `}
               >
                 {isOptimizing ? (
                   <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    <svg
+                      className="w-4 h-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Generating workflow...
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
                     </svg>
                     Generate with AI
                   </>
@@ -618,7 +811,6 @@ export default function JSONEditor({
               </button>
             </div>
           </div>
-
         </div>
 
         {/* Collapsible System Prompt */}
@@ -627,7 +819,9 @@ export default function JSONEditor({
             onClick={() => setShowSystemPrompt(!showSystemPrompt)}
             className="w-full px-6 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <span className="text-sm font-medium text-gray-700">AI System Prompt</span>
+            <span className="text-sm font-medium text-gray-700">
+              AI System Prompt
+            </span>
             <svg
               className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${showSystemPrompt ? "rotate-180" : ""}`}
               fill="none"
@@ -659,8 +853,18 @@ export default function JSONEditor({
         <div className="flex-1 bg-white overflow-y-auto">
           <div className="px-6 py-4">
             <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               Format & Validate
             </h3>
@@ -680,8 +884,18 @@ export default function JSONEditor({
                   }}
                   className="w-full px-4 py-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-700 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                    />
                   </svg>
                   Format JSON
                 </button>
@@ -691,33 +905,69 @@ export default function JSONEditor({
                   disabled={isVerifying || !!jsonParseError}
                   className={`
                     w-full px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2
-                    ${jsonParseError
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : isVerifying
-                      ? "bg-purple-50 text-purple-700 border border-purple-200"
-                      : "bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 cursor-pointer"
+                    ${
+                      jsonParseError
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : isVerifying
+                          ? "bg-purple-50 text-purple-700 border border-purple-200"
+                          : "bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 cursor-pointer"
                     }
                   `}
                 >
                   {isVerifying ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                      <svg
+                        className="w-4 h-4 animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Validating...
                     </>
                   ) : jsonParseError ? (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                       Fix JSON First
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                       Validate Workflow
                     </>
@@ -726,19 +976,43 @@ export default function JSONEditor({
               </div>
 
               {/* JSON Status */}
-              <div className={`p-3 rounded-lg border ${jsonParseError ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+              <div
+                className={`p-3 rounded-lg border ${jsonParseError ? "bg-red-50 border-red-200" : "bg-green-50 border-green-200"}`}
+              >
                 <div className="flex items-center gap-2">
                   {jsonParseError ? (
-                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-4 h-4 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   ) : (
-                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-4 h-4 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   )}
-                  <span className={`text-sm font-medium ${jsonParseError ? 'text-red-800' : 'text-green-800'}`}>
-                    {jsonParseError ? 'Invalid JSON' : 'Valid JSON'}
+                  <span
+                    className={`text-sm font-medium ${jsonParseError ? "text-red-800" : "text-green-800"}`}
+                  >
+                    {jsonParseError ? "Invalid JSON" : "Valid JSON"}
                   </span>
                 </div>
                 {jsonParseError && (
@@ -748,29 +1022,63 @@ export default function JSONEditor({
 
               {/* Workflow Validation Status - READ ONLY */}
               {verificationResult && (
-                <div className={`p-3 rounded-lg border-2 border-dashed ${verificationResult.isValid ? 'bg-emerald-50 border-emerald-300' : 'bg-orange-50 border-orange-300'}`}>
+                <div
+                  className={`p-3 rounded-lg border-2 border-dashed ${verificationResult.isValid ? "bg-emerald-50 border-emerald-300" : "bg-orange-50 border-orange-300"}`}
+                >
                   <div className="flex items-center gap-2">
                     {verificationResult.isValid ? (
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4 text-emerald-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     ) : (
-                      <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4 text-orange-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     )}
-                    <span className={`text-sm font-medium ${verificationResult.isValid ? 'text-emerald-800' : 'text-orange-800'}`}>
-                      {verificationResult.isValid ? 'Workflow Ready' : `${verificationResult.errors.length} Issues Found`}
+                    <span
+                      className={`text-sm font-medium ${verificationResult.isValid ? "text-emerald-800" : "text-orange-800"}`}
+                    >
+                      {verificationResult.isValid
+                        ? "Workflow Ready"
+                        : `${verificationResult.errors.length} Issues Found`}
                     </span>
-                    <span className="text-xs text-gray-500 ml-auto">Status</span>
+                    <span className="text-xs text-gray-500 ml-auto">
+                      Status
+                    </span>
                   </div>
                   {!verificationResult.isValid && (
                     <ul className="mt-2 space-y-1">
-                      {verificationResult.errors.slice(0, 3).map((error, index) => (
-                        <li key={index} className="text-xs text-orange-700">• {error}</li>
-                      ))}
+                      {verificationResult.errors
+                        .slice(0, 3)
+                        .map((error, index) => (
+                          <li key={index} className="text-xs text-orange-700">
+                            • {error}
+                          </li>
+                        ))}
                       {verificationResult.errors.length > 3 && (
-                        <li className="text-xs text-orange-600">+ {verificationResult.errors.length - 3} more issues</li>
+                        <li className="text-xs text-orange-600">
+                          + {verificationResult.errors.length - 3} more issues
+                        </li>
                       )}
                     </ul>
                   )}
@@ -779,19 +1087,27 @@ export default function JSONEditor({
 
               {/* Workflow Templates */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Start Templates</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-3">
+                  Quick Start Templates
+                </h4>
                 <div className="space-y-2">
                   {WORKFLOW_TEMPLATES.map((template) => (
                     <button
                       key={template.id}
                       onClick={() => {
-                        updateWorkflowJSON(JSON.stringify(template.workflow, null, 2))
+                        updateWorkflowJSON(
+                          JSON.stringify(template.workflow, null, 2)
+                        )
                         setIsDirty(true)
                       }}
                       className="w-full px-3 py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-left transition-colors cursor-pointer"
                     >
-                      <div className="text-sm font-medium text-gray-900">{template.name}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{template.description}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {template.name}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {template.description}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -809,8 +1125,18 @@ export default function JSONEditor({
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2" />
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"
+                    />
                   </svg>
                   Save Workflow Version
                 </h3>
@@ -822,8 +1148,18 @@ export default function JSONEditor({
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -833,8 +1169,18 @@ export default function JSONEditor({
             <div className="px-6 py-4">
               {saveError && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-                  <svg className="w-4 h-4 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 text-red-600 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <div className="text-red-700 text-sm">{saveError}</div>
                 </div>
@@ -852,7 +1198,12 @@ export default function JSONEditor({
                   value={commitMessage}
                   onChange={(e) => setCommitMessage(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && commitMessage.trim() && !isLoading) {
+                    if (
+                      e.key === "Enter" &&
+                      (e.metaKey || e.ctrlKey) &&
+                      commitMessage.trim() &&
+                      !isLoading
+                    ) {
                       e.preventDefault()
                       handleSave()
                     }
@@ -863,7 +1214,9 @@ export default function JSONEditor({
                   autoFocus
                 />
                 <p className="mt-2 text-xs text-gray-500">
-                  {commitMessage.length > 0 ? `${commitMessage.length} characters` : "Write a brief description of your changes"}
+                  {commitMessage.length > 0
+                    ? `${commitMessage.length} characters`
+                    : "Write a brief description of your changes"}
                 </p>
               </div>
 
@@ -877,7 +1230,7 @@ export default function JSONEditor({
                       "Added new processing node",
                       "Fixed validation errors",
                       "Updated node connections",
-                      "Improved error handling"
+                      "Improved error handling",
                     ].map((suggestion) => (
                       <button
                         key={suggestion}
@@ -896,7 +1249,8 @@ export default function JSONEditor({
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-gray-500">
-                  {(navigator.platform.indexOf('Mac') > -1 ? "⌘" : "Ctrl")}+Enter to save
+                  {navigator.platform.indexOf("Mac") > -1 ? "⌘" : "Ctrl"}+Enter
+                  to save
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -915,24 +1269,50 @@ export default function JSONEditor({
                     className={`
                       px-6 py-2 rounded-md text-sm font-medium
                       transition-all duration-200 flex items-center gap-2
-                      ${commitMessage.trim() && !isLoading
-                        ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer" 
-                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      ${
+                        commitMessage.trim() && !isLoading
+                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer"
+                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
                       }
                     `}
                   >
                     {isLoading ? (
                       <>
-                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        <svg
+                          className="w-4 h-4 animate-spin"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
                         </svg>
                         Saving...
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                         Save Version
                       </>

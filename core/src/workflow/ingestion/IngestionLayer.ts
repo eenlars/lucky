@@ -272,11 +272,15 @@ export class IngestionLayer {
       lgg.info("[GAIALoader] Using local cached GAIA data")
 
       // get HF token from environment if available (prefer runtime env over test/static mock)
-      const authToken =
-        process.env.HF_TOKEN ||
-        process.env.HUGGING_FACE_API_KEY ||
-        envi.HF_TOKEN ||
-        envi.HUGGING_FACE_API_KEY
+      const authTokenCandidates: Array<string | undefined | null> = [
+        process.env.HF_TOKEN,
+        process.env.HUGGING_FACE_API_KEY,
+        envi.HF_TOKEN,
+        envi.HUGGING_FACE_API_KEY,
+      ]
+      const authToken = authTokenCandidates.find(
+        (v): v is string => typeof v === "string" && v.length > 0
+      )
 
       if (!authToken) {
         lgg.warn(

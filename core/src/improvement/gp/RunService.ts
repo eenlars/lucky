@@ -29,13 +29,9 @@ import type {
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type {
-  Tables,
-  TablesInsert,
-  TablesUpdate,
-} from "@core/utils/clients/supabase/types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
+import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"

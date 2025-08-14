@@ -2,7 +2,6 @@
 
 import { cleanupStaleEvolutionRuns } from "@/trace-visualization/db/Evolution/retrieveEvolution"
 import type { Database } from "@lucky/shared"
-type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
@@ -41,6 +40,9 @@ const getDuration = (startTime: string, endTime: string | null) => {
   if (minutes > 0) return `${minutes}m ${seconds % 60}s`
   return `${seconds}s`
 }
+
+type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"]
 
 const isStaleRun = (run: Tables<"EvolutionRun">) => {
   if (run.status !== "running") return false

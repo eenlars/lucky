@@ -1,13 +1,12 @@
 "use client"
 
-import { MODELS } from "@runtime/settings/constants.client"
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Database } from "@lucky/shared"
-type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 import {
   toWorkflowConfig,
   type WorkflowConfig,
 } from "@core/workflow/schema/workflow.types"
+import type { Tables } from "@lucky/shared"
+import { MODELS } from "@runtime/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import {

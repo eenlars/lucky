@@ -1,7 +1,7 @@
-echo "[husky] running core unit tests..."
-cd core && CI=1 bun run test:unit || exit 1
+echo "[husky] running core unit tests (quiet)..."
+cd core && CI=1 bun run test:unit -- --reporter=dot --silent > ../.husky/.prepush_core.log 2>&1 || { echo "[husky] core unit tests failed. See .husky/.prepush_core.log"; tail -n 120 ../.husky/.prepush_core.log; exit 1; }
 cd - >/dev/null 2>&1 || exit 1
 
-echo "[husky] running gate tests..."
-bun run test:gate || exit 1
+echo "[husky] running gate tests (quiet)..."
+CI=1 bun run test:gate -- --reporter=dot --silent > .husky/.prepush_gate.log 2>&1 || { echo "[husky] gate tests failed. See .husky/.prepush_gate.log"; tail -n 120 .husky/.prepush_gate.log; exit 1; }
 

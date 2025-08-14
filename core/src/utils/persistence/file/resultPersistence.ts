@@ -1,10 +1,10 @@
 // persist.ts
 // Drop this anywhere; call persist(finalConfig, analysisResult?)
 
-import type { Json } from "@core/utils/clients/supabase/types"
 import { mkdirIfMissing, writeJsonAtomic } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { Json } from "@lucky/shared"
 import { PATHS } from "@runtime/settings/constants"
 import path from "path"
 

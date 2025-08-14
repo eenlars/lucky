@@ -7,4 +7,11 @@ export * from "./fs/index.js"
 export * from "./utils/files/json/jsonParse.js"
 
 // Types
-export type { Database, Json } from "./types/database.types.js"
+export type {
+  Database,
+  Enums,
+  Json,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "./types/database.types.js"

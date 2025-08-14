@@ -43,7 +43,9 @@ export default function WorkflowIOTableRow({
     )
 
   // Use custom hooks
-  const rubric = useRubricManagement(io.id, updateCase)
+  const rubric = useRubricManagement(io.id, (id, expected) =>
+    updateCase(id, { expected })
+  )
   const metricsHook = useMetrics()
   const { setMetrics } = metricsHook
   const { setCriteria } = rubric

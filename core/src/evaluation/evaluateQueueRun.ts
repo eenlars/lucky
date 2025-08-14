@@ -1,6 +1,5 @@
 import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateFeedback"
 import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
-import { Json } from "@core/utils/clients/supabase/types"
 import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/workflow/registerWorkflow"
 import { R, type RS } from "@core/utils/types"
 import type {
@@ -9,7 +8,7 @@ import type {
 } from "@core/workflow/runner/types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
-import { JSONN } from "@lucky/shared"
+import { Json, JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 
 export const evaluateQueueRun = async ({
