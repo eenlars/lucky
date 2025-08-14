@@ -69,64 +69,55 @@ Instead of manually designing workflows, provide a small dataset of question-ans
 
 ```typescript
 import { Workflow } from "@core/workflow/Workflow"
-
-// Define a custom Tool
-const verifyLocation = (locationInput: string) => {
-  // Verify locations with external API
-  return API.call("location-verify", locationInput)
-}
+import { CustomTools, MCPTools } from "./tools"
+import { dataset } from "./dataset"
 
 // Create workflow with training dataset
-const workflow = await Workflow.create(
-  {
-    goal: "Find all physical stores of a company",
-    customTools: [verifyLocation],
-    mcpTools: ["browserUse", "firecrawl"],
-  },
-  "JSON with store addresses and business details",
-  [
-    {
-      question: "Find all Patagonia stores in the Netherlands",
-      expectedAnswer: {
-        addresses: ["Singel 465, Amsterdam"],
-      },
-    },
-  ]
-)
-
-// Train with different algorithms and budgets
-await workflow.train({
-  type: "genetic", // or iterative
-  budget: { generations: 10, populationSize: 20 },
+const workflow = await Workflow.create({
+  goal: "Find all physical stores of a company",
+  tools: [MyTools, MCPTools],
+  evaluations,
 })
 
-// Execute optimized workflow
-const result = await workflow.execute(
-  "Find all Tony Chocolonely locations in the Netherlands"
+await workflow.train()
+```
+
+After training, you can return to execute it:
+
+```typescript
+import { Workflow } from "@core/workflow/Workflow"
+
+const workflow = await Workflow.getStats("123") // e.g. 100%
+
+// fetch Workflow with another location:
+const addresses = await Workflow.execute(
+  "123",
+  "Find all Tony Chocolonely stores"
 )
-
-// Output:
-console.log(result)
-
-// {
-//   addresses: ["Oudebrugsteeg 15", "Danzigerkade 23B"],
-// }
+// ["Oudebrugsteeg 15", "Danzigerkade 23B"]
 ```
 
 ## Development
 
 ```bash
-# Start the web app (from app/)
-cd app && bun dev
+# Install Bun (if not already installed)
+# Windows:
+powershell -c "irm bun.sh/install.ps1 | iex"
+# macOS/Linux:
+curl -fsSL https://bun.sh/install | bash
 
-# Run e2e/essential tests (from repo root)
-bun run test:gate
+# Install dependencies
+bun install
 
-# TypeScript type checking (from app/)
-cd app && bun run tsc
+# Add your OPENROUTER_API_KEY to .env
+cp .env.example .env
 
-# (Optional) Run app-specific unit tests
-cd app && bun run test
+# Run your first workflow:
+cd core && bun once
+
+# Or train your first workflow (iteratively):
+cd core && bun iterative
+
 ```
 
 ## Optimization Algorithms

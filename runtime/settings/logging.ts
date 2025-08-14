@@ -26,7 +26,7 @@ export const LoggingTypes = {
   },
   custom: {
     Setup: true,
-    Tools: true,
+    Tools: false,
     Memory: false,
     InvocationPipeline: false,
     Messaging: false,
