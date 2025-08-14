@@ -15,20 +15,20 @@ import {
   ZAxis,
 } from "recharts"
 
-import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 import {
   accuracyScorePct,
   costTimeBalancedScorePct,
-} from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
+} from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
 import {
   MODELS,
   TEST_SCENARIOS,
-} from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/constants"
+} from "@experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
   V3ExperimentResults,
   V3Run,
-} from "../../../../research-experiments/tool-real/experiments/03-context-adaptation/types"
+} from "@experiments/tool-real/experiments/03-context-adaptation/types"
+import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 
 type ShapeName =
   | "circle"

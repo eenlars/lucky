@@ -1,14 +1,14 @@
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { experimentalModels } from "../../runtime/settings/models"
+import { experimentalModels } from "../../../runtime/settings/models"
 import {
   CLEAR_SYSTEM_PROMPT,
   TEST_SCENARIOS,
   VAGUE_SYSTEM_PROMPT,
-} from "../src/research-experiments/tool-real/experiments/03-context-adaptation/constants"
-import type { Condition } from "../src/research-experiments/tool-real/experiments/03-context-adaptation/types"
-import { runMultiToolV3 } from "../src/research-experiments/tool-real/experiments/03-context-adaptation/v3helper-runner"
-import { adaptiveTools } from "../src/research-experiments/tool-real/shared/tools/adaptive/adaptiveTools"
+} from "../src/tool-real/experiments/03-context-adaptation/constants"
+import type { Condition } from "../src/tool-real/experiments/03-context-adaptation/types"
+import { runMultiToolV3 } from "../src/tool-real/experiments/03-context-adaptation/v3helper-runner"
+import { adaptiveTools } from "../src/tool-real/shared/tools/adaptive/adaptiveTools"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

@@ -23,7 +23,8 @@
       "@/*": ["./src/*"],
       "@shared/*": ["../shared/src/*"],
       "@core/*": ["../core/src/*"],
-      "@runtime/*": ["../runtime/*"]
+      "@runtime/*": ["../runtime/*"],
+      "@experiments/*": ["../packages/experiments/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },
@@ -38,7 +39,7 @@
   "exclude": [
     "node_modules",
     "src/runtime/logging_folder",
-    "src/experiments-2/*",
+    "../packages/experiments/src/experiments-2/**",
     ".next/**"
   ]
 }

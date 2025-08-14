@@ -1,14 +1,11 @@
 /**
  * Quick validation suite - test one model with minimal tool counts to verify setup
  */
-import {
-  allToolSpecs,
-  chatWithTools,
-} from "@/research-experiments/tool-real/experiments/01-capacity-limits/openaiRunner"
+import { lgg } from "@core/utils/logging/Logger"
 import type { OpenRouterModelName } from "@core/utils/spending/models.types"
-import { lgg } from "../../../../../../../core/src/utils/logging/Logger"
 import { experimentalModels } from "../../../../../../../runtime/settings/models"
 import { evaluate } from "../evaluation"
+import { allToolSpecs, chatWithTools } from "../openaiRunner"
 import { prompts } from "../prompts"
 
 export async function quickValidationSuite() {

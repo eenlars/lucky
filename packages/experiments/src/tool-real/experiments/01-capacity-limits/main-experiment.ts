@@ -9,23 +9,19 @@
  * - 5 tasks that each require one specific tool
  * - Metrics: Selection accuracy, latency per tool call, failure type classification
  */
-
-import {
-  allToolSpecs,
-  chatWithTools,
-} from "@/research-experiments/tool-real/experiments/01-capacity-limits/openaiRunner"
+import { lgg } from "@core/utils/logging/Logger"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
+import { experimentalModels } from "@runtime/settings/models"
 import { mkdirSync, writeFileSync } from "fs"
 import { join, resolve } from "path"
 import { fileURLToPath } from "url"
-import { lgg } from "../../../../../../core/src/utils/logging/Logger"
-import type { AllowedModelName } from "../../../../../../core/src/utils/spending/models.types"
-import { experimentalModels } from "../../../../../../runtime/settings/models"
 import {
   classifyFailure,
   evaluate,
   type FailureType,
   type RunOutcome,
 } from "./evaluation"
+import { allToolSpecs, chatWithTools } from "./openaiRunner"
 import { prompts } from "./prompts"
 
 const __dirname = process.cwd()
