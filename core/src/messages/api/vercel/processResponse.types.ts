@@ -7,12 +7,19 @@ import { isNir } from "@core/utils/common/isNir"
  * Represents the outcome of processing a model response.
  * Uses discriminated unions for type-safe pattern matching.
  */
+/**
+ * Union of processed response variants after normalizing raw provider output.
+ */
 export type ProcessedResponse = TextProcessed | ToolProcessed | ErrorProcessed
+/** Processed response that is guaranteed to carry a summary. */
 export type ProcessedResponseWithSummary = ProcessedResponse & {
   readonly summary: string
 }
 
 // Make nodeId required
+/**
+ * Base interface shared by processed responses.
+ */
 interface AnyProcessed {
   readonly nodeId: string
   readonly cost: number
@@ -20,17 +27,26 @@ interface AnyProcessed {
   readonly summary?: string
 }
 
+/**
+ * Normalized text response (no tools called).
+ */
 export interface TextProcessed extends AnyProcessed {
   readonly type: "text"
   readonly content: string
   readonly learnings?: string
 }
 
+/**
+ * Normalized tool response (one or more tool calls captured in steps).
+ */
 export interface ToolProcessed extends AnyProcessed {
   readonly type: "tool"
   readonly learnings?: string
 }
 
+/**
+ * Normalized error outcome when provider output could not be interpreted.
+ */
 export interface ErrorProcessed extends AnyProcessed {
   readonly type: "error"
   readonly message: string

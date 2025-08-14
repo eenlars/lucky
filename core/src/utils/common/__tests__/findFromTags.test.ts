@@ -1,6 +1,11 @@
 import { findFromTags } from "../findFromTags"
 
 describe("findFromTags – core & edge cases", () => {
+  // TODO: minor improvements for completeness:
+  // 1. could add tests for concurrent tag extraction if function is used in parallel
+  // 2. could test memory usage with extremely large inputs (beyond 1MB test)
+  // 3. could add fuzzing tests for random malformed HTML inputs
+  // note: existing coverage is excellent - tests real LLM scenarios, performance, edge cases
   // Basic and parameterized cases
   test.each([
     // [description, html, tagName, expectedResult]

@@ -16,6 +16,15 @@ const mockSendAI = vi.mocked(sendAI)
  * For integration tests with real AI calls, see llmGuard.integration.test.ts (if exists)
  */
 describe("llmGuard", () => {
+  // TODO: test improvements needed:
+  // 1. all tests have 10-second timeout which seems excessive for unit tests with mocked API
+  // 2. no tests for rate limiting scenarios
+  // 3. no tests for partial/malformed API responses
+  // 4. no tests for very large content validation
+  // 5. no tests for timeout scenarios
+  // 6. mock responses might not match actual API response structure
+  // 7. no tests for cost tracking validation
+  // 8. no tests for different language content validation
   beforeEach(() => {
     setupCoreTest()
     vi.clearAllMocks()

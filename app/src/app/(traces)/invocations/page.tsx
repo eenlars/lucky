@@ -6,7 +6,7 @@ import {
   type WorkflowInvocationFilters,
   type WorkflowInvocationSortOptions,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"
@@ -14,6 +14,9 @@ import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 // Temporary type extension for new scoring fields
+type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"]
+
 type WorkflowInvocationWithScores = Tables<"WorkflowInvocation"> & {
   accuracy?: number | null
   fitness_score?: number | null

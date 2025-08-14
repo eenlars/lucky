@@ -1,7 +1,7 @@
 /**
  * adaptiveTools.ts - Tools with hidden constraints to test adaptive behavior
  */
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
 
 // Tool 1: Object fetcher with hidden limit of 3
@@ -48,7 +48,7 @@ export function objectFetcherFn({
 export const objectFetcherSpec = tool({
   description:
     "Fetches objects based on query and count. Returns array of objects.",
-  parameters: ObjectFetcherParams,
+  parameters: zodSchema(ObjectFetcherParams),
   execute: objectFetcherFn,
 })
 
@@ -58,7 +58,7 @@ export const resultAggregatorSpec = tool({
   description:
     "Combines multiple result arrays into a single aggregated result",
   // Make argument schema permissive so bad calls don't abort the whole run
-  parameters: z.object({ results: z.unknown() }),
+  parameters: zodSchema(z.object({ results: z.unknown() })),
   execute: async (
     { results }: { results?: unknown } = {},
     _options?: unknown

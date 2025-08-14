@@ -12,3 +12,13 @@ beforeEach(() => {
   // clear all mocks between tests
   vi.clearAllMocks()
 })
+
+// Mock ELK to avoid Web Worker usage in Node test environment
+vi.mock("elkjs/lib/elk.bundled.js", () => {
+  class ELKMock {
+    async layout(_graph: any) {
+      return { children: [] }
+    }
+  }
+  return { default: ELKMock, ElkNode: class {}, ElkPort: class {} }
+})

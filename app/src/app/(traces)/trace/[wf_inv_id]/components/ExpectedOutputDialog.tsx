@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
-import type { Json } from "@core/utils/clients/supabase/types"
+import type { Json } from "@lucky/shared"
 import { Copy, Expand, FileJson } from "lucide-react"
 import { useState } from "react"
 

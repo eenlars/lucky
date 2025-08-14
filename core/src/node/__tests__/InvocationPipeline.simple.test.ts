@@ -2,6 +2,10 @@ import { describe, expect, it, vi } from "vitest"
 
 describe("InvocationPipeline System Prompt Integration", () => {
   it("should follow system prompt: use todo write first, then return output of todo read", async () => {
+    // TODO: this test mocks all AI responses and tool executions with hardcoded values.
+    // it doesn't test InvocationPipeline's actual ability to interpret system prompts,
+    // coordinate tool calls, or handle real AI responses. the test is essentially
+    // verifying that mocked functions return what we told them to return.
     // Mock the AI response to simulate what would happen with the system prompt
     const mockSendAI = vi.fn()
 
@@ -111,6 +115,9 @@ describe("InvocationPipeline System Prompt Integration", () => {
     const systemPrompt =
       "use todo write first, and then return the output of todo read"
 
+    // TODO: this comment describes what should be tested but the test doesn't actually
+    // instantiate or use InvocationPipeline at all. it's just calling mocked functions
+    // directly and asserting they return what we mocked them to return.
     // Simulate what the pipeline would do:
     // 1. Parse system prompt
     // 2. Call AI with available tools
@@ -188,6 +195,10 @@ describe("InvocationPipeline System Prompt Integration", () => {
   })
 
   it("should verify experimental multi-step loop follows same pattern", async () => {
+    // TODO: this test mocks selectToolStrategyV2 and never uses it with real InvocationPipeline.
+    // it doesn't test how multi-step loop is integrated with the pipeline, how it handles
+    // errors, retries, or complex decision flows. also modifies global CONFIG which could
+    // affect other tests if not properly restored.
     // This test verifies that multi-step loop would follow the same system prompt
     const { CONFIG } = await import("@runtime/settings/constants")
 

@@ -1,5 +1,5 @@
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
-import type { Enums } from "@core/utils/clients/supabase/types"
+import type { Enums } from "@lucky/shared"
 // collaboration Types
 
 // OFFLOAD
@@ -14,26 +14,46 @@ import type { Enums } from "@core/utils/clients/supabase/types"
 // clarification: the source node will clarify the target node's task
 // consensus_request: the source node will ask the target node for consensus on a task
 
-// src/core/messages/types.ts
+/**
+ * Enum alias of the `MessageRole` database type.
+ * Represents the high-level intent or coordination kind of a message.
+ */
 export type MessageType = Enums<"MessageRole">
 
+/**
+ * Common fields shared by all payload kinds.
+ * - kind: discriminant for payload shape
+ * - berichten: list of textual items composing the message body
+ */
 export interface BasePayload {
   kind: MessageType
   berichten: TextContent[] // todo-payload change name after the aggregated payload is renamed
 }
 
+/**
+ * Payload indicating sequential handoff/processing to the next node.
+ */
 export interface SequentialPayload extends BasePayload {
   kind: "sequential"
 }
 
+/**
+ * Payload indicating delegated work to a specific recipient node.
+ */
 export interface DelegationPayload extends BasePayload {
   kind: "delegation"
 }
 
+/**
+ * Final/terminal payload carrying the result of a workflow branch.
+ */
 export interface ReplyPayload extends BasePayload {
   kind: "result" //todo-payload change name to reply
 }
 
+/**
+ * Payload combining results from multiple workers.
+ */
 export interface AggregatedPayload extends BasePayload {
   kind: "aggregated"
   messages: Array<{
@@ -55,6 +75,9 @@ export const isSequentialPayload = (
   return (payload as SequentialPayload).kind === "sequential"
 }
 
+/**
+ * Discriminated union of all supported payload shapes.
+ */
 export type Payload =
   | DelegationPayload
   | SequentialPayload

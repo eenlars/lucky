@@ -1,4 +1,4 @@
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { createMockEvaluationInputGeneric } from "@core/utils/__tests__/setup/coreMocks"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
@@ -45,7 +45,6 @@ const runEvolution = async () => {
             totalCostUsd: 0.01,
             totalTimeSeconds: 1,
             accuracy: 0.9,
-            novelty: 0.9,
           },
           hasBeenEvaluated: true,
           evaluatedAt: new Date().toISOString(),

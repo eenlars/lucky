@@ -4,6 +4,9 @@ import { z } from "zod"
 import { zodToJson } from "../../../utils/zod/zodToJson"
 import { genObject } from "../genObject"
 
+// TODO: These are integration tests making real API calls - exclude from main suite
+// TODO: No tests for complex nested schemas or recursive types
+
 describe("genObject integration tests", () => {
   const simpleSchema = z.object({
     name: z.string(),
@@ -50,6 +53,7 @@ describe("genObject integration tests", () => {
     })
   })
 
+  // TODO: Test name says OpenAI but uses getDefaultModels which may not be OpenAI
   it("should successfully generate object with OpenAI", async () => {
     const result = await genObject({
       messages,
@@ -72,6 +76,8 @@ describe("genObject integration tests", () => {
     }
   })
 
+  // TODO: Test name says Claude but uses same getDefaultModels as OpenAI test
+  // These appear to be duplicate tests
   it("should successfully generate object with Claude", async () => {
     const result = await genObject({
       messages,
@@ -110,6 +116,7 @@ describe("genObject integration tests", () => {
       expect(result.data.value).toMatchObject({
         name: expect.any(String),
       })
+      // TODO: Weak assertion - should test both cases (with and without optional field)
       // age is optional, so it might or might not be present
       if (result.data.value.age !== undefined) {
         expect(result.data.value.age).toEqual(expect.any(Number))
@@ -133,6 +140,7 @@ describe("genObject integration tests", () => {
       expect(result.data.value).toMatchObject({
         name: expect.any(String),
       })
+      // TODO: Weak assertion - should test both cases (with and without optional field)
       // age is optional, so it might or might not be present
       if (result.data.value.age !== undefined) {
         expect(result.data.value.age).toEqual(expect.any(Number))

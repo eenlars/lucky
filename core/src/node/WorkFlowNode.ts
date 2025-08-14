@@ -1,5 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/WorkFlowNode.ts
 
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/node/selfImproveHelper"
 import type { Payload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
@@ -9,7 +10,6 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,

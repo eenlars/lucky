@@ -1,6 +1,6 @@
 // Genome test utilities without problematic vi.mock calls
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
@@ -81,5 +81,4 @@ export const createMockWorkflowScore = (): FitnessOfWorkflow => ({
   totalCostUsd: 0.1,
   totalTimeSeconds: 5,
   accuracy: 0.9,
-  novelty: 0.7,
 })

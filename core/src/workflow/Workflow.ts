@@ -1,5 +1,6 @@
 // src/core/workflow/Workflow.ts
-import { improveNodesCulturallyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import {
   prepareProblem,
   type PrepareProblemMethod,
@@ -29,7 +30,6 @@ import {
   verifyWorkflowConfigStrict,
 } from "@core/utils/validation/workflow"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import {
   workflowToString,
@@ -39,13 +39,15 @@ import type {
   EvaluationInput,
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
-import type { AggregateEvaluationResult } from "@core/workflow/runner/queueRun"
 import {
   aggregateResults,
   evaluateRuns,
   runAllIO,
-  type RunResult,
 } from "@core/workflow/runner/runAllInputs"
+import type {
+  AggregateEvaluationResult,
+  RunResult,
+} from "@core/workflow/runner/types"
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import type {
   WorkflowConfig,
@@ -385,11 +387,11 @@ export class Workflow {
         configFiles: this.config.contextFile ? [this.config.contextFile] : [],
         workflowIOIndex: index,
       },
-      expectedOutputType: this.evaluationInput.expectedOutputSchema
-        ? zodToJson(this.evaluationInput.expectedOutputSchema)
+      expectedOutputType: this.evaluationInput.outputSchema
+        ? zodToJson(this.evaluationInput.outputSchema)
         : null,
       workflowInput: workflowIO.workflowInput as any,
-      workflowOutput: workflowIO.expectedWorkflowOutput as any,
+      workflowOutput: workflowIO.workflowOutput as any,
     })
 
     this.workflowInvocationIds.set(index, workflowInvocationId)
@@ -543,11 +545,11 @@ export class Workflow {
     return this.workflowFiles.size < CONFIG.context.maxFilesPerWorkflow
   }
 
-  async improveNodesCulturally(params: {
+  async improveNodesIteratively(params: {
     _fitness: FitnessOfWorkflow
     workflowInvocationId: string
   }): Promise<WorkflowImprovementResult> {
-    const result = await improveNodesCulturallyImpl(this, {
+    const result = await improveNodesIterativelyImpl(this, {
       _fitness: params._fitness,
       workflowInvocationId: params.workflowInvocationId,
     })
@@ -693,7 +695,12 @@ export class Workflow {
   }
 }
 
-export type WorkflowImprovementResult = {
+/**
+ * Result returned by node-improvement operators.
+ */
+export interface WorkflowImprovementResult {
+  /** Updated workflow configuration after improvements */
   newConfig: WorkflowConfig
+  /** Additional USD cost incurred by the improvement process */
   cost: number
 }

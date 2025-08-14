@@ -1,5 +1,5 @@
 import { llmify } from "@core/utils/common/llmify"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import { JSONN } from "@lucky/shared"
 
 export type WorkflowFile = {
   store: "supabase"

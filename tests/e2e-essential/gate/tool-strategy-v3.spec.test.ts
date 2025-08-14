@@ -2,6 +2,7 @@ import * as sendAIModule from "@core/messages/api/sendAI/sendAI"
 import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { ToolSet } from "ai"
+import { zodSchema } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -11,12 +12,12 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   const tools: ToolSet = {
     sum: {
       description: "add two numbers",
-      parameters: z.object({ a: z.number(), b: z.number() }),
+      parameters: zodSchema(z.object({ a: z.number(), b: z.number() })),
       execute: async ({ a, b }: { a: number; b: number }) => a + b,
     },
     echo: {
       description: "echo text",
-      parameters: z.object({ text: z.string() }),
+      parameters: zodSchema(z.object({ text: z.string() })),
       execute: async ({ text }: { text: string }) => text,
     },
   }

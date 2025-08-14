@@ -1,25 +1,5 @@
 // Template for test mocks - copy these into your test files
 
-// Mock environment variables
-vi.mock("@core/utils/env.mjs", () => ({
-  envi: {
-    GOOGLE_API_KEY: "test-google-key",
-    OPENAI_API_KEY: "test-openai-key",
-    SERPAPI_API_KEY: "test-serp-key",
-    ANTHROPIC_API_KEY: "test-anthropic-key",
-    TAVILY_API_KEY: "test-tavily-key",
-    FIRECRAWL_API_KEY: "test-firecrawl-key",
-    SUPABASE_ANON_KEY: "test-supabase-key",
-    SUPABASE_PROJECT_ID: "test-project-id",
-    OPENROUTER_API_KEY: "test-openrouter-key",
-    XAI_API_KEY: "test-xai-key",
-    MAPBOX_TOKEN: "test-mapbox-token",
-    HF_TOKEN: "test-hf-token",
-    HUGGING_FACE_API_KEY: "test-hf-key",
-    WEBSHARE_API_KEY: "test-webshare-key",
-  },
-}))
-
 // Mock runtime constants - comprehensive CONFIG
 vi.mock("@runtime/settings/constants", () => ({
   CONFIG: {
@@ -88,7 +68,7 @@ vi.mock("@runtime/settings/constants", () => ({
       enforceFileLimit: true,
     },
     evolution: {
-      culturalIterations: 50,
+      iterativeIterations: 50,
       GP: {
         generations: 40,
         populationSize: 10,

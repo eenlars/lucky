@@ -2,7 +2,10 @@ import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { ToolSet } from "ai"
 
-export type SelectToolStrategyOptions<T extends ToolSet> = {
+/**
+ * Options passed to a tool selection strategy implementation.
+ */
+export interface SelectToolStrategyOptions<T extends ToolSet> {
   tools: T
   identityPrompt: string
   agentSteps: AgentStep[]
@@ -10,3 +13,19 @@ export type SelectToolStrategyOptions<T extends ToolSet> = {
   systemMessage: string
   model: ModelName
 }
+
+/**
+ * Result of a tool selection strategy decision.
+ */
+export type StrategyResult<T> =
+  | {
+      type: "tool"
+      toolName: keyof T
+      reasoning: string
+      plan: string
+      check?: string
+      expectsMutation?: boolean
+      usdCost: number
+    }
+  | { type: "terminate"; reasoning: string; usdCost: number }
+  | { type: "error"; reasoning: string; usdCost: number }

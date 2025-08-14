@@ -7,9 +7,8 @@ import { useShallow } from "zustand/react/shallow"
 import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
 import { NodeDetailsDialog } from "@/react-flow-visualization/components/node-details-dialog-human"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
-import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
-import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
+// runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
@@ -85,13 +84,11 @@ export default function Workflow({
 
   const { onDragOver, onDrop } = useDragAndDrop()
   const runLayout = useLayout(true)
-  const {
-    promptDialogOpen,
-    setPromptDialogOpen,
-    executeWorkflowWithPrompt,
-    isRunning,
-    logMessages,
-  } = useWorkflowRunnerContext()
+  const promptDialogOpen = false
+  const setPromptDialogOpen = (_: boolean) => {}
+  const executeWorkflowWithPrompt = async () => {}
+  const isRunning = false
+  const logMessages: string[] = []
 
   const proOptions = {
     // passing in the account property will enable hiding the attribution
@@ -172,13 +169,7 @@ export default function Workflow({
         />
       )}
 
-      <PromptInputDialog
-        open={promptDialogOpen}
-        onOpenChange={setPromptDialogOpen}
-        onExecute={executeWorkflowWithPrompt}
-        loading={isRunning}
-        logs={logMessages}
-      />
+      {/* Runner removed */}
     </>
   )
 }

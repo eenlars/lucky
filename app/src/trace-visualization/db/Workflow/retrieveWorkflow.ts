@@ -1,12 +1,8 @@
 "use server"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type {
-  Tables,
-  TablesInsert,
-  TablesUpdate,
-} from "@core/utils/clients/supabase/types"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
 
 export const retrieveWorkflowInvocation = async (
   invocationId: string
@@ -26,7 +22,6 @@ export const retrieveWorkflowInvocation = async (
     lgg.log("Retrieved single invocation with scores:", {
       id: data.wf_invocation_id,
       accuracy: data.accuracy,
-      novelty: data.novelty,
       fitness_score: data.fitness_score,
     })
   }
@@ -117,8 +112,6 @@ export interface WorkflowInvocationFilters {
   dateTo?: string
   minAccuracy?: number
   maxAccuracy?: number
-  minNovelty?: number
-  maxNovelty?: number
   minFitnessScore?: number
   maxFitnessScore?: number
 }
@@ -130,7 +123,6 @@ export interface WorkflowInvocationSortOptions {
     | "status"
     | "fitness"
     | "accuracy"
-    | "novelty"
     | "duration"
   order: "asc" | "desc"
 }
@@ -174,12 +166,6 @@ export const retrieveWorkflowInvocations = async (
     if (filters.maxAccuracy !== undefined) {
       query = query.lte("accuracy", filters.maxAccuracy)
     }
-    if (filters.minNovelty !== undefined) {
-      query = query.gte("novelty", filters.minNovelty)
-    }
-    if (filters.maxNovelty !== undefined) {
-      query = query.lte("novelty", filters.maxNovelty)
-    }
     if (filters.minFitnessScore !== undefined) {
       query = query.gte("fitness_score", filters.minFitnessScore)
     }
@@ -211,13 +197,6 @@ export const retrieveWorkflowInvocations = async (
       case "accuracy":
         // Handle NULL values properly - NULL accuracy scores should always sort last
         query = query.order("accuracy", {
-          ascending,
-          nullsFirst: false, // NULL values (failed invocations) always sort last
-        })
-        break
-      case "novelty":
-        // Handle NULL values properly - NULL novelty scores should always sort last
-        query = query.order("novelty", {
           ascending,
           nullsFirst: false, // NULL values (failed invocations) always sort last
         })

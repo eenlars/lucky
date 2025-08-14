@@ -2,7 +2,10 @@ import { getModelV2 } from "@core/utils/spending/functions"
 import type { ModelName, TokenUsage } from "@core/utils/spending/models.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 
-export type VercelUsage = {
+/**
+ * Minimal usage stats available from Vercel SDK responses.
+ */
+export interface VercelUsage {
   promptTokens: number
   completionTokens: number
   totalTokens: number

@@ -1,11 +1,11 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import { FitnessOfWorkflowSchema } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import { JSONN } from "@lucky/shared"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 
 /**
  * Evaluates the quality of a critique by comparing it to the meta agent's assessment
@@ -26,7 +26,7 @@ export const evaluateCritiqueQuality = async ({
   totalTime: number
   totalCost: number
   evaluation: string
-  expectedOutputTypeOfWorkflow?: ExpectedOutputSchema
+  expectedOutputTypeOfWorkflow?: OutputSchema
 }): Promise<RS<FitnessOfWorkflow>> => {
   const critique = criticWorkflowOutput
 
@@ -38,10 +38,6 @@ Accuracy 1-100:
 - How well the critique identifies real issues, provides constructive feedback, and aligns with expert assessment. 
 - Give partial credit: if 2/4 of the expected criteria are met, give 50% credit.
 - If there is no good answer, give 0% credit.
-
-# novelty
-Novelty 1-100: 
-- How innovative the critique's suggestions are.
 
 # criteria
 - Issue identification (40%)
@@ -59,7 +55,7 @@ ${typeof originalOutput === "string" ? originalOutput : llmify(JSONN.show(origin
 
 Ground Truth: ${evaluation}
 
-Respond with JSON: {"accuracy": 1-100, "novelty": 1-100, "feedback": "comprehensive analysis"}
+Respond with JSON: {"accuracy": 1-100, "feedback": "comprehensive analysis"}
 
 In your feedback, include: critique quality justification, specific weaknesses and strengths of the critique (bullet points), 2-3 improvement suggestions with priorities, and estimated impact (potential improvement 0-100, cost change decrease/increase/neutral).
   `
@@ -87,7 +83,6 @@ In your feedback, include: critique quality justification, specific weaknesses a
       totalCostUsd: totalCost + response.usdCost,
       totalTimeSeconds: totalTime / 1000,
       accuracy: response.data.accuracy,
-      novelty: response.data.novelty,
     },
     response.usdCost
   )

@@ -27,9 +27,6 @@ bun install
 cp .env.example .env
 # Edit .env with your API keys (OpenAI, Supabase, etc.)
 
-# Run the workflow engine
-bun run flow
-
 # Start web interface
 bun dev
 ```

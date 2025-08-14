@@ -21,132 +21,134 @@ vi.mock("@core/utils/env.mjs", () => ({
 import os from "os"
 import path from "path"
 
-// Safe temp directories for this test
-const TEST_TMP_ROOT = path.join(os.tmpdir(), "together-tests")
-const TEST_LOGGING_DIR = path.join(TEST_TMP_ROOT, "node", "logging")
-const TEST_MEMORY_ROOT = path.join(TEST_TMP_ROOT, "memory", "root")
-const TEST_MEMORY_WORKFILES = path.join(TEST_TMP_ROOT, "memory", "workfiles")
-const TEST_ERROR_DIR = path.join(TEST_TMP_ROOT, "node", "error")
-
 // Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => ({
-  CONFIG: {
-    coordinationType: "sequential" as const,
-    newNodeProbability: 0.7,
-    logging: {
-      level: "info" as const,
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-        Summary: false,
+vi.mock("@runtime/settings/constants", () => {
+  // compute temp paths inside the factory to avoid hoist issues
+  const tmpRoot = path.join(os.tmpdir(), "together-tests")
+  const loggingDir = path.join(tmpRoot, "node", "logging")
+  const memoryRoot = path.join(tmpRoot, "memory", "root")
+  const memoryWorkfiles = path.join(tmpRoot, "memory", "workfiles")
+  const errorDir = path.join(tmpRoot, "node", "error")
+
+  return {
+    CONFIG: {
+      coordinationType: "sequential" as const,
+      newNodeProbability: 0.7,
+      logging: {
+        level: "info" as const,
+        override: {
+          API: false,
+          GP: false,
+          Database: false,
+          Summary: false,
+        },
+      },
+      workflow: {
+        maxNodeInvocations: 14,
+        maxNodes: 20,
+        handoffContent: "full" as const,
+        prepareProblem: true,
+        prepareProblemMethod: "ai" as const,
+        prepareProblemWorkflowVersionId: "test-version-id",
+        parallelExecution: false,
+      },
+      tools: {
+        inactive: new Set(),
+        uniqueToolsPerAgent: false,
+        uniqueToolSetsPerAgent: false,
+        maxToolsPerAgent: 3,
+        maxStepsVercel: 10,
+        defaultTools: new Set(),
+        autoSelectTools: true,
+        usePrepareStepStrategy: false,
+        experimentalMultiStepLoop: true,
+        showParameterSchemas: true,
+      },
+      models: {
+        provider: "openai" as const,
+        inactive: new Set(),
+      },
+      improvement: {
+        fitness: {
+          timeThresholdSeconds: 300,
+          baselineTimeSeconds: 60,
+          baselineCostUsd: 0.005,
+          costThresholdUsd: 0.01,
+          weights: { score: 0.7, time: 0.2, cost: 0.1 },
+        },
+        flags: {
+          selfImproveNodes: false,
+          addTools: true,
+          analyzeWorkflow: true,
+          removeNodes: true,
+          editNodes: true,
+          maxRetriesForWorkflowRepair: 4,
+          useSummariesForImprovement: true,
+          improvementType: "judge" as const,
+          operatorsWithFeedback: true,
+        },
+      },
+      verification: {
+        allowCycles: true,
+        enableOutputValidation: false,
+      },
+      context: {
+        maxFilesPerWorkflow: 1,
+        enforceFileLimit: true,
+      },
+      evolution: {
+        iterativeIterations: 50,
+        GP: {
+          generations: 40,
+          populationSize: 10,
+          verbose: false,
+          initialPopulationMethod: "prepared" as const,
+          initialPopulationFile: "",
+          maximumTimeMinutes: 700,
+        },
+      },
+      limits: {
+        maxConcurrentWorkflows: 2,
+        maxConcurrentAIRequests: 30,
+        maxCostUsdPerRun: 30.0,
+        enableSpendingLimits: true,
+        rateWindowMs: 10000,
+        maxRequestsPerWindow: 300,
+        enableStallGuard: true,
+        enableParallelLimit: true,
       },
     },
-    workflow: {
-      maxNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full" as const,
-      prepareProblem: true,
-      prepareProblemMethod: "ai" as const,
-      prepareProblemWorkflowVersionId: "test-version-id",
-      parallelExecution: false,
+    MODELS: {
+      summary: "google/gemini-2.0-flash-001",
+      nano: "google/gemini-2.0-flash-001",
+      default: "openai/gpt-4.1-mini",
+      free: "qwen/qwq-32b:free",
+      free2: "deepseek/deepseek-r1-0528:free",
+      low: "openai/gpt-4.1-nano",
+      medium: "openai/gpt-4.1-mini",
+      high: "anthropic/claude-sonnet-4",
+      fitness: "openai/gpt-4.1-mini",
+      reasoning: "anthropic/claude-sonnet-4",
+      fallbackOpenRouter: "switchpoint/router",
     },
-    tools: {
-      inactive: new Set(),
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      defaultTools: new Set(),
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-    },
-    models: {
-      provider: "openai" as const,
-      inactive: new Set(),
-    },
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: { score: 0.7, time: 0.2, cost: 0.1 },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 4,
-        useSummariesForImprovement: true,
-        improvementType: "judge" as const,
-        operatorsWithFeedback: true,
+    PATHS: {
+      root: tmpRoot,
+      app: path.join(tmpRoot, "app"),
+      runtime: path.join(tmpRoot, "runtime"),
+      codeTools: path.join(tmpRoot, "codeTools"),
+      setupFile: path.join(tmpRoot, "setup.json"),
+      improver: path.join(tmpRoot, "improver"),
+      node: {
+        logging: loggingDir,
+        memory: {
+          root: memoryRoot,
+          workfiles: memoryWorkfiles,
+        },
+        error: errorDir,
       },
     },
-    verification: {
-      allowCycles: true,
-      enableOutputValidation: false,
-    },
-    context: {
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
-    evolution: {
-      culturalIterations: 50,
-      GP: {
-        generations: 40,
-        populationSize: 10,
-        verbose: false,
-        initialPopulationMethod: "prepared" as const,
-        initialPopulationFile: "",
-        maximumTimeMinutes: 700,
-      },
-    },
-    limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      rateWindowMs: 10000,
-      maxRequestsPerWindow: 300,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-    },
-  },
-  MODELS: {
-    summary: "google/gemini-2.0-flash-001",
-    nano: "google/gemini-2.0-flash-001",
-    default: "openai/gpt-4.1-mini",
-    free: "qwen/qwq-32b:free",
-    free2: "deepseek/deepseek-r1-0528:free",
-    low: "openai/gpt-4.1-nano",
-    medium: "openai/gpt-4.1-mini",
-    high: "anthropic/claude-sonnet-4",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "anthropic/claude-sonnet-4",
-    fallbackOpenRouter: "switchpoint/router",
-  },
-  PATHS: {
-    root: TEST_TMP_ROOT,
-    app: path.join(TEST_TMP_ROOT, "app"),
-    runtime: path.join(TEST_TMP_ROOT, "runtime"),
-    codeTools: path.join(TEST_TMP_ROOT, "codeTools"),
-    setupFile: path.join(TEST_TMP_ROOT, "setup.json"),
-    improver: path.join(TEST_TMP_ROOT, "improver"),
-    node: {
-      logging: TEST_LOGGING_DIR,
-      memory: {
-        root: TEST_MEMORY_ROOT,
-        workfiles: TEST_MEMORY_WORKFILES,
-      },
-      error: TEST_ERROR_DIR,
-    },
-  },
-}))
+  }
+})
 
 // Mock Supabase client
 vi.mock("@core/utils/clients/supabase/client", () => ({
@@ -185,6 +187,11 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeNode } from "../invokeNode"
 
 describe("invokeNode", () => {
+  // TODO: this test makes real AI calls and should be marked as integration test.
+  // it also has very weak assertions - only checking that output exists and is
+  // non-empty string, not verifying the quality of response or that the node
+  // actually followed the system prompt. console.log suggests debugging output
+  // left in test.
   it("should invoke a simple node and return result", async () => {
     // Create a minimal node configuration
     const nodeConfig: WorkflowNodeConfig = {

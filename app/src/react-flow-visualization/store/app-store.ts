@@ -1,5 +1,4 @@
 import {
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   ColorMode,
@@ -7,6 +6,7 @@ import {
   OnEdgesChange,
   OnNodeDrag,
   OnNodesChange,
+  addEdge as rfAddEdge,
   XYPosition,
 } from "@xyflow/react"
 import { create } from "zustand"
@@ -23,7 +23,8 @@ import nodesConfig, {
   type AppNodeType,
   type WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes"
-import { initialSetupConfig } from "@/react-flow-visualization/lib/workflow-data"
+import { toFrontendWorkflowConfig } from "@/react-flow-visualization/lib/workflow-data"
+import { requiresHandle } from "@/react-flow-visualization/store/edge-validation"
 import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
@@ -189,7 +190,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         if (!newNodeId) return
 
         get().removeEdge(
-          `${source}-${sourceHandleId}-${target}-${targetHandleId}`
+          `${source}-${sourceHandleId ?? ""}-${target}-${targetHandleId ?? ""}`
         )
 
         const nodeHandles = nodesConfig[type].handles
@@ -222,7 +223,25 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       getEdges: () => get().edges,
 
       addEdge: (edge) => {
-        const nextEdges = addEdge(edge, get().edges)
+        const nodes = get().nodes
+        const sourceNode = nodes.find((n) => n.id === edge.source)
+        const targetNode = nodes.find((n) => n.id === edge.target)
+
+        if (requiresHandle(sourceNode?.type, "source") && !edge.sourceHandle) {
+          console.error(
+            `Edge rejected: missing sourceHandle for node '${edge.source}' which has multiple source handles`
+          )
+          return
+        }
+
+        if (requiresHandle(targetNode?.type, "target") && !edge.targetHandle) {
+          console.error(
+            `Edge rejected: missing targetHandle for node '${edge.target}' which has multiple target handles`
+          )
+          return
+        }
+
+        const nextEdges = rfAddEdge(edge, get().edges)
         set({ edges: nextEdges })
       },
 
@@ -236,10 +255,37 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       },
 
       onConnect: (connection) => {
+        const nodes = get().nodes
+        const sourceNode = nodes.find((n) => n.id === connection.source)
+        const targetNode = nodes.find((n) => n.id === connection.target)
+
+        if (
+          requiresHandle(sourceNode?.type, "source") &&
+          !connection.sourceHandle
+        ) {
+          console.error(
+            `Connection rejected: missing sourceHandle for node '${connection.source}' which has multiple source handles`
+          )
+          return
+        }
+
+        if (
+          requiresHandle(targetNode?.type, "target") &&
+          !connection.targetHandle
+        ) {
+          console.error(
+            `Connection rejected: missing targetHandle for node '${connection.target}' which has multiple target handles`
+          )
+          return
+        }
+
         const newEdge: AppEdge = {
-          ...connection,
+          id: `${connection.source}-${connection.sourceHandle ?? ""}-${connection.target}-${connection.targetHandle ?? ""}`,
+          source: connection.source!,
+          target: connection.target!,
+          sourceHandle: connection.sourceHandle ?? undefined,
+          targetHandle: connection.targetHandle ?? undefined,
           type: "workflow",
-          id: `${connection.source}-${connection.target}`,
           animated: true,
         }
 
@@ -335,7 +381,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             }
           }
 
-          const setup = initialSetupConfig(workflowConfig)
+          const setup = toFrontendWorkflowConfig(workflowConfig)
           console.log("Initial setup config:", setup)
 
           // apply layout to position nodes properly
@@ -375,7 +421,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
 
           const workflowConfig = await response.json()
-          const setup = initialSetupConfig(workflowConfig)
+          const setup = toFrontendWorkflowConfig(workflowConfig)
 
           // apply layout to position nodes properly
           const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
@@ -400,7 +446,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         set({ workflowLoading: true, workflowError: undefined })
 
         try {
-          const setup = initialSetupConfig(workflowData)
+          const setup = toFrontendWorkflowConfig(workflowData)
 
           // apply layout to position nodes properly
           const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)

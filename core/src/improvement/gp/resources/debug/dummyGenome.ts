@@ -33,8 +33,6 @@ export const createDummySurvivors = (
   parents: Genome[],
   offspring: Genome[]
 ): Genome[] => {
-  console.log("CREATING DUMMY SURVIVORS", parents)
-
   const survivors = parents.map((parent) =>
     createDummyGenome(
       parent.genome.parentWorkflowVersionIds,
@@ -100,7 +98,6 @@ export const createDummyGenome = (
         fitness: {
           score: 0.7,
           accuracy: 70,
-          novelty: 70,
           totalCostUsd: 0.01,
           totalTimeSeconds: 2.0,
         },

@@ -1,6 +1,6 @@
 "use client"
 
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Tables } from "@lucky/shared"
 import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
 import Link from "next/link"
@@ -450,15 +450,15 @@ export default function PerformanceOverview({
                             </div>
                             <div className="text-xs text-gray-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
                               {typeof (workflow.workflow_io as any)
-                                ?.expectedWorkflowOutput === "object"
+                                ?.workflowOutput === "object"
                                 ? JSON.stringify(
                                     (workflow.workflow_io as any)
-                                      ?.expectedWorkflowOutput,
+                                      ?.workflowOutput,
                                     null,
                                     2
                                   )
                                 : (workflow.workflow_io as any)
-                                    ?.expectedWorkflowOutput || "No output"}
+                                    ?.workflowOutput || "No output"}
                             </div>
                           </div>
                         </>

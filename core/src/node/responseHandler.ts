@@ -230,19 +230,24 @@ export async function handleError({
     filesUsed.push(...context.workflowFiles.map((file) => file.filePath))
   }
 
-  const { nodeInvocationId } = await saveNodeInvocationToDB({
-    nodeId: context.nodeConfig.nodeId,
-    start_time: context.startTime,
-    messageId: context.workflowMessageIncoming.messageId,
-    usdCost: 0,
-    output: errorMessage,
-    workflowInvocationId: context.workflowInvocationId,
-    agentSteps,
-    summary,
-    files: filesUsed.length > 0 ? filesUsed : undefined,
-    workflowVersionId: context.workflowVersionId,
-    model: context.nodeConfig.modelName,
-  })
+  // Respect skipDatabasePersistence similarly to handleSuccess
+  const nodeInvocationId = context.skipDatabasePersistence
+    ? `mock-invocation-${context.nodeConfig.nodeId}-${Date.now()}`
+    : (
+        await saveNodeInvocationToDB({
+          nodeId: context.nodeConfig.nodeId,
+          start_time: context.startTime,
+          messageId: context.workflowMessageIncoming.messageId,
+          usdCost: 0,
+          output: errorMessage,
+          workflowInvocationId: context.workflowInvocationId,
+          agentSteps,
+          summary,
+          files: filesUsed.length > 0 ? filesUsed : undefined,
+          workflowVersionId: context.workflowVersionId,
+          model: context.nodeConfig.modelName,
+        })
+      ).nodeInvocationId
 
   const {
     handoff: nextNodeId,

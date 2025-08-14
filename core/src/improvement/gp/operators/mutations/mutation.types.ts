@@ -6,6 +6,9 @@ import type { FlowEvolutionMode } from "@core/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Genome } from "../../Genome"
 
+/**
+ * Options describing the context for a mutation operation.
+ */
 export interface MutationOptions {
   parent: Genome
   generationNumber: number
@@ -13,6 +16,9 @@ export interface MutationOptions {
   evolutionMode: FlowEvolutionMode // determines which mutations are available
 }
 
+/**
+ * Result of executing a mutation operator.
+ */
 export interface MutationResult {
   success: boolean
   data?: Genome
@@ -20,6 +26,9 @@ export interface MutationResult {
   usdCost: number
 }
 
+/**
+ * Contract for a workflow-level mutation operator.
+ */
 export interface MutationOperator {
   execute(
     config: WorkflowConfig,
@@ -28,10 +37,16 @@ export interface MutationOperator {
   ): Promise<number>
 }
 
+/**
+ * Contract for a node-level mutation operator.
+ */
 export interface NodeMutationOperator {
   execute(config: WorkflowConfig, parent?: Genome): Promise<void>
 }
 
+/**
+ * Discrete categories of mutations available to the engine.
+ */
 export type MutationType =
   | "model"
   | "prompt"
@@ -39,8 +54,11 @@ export type MutationType =
   | "structure"
   | "addNode"
   | "deleteNode"
-  | "cultural"
+  | "iterative"
 
+/**
+ * Weight configuration for probabilistic selection of mutation types.
+ */
 export interface MutationWeight {
   type: MutationType
   weight: number
@@ -64,9 +82,9 @@ export const MUTATION_WEIGHTS: MutationWeight[] = [
     description: "Add, remove, or move tools between nodes",
   },
   {
-    type: "cultural",
+    type: "iterative",
     weight: 0.15,
-    description: "Cultural improvement via unified approach",
+    description: "Iterative improvement via unified approach",
   },
   {
     type: "structure",
@@ -92,8 +110,8 @@ export function getEvolutionMutations(
   evolutionMode: FlowEvolutionMode
 ): MutationType[] {
   switch (evolutionMode) {
-    case "cultural":
-      return ["cultural"]
+    case "iterative":
+      return ["iterative"]
     case "GP":
       return ["model", "prompt", "tool", "structure", "addNode", "deleteNode"]
     default: {
@@ -110,4 +128,7 @@ export const INTENSITY_LEVELS = {
   extreme: { threshold: 1.0, description: "Aggressive transformations" },
 } as const
 
+/**
+ * Named intensity presets mapped to `INTENSITY_LEVELS` keys.
+ */
 export type IntensityLevel = keyof typeof INTENSITY_LEVELS

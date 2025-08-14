@@ -1,12 +1,13 @@
+import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
+import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { truncater } from "@core/utils/common/llmify"
+import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { JSONN } from "@lucky/shared"
+import { CSVLoader } from "@lucky/shared/csv"
 import { CONFIG } from "@runtime/settings/constants"
-import { CSVLoader } from "@shared/utils/files/csv/CSVLoader"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
-import { GAIALoader } from "./benchmarks/gaia/GAIALoader"
-import { SWEBenchLoader } from "./benchmarks/swe/SWEBenchLoader"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**
@@ -62,7 +63,9 @@ export class IngestionLayer {
   ): WorkflowIO[] {
     const workflowCase: WorkflowIO = {
       workflowInput: evaluation.question,
-      expectedWorkflowOutput: evaluation.answer,
+      workflowOutput: {
+        output: evaluation.answer,
+      },
     }
 
     lgg.onlyIf(
@@ -78,7 +81,9 @@ export class IngestionLayer {
     return [
       {
         workflowInput: evaluation.goal,
-        expectedWorkflowOutput: "everything is correct, always return 100%",
+        workflowOutput: {
+          output: "everything is correct, always return 100%",
+        },
       },
     ]
   }
@@ -106,35 +111,37 @@ export class IngestionLayer {
       )
 
       // create workflow cases from CSV rows
-      const workflowCases: WorkflowIO[] = csvData.map((row, index) => {
-        // filter row data to only include specified columns if onlyIncludeInputColumns is provided
-        const filteredRow = evaluation.onlyIncludeInputColumns
-          ? Object.fromEntries(
-              Object.entries(row).filter(([key]) =>
-                evaluation.onlyIncludeInputColumns!.includes(key)
+      const workflowCases: WorkflowIO[] = csvData.map(
+        (row: Record<string, any>, index: number) => {
+          // filter row data to only include specified columns if onlyIncludeInputColumns is provided
+          const filteredRow = evaluation.onlyIncludeInputColumns
+            ? Object.fromEntries(
+                Object.entries(row).filter(([key]) =>
+                  evaluation.onlyIncludeInputColumns!.includes(key)
+                )
               )
-            )
-          : row
+            : row
 
-        // create input by combining goal with row data
-        const rowContext = Object.entries(filteredRow)
-          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-          .join("\n")
+          // create input by combining goal with row data
+          const rowContext = Object.entries(filteredRow)
+            .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+            .join("\n")
 
-        const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
+          const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
 
-        // determine expected output for this row
-        const workflowOutput = this.determineExpectedOutput(
-          row,
-          expectedOutputColumnName,
-          index
-        )
+          // determine expected output for this row
+          const workflowOutput = this.determineExpectedOutput(
+            row,
+            expectedOutputColumnName,
+            index
+          )
 
-        return {
-          workflowInput,
-          expectedWorkflowOutput: workflowOutput,
+          return {
+            workflowInput,
+            workflowOutput: workflowOutput,
+          }
         }
-      })
+      )
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases", {
         count: workflowCases.length,
@@ -264,8 +271,16 @@ export class IngestionLayer {
 
       lgg.info("[GAIALoader] Using local cached GAIA data")
 
-      // get HF token from environment if available
-      const authToken = process.env.HF_TOKEN || process.env.HUGGING_FACE_API_KEY
+      // get HF token from environment if available (prefer runtime env over test/static mock)
+      const authTokenCandidates: Array<string | undefined | null> = [
+        process.env.HF_TOKEN,
+        process.env.HUGGING_FACE_API_KEY,
+        envi.HF_TOKEN,
+        envi.HUGGING_FACE_API_KEY,
+      ]
+      const authToken = authTokenCandidates.find(
+        (v): v is string => typeof v === "string" && v.length > 0
+      )
 
       if (!authToken) {
         lgg.warn(
@@ -310,7 +325,9 @@ The file content should be processed as part of solving this task.`
 
         return {
           workflowInput,
-          expectedWorkflowOutput: workflowOutput,
+          workflowOutput: {
+            output: workflowOutput,
+          },
         }
       })
 
@@ -340,7 +357,9 @@ The file content should be processed as part of solving this task.`
 Note: GAIA dataset requires authentication. Please set HF_TOKEN or HUGGING_FACE_API_KEY environment variable to access real GAIA tasks.
 
 Fallback Question: What is 2 + 2?`,
-          expectedWorkflowOutput: "4",
+          workflowOutput: {
+            output: "4",
+          },
         }
         return [fallbackCase]
       }

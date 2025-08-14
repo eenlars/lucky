@@ -3,7 +3,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type {
   AllowedModelName,
-  ModelNameV2,
+  ModelName,
   ModelPricingV2,
 } from "@core/utils/spending/models.types"
 import {
@@ -19,14 +19,13 @@ export const getActiveModelNames = <T extends LuckyProvider>(
   if (isNir(customProvider)) return []
 
   return Object.keys(providersV2[customProvider])
-    .filter((modelName) => isActiveModel(modelName as ModelNameV2))
+    .filter((modelName) => isActiveModel(modelName as ModelName))
     .map((modelName) => modelName as AllowedModelName<T>)
 }
 
 // Type guard to check if a model is active
 export function isActiveModel(model: string): model is AllowedModelName {
-  const modelConfig =
-    providersV2[CURRENT_PROVIDER][model as ModelNameV2<typeof CURRENT_PROVIDER>]
+  const modelConfig = providersV2[CURRENT_PROVIDER][model as ModelName]
 
   // Check both the providersV2 active flag AND the MODEL_CONFIG inactive set
   return modelConfig?.active === true && !MODEL_CONFIG.inactive.has(model)
@@ -41,7 +40,7 @@ export function getModelV2(model: string): ModelPricingV2 | null {
     throw new Error("getModelV2: No provider or model provided")
   }
 
-  const modelConfig = providersV2[provider]?.[model as ModelNameV2]
+  const modelConfig = providersV2[provider]?.[model as ModelName]
 
   if (!modelConfig) {
     lgg.warn(`getModelV2: Model ${model} not found`)

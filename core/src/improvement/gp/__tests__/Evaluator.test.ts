@@ -1,19 +1,19 @@
 // tests for Evaluator - fitness evaluation for genetic programming
-import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
 import {
   createMockGenome,
-  createMockWorkflowConfig,
   createMockWorkflowIO,
   createMockWorkflowScore,
   mockRuntimeConstantsForGP,
   setupCoreTest,
 } from "@core/utils/__tests__/setup/coreMocks"
-import { Workflow } from "@core/workflow/Workflow"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+// TODO: This test file primarily tests mock behavior rather than actual evaluation logic
+// - Tests verify that mocked AggregatedEvaluator returns expected values
+// - No tests for the actual fitness calculation algorithms
+// - No tests for how fitness scores are computed from workflow performance
+
+vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       success: true,
@@ -23,7 +23,6 @@ vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
           totalCostUsd: 0.05,
           totalTimeSeconds: 1.5,
           accuracy: 0.85,
-          novelty: 0.85,
         },
         feedback: "test feedback",
       },
@@ -63,9 +62,12 @@ describe("Evaluator", () => {
   })
 
   describe("GPEvaluatorAdapter", () => {
+    // TODO: This test only verifies that the mock returns expected values
+    // - Doesn't test actual evaluation logic or fitness calculation
+    // - Should test with real workflow execution results
     it("should evaluate genome successfully", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -88,7 +90,7 @@ describe("Evaluator", () => {
 
     it("should set precomputed workflow data on genome", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -111,12 +113,15 @@ describe("Evaluator", () => {
       })
     })
 
+    // TODO: This test only verifies mock interaction, not evaluation behavior
+    // - Should test that genome's workflow is actually executed
+    // - Should verify fitness is calculated based on workflow performance
     it("should call aggregated evaluator with genome", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -139,10 +144,10 @@ describe("Evaluator", () => {
 
     it("should handle aggregated evaluator returning failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -180,10 +185,10 @@ describe("Evaluator", () => {
 
     it("should handle aggregated evaluator throwing exception", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
       const { lgg } = await import("@core/utils/logging/Logger")
 
@@ -219,10 +224,10 @@ describe("Evaluator", () => {
 
     it("should handle missing fitness data", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -258,12 +263,16 @@ describe("Evaluator", () => {
       expect(result.error).toBe("Evaluation failed")
     })
 
+    // TODO: Poor test - it accepts invalid fitness scores without validation
+    // - Should test that evaluator rejects NaN/negative fitness scores
+    // - Should ensure fitness scores are normalized to [0, 1] range
+    // - Missing validation for fitness score bounds
     it("should handle invalid fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -275,7 +284,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.05,
             totalTimeSeconds: 1.5,
             accuracy: -1,
-            novelty: -1,
           },
           feedback: "test feedback",
         },
@@ -309,10 +317,10 @@ describe("Evaluator", () => {
 
     it("should track costs correctly", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -324,7 +332,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.15,
             totalTimeSeconds: 2.0,
             accuracy: 0.95,
-            novelty: 0.95,
           },
           feedback: "test feedback",
         },
@@ -356,9 +363,13 @@ describe("Evaluator", () => {
   })
 
   describe("evaluation metrics", () => {
+    // TODO: Superficial test - only checks timestamp format, not evaluation metrics
+    // - Should test actual fitness metric calculations
+    // - Should test how accuracy and other metrics are computed
+    // - Missing tests for metric aggregation and weighting
     it("should generate valid timestamps", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -381,10 +392,10 @@ describe("Evaluator", () => {
 
     it("should handle zero cost evaluations", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -396,7 +407,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0,
             totalTimeSeconds: 0.5,
             accuracy: 0.75,
-            novelty: 0.75,
           },
           feedback: "test feedback",
         },
@@ -429,10 +439,10 @@ describe("Evaluator", () => {
 
     it("should handle high fitness scores", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -444,7 +454,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.02,
             totalTimeSeconds: 0.8,
             accuracy: 0.98,
-            novelty: 0.98,
           },
           feedback: "test feedback",
         },
@@ -477,10 +486,10 @@ describe("Evaluator", () => {
 
     it("should handle long execution times", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -492,7 +501,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.1,
             totalTimeSeconds: 30.0,
             accuracy: 0.65,
-            novelty: 0.65,
           },
           feedback: "test feedback",
         },
@@ -526,10 +534,10 @@ describe("Evaluator", () => {
   describe("error recovery", () => {
     it("should return consistent invalid result format", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock to throw an error
@@ -566,10 +574,10 @@ describe("Evaluator", () => {
 
     it("should not throw exceptions on evaluation failure", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock to throw an error
@@ -601,10 +609,10 @@ describe("Evaluator", () => {
 
     it("should log detailed error information", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
       const { lgg } = await import("@core/utils/logging/Logger")
 
@@ -638,13 +646,18 @@ describe("Evaluator", () => {
     })
   })
 
+  // TODO: Missing critical multi-objective optimization tests
+  // - No tests for Pareto dominance between solutions
+  // - No tests for trade-offs between objectives (cost vs accuracy)
+  // - No tests for fitness normalization across different scales
   describe("multi-objective evaluation", () => {
+    // TODO: Only tests that mock returns multiple values, not actual multi-objective logic
     it("should support multiple fitness criteria", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       // Override mock for this test only
@@ -656,7 +669,6 @@ describe("Evaluator", () => {
             totalCostUsd: 0.03,
             totalTimeSeconds: 1.2,
             accuracy: 0.9,
-            novelty: 0.9,
           },
           feedback: "test feedback",
         },
@@ -685,14 +697,13 @@ describe("Evaluator", () => {
       expect(result.success).toBe(true)
       expect(result.data?.fitness?.score).toBe(0.85)
       expect(result.data?.fitness?.accuracy).toBe(0.9)
-      expect(result.data?.fitness?.novelty).toBe(0.9)
     })
   })
 
   describe("performance optimization", () => {
     it("should handle concurrent evaluations", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -726,10 +737,10 @@ describe("Evaluator", () => {
 
     it("should maintain evaluation state independence", async () => {
       const { GPEvaluatorAdapter } = await import(
-        "@core/improvement/evaluators/GPEvaluatorAdapter"
+        "@core/evaluation/evaluators/GPEvaluatorAdapter"
       )
       const { AggregatedEvaluator } = await import(
-        "@core/improvement/evaluators/AggregatedEvaluator"
+        "@core/evaluation/evaluators/AggregatedEvaluator"
       )
 
       const evaluator = new GPEvaluatorAdapter(
@@ -751,7 +762,6 @@ describe("Evaluator", () => {
               totalCostUsd: 0.1,
               totalTimeSeconds: 2.0,
               accuracy: 0.6,
-              novelty: 0.6,
             },
             feedback: "test feedback 1",
           },
@@ -765,7 +775,6 @@ describe("Evaluator", () => {
               totalCostUsd: 0.02,
               totalTimeSeconds: 0.8,
               accuracy: 0.95,
-              novelty: 0.95,
             },
             feedback: "test feedback 2",
           },

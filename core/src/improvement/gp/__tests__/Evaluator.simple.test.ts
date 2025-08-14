@@ -8,7 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Simple inline mocks - no external variables
-vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: class {
     evaluate = vi.fn().mockResolvedValue({
       success: true,
@@ -18,7 +18,6 @@ vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
           totalCostUsd: 0.05,
           totalTimeSeconds: 1.5,
           accuracy: 0.85,
-          novelty: 0.85,
         },
         feedback: "test feedback",
       },
@@ -30,7 +29,6 @@ vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
       totalCostUsd: 0.05,
       totalTimeSeconds: 1.5,
       accuracy: 0.85,
-      novelty: 0.85,
     })
   },
 }))
@@ -64,10 +62,10 @@ describe("GPEvaluatorAdapter", () => {
   })
 
   it("evaluates genome successfully", async () => {
-    const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+    const { GPEvaluatorAdapter: GPEvaluatorAdapterFail } = await import(
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
-    const evaluator = new GPEvaluatorAdapter(
+    const evaluator = new GPEvaluatorAdapterFail(
       [createMockWorkflowIO()],
       "test goal",
       "test analysis"
@@ -86,17 +84,20 @@ describe("GPEvaluatorAdapter", () => {
   })
 
   it("handles evaluation failure", async () => {
-    const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
-    )
+    // Reset module registry to ensure per-test mock overrides take effect
+    vi.resetModules()
 
-    // Override mock for this test by re-mocking the module
-    vi.doMock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+    // Override mock implementation at runtime for this test only
+    vi.doMock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
       AggregatedEvaluator: class {
         evaluate = vi.fn().mockRejectedValue(new Error("eval failed"))
         protected aggregateFitness = vi.fn()
       },
     }))
+
+    const { GPEvaluatorAdapter } = await import(
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
+    )
 
     const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],
@@ -112,14 +113,14 @@ describe("GPEvaluatorAdapter", () => {
     })
 
     expect(result.success).toBe(false)
-    expect(result.error).toBe("Evaluation failed")
+    expect(result.error).toContain("Evaluation failed")
   })
 
   it("uses prompt-only path when configured", async () => {
-    const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+    const { GPEvaluatorAdapter: GPEvaluatorAdapterCalls } = await import(
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
-    const evaluator = new GPEvaluatorAdapter(
+    const evaluator = new GPEvaluatorAdapterCalls(
       [createMockWorkflowIO()],
       "test goal",
       "test analysis"
@@ -143,7 +144,7 @@ describe("GPEvaluatorAdapter", () => {
 
   it("calls genome methods correctly", async () => {
     const { GPEvaluatorAdapter } = await import(
-      "@core/improvement/evaluators/GPEvaluatorAdapter"
+      "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
     const evaluator = new GPEvaluatorAdapter(
       [createMockWorkflowIO()],

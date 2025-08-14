@@ -70,10 +70,10 @@ dev-debug.log
 /.cursor
 /app/src/runtime/logging_folder/*
 /logging_folder
-/output
-**/output/**
-**/output/
-output/
+/output*
+**/output*/**
+**/output*
+output*
 **setupfile.json
 
 # Downloads folder contents (but keep the folder)
@@ -95,3 +95,8 @@ mcp/*
 
 # NPM pack output
 *.tgz
+
+/resilience/
+**/resilience/**
+**/resilience/
+resilience/

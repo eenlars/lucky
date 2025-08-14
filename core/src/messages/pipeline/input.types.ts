@@ -6,6 +6,10 @@ import type {
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
 
+/**
+ * Execution context for invoking a workflow node.
+ * Extends the generic tool invocation context with workflow-specific data.
+ */
 export interface NodeInvocationCallContext extends InvocationContext {
   startTime: string
   workflowVersionId: string

@@ -1,10 +1,10 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { getSelfImprovePrompt } from "@core/improvement/behavioral/self-improve/node/selfImprovement.p"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
 import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,

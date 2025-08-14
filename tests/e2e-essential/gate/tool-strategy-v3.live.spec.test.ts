@@ -1,6 +1,7 @@
 import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { ToolSet } from "ai"
+import { zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -20,13 +21,13 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
   const tools: ToolSet = {
     sum: {
       description: "add two numbers",
-      parameters: z.object({ a: z.number(), b: z.number() }),
+      parameters: zodSchema(z.object({ a: z.number(), b: z.number() })),
       // Not executed here; only selection is tested.
       execute: async ({ a, b }: { a: number; b: number }) => a + b,
     },
     echo: {
       description: "echo text",
-      parameters: z.object({ text: z.string() }),
+      parameters: zodSchema(z.object({ text: z.string() })),
       execute: async ({ text }: { text: string }) => text,
     },
   }

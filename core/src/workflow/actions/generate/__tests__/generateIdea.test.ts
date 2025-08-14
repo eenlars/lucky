@@ -1,15 +1,19 @@
+import type { SendAI, TResponse } from "@core/messages/api/sendAI/types"
+import type { AllToolNames } from "@core/tools/tool.types"
 import { mockRuntimeConstants } from "@core/utils/__tests__/setup/runtimeConstantsMock"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
 vi.mock("@runtime/settings/constants", () => mockRuntimeConstants())
 
-// Create mock instances directly
-const mockSendAIRequest = vi.fn()
-const mockToolsExplanations = vi.fn()
+// Create typed mock instances
+const mockSendAIRequest =
+  vi.fn<(req: Parameters<SendAI>[0]) => Promise<TResponse<unknown>>>()
+const mockToolsExplanations = vi.fn<(type?: "mcp" | "code" | "all") => string>()
 
 // mock external dependencies using vi.mock
-vi.mock("@core/messages/api/sendAI", () => ({
+// IMPORTANT: path must match the implementation import exactly
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: mockSendAIRequest,
 }))
 
@@ -17,15 +21,17 @@ vi.mock("@core/prompts/explainTools", () => ({
   toolsExplanations: mockToolsExplanations,
 }))
 
-vi.mock("@core/tools/tool.types", () => ({
-  ALL_ACTIVE_TOOL_NAMES: [
-    "tool1",
-    "tool2",
-    "tool3",
+vi.mock("@core/tools/tool.types", () => {
+  const tools = [
     "csvReader",
+    "csvInfo",
     "locationDataManager",
-  ],
-}))
+    "contextHandler",
+  ] as const satisfies [AllToolNames, ...AllToolNames[]]
+  return {
+    ALL_ACTIVE_TOOL_NAMES: tools,
+  }
+})
 
 // Runtime constants mocked by mockRuntimeConstantsForGP
 
@@ -35,7 +41,8 @@ vi.mock("@core/prompts/generationRules", () => ({
 
 describe("generateWorkflowIdea", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // Reset implementations between tests to avoid leftover mockResolvedValueOnce queues
+    vi.resetAllMocks()
 
     // set up default mock implementations
     mockToolsExplanations.mockReturnValue("mocked tools explanation")
@@ -47,15 +54,30 @@ describe("generateWorkflowIdea", () => {
     // Expected mock data but got real AI response starting with "1: Identify problem and gather requir…"
     const { generateWorkflowIdea } = await import("../generateIdea")
 
-    const mockResponse = {
+    type GenerateIdeaSchema = {
+      workflow: string
+      tools: AllToolNames[]
+      whyItsSolvesTheProblem: string
+      problemDestructuring: string
+      thinkingProcess: string
+      amountOfNodes: number
+    }
+
+    const mockResponse: TResponse<GenerateIdeaSchema> = {
       success: true,
       data: {
         workflow:
-          "1: data collection (tools: tool1, tool2); connects to 2\n2: data processing (tools: tool3); connects to end",
-        tools: ["tool1", "tool2", "tool3"],
+          "1: data collection (tools: csvReader, csvInfo); connects to 2\n2: data processing (tools: locationDataManager); connects to end",
+        tools: ["csvReader", "csvInfo", "locationDataManager"],
         amountOfNodes: 2,
+        whyItsSolvesTheProblem: "because",
+        problemDestructuring: "n/a",
+        thinkingProcess: "n/a",
       },
       usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
     mockSendAIRequest.mockResolvedValue(mockResponse)
@@ -73,10 +95,14 @@ describe("generateWorkflowIdea", () => {
   })
 
   it("should handle AI request failure", async () => {
-    mockSendAIRequest.mockResolvedValue({
+    const failureResponse: TResponse<unknown> = {
       success: false,
+      data: null,
       error: "AI request failed",
-    })
+      debug_input: [],
+      debug_output: {},
+    }
+    mockSendAIRequest.mockResolvedValue(failureResponse)
 
     const { generateWorkflowIdea } = await import("../generateIdea")
 
@@ -95,14 +121,27 @@ describe("generateWorkflowIdea", () => {
     // Expected sendAI to be called but it was not called (0 times)
     const { generateWorkflowIdea } = await import("../generateIdea")
 
-    const mockResponse = {
+    const mockResponse: TResponse<{
+      workflow: string
+      tools: AllToolNames[]
+      amountOfNodes: number
+      whyItsSolvesTheProblem: string
+      problemDestructuring: string
+      thinkingProcess: string
+    }> = {
       success: true,
       data: {
         workflow: "test workflow",
-        tools: ["tool1"],
+        tools: ["csvInfo"],
         amountOfNodes: 1,
+        whyItsSolvesTheProblem: "",
+        problemDestructuring: "",
+        thinkingProcess: "",
       },
       usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
     mockSendAIRequest.mockResolvedValue(mockResponse)
@@ -130,14 +169,27 @@ describe("generateWorkflowIdea", () => {
     // Expected mockToolsExplanations to be called at least once but it was not called
     const { generateWorkflowIdea } = await import("../generateIdea")
 
-    const mockResponse = {
+    const mockResponse: TResponse<{
+      workflow: string
+      tools: AllToolNames[]
+      amountOfNodes: number
+      whyItsSolvesTheProblem: string
+      problemDestructuring: string
+      thinkingProcess: string
+    }> = {
       success: true,
       data: {
         workflow: "test workflow",
-        tools: ["tool1"],
+        tools: ["csvInfo"],
         amountOfNodes: 1,
+        whyItsSolvesTheProblem: "",
+        problemDestructuring: "",
+        thinkingProcess: "",
       },
       usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
     mockSendAIRequest.mockResolvedValue(mockResponse)
@@ -166,21 +218,24 @@ describe("generateWorkflowIdea", () => {
     // Expected 2 results but got 0, indicating mock failure and real API calls
     const { generateMultipleWorkflowIdeas } = await import("../generateIdea")
 
-    const mockResponse = {
+    const mockResponse: TResponse<{
+      workflow: string
+      tools: AllToolNames[]
+      amountOfNodes: number
+    }> = {
       success: true,
       data: {
         workflow: "test workflow",
-        tools: ["tool1"],
+        tools: ["csvInfo"],
         amountOfNodes: 1,
-        usdCost: 0.001,
       },
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
-    mockSendAIRequest.mockResolvedValue({
-      success: true,
-      data: mockResponse.data,
-      usdCost: 0.001,
-    })
+    mockSendAIRequest.mockResolvedValue(mockResponse)
 
     const results = await generateMultipleWorkflowIdeas("test prompt", 2)
 
@@ -195,20 +250,29 @@ describe("generateWorkflowIdea", () => {
     // Expected 2 successful results but got 0
     const { generateMultipleWorkflowIdeas } = await import("../generateIdea")
 
-    const successResponse = {
+    const successResponse: TResponse<{
+      workflow: string
+      tools: AllToolNames[]
+      amountOfNodes: number
+    }> = {
       success: true,
       data: {
         workflow: "test workflow",
-        tools: ["tool1"],
+        tools: ["csvInfo"],
         amountOfNodes: 1,
-        usdCost: 0.001,
       },
       usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
-    const failureResponse = {
+    const failureResponse: TResponse<unknown> = {
       success: false,
+      data: null,
       error: "AI request failed",
+      debug_input: [],
+      debug_output: {},
     }
 
     mockSendAIRequest
@@ -224,15 +288,33 @@ describe("generateWorkflowIdea", () => {
   })
 
   it("should handle complex workflow with multiple tools", async () => {
-    const mockResponse = {
+    const mockResponse: TResponse<{
+      workflow: string
+      tools: AllToolNames[]
+      amountOfNodes: number
+      whyItsSolvesTheProblem: string
+      problemDestructuring: string
+      thinkingProcess: string
+    }> = {
       success: true,
       data: {
         workflow:
-          "1: search locations (tools: csvReader, locationDataManager); connects to 2\n2: verify data (tools: tool3); connects to 3\n3: save results (tools: tool1); connects to end",
-        tools: ["csvReader", "locationDataManager", "tool3", "tool1"],
+          "1: search locations (tools: csvReader, locationDataManager); connects to 2\n2: verify data (tools: csvInfo); connects to 3\n3: save results (tools: contextHandler); connects to end",
+        tools: [
+          "csvReader",
+          "locationDataManager",
+          "csvInfo",
+          "contextHandler",
+        ],
         amountOfNodes: 3,
+        whyItsSolvesTheProblem: "",
+        problemDestructuring: "",
+        thinkingProcess: "",
       },
       usdCost: 0.003,
+      error: null,
+      debug_input: [],
+      debug_output: {},
     }
 
     mockSendAIRequest.mockResolvedValue(mockResponse)

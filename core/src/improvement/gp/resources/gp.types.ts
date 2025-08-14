@@ -2,16 +2,26 @@
  * Simplified GP types focused on prompt evolution research
  */
 
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 /**
- * Type safety for generation-related values to prevent confusion
+ * Evolution-scoped identifiers/state passed around during a run.
+ * Used to tag genomes, evaluations, and DB writes with run/generation IDs.
  */
+export interface EvolutionContext {
+  /** Unique run identifier for the overall evolution session */
+  runId: string
+  /** Unique ID of the current generation within the run */
+  generationId: string
+  /** Zero-based generation index within the run */
+  generationNumber: number
+  /** Optional parent genome workflow version IDs that produced this genome */
+  parentIds?: string[]
+}
 
 /**
- * Workflow genome extends node config with evolution metadata
+ * Workflow genome extends workflow config with evolution metadata.
  */
 export interface WorkflowGenome extends WorkflowConfig {
   _evolutionContext: EvolutionContext
@@ -21,7 +31,7 @@ export interface WorkflowGenome extends WorkflowConfig {
 }
 
 /**
- * Evaluation result for a genome
+ * Evaluation result and metadata for a genome.
  */
 export interface GenomeEvaluationResults {
   workflowVersionId: string
@@ -34,7 +44,7 @@ export interface GenomeEvaluationResults {
 }
 
 /**
- * Population statistics for tracking
+ * Aggregated statistics over the current generation/population.
  */
 export interface PopulationStats {
   generation: number

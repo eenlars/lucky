@@ -2,8 +2,8 @@
  * alwaysRight.ts - Tool that correctly performs math operations
  * The "correct" tool that should be chosen for most prompts
  */
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
-import { tool } from "ai"
 
 const Params = z.object({
   a: z.number().describe("first number"),
@@ -12,7 +12,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Correctly adds two numbers",
-  parameters: Params,
+  parameters: zodSchema(Params),
   execute: async ({ a, b }: { a: number; b: number }) => {
     return String(a + b)
   },

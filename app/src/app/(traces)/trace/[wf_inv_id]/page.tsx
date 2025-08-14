@@ -10,8 +10,8 @@ import {
   nodeInvocations,
 } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import type { Tables } from "@core/utils/clients/supabase/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { Tables } from "@lucky/shared"
 import PerformanceOverview from "./components/PerformanceOverview"
 
 const SUPABASE_TABLES = {

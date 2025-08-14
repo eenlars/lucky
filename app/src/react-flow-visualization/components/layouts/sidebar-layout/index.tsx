@@ -16,10 +16,12 @@ export default function SidebarLayout({
   children,
   title,
   right,
+  showToggle = true,
 }: {
   children: React.ReactNode
   title?: string
   right?: React.ReactNode
+  showToggle?: boolean
 }) {
   return (
     <SidebarProvider defaultOpen={false}>
@@ -27,8 +29,10 @@ export default function SidebarLayout({
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 justify-between">
           <div className="flex flex-1 items-center gap-2 px-3">
-            <SidebarTrigger />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+            {showToggle ? <SidebarTrigger /> : null}
+            {showToggle ? (
+              <Separator orientation="vertical" className="mr-2 h-4" />
+            ) : null}
             {title && (
               <Breadcrumb>
                 <BreadcrumbList>

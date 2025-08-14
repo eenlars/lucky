@@ -1,12 +1,12 @@
 "use client"
 
-import { MODELS } from "@runtime/settings/constants.client"
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
 import {
   toWorkflowConfig,
   type WorkflowConfig,
 } from "@core/workflow/schema/workflow.types"
+import type { Tables } from "@lucky/shared"
+import { MODELS } from "@runtime/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import {

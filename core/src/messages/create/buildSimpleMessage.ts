@@ -10,7 +10,7 @@ import chalk from "chalk"
 import { llmify } from "../../utils/common/llmify"
 
 /**
- * Configuration parameters for building AI chat messages
+ * Configuration parameters for building AI chat messages.
  */
 export interface BuildSimpleMessageContext extends WorkflowFiles {
   /** Primary message content to be sent to the AI model */

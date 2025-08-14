@@ -159,7 +159,6 @@ export function _createDefaultEvolutionSettings(
     numberOfParentsCreatingOffspring: 2,
     immigrantRate: 3,
     immigrantInterval: 5,
-    noveltyWeight: 0.2,
 
     ...overrides,
   } as const

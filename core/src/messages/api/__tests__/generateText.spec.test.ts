@@ -1,15 +1,22 @@
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
-import { generateText, tool } from "ai"
+import { JSONN } from "@lucky/shared"
+import { generateText, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
+
+// TODO: These integration tests make real API calls and should be excluded from main suite
+// TODO: Tests depend on specific AI behavior which may change over time
+// TODO: Tool names and descriptions are cryptic (nod-333, mod-888, etc.)
+// Should use meaningful names that clearly indicate test purpose
 const tool1 = tool({
   description: "nod-333",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return "555"
   },
@@ -17,9 +24,11 @@ const tool1 = tool({
 
 const tool2 = tool({
   description: "mod-888",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "555" ? "B" : "2"
   },
@@ -27,9 +36,11 @@ const tool2 = tool({
 
 const tool3 = tool({
   description: "rod-999",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "B" ? "9" : "C"
   },
@@ -61,6 +72,7 @@ describe("generateText with sequential tools", () => {
     // convert to v2
     const resultV2 = processStepsV2(result.steps, getDefaultModels().default)
 
+    // TODO: Remove console.log from test - use proper test reporters
     console.log(JSONN.show(resultV2))
 
     expect(resultV2?.agentSteps).toBeDefined()
@@ -73,7 +85,7 @@ describe("generateText with sequential tools", () => {
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")
     expect(tool3Result?.return).toEqual("9")
-  }, 30000) //
+  }, 30000) // TODO: Comment explaining why 30s timeout is needed
 
   it("should execute tools in sequence despite large irrelevant context", async () => {
     const result = await generateText({
@@ -120,6 +132,7 @@ Now, let me execute the tools as requested.`,
     // convert to v2
     const resultV2 = processStepsV2(result.steps, getDefaultModels().default)
 
+    // TODO: Remove console.log from test - use proper test reporters
     console.log(JSONN.show(resultV2))
 
     expect(resultV2?.agentSteps).toBeDefined()

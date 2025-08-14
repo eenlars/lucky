@@ -18,6 +18,7 @@
  * @see WorkflowGenome - Raw genome representation structure
  */
 
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
@@ -34,7 +35,6 @@ import {
 } from "@core/utils/persistence/workflow/registerWorkflow"
 import { getActiveModelNames } from "@core/utils/spending/functions"
 import { R, type RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -95,7 +95,6 @@ export class Genome extends Workflow {
         totalCostUsd: 0,
         totalTimeSeconds: 0,
         accuracy: 0,
-        novelty: 0,
       },
       costOfEvaluation: 0,
       errors: [],
@@ -210,7 +209,7 @@ export class Genome extends Workflow {
           this was an analysis of the problem: ${problemAnalysis}
           `,
         randomness,
-        model: randomModel, // creates novelty, ensemble method.
+        model: randomModel, // ensemble method.
       })
       lgg.onlyIf(
         Genome.verbose,
@@ -431,7 +430,6 @@ export class Genome extends Workflow {
         totalCostUsd: 0,
         totalTimeSeconds: 0,
         accuracy: 0,
-        novelty: 0,
       },
       costOfEvaluation: 0,
       errors: [],

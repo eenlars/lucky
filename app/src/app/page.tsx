@@ -53,6 +53,19 @@ export default function HomePage() {
               View genetic programming runs
             </p>
           </Link>
+
+          <Link
+            href="/ingestions"
+            className="group flex flex-col items-center p-8 transition-all duration-300 hover:translate-y-[-2px]"
+          >
+            <div className="w-16 h-16 mb-6 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors duration-300">
+              <span className="text-2xl">⇪</span>
+            </div>
+            <h3 className="text-xl font-light text-black mb-2">Ingestions</h3>
+            <p className="text-sm font-light text-black/50 text-center tracking-wide">
+              Upload inputs and run workflows on them
+            </p>
+          </Link>
         </div>
       </div>
     </div>

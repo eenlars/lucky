@@ -1,10 +1,11 @@
 import { Play } from "lucide-react"
 
 import { Button } from "@/react-flow-visualization/components/ui/button"
-import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
+// runner context removed
 
 export function AppPopover() {
-  const { isRunning, setPromptDialogOpen } = useWorkflowRunnerContext()
+  const isRunning = false
+  const setPromptDialogOpen = (_: boolean) => {}
 
   const onClickRun = () => {
     if (isRunning) return
@@ -17,7 +18,7 @@ export function AppPopover() {
       className="cursor-pointer"
       disabled={isRunning}
     >
-      <Play /> Run with Prompt
+      <Play /> Run
     </Button>
   )
 }

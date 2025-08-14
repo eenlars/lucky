@@ -11,7 +11,7 @@ import {
   WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes/"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
-import { useWorkflowRunnerContext } from "@/react-flow-visualization/hooks/workflow-runner-context"
+// runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
 import {
   ACTIVE_MCP_TOOL_NAMES,
@@ -31,7 +31,7 @@ function WorkflowNode({
   data: WorkflowNodeData
   children?: React.ReactNode
 }) {
-  const { setPromptDialogOpen } = useWorkflowRunnerContext()
+  const setPromptDialogOpen = (_: boolean) => {}
   const openNodeDetails = useAppStore((state) => state.openNodeDetails)
   const updateNode = useAppStore((state) => state.updateNode)
   const [isToolSelectorOpen, setIsToolSelectorOpen] = useState(false)
@@ -41,7 +41,7 @@ function WorkflowNode({
       e.stopPropagation()
       // When clicking run from a node in graph mode, just open the prompt dialog.
       // Optionally, we could pre-fill a startNodeId here.
-      setPromptDialogOpen(true)
+      // runner removed
     },
     [setPromptDialogOpen]
   )

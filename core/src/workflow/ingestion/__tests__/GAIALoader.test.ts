@@ -1,8 +1,8 @@
+import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { GAIALoader } from "../benchmarks/gaia/GAIALoader"
 
 // Mock global fetch
-global.fetch = vi.fn()
+global.fetch = vi.fn() as unknown as typeof fetch
 
 // Mock GAIALocalLoader to force HTTP path
 vi.mock("../benchmarks/gaia/GAIALocalLoader", () => ({

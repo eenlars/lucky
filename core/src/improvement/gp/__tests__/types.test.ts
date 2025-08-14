@@ -25,7 +25,6 @@ describe("GP Types and Utilities", () => {
           totalCostUsd: 0.01,
           totalTimeSeconds: 10,
           accuracy: 0.8,
-          novelty: 0.8,
         },
       }
 
@@ -46,11 +45,9 @@ describe("GP Types and Utilities", () => {
         totalCostUsd: 0.01,
         totalTimeSeconds: 10,
         accuracy: 0.8,
-        novelty: 0.8,
         genomeId: "test-id",
         valid: true,
         evaluatedAt: new Date().toISOString(),
-        noveltyScore: 0.5,
       }
 
       expect(score.genomeId).toBeDefined()
@@ -72,7 +69,6 @@ describe("GP Types and Utilities", () => {
           totalCostUsd: 0.01,
           totalTimeSeconds: 10,
           accuracy: 0.8,
-          novelty: 0.8,
         },
         costOfEvaluation: 0.01,
         errors: [],

@@ -38,6 +38,10 @@ describe("InvocationPipeline Focused Integration", () => {
   })
 
   it("should execute real todo workflow without circular dependency issues", async () => {
+    // TODO: this test is testing tool execution directly instead of testing InvocationPipeline.
+    // it imports tools directly and executes them manually, bypassing the actual pipeline logic
+    // that should be tested. this doesn't test how InvocationPipeline coordinates tool execution,
+    // message passing, or error handling. should rewrite to test actual InvocationPipeline class.
     // Create a minimal test that simulates the exact workflow you requested
     const workflowInvocationId = `focused-test-${Date.now()}`
 
@@ -110,6 +114,9 @@ describe("InvocationPipeline Focused Integration", () => {
     expect(finalOutput?.todos).toBeDefined()
     expect(finalOutput?.isEmpty).toBe(false)
 
+    // TODO: this test doesn't verify actual system prompt parsing or interpretation by AI.
+    // it manually checks execution order but doesn't test if InvocationPipeline would
+    // correctly parse and follow system prompts. also uses console.log instead of assertions.
     // Verify this follows the system prompt exactly:
     // 1. ✅ Used todo write first
     // 2. ✅ Returned the output of todo read
@@ -132,6 +139,10 @@ describe("InvocationPipeline Focused Integration", () => {
   })
 
   it("should validate system prompt interpretation logic", async () => {
+    // TODO: this test uses hardcoded string matching instead of testing actual AI interpretation.
+    // it doesn't test how InvocationPipeline or the AI model would understand and execute
+    // natural language instructions. the test is too simplistic - real system prompts are
+    // more complex and require semantic understanding, not just string.includes() checks.
     // Test the logic that would interpret the system prompt
     const systemPrompt =
       "use todo write first, and then return the output of todo read"
@@ -171,6 +182,10 @@ describe("InvocationPipeline Focused Integration", () => {
   })
 
   it("should simulate experimental multi-step loop tool strategy", async () => {
+    // TODO: this test is a pure simulation with hardcoded mockDecisionFlow array.
+    // it doesn't test actual multi-step loop implementation or decision-making logic.
+    // it's just verifying that a manually created array has expected values, which
+    // provides no confidence that the real multi-step loop would work correctly.
     // Mock the multi-step loop decision making
     const mockDecisionFlow = [
       {

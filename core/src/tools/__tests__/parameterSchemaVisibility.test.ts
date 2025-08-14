@@ -1,7 +1,7 @@
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -20,16 +20,21 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 describe("Parameter Schema Visibility", () => {
+  // TODO: This test suite mocks sendAI responses but doesn't verify what's actually sent to the AI.
+  // The mock always returns the same response regardless of input, which means we're not testing
+  // if the schema visibility actually affects AI behavior or tool selection quality.
   const mockSearchGoogleMapsTool = tool({
     description: "Search Google Maps for business information",
-    parameters: z.object({
-      query: z.string().describe("Search query"),
-      maxResultCount: z
-        .number()
-        .max(20)
-        .default(10)
-        .describe("Number of results to return"),
-    }),
+    parameters: zodSchema(
+      z.object({
+        query: z.string().describe("Search query"),
+        maxResultCount: z
+          .number()
+          .max(20)
+          .default(10)
+          .describe("Number of results to return"),
+      })
+    ),
     execute: async () => "mock result",
   })
 
@@ -46,6 +51,8 @@ describe("Parameter Schema Visibility", () => {
 
   afterEach(() => {
     ;(CONFIG.tools as any).showParameterSchemas = originalShowParameterSchemas
+    // TODO: Using 'as any' to bypass TypeScript is a code smell. The CONFIG object should
+    // either be properly mutable for tests or use a proper mocking strategy.
   })
 
   it("should include parameter schemas when enabled", async () => {
@@ -70,6 +77,10 @@ describe("Parameter Schema Visibility", () => {
     expect(userMessage.content).toContain("maximum")
     expect(userMessage.content).toContain("20")
     expect(userMessage.content).not.toContain("not shown")
+    // TODO: This test only checks string presence in the message. It should verify:
+    // 1) The schema is properly formatted/structured for AI consumption
+    // 2) All schema constraints are included (not just 'maximum')
+    // 3) The schema format matches what the AI expects
   })
 
   it("should hide parameter schemas when disabled", async () => {
@@ -98,20 +109,27 @@ describe("Parameter Schema Visibility", () => {
   })
 
   it("should work with complex tool parameter patterns", async () => {
+    // TODO: This test creates a complex schema but only tests superficial string presence.
+    // It should verify: 1) Nested objects are properly represented
+    //                  2) Union types are correctly formatted
+    //                  3) Optional fields are marked as such
+    //                  4) Default values are communicated
     ;(CONFIG.tools as any).showParameterSchemas = true
 
     const complexTool = tool({
       description: "Complex tool with various parameter types",
-      parameters: z.object({
-        query: z.string().describe("Search query"),
-        options: z.object({
-          maxResults: z.number().max(100).default(10),
-          includeMetadata: z.boolean().default(false),
-          tags: z.array(z.string()).optional(),
-        }),
-        mode: z.enum(["fast", "thorough"]).default("fast"),
-        filters: z.union([z.string(), z.array(z.string())]).optional(),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string().describe("Search query"),
+          options: z.object({
+            maxResults: z.number().max(100).default(10),
+            includeMetadata: z.boolean().default(false),
+            tags: z.array(z.string()).optional(),
+          }),
+          mode: z.enum(["fast", "thorough"]).default("fast"),
+          filters: z.union([z.string(), z.array(z.string())]).optional(),
+        })
+      ),
       execute: async () => "complex result",
     })
 
@@ -140,13 +158,18 @@ describe("Parameter Schema Visibility", () => {
   })
 
   it("should handle mixed parameter types (Zod and Vercel AI)", async () => {
+    // TODO: This test mixes tool formats but doesn't test the critical aspect:
+    // How are different parameter formats normalized for consistent AI consumption?
+    // The test should verify the conversion/normalization logic, not just string presence.
     ;(CONFIG.tools as any).showParameterSchemas = true
 
     const zodTool = tool({
       description: "Tool with Zod parameters",
-      parameters: z.object({
-        query: z.string(),
-      }),
+      parameters: zodSchema(
+        z.object({
+          query: z.string(),
+        })
+      ),
       execute: async () => "zod result",
     })
 
@@ -164,6 +187,9 @@ describe("Parameter Schema Visibility", () => {
     }
 
     const mixedTools = { zodTool, vercelTool }
+    // TODO: The vercelTool structure doesn't match the actual Vercel AI tool interface.
+    // Real Vercel AI tools don't have a 'parameters.jsonSchema' structure like this.
+    // This test might be testing against an incorrect tool format.
 
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 

@@ -14,7 +14,7 @@ vi.mock("@runtime/settings/constants", () => ({
     coordinationType: "sequential",
     newNodeProbability: 0.7,
     evolution: {
-      culturalIterations: 3,
+      iterativeIterations: 3,
       GP: {
         verbose: false,
         populationSize: 5,
@@ -297,6 +297,8 @@ describe("Genome", () => {
 
   describe("Static Methods", () => {
     describe("createRandom", () => {
+      // TODO: multiple tests marked as .skip without explanation
+      // indicates incomplete test suite - either complete or document why skipped
       it.skip("should create random genome in non-verbose mode", async () => {
         const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -310,6 +312,8 @@ describe("Genome", () => {
 
         expect(genome.success).toBe(true)
         expect(genome.data?.genome?.parentWorkflowVersionIds.length).toBe(0)
+        // TODO: comment "Workflow.ideaToWorkflow is called directly, not our mock"
+        // suggests mocking issues - fix mocks or update test approach
         // Note: Workflow.ideaToWorkflow is called directly, not our mock
         // Just verify the result is correct
         expect(genome.success).toBe(true)
@@ -453,6 +457,8 @@ describe("Genome", () => {
         genome.addCost(0.05)
         genome.addCost(0.03)
 
+        // TODO: comment "cost is internal, verify through behavior" but no behavior is verified
+        // should test the effect of addCost on evaluation results or total cost
         // cost is internal, verify through behavior
         expect(genome).toBeInstanceOf(Genome)
       })
@@ -528,7 +534,8 @@ describe("Genome", () => {
       const incompleteScore = {
         score: 0.8,
         totalCostUsd: 0.01,
-      } as any
+      } as any // TODO: using 'as any' to bypass TypeScript defeats purpose of type safety
+      // create proper test data or use partial types instead
 
       expect(() => {
         const evaluationInput = createMockEvaluationInputGeneric()

@@ -1,6 +1,6 @@
 "use server"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Tables } from "@core/utils/clients/supabase/types"
+import type { Tables } from "@lucky/shared"
 
 export interface WorkflowInvocationSubset {
   wf_invocation_id: string
@@ -10,7 +10,6 @@ export interface WorkflowInvocationSubset {
   status: "running" | "completed" | "failed" | "rolled_back"
   usd_cost: number
   fitness_score: number | null
-  novelty: number | null
   accuracy: number | null
   run_id: string | null
   generation_id: string | null
@@ -122,7 +121,6 @@ const performComplexQuery = async (
         status,
         usd_cost,
         fitness_score,
-        novelty,
         accuracy,
         run_id,
         generation_id

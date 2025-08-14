@@ -8,50 +8,14 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
-import type { Json } from "@core/utils/clients/supabase/types"
 import { lgg } from "@core/utils/logging/Logger"
-import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/workflow/registerWorkflow"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
-import { R, type RS } from "@core/utils/types"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import { calculateFeedback } from "@core/workflow/actions/analyze/calculate-fitness/calculateFeedback"
-import { calculateFitness } from "@core/workflow/actions/analyze/calculate-fitness/calculateFitness"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import chalk from "chalk"
+import type { QueueRunParams, QueueRunResult } from "./types"
 
-export type QueueRunParams = {
-  workflow: Workflow
-  workflowInput: string
-  workflowInvocationId: string
-}
-
-// Fix to use ProcessedResponse
-export type QueueRunResult = {
-  success: boolean
-  agentSteps: AgentSteps
-  finalWorkflowOutput: string
-  error?: string
-  totalTime: number
-  totalCost: number
-}
-
-export type EvaluationResult = {
-  transcript: AgentSteps
-  summaries: InvocationSummary[]
-  fitness: FitnessOfWorkflow
-  feedback: string
-  finalWorkflowOutput: string
-}
-
-export type AggregateEvaluationResult = {
-  results: EvaluationResult[]
-  totalCost: number
-  averageFitness: FitnessOfWorkflow
-  averageFeedback: string
-}
+// Types are centralized in ./types to avoid circular imports and keep the API surface stable.
 
 const coordinationType = CONFIG.coordinationType
 const verbose = CONFIG.logging.override.Memory ?? false
@@ -263,7 +227,7 @@ export async function queueRun({
       error,
       summaryWithInfo,
       updatedMemory,
-      agentSteps,
+      agentSteps: nodeAgentSteps,
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
@@ -285,6 +249,11 @@ export async function queueRun({
     }
 
     nodeInvocations++
+
+    // Aggregate agent steps from this node invocation into the run-level transcript
+    if (Array.isArray(nodeAgentSteps) && nodeAgentSteps.length > 0) {
+      agentSteps.push(...nodeAgentSteps)
+    }
 
     currentMessage.updateMessage({
       target_invocation_id: nodeInvocationId,
@@ -437,81 +406,5 @@ export async function queueRun({
     totalTime: Date.now() - startTime,
     totalCost: totalCost,
     finalWorkflowOutput: lastNodeOutput,
-  }
-}
-
-export const evaluateQueueRun = async ({
-  workflow,
-  queueRunResult,
-  evaluation,
-  workflowInvocationId,
-}: {
-  workflow: Workflow
-  queueRunResult: QueueRunResult
-  evaluation: string
-  workflowInvocationId: string
-}): Promise<RS<EvaluationResult>> => {
-  const evaluationInput = workflow.getEvaluationInput()
-
-  const fitnessResult = await calculateFitness({
-    agentSteps: queueRunResult.agentSteps,
-    totalTime: queueRunResult.totalTime,
-    totalCost: queueRunResult.totalCost,
-    evaluation: evaluation,
-    expectedOutputSchema: evaluationInput.expectedOutputSchema,
-    finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
-  })
-
-  let feedbackResult: RS<string> | null = null
-  if (CONFIG.improvement.flags.operatorsWithFeedback) {
-    feedbackResult = await calculateFeedback({
-      agentSteps: queueRunResult.agentSteps,
-      evaluation: evaluation,
-    })
-    if (!feedbackResult.success) {
-      return R.error(feedbackResult.error, feedbackResult.usdCost)
-    }
-  }
-
-  if (!fitnessResult.success)
-    return R.error(fitnessResult.error, fitnessResult.usdCost)
-
-  const fitness = fitnessResult.data
-
-  await updateWorkflowInvocationInDatabase({
-    workflowInvocationId: workflowInvocationId,
-    status: "completed",
-    end_time: new Date().toISOString(),
-    usd_cost: queueRunResult.totalCost + (fitnessResult.usdCost ?? 0),
-    // todo-typesafety: unsafe 'as' type assertions - violates CLAUDE.md "we hate as"
-    fitness: fitnessResult as unknown as Json,
-    extras: {
-      evaluation: JSONN.show(evaluation),
-      actualOutput: JSONN.show(queueRunResult.agentSteps),
-    },
-    workflow_output: evaluation as unknown as Json,
-    expected_output:
-      typeof evaluation === "string" ? evaluation : JSON.stringify(evaluation),
-    actual_output: queueRunResult.finalWorkflowOutput,
-    feedback: feedbackResult?.data ?? "",
-    fitness_score: fitness.score,
-    novelty: fitness.novelty,
-    accuracy: fitness.accuracy,
-  })
-
-  return {
-    success: true,
-    data: {
-      transcript: queueRunResult.agentSteps,
-      summaries: queueRunResult.agentSteps.map((output, index) => ({
-        timestamp: Date.now(),
-        nodeId: `node-${index}`,
-        summary: output.return?.toString() || "", // todo-wrong
-      })),
-      fitness: fitness,
-      feedback: feedbackResult?.data ?? "",
-      finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
-    },
-    usdCost: queueRunResult.totalCost + (fitnessResult.usdCost ?? 0),
   }
 }

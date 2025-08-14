@@ -3,7 +3,6 @@ import { supabase } from "@core/utils/clients/supabase/client"
 interface NewerFitnessData {
   data: {
     score: number
-    novelty: number
     accuracy: number
     feedback: string
     totalCostUsd: number
@@ -47,10 +46,8 @@ function isNewerFormat(data: unknown): data is NewerFitnessData {
     data.data !== null &&
     typeof data.data === "object" &&
     "score" in data.data &&
-    "novelty" in data.data &&
     "accuracy" in data.data &&
     typeof (data.data as any).score === "number" &&
-    typeof (data.data as any).novelty === "number" &&
     typeof (data.data as any).accuracy === "number"
   )
 }
@@ -64,7 +61,6 @@ function isMiddleFormat(data: unknown): data is MiddleFitnessData {
     typeof data.data === "object" &&
     "score" in data.data &&
     "dataAccuracy" in data.data &&
-    !("novelty" in data.data) &&
     !("accuracy" in data.data) &&
     typeof (data.data as any).score === "number" &&
     typeof (data.data as any).dataAccuracy === "number"
@@ -83,19 +79,16 @@ function isOlderFormat(data: unknown): data is OlderFitnessData {
 
 function extractFitnessValues(fitnessData: unknown): {
   accuracy: number | null
-  novelty: number | null
   fitness_score: number | null
 } {
   if (isNewerFormat(fitnessData)) {
     return {
       accuracy: Math.round(fitnessData.data.accuracy),
-      novelty: Math.round(fitnessData.data.novelty),
       fitness_score: Math.round(fitnessData.data.score),
     }
   } else if (isMiddleFormat(fitnessData)) {
     return {
       accuracy: Math.round(fitnessData.data.dataAccuracy),
-      novelty: null,
       fitness_score: Math.round(fitnessData.data.score),
     }
   } else if (isOlderFormat(fitnessData)) {
@@ -103,13 +96,11 @@ function extractFitnessValues(fitnessData: unknown): {
       accuracy: fitnessData.extendedFitness?.dataAccuracy
         ? Math.round(fitnessData.extendedFitness.dataAccuracy)
         : null,
-      novelty: null,
       fitness_score: Math.round(fitnessData.score),
     }
   } else {
     return {
       accuracy: null,
-      novelty: null,
       fitness_score: null,
     }
   }
@@ -122,9 +113,9 @@ export async function migrateFitnessToColumns() {
     // Get all WorkflowInvocation rows that have fitness data but missing the new columns
     const { data: rows, error: fetchError } = await supabase
       .from("WorkflowInvocation")
-      .select("wf_invocation_id, fitness, accuracy, novelty, fitness_score")
+      .select("wf_invocation_id, fitness, accuracy, fitness_score")
       .not("fitness", "is", null)
-      .or("accuracy.is.null,novelty.is.null,fitness_score.is.null")
+      .or("accuracy.is.null,fitness_score.is.null")
 
     if (fetchError) {
       throw new Error(`Failed to fetch rows: ${fetchError.message}`)
@@ -150,16 +141,13 @@ export async function migrateFitnessToColumns() {
         }
 
         // Extract values using type-safe function
-        const { accuracy, novelty, fitness_score } =
+        const { accuracy, fitness_score } =
           extractFitnessValues(fitnessData)
 
         // Only update if we have at least one value to update and it's currently null
         const updates: any = {}
         if (accuracy !== null && row.accuracy === null) {
           updates.accuracy = accuracy
-        }
-        if (novelty !== null && row.novelty === null) {
-          updates.novelty = novelty
         }
         if (fitness_score !== null && row.fitness_score === null) {
           updates.fitness_score = fitness_score

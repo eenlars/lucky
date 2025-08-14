@@ -3,9 +3,9 @@ import type { Payload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import { truncate } from "lodash"
 import z from "zod"
 
@@ -159,7 +159,10 @@ export const createHandoffSchema = (handOffs: string[]) =>
       .describe("what should the other node have to know? (plain english)"),
   })
 
-export type HandoffResult = {
+/**
+ * Result of choosing a handoff target along with reply payload and cost.
+ */
+export interface HandoffResult {
   handoff: string
   usdCost: number
   replyMessage: Payload

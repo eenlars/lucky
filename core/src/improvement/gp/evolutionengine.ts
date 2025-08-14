@@ -26,11 +26,12 @@
  * @see EvolutionEvaluator - External genome evaluation interface
  */
 
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Population } from "@core/improvement/gp/Population"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import { evolutionSettingsToString } from "@core/improvement/gp/resources/evolution-types"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
+import { validateEvolutionSettings } from "@core/improvement/gp/resources/validation"
 import type { FlowEvolutionMode } from "@core/types"
 import { isNir } from "@core/utils/common/isNir"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
@@ -39,10 +40,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
-import {
-  createEvolutionSettingsWithConfig,
-  validateEvolutionSettings,
-} from "@runtime/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
 import { Genome } from "./Genome"
 import type {
   GenomeEvaluationResults,

@@ -1,6 +1,5 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type {
-  AllowedModelName,
   ModelPricingV2,
   StandardModels,
 } from "@core/utils/spending/models.types"
@@ -31,7 +30,7 @@ export const DEFAULT_MODELS = {
     medium: "openai/gpt-4.1-mini",
     high: "google/gemini-2.5-pro-preview",
     default: "openai/gpt-4.1-nano",
-    fitness: "google/gemini-2.5-pro-preview",
+    fitness: "openai/gpt-4.1-mini",
     reasoning: "anthropic/claude-sonnet-4",
     fallback: "switchpoint/router",
   },
@@ -67,15 +66,6 @@ type DEFAULT_MODELS_BY_CURRENT_PROVIDER =
 export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
   const provider = MODEL_CONFIG.provider
   return DEFAULT_MODELS[provider]
-}
-
-export const getActiveModelNames = (): AllowedModelName<
-  typeof MODEL_CONFIG.provider
->[] => {
-  const provider = MODEL_CONFIG.provider
-  return Object.keys(DEFAULT_MODELS[provider]) as AllowedModelName<
-    typeof MODEL_CONFIG.provider
-  >[]
 }
 
 export const experimentalModels = {

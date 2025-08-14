@@ -5,6 +5,9 @@ import { setupCodeToolsForNode } from "../codeToolsSetup"
 import { codeToolRegistry } from "../index"
 
 describe("codeToolsSetup bug demonstration", () => {
+  // TODO: This test suite is labeled as "bug demonstration" which suggests it's testing
+  // known broken behavior. Tests should verify correct behavior, not document bugs.
+  // If this is a regression test, it should be named accordingly and test the fix.
   beforeEach(async () => {
     // Initialize registry
     await codeToolRegistry.initialize()
@@ -19,6 +22,9 @@ describe("codeToolsSetup bug demonstration", () => {
     console.log("Tools without context:", Object.keys(tools))
     expect(tools).toEqual({})
     expect(Object.keys(tools).length).toBe(0)
+    // TODO: If this is expected behavior (tools require context), the test name is misleading.
+    // It says "tools are missing" like it's a bug, but then expects it to be empty.
+    // Is this a bug or intended behavior?
   })
 
   it("shows tools appear with context", async () => {
@@ -36,6 +42,7 @@ describe("codeToolsSetup bug demonstration", () => {
     const tools = await setupCodeToolsForNode(toolNames, context)
 
     console.log("Tools with context:", Object.keys(tools))
+    // TODO: Console.log for debugging instead of proper test assertions
     expect(Object.keys(tools).length).toBe(2)
     expect(tools.todoWrite).toBeDefined()
     expect(tools.todoRead).toBeDefined()
@@ -47,6 +54,7 @@ describe("codeToolsSetup bug demonstration", () => {
     // Step 1: What ToolManager.initializeTools() does
     const toolsFromInit = await setupCodeToolsForNode(toolNames)
     console.log("Step 1 - initializeTools:", Object.keys(toolsFromInit))
+    // TODO: More console.log debugging
 
     // Step 2: What ToolManager.getAllTools() does
     const context: ToolExecutionContext = {
@@ -63,5 +71,11 @@ describe("codeToolsSetup bug demonstration", () => {
     // The bug: Same tool names, different results!
     expect(toolsFromInit).toEqual({})
     expect(Object.keys(toolsFromGetAll).length).toBe(2)
+    // TODO: This test documents inconsistent behavior but doesn't test a solution.
+    // If context is required, the API should either:
+    // 1) Make context mandatory (TypeScript parameter)
+    // 2) Throw an error when context is missing
+    // 3) Return a clear error object
+    // Simply returning an empty object is a poor API design.
   })
 })

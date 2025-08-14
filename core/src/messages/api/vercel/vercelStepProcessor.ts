@@ -39,7 +39,8 @@ export const processStepsV2 = <T extends ToolSet>(
   steps: StepResult<T>[],
   modelUsed: ModelName
 ): { usdCost: number; agentSteps: AgentSteps } | undefined => {
-  if (isNir(steps) || !Array.isArray(steps)) return undefined
+  if (isNir(steps) || !Array.isArray(steps))
+    return { usdCost: 0, agentSteps: [] }
 
   /* ---------- 1. Map every step to the internal shape ---------- */
   const perStep = (steps as StepResult<T>[]).map((rawStep) => {
@@ -76,6 +77,7 @@ export const processStepsV2 = <T extends ToolSet>(
   /* ---------- 2. Aggregate using for loops ---------- */
   const aggregated: AgentSteps = []
   let lastText = ""
+  const hasAnyNonNullStep = (steps as unknown[]).some((s) => s != null)
 
   for (const { toolCalls, totalCost, rawText } of perStep) {
     // add tool outputs if present
@@ -92,14 +94,22 @@ export const processStepsV2 = <T extends ToolSet>(
     lastText = rawText || lastText
   }
 
-  /* ---------- 3. Fallback: no tool calls at all ⇒ emit text ---------- */
+  /* ---------- 3. Fallbacks ---------- */
+  // If there are no aggregated tool calls:
+  // - If we have any non-null step present, emit text (even if empty) to reflect a processed step
+  // - Else (truly empty input), return no steps
   if (aggregated.length === 0) {
-    aggregated.push({
-      type: "text" as const,
-      name: undefined,
-      args: undefined,
-      return: lastText,
-    })
+    if (
+      hasAnyNonNullStep ||
+      (typeof lastText === "string" && lastText.length > 0)
+    ) {
+      aggregated.push({
+        type: "text" as const,
+        name: undefined,
+        args: undefined,
+        return: lastText,
+      })
+    }
   }
 
   return {

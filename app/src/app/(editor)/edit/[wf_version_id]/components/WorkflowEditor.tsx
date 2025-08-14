@@ -1,8 +1,8 @@
 "use client"
 
 import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
 import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
+import type { Tables } from "@lucky/shared"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 // Removed server action import - using API route instead

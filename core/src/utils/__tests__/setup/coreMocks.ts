@@ -1,5 +1,6 @@
 // core test utilities and mocks - consolidated mock file
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type {
   GenomeEvaluationResults,
@@ -12,7 +13,6 @@ import type {
   FullFlowRuntimeConfig,
 } from "@core/types"
 import type { RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type {
   EvaluationCSV,
   EvaluationInput,
@@ -37,8 +37,8 @@ export const mockGetWorkflowSetup = vi.fn()
 export const mockEvolutionEngineRun = vi.fn()
 export const mockEvolutionEngineInit = vi.fn()
 
-// cultural evolution mocks
-export const mockCulturalEvolutionMain = vi.fn()
+// iterative evolution mocks
+export const mockIterativeEvolutionMain = vi.fn()
 
 // supabase client mocks
 export const mockSupabaseInsert = vi.fn()
@@ -233,7 +233,9 @@ export const createMockEvaluationInput = (): EvaluationInput => ({
 
 export const createMockWorkflowIO = (): WorkflowIO => ({
   workflowInput: "test workflow input",
-  expectedWorkflowOutput: "test expected output",
+  workflowOutput: {
+    output: "test expected output",
+  },
 })
 
 export const createMockSupabaseClient = (): any => ({
@@ -275,7 +277,7 @@ export const createMockEvolutionEngine = (): any => ({
   getTotalCost: vi.fn().mockReturnValue(0.1),
 })
 
-export const createMockCulturalResult = (): any => ({
+export const createMockIterativeResult = (): any => ({
   results: [
     {
       iteration: 1,
@@ -305,7 +307,7 @@ export const setupCoreMocks = (): void => {
   mockSaveWorkflowConfig.mockResolvedValue(undefined)
   mockDisplayResults.mockReturnValue(undefined)
 
-  mockCulturalEvolutionMain.mockResolvedValue(createMockCulturalResult())
+  mockIterativeEvolutionMain.mockResolvedValue(createMockIterativeResult())
 
   // supabase defaults
   mockSupabaseInsert.mockReturnValue({
@@ -361,7 +363,7 @@ export const resetCoreMocks = (): void => {
   mockGetWorkflowSetup.mockReset()
   mockEvolutionEngineRun.mockReset()
   mockEvolutionEngineInit.mockReset()
-  mockCulturalEvolutionMain.mockReset()
+  mockIterativeEvolutionMain.mockReset()
   mockSupabaseInsert.mockReset()
   mockSupabaseUpdate.mockReset()
   mockSupabaseSelect.mockReset()
@@ -422,10 +424,9 @@ export const createMockWorkflow = (
     options = {
       config: createMockWorkflowConfig(),
       evaluationInput: createMockEvaluationInput(),
-      toolContext: createMockEvaluationInput().expectedOutputSchema
+      toolContext: createMockEvaluationInput().outputSchema
         ? {
-            expectedOutputType:
-              createMockEvaluationInput().expectedOutputSchema,
+            expectedOutputType: createMockEvaluationInput().outputSchema,
           }
         : undefined,
     }
@@ -436,7 +437,6 @@ export const createMockWorkflow = (
 export const createMockWorkflowScore = (score = 0.8): FitnessOfWorkflow => ({
   score,
   accuracy: 80,
-  novelty: 80,
   totalCostUsd: 0.01,
   totalTimeSeconds: 1.5,
 })
@@ -487,7 +487,6 @@ export const createMockGenomeEvaluationResults = (
   fitness: {
     score,
     accuracy: 80,
-    novelty: 80,
     totalCostUsd: 0.01,
     totalTimeSeconds: 1.5,
   },
@@ -615,7 +614,6 @@ export const createMockEvaluator = (): EvolutionEvaluator => {
         totalCostUsd: 0.01,
         totalTimeSeconds: 10,
         accuracy: 0.8,
-        novelty: 0.8,
       },
       feedback: "test feedback",
     },
@@ -637,6 +635,11 @@ export const createMockCrossoverParams = (overrides = {}): any => {
     getFitness: vi.fn(() => mockFitness),
     getGoal: vi.fn(() => "test goal"),
     getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    // memory APIs expected by MemoryPreservation
+    getMemory: vi.fn(() => ({
+      node1: {},
+      node2: {},
+    })),
     genome: { generationNumber: 0, parentIds: [] },
   }
   const mockParent2 = {
@@ -646,6 +649,10 @@ export const createMockCrossoverParams = (overrides = {}): any => {
     getFitness: vi.fn(() => mockFitness),
     getGoal: vi.fn(() => "test goal"),
     getWorkflowConfig: vi.fn(() => createMockWorkflowConfig()),
+    getMemory: vi.fn(() => ({
+      node1: {},
+      node2: {},
+    })),
     genome: { generation: 0, parentIds: [] },
   }
 
@@ -752,7 +759,7 @@ export const createMockFullFlowRuntimeConfig = (
       },
     },
     evolution: {
-      culturalIterations: 3,
+      iterativeIterations: 3,
       GP: {
         populationSize: 4,
         generations: 3,
@@ -886,7 +893,7 @@ export const createMockRuntimeConstants = () => ({
       enforceFileLimit: true,
     },
     evolution: {
-      culturalIterations: 50,
+      iterativeIterations: 50,
       GP: {
         generations: 40,
         populationSize: 10,
@@ -1005,16 +1012,16 @@ export const mockRuntimeConstantsForGP = (
   }
 }
 
-export const mockRuntimeConstantsForCultural = (
+export const mockRuntimeConstantsForIterative = (
   overrides: {
-    culturalIterations?: number
+    iterativeIterations?: number
     [key: string]: unknown
   } = {}
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
   console.warn(
-    "mockRuntimeConstantsForCultural called but runtime constants need to be mocked at top level"
+    "mockRuntimeConstantsForIterative called but runtime constants need to be mocked at top level"
   )
 }
 
@@ -1119,7 +1126,7 @@ export const mockPopulationClass = () => {
 }
 
 export const mockEvaluatorClass = () => {
-  vi.mock("@core/improvement/evaluators/EvolutionEvaluator", () => ({
+  vi.mock("@core/evaluation/evaluators/EvolutionEvaluator", () => ({
     EvolutionEvaluator: vi.fn().mockImplementation(() => mockEvaluatorInstance),
   }))
   return mockEvaluatorInstance
@@ -1221,16 +1228,17 @@ export const mockWorkflowGeneration = () => {
 // ====== COMBINED SETUP HELPERS ======
 
 export const setupGPTestMocks = (
-  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0]
+  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0],
+  options?: { mockGenome?: boolean }
 ) => {
   const runService = mockRunService()
   const verificationCache = mockVerificationCache()
   const logger = mockLogger()
-  const genome = mockGenomeClass()
+  const shouldMockGenome = options?.mockGenome ?? true
+  const genome = shouldMockGenome ? mockGenomeClass() : getMockGenome()
   const population = mockPopulationClass()
 
   mockRuntimeConstantsForGP(runtimeOverrides)
-  mockSelectClass()
   mockWorkflowGeneration()
   mockCrossoverClass()
   mockMutationsClass()

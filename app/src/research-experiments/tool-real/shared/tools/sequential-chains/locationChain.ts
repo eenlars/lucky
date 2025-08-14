@@ -2,7 +2,7 @@
  * locationChain.ts - Simulated location tools with large JSON payloads
  * Sequence: search_google_maps → location_data_manager → verify_location → location_data_info
  */
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
 
 const Bounds = z.object({
@@ -59,7 +59,7 @@ const SearchParams = z.object({
 export const searchGoogleMapsSpec = tool({
   description:
     "Searches for locations and returns a large JSON payload of results",
-  parameters: SearchParams,
+  parameters: zodSchema(SearchParams),
   execute: async ({ query: _query, area }: z.infer<typeof SearchParams>) => {
     // Ignore query semantics; just generate data within bounds
     const locations = generateLocations(60, area)
@@ -75,7 +75,7 @@ const ManagerParams = z.object({
 
 export const locationDataManagerSpec = tool({
   description: "Saves or removes locations and returns a dataset reference",
-  parameters: ManagerParams,
+  parameters: zodSchema(ManagerParams),
   execute: async ({ locations, action }: z.infer<typeof ManagerParams>) => {
     const datasetId = `ds_${Math.random().toString(36).slice(2, 10)}`
     const savedCount = action === "save" ? locations.length : 0
@@ -92,7 +92,7 @@ const VerifyParams = z.object({
 
 export const verifyLocationSpec = tool({
   description: "Verifies which locations fall within the given area bounds",
-  parameters: VerifyParams,
+  parameters: zodSchema(VerifyParams),
   execute: async ({
     datasetId,
     locations,
@@ -131,7 +131,7 @@ const InfoParams = z.object({
 
 export const locationDataInfoSpec = tool({
   description: "Summarizes the verification results for reporting",
-  parameters: InfoParams,
+  parameters: zodSchema(InfoParams),
   execute: async ({
     datasetId,
     verifiedCount,

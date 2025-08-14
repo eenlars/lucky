@@ -47,10 +47,14 @@ export function PromptInputDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Run Workflow</DialogTitle>
+          <DialogTitle>{isExecuting ? "Workflow Execution" : "Run Workflow"}</DialogTitle>
           <DialogDescription>
-            Enter a prompt to execute the workflow with. This will be used as
-            the initial input for the workflow.
+            {loading 
+              ? "Workflow is running. Please wait for completion."
+              : logs.length > 0
+              ? "Workflow execution completed. You can view the results below."
+              : "Enter a prompt to execute the workflow with. This will be used as the initial input for the workflow."
+            }
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -86,11 +90,13 @@ export function PromptInputDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            Cancel
+            {logs.length > 0 && !loading ? "Close" : "Cancel"}
           </Button>
-          <Button onClick={handleExecute} disabled={!prompt.trim() || loading}>
-            {loading ? "Running..." : "Execute Workflow"}
-          </Button>
+          {!isExecuting && (
+            <Button onClick={handleExecute} disabled={!prompt.trim() || loading}>
+              Execute Workflow
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

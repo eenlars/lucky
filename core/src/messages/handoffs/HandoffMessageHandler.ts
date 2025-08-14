@@ -8,12 +8,20 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 
-export type OutgoingHandoffMessage = {
+/**
+ * Message emitted when handing off work to another node.
+ * - toNodeId: recipient node identifier
+ * - payload: message payload delivered to the recipient
+ */
+export interface OutgoingHandoffMessage {
   toNodeId: string
   payload: Payload
 }
 
-export type HandoffMessageHandlerOptions = {
+/**
+ * Optional knobs to influence how handoff messages are built.
+ */
+export interface HandoffMessageHandlerOptions {
   /**
    * Optional override for which targets to send to. If omitted, the handler will
    * derive targets from the node config:
@@ -95,8 +103,8 @@ export class HandoffMessageHandler {
     // Build payloads per target
     const payloads = targets.map((toNodeId) => {
       // For parallel fan-out, add light per-target templating (minimal & compatible)
-      const prompt = useParallel
-        ? `[Task for ${toNodeId}]: ${derivedPrompt}`
+      const textForBerichten = useParallel
+        ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
         : derivedPrompt
 
       const base: DelegationPayload | SequentialPayload =
@@ -106,9 +114,7 @@ export class HandoffMessageHandler {
               berichten: [
                 {
                   type: "text",
-                  text: useParallel
-                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                    : "",
+                  text: textForBerichten,
                 },
               ],
             }
@@ -117,9 +123,7 @@ export class HandoffMessageHandler {
               berichten: [
                 {
                   type: "text",
-                  text: useParallel
-                    ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-                    : "",
+                  text: textForBerichten,
                 },
               ],
             }
@@ -139,8 +143,11 @@ export class HandoffMessageHandler {
    */
   private selectDefaultTarget(handOffs: string[]): string[] {
     if (handOffs.length === 0) return []
-    if (handOffs.length === 1) return [handOffs[0]]
-    if (handOffs.length === 1 && handOffs[0] === "end") return ["end"]
+    // For single handoff, only auto-target when it's the terminal 'end';
+    // otherwise, defer selection to external chooser logic
+    if (handOffs.length === 1) {
+      return handOffs[0] === "end" ? ["end"] : []
+    }
     if (handOffs.length > 1 && handOffs.every((h) => h === "end"))
       return ["end"]
     // Multiple non-parallel targets present → selection should be done elsewhere (LLM/logic)

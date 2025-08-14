@@ -1,4 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
+// TODO: despite being "basic" tests, still has issues:
+// - genome mock returns random IDs causing test flakiness
+// - missing tests for async population initialization
+// - no error handling for concurrent population modifications
 
 // Mock only what's absolutely necessary for Population class to work
 vi.mock("@core/utils/logging/Logger", () => ({
@@ -32,6 +36,8 @@ vi.mock("../Genome", () => ({
     createRandom: vi.fn().mockResolvedValue({
       success: true,
       data: {
+        // TODO: using Math.random() in mocks makes tests non-deterministic
+        // use counter or fixed values instead for reproducible tests
         workflowVersionId: `test-genome-${Math.random()}`,
         getWorkflowVersionId: () => `test-genome-${Math.random()}`,
         getFitness: () => ({ score: 0.5, valid: true }),
@@ -143,6 +149,8 @@ describe("Population Basic Tests", () => {
     expect(population.size()).toBe(3)
 
     // Test getBest/getWorst
+    // TODO: tests don't verify ordering thoroughly
+    // should test with more genomes and edge cases (ties, all same fitness)
     const best = population.getBest()
     expect(best.getFitnessScore()).toBe(0.9)
 
@@ -211,6 +219,11 @@ describe("Population Basic Tests", () => {
   })
 
   it("should handle error cases properly", async () => {
+    // TODO: missing critical edge case tests:
+    // - concurrent population modifications
+    // - population constraints (max size, memory limits)
+    // - thread safety and race conditions
+    // - async initialization failures
     const { Population } = await import("@core/improvement/gp/Population")
 
     const mockRunService = {

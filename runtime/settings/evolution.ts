@@ -2,7 +2,7 @@ import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution
 
 // evolution runtime configuration
 export const EVOLUTION_CONFIG = {
-  culturalIterations: 30,
+  iterativeIterations: 30,
   GP: {
     generations: 3,
     populationSize: 4, // Minimum viable population for GP operations is 4

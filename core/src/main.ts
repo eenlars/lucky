@@ -1,10 +1,10 @@
 // src/core/main.ts
 
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
+import { GPEvaluatorAdapter } from "@core/evaluation/evaluators/GPEvaluatorAdapter"
 import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
-import { GPEvaluatorAdapter } from "@core/improvement/evaluators/GPEvaluatorAdapter"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
-import type { CulturalConfig } from "@core/improvement/gp/resources/evolution-types"
+import type { IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
 import {
   GenomeEvaluationResults,
   WorkflowGenome,
@@ -38,7 +38,7 @@ try {
   if (error instanceof ArgumentParsingError) {
     lgg.error(`❌ Argument parsing failed: ${error.message}`)
     lgg.info(
-      `Usage: tsx src/core/main.ts --mode=<cultural|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
+      `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
     )
     process.exit(1)
   }
@@ -52,10 +52,10 @@ const cliSetupFile = parsedArgs.setupFile
 
 if (!EVOLUTION_MODE) {
   lgg.error(
-    "❌ Evolution mode must be specified with --mode=cultural or --mode=GP"
+    "❌ Evolution mode must be specified with --mode=iterative or --mode=GP"
   )
   lgg.info(
-    `Usage: tsx src/core/main.ts --mode=<cultural|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
+    `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
   )
   process.exit(1)
 }
@@ -68,14 +68,14 @@ const {
       generations: configGenerations,
       populationSize: configPopulationSize,
     },
-    culturalIterations: CULTURAL_EVOLUTION_ITERATIONS,
+    iterativeIterations: ITERATIVE_EVOLUTION_ITERATIONS,
   },
 } = CONFIG
 
 const GP_GENERATIONS = cliGenerations ?? configGenerations
 const GP_POPULATION_SIZE = cliPopulationSize ?? configPopulationSize
 
-type CulturalResult = {
+type IterativeResult = {
   results: Array<{
     iteration: number
     fitness: { score: number }
@@ -102,7 +102,7 @@ const ROBUST_CONFIG: IterationConfig = {
   maxRetries: 2,
   maxConsecutiveFailures: Math.max(
     3,
-    Math.floor(CULTURAL_EVOLUTION_ITERATIONS * 0.1)
+    Math.floor(ITERATIVE_EVOLUTION_ITERATIONS * 0.1)
   ), // 10% failure tolerance
   backoffMs: 1000,
 }
@@ -126,25 +126,25 @@ type GeneticResult = {
 }
 
 /**
- * Executes either cultural or genetic evolution depending on the configured mode.
+ * Executes either iterative or genetic evolution depending on the configured mode.
  * Both share a common logging and result-handling structure, so we unify them here.
  */
-async function runEvolution(): Promise<CulturalResult | GeneticResult> {
+async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   /* ------------------------------------------------------------------
-   * CULTURAL EVOLUTION
+   * ITERATIVE EVOLUTION
    * ------------------------------------------------------------------ */
-  if (mode === "cultural") {
+  if (mode === "iterative") {
     const runService = new RunService(true, mode)
 
-    // create cultural evolution config
-    const culturalConfig: CulturalConfig = {
-      mode: "cultural" as const,
-      iterations: CULTURAL_EVOLUTION_ITERATIONS,
+    // create iterative evolution config
+    const iterativeConfig: IterativeConfig = {
+      mode: "iterative" as const,
+      iterations: ITERATIVE_EVOLUTION_ITERATIONS,
       question: SELECTED_QUESTION,
     }
 
     // create evolution run in database
-    await runService.createRun(SELECTED_QUESTION.goal, culturalConfig)
+    await runService.createRun(SELECTED_QUESTION.goal, iterativeConfig)
 
     // initialize spending tracker
     if (CONFIG.limits.enableSpendingLimits) {
@@ -158,14 +158,14 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     let totalCost = 0
     const parent1Id: string | undefined = undefined
     const parent2Id: string | undefined = undefined
-    const results: CulturalResult["results"] = []
+    const results: IterativeResult["results"] = []
     const stats = { successful: 0, failed: 0, recovered: 0 }
     let lastSuccessfulConfig = setup
     let consecutiveFailures = 0
 
-    lgg.log("starting cultural evolution workflow", {
+    lgg.log("starting iterative evolution workflow", {
       mainQuestion: SELECTED_QUESTION.goal,
-      iterations: CULTURAL_EVOLUTION_ITERATIONS,
+      iterations: ITERATIVE_EVOLUTION_ITERATIONS,
     })
 
     // create aggregated evaluator for all questions
@@ -199,8 +199,8 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
               generationId: runService.getCurrentGenerationId(),
               generationNumber: iterationIndex + 1,
             },
-            toolContext: SELECTED_QUESTION.expectedOutputSchema
-              ? { expectedOutputType: SELECTED_QUESTION.expectedOutputSchema }
+            toolContext: SELECTED_QUESTION.outputSchema
+              ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
               : undefined,
           })
 
@@ -216,7 +216,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
 
           if (!success) {
             lgg.error(
-              `[CulturalEvolution] Evaluation failed for 
+              `[IterativeEvolution] Evaluation failed for 
               genome ${runner.getWorkflowVersionId()}:
               ${JSON.stringify(error, null, 2)}`
             )
@@ -226,7 +226,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
           countIO = runner.getWorkflowIO().length
 
           const { newConfig, cost: improveCost } =
-            await runner.improveNodesCulturally({
+            await runner.improveNodesIteratively({
               _fitness: evaluationResult.fitness,
               workflowInvocationId: runner.getWorkflowInvocationId(0),
             })
@@ -287,7 +287,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     const startIteration = 0
 
     // main evolution loop with circuit breaker
-    for (let i = startIteration; i < CULTURAL_EVOLUTION_ITERATIONS; i++) {
+    for (let i = startIteration; i < ITERATIVE_EVOLUTION_ITERATIONS; i++) {
       if (consecutiveFailures >= ROBUST_CONFIG.maxConsecutiveFailures) {
         lgg.error(
           `🚨 Circuit breaker: ${consecutiveFailures} consecutive failures. Stopping.`
@@ -296,7 +296,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
       }
 
       lgg.log(
-        `\n🔄 Evolution Iteration ${i + 1}/${CULTURAL_EVOLUTION_ITERATIONS}`
+        `\n🔄 Evolution Iteration ${i + 1}/${ITERATIVE_EVOLUTION_ITERATIONS}`
       )
 
       const success = await executeIteration(i)
@@ -306,7 +306,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     const successRate =
       (stats.successful / (stats.successful + stats.failed)) * 100
 
-    lgg.log("cultural evolution completed", {
+    lgg.log("iterative evolution completed", {
       ...stats,
       totalWorkflowCases: countIO,
       totalCost,
@@ -317,7 +317,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     // Mark as completed if success rate > 80%, otherwise failed
     const runStatus = successRate > 80 ? "completed" : "failed"
 
-    // Always save final configuration to setupfile after cultural evolution run
+    // Always save final configuration to setupfile after iterative evolution run
     if (lastSuccessfulConfig) {
       const targetFile = cliSetupFile ?? PATHS.setupFile
       await persistWorkflow(
@@ -356,7 +356,6 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
     offspringCount: Math.floor(GP_POPULATION_SIZE * 0.8),
     maxCostUSD: CONFIG.limits.maxCostUsdPerRun,
     maxEvaluationsPerHour: 500,
-    noveltyWeight: 0.5,
     immigrantRate: 3,
     immigrantInterval: 5,
   })
@@ -371,7 +370,7 @@ async function runEvolution(): Promise<CulturalResult | GeneticResult> {
   // the genomes have not been reset after running this.
   const evaluator = new GPEvaluatorAdapter(workflowIO, newGoal, problemAnalysis)
 
-  const evolutionEngine = new EvolutionEngine(evolutionSettings, "cultural")
+  const evolutionEngine = new EvolutionEngine(evolutionSettings, "iterative")
 
   lgg.log("evolving workflow to handle all cases optimally", {
     workflowCasesCount:
@@ -470,7 +469,7 @@ async function main() {
       lgg.log(`Population Size: ${GP_POPULATION_SIZE}`)
       lgg.log(`Generations:     ${GP_GENERATIONS}`)
     } else {
-      lgg.log(`Iterations:      ${CULTURAL_EVOLUTION_ITERATIONS}`)
+      lgg.log(`Iterations:      ${ITERATIVE_EVOLUTION_ITERATIONS}`)
     }
 
     const results = await runEvolution()

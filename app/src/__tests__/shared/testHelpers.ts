@@ -122,7 +122,6 @@ export const createBasicFitnessScore = (score = 0.8) => ({
   totalCostUsd: 0.01,
   totalTimeSeconds: 10,
   accuracy: score,
-  novelty: score,
   workflowVersionId: "test-genome-id",
   valid: true,
   evaluatedAt: new Date().toISOString(),

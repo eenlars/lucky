@@ -1,41 +1,44 @@
-import type { ModelNameV2 } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../vercel/vercelStepProcessor"
 
+// TODO: Missing tests for processStepsV1 if it still exists
+// TODO: No tests for error propagation from underlying functions
+
 describe("processStepsV2", () => {
-  const testModel: ModelNameV2 = getDefaultModels().default
+  const testModel: ModelName = getDefaultModels().default
 
   describe("invalid inputs", () => {
     it("should return empty result for non-array input", () => {
       const result = processStepsV2(null as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for undefined input", () => {
       const result = processStepsV2(undefined as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for string input", () => {
       const result = processStepsV2("not an array" as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for object input", () => {
       const result = processStepsV2({ some: "object" } as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
   })
@@ -44,8 +47,8 @@ describe("processStepsV2", () => {
     it("should return empty result for empty array", () => {
       const result = processStepsV2([] as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
@@ -53,8 +56,8 @@ describe("processStepsV2", () => {
       const steps = [null, undefined, null]
       const result = processStepsV2(steps as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
   })
@@ -181,6 +184,8 @@ describe("processStepsV2", () => {
     })
   })
 
+  // TODO: Test name says "join with comma" but implementation returns individual steps
+  // Either fix test name or clarify expected behavior
   describe("tool name processing", () => {
     it("should join multiple tool names with comma", () => {
       const steps = [
@@ -380,6 +385,8 @@ describe("processStepsV2", () => {
 
       const result = processStepsV2(steps as any, testModel)
 
+      // TODO: Inconsistent behavior - some steps are silently ignored
+      // Should either process all steps or throw an error for unsupported formats
       // Only tool1 will be processed since tool_calls format isn't supported
       expect(result?.agentSteps).toHaveLength(1)
       expect(result?.agentSteps[0].name).toBe("tool1")

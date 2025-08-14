@@ -29,9 +29,9 @@ export class CodeToolAutoDiscovery {
     }
 
     try {
-      // Find all tool*.ts files in subdirectories
+      // Find all tool*.ts files in subdirectories from repo-rooted runtime paths
       const toolPattern = path
-        .join(process.cwd(), this.basePath, "**/tool*.ts")
+        .join(PATHS.codeTools, "**/tool*.ts")
         .replace(/\\/g, "/")
 
       const allFiles = await glob(toolPattern, {
@@ -54,13 +54,11 @@ export class CodeToolAutoDiscovery {
 
       for (const filePath of allFiles) {
         try {
-          // Convert absolute path to relative for import
-          const relativePath = path
-            .relative(process.cwd(), filePath)
+          // Convert absolute path in runtime to package alias import path
+          const relativeToRuntime = path
+            .relative(PATHS.runtime, filePath)
             .replace(/\\/g, "/")
-          const importPath = relativePath
-            .replace(/\.ts$/, "")
-            .replace(/^src\//, "@/")
+          const importPath = `@runtime/${relativeToRuntime.replace(/\.ts$/, "")}`
 
           if (CONFIG.logging.override.Tools) {
             lgg.log(`📦 Importing potential tool from: ${importPath}`)

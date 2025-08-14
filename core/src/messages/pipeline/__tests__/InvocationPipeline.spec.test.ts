@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../InvocationPipeline"
 import type { NodeInvocationCallContext } from "../input.types"
 
+// TODO: These integration tests make real LLM calls and should be in a separate test suite
+// TODO: Tests are extremely long (2-3 minutes) and expensive to run
+// TODO: Missing cleanup of database records created during tests
 // Clean extractor for test results
 interface TestResult {
   toolsUsed: string[]
@@ -49,6 +52,8 @@ describe("InvocationPipeline Real Integration", () => {
     }
   }
 
+  // TODO: This helper creates real database records but doesn't clean them up
+  // Should use transactions or cleanup in afterEach
   // Helper function to set up required database records
   const setupTestWorkflow = async (
     workflowInvocationId: string,
@@ -199,6 +204,8 @@ describe("InvocationPipeline Real Integration", () => {
     )
     expect(toolsAfterLastTodoRead).toEqual([])
 
+    // TODO: Using another LLM call to verify test results is unreliable and expensive
+    // Should use deterministic assertions instead
     // Verify the response contains todo information (should be output of todoRead)
     const verification = await sendAI({
       model: getDefaultModels().default,
@@ -359,6 +366,8 @@ describe("InvocationPipeline Real Integration", () => {
     }
   }, 180000) // 3 minute timeout for multi-step execution
 
+  // TODO: Only testing one model when comment says "Test with medium model"
+  // Should either test multiple models or update comment
   // Test with medium model
   const testModels = [getDefaultModels().medium]
 

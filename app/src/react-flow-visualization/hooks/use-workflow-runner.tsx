@@ -12,7 +12,8 @@ import { useAppStore } from "@/react-flow-visualization/store"
  * even replacing the entire `collectNodesToProcess` function with your own logic.
  */
 export function useWorkflowRunner() {
-  const [logMessages, setLogMessages] = useState<string[]>([])
+  // runner removed; keep noop API for compatibility
+  const [logMessages] = useState<string[]>([])
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
   const [pendingStartNodeId, setPendingStartNodeId] = useState<
     string | undefined
@@ -31,7 +32,6 @@ export function useWorkflowRunner() {
 
   const stopWorkflow = useCallback(() => {
     isRunning.current = false
-    setLogMessages((prev) => [...prev, "Workflow stopped."])
   }, [])
 
   const resetNodeStatus = useCallback(() => {
@@ -59,7 +59,6 @@ export function useWorkflowRunner() {
   const processNode = useCallback(
     async (node: AppNode) => {
       updateNodeStatus(node.id, "loading")
-      setLogMessages((prev) => [...prev, `${node.data.nodeId} processing...`])
 
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
@@ -74,81 +73,8 @@ export function useWorkflowRunner() {
   )
 
   const executeWorkflowWithPrompt = useCallback(
-    async (prompt: string) => {
-      console.log("executeWorkflowWithPrompt called with prompt:", prompt)
-      if (isRunning.current) return
-      isRunning.current = true
-
-      try {
-        setLogMessages(["Starting workflow execution..."])
-        console.log("Set initial log message")
-
-        const workflowJSON = exportToJSON()
-        const dslConfig = JSON.parse(workflowJSON)
-        const workflowId = currentWorkflowId || "temp-workflow"
-
-        console.log("Workflow data:", { dslConfig, workflowId, prompt })
-        // Directly invoke the workflow with prompt-only input (no evaluation/polling)
-        const response = await fetch("/api/workflow/invoke", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            dslConfig,
-            evalInput: {
-              type: "prompt-only",
-              goal: prompt,
-              // workflowId is optional; server will default if omitted
-            },
-          }),
-        })
-
-        console.log("API response status:", response.status)
-        const result = await response.json()
-        console.log("API result:", result)
-
-        if (result.success) {
-          const outputs: string[] = Array.isArray(result.data)
-            ? result.data
-                .map((r: any, idx: number) => {
-                  const out = r?.queueRunResult?.finalWorkflowOutput
-                  return out ? `Output #${idx + 1}: ${out}` : undefined
-                })
-                .filter(Boolean)
-            : []
-
-          const costMsg =
-            typeof result.usdCost === "number"
-              ? `Total cost: $${result.usdCost.toFixed(4)}`
-              : undefined
-
-          setLogMessages((prev) => [
-            ...prev,
-            "Workflow executed successfully.",
-            ...(costMsg ? [costMsg] : []),
-            ...(outputs.length > 0
-              ? outputs
-              : ["No final output returned from workflow."]),
-          ])
-        } else {
-          setLogMessages((prev) => [
-            ...prev,
-            `Error: ${result.error ?? "Unknown error"}`,
-          ])
-        }
-      } catch (error) {
-        console.error("Error in executeWorkflowWithPrompt:", error)
-        setLogMessages((prev) => [
-          ...prev,
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        ])
-      } finally {
-        isRunning.current = false
-        setPendingStartNodeId(undefined)
-      }
-    },
-    [exportToJSON, currentWorkflowId]
+    async (_prompt: string) => {},
+    []
   )
 
   const runWorkflow = useCallback(
@@ -158,10 +84,10 @@ export function useWorkflowRunner() {
       const edges = getEdges()
       isRunning.current = true
 
-      // For now, just show the prompt dialog instead of running the demo
+      // runner removed
       setPendingStartNodeId(startNodeId)
-      setPromptDialogOpen(true)
-      isRunning.current = false // Reset since we're not actually running yet
+      setPromptDialogOpen(false)
+      isRunning.current = false
     },
     [getNodes, getEdges]
   )

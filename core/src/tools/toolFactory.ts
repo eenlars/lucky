@@ -2,9 +2,9 @@ import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { CodeToolName } from "@core/tools/tool.types"
 import { R, type RS } from "@core/utils/types"
-import type { ExpectedOutputSchema } from "@core/workflow/ingestion/ingestion.types"
+import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { TOOLS } from "@runtime/settings/tools"
-import { tool, type Tool } from "ai"
+import { tool, zodSchema, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
 
 // toolcontext gives a tool extra information about
@@ -15,7 +15,7 @@ export interface ToolExecutionContext {
   workflowVersionId: string
   workflowInvocationId: string
   workflowFiles: WorkflowFile[]
-  expectedOutputType: ExpectedOutputSchema | undefined
+  expectedOutputType: OutputSchema | undefined
   mainWorkflowGoal: string
 }
 export type InvocationContext = ToolExecutionContext
@@ -86,7 +86,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
 ): Tool {
   return tool({
     description: toolDef.description,
-    parameters: toolDef.parameters,
+    parameters: zodSchema(toolDef.parameters),
     execute: async (params: z.infer<ParamsSchema>) => {
       // Apply schema-based validation and auto-correction using the tool's own Zod schema
       const {

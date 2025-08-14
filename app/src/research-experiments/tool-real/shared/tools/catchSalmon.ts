@@ -1,7 +1,7 @@
 /**
  * catchSalmon.ts - Specialized salmon-catching tool
  */
-import { tool } from "ai"
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
 
 const Params = z.object({
@@ -10,7 +10,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Specialized tool optimized for catching salmon.",
-  parameters: Params,
+  parameters: zodSchema(Params),
   execute: async ({ river }: { river: string }) => {
     return `caught_salmon_at_${river.replace(/\s+/g, "_")}`
   },

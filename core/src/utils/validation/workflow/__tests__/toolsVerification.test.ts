@@ -1,9 +1,6 @@
-import { getDefaultModels } from "@runtime/settings/models"
-import type {
-  ModelNameV2,
-  AllowedModelName,
-} from "@core/utils/spending/models.types"
+import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it } from "vitest"
 import { verifyModelNameExists, verifyNoDuplicateHandoffs } from "../index"
 import { verifyToolsUnique } from "../toolsVerification"
@@ -138,6 +135,14 @@ const duplicateHandoffsExample: WorkflowConfig = {
 }
 
 describe("verifyToolsUnique", () => {
+  // TODO: major test coverage issues:
+  // 1. main test is skipped - needs implementation to alter constants for testing
+  // 2. no tests for MCP tools validation
+  // 3. no tests for tool availability checking
+  // 4. no tests for tool parameter validation
+  // 5. no tests for mixed MCP and code tools in same node
+  // 6. no tests for empty tool arrays
+  // 7. no tests for tool configuration validation
   it.skip("should detect tools used by multiple nodes", async () => {
     // TODO: need to make we can alter constants from the test, otherwise we can't test this nicely.
     // Using the provided example with duplicate tool usage

@@ -10,9 +10,9 @@ import {
   type WorkflowInvocationSubset,
 } from "@/trace-visualization/db/Evolution/retrieveEvolution"
 import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import type { Tables } from "@core/utils/clients/supabase/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
@@ -35,6 +35,9 @@ const getTimeDifference = (timestamp: string) => {
   if (minutes > 0) return `${minutes}m ${seconds % 60}s ago`
   return `${seconds}s ago`
 }
+
+type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"]
 
 const isStaleRun = (run: Tables<"EvolutionRun">) => {
   if (run.status !== "running") return false

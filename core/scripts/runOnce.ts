@@ -1,18 +1,18 @@
 #!/usr/bin/env bun
 // core/scripts/runOnce.ts
 
-import { AggregatedEvaluator } from "@core/improvement/evaluators/AggregatedEvaluator"
-import { NoEvaluator } from "@core/improvement/evaluators/NoEvaluator"
+import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
+import { NoEvaluator } from "@core/evaluation/evaluators/NoEvaluator"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
+import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { WorkflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
+import { JSONN } from "@lucky/shared"
 import { PATHS } from "@runtime/settings/constants"
 import { SELECTED_QUESTION } from "@runtime/settings/inputs"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import chalk from "chalk"
 import { resolve } from "path"
-import { llmify } from "../src/utils/common/llmify"
 
 async function runOnce(setupFilePath?: string) {
   try {
@@ -32,8 +32,8 @@ async function runOnce(setupFilePath?: string) {
     lgg.log(JSONN.show(setup, 2))
 
     const toolContext: Partial<ToolExecutionContext> | undefined =
-      SELECTED_QUESTION.expectedOutputSchema
-        ? { expectedOutputType: SELECTED_QUESTION.expectedOutputSchema }
+      SELECTED_QUESTION.outputSchema
+        ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
         : undefined
 
     // create workflow

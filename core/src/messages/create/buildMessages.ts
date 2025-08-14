@@ -12,6 +12,9 @@ import type { WorkflowFiles } from "@core/tools/context/contextStore.types"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { CoreMessage } from "ai"
 
+/**
+ * Parameters for composing a complete message set for model consumption.
+ */
 export interface BuildMessagesContext extends WorkflowFiles {
   workflowMessageIncoming: WorkflowMessage
   workflowInvocationId: string

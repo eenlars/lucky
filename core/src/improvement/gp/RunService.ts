@@ -23,20 +23,16 @@
  */
 
 import type {
-  CulturalConfig,
   EvolutionSettings,
+  IterativeConfig,
 } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import type {
-  Tables,
-  TablesInsert,
-  TablesUpdate,
-} from "@core/utils/clients/supabase/types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
+import { JSONN } from "@lucky/shared"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 
@@ -131,7 +127,7 @@ export class RunService {
    */
   async createRun(
     inputText: string,
-    config: EvolutionSettings | CulturalConfig,
+    config: EvolutionSettings | IterativeConfig,
     continueRunId?: string
   ): Promise<void> {
     if (continueRunId) {
@@ -150,8 +146,8 @@ export class RunService {
     }
     return RunService.withRetry(async () => {
       let notes = ""
-      if (config.mode === "cultural") {
-        notes = `Cultural Evolution Run - Iter: ${config.iterations}`
+      if (config.mode === "iterative") {
+        notes = `Iterative Evolution Run - Iter: ${config.iterations}`
       } else {
         notes = `GP Evolution Run - Pop: ${config.populationSize}, Gen: ${config.generations}`
       }
@@ -179,6 +175,11 @@ export class RunService {
       })
       this.runId = data.run_id
       this.currentGenerationId = generationId
+      if (this.verbose) {
+        lgg.log(
+          `[RunService] Initialized run ${this.runId} with generation ${this.currentGenerationId}`
+        )
+      }
     }, "createRun")
   }
 
@@ -383,16 +384,16 @@ export class RunService {
     stats?: PopulationStats
     operator: WorkflowOperator
   }): Promise<void> {
-    const evolutionContext = this.getEvolutionContext()
-    const activeRunId = evolutionContext.runId
-    if (!evolutionContext.generationId || !activeRunId) {
+    const activeRunId = this.runId
+    const activeGenerationId = this.currentGenerationId
+    if (!activeGenerationId || !activeRunId) {
       lgg.warn("[RunService] No active generation ID or run ID for completion")
       return
     }
     await RunService.withRetry(async () => {
       const workflowVersionId = await RunService.ensureWorkflowVersion(
         bestGenome,
-        evolutionContext.generationId,
+        activeGenerationId,
         operator
       )
       const updateData: TablesUpdate<"Generation"> = {
@@ -405,15 +406,15 @@ export class RunService {
       const { error } = await supabase
         .from("Generation")
         .update(updateData)
-        .eq("generation_id", evolutionContext.generationId)
+        .eq("generation_id", activeGenerationId)
       if (error) {
         lgg.error("[RunService] Error completing generation:", error)
         throw error
       }
       lgg.log(
-        `[RunService] Completed generation: ${evolutionContext.generationId} with best workflow version: ${workflowVersionId}`
+        `[RunService] Completed generation: ${activeGenerationId} with best workflow version: ${workflowVersionId}`
       )
-    }, `completeGeneration(generationId=${evolutionContext.generationId}, operator=${operator})`)
+    }, `completeGeneration(generationId=${activeGenerationId}, operator=${operator})`)
   }
 
   /**
@@ -424,7 +425,7 @@ export class RunService {
     totalCost?: number,
     bestGenome?: Genome
   ): Promise<void> {
-    const activeRunId = this.getRunId()
+    const activeRunId = this.runId
     if (!activeRunId) {
       lgg.warn("[RunService] No active run ID for completion")
       return

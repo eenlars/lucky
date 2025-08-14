@@ -2,7 +2,7 @@ import type { PricingLevel } from "@core/messages/api/vercel/pricing/calculatePr
 import { getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
 import type {
   ActiveModelName,
-  ModelNameV2,
+  ModelName,
 } from "@core/utils/spending/models.types"
 
 // model utilities - use new providersV2 system
@@ -22,17 +22,17 @@ export const ACTIVE_MODEL_NAMES = getActiveModels() as [
 ]
 export const ACTIVE_MODEL_NAMES_WITH_INFO = getActiveModelsWithInfo()
 
-export const openaiModelsByLevel: Record<PricingLevel, ModelNameV2> = {
-  low: "gpt-4.1-nano" as ModelNameV2,
-  medium: "gpt-4.1-mini" as ModelNameV2,
-  high: "gpt-4.1" as ModelNameV2,
+export const openaiModelsByLevel: Record<PricingLevel, ModelName> = {
+  low: "gpt-4.1-nano" as ModelName,
+  medium: "gpt-4.1-mini" as ModelName,
+  high: "gpt-4.1" as ModelName,
 }
 
 /**
- * @deprecated Use pricingV2 and ModelNameV2 instead of pricingOLD and ModelName
+ * @deprecated Use pricingV2 and ModelName
  * This will be removed in a future version
  */
-export function getPricingLevel(model: ModelNameV2): PricingLevel {
+export function getPricingLevel(model: ModelName): PricingLevel {
   const info = getModelV2(model)?.info
   if (!info) {
     console.log(`getPricingLevel: No info found for model ${model}`)

@@ -1,21 +1,25 @@
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { createPrepareStepStrategy } from "@core/messages/pipeline/selectTool/selectToolStrategy"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
+import { JSONN } from "@lucky/shared"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
-import { generateText, tool, type ToolSet } from "ai"
+import { generateText, tool, zodSchema, type ToolSet } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
 const model = openrouter(getDefaultModels().medium)
 
+// TODO: Comment "return F if it should never return that" is unclear
+// Should explain what F represents and why it indicates failure
 // return F if it should never return that
 
 const nod_333 = tool({
   description: "nod_333",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return "555"
   },
@@ -23,9 +27,11 @@ const nod_333 = tool({
 
 const mod_888 = tool({
   description: "mod_  888",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "555" ? "B" : "F"
   },
@@ -33,20 +39,26 @@ const mod_888 = tool({
 
 const rod_999 = tool({
   description: "rod_999",
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return input === "B" ? "9" : "F"
   },
 })
 
+// TODO: These "unnecessary tools" are actually used to test tool filtering
+// Comment should explain their purpose in the test
 // define a few unnecessary tools
 const rod_333 = tool({
   description: "rod_333", // should be ignored, it's rod-333, not nod-333
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return "F"
   },
@@ -54,14 +66,18 @@ const rod_333 = tool({
 
 const mod_333 = tool({
   description: "mod_333", // should be ignored, it's mod-333, not nod-333
-  parameters: z.object({
-    input: z.string(),
-  }),
+  parameters: zodSchema(
+    z.object({
+      input: z.string(),
+    })
+  ),
   execute: async ({ input }: { input: string }) => {
     return "F"
   },
 })
 
+// TODO: These integration tests make real API calls - should be excluded from main suite
+// TODO: Missing error case testing - what if strategy selection fails?
 describe("generateText with createPrepareStepStrategy", () => {
   it("should execute tools in sequence using step strategy: tool1 -> tool2 -> tool3", async () => {
     const tools: ToolSet = {
@@ -172,6 +188,8 @@ Now, let me execute the tools as requested.`,
       experimental_prepareStep: prepareStep,
     })
 
+    // TODO: Using different model (nano) for processing than generation (medium)
+    // This could cause cost calculation errors
     // convert to v2
     const resultV2 = processStepsV2(result.steps, getDefaultModels().nano)
 

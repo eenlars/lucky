@@ -1,4 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
+// TODO: significant duplication with Population.basic.test.ts
+// unclear why tests are split into two files - consider merging
+// missing tests for population evolution cycles and selection pressure
 
 // Mock only what's absolutely necessary for Population class to work
 vi.mock("@core/utils/logging/Logger", () => ({
@@ -53,6 +56,8 @@ vi.unmock("../Population")
 // Mock Genome class to avoid complex genome creation
 vi.mock("../Genome", () => ({
   Genome: {
+    // TODO: Genome.createRandom mock is overly complex for unit tests
+    // creates coupling between test and implementation details
     createRandom: vi.fn().mockImplementation(async () => ({
       success: true,
       data: {
@@ -251,6 +256,8 @@ describe("Population", () => {
     expect(stats).toBeDefined()
     expect(stats.generation).toBe(0)
     expect(stats.bestFitness).toBe(0.9)
+    // TODO: using toBeCloseTo with tolerance might be too loose
+    // missing validation of standard deviation and diversity metrics
     expect(stats.avgFitness).toBeCloseTo(0.7, 1) // (0.9 + 0.7 + 0.5) / 3
   })
 
@@ -305,6 +312,9 @@ describe("Population", () => {
     const config = createMockEvolutionSettings({ populationSize: 5 })
     const population = new Population(config, mockRunService as any)
 
+    // TODO: diversity operations tested superficially
+    // only tests that methods don't throw, not their functionality
+    // missing tests for actual similarity detection and pruning behavior
     // Test diversity methods exist and don't crash with empty population
     expect(typeof population.findSimilarGenomes).toBe("function")
     expect(typeof population.pruneSimilar).toBe("function")

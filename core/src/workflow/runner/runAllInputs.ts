@@ -1,25 +1,25 @@
-import { isNir } from "@core/utils/common/isNir"
-import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
 import {
   calculateAverageFeedback,
   calculateAverageFitness,
-} from "@core/workflow/actions/analyze/calculate-fitness/average"
-import {
-  evaluateQueueRun,
-  queueRun,
-  type AggregateEvaluationResult,
-  type EvaluationResult,
-  type QueueRunResult,
-} from "@core/workflow/runner/queueRun"
+} from "@core/evaluation/calculate-fitness/average"
+import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
+import { isNir } from "@core/utils/common/isNir"
+import { lgg } from "@core/utils/logging/Logger"
+import { R, type RS } from "@core/utils/types"
+import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
+import type {
+  AggregateEvaluationResult,
+  EvaluationResult,
+  RunResult,
+} from "./types"
 
-export type RunResult = {
-  workflowInvocationId: string
-  queueRunResult: QueueRunResult
-}
+/**
+ * Run result for a single workflow IO case.
+ */
+// RunResult interface is centralized in ./types
 
 const verbose = false
 
@@ -126,7 +126,7 @@ export async function evaluateRuns(
     const evaluationResult = await evaluateQueueRun({
       workflow,
       queueRunResult: runResult.queueRunResult,
-      evaluation: workflowIO.expectedWorkflowOutput,
+      evaluation: workflowIO.workflowOutput.output,
       workflowInvocationId: runResult.workflowInvocationId,
     })
     if (!evaluationResult.success) {

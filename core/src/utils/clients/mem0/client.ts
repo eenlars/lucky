@@ -1,10 +1,11 @@
+import { envi } from "@core/utils/env.mjs"
 import Mem0 from "mem0ai"
 
 let mem0Client: Mem0 | null = null
 
 export function getMem0Client(): Mem0 | null {
   if (!mem0Client) {
-    const apiKey = process.env.MEM0_API_KEY
+    const apiKey = envi.MEM0_API_KEY
     if (!apiKey) {
       console.warn(
         "MEM0_API_KEY environment variable not found, memory functionality disabled"

@@ -741,7 +741,31 @@ export const ToolCallsDisplay = ({
           )
         }
 
-        return null
+        // Fallback renderer for unknown step types (e.g., "prepare")
+        const themeUnknown = getStepTheme(output.type)
+        return (
+          <Card
+            key={`unknown-${index}`}
+            className={`p-2 shadow-sm cursor-pointer ${themeUnknown.cardClass}`}
+            onClick={() => toggleCollapsed(index)}
+          >
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className={`${themeUnknown.iconClass}`}>{getStepIcon(output.type)}</div>
+                <span className={`${themeUnknown.labelClass} text-xs`}>{output.type}</span>
+              </div>
+              {output.return && (
+                <div
+                  className={`text-sm leading-relaxed whitespace-pre-wrap ${themeUnknown.contentClass}`}
+                >
+                  {typeof output.return === "string"
+                    ? output.return
+                    : JSON.stringify(output.return, null, 2)}
+                </div>
+              )}
+            </div>
+          </Card>
+        )
       })}
     </div>
   )

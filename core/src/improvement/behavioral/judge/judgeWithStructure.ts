@@ -1,6 +1,6 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import type { StructureExplorationResult } from "./exploreStructure"

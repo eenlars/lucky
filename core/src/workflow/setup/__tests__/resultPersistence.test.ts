@@ -1,7 +1,7 @@
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
-import { getDefaultModels } from "@runtime/settings/models"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { PATHS } from "@runtime/settings/constants"
+import { getDefaultModels } from "@runtime/settings/models"
 import * as fs from "fs/promises"
 import * as path from "path"
 import {
@@ -38,8 +38,8 @@ describe("resultPersistence", () => {
 
   // save original setupFile path
   const originalSetupFile = PATHS.setupFile
-  // The actual directory where files are saved is hardcoded in persistWorkflow
-  const actualOutDir = path.dirname(PATHS.setupFile) // This resolves correctly
+  // The actual directory where files are saved is computed inside persistWorkflow
+  let actualOutDir: string
   const actualBackupDir = path.join(PATHS.node.logging, "backups")
 
   beforeAll(async () => {
@@ -52,6 +52,9 @@ describe("resultPersistence", () => {
       writable: true,
       configurable: true,
     })
+
+    // compute after override so expectations match runtime behavior
+    actualOutDir = path.dirname(PATHS.setupFile)
   })
 
   afterAll(async () => {

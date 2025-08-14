@@ -7,7 +7,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@runtime/settings/constants.client"
 import type { z } from "zod"
 
 // dynamically generate tool descriptions from active tools only
@@ -23,6 +23,7 @@ export const agentDescriptionsWithTools = {
   codeTools: `Code internal tools (${codeToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,
   handOffType: AGENT_KEY_EXPLANATIONS.handOffType,
+  waitFor: AGENT_KEY_EXPLANATIONS.waitFor,
   memory: AGENT_KEY_EXPLANATIONS.memory,
   systemPrompt: AGENT_KEY_EXPLANATIONS.systemPrompt,
 } as const

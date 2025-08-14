@@ -1,4 +1,4 @@
-import type { EvolutionEvaluator } from "@core/improvement/evaluators/EvolutionEvaluator"
+import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Genome } from "@core/improvement/gp/Genome"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
@@ -33,7 +33,6 @@ export class MockGPEvaluator implements EvolutionEvaluator {
           totalCostUsd: 0.01,
           totalTimeSeconds: mockTime,
           accuracy: Math.random(),
-          novelty: Math.random(),
         },
         hasBeenEvaluated: true,
         evaluatedAt: new Date().toISOString(),

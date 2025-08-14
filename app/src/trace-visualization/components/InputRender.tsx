@@ -12,7 +12,7 @@ import {
   isDelegationPayload,
   isSequentialPayload,
 } from "@core/messages/MessagePayload"
-import type { Json } from "@core/utils/clients/supabase/types"
+import type { Json } from "@lucky/shared"
 import { Maximize2, MessageSquare, Users } from "lucide-react"
 import { useState } from "react"
 

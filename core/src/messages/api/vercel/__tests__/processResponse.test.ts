@@ -5,6 +5,8 @@ import { processResponseVercel } from "../../processResponse"
 import toolResponseMultipleSteps from "../../__tests__/resources/toolResponseMultipleSteps.json"
 import toolResponseNoToolUsed from "../../__tests__/resources/toolResponseNoToolUsed.json"
 
+// TODO: Mock is incomplete - missing many required environment variables
+// Should use a complete mock or test helper
 // Mock environment validation
 vi.mock("@core/utils/env.mjs", () => ({
   envi: {
@@ -14,6 +16,8 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
+// TODO: Missing error case tests - what if response is malformed?
+// TODO: No tests for edge cases like empty steps array or missing usage data
 describe("processModelResponse", () => {
   it("should correctly process a valid tool response with results", async () => {
     // Act
@@ -35,6 +39,7 @@ describe("processModelResponse", () => {
       expect(Array.isArray(agentSteps)).toBe(true)
       expect(agentSteps.length).toBeGreaterThan(0)
 
+      // TODO: Only checking first output - should verify all outputs
       // Check first output structure - correct property names per NodeLog interface
       const firstOutput = agentSteps[0]
       expect(firstOutput).toHaveProperty("type", "tool")

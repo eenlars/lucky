@@ -12,14 +12,23 @@ import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
 import chalk from "chalk"
 import z from "zod"
 
-export type SummaryResult = { summary: string; usdCost: number }
-export type InvocationSummary = {
+/**
+ * Result object returned by summary helpers.
+ */
+export interface SummaryResult {
+  summary: string
+  usdCost: number
+}
+/**
+ * Minimal, persistable invocation summary shape.
+ */
+export interface InvocationSummary {
   summary: string
   timestamp: number
   nodeId: string

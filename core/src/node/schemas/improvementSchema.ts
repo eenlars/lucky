@@ -58,4 +58,6 @@ export const AGENT_KEY_EXPLANATIONS = {
   handOffs: "Permitted hand-off workflow node IDs",
   handOffType:
     "Optional handoff strategy for this node: 'sequential' (default), 'parallel' (fan-out to all handOffs), or 'conditional' (model decides one).",
+  waitFor:
+    "Optional list of upstream node IDs that this node must wait for before invoking. Enables async joins/aggregation across parallel branches.",
 }

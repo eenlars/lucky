@@ -5,6 +5,8 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { responseToAgentSteps } from "../responseToAgentSteps"
 import multiOutput from "./resources/multiOutput.json"
 
+// TODO: Test file name says "combined" but only tests vercel integration
+// TODO: Missing tests for error cases and edge conditions
 describe("vercel.integration.test", () => {
   const testModel: ModelName = getDefaultModels().default
 
@@ -47,9 +49,13 @@ describe("vercel.integration.test", () => {
       testModel
     )
 
+    // TODO: This assertion assumes test fixtures use same model as default
+    // Test will break if default model changes
     // Ensure model alignment with fixture to avoid drift
     expect(testModel).toBe((multiOutput as any).response.modelId)
 
+    // TODO: Testing cost calculation to 8 decimal places is overly precise
+    // Costs can vary slightly - use more reasonable precision (4-5 decimals)
     expect(usdCost).toBeCloseTo(perStepCost, 8)
     expect(usdCost).toBeCloseTo(topLevelCost, 8)
   })

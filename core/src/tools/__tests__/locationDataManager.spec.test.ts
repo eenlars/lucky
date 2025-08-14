@@ -1,11 +1,17 @@
+import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
+import { codeToolRegistry } from "@core/tools/code/CodeToolRegistry"
 import { describe, expect, it } from "vitest"
 
 describe("LocationDataManager Tool Integration", () => {
+  // TODO: This test imports a tool from an absolute path instead of using the proper tool registry.
+  // It should test through the actual tool discovery/registry system to ensure the tool is properly
+  // integrated. Also, the absolute path import makes this test brittle and environment-specific.
   it("should reproduce the exact error we're seeing", async () => {
-    // Dynamically import to avoid path resolution issues
-    const { tool: locationDataManager } = await import(
-      "/Users/here/CODE_FOLDER/main-projects/thesis/together/runtime/code_tools/location-data-manager/tool"
-    )
+    // Discover tools via registry instead of deep-importing
+    await codeToolAutoDiscovery.setupCodeTools()
+    const locationDataManager = codeToolRegistry
+      .getAllTools()
+      .find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation",
@@ -30,12 +36,17 @@ describe("LocationDataManager Tool Integration", () => {
 
       // Log the actual result to understand what's happening
       console.log("Tool result:", result)
+      // TODO: Using console.log for debugging in tests is not ideal. Tests should have clear
+      // assertions without relying on manual log inspection.
 
       // The tool should either fail or auto-correct with warnings
       if (result.success) {
         console.log("Tool succeeded - checking for auto-correction...")
         // Tool auto-corrected, which is valid behavior
         expect(result).toBeDefined()
+        // TODO: This assertion is too weak - expect(result).toBeDefined() doesn't test anything meaningful.
+        // Should verify: 1) What auto-correction happened, 2) If warnings were generated,
+        // 3) What the corrected parameters look like
       } else {
         console.log("Tool failed as expected:", result.error)
         expect(result.error).toContain("Expected array, received string")
@@ -44,6 +55,9 @@ describe("LocationDataManager Tool Integration", () => {
       // This would be a validation error from Zod
       console.log("Tool threw error:", error)
       expect(error).toBeDefined()
+      // TODO: This test doesn't know what behavior to expect - it accepts both success AND failure.
+      // A good test should have a clear expectation. Either the tool should validate and reject,
+      // or it should auto-correct. Testing both outcomes makes this test non-deterministic.
       expect((error as Error).message || (error as Error).toString()).toContain(
         "Expected array, received string"
       )
@@ -51,9 +65,10 @@ describe("LocationDataManager Tool Integration", () => {
   })
 
   it("should work correctly with proper array data", async () => {
-    const { tool: locationDataManager } = await import(
-      "/Users/here/CODE_FOLDER/main-projects/thesis/together/runtime/code_tools/location-data-manager/tool"
-    )
+    await codeToolAutoDiscovery.setupCodeTools()
+    const locationDataManager = codeToolRegistry
+      .getAllTools()
+      .find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation-2",
@@ -97,6 +112,7 @@ describe("LocationDataManager Tool Integration", () => {
 
     // Log the result to debug
     console.log("Valid tool result:", result)
+    // TODO: More console.log debugging - tests should assert specific behavior
 
     // Should return success result
     expect(result).toBeDefined()
@@ -104,5 +120,8 @@ describe("LocationDataManager Tool Integration", () => {
       console.log("Tool failed:", result.error)
     }
     expect(result.success).toBe(true)
+    // TODO: This test only verifies success=true but doesn't test what the tool actually did.
+    // Should verify: 1) Locations were stored correctly, 2) Return value structure,
+    // 3) Side effects (file creation, database updates, etc.)
   })
 })

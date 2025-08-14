@@ -5,12 +5,7 @@ import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
-import {
-  needsEvaluation,
-  type EvaluationInput,
-} from "@core/workflow/ingestion/ingestion.types"
-import type { RunResult } from "@core/workflow/runner/runAllInputs"
+import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import {
   loadFromDatabase,
@@ -18,23 +13,18 @@ import {
   loadFromFile,
 } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
+import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import { JSONN } from "@shared/utils/files/json/jsonParse"
+import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
-export type InvocationInput = {
-  evalInput: EvaluationInput
-} & (
-  | { workflowVersionId: string; filename?: never; dslConfig?: never }
-  | { filename: string; workflowVersionId?: never; dslConfig?: never }
-  | { dslConfig: WorkflowConfig; workflowVersionId?: never; filename?: never }
-)
-
-export type InvokeWorkflowResult = RunResult & {
-  fitness?: FitnessOfWorkflow
-  feedback?: string
-  usdCost?: number
-  outputMessage?: string
-}
+/**
+ * Union of supported ways to invoke a workflow.
+ * Provide `evalInput` and exactly one of:
+ * - workflowVersionId: load config from database by version id
+ * - filename: load config from a local file
+ * - dslConfig: pass a config object directly
+ */
+// InvocationInput and InvokeWorkflowResult centralized in ./types
 
 export async function invokeWorkflow(
   input: InvocationInput

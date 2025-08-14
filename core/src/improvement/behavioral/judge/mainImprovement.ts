@@ -1,13 +1,13 @@
+import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesSelfImprovement } from "@core/improvement/behavioral/judge/improveNode"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
 import { judge } from "@core/improvement/behavioral/judge/judge"
 import { parseCliArguments } from "@core/utils/cli/argumentParser"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
-import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
-import type { FitnessOfWorkflow } from "@core/workflow/actions/analyze/calculate-fitness/fitness.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 
 /**
@@ -22,9 +22,9 @@ export interface ImprovementOptions {
 }
 
 /**
- * Main parameters for the cultural improvement process
+ * Main parameters for the iterative improvement process
  */
-export interface CulturalImprovementParams {
+export interface IterativeImprovementParams {
   _fitness: FitnessOfWorkflow
   workflowInvocationId: string
 }
@@ -32,9 +32,9 @@ export interface CulturalImprovementParams {
 /**
  * Main orchestrator function that composes all improvement steps
  */
-export async function improveNodesCulturallyImpl(
+export async function improveNodesIterativelyImpl(
   workflow: Workflow,
-  params: CulturalImprovementParams
+  params: IterativeImprovementParams
 ): Promise<WorkflowImprovementResult> {
   const { _fitness, workflowInvocationId } = params
   let totalCost = 0
@@ -51,7 +51,7 @@ export async function improveNodesCulturallyImpl(
   const improvementType =
     parsedArgs.improvementType ?? CONFIG.improvement.flags.improvementType
 
-  lgg.log("🚀 Starting cultural improvement process...")
+  lgg.log("🚀 Starting iterative improvement process...")
 
   // step 1: agent self-improvement (optional)
   if (selfImproveNodes) {
@@ -137,7 +137,7 @@ export async function improveNodesCulturallyImpl(
   totalCost += validationCost
 
   lgg.log(
-    `✅ Cultural improvement process completed with ${improvementType} improvement type`
+    `✅ Iterative improvement process completed with ${improvementType} improvement type`
   )
   return {
     newConfig: validatedConfig,

@@ -1,3 +1,4 @@
+import { PATHS } from "@runtime/settings/constants"
 import { join } from "path"
 
 interface FailureStats {
@@ -37,9 +38,9 @@ class FailureTracker {
       sessionId: this.sessionId,
     }
 
-    // Use process.cwd() to get project root directory
+    // Use runtime logging path from PATHS
     this.outputPath = join(
-      process.cwd(),
+      PATHS.node.logging,
       `gp_failure_tracking_${this.sessionId}.json`
     )
     console.log(

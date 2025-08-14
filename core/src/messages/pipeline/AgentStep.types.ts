@@ -1,6 +1,9 @@
-import type { Json } from "../../../../shared/dist"
+import type { Json } from "@shared/index"
 
-export type LearningStep = {
+/**
+ * Specialized step that records a learning the agent made.
+ */
+export interface LearningStep {
   type: "learning"
   name?: never
   args?: never
@@ -8,6 +11,10 @@ export type LearningStep = {
 }
 /**
  * This is the language of the agent!
+ */
+/**
+ * A single step produced by the agent while solving a task.
+ * This union enumerates all step variants and their payloads.
  */
 export type AgentStep<TOOL_CALL_OUTPUT_TYPE = unknown> = // output depends on which tool is called.
 
@@ -63,13 +70,16 @@ export type AgentStep<TOOL_CALL_OUTPUT_TYPE = unknown> = // output depends on wh
         return: Json // debug information
       }
 
+/**
+ * Convenience alias for an array of agent steps.
+ */
 export type AgentSteps<TOOL_CALL_OUTPUT_TYPE = unknown> =
   AgentStep<TOOL_CALL_OUTPUT_TYPE>[]
 
 /**
- * @deprecated Use AgentSteps instead
+ * @deprecated Use `AgentSteps` instead.
  */
-export type AgentStepsLegacy = {
+export interface AgentStepsLegacy {
   outputs: AgentStep[]
   totalCost: number
 }

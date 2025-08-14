@@ -17,13 +17,15 @@ describe("Mutation Types", () => {
       expect(totalWeight).toBeCloseTo(1.0, 10)
     })
 
-    it("should include cultural mutation", () => {
-      const culturalWeight = MUTATION_WEIGHTS.find((w) => w.type === "cultural")
+    it("should include iterative mutation", () => {
+      const iterativeWeight = MUTATION_WEIGHTS.find(
+        (w) => w.type === "iterative"
+      )
 
-      expect(culturalWeight).toBeDefined()
-      expect(culturalWeight?.weight).toBe(0.15)
-      expect(culturalWeight?.description).toBe(
-        "Cultural improvement via unified approach"
+      expect(iterativeWeight).toBeDefined()
+      expect(iterativeWeight?.weight).toBe(0.15)
+      expect(iterativeWeight?.description).toBe(
+        "Iterative improvement via unified approach"
       )
     })
 
@@ -45,7 +47,7 @@ describe("Mutation Types", () => {
         "model",
         "prompt",
         "tool",
-        "cultural",
+        "iterative",
         "structure",
         "addNode",
         "deleteNode",

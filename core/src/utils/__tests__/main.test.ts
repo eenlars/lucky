@@ -1,16 +1,24 @@
 // tests for core/main.ts
+// TODO: major refactoring needed - this entire test file has critical issues:
+// 1. mocks wrong functions - tests mock iterativeEvolutionMain, getWorkflowSetup, workflowCreate
+//    but actual implementation uses: loadSingleWorkflow, Workflow.create, runEvolution
+// 2. test assertions don't match implementation - expects process.exit(0) but gets exit(1) due to missing mocks
+// 3. evolution mode source is wrong - tests assume CONFIG.evolution.mode but it comes from CLI args
+// 4. most assertions are commented out making tests no-ops
+// 5. missing critical test coverage for: RunService lifecycle, AggregatedEvaluator, error recovery, actual evolution flow
+// 6. should test both iterative and genetic evolution paths with proper mocks
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   getMockLogger,
-  mockCulturalEvolutionMain,
   mockDisplayResults,
   mockGetWorkflowSetup,
+  mockIterativeEvolutionMain,
   mockSaveWorkflowConfig,
   setupCoreTest,
 } from "./setup/coreMocks"
 
 // Set up process.argv before any imports
-process.argv = ["node", "main.js", "--mode=cultural"]
+process.argv = ["node", "main.js", "--mode=iterative"]
 
 // Mock the main dependencies
 
@@ -57,7 +65,7 @@ vi.mock("@core/workflow/Workflow", () => ({
       getWorkflowIO: vi
         .fn()
         .mockReturnValue([{ input: "test", output: "result" }]),
-      improveNodesCulturally: vi.fn().mockResolvedValue({
+      improveNodesIteratively: vi.fn().mockResolvedValue({
         newConfig: { nodes: [], entryNodeId: "test-node" },
         cost: 0.02,
       }),
@@ -125,7 +133,7 @@ vi.mock("@core/workflow/schema/errorMessages", () => ({
   }),
 }))
 
-vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
+vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   AggregatedEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       success: true,
@@ -138,7 +146,7 @@ vi.mock("@core/improvement/evaluators/AggregatedEvaluator", () => ({
   })),
 }))
 
-vi.mock("@core/improvement/evaluators/GPEvaluatorAdapter", () => ({
+vi.mock("@core/evaluation/evaluators/GPEvaluatorAdapter", () => ({
   GPEvaluatorAdapter: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       fitness: { score: 0.9 },
@@ -187,13 +195,13 @@ vi.mock("@runtime/settings/constants", () => ({
       prepareProblemWorkflowVersionId: "a1373554",
     },
     evolution: {
-      mode: "cultural",
+      mode: "iterative",
       GP: {
         generations: 3,
         populationSize: 4,
         initialPopulationFile: "/test/initial.json",
       },
-      culturalIterations: 3,
+      iterativeIterations: 3,
     },
     limits: {
       enableSpendingLimits: false,
@@ -230,14 +238,14 @@ const mockProcessExit = vi.fn()
 const originalProcess = process
 vi.stubGlobal("process", {
   ...originalProcess,
-  argv: ["node", "main.js", "--mode=cultural"],
+  argv: ["node", "main.js", "--mode=iterative"],
   exit: mockProcessExit,
   env: originalProcess.env,
 })
 
 // Mock CLI argument parser - must be set up before any imports
 const mockParseCliArguments = vi.fn().mockReturnValue({
-  mode: "cultural",
+  mode: "iterative",
   generations: 3,
   populationSize: 4,
   setupFile: "/test/setup.json",
@@ -260,12 +268,12 @@ vi.mock("@runtime/setup/inputs", () => ({
 const mocks = {
   CONFIG: {
     evolution: {
-      mode: "cultural",
+      mode: "iterative",
     },
   },
   displayResults: mockDisplayResults,
   lggError: mockLogger.error,
-  culturalEvolutionMain: mockCulturalEvolutionMain,
+  iterativeEvolutionMain: mockIterativeEvolutionMain,
   evolutionEngineRun: mockEvolutionEngine.evolve,
   getWorkflowSetup: mockGetWorkflowSetup,
   saveWorkflowConfig: mockSaveWorkflowConfig,
@@ -288,27 +296,28 @@ describe("main.ts", () => {
     mockProcessExit.mockClear()
   })
 
-  describe("Cultural Evolution Mode", () => {
+  describe("Iterative Evolution Mode", () => {
     beforeEach(() => {
       mockParseCliArguments.mockReturnValue({
-        mode: "cultural",
+        mode: "iterative",
         generations: 3,
         populationSize: 4,
         setupFile: "/test/setup.json",
       })
     })
 
-    it("should run cultural evolution successfully", async () => {
-      // IMPROVEMENT NEEDED: This test fails because the main function hits error paths due to missing mocks
-      // The test expects process.exit(0) but gets process.exit(1), indicating unhandled errors
-      // Need to properly mock all dependencies including RunService, AggregatedEvaluator, and persistence layers
+    it("should run iterative evolution successfully", async () => {
+      // TODO: this test fails because the main function hits error paths due to missing mocks
+      // the test expects process.exit(0) but gets process.exit(1), indicating unhandled errors
+      // need to properly mock: loadSingleWorkflow, Workflow.create, runEvolution, RunService, AggregatedEvaluator
+      // also need to mock persistence layers and handle the actual control flow
       const { default: main } = await import("@core/main")
 
       await main()
 
       expect(mockProcessExit).toHaveBeenCalledWith(1) // currently failing - should be 0 after fixing mocks
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.objectContaining({
       //     results: expect.any(Array),
       //     totalCost: expect.any(Number),
@@ -316,12 +325,12 @@ describe("main.ts", () => {
       // )
     })
 
-    it("should handle cultural evolution errors gracefully", async () => {
-      // IMPROVEMENT NEEDED: culturalEvolutionMain is not used in the actual main.ts file
-      // The main function runs evolution directly, not through culturalEvolutionMain
-      // Mock setup needs to align with actual implementation structure
-      mocks.culturalEvolutionMain.mockRejectedValue(
-        new Error("cultural evolution failed")
+    it("should handle iterative evolution errors gracefully", async () => {
+      // TODO: iterativeEvolutionMain is not used in the actual main.ts file
+      // the main function calls runEvolution directly, not through iterativeEvolutionMain
+      // mock setup needs complete refactoring to match actual implementation
+      mocks.iterativeEvolutionMain.mockRejectedValue(
+        new Error("iterative evolution failed")
       )
 
       const { default: main } = await import("@core/main")
@@ -335,10 +344,10 @@ describe("main.ts", () => {
       // )
     })
 
-    it("should display cultural results correctly", async () => {
-      // IMPROVEMENT NEEDED: Similar to above - culturalEvolutionMain is not called from main.ts
-      // The displayResults call depends on successful completion of runEvolution()
-      // Test fails because runEvolution() throws due to missing mocks
+    it("should display iterative results correctly", async () => {
+      // TODO: iterativeEvolutionMain is not called from main.ts
+      // displayResults depends on successful completion of runEvolution()
+      // test fails because runEvolution() throws due to missing mocks for Workflow.create, loadSingleWorkflow, etc.
       const mockResult = {
         results: [
           {
@@ -351,14 +360,14 @@ describe("main.ts", () => {
         totalCost: 0.05,
         logFilePath: "/test/log/path",
       }
-      mocks.culturalEvolutionMain.mockResolvedValue(mockResult)
+      mocks.iterativeEvolutionMain.mockResolvedValue(mockResult)
 
       const { default: main } = await import("@core/main")
 
       await main()
 
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.any(Object)
       // )
     })
@@ -375,7 +384,7 @@ describe("main.ts", () => {
     })
 
     it("should run genetic programming successfully", async () => {
-      // IMPROVEMENT NEEDED: Test expects GP mode but parseCliArguments returns 'cultural' mode in beforeEach
+      // IMPROVEMENT NEEDED: Test expects GP mode but parseCliArguments returns 'iterative' mode in beforeEach
       // Need to properly mock parseCliArguments to return GP mode for this test
       const { default: main } = await import("@core/main")
 
@@ -392,7 +401,7 @@ describe("main.ts", () => {
     })
 
     it("should handle GP initialization errors", async () => {
-      // IMPROVEMENT NEEDED: Test runs in cultural mode due to CLI arg mocking
+      // IMPROVEMENT NEEDED: Test runs in iterative mode due to CLI arg mocking
       // Should throw GP error but won't reach GP code path
       mocks.evolutionEngineRun.mockRejectedValue(
         new Error("GP initialization failed")
@@ -404,7 +413,7 @@ describe("main.ts", () => {
     })
 
     it("should create evolution engine with correct config", async () => {
-      // IMPROVEMENT NEEDED: EvolutionEngine not called in cultural mode
+      // IMPROVEMENT NEEDED: EvolutionEngine not called in iterative mode
       const { default: main } = await import("@core/main")
       const { EvolutionEngine } = await import(
         "@core/improvement/gp/evolutionengine"
@@ -416,7 +425,7 @@ describe("main.ts", () => {
     })
 
     it("should save best workflow to file", async () => {
-      // IMPROVEMENT NEEDED: saveWorkflowConfig not called in cultural mode path
+      // IMPROVEMENT NEEDED: saveWorkflowConfig not called in iterative mode path
       const { default: main } = await import("@core/main")
 
       await main()
@@ -440,7 +449,8 @@ describe("main.ts", () => {
     })
 
     it("should use default config values", async () => {
-      // IMPROVEMENT NEEDED: getWorkflowSetup is mocked but loadSingleWorkflow is called
+      // TODO: getWorkflowSetup is mocked but loadSingleWorkflow is actually called in implementation
+      // need to mock loadSingleWorkflow instead
       const { default: main } = await import("@core/main")
 
       await main()
@@ -449,8 +459,8 @@ describe("main.ts", () => {
     })
 
     it("should handle invalid evolution mode", async () => {
-      // IMPROVEMENT NEEDED: Mode comes from CLI args, not CONFIG.evolution.mode
-      // parseCliArguments determines mode, not config
+      // TODO: evolution mode comes from CLI args via parseCliArguments, not CONFIG.evolution.mode
+      // this test is testing the wrong thing - should mock parseCliArguments to return invalid mode
       mocks.CONFIG.evolution.mode = "invalid-mode"
 
       const { default: main } = await import("@core/main")
@@ -462,8 +472,8 @@ describe("main.ts", () => {
 
   describe("Workflow Creation", () => {
     it("should create workflow with correct parameters", async () => {
-      // IMPROVEMENT NEEDED: workflowCreate is not used - Workflow.create is called directly
-      // Mock Workflow.create instead of workflowCreate
+      // TODO: workflowCreate is not used - implementation calls Workflow.create directly
+      // need to mock Workflow.create static method instead of workflowCreate function
       const mockSetup = {
         expectedFormat: "json output",
         question: "test question",
@@ -487,7 +497,7 @@ describe("main.ts", () => {
     })
 
     it("should handle workflow creation failure", async () => {
-      // IMPROVEMENT NEEDED: workflowCreate is not the function called
+      // TODO: workflowCreate is not the function called - need to mock Workflow.create
       // Need to mock Workflow.create to throw error
       mocks.workflowCreate.mockRejectedValue(
         new Error("workflow creation failed")
@@ -502,7 +512,8 @@ describe("main.ts", () => {
 
   describe("Error Handling", () => {
     it("should log errors with context", async () => {
-      // IMPROVEMENT NEEDED: loadSingleWorkflow is called, not getWorkflowSetup
+      // TODO: loadSingleWorkflow is called in implementation, not getWorkflowSetup
+      // need to mock the correct function for this test to work
       const error = new Error("test error")
       mocks.getWorkflowSetup.mockRejectedValue(error)
 
@@ -514,7 +525,8 @@ describe("main.ts", () => {
     })
 
     it("should handle invalid config gracefully", async () => {
-      // IMPROVEMENT NEEDED: Same as above - mode comes from CLI args, not CONFIG
+      // TODO: evolution mode comes from CLI args via parseCliArguments, not CONFIG.evolution.mode
+      // should mock parseCliArguments to return invalid mode instead
       mocks.CONFIG.evolution.mode = "invalid-mode"
 
       const { default: main } = await import("@core/main")
@@ -526,8 +538,9 @@ describe("main.ts", () => {
 
   describe("Result Display", () => {
     it("should format genetic results correctly", async () => {
-      // IMPROVEMENT NEEDED: CONFIG.evolution.mode doesn't control mode - CLI args do
-      // Running in cultural mode, not GP mode, so displayResults won't be called with GP results
+      // TODO: CONFIG.evolution.mode doesn't control mode - parseCliArguments does
+      // test is running in iterative mode due to process.argv setup, not GP mode
+      // need to mock parseCliArguments to return mode: "GP" for this test
       mocks.CONFIG.evolution.mode = "GP"
       const mockGPResult = {
         bestGenome: { getWorkflowVersionId: () => "best-test" },
@@ -577,7 +590,7 @@ describe("main.ts", () => {
       await main()
 
       // expect(mocks.displayResults).toHaveBeenCalledWith(
-      //   "cultural",
+      //   "iterative",
       //   expect.objectContaining({
       //     totalCost: expect.any(Number),
       //   })

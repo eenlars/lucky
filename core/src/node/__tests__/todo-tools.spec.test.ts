@@ -2,6 +2,10 @@ import { getDefaultModels } from "@runtime/settings/constants.client"
 import { describe, expect, it } from "vitest"
 
 describe("Todo Tools Integration Test", () => {
+  // TODO: this is a true integration test that makes real AI calls and should be
+  // marked as such. it's testing tool execution directly rather than through
+  // InvocationPipeline, which bypasses the actual workflow execution logic.
+  // also uses console.log for debugging output that should be removed.
   it("should execute todoWrite and todoRead workflow", async () => {
     // Import the todo tools directly
     const todoWrite = await import(
@@ -54,6 +58,10 @@ describe("Todo Tools Integration Test", () => {
 
     console.log("TodoRead result:", readResult.data?.output?.todos)
 
+    // TODO: this verification step using AI is overkill and unreliable. the test
+    // already verifies the todo structure above. using AI to verify test results
+    // adds unnecessary complexity, cost, and potential flakiness. should remove
+    // this entire verification step and rely on direct assertions.
     // Step 3: Verify the workflow with AI
     const todoListContent = JSON.stringify(
       readResult.data?.output?.todos,

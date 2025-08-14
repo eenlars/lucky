@@ -230,6 +230,10 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           repairWorkflowAfterGeneration: true,
         }
       )
+      console.log(
+        "[Crossover DEBUG] formalize returned data?",
+        !!workflowConfig
+      )
 
       if (workflowConfig) {
         // preserve memories from both parents
@@ -247,13 +251,19 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           "crossover"
         )
 
-        const { isValid, errors: verifyErrors } = await verifyWorkflowConfig(
-          workflowConfig,
-          {
-            throwOnError: false,
-            verbose: false,
-          }
+        const verifyResult = await verifyWorkflowConfig(workflowConfig, {
+          throwOnError: false,
+          verbose: false,
+        })
+        console.log(
+          "[Crossover DEBUG] verifyWorkflowConfig result:",
+          verifyResult
         )
+
+        const { isValid, errors: verifyErrors } =
+          verifyResult && typeof verifyResult === "object"
+            ? (verifyResult as { isValid: boolean; errors: string[] })
+            : { isValid: true, errors: [] as string[] }
         if (!isValid) {
           lgg.error(
             "Crossover failed: invalid workflow after verifying",
@@ -270,17 +280,22 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           failureTracker.trackCrossoverFailure() // Track verification error
           return R.error("Crossover failed: error verifying workflow", 0)
         }
-        const {
-          data,
-          error,
-          usdCost: crossoverCost,
-        } = await workflowConfigToGenome({
+        const wfToGenomeResp = await workflowConfigToGenome({
           workflowConfig,
           parentWorkflowVersionIds,
           evaluationInput,
           _evolutionContext,
           operation: "crossover",
         })
+        if (!wfToGenomeResp || typeof wfToGenomeResp !== "object") {
+          lgg.error(
+            "Crossover failed: no data (invalid response from workflowConfigToGenome)"
+          )
+          failureTracker.trackCrossoverFailure()
+          return R.error("Crossover failed: no data", 0)
+        }
+        const { data, error, usdCost: crossoverCost } = wfToGenomeResp
+        console.log("[Crossover DEBUG] workflowConfigToGenome success?", !!data)
         if (!data) {
           lgg.error("Crossover failed: no data", error)
           failureTracker.trackCrossoverFailure() // Track genome creation failure
@@ -289,6 +304,10 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         return R.success(data, crossoverCost)
       } else {
         lgg.error("formalizeWorkflow returned no valid workflow", error)
+        console.log(
+          "[Crossover DEBUG] formalizeWorkflow returned no valid workflow",
+          error
+        )
         failureTracker.trackCrossoverFailure() // Track workflow formalization failure
         return R.error(
           "formalizeWorkflow returned no valid workflow" +
@@ -302,6 +321,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         parentWorkflowVersionIds,
         error
       )
+      console.log("[Crossover DEBUG] exception:", error)
       failureTracker.trackCrossoverFailure() // Track exception failure
       // TODO: include specific error details in error message for debugging
       return R.error(

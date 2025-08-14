@@ -15,18 +15,18 @@
  * TODO: Create migration script to update calling code automatically
  */
 
-import type { FlowEvolutionMode } from "@core/types"
 import type { RS } from "@core/utils/types"
 import type { Genome } from "../Genome"
 import { MutationCoordinator } from "./mutations/index"
+import type { MutationOptions as CanonicalMutationOptions } from "./mutations/mutation.types"
 
-// Legacy interface with old terminology for backward compatibility
-// TODO: remove this interface once all code is migrated to MutationCoordinator
-export interface MutationOptions {
-  parent: Genome
-  generationNumber: number
-  aggression?: number // @deprecated Use intensity instead - will be removed in next version
-  evolutionMode: FlowEvolutionMode // determines which mutations are available
+// Legacy interface with old terminology for backward compatibility.
+// Keep shape aligned with canonical MutationOptions, but allow `aggression` alias.
+// TODO: remove this once all code is migrated to MutationCoordinator
+export interface MutationOptions
+  extends Omit<CanonicalMutationOptions, "intensity"> {
+  /** @deprecated Use `intensity` instead */
+  aggression?: number
 }
 
 export class Mutations {

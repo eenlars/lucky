@@ -2,15 +2,15 @@
  * noops.ts - Collection of 100 filler tools that do nothing
  * Used to test tool capacity limits by adding noise to tool selection
  */
+import { tool, zodSchema } from "ai"
 import { z } from "zod"
-import { tool } from "ai"
 
 const NoopParams = z.object({})
 
 export const noopSpecs = Array.from({ length: 100 }, (_, i) =>
   tool({
     description: `Does nothing useful #${i}`,
-    parameters: NoopParams,
+    parameters: zodSchema(NoopParams),
     execute: async () => "noop",
   })
 )
