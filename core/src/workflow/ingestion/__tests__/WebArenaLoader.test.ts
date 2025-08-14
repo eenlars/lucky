@@ -108,15 +108,15 @@ describe("WebArenaLoader", () => {
     )
     expect(result[0].workflowInput).toContain("Sites involved: shopping, map")
     expect(result[0].workflowInput).toContain("Requires login: Yes")
-    expect(result[0].workflowOutput).toContain("string_match")
-    expect(result[0].workflowOutput).toContain("Primanti Bros")
+    expect(result[0].workflowOutput.output).toContain("string_match")
+    expect(result[0].workflowOutput.output).toContain("Primanti Bros")
 
     // check second workflow
     expect(result[1].workflowInput).toContain("Create a post about AI")
     expect(result[1].workflowInput).toContain("Sites involved: reddit")
     expect(result[1].workflowInput).toContain("Requires login: No")
-    expect(result[1].workflowOutput).toContain("fuzzy_match")
-    expect(result[1].workflowOutput).toContain("success")
+    expect(result[1].workflowOutput.output).toContain("fuzzy_match")
+    expect(result[1].workflowOutput.output).toContain("success")
   })
 
   it("should filter tasks by sites", async () => {
@@ -246,10 +246,12 @@ describe("WebArenaLoader", () => {
     const result = await WebArenaLoader.fetchAsWorkflowIO(1)
 
     expect(result).toHaveLength(1)
-    expect(result[0].workflowOutput).toContain("string_match, fuzzy_match")
-    expect(result[0].workflowOutput).toContain("test-repo")
-    expect(result[0].workflowOutput).toContain("repository")
-    expect(result[0].workflowOutput).toContain("success")
+    expect(result[0].workflowOutput.output).toContain(
+      "string_match, fuzzy_match"
+    )
+    expect(result[0].workflowOutput.output).toContain("test-repo")
+    expect(result[0].workflowOutput.output).toContain("repository")
+    expect(result[0].workflowOutput.output).toContain("success")
   })
 
   it("should throw error when task is not found", async () => {

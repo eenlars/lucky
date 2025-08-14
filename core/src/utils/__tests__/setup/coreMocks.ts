@@ -1228,12 +1228,14 @@ export const mockWorkflowGeneration = () => {
 // ====== COMBINED SETUP HELPERS ======
 
 export const setupGPTestMocks = (
-  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0]
+  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0],
+  options?: { mockGenome?: boolean }
 ) => {
   const runService = mockRunService()
   const verificationCache = mockVerificationCache()
   const logger = mockLogger()
-  const genome = mockGenomeClass()
+  const shouldMockGenome = options?.mockGenome ?? true
+  const genome = shouldMockGenome ? mockGenomeClass() : getMockGenome()
   const population = mockPopulationClass()
 
   mockRuntimeConstantsForGP(runtimeOverrides)

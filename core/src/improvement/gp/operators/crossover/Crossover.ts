@@ -230,6 +230,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           repairWorkflowAfterGeneration: true,
         }
       )
+      lgg.onlyIf?.(CONFIG.logging.override.GP, "[Crossover] formalize result has data:", !!workflowConfig)
 
       if (workflowConfig) {
         // preserve memories from both parents
@@ -247,13 +248,25 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           "crossover"
         )
 
-        const { isValid, errors: verifyErrors } = await verifyWorkflowConfig(
-          workflowConfig,
-          {
-            throwOnError: false,
-            verbose: false,
-          }
-        )
+        const verifyResult = await verifyWorkflowConfig(workflowConfig, {
+          throwOnError: false,
+          verbose: false,
+        })
+        lgg.onlyIf?.(CONFIG.logging.override.GP, "[Crossover] verify result:", verifyResult)
+
+        if (!verifyResult || typeof verifyResult !== "object") {
+          lgg.error(
+            "Crossover failed: invalid workflow after verifying",
+            verifyResult
+          )
+          failureTracker.trackCrossoverFailure()
+          return R.error(
+            "Crossover failed: invalid workflow after verifying",
+            0
+          )
+        }
+
+        const { isValid, errors: verifyErrors } = verifyResult
         if (!isValid) {
           lgg.error(
             "Crossover failed: invalid workflow after verifying",
@@ -281,6 +294,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           _evolutionContext,
           operation: "crossover",
         })
+        lgg.onlyIf?.(CONFIG.logging.override.GP, "[Crossover] workflowConfigToGenome success:", !!data)
         if (!data) {
           lgg.error("Crossover failed: no data", error)
           failureTracker.trackCrossoverFailure() // Track genome creation failure

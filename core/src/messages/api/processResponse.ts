@@ -52,9 +52,13 @@ export function processResponseVercel({
 
   // process steps if they exist (now returns AgentSteps) and derive cost deterministically
   const processedSteps = processStepsV2(response.steps, modelUsed)
-  const cost =
-    processedSteps?.usdCost ??
-    calculateUsageCost(response.usage as Partial<VercelUsage>, modelUsed)
+  // Prefer top-level usage cost when available; fall back to per-step aggregation
+  const topLevelCost = calculateUsageCost(
+    (response.usage ?? {}) as Partial<VercelUsage>,
+    modelUsed
+  )
+  const perStepCost = processedSteps?.usdCost ?? 0
+  const cost = Math.max(topLevelCost, perStepCost)
 
   // If steps exist, decide whether it's a tool or pure text response
   if (processedSteps && processedSteps.agentSteps.length > 0) {

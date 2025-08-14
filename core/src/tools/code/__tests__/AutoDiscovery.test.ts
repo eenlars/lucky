@@ -1,10 +1,58 @@
-import { CodeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
-import { beforeEach, describe, expect, it } from "vitest"
+import type { CodeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
+import fs from "fs"
+import path from "path"
+import { fileURLToPath } from "url"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 describe("CodeToolAutoDiscovery", () => {
   let autoDiscovery: CodeToolAutoDiscovery
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.resetModules()
+
+    // Override PATHS only for this test to point to the real runtime code tools
+    vi.doMock("@runtime/settings/constants", async () => {
+      const real = await vi.importActual<
+        typeof import("@runtime/settings/constants")
+      >("@runtime/settings/constants")
+
+      const __filename = fileURLToPath(import.meta.url)
+      const __dirname = path.dirname(__filename)
+
+      // Find repo root by walking up until we see the runtime/code_tools dir
+      function findRepoRoot(startDir: string): string {
+        let dir = startDir
+        // hard cap to prevent infinite loops
+        for (let i = 0; i < 12; i++) {
+          const candidate = path.join(dir, "runtime", "code_tools")
+          if (fs.existsSync(candidate)) {
+            return dir
+          }
+          const parent = path.dirname(dir)
+          if (parent === dir) break
+          dir = parent
+        }
+        return startDir
+      }
+
+      const repoRoot = findRepoRoot(__dirname)
+      const runtimeDir = path.join(repoRoot, "runtime")
+      const codeToolsDir = path.join(runtimeDir, "code_tools")
+
+      return {
+        ...real,
+        PATHS: {
+          ...real.PATHS,
+          root: repoRoot,
+          runtime: runtimeDir,
+          codeTools: codeToolsDir,
+        },
+      }
+    })
+
+    const { CodeToolAutoDiscovery } = await import(
+      "@core/tools/code/AutoDiscovery"
+    )
     autoDiscovery = new CodeToolAutoDiscovery()
     autoDiscovery.reset()
   })

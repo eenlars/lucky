@@ -13,32 +13,32 @@ describe("processStepsV2", () => {
     it("should return empty result for non-array input", () => {
       const result = processStepsV2(null as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for undefined input", () => {
       const result = processStepsV2(undefined as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for string input", () => {
       const result = processStepsV2("not an array" as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
     it("should return empty result for object input", () => {
       const result = processStepsV2({ some: "object" } as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
   })
@@ -47,8 +47,8 @@ describe("processStepsV2", () => {
     it("should return empty result for empty array", () => {
       const result = processStepsV2([] as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
 
@@ -56,8 +56,8 @@ describe("processStepsV2", () => {
       const steps = [null, undefined, null]
       const result = processStepsV2(steps as any, testModel)
       expect(result).toEqual({
-        outputs: [],
-        totalCost: 0,
+        agentSteps: [],
+        usdCost: 0,
       })
     })
   })

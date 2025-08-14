@@ -23,8 +23,8 @@ export async function persistWorkflow(
   const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))
   const BACKUP_DIR = path.join(PATHS.node.logging, "backups")
 
-  mkdirIfMissing(OUT_DIR)
-  mkdirIfMissing(BACKUP_DIR)
+  await mkdirIfMissing(OUT_DIR)
+  await mkdirIfMissing(BACKUP_DIR)
 
   const finalConfigJson = finalConfig as Json
 
@@ -35,13 +35,13 @@ export async function persistWorkflow(
   const filename = path.basename(fileName)
   const configPath = path.join(OUT_DIR, filename)
 
-  writeJsonAtomic(configPath, finalConfigJson)
+  await writeJsonAtomic(configPath, finalConfigJson)
 
   // Create backup unless skipBackup is true
   if (!skipBackup) {
     const backupName = path.basename(fileName, path.extname(fileName))
 
-    writeJsonAtomic(
+    await writeJsonAtomic(
       path.join(BACKUP_DIR, `${backupName}_${stamp}.json`),
       finalConfigJson
     )

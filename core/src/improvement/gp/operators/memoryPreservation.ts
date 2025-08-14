@@ -45,7 +45,8 @@ export class MemoryPreservation {
           ...parent1NodeMemory, // parent1 takes precedence
         }
 
-        lgg.onlyIf(
+        // logger may be partially mocked in tests
+        lgg.onlyIf?.(
           MemoryPreservation.verbose,
           `Preserved memory for node ${node.nodeId}:`,
           node.memory
@@ -63,7 +64,8 @@ export class MemoryPreservation {
         )
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
-          lgg.onlyIf(
+          // logger may be partially mocked in tests
+          lgg.onlyIf?.(
             MemoryPreservation.verbose,
             `Inherited similar memory for new node ${node.nodeId}:`,
             node.memory
@@ -95,7 +97,8 @@ export class MemoryPreservation {
       if (parentNodeMemory) {
         node.memory = { ...parentNodeMemory }
 
-        lgg.onlyIf(
+        // logger may be partially mocked in tests
+        lgg.onlyIf?.(
           MemoryPreservation.verbose,
           `Preserved memory for mutated node ${node.nodeId}:`,
           node.memory
@@ -109,7 +112,8 @@ export class MemoryPreservation {
         const similarNodeMemory = this.findSimilarNodeMemory(node, parentMemory)
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
-          lgg.onlyIf(
+          // logger may be partially mocked in tests
+          lgg.onlyIf?.(
             MemoryPreservation.verbose,
             `Inherited memory for new mutated node ${node.nodeId}:`,
             node.memory
@@ -236,7 +240,8 @@ export class MemoryPreservation {
       throw new Error(errorMsg)
     }
 
-    lgg.onlyIf(
+    // logger may be partially mocked in tests
+    lgg.onlyIf?.(
       MemoryPreservation.verbose,
       `Memory preservation validated for ${operationType} - all parent memories preserved`
     )

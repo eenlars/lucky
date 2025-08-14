@@ -1,20 +1,151 @@
+import type { MCPToolName } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
-import { describe, expect, it } from "vitest"
-import { setupMCPForNode } from "../mcp"
+import type { ToolSet } from "ai"
+import fs from "fs"
+import os from "os"
+import path from "path"
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
+
+// Create a temporary external MCP config and mock MCP transport/client
+// so unit tests don't require real binaries or network access.
+let tempConfigPath: string
+let prevMcpSecretPath: string | undefined
+type SetupMCPForNodeFn = (
+  toolNames: MCPToolName[],
+  workflowId: string
+) => Promise<ToolSet>
+let setupMCPForNode: SetupMCPForNodeFn
+
+vi.mock("ai/mcp-stdio", () => {
+  interface MockTransportOptions {
+    command: string
+    args: string[]
+    env?: Record<string, string | undefined>
+  }
+  class Experimental_StdioMCPTransport {
+    opts: MockTransportOptions
+    constructor(opts: MockTransportOptions) {
+      this.opts = opts
+    }
+  }
+  return { Experimental_StdioMCPTransport }
+})
+
+vi.mock("ai", () => {
+  interface MockTransportOptions {
+    command: string
+    args: string[]
+    env?: Record<string, string | undefined>
+  }
+  return {
+    experimental_createMCPClient: ({
+      transport,
+    }: {
+      transport: { opts: MockTransportOptions }
+    }) => {
+      const mcpName = transport.opts.env?.MCP_NAME
+      const client = {
+        tools: async (): Promise<ToolSet> => {
+          switch (mcpName) {
+            case "tavily":
+              return {
+                "tavily-search": {
+                  description: "mock tavily search",
+                  parameters: {},
+                },
+              }
+            case "googleScholar":
+              return {
+                search_google_scholar_key_words: {
+                  description: "mock gs kw",
+                  parameters: {},
+                },
+                search_google_scholar_advanced: {
+                  description: "mock gs adv",
+                  parameters: {},
+                },
+                get_author_info: {
+                  description: "mock gs author",
+                  parameters: {},
+                },
+              }
+            case "browserUse":
+              return {
+                open_url: { description: "mock open url", parameters: {} },
+                click: { description: "mock click", parameters: {} },
+              }
+            default:
+              return {}
+          }
+        },
+      }
+      return client
+    },
+  }
+})
+
+beforeAll(async () => {
+  // Write a temporary mcp-secret.json and point loader to it
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-test-"))
+  tempConfigPath = path.join(tmpDir, "mcp-secret.json")
+  fs.writeFileSync(
+    tempConfigPath,
+    JSON.stringify(
+      {
+        mcpServers: {
+          tavily: {
+            command: "dummy",
+            args: [],
+            env: { MCP_NAME: "tavily" },
+          },
+          googleScholar: {
+            command: "dummy",
+            args: [],
+            env: { MCP_NAME: "googleScholar" },
+          },
+          browserUse: {
+            command: "dummy",
+            args: [],
+            env: { MCP_NAME: "browserUse" },
+          },
+        },
+      },
+      null,
+      2
+    )
+  )
+
+  prevMcpSecretPath = process.env.MCP_SECRET_PATH
+  process.env.MCP_SECRET_PATH = tempConfigPath
+
+  // Import after env and mocks so the module reads our temp config
+  const mod = await import("../mcp")
+  setupMCPForNode = mod.setupMCPForNode
+})
+
+afterAll(() => {
+  try {
+    if (tempConfigPath && fs.existsSync(tempConfigPath)) {
+      fs.rmSync(path.dirname(tempConfigPath), { recursive: true, force: true })
+    }
+    // restore previous env to avoid leaking state across other tests
+    if (prevMcpSecretPath !== undefined) {
+      process.env.MCP_SECRET_PATH = prevMcpSecretPath
+    } else {
+      delete process.env.MCP_SECRET_PATH
+    }
+  } catch {}
+})
 
 describe("setupMCPForNode", () => {
   it("should set up the tavily MCP tool without errors", async () => {
-    // TODO: This test requires external MCP server/API to be available.
-    // Should mock the MCP connection for unit tests.
     await expect(
       setupMCPForNode(["tavily"], "test-mcp-setup-tavily")
     ).resolves.toBeTypeOf("object")
-    // TODO: Weak assertion - almost everything is type "object" in JS
 
     const tools = await setupMCPForNode(["tavily"], "test-mcp-setup-tavily")
     expect(Object.keys(tools).length).toBeGreaterThan(0)
   }, 30000)
-  // TODO: 30 second timeout suggests slow external dependency
 
   it.skip("should set up the proxy MCP tool without errors", async () => {
     // skip this test as it requires external MCP proxy server to be running
@@ -32,7 +163,6 @@ describe("setupMCPForNode", () => {
 describe("browserUse MCP", () => {
   it("should load browserUse tools", async () => {
     lgg.log("testing browserUse mcp...")
-    // TODO: Console logging for debugging
 
     // setup mcp client for browserUse
     const tools = await setupMCPForNode(
@@ -52,10 +182,8 @@ describe("browserUse MCP", () => {
       lgg.log("  description:", tool.description)
       lgg.log("  parameters:", JSON.stringify(tool.parameters, null, 2))
     }
-    // TODO: This is debug logging, not testing. Should assert on tool structure/properties.
 
     lgg.log("browserUse mcp test passed ✓")
-    // TODO: Test shouldn't log its own pass/fail status
   }, 30000)
 })
 
@@ -64,9 +192,6 @@ describe("External MCP Configuration", () => {
     // This test verifies that external MCP configs work
     // Since we have mcp-secret.json with googleScholar configured,
     // it should load the tools successfully
-    // TODO: This test depends on external config file (mcp-secret.json) existing.
-    // Test will fail if config is missing or misconfigured.
-
     const tools = await setupMCPForNode(
       ["googleScholar"],
       "test-mcp-external-config"
@@ -79,13 +204,10 @@ describe("External MCP Configuration", () => {
     lgg.log(`googleScholar tools loaded: ${toolCount}`)
     lgg.log(`Tool names: ${toolNames.join(", ")}`)
 
-    // Google Scholar MCP provides 3 tools when properly configured
     expect(toolCount).toBe(3)
     expect(toolNames).toContain("search_google_scholar_key_words")
     expect(toolNames).toContain("search_google_scholar_advanced")
     expect(toolNames).toContain("get_author_info")
-    // TODO: These assertions are brittle - they assume specific tool names/count.
-    // If the MCP provider changes their API, tests will break.
   }, 30000)
 
   it("should load tavily MCP from external config (not built-in)", async () => {
@@ -101,22 +223,16 @@ describe("External MCP Configuration", () => {
     lgg.log(`tavily tools loaded from external config: ${toolCount}`)
     lgg.log(`Tool names: ${toolNames.join(", ")}`)
 
-    // Tavily MCP provides multiple tools
     expect(toolCount).toBeGreaterThan(0)
     expect(toolNames).toContain("tavily-search")
   }, 30000)
 
-  it("should handle invalid MCP tool names gracefully", async () => {
-    // This test verifies proper error handling for non-existent MCPs
-    const tools = await setupMCPForNode(
-      ["nonExistentMCP" as any],
-      "test-invalid-mcp"
-    )
+  it("should handle missing MCP config gracefully for valid tool names", async () => {
+    // Request a valid MCP tool name that is not present in our temp config
+    // This simulates missing external config for a known tool
+    const tools = await setupMCPForNode(["filesystem"], "test-missing-config")
 
-    // Should return empty object for invalid tools
     expect(tools).toBeTypeOf("object")
     expect(Object.keys(tools).length).toBe(0)
-    // TODO: Should also test error logging/reporting for invalid MCPs.
-    // Silent failure (empty object) might not be the best API design.
   }, 10000)
 })
