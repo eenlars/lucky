@@ -13,6 +13,7 @@
     "iterative": "rm -rf src/runtime/logging_folder && bun run src/main.ts --mode=iterative",
     "clean": "bun run scripts/cleanup.ts",
     "test": "bunx vitest --project unit",
+    "test:unit": "bunx vitest run --project unit",
     "test:core": "bunx vitest --project unit",
     "test:integration": "bunx vitest --project integration",
     "coverage": "bunx vitest run --coverage",

@@ -1,3 +1,7 @@
+echo "[husky] running core unit tests..."
+cd core && CI=1 bun run test:unit || exit 1
+cd - >/dev/null 2>&1 || exit 1
+
 echo "[husky] running gate tests..."
 bun run test:gate || exit 1
 
