@@ -10,14 +10,14 @@
 
 Current multi-agent frameworks require manual workflow design, taking hours to configure and lacking native optimization capabilities. This creates a bottleneck: you know what problem to solve but not how agents should collaborate to solve it efficiently.
 
-This framework automatically discovers and optimizes multi-agent workflows through evolutionary algorithms, eliminating manual configuration while providing full observability of the optimization process.
+This framework automatically discovers and optimizes multi-agent workflows through an evolutionary algorithm, eliminating manual configuration while providing full observability of the optimization process.
 
 ## Three Core Differentiators
 
 **1. Built for Optimization**  
-Genetic programming and cultural evolution automatically discover optimal agent collaboration patterns, tool usage, and workflow structures.
+The cultural evolution algorithm automatically discovers optimal agent collaboration patterns, tool usage, and workflow structures. Implements a tool-use algorithm letting less capable models use tools 29% more effectively than the baseline.
 
-**2. 30-Second Deployment**  
+**2. 30-Second Deployment**
 JSON-based workflow definitions enable immediate deployment without coding agent interactions or setting up complex infrastructures.
 
 **3. Complete Observability**  
@@ -87,9 +87,9 @@ After training, you can return to execute it:
 ```typescript
 import { Workflow } from "@core/workflow/Workflow"
 
-const workflow = await Workflow.getStats("123") // e.g. 100%
+const workflow = await Workflow.getStats("123") // e.g. 98% accuracy.
 
-// fetch Workflow with another location:
+// use the workflow with a new, untrained input.
 const addresses = await Workflow.execute(
   "123",
   "Find all Tony Chocolonely stores"
@@ -124,9 +124,9 @@ cd core && bun iterative
 
 The framework implements two primary optimization approaches:
 
-**Genetic Programming**: Population-based evolution with semantic crossover and mutation operations on workflow structures, agent prompts, and tool selections. Fitness evaluation across accuracy, cost, and execution time dimensions.
+**Iterative Improvement**: Iterative improvement, using feedback from an LLM-evaluator and a root-cause analysis to improve itself.
 
-**Cultural Evolution**: Iterative improvement through analysis-driven mutations that preserve successful patterns while exploring variations in agent roles, tool usage, and inter-agent communication protocols.
+**Cultural Evolution (GP)**: Population-based evolution with LLM-guided crossover and mutation operations on workflow structures, agent prompts, tool use and more. Fitness is evaluated across accuracy, cost, and execution time. Selects the highest-performing workflows.
 
 ## Development Roadmap
 
