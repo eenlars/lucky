@@ -1,24 +1,37 @@
-import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
+import { supabase } from "@core/utils/clients/supabase/client"
 import { NextRequest, NextResponse } from "next/server"
 
-// revalidate every 5 minutes (300 seconds)
-export const revalidate = 300
+export const dynamic = "force-dynamic"
 
 export async function GET(
-  request: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ wf_version_id: string }> }
 ) {
+  const { wf_version_id } = await params
+
   try {
-    const { wf_version_id } = await params
+    const { data, error } = await supabase
+      .from("WorkflowVersion")
+      .select("*")
+      .eq("wf_version_id", wf_version_id)
+      .single()
 
-    const workflowConfig = await loadFromDatabaseForDisplay(wf_version_id)
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
-    return NextResponse.json({ dsl: workflowConfig })
+    if (!data) {
+      return NextResponse.json(
+        { error: `Workflow version ${wf_version_id} not found` },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(data)
   } catch (error) {
-    console.error("Failed to load workflow version:", error)
-
+    console.error("Error fetching workflow version:", error)
     return NextResponse.json(
-      { error: "Failed to load workflow version" },
+      { error: error instanceof Error ? error.message : "Failed to fetch workflow version" },
       { status: 500 }
     )
   }

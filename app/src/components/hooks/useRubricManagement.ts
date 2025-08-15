@@ -7,13 +7,19 @@ import {
   createRubricString,
   generateFakeScores,
   hasResults,
+  parseRubricString,
 } from "../utils/rubric-utils"
 
 export function useRubricManagement(
   ioId: string,
+  initialExpected: string,
   updateExpected: (id: string, expected: string) => void
 ) {
-  const [criteria, setCriteria] = useState<RubricCriteria[]>(DEFAULT_CRITERIA)
+  const [criteria, setCriteria] = useState<RubricCriteria[]>(() => {
+    // Try to parse existing rubric, fall back to default if parsing fails
+    const parsed = parseRubricString(initialExpected)
+    return parsed.length > 0 ? parsed : DEFAULT_CRITERIA
+  })
   const updateExpectedRef = useRef(updateExpected)
   useEffect(() => {
     updateExpectedRef.current = updateExpected
@@ -23,11 +29,16 @@ export function useRubricManagement(
   const totalAchievedPoints = calculateTotalAchievedPoints(criteria)
   const hasRubricResults = hasResults(criteria)
 
-  // Auto-save rubric when criteria change
+  // Auto-save rubric when criteria change (with debounce)
   useEffect(() => {
     if (criteria.length === 0) return
-    const rubricString = createRubricString(criteria)
-    updateExpectedRef.current(ioId, rubricString)
+    
+    const timeoutId = setTimeout(() => {
+      const rubricString = createRubricString(criteria)
+      updateExpectedRef.current(ioId, rubricString)
+    }, 500) // 500ms debounce
+    
+    return () => clearTimeout(timeoutId)
   }, [criteria, ioId])
 
   const addCriteria = () => {

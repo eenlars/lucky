@@ -65,35 +65,23 @@ The system treats AI agent workflows as evolvable data structures. Instead of ma
 
 ## Usage
 
-Instead of manually designing workflows, provide a small dataset of question-answer pairs. The system automatically discovers optimal workflows through evolutionary optimization.
+Provide a small dataset of question-answer pairs. The system attempts to discover optimal workflows through evolutionary optimization.
 
 ```typescript
-import { Workflow } from "@core/workflow/Workflow"
-import { CustomTools, MCPTools } from "./tools"
-import { dataset } from "./dataset"
+// in the near future, you would be able to call:
+import { Workflow } from "@flowflow/workflow"
+import { tools, evals, models } from "./myData"
 
 // Create workflow with training dataset
-const workflow = await Workflow.create({
+const workflow = await Workflow.train({
   goal: "Find all physical stores of a company",
-  tools: [MyTools, MCPTools],
-  evaluations,
+  tools,
+  evals,
+  models,
 })
 
-await workflow.train()
-```
-
-After training, you can return to execute it:
-
-```typescript
-import { Workflow } from "@core/workflow/Workflow"
-
-const workflow = await Workflow.getStats("123") // e.g. 98% accuracy.
-
 // use the workflow with a new, untrained input.
-const addresses = await Workflow.execute(
-  "123",
-  "Find all Tony Chocolonely stores"
-)
+const addresses = await workflow.ask("Find all Tony Chocolonely stores")
 // ["Oudebrugsteeg 15", "Danzigerkade 23B"]
 ```
 

@@ -5,6 +5,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get("limit") || "1000")
   const offset = parseInt(searchParams.get("offset") || "0")
+  
+  // filter parameters
+  const statusFilter = searchParams.get("status") || "all"
+  const modeFilter = searchParams.get("mode") || "all"
+  const searchTerm = searchParams.get("search") || ""
+  const dateFilter = searchParams.get("dateFilter") || "all"
+  const hideEmpty = searchParams.get("hideEmpty") === "true"
+  
   try {
     // First get all evolution runs
     const { data: evolutionRuns, error } = await supabase
@@ -113,7 +121,55 @@ export async function GET(request: Request) {
         successful_invocations: successful,
         generation_count: generations,
       }))
-      .filter((run) => run.generation_count > 0)
+      .filter((run) => {
+        // always filter runs with no generations
+        if (run.generation_count === 0) return false
+        
+        // hide empty runs filter
+        if (hideEmpty && (!run.total_invocations || run.total_invocations === 0)) {
+          return false
+        }
+        
+        // search filter
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase()
+          if (!run.goal_text.toLowerCase().includes(searchLower) &&
+              !run.run_id.toLowerCase().includes(searchLower)) {
+            return false
+          }
+        }
+        
+        // status filter
+        if (statusFilter !== "all" && run.status !== statusFilter) {
+          return false
+        }
+        
+        // mode filter
+        if (modeFilter !== "all" && run.config?.mode !== modeFilter) {
+          return false
+        }
+        
+        // date filter
+        if (dateFilter !== "all") {
+          const runDate = new Date(run.start_time)
+          const now = new Date()
+          const daysDiff = (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
+          
+          switch (dateFilter) {
+            case "today":
+              if (daysDiff > 1) return false
+              break
+            case "week":
+              if (daysDiff > 7) return false
+              break
+            case "month":
+              if (daysDiff > 30) return false
+              break
+          }
+        }
+        
+        return true
+      })
       .sort(
         (a, b) =>
           new Date(b.start_time).getTime() - new Date(a.start_time).getTime()

@@ -1,6 +1,5 @@
 "use client"
 
-import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import {
   toWorkflowConfig,
   type WorkflowConfig,
@@ -221,7 +220,11 @@ export default function StructuresPage() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const versions = await retrieveLatestWorkflowVersions(200)
+        const response = await fetch("/api/workflow/versions/latest?limit=200")
+        if (!response.ok) {
+          throw new Error(`Failed to fetch versions: ${response.statusText}`)
+        }
+        const versions = await response.json()
         setAllVersions(versions)
       } catch (error) {
         console.error("Error fetching workflow versions:", error)

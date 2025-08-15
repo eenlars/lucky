@@ -1,10 +1,12 @@
 // Workflow templates for quick start
 
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+
 export interface WorkflowTemplate {
   id: string
   name: string
   description: string
-  workflow: object
+  workflow: WorkflowConfig
 }
 
 export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
@@ -22,7 +24,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: "gpt-4o-mini",
+          modelName: "openai/gpt-4o-mini",
         },
       ],
     },
@@ -39,29 +41,29 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           description: "Parse ingredients",
           systemPrompt:
             "You are an expert chef who analyzes ingredients and suggests recipes.",
-          mcpTools: ["search"],
+          mcpTools: [],
           codeTools: [],
           handOffs: ["recipe_generator"],
-          modelName: "gpt-4o-mini",
+          modelName: "openai/gpt-4o-mini",
         },
         {
           nodeId: "recipe_generator",
           description: "Generate a recipe",
           systemPrompt:
             "Generate a complete recipe based on parsed ingredients.",
-          mcpTools: ["search", "web_scrape"],
+          mcpTools: [],
           codeTools: [],
           handOffs: ["nutrition_analyzer"],
-          modelName: "gpt-4o-mini",
+          modelName: "openai/gpt-4o-mini",
         },
         {
           nodeId: "nutrition_analyzer",
           description: "Analyze nutrition",
           systemPrompt: "Analyze recipe and provide nutritional information.",
-          mcpTools: ["search"],
+          mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: "gpt-4o-mini",
+          modelName: "openai/gpt-4o-mini",
         },
       ],
     },

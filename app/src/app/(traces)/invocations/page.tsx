@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  deleteWorkflowInvocations,
-  retrieveWorkflowInvocations,
-  type WorkflowInvocationFilters,
-  type WorkflowInvocationSortOptions,
-} from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { showToast } from "@/lib/toast-utils"
 import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -21,6 +16,33 @@ type WorkflowInvocationWithScores = Tables<"WorkflowInvocation"> & {
   accuracy?: number | null
   fitness_score?: number | null
 }
+// Type definitions
+interface WorkflowInvocationFilters {
+  status?: string | string[]
+  runId?: string
+  generationId?: string
+  wfVersionId?: string
+  dateRange?: {
+    start: string
+    end: string
+  }
+  dateFrom?: string
+  dateTo?: string
+  hasFitnessScore?: boolean
+  hasAccuracy?: boolean
+  minCost?: number
+  maxCost?: number
+  minAccuracy?: number
+  maxAccuracy?: number
+  minFitnessScore?: number
+  maxFitnessScore?: number
+}
+
+interface WorkflowInvocationSortOptions {
+  field: string
+  order: "asc" | "desc"
+}
+
 // initialize dayjs plugins
 dayjs.extend(relativeTime)
 
@@ -155,14 +177,21 @@ export default function InvocationsPage() {
         order: sortOrder,
       }
 
-      const response = await retrieveWorkflowInvocations(
-        currentPage,
-        itemsPerPage,
-        filterParams,
-        sortParams
-      )
-      setInvocations(response.data)
-      setTotalCount(response.totalCount)
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        pageSize: itemsPerPage.toString(),
+        filters: JSON.stringify(filterParams),
+        sort: JSON.stringify(sortParams),
+      })
+
+      const response = await fetch(`/api/workflow/invocations?${params}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch invocations: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+      setInvocations(result.data)
+      setTotalCount(result.totalCount)
     } catch (err) {
       setError(
         err instanceof Error
@@ -262,7 +291,19 @@ export default function InvocationsPage() {
 
     try {
       const idsToDelete = Array.from(selectedRows)
-      await deleteWorkflowInvocations(idsToDelete)
+      
+      const response = await fetch("/api/workflow/invocations", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: idsToDelete }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Failed to delete invocations")
+      }
 
       // Remove deleted items from the invocations list
       setInvocations(
@@ -270,12 +311,15 @@ export default function InvocationsPage() {
       )
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
+      
+      const count = idsToDelete.length
+      showToast.success.delete(`Deleted ${count} invocation${count > 1 ? 's' : ''}`)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to delete selected invocations"
-      )
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to delete selected invocations"
+      setError(errorMessage)
+      showToast.error.generic(errorMessage)
       console.error("Error deleting invocations:", err)
     } finally {
       setDeleteLoading(false)

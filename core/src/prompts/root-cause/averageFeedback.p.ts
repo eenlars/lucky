@@ -1,7 +1,7 @@
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { truncater } from "@core/utils/common/llmify"
 
-const groupFeedback = (feedbacksString: string) => `
+export const groupedFeedback = (feedbacksString: string) => `
 You are an expert feedback analyst tasked with identifying patterns across multiple workflow paths.
 
 <context>
@@ -14,6 +14,12 @@ ${truncater(feedbacksString, 12000)}
 
 <task>
 Synthesize the above feedback entries with these specific objectives:
+
+Please provide a synthesized feedback that:
+- Groups issues and patterns into categories
+- Combines duplicate issues and adds a number of occurrences
+- Maintains the analytical depth, does not lose information
+
 
 1. **Pattern Recognition**: Identify the 3-5 most frequently occurring issues or failure modes. For each, specify:
    - Frequency (how often it appears)
@@ -40,7 +46,7 @@ Synthesize the above feedback entries with these specific objectives:
 Structure your response as:
 
 ### Executive Summary
-[2-3 sentence overview of key findings]
+[2 sentences overview of key findings]
 
 ### Critical Patterns
 [Numbered list with frequency and impact]
@@ -54,5 +60,6 @@ Structure your response as:
 
 Focus on practical solutions that reduce complexity while maintaining robustness.
 
+Your output must respect the following limits, so it does not include any specific information and remain generalizable:
 ${GENERALIZATION_LIMITS}
 `

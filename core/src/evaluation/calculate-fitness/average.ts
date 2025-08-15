@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { truncater } from "@core/utils/common/llmify"
+import { groupedFeedback } from "@core/prompts/root-cause/averageFeedback.p"
 import { R, type RS } from "@core/utils/types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -53,16 +53,7 @@ export const calculateFeedbackGrouped = async (
     .join("\n\n")
 
   // Use AI to synthesize the feedback.
-  const prompt = `
-  Analyze the following feedback entries and synthesize them:
-
-${truncater(feedbacksString, 12000)}
-
-Please provide a synthesized feedback that:
-- Groups issues and patterns into categories
-- Combines duplicate issues and adds a number of occurrences
-- Maintains the analytical depth, does not lose information
-`
+  const prompt = groupedFeedback(feedbacksString)
 
   const result = await sendAI({
     messages: [{ role: "user", content: prompt }],

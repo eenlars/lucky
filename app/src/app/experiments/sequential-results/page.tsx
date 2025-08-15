@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import PerfectRateChart from "./components/PerfectRateChart"
 import SequentialResultsChart from "./components/SequentialResultsChart"
 
@@ -5,20 +8,6 @@ type RawResult = {
   model: string
   chain: string
   validation: { score: number }
-}
-
-async function loadResults() {
-  try {
-    const res = await fetch(`/api/experiments/sequential-results`, {
-      cache: "no-store",
-    })
-    if (!res.ok) return []
-    const data = (await res.json()) as { results: RawResult[] }
-    return data.results || []
-  } catch (err) {
-    console.error("Failed to fetch sequential results via API", err)
-    return [] as RawResult[]
-  }
 }
 
 function aggregateByModelAndChain(results: RawResult[]) {
@@ -102,8 +91,63 @@ function aggregateByModelAndChain(results: RawResult[]) {
   return { dataAvg, dataPerfect, chains, overall }
 }
 
-export default async function SequentialResultsPage() {
-  const results = await loadResults()
+export default function SequentialResultsPage() {
+  const [results, setResults] = useState<RawResult[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadResults() {
+      try {
+        const res = await fetch(`/api/experiments/sequential-results`, {
+          cache: "no-store",
+        })
+        if (!res.ok) {
+          throw new Error(`Failed to fetch: ${res.status}`)
+        }
+        const data = (await res.json()) as { results: RawResult[] }
+        setResults(data.results || [])
+      } catch (err) {
+        console.error("Failed to fetch sequential results via API", err)
+        setError(err instanceof Error ? err.message : String(err))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadResults()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-8">
+            <div className="text-gray-600">Loading sequential results...</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-8">
+            <div className="text-red-600 mb-4">Error loading results: {error}</div>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const { dataAvg, dataPerfect, chains, overall } =
     aggregateByModelAndChain(results)
 

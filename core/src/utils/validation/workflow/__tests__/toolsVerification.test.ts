@@ -2,12 +2,16 @@ import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { verifyModelNameExists, verifyNoDuplicateHandoffs, verifyModelsAreActive } from "../index"
-import { 
-  verifyToolsUnique, 
-  verifyAllToolsAreActive, 
+import {
+  verifyModelNameExists,
+  verifyModelsAreActive,
+  verifyNoDuplicateHandoffs,
+} from "../index"
+import {
+  verifyAllToolsAreActive,
+  verifyMaxToolsPerAgent,
   verifyToolSetEachNodeIsUnique,
-  verifyMaxToolsPerAgent 
+  verifyToolsUnique,
 } from "../toolsVerification"
 
 // Mock the constants module
@@ -17,28 +21,56 @@ vi.mock("@runtime/settings/constants", () => ({
       uniqueToolsPerAgent: true,
       uniqueToolSetsPerAgent: true,
       maxToolsPerAgent: 3,
-      defaultTools: new Set(["defaultTool1", "defaultTool2"]),
-      inactive: new Set(["inactiveTool1"]),
+      defaultTools: new Set(["urlToMarkdown", "csvReader"]),
+      inactive: new Set(["readFileLegacy"]),
     },
     models: {
-      inactive: new Set(["inactive-model"])
-    }
+      inactive: new Set(["inactive-model"]),
+    },
   },
 }))
 
 // Mock the tool types
 vi.mock("@core/tools/tool.types", () => ({
   ALL_ACTIVE_TOOL_NAMES: [
-    "searchGoogleMaps", 
-    "saveFileLegacy", 
-    "verifyLocation", 
-    "readFile", 
-    "save", 
-    "browserUse", 
-    "tavily-search",
-    "firecrawl-scrape"
+    "searchGoogleMaps",
+    "saveFileLegacy",
+    "readFileLegacy",
+    "verifyLocation",
+    "locationDataManager",
+    "locationDataInfo",
+    "browserAutomation",
+    "firecrawlAPI",
+    "urlToMarkdown",
+    "csvReader",
+    "csvInfo",
+    "csvWriter",
+    "csvFilter",
+    "contextHandler",
+    "contextList",
+    "contextGet",
+    "contextSet",
+    "contextManage",
+    "csvRowProcessor",
+    "todoRead",
+    "todoWrite",
+    "expectedOutputHandler",
+    "memoryManager",
+    "humanApproval",
+    "humanHelp",
+    "runInspector",
+    "jsExecutor",
+    // MCP
+    "proxy",
+    "tavily",
+    "filesystem",
+    "firecrawl",
+    "browserUse",
+    "googleScholar",
+    "playwright",
+    "serpAPI",
   ],
-  INACTIVE_TOOLS: new Set(["inactiveTool1", "deprecatedTool"])
+  INACTIVE_TOOLS: new Set(["readFileLegacy", "deprecatedTool"]),
 }))
 
 import { CONFIG } from "@runtime/settings/constants"
@@ -176,7 +208,7 @@ describe("verifyToolsUnique", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Ensure unique tools are enforced
-    vi.mocked(CONFIG).tools.uniqueToolsPerAgent = true
+    ;(CONFIG.tools as any).uniqueToolsPerAgent = true
   })
 
   it("should detect tools used by multiple nodes", async () => {
@@ -195,8 +227,8 @@ describe("verifyToolsUnique", () => {
   })
 
   it("should allow duplicate tools when uniqueToolsPerAgent is false", async () => {
-    vi.mocked(CONFIG).tools.uniqueToolsPerAgent = false
-    
+    ;(CONFIG.tools as any).uniqueToolsPerAgent = false
+
     const errors = await verifyToolsUnique(wrongExample)
     expect(errors).toEqual([])
   })
@@ -230,16 +262,16 @@ describe("verifyToolsUnique", () => {
           description: "node with mixed tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
           handOffs: ["node2"],
         },
         {
-          nodeId: "node2", 
+          nodeId: "node2",
           description: "node with same tool names",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"], // Duplicate MCP tool
+          mcpTools: ["tavily"], // Duplicate MCP tool
           codeTools: [],
           handOffs: ["end"],
         },
@@ -248,7 +280,7 @@ describe("verifyToolsUnique", () => {
 
     const errors = await verifyToolsUnique(mixedToolsWorkflow)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors[0]).toContain("tavily-search")
+    expect(errors[0]).toContain("tavily")
     expect(errors[0]).toContain("node1")
     expect(errors[0]).toContain("node2")
   })
@@ -262,7 +294,7 @@ describe("verifyToolsUnique", () => {
           description: "first mcp user",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["firecrawl-scrape"],
+          mcpTools: ["firecrawl"],
           codeTools: [],
           handOffs: ["node2"],
         },
@@ -271,7 +303,7 @@ describe("verifyToolsUnique", () => {
           description: "second mcp user",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["firecrawl-scrape"], // Duplicate
+          mcpTools: ["firecrawl"], // Duplicate
           codeTools: [],
           handOffs: ["end"],
         },
@@ -280,7 +312,7 @@ describe("verifyToolsUnique", () => {
 
     const errors = await verifyToolsUnique(mcpDuplicateWorkflow)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors[0]).toContain("firecrawl-scrape")
+    expect(errors[0]).toContain("firecrawl")
   })
 })
 
@@ -317,7 +349,7 @@ describe("verifyAllToolsAreActive", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["inactiveTool1"], // This is in INACTIVE_TOOLS
+          codeTools: ["readFileLegacy"], // This is in INACTIVE_TOOLS
           handOffs: ["end"],
         },
       ],
@@ -326,21 +358,21 @@ describe("verifyAllToolsAreActive", () => {
     const errors = await verifyAllToolsAreActive(inactiveToolWorkflow)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("inactive tools")
-    expect(errors[0]).toContain("inactiveTool1")
+    expect(errors[0]).toContain("readFileLegacy")
     expect(errors[0]).toContain("node1")
   })
 
   it("should detect unknown tools", async () => {
     const unknownToolWorkflow: WorkflowConfig = {
-      entryNodeId: "node1", 
+      entryNodeId: "node1",
       nodes: [
         {
           nodeId: "node1",
           description: "node with unknown tool",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["unknownMcpTool"],
-          codeTools: ["unknownCodeTool"],
+          mcpTools: ["unknownMcpTool" as any],
+          codeTools: ["unknownCodeTool" as any],
           handOffs: ["end"],
         },
       ],
@@ -348,9 +380,9 @@ describe("verifyAllToolsAreActive", () => {
 
     const errors = await verifyAllToolsAreActive(unknownToolWorkflow)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors.some(error => error.includes("unknown tools"))).toBe(true)
-    expect(errors.some(error => error.includes("unknownMcpTool"))).toBe(true)
-    expect(errors.some(error => error.includes("unknownCodeTool"))).toBe(true)
+    expect(errors.some((error) => error.includes("unknown tools"))).toBe(true)
+    expect(errors.some((error) => error.includes("unknownMcpTool"))).toBe(true)
+    expect(errors.some((error) => error.includes("unknownCodeTool"))).toBe(true)
   })
 
   it("should allow default tools", async () => {
@@ -358,12 +390,12 @@ describe("verifyAllToolsAreActive", () => {
       entryNodeId: "node1",
       nodes: [
         {
-          nodeId: "node1", 
+          nodeId: "node1",
           description: "node with default tool",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["defaultTool1"], // This is in defaultTools
+          codeTools: ["urlToMarkdown"], // This is in defaultTools
           handOffs: ["end"],
         },
       ],
@@ -382,8 +414,8 @@ describe("verifyAllToolsAreActive", () => {
           description: "node with active tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"], 
+          mcpTools: ["tavily"],
+          codeTools: ["saveFileLegacy"],
           handOffs: ["end"],
         },
       ],
@@ -396,7 +428,7 @@ describe("verifyAllToolsAreActive", () => {
 
 describe("verifyToolSetEachNodeIsUnique", () => {
   beforeEach(() => {
-    vi.mocked(CONFIG).tools.uniqueToolSetsPerAgent = true
+    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = true
   })
 
   it("should detect nodes with identical tool sets", async () => {
@@ -408,8 +440,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           description: "first node",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
           handOffs: ["node2"],
         },
         {
@@ -417,8 +449,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           description: "second node with same tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
           handOffs: ["end"],
         },
       ],
@@ -436,18 +468,20 @@ describe("verifyToolSetEachNodeIsUnique", () => {
       entryNodeId: "node1",
       nodes: [
         {
-          nodeId: "node1", 
+          nodeId: "node1",
           description: "node with duplicate tools internally",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["readFile", "readFile"], // Duplicate
+          codeTools: ["readFileLegacy", "readFileLegacy"], // Duplicate
           handOffs: ["end"],
         },
       ],
     }
 
-    const errors = await verifyToolSetEachNodeIsUnique(internalDuplicateWorkflow)
+    const errors = await verifyToolSetEachNodeIsUnique(
+      internalDuplicateWorkflow
+    )
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("duplicate tools in its own tool set")
     expect(errors[0]).toContain("node1")
@@ -469,7 +503,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
         {
           nodeId: "node2",
           description: "also empty tools",
-          systemPrompt: "test", 
+          systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
           codeTools: [],
@@ -483,7 +517,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
   })
 
   it("should skip validation when uniqueToolSetsPerAgent is false", async () => {
-    vi.mocked(CONFIG).tools.uniqueToolSetsPerAgent = false
+    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = false
 
     const duplicateToolSetWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
@@ -493,8 +527,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           description: "first node",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
           handOffs: ["node2"],
         },
         {
@@ -502,8 +536,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           description: "second node with same tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
           handOffs: ["end"],
         },
       ],
@@ -524,7 +558,14 @@ describe("verifyMaxToolsPerAgent", () => {
           description: "node with too many mcp tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search", "firecrawl-scrape", "browserUse", "extra1", "extra2", "extra3"], // 6 tools, limit is 3 + 2 defaultTools = 5
+          mcpTools: [
+            "tavily",
+            "firecrawl",
+            "browserUse",
+            "proxy",
+            "googleScholar",
+            "serpAPI",
+          ], // 6 tools, limit is 3 + 2 defaultTools = 5
           codeTools: [],
           handOffs: ["end"],
         },
@@ -548,7 +589,14 @@ describe("verifyMaxToolsPerAgent", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["readFile", "save", "searchGoogleMaps", "verifyLocation", "saveFileLegacy", "extra"], // 6 tools, limit is 3 + 2 defaultTools = 5  
+          codeTools: [
+            "readFileLegacy",
+            "saveFileLegacy",
+            "searchGoogleMaps",
+            "verifyLocation",
+            "urlToMarkdown",
+            "csvReader",
+          ], // 6 tools, limit is 3 + 2 defaultTools = 5
           handOffs: ["end"],
         },
       ],
@@ -570,8 +618,8 @@ describe("verifyMaxToolsPerAgent", () => {
           description: "node with acceptable tool count",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile", "save"],
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy", "saveFileLegacy"],
           handOffs: ["end"],
         },
       ],
@@ -648,7 +696,9 @@ describe("Edge cases and comprehensive validation", () => {
     // Should not crash and should handle gracefully
     const uniqueErrors = await verifyToolsUnique(undefinedToolsWorkflow)
     const activeErrors = await verifyAllToolsAreActive(undefinedToolsWorkflow)
-    const setErrors = await verifyToolSetEachNodeIsUnique(undefinedToolsWorkflow)
+    const setErrors = await verifyToolSetEachNodeIsUnique(
+      undefinedToolsWorkflow
+    )
     const maxErrors = await verifyMaxToolsPerAgent(undefinedToolsWorkflow)
 
     // All should handle undefined gracefully
@@ -667,8 +717,8 @@ describe("Edge cases and comprehensive validation", () => {
           description: "complex node 1",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: ["tavily-search"],
-          codeTools: ["readFile", "save"],
+          mcpTools: ["tavily"],
+          codeTools: ["saveFileLegacy", "verifyLocation"],
           handOffs: ["node2"],
         },
         {
@@ -676,7 +726,7 @@ describe("Edge cases and comprehensive validation", () => {
           description: "complex node 2",
           systemPrompt: "test",
           modelName: getDefaultModels().nano,
-          mcpTools: ["firecrawl-scrape"],
+          mcpTools: ["firecrawl"],
           codeTools: ["searchGoogleMaps"],
           handOffs: ["end"],
         },

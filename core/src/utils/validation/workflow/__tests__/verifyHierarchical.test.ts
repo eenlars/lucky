@@ -11,11 +11,18 @@ vi.mock("@runtime/constants", () => ({
   },
 }))
 
-import { getDefaultModels } from "@runtime/settings/models"
 import { CONFIG } from "@runtime/settings/constants"
-import { verifyHierarchicalStructure, isOrchestrator, getNodeRole } from "../verifyHierarchical"
+import { getDefaultModels } from "@runtime/settings/models"
+import {
+  everyNodeIsConnectedToStartNode,
+  startNodeIsConnectedToEndNode,
+} from "../connectionVerification"
 import { verifyNoCycles } from "../verifyDirectedGraph"
-import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
+import {
+  getNodeRole,
+  isOrchestrator,
+  verifyHierarchicalStructure,
+} from "../verifyHierarchical"
 
 describe("verifyHierarchicalStructure", () => {
   // TODO: additional test coverage needed:
@@ -81,7 +88,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should validate hierarchical structure correctly in hierarchical mode", async () => {
     // Mock hierarchical mode
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    ;(CONFIG as any).coordinationType = "hierarchical"
 
     const result = await verifyHierarchicalStructure(problemWorkflow)
     // Should pass with our new logic that supports worker chains
@@ -90,7 +97,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should detect invalid handoffs to non-existent nodes", async () => {
     // Mock hierarchical mode
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    ;(CONFIG as any).coordinationType = "hierarchical"
 
     const invalidHandoffWorkflow: WorkflowConfig = {
       entryNodeId: "orchestrator",
@@ -125,7 +132,7 @@ describe("verifyHierarchicalStructure", () => {
   // Test for circular dependencies
   it("should detect circular dependencies in workflow", () => {
     // Ensure cycles are not allowed for this test
-    vi.mocked(CONFIG).verification.allowCycles = false
+    ;(CONFIG.verification as any).allowCycles = false
     const circularWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
       nodes: [
@@ -167,7 +174,7 @@ describe("verifyHierarchicalStructure", () => {
   // Test for self-referential nodes
   it("should detect self-referential nodes", () => {
     // Ensure cycles are not allowed for this test
-    vi.mocked(CONFIG).verification.allowCycles = false
+    ;(CONFIG.verification as any).allowCycles = false
     const selfRefWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
       nodes: [
@@ -231,7 +238,7 @@ describe("verifyHierarchicalStructure", () => {
 
   // Test for multiple orchestrators (only entry should be orchestrator)
   it("should identify correct orchestrator in hierarchical mode", async () => {
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    ;(CONFIG as any).coordinationType = "hierarchical"
 
     const workflow: WorkflowConfig = {
       entryNodeId: "main-orchestrator",
@@ -279,7 +286,7 @@ describe("verifyHierarchicalStructure", () => {
 
   // Test for complex branching hierarchies
   it("should handle complex branching hierarchies", async () => {
-    vi.mocked(CONFIG).coordinationType = "hierarchical"
+    ;(CONFIG as any).coordinationType = "hierarchical"
 
     const complexWorkflow: WorkflowConfig = {
       entryNodeId: "orchestrator",
@@ -345,7 +352,8 @@ describe("verifyHierarchicalStructure", () => {
     expect(result).toEqual([]) // Should be valid
 
     // Verify all nodes are reachable
-    const connectionResult = await everyNodeIsConnectedToStartNode(complexWorkflow)
+    const connectionResult =
+      await everyNodeIsConnectedToStartNode(complexWorkflow)
     expect(connectionResult).toEqual([])
 
     // Verify path to end exists
@@ -398,7 +406,8 @@ describe("verifyHierarchicalStructure", () => {
     }
 
     // Should handle diamond pattern correctly
-    const hierarchicalResult = await verifyHierarchicalStructure(diamondWorkflow)
+    const hierarchicalResult =
+      await verifyHierarchicalStructure(diamondWorkflow)
     expect(hierarchicalResult).toEqual([])
 
     // No cycles in diamond pattern
@@ -410,7 +419,7 @@ describe("verifyHierarchicalStructure", () => {
   it("should handle deeply nested hierarchies efficiently", async () => {
     const depth = 20
     const nodes = []
-    
+
     // Create a deep chain of nodes
     for (let i = 0; i < depth; i++) {
       nodes.push({
@@ -437,14 +446,14 @@ describe("verifyHierarchicalStructure", () => {
 
     expect(cycleResult).toEqual([])
     expect(connectionResult).toEqual([])
-    
+
     // Should complete quickly even with deep nesting
     expect(endTime - startTime).toBeLessThan(100) // 100ms threshold
   })
 
   // Test when CONFIG allows cycles
   it("should skip cycle validation when allowCycles is true", () => {
-    vi.mocked(CONFIG).verification.allowCycles = true
+    ;(CONFIG.verification as any).allowCycles = true
 
     const circularWorkflow: WorkflowConfig = {
       entryNodeId: "node1",

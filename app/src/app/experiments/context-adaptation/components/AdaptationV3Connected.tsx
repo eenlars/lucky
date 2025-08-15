@@ -133,7 +133,7 @@ function buildPoints(results: V3ExperimentResults | null): {
   for (const run of results.runs) {
     const expected = expectedByScenario[run.scenario]
     if (!expected) continue
-    const successPct = (run.successItems / expected) * 100
+    const _successPct = (run.successItems / expected) * 100
     const accuracyPct = accuracyScorePct(run.successItems, expected)
     const minimalCalls = Math.max(1, Math.ceil(expected / 3))
     const actualCalls = Math.max(0, run.totalFetchCalls || 0)

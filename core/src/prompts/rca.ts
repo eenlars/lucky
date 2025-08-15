@@ -1,4 +1,6 @@
 // taken a few small bits from https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/systemprompts/debug_prompt.py
+import { GENERALIZATION_LIMITS } from "./generalizationLimits"
+
 export const rcaPrompt = `
 ROLE
 You have to output a twofold-analysis of a long trace of ai agents that are working together to solve a common goal. One part is to analyze what exactly the ai agents are trying to do, and why they are not scoring the full 100\% accuracy. The second part analyzes the goal in greater detail, and tries to find the hidden assumptions. We never go into the improvment steps.
@@ -74,4 +76,7 @@ Design for scalability and robustness - Consider production scaling and cost fro
 
 ### CONCLUSION ###
 we want to create a two-fold output, one for the root cause, according to the structure above, and the other for breaking down assumptions.
+
+your output must respect the following limits, so it does not include any specific information and remain generalizable:
+${GENERALIZATION_LIMITS}
 `

@@ -2,14 +2,6 @@
 
 import { StructureMiniMap } from "@/app/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
-import {
-  cleanupStaleEvolutionRuns,
-  retrieveAllInvocationsForRunGroupedByGeneration,
-  retrieveEvolutionRun,
-  type GenerationWithData,
-  type WorkflowInvocationSubset,
-} from "@/trace-visualization/db/Evolution/retrieveEvolution"
-import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Database } from "@lucky/shared"
@@ -19,6 +11,26 @@ import Link from "next/link"
 import { use, useCallback, useEffect, useState } from "react"
 
 dayjs.extend(relativeTime)
+
+// Type definitions (moved from server action file)
+interface WorkflowInvocationSubset {
+  wf_invocation_id: string
+  wf_version_id: string
+  start_time: string
+  end_time: string | null
+  status: "running" | "completed" | "failed" | "rolled_back"
+  usd_cost: number
+  fitness_score: number | null
+  accuracy: number | null
+  run_id: string | null
+  generation_id: string | null
+}
+
+interface GenerationWithData {
+  generation: Tables<"Generation">
+  versions: Tables<"WorkflowVersion">[]
+  invocations: WorkflowInvocationSubset[]
+}
 
 const getTimeDifference = (timestamp: string) => {
   const startTime = new Date(timestamp).getTime()
@@ -102,9 +114,17 @@ export default function EvolutionRunPage({
     setError(null)
 
     try {
-      await cleanupStaleEvolutionRuns()
-      const runData = await retrieveEvolutionRun(run_id)
-      setEvolutionRun(runData)
+      // Clean up stale runs first
+      await fetch("/api/evolution-runs/cleanup", { method: "POST" })
+      
+      // Fetch evolution run data
+      const response = await fetch(`/api/evolution/${run_id}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch evolution run: ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      setEvolutionRun(data)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to fetch evolution run"
@@ -118,8 +138,12 @@ export default function EvolutionRunPage({
   const fetchGenerationsData = useCallback(async () => {
     setGenerationsLoading(true)
     try {
-      const generationsWithInvocations =
-        await retrieveAllInvocationsForRunGroupedByGeneration(run_id)
+      const response = await fetch(`/api/evolution/${run_id}/generations`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch generations: ${response.statusText}`)
+      }
+      
+      const generationsWithInvocations = await response.json()
       setGenerationsData(generationsWithInvocations)
       setLastFetchTime(Date.now())
     } catch (err) {
@@ -145,7 +169,12 @@ export default function EvolutionRunPage({
     }
 
     try {
-      const version = await retrieveWorkflowVersion(versionId)
+      const response = await fetch(`/api/workflow/version/${versionId}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch workflow version: ${response.statusText}`)
+      }
+      
+      const version = await response.json()
       setWorkflowVersions((prev) => new Map(prev).set(versionId, version))
       return version
     } catch (err) {
@@ -171,7 +200,7 @@ export default function EvolutionRunPage({
 
   useEffect(() => {
     fetchEvolutionRun()
-  }, [run_id])
+  }, [run_id, fetchEvolutionRun])
 
   useEffect(() => {
     if (evolutionRun) {

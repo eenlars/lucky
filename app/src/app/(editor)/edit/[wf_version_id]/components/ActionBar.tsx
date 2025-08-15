@@ -7,7 +7,6 @@ interface ActionBarProps {
   onRun: () => Promise<void>
   isDirty: boolean
   isLoading: boolean
-  saveError?: string | null
 }
 
 export default function ActionBar({
@@ -15,7 +14,6 @@ export default function ActionBar({
   onRun,
   isDirty,
   isLoading,
-  saveError,
 }: ActionBarProps) {
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [commitMessage, setCommitMessage] = useState("")
@@ -79,12 +77,6 @@ export default function ActionBar({
             <h3 className="text-lg font-semibold mb-4">
               Save Workflow Version
             </h3>
-
-            {saveError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <div className="text-red-700 text-sm">{saveError}</div>
-              </div>
-            )}
 
             <div className="mb-4">
               <label

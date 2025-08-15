@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import {
   Dialog,
@@ -53,8 +54,8 @@ export default function FeedbackDialog({
     setFeedbackRating(null)
     onOpenChange(false)
     
-    // Could show a toast notification here
-    alert("Feedback submitted successfully!")
+    // Show success toast
+    toast.success("Feedback submitted successfully!")
   }
 
   return (

@@ -20,10 +20,11 @@ vi.mock("@core/utils/env.mjs", () => ({
 
 import os from "os"
 import path from "path"
+import { z } from "zod"
 
 // Mock sendAI to avoid real API calls
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({
-  sendAI: vi.fn()
+  sendAI: vi.fn(),
 }))
 
 // Mock processResponseVercel to return proper handoff
@@ -31,13 +32,17 @@ vi.mock("@core/messages/api/processResponse", () => ({
   processResponseVercel: vi.fn().mockReturnValue({
     type: "text",
     text: "Test response: I received your input.",
-    handoff: "end"
+    handoff: "end",
   }),
   getResponseContent: vi.fn().mockImplementation((response) => {
     if (response?.text) return response.text
     if (response?.type === "text" && response?.text) return response.text
     return "Test response: I received your input."
-  })
+  }),
+  // Some parts of the pipeline import this helper; provide a stubbed export
+  getFinalOutputNodeInvocation: vi
+    .fn()
+    .mockReturnValue("Test response: I received your input."),
 }))
 
 // Mock runtime constants - comprehensive CONFIG
@@ -201,19 +206,27 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { describe, expect, it, vi, beforeEach } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import type {
+  StructuredRequest,
+  TextRequest,
+  ToolRequest,
+  TResponse,
+} from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeNode } from "../invokeNode"
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 describe("invokeNode", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     // Configure default mock behavior
-    vi.mocked(sendAI).mockImplementation((req) => {
+    const sendAIMockImpl = (
+      req: TextRequest | ToolRequest | StructuredRequest<any>
+    ): Promise<TResponse<any>> => {
       // For structured handoff calls
       if (req.mode === "structured") {
         return Promise.resolve({
@@ -223,30 +236,33 @@ describe("invokeNode", () => {
             reason: "Task completed",
             error: null,
             hasError: false,
-            handoffContext: "Task completed successfully"
+            handoffContext: "Task completed successfully",
           },
           error: null,
-          usdCost: 0.001
+          usdCost: 0.001,
+          debug_input: [],
+          debug_output: {},
         })
       }
-      
+
       // For text generation calls
       return Promise.resolve({
         success: true,
         data: {
           text: "Test response: I received your input.",
-          toolCalls: [],
-          finishReason: "stop",
-          usage: {
-            promptTokens: 100,
-            completionTokens: 20,
-            totalTokens: 120
-          }
         },
         error: null,
-        usdCost: 0.002
+        usdCost: 0.002,
+        debug_input: [],
+        debug_output: {},
       })
-    })
+    }
+
+    ;(
+      sendAI as unknown as {
+        mockImplementation: (fn: typeof sendAIMockImpl) => void
+      }
+    ).mockImplementation(sendAIMockImpl)
   })
 
   it("should invoke a simple node and return mocked result", async () => {
@@ -276,15 +292,17 @@ describe("invokeNode", () => {
     expect(result.nodeInvocationId).toBeDefined()
     expect(result.nodeInvocationFinalOutput).toBeDefined()
     expect(typeof result.nodeInvocationFinalOutput).toBe("string")
-    expect(result.nodeInvocationFinalOutput).toBe("Test response: I received your input.")
-    
+    expect(result.nodeInvocationFinalOutput).toBe(
+      "Test response: I received your input."
+    )
+
     // Verify node followed the handoffs
     expect(result.nextIds).toEqual(["end"])
-    
+
     // Verify cost tracking
     expect(result.usdCost).toBeDefined()
     expect(result.usdCost).toBeGreaterThanOrEqual(0)
-    
+
     // Verify agent steps were recorded
     expect(result.agentSteps).toBeDefined()
     expect(Array.isArray(result.agentSteps)).toBe(true)
@@ -292,7 +310,9 @@ describe("invokeNode", () => {
 
   it("should handle node with tools", async () => {
     // Override mock for this specific test to return next-node handoff
-    vi.mocked(sendAI).mockImplementation((req) => {
+    const sendAIMockImpl2 = (
+      req: TextRequest | ToolRequest | StructuredRequest<any>
+    ): Promise<TResponse<any>> => {
       if (req.mode === "structured") {
         return Promise.resolve({
           success: true,
@@ -301,37 +321,39 @@ describe("invokeNode", () => {
             reason: "Need to process further",
             error: null,
             hasError: false,
-            handoffContext: "Process with next node"
+            handoffContext: "Process with next node",
           },
           error: null,
-          usdCost: 0.001
+          usdCost: 0.001,
+          debug_input: [],
+          debug_output: {},
         })
       }
-      
+
       return Promise.resolve({
         success: true,
         data: {
           text: "Test response: I received your input.",
-          toolCalls: [],
-          finishReason: "stop",
-          usage: {
-            promptTokens: 100,
-            completionTokens: 20,
-            totalTokens: 120
-          }
         },
         error: null,
-        usdCost: 0.002
+        usdCost: 0.002,
+        debug_input: [],
+        debug_output: {},
       })
-    })
-    
+    }
+    ;(
+      sendAI as unknown as {
+        mockImplementation: (fn: typeof sendAIMockImpl2) => void
+      }
+    ).mockImplementation(sendAIMockImpl2)
+
     const nodeConfig: WorkflowNodeConfig = {
       nodeId: "tool-node",
       description: "A node with tools",
       systemPrompt: "You have access to tools. Use them if needed.",
       modelName: getDefaultModels().nano,
       mcpTools: [],
-      codeTools: ["save", "readFile"],
+      codeTools: ["saveFileLegacy", "readFileLegacy"],
       handOffs: ["next-node", "end"],
       memory: {},
     }
@@ -359,7 +381,7 @@ describe("invokeNode", () => {
       handOffs: ["end"],
       memory: {
         previousResult: "cached data",
-        counter: "5"
+        counter: "5",
       },
     }
 
@@ -393,13 +415,10 @@ describe("invokeNode", () => {
       nodeConfig,
       prompt: "Analyze this data",
       mainWorkflowGoal: "Extract key insights from customer feedback",
-      expectedOutputType: {
-        type: "json",
-        schema: {
-          insights: "string[]",
-          sentiment: "positive | negative | neutral"
-        }
-      },
+      expectedOutputType: z.object({
+        insights: z.array(z.string()),
+        sentiment: z.enum(["positive", "negative", "neutral"]),
+      }),
       skipDatabasePersistence: true,
     })
 

@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react"
 
-import { MODELS } from "@runtime/settings/constants.client"
 import {
   type WorkflowConfig,
   toWorkflowConfig,
 } from "@core/workflow/schema/workflow.types"
+import { MODELS } from "@runtime/settings/constants.client"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig
@@ -65,6 +65,7 @@ export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
         codeTools: [],
         description: "End node",
         modelName: MODELS.default,
+        memory: {},
       })
     }
 

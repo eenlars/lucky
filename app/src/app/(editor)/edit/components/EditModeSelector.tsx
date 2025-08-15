@@ -4,6 +4,7 @@ import type { Tables } from "@lucky/shared"
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
@@ -19,7 +20,7 @@ import WorkflowIOTable from "@/components/WorkflowIOTable"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { loadFromDSLClient } from "@core/workflow/setup/WorkflowLoader.client"
+import { loadFromDSLClient, loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
 
 type EditMode = "graph" | "json" | "eval"
 
@@ -59,16 +60,16 @@ export default function EditModeSelector({
   // Eval mode state (shared store)
   const {
     cases,
-    busyIds,
-    resultsById,
+    busyIds: _busyIds,
+    resultsById: _resultsById,
     goal,
     setGoal,
     addCase,
-    updateCase,
-    removeCase,
+    updateCase: _updateCase,
+    removeCase: _removeCase,
     runOne,
     runAll,
-    cancel,
+    cancel: _cancel,
   } = useRunConfigStore(
     useShallow((s) => ({
       cases: s.cases,
@@ -370,8 +371,11 @@ export default function EditModeSelector({
                     const json = exportToJSON()
                     const parsed = JSON.parse(json)
                     const cfgMaybe = toWorkflowConfig(parsed)
-                    if (!cfgMaybe) return alert("Invalid workflow config")
-                    const cfg = await loadFromDSLClient(cfgMaybe)
+                    if (!cfgMaybe) {
+                      toast.error("Invalid workflow configuration")
+                      return
+                    }
+                    const cfg = await loadFromDSLClientDisplay(cfgMaybe)
                     await runAll(cfg)
                   }}
                   disabled={!cases.length}
@@ -389,8 +393,11 @@ export default function EditModeSelector({
                   const json = exportToJSON()
                   const parsed = JSON.parse(json)
                   const cfgMaybe = toWorkflowConfig(parsed)
-                  if (!cfgMaybe) return alert("Invalid workflow config")
-                  const cfg = await loadFromDSLClient(cfgMaybe)
+                  if (!cfgMaybe) {
+                    toast.error("Invalid workflow configuration")
+                    return
+                  }
+                  const cfg = await loadFromDSLClientDisplay(cfgMaybe)
                   await runOne(cfg, row)
                 }}
               />

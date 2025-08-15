@@ -13,11 +13,7 @@ import {
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
-import {
-  ACTIVE_MCP_TOOL_NAMES,
-  type CodeToolName,
-  type MCPToolName,
-} from "@core/tools/tool.types"
+// Unused tool imports removed
 
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
@@ -31,10 +27,10 @@ function WorkflowNode({
   data: WorkflowNodeData
   children?: React.ReactNode
 }) {
-  const setPromptDialogOpen = (_: boolean) => {}
+  const _setPromptDialogOpen = (_: boolean) => {}
   const openNodeDetails = useAppStore((state) => state.openNodeDetails)
-  const updateNode = useAppStore((state) => state.updateNode)
-  const [isToolSelectorOpen, setIsToolSelectorOpen] = useState(false)
+  const _updateNode = useAppStore((state) => state.updateNode)
+  const [_isToolSelectorOpen, _setIsToolSelectorOpen] = useState(false)
 
   const onRunClick = useCallback(
     (e: React.MouseEvent) => {
@@ -43,7 +39,7 @@ function WorkflowNode({
       // Optionally, we could pre-fill a startNodeId here.
       // runner removed
     },
-    [setPromptDialogOpen]
+    []
   )
 
   // check if this is a start or end node by type
@@ -58,42 +54,18 @@ function WorkflowNode({
 
   // Node ID is edited in the Node Details dialog; inline editing removed
 
-  const handleToolSelect = useCallback(
-    (toolName: string) => {
-      const currentMcpTools = data?.mcpTools || []
-      const currentCodeTools = data?.codeTools || []
-
-      // check if tool is already added
-      if (
-        currentMcpTools.includes(toolName as MCPToolName) ||
-        currentCodeTools.includes(toolName as CodeToolName)
-      ) {
-        return
-      }
-
-      // determine if it's an MCP tool or code tool and add to appropriate array
-      const isMcpTool = ACTIVE_MCP_TOOL_NAMES.includes(toolName as MCPToolName)
-      if (isMcpTool) {
-        updateNode(data.nodeId, {
-          mcpTools: [...currentMcpTools, toolName as MCPToolName],
-        })
-      } else {
-        updateNode(data.nodeId, {
-          codeTools: [...currentCodeTools, toolName as CodeToolName],
-        })
-      }
-
-      setIsToolSelectorOpen(false)
+  const _handleToolSelect = useCallback(
+    (_toolName: string) => {
+      // Functionality removed
     },
-    [data?.mcpTools, data?.codeTools, data.nodeId, updateNode]
+    []
   )
 
-  const onAddToolClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    setIsToolSelectorOpen(true)
+  const _onAddToolClick = useCallback((_e: React.MouseEvent) => {
+    // Functionality removed
   }, [])
 
-  const IconComponent = data?.icon ? iconMapping[data.icon] : undefined
+  const _IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
   // derive a clean, human-readable model name (Stripe-like chip)
   const displayModelName = (() => {
@@ -106,12 +78,12 @@ function WorkflowNode({
       .join(" ")
   })()
 
-  const totalTools =
+  const _totalTools =
     (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
-  const connectionCount = data?.handOffs?.length || 0
+  const _connectionCount = data?.handOffs?.length || 0
 
   const allTools = [...(data?.mcpTools || []), ...(data?.codeTools || [])]
-  const visibleTools = allTools.slice(0, 3)
+  const _visibleTools = allTools.slice(0, 3)
   const hiddenTools = allTools.slice(3)
 
   return (

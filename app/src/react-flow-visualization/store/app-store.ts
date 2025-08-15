@@ -10,7 +10,7 @@ import {
   XYPosition,
 } from "@xyflow/react"
 import { create } from "zustand"
-import { subscribeWithSelector } from "zustand/middleware"
+import { subscribeWithSelector, persist, createJSONStorage } from "zustand/middleware"
 
 import { setColorModeCookie } from "@/react-flow-visualization/components/actions/cookies"
 import {
@@ -25,7 +25,6 @@ import nodesConfig, {
 } from "@/react-flow-visualization/components/nodes"
 import { toFrontendWorkflowConfig } from "@/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/react-flow-visualization/store/edge-validation"
-import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
@@ -130,7 +129,7 @@ export const defaultState: AppState = {
 }
 
 export const createAppStore = (initialState: AppState = defaultState) => {
-  const store = create<AppStore>()(
+  const store = create<AppStore>()(persist(
     subscribeWithSelector((set, get) => ({
       ...initialState,
 
@@ -599,21 +598,41 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const workflowJSON = get().exportToJSON()
           const workflow = JSON.parse(workflowJSON)
 
-          saveWorkflowVersion({
-            dsl: workflow,
-            commitMessage: isRename
-              ? `Renamed node ${nodeId} -> ${updates.nodeId}`
-              : `Updated node ${nodeId}`,
-            workflowId,
-            iterationBudget: 50,
-            timeBudgetSeconds: 3600,
+          // Use API route instead of server action
+          fetch("/api/workflow/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              dsl: workflow,
+              commitMessage: isRename
+                ? `Renamed node ${nodeId} -> ${updates.nodeId}`
+                : `Updated node ${nodeId}`,
+              workflowId,
+              iterationBudget: 50,
+              timeBudgetSeconds: 3600,
+            }),
           }).catch((error) => {
             console.error("Failed to save node update:", error)
           })
         }
       },
-    }))
-  )
+    })),
+    {
+      name: "workflow-editor-state",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        // Only persist the essential workflow data
+        nodes: state.nodes,
+        edges: state.edges,
+        workflowJSON: state.workflowJSON,
+        currentWorkflowId: state.currentWorkflowId,
+        layout: state.layout,
+        colorMode: state.colorMode,
+      }),
+    }
+  ))
 
   store.subscribe(
     (state) => state.colorMode,

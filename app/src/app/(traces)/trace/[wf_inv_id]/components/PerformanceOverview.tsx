@@ -28,7 +28,7 @@ export default function PerformanceOverview({
   workflow,
   workflowVersion,
   performanceMetrics,
-  wf_inv_id,
+  wf_inv_id: _wf_inv_id,
 }: PerformanceOverviewProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 

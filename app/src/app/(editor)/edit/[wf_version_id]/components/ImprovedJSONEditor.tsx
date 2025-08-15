@@ -3,7 +3,7 @@
 import CodeMirror from "@uiw/react-codemirror"
 import { json } from "@codemirror/lang-json"
 import { EditorView } from "@codemirror/view"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { linter, Diagnostic } from "@codemirror/lint"
 
 interface ImprovedJSONEditorProps {
