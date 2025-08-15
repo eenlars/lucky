@@ -1,6 +1,7 @@
 import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { feedbackPrompt } from "@core/prompts/feedback.p"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { rcaPrompt } from "@core/prompts/rca"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
@@ -37,16 +38,21 @@ Workflow Final Output:
 ${outputStr}
 </output>
 
-Evaluate how well the workflow's final output matches the expected ground truth solution, considering the evaluation criteria above.
+Evaluate how well the workflow's final output matches the expected ground truth solution, 
+considering the evaluation criteria above.
 if not good, you need to give examples why it's not good.
 
-VERY IMPORTANT!!! : the feedback may NEVER include the answer, or parts of the answer to the question. if it does, it will be rejected.
-You may include the original question in the feedback, but you have to note that this is a general question for this workflow, and it may not generalize for the netire workflow.
+VERY IMPORTANT!!! : 
+- the feedback may NEVER include the answer
+- it may never include parts of the answer to the question. if it does, it will be rejected.
+- You may include the original question in the feedback, 
+  but you have to note that this is a general question for this workflow, 
+  and it may not generalize for the entire workflow.
 
 keep the feedback short and dense with information.
+
+${GENERALIZATION_LIMITS}
 `
-  console.log("evaluation", evaluation)
-  console.log("outputStr", outputStr)
   const response = await sendAI({
     messages: [
       { role: "system", content: llmify(systemPrompt) },

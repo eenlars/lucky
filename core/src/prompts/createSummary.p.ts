@@ -1,3 +1,4 @@
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { truncater } from "@core/utils/common/llmify"
 
 export const CreateSummaryPrompt = {
@@ -71,6 +72,7 @@ for limited results:
 - keep it concise but informative
 - if there was an error, mention the error type/message
 - english only
+${GENERALIZATION_LIMITS}
 </rules>
     `
   },

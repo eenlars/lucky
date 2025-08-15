@@ -1,6 +1,7 @@
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { truncater } from "@core/utils/common/llmify"
 
-const averageFeedback = (feedbacksString: string) => `
+const groupFeedback = (feedbacksString: string) => `
 You are an expert feedback analyst tasked with identifying patterns across multiple workflow paths.
 
 <context>
@@ -52,4 +53,6 @@ Structure your response as:
 </output_format>
 
 Focus on practical solutions that reduce complexity while maintaining robustness.
+
+${GENERALIZATION_LIMITS}
 `

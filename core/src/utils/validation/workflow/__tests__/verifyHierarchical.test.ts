@@ -5,12 +5,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 vi.mock("@runtime/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
+    verification: {
+      allowCycles: false,
+    },
   },
 }))
 
 import { getDefaultModels } from "@runtime/settings/models"
 import { CONFIG } from "@runtime/settings/constants"
-import { verifyHierarchicalStructure } from "../verifyHierarchical"
+import { verifyHierarchicalStructure, isOrchestrator, getNodeRole } from "../verifyHierarchical"
+import { verifyNoCycles } from "../verifyDirectedGraph"
+import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
 
 describe("verifyHierarchicalStructure", () => {
   // TODO: additional test coverage needed:
@@ -115,5 +120,357 @@ describe("verifyHierarchicalStructure", () => {
     expect(result).toHaveLength(1)
     expect(result[0]).toContain("invalid handoff to non-existent node")
     expect(result[0]).toContain("non-existent-node")
+  })
+
+  // Test for circular dependencies
+  it("should detect circular dependencies in workflow", () => {
+    // Ensure cycles are not allowed for this test
+    vi.mocked(CONFIG).verification.allowCycles = false
+    const circularWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "first node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "second node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node3"],
+        },
+        {
+          nodeId: "node3",
+          description: "third node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node1"], // Creates cycle
+        },
+      ],
+    }
+
+    const result = verifyNoCycles(circularWorkflow)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toContain("contains cycles")
+  })
+
+  // Test for self-referential nodes
+  it("should detect self-referential nodes", () => {
+    // Ensure cycles are not allowed for this test
+    vi.mocked(CONFIG).verification.allowCycles = false
+    const selfRefWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "self-referencing node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node1", "end"], // Self-reference
+        },
+      ],
+    }
+
+    const result = verifyNoCycles(selfRefWorkflow)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toContain("contains cycles")
+  })
+
+  // Test for orphaned nodes
+  it("should detect orphaned nodes not reachable from entry", async () => {
+    const orphanedWorkflow: WorkflowConfig = {
+      entryNodeId: "orchestrator",
+      nodes: [
+        {
+          nodeId: "orchestrator",
+          description: "orchestrator",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["worker1", "end"],
+        },
+        {
+          nodeId: "worker1",
+          description: "connected worker",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+        {
+          nodeId: "orphaned-node",
+          description: "orphaned worker",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const result = await everyNodeIsConnectedToStartNode(orphanedWorkflow)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toContain("orphaned-node")
+    expect(result[0]).toContain("not reachable")
+  })
+
+  // Test for multiple orchestrators (only entry should be orchestrator)
+  it("should identify correct orchestrator in hierarchical mode", async () => {
+    vi.mocked(CONFIG).coordinationType = "hierarchical"
+
+    const workflow: WorkflowConfig = {
+      entryNodeId: "main-orchestrator",
+      nodes: [
+        {
+          nodeId: "main-orchestrator",
+          description: "orchestrator",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["worker1", "worker2"],
+        },
+        {
+          nodeId: "worker1",
+          description: "worker",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+        {
+          nodeId: "worker2",
+          description: "worker",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    // Only entry node should be orchestrator
+    expect(isOrchestrator("main-orchestrator", workflow)).toBe(true)
+    expect(isOrchestrator("worker1", workflow)).toBe(false)
+    expect(isOrchestrator("worker2", workflow)).toBe(false)
+
+    // Check node roles
+    expect(getNodeRole("main-orchestrator", workflow)).toBe("orchestrator")
+    expect(getNodeRole("worker1", workflow)).toBe("worker")
+    expect(getNodeRole("worker2", workflow)).toBe("worker")
+  })
+
+  // Test for complex branching hierarchies
+  it("should handle complex branching hierarchies", async () => {
+    vi.mocked(CONFIG).coordinationType = "hierarchical"
+
+    const complexWorkflow: WorkflowConfig = {
+      entryNodeId: "orchestrator",
+      nodes: [
+        {
+          nodeId: "orchestrator",
+          description: "main orchestrator",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["branch1-worker1", "branch2-worker1"],
+        },
+        {
+          nodeId: "branch1-worker1",
+          description: "branch 1 start",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["branch1-worker2"],
+        },
+        {
+          nodeId: "branch1-worker2",
+          description: "branch 1 end",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["merger"],
+        },
+        {
+          nodeId: "branch2-worker1",
+          description: "branch 2 start",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["branch2-worker2"],
+        },
+        {
+          nodeId: "branch2-worker2",
+          description: "branch 2 end",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["merger"],
+        },
+        {
+          nodeId: "merger",
+          description: "merge branches",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const result = await verifyHierarchicalStructure(complexWorkflow)
+    expect(result).toEqual([]) // Should be valid
+
+    // Verify all nodes are reachable
+    const connectionResult = await everyNodeIsConnectedToStartNode(complexWorkflow)
+    expect(connectionResult).toEqual([])
+
+    // Verify path to end exists
+    const pathToEnd = await startNodeIsConnectedToEndNode(complexWorkflow)
+    expect(pathToEnd).toEqual([])
+  })
+
+  // Test for worker nodes with multiple parents (diamond pattern)
+  it("should handle diamond pattern (multiple parents)", async () => {
+    const diamondWorkflow: WorkflowConfig = {
+      entryNodeId: "orchestrator",
+      nodes: [
+        {
+          nodeId: "orchestrator",
+          description: "orchestrator",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["workerA", "workerB"],
+        },
+        {
+          nodeId: "workerA",
+          description: "worker A",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["workerC"],
+        },
+        {
+          nodeId: "workerB",
+          description: "worker B",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["workerC"],
+        },
+        {
+          nodeId: "workerC",
+          description: "worker C (multiple parents)",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    // Should handle diamond pattern correctly
+    const hierarchicalResult = await verifyHierarchicalStructure(diamondWorkflow)
+    expect(hierarchicalResult).toEqual([])
+
+    // No cycles in diamond pattern
+    const cycleResult = verifyNoCycles(diamondWorkflow)
+    expect(cycleResult).toEqual([])
+  })
+
+  // Test for deeply nested hierarchies performance
+  it("should handle deeply nested hierarchies efficiently", async () => {
+    const depth = 20
+    const nodes = []
+    
+    // Create a deep chain of nodes
+    for (let i = 0; i < depth; i++) {
+      nodes.push({
+        nodeId: `node${i}`,
+        description: i === 0 ? "orchestrator" : `worker level ${i}`,
+        systemPrompt: "test",
+        modelName: getDefaultModels().default,
+        mcpTools: [],
+        codeTools: [],
+        handOffs: i < depth - 1 ? [`node${i + 1}`] : ["end"],
+      })
+    }
+
+    const deepWorkflow: WorkflowConfig = {
+      entryNodeId: "node0",
+      nodes,
+    }
+
+    // Measure performance
+    const startTime = performance.now()
+    const cycleResult = verifyNoCycles(deepWorkflow)
+    const connectionResult = await everyNodeIsConnectedToStartNode(deepWorkflow)
+    const endTime = performance.now()
+
+    expect(cycleResult).toEqual([])
+    expect(connectionResult).toEqual([])
+    
+    // Should complete quickly even with deep nesting
+    expect(endTime - startTime).toBeLessThan(100) // 100ms threshold
+  })
+
+  // Test when CONFIG allows cycles
+  it("should skip cycle validation when allowCycles is true", () => {
+    vi.mocked(CONFIG).verification.allowCycles = true
+
+    const circularWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().default,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node1"], // Cycle
+        },
+      ],
+    }
+
+    const result = verifyNoCycles(circularWorkflow)
+    expect(result).toEqual([]) // Should allow cycles when configured
   })
 })

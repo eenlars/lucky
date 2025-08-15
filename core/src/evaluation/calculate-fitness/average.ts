@@ -34,7 +34,7 @@ export const calculateAverageFitness = (
   }
 }
 
-export const calculateAverageFeedback = async (
+export const calculateFeedbackGrouped = async (
   feedbacks: string[]
 ): Promise<RS<string>> => {
   guard(feedbacks, "No feedbacks to average")
@@ -52,17 +52,16 @@ export const calculateAverageFeedback = async (
     .map((feedback, index) => `Feedback ${index + 1}:\n${feedback}`)
     .join("\n\n")
 
-  // Use AI to synthesize common themes from multiple feedbacks
+  // Use AI to synthesize the feedback.
   const prompt = `
   Analyze the following feedback entries and synthesize them:
 
 ${truncater(feedbacksString, 12000)}
 
 Please provide a synthesized feedback that:
-- Identifies the most common issues or patterns
-- Combines recurring themes and recommendations
-- Maintains the analytical depth of the original feedbacks
-- Provides actionable insights based on the collective feedback
+- Groups issues and patterns into categories
+- Combines duplicate issues and adds a number of occurrences
+- Maintains the analytical depth, does not lose information
 `
 
   const result = await sendAI({

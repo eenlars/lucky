@@ -21,6 +21,25 @@ vi.mock("@core/utils/env.mjs", () => ({
 import os from "os"
 import path from "path"
 
+// Mock sendAI to avoid real API calls
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
+  sendAI: vi.fn()
+}))
+
+// Mock processResponseVercel to return proper handoff
+vi.mock("@core/messages/api/processResponse", () => ({
+  processResponseVercel: vi.fn().mockReturnValue({
+    type: "text",
+    text: "Test response: I received your input.",
+    handoff: "end"
+  }),
+  getResponseContent: vi.fn().mockImplementation((response) => {
+    if (response?.text) return response.text
+    if (response?.type === "text" && response?.text) return response.text
+    return "Test response: I received your input."
+  })
+}))
+
 // Mock runtime constants - comprehensive CONFIG
 vi.mock("@runtime/settings/constants", () => {
   // compute temp paths inside the factory to avoid hoist issues
@@ -41,6 +60,7 @@ vi.mock("@runtime/settings/constants", () => {
           GP: false,
           Database: false,
           Summary: false,
+          InvocationPipeline: false,
         },
       },
       workflow: {
@@ -62,6 +82,7 @@ vi.mock("@runtime/settings/constants", () => {
         autoSelectTools: true,
         usePrepareStepStrategy: false,
         experimentalMultiStepLoop: true,
+        experimentalMultiStepLoopMaxRounds: 5,
         showParameterSchemas: true,
       },
       models: {
@@ -180,19 +201,55 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi, beforeEach } from "vitest"
 
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeNode } from "../invokeNode"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 describe("invokeNode", () => {
-  // TODO: this test makes real AI calls and should be marked as integration test.
-  // it also has very weak assertions - only checking that output exists and is
-  // non-empty string, not verifying the quality of response or that the node
-  // actually followed the system prompt. console.log suggests debugging output
-  // left in test.
-  it("should invoke a simple node and return result", async () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    
+    // Configure default mock behavior
+    vi.mocked(sendAI).mockImplementation((req) => {
+      // For structured handoff calls
+      if (req.mode === "structured") {
+        return Promise.resolve({
+          success: true,
+          data: {
+            handoff: "end",
+            reason: "Task completed",
+            error: null,
+            hasError: false,
+            handoffContext: "Task completed successfully"
+          },
+          error: null,
+          usdCost: 0.001
+        })
+      }
+      
+      // For text generation calls
+      return Promise.resolve({
+        success: true,
+        data: {
+          text: "Test response: I received your input.",
+          toolCalls: [],
+          finishReason: "stop",
+          usage: {
+            promptTokens: 100,
+            completionTokens: 20,
+            totalTokens: 120
+          }
+        },
+        error: null,
+        usdCost: 0.002
+      })
+    })
+  })
+
+  it("should invoke a simple node and return mocked result", async () => {
     // Create a minimal node configuration
     const nodeConfig: WorkflowNodeConfig = {
       nodeId: "test-node",
@@ -219,8 +276,135 @@ describe("invokeNode", () => {
     expect(result.nodeInvocationId).toBeDefined()
     expect(result.nodeInvocationFinalOutput).toBeDefined()
     expect(typeof result.nodeInvocationFinalOutput).toBe("string")
-    expect(result.nodeInvocationFinalOutput.length).toBeGreaterThan(0)
+    expect(result.nodeInvocationFinalOutput).toBe("Test response: I received your input.")
+    
+    // Verify node followed the handoffs
+    expect(result.nextIds).toEqual(["end"])
+    
+    // Verify cost tracking
+    expect(result.usdCost).toBeDefined()
+    expect(result.usdCost).toBeGreaterThanOrEqual(0)
+    
+    // Verify agent steps were recorded
+    expect(result.agentSteps).toBeDefined()
+    expect(Array.isArray(result.agentSteps)).toBe(true)
+  })
 
-    console.log("Node output:", result.nodeInvocationFinalOutput)
-  }, 30000) // 30 second timeout for AI calls
+  it("should handle node with tools", async () => {
+    // Override mock for this specific test to return next-node handoff
+    vi.mocked(sendAI).mockImplementation((req) => {
+      if (req.mode === "structured") {
+        return Promise.resolve({
+          success: true,
+          data: {
+            handoff: "next-node",
+            reason: "Need to process further",
+            error: null,
+            hasError: false,
+            handoffContext: "Process with next node"
+          },
+          error: null,
+          usdCost: 0.001
+        })
+      }
+      
+      return Promise.resolve({
+        success: true,
+        data: {
+          text: "Test response: I received your input.",
+          toolCalls: [],
+          finishReason: "stop",
+          usage: {
+            promptTokens: 100,
+            completionTokens: 20,
+            totalTokens: 120
+          }
+        },
+        error: null,
+        usdCost: 0.002
+      })
+    })
+    
+    const nodeConfig: WorkflowNodeConfig = {
+      nodeId: "tool-node",
+      description: "A node with tools",
+      systemPrompt: "You have access to tools. Use them if needed.",
+      modelName: getDefaultModels().nano,
+      mcpTools: [],
+      codeTools: ["save", "readFile"],
+      handOffs: ["next-node", "end"],
+      memory: {},
+    }
+
+    const result = await invokeNode({
+      nodeConfig,
+      prompt: "Process this with tools",
+      handOffs: ["next-node", "end"],
+      skipDatabasePersistence: true,
+    })
+
+    expect(result.nodeInvocationId).toBeDefined()
+    expect(result.nodeInvocationFinalOutput).toBeDefined()
+    expect(result.nextIds).toEqual(["next-node"])
+  })
+
+  it("should handle node with memory", async () => {
+    const nodeConfig: WorkflowNodeConfig = {
+      nodeId: "memory-node",
+      description: "A node with initial memory",
+      systemPrompt: "You have memory from previous runs.",
+      modelName: getDefaultModels().nano,
+      mcpTools: [],
+      codeTools: [],
+      handOffs: ["end"],
+      memory: {
+        previousResult: "cached data",
+        counter: "5"
+      },
+    }
+
+    const result = await invokeNode({
+      nodeConfig,
+      prompt: "Use your memory",
+      skipDatabasePersistence: true,
+    })
+
+    expect(result.nodeInvocationId).toBeDefined()
+    expect(result.nodeInvocationFinalOutput).toBeDefined()
+    // Memory updates might be returned
+    if (result.updatedMemory) {
+      expect(typeof result.updatedMemory).toBe("object")
+    }
+  })
+
+  it("should handle custom workflow context", async () => {
+    const nodeConfig: WorkflowNodeConfig = {
+      nodeId: "context-node",
+      description: "A node with workflow context",
+      systemPrompt: "Process based on workflow goal.",
+      modelName: getDefaultModels().nano,
+      mcpTools: [],
+      codeTools: [],
+      handOffs: ["analyzer", "summarizer", "end"],
+      memory: {},
+    }
+
+    const result = await invokeNode({
+      nodeConfig,
+      prompt: "Analyze this data",
+      mainWorkflowGoal: "Extract key insights from customer feedback",
+      expectedOutputType: {
+        type: "json",
+        schema: {
+          insights: "string[]",
+          sentiment: "positive | negative | neutral"
+        }
+      },
+      skipDatabasePersistence: true,
+    })
+
+    expect(result.nodeInvocationId).toBeDefined()
+    expect(result.nodeInvocationFinalOutput).toBeDefined()
+    expect(result.nextIds.length).toBeGreaterThan(0)
+  })
 })

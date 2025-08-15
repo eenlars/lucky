@@ -8,6 +8,7 @@ import {
   normalizeTime,
 } from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -64,6 +65,8 @@ ${eutputSchemaStr ? `expected output schema: ${eutputSchemaStr}` : ""}
 
 Evaluate how well the workflow's final output matches the expected ground truth solution, considering the evaluation criteria above.
 if not good, you need to give examples why it's not good.
+
+${GENERALIZATION_LIMITS}
 `
   const response = await sendAI({
     messages: [

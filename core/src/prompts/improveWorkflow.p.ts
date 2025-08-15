@@ -1,5 +1,6 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { workflowToStringFromConfig } from "@core/workflow/actions/generate/workflowToString"
@@ -27,7 +28,10 @@ IMPORTANT PRINCIPLES:
 - Only make changes that directly address identified issues
 - Maintain all existing functionality while improving performance
 - Always try to find improvements, even if the current solution seems good. Consider alternative approaches.
-- ALWAYS preserve the memory field from each node (if it exists) when creating new configs`
+- ALWAYS preserve the memory field from each node (if it exists) when creating new configs
+
+${GENERALIZATION_LIMITS}
+`
 
     const userPrompt = `Analyze this workflow and decide if improvements are needed.
 
@@ -81,7 +85,10 @@ VARIATION HINTS:
 - Try using different models for different tasks.`
 
     return [
-      { role: "system" as const, content: systemPrompt },
+      {
+        role: "system" as const,
+        content: systemPrompt,
+      },
       { role: "user" as const, content: userPrompt },
     ]
   }
@@ -110,6 +117,8 @@ IMPORTANT PRINCIPLES:
 - Consider node relationships and dependencies
 - Only suggest changes that directly address identified issues
 - Preserve workflow functionality while improving performance`
+
+    const generalizationDirective = "\n\n" + GENERALIZATION_LIMITS
 
     const userPrompt = `Analyze this workflow and decide what single node operation would most improve it.
 
@@ -155,7 +164,10 @@ explain in detail which connections need to be made.
 `
 
     return [
-      { role: "system" as const, content: systemPrompt },
+      {
+        role: "system" as const,
+        content: systemPrompt + generalizationDirective,
+      },
       { role: "user" as const, content: userPrompt },
     ]
   }
@@ -208,6 +220,8 @@ ${
     : "NOTE: The structural analysis suggests this pattern may not be beneficial for this workflow."
 }`
 
+    const generalizationDirective = "\n\n" + GENERALIZATION_LIMITS
+
     const userPrompt = `Analyze this workflow and generate an improved WorkflowConfig that implements better structural patterns, or return null if no structural improvements are needed.
 
 CURRENT WORKFLOW CONFIG (JSON):
@@ -254,6 +268,6 @@ Focus on structural transformation that would have the biggest positive impact. 
 
 Explain how the new structure addresses identified performance issues and implements the structural recommendations.`
 
-    return systemPrompt + "\n\n" + userPrompt
+    return systemPrompt + generalizationDirective + "\n\n" + userPrompt
   }
 }

@@ -1,20 +1,20 @@
 /**
  * Batch execution and evaluation module for workflows.
- * 
+ *
  * Handles running workflows with multiple input/output cases in parallel batches,
  * evaluating results, and aggregating fitness scores and feedback.
- * 
+ *
  * Key functions:
  * - runAllIO: Execute workflow on all input cases with batching
  * - evaluateRuns: Evaluate execution results against expected outputs
  * - aggregateResults: Combine evaluation results into aggregate fitness
- * 
+ *
  * @module workflow/runner/runAllInputs
  */
 
 import {
-  calculateAverageFeedback,
   calculateAverageFitness,
+  calculateFeedbackGrouped,
 } from "@core/evaluation/calculate-fitness/average"
 import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
 import { isNir } from "@core/utils/common/isNir"
@@ -39,10 +39,10 @@ const verbose = false
 
 /**
  * Executes a workflow on all input/output test cases in parallel batches.
- * 
+ *
  * @param workflow - Workflow instance to execute
  * @returns Result containing array of run results for each IO case
- * 
+ *
  * @remarks
  * - Processes IO cases in batches of CONFIG.limits.maxConcurrentWorkflows
  * - Creates invocations for tracking each execution
@@ -139,13 +139,13 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
 
 /**
  * Evaluates workflow execution results against expected outputs.
- * 
+ *
  * @param workflow - Workflow instance that was executed
  * @param runResults - Results from runAllIO execution
  * @returns Array of evaluation results with fitness scores
- * 
+ *
  * @throws Error if any individual evaluation fails
- * 
+ *
  * @remarks
  * Maps each run result to its corresponding expected output
  * and calculates fitness based on accuracy and performance.
@@ -179,16 +179,16 @@ export async function evaluateRuns(
 
 /**
  * Aggregates multiple evaluation results into a single fitness score.
- * 
+ *
  * @param evals - Array of individual evaluation results
  * @returns Aggregate result containing:
  *   - results: Original evaluation results
  *   - totalCost: Sum of all execution costs
  *   - averageFitness: Weighted average fitness score
  *   - averageFeedback: Combined feedback (if enabled)
- * 
+ *
  * @throws Error if no evaluation results provided
- * 
+ *
  * @remarks
  * Uses calculateAverageFitness for weighted averaging.
  * Feedback aggregation is controlled by CONFIG.improvement.flags.operatorsWithFeedback.
@@ -210,7 +210,7 @@ export async function aggregateResults(
   console.log(evalFeedback, evals)
   if (CONFIG.improvement.flags.operatorsWithFeedback) {
     const { success, data, error } =
-      await calculateAverageFeedback(evalFeedback)
+      await calculateFeedbackGrouped(evalFeedback)
     if (!success) {
       lgg.error(`Failed to calculate average feedback: ${error}`)
       return R.error(error, 0)

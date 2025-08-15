@@ -1,6 +1,6 @@
 /**
  * Tool mutation operations for evolving node capabilities.
- * 
+ *
  * This module provides mutations that modify the tools available to workflow
  * nodes. Tools are the primary way nodes interact with external systems and
  * perform actions, making tool mutations critical for capability evolution.
@@ -8,6 +8,7 @@
 
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,
@@ -26,11 +27,11 @@ const OPERATORS_WITH_FEEDBACK = CONFIG.improvement.flags.operatorsWithFeedback
 
 /**
  * Mutates tool assignments across workflow nodes.
- * 
+ *
  * Uses AI to intelligently decide how to modify tool availability:
  * adding new capabilities, removing redundant tools, or redistributing
  * tools between nodes for better task specialization.
- * 
+ *
  * @remarks
  * Tool mutations enable workflows to evolve their interaction patterns
  * with external systems. This includes both MCP (Model Context Protocol)
@@ -39,12 +40,12 @@ const OPERATORS_WITH_FEEDBACK = CONFIG.improvement.flags.operatorsWithFeedback
 export class ToolMutation implements MutationOperator {
   /**
    * Executes tool mutation on the workflow configuration.
-   * 
+   *
    * @param mutatedConfig - The workflow configuration to mutate (modified in-place)
    * @param parent - Parent genome providing context and feedback
    * @param _intensity - Mutation intensity (unused but required by interface)
    * @returns The cost in USD of the AI call for mutation decisions
-   * 
+   *
    * @remarks
    * - Uses AI to decide mutation action: add, remove, or move tools
    * - Can target specific nodes or apply changes globally
@@ -90,26 +91,28 @@ export class ToolMutation implements MutationOperator {
             role: "user",
             content: `You are going to change a tool for the following workflow: ${workflowDescription}
 
-${
-  OPERATORS_WITH_FEEDBACK
-    ? ` Based on the feedback: ${feedback || "No specific feedback"}`
-    : ""
-}
+            ${
+              OPERATORS_WITH_FEEDBACK
+                ? ` Based on the feedback: ${feedback || "No specific feedback"}`
+                : ""
+            }
 
-You can do one of the following:
-- remove a tool from one node
-- remove a tool for all nodes
-- add a tool for all nodes
-- add a tool for one node
-- move a tool from one node to another node
+            You can do one of the following:
+            - remove a tool from one node
+            - remove a tool for all nodes
+            - add a tool for all nodes
+            - add a tool for one node
+            - move a tool from one node to another node
 
-What are you choosing? It must make logical sense for that node to use it, but it can be a bit random if this number is > 3: ${EvolutionUtils.poisson(2)} // adds controlled randomness 
+            What are you choosing? It must make logical sense for that node to use it, but it can be a bit random if this number is > 3: ${EvolutionUtils.poisson(2)} // adds controlled randomness 
 
-the goal of the workflow is : ${parent.getGoal()}
+            the goal of the workflow is : ${parent.getGoal()}
 
-If choosing new tools, these are the available tools you can choose from: ${allAvailableTools.join(", ")}
+            ${GENERALIZATION_LIMITS}
 
-Your output should include the tool(s), node id(s), and the action.`,
+            If choosing new tools, these are the available tools you can choose from: ${allAvailableTools.join(", ")}
+
+            Your output should include the tool(s), node id(s), and the action.`,
           },
         ],
         mode: "structured",
@@ -162,7 +165,7 @@ Your output should include the tool(s), node id(s), and the action.`,
 
   /**
    * Applies the tool mutation to the workflow configuration.
-   * 
+   *
    * @param mutatedConfig - Workflow to modify
    * @param action - Type of mutation: add, remove, or move
    * @param tool - Tool name to mutate
@@ -172,7 +175,7 @@ Your output should include the tool(s), node id(s), and the action.`,
    * @param allNodes - Whether to apply to all nodes
    * @param isMCPTool - Whether tool is an MCP tool
    * @param isCodeTool - Whether tool is a code tool
-   * 
+   *
    * @remarks
    * Modifies the workflow configuration in-place. Handles both MCP and code
    * tools appropriately, ensuring tools aren't duplicated when added and
