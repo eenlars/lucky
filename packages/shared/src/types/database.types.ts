@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      DatasetRecord: {
+        Row: {
+          created_at: string
+          dataset_record_id: string
+          ground_truth: Json | null
+          output_schema_json: Json | null
+          rubric: Json | null
+          workflow_input: string | null
+        }
+        Insert: {
+          created_at?: string
+          dataset_record_id?: string
+          ground_truth?: Json | null
+          output_schema_json?: Json | null
+          rubric?: Json | null
+          workflow_input?: string | null
+        }
+        Update: {
+          created_at?: string
+          dataset_record_id?: string
+          ground_truth?: Json | null
+          output_schema_json?: Json | null
+          rubric?: Json | null
+          workflow_input?: string | null
+        }
+        Relationships: []
+      }
       EvolutionRun: {
         Row: {
           config: Json

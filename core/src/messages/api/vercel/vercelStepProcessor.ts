@@ -1,6 +1,7 @@
 import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
+import Tools from "@core/tools/code/output.types"
 import { isNir } from "@core/utils/common/isNir"
 import { asArray } from "@core/utils/common/utils"
 import type { ModelName } from "@core/utils/spending/models.types"
@@ -43,6 +44,10 @@ export const processStepsV2 = <T extends ToolSet>(
     return { usdCost: 0, agentSteps: [] }
 
   /* ---------- 1. Map every step to the internal shape ---------- */
+  const unwrapToolResponse = (value: unknown): unknown =>
+    Tools.isCodeToolResult(value)
+      ? (value as { output: unknown }).output
+      : value
   const perStep = (steps as StepResult<T>[]).map((rawStep) => {
     const step = rawStep ?? {}
 
@@ -62,7 +67,7 @@ export const processStepsV2 = <T extends ToolSet>(
       return {
         toolName: c?.toolName ?? "",
         toolArgs: c?.args ?? {},
-        toolResponse: finalResponse,
+        toolResponse: unwrapToolResponse(finalResponse),
       }
     })
 
