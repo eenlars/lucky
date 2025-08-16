@@ -9,7 +9,7 @@ We have a workflow orchestrator handling diverse edge cases. Your goal is to ana
 </context>
 
 <feedback_entries>
-${truncater(feedbacksString, 12000)}
+${truncater(JSON.stringify(feedbacksString), 12000)}
 </feedback_entries>
 
 <task>

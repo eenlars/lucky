@@ -62,6 +62,7 @@ import { displayResults } from "@core/utils/logging/displayResults"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { hashWorkflow } from "@core/workflow/schema/hash"
 import {
   loadSingleWorkflow,
   persistWorkflow,
@@ -204,7 +205,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     guard(setup, "Setup not found")
 
     let totalCost = 0
-    const parent1Id: string | undefined = undefined
+    let parent1Id: string | undefined = undefined
     const parent2Id: string | undefined = undefined
     const results: IterativeResult["results"] = []
     const stats = { successful: 0, failed: 0, recovered: 0 }
@@ -240,19 +241,24 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             )
           }
 
+          // Create a unique workflow version per generation/iteration to capture lineage
+          const configHash = hashWorkflow(setup).substring(0, 8)
+          const runSuffix = runService.getRunId().slice(-6)
+          const iterationSuffix = String(
+            runService.getEvolutionContext().generationNumber
+          ).padStart(2, "0")
+          const wfVersionId = `wf_ver_${configHash}_${runSuffix}_${iterationSuffix}`
+
           const runner = Workflow.create({
             config: setup,
             evaluationInput: SELECTED_QUESTION,
             parent1Id,
             parent2Id,
-            evolutionContext: {
-              runId: runService.getRunId(),
-              generationId: runService.getCurrentGenerationId(),
-              generationNumber: iterationIndex + 1,
-            },
+            evolutionContext: runService.getEvolutionContext(),
             toolContext: SELECTED_QUESTION.outputSchema
               ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
               : undefined,
+            workflowVersionId: wfVersionId,
           })
 
           await runner.prepareWorkflow(
@@ -312,6 +318,9 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             `💾 Saved evolved configuration after iteration ${iteration}: ${targetFile}`
           )
 
+          // Chain lineage to next iteration
+          parent1Id = runner.getWorkflowVersionId()
+
           if (retry > 0) stats.recovered++
           stats.successful++
           return true
@@ -323,6 +332,25 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           lgg.error(
             `❌ Iteration ${iteration} attempt ${retry + 1} failed:`,
             error
+          )
+          // Persist detailed error to a file for retries
+          await lgg.logAndSave(
+            `iterative-retry-error-it${iteration}-try${retry + 1}.json`,
+            {
+              iteration,
+              attempt: retry + 1,
+              workflowVersionId: parent1Id,
+              runId: runService.getRunId(),
+              generationId: runService.getCurrentGenerationId(),
+              error:
+                error instanceof Error
+                  ? {
+                      name: error.name,
+                      message: error.message,
+                      stack: error.stack,
+                    }
+                  : String(error),
+            }
           )
         }
       }
@@ -349,6 +377,9 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       lgg.log(
         `\n🔄 Evolution Iteration ${i + 1}/${ITERATIVE_EVOLUTION_ITERATIONS}`
       )
+
+      // 1 iteration = 1 generation (create once per iteration, retries reuse this)
+      await runService.createNewGeneration()
 
       const success = await executeIteration(i)
       consecutiveFailures = success ? 0 : consecutiveFailures + 1

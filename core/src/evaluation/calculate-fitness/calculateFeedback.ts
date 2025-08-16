@@ -3,7 +3,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   singleFeedbackSystemPrompt,
   singleFeedbackUserPrompt,
-} from "@core/prompts/root-cause/singleFeedback.p"
+} from "@core/prompts/evaluator/feedback/singleFeedback.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"

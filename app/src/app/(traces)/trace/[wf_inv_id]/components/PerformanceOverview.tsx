@@ -1,5 +1,6 @@
 "use client"
 
+import { SmartContent } from "@/components/utils/SmartContent"
 import type { Tables } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
@@ -9,6 +10,11 @@ import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import remarkGfm from "remark-gfm"
 import { ExpectedOutputDialog } from "./ExpectedOutputDialog"
+
+interface WorkflowInvocationExtrasLegacy {
+  evaluation?: unknown
+  actualOutput?: unknown
+}
 
 interface PerformanceMetrics {
   totalDuration: number
@@ -31,6 +37,23 @@ export default function PerformanceOverview({
   wf_inv_id: _wf_inv_id,
 }: PerformanceOverviewProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpActExpanded, setIsExpActExpanded] = useState(true)
+
+  const toDisplayString = (value: unknown): string => {
+    if (typeof value === "string") return value
+    try {
+      return JSON.stringify(value, null, 2)
+    } catch {
+      return String(value)
+    }
+  }
+
+  const isLongContent = (value: unknown | undefined): boolean => {
+    if (value == null) return false
+    const text = toDisplayString(value)
+    const lineCount = text.split("\n").length
+    return text.length > 800 || lineCount > 20
+  }
 
   const isMarkdownContent = (content: string): boolean => {
     const markdownPatterns = [
@@ -53,124 +76,6 @@ export default function PerformanceOverview({
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}m ${remainingSeconds.toFixed(0)}s`
-  }
-
-  const _renderFitnessMetrics = () => {
-    if (!workflow.fitness) return null
-
-    let fitness: any
-
-    // Handle the case where fitness is a stringified JSON object
-    if (typeof workflow.fitness === "string") {
-      try {
-        fitness = JSONN.extract(workflow.fitness)
-      } catch {
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="bg-white p-4 rounded border border-green-200 bg-green-50">
-              <div className="flex flex-col">
-                <span className="font-medium text-green-700 text-sm">
-                  Performance Score
-                </span>
-                <span className="text-2xl font-bold text-green-600">
-                  {String(workflow.fitness)}
-                </span>
-              </div>
-            </div>
-          </div>
-        )
-      }
-    } else if (typeof workflow.fitness === "object") {
-      fitness = workflow.fitness
-    } else {
-      fitness = { score: workflow.fitness }
-    }
-
-    // Check if it's the new wrapped format with "data" key
-    if (fitness.data && typeof fitness.data === "object") {
-      fitness = fitness.data
-    }
-
-    const isExtendedFitness =
-      fitness.score !== undefined &&
-      (fitness.totalCostUsd !== undefined ||
-        fitness.totalTimeSeconds !== undefined ||
-        fitness.accuracy !== undefined)
-
-    if (isExtendedFitness) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-white p-4 rounded border border-green-200 bg-green-50">
-            <div className="flex flex-col">
-              <span className="font-medium text-green-700 text-sm">
-                Performance Score
-              </span>
-              <span className="text-2xl font-bold text-green-600">
-                {Math.round(fitness.score)}/100
-              </span>
-            </div>
-          </div>
-
-          {fitness.totalCostUsd !== undefined && (
-            <div className="bg-white p-3 rounded border">
-              <div className="flex flex-col">
-                <span className="font-medium text-gray-600 text-sm">Cost</span>
-                <span className="text-lg font-semibold">
-                  ${fitness.totalCostUsd.toFixed(6)}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {fitness.totalTimeSeconds !== undefined && (
-            <div className="bg-white p-3 rounded border">
-              <div className="flex flex-col">
-                <span className="font-medium text-gray-600 text-sm">
-                  Duration
-                </span>
-                <span className="text-lg font-semibold">
-                  {formatDuration(fitness.totalTimeSeconds)}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {fitness.accuracy !== undefined && (
-            <div className="bg-white p-3 rounded border">
-              <div className="flex flex-col">
-                <span className="font-medium text-gray-600 text-sm">
-                  Data Accuracy
-                </span>
-                <span className="text-lg font-semibold text-blue-600">
-                  {Math.round(fitness.accuracy)}%
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      )
-    } else {
-      return (
-        <div className="bg-gray-50 p-3 rounded-lg">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-2 text-sm">
-            {Object.entries(fitness)
-              .filter(([key]) => key !== "feedback")
-              .map(([key, value]) => (
-                <div key={key} className="flex justify-between items-center">
-                  <span className="text-gray-600 capitalize">
-                    {key.replace(/_/g, " ")}:
-                  </span>
-                  <span className="font-semibold text-gray-900">
-                    {typeof value === "number"
-                      ? Math.round(value)
-                      : String(value)}
-                  </span>
-                </div>
-              ))}
-          </div>
-        </div>
-      )
-    }
   }
 
   return (
@@ -394,25 +299,94 @@ export default function PerformanceOverview({
                 </div>
               )}
 
-            {/* Input/Output Display - Only in collapsible section */}
-            {(workflow.workflow_input || workflow.workflow_output) && (
+            {/* Input/Feedback/Output Display - Only in collapsible section */}
+            {(workflow.workflow_input ||
+              workflow.workflow_output ||
+              workflow.feedback) && (
               <div className="p-4">
                 <h4 className="font-medium text-gray-900 mb-3">
                   Workflow Input/Output
                 </h4>
                 <div className="bg-gray-50 p-4 rounded-lg border">
                   <div className="space-y-4">
-                    {/* Workflow Input */}
-                    {workflow.workflow_input && (
-                      <div>
-                        <div className="font-medium text-sm text-gray-900 mb-1">
-                          Input:
-                        </div>
-                        <div className="text-xs text-gray-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
-                          {typeof workflow.workflow_input === "object"
-                            ? JSON.stringify(workflow.workflow_input, null, 2)
-                            : String(workflow.workflow_input)}
-                        </div>
+                    {/* Workflow Input + Feedback side by side */}
+                    {(workflow.workflow_input || workflow.feedback) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Input */}
+                        {workflow.workflow_input && (
+                          <div>
+                            <div className="font-medium text-sm text-gray-900 mb-1">
+                              Input
+                            </div>
+                            <div
+                              className={`bg-white p-3 rounded border overflow-y-auto ${
+                                isLongContent(workflow.workflow_input)
+                                  ? "max-h-[65vh]"
+                                  : "max-h-40"
+                              }`}
+                            >
+                              <SmartContent
+                                value={workflow.workflow_input}
+                                collapsed={false}
+                                enableClipboard
+                                showExpanders
+                                jsonTheme="auto"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {/* Feedback */}
+                        {workflow.feedback && (
+                          <div>
+                            <div className="font-medium text-sm text-gray-900 mb-1">
+                              Feedback
+                            </div>
+                            <div
+                              className={`bg-white p-3 rounded border overflow-y-auto ${
+                                isLongContent(workflow.feedback)
+                                  ? "max-h-[65vh]"
+                                  : "max-h-40"
+                              }`}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {isMarkdownContent(workflow.feedback) ? (
+                                  <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeHighlight]}
+                                    components={{
+                                      pre: ({ children }) => (
+                                        <pre className="bg-gray-100 rounded-lg p-3 overflow-x-auto text-xs">
+                                          {children}
+                                        </pre>
+                                      ),
+                                      code: ({ children, className }) => {
+                                        const isInline = !className
+                                        return isInline ? (
+                                          <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
+                                            {children}
+                                          </code>
+                                        ) : (
+                                          <code className={className}>
+                                            {children}
+                                          </code>
+                                        )
+                                      },
+                                      p: ({ children }) => (
+                                        <p className="mb-2 last:mb-0">
+                                          {children}
+                                        </p>
+                                      ),
+                                    }}
+                                  >
+                                    {workflow.feedback}
+                                  </ReactMarkdown>
+                                ) : (
+                                  workflow.feedback
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -468,6 +442,110 @@ export default function PerformanceOverview({
               </div>
             )}
 
+            {/* Expected vs Actual Output (prefer new; fallback to legacy) */}
+            {(() => {
+              const extras =
+                workflow.extras as unknown as WorkflowInvocationExtrasLegacy | null
+              const expectedNew = workflow.expected_output ?? undefined
+              const actualNew = workflow.actual_output ?? undefined
+              const expectedLegacy =
+                extras &&
+                typeof extras === "object" &&
+                "evaluation" in (extras as any)
+                  ? (extras as any).evaluation
+                  : undefined
+              const actualLegacy =
+                extras &&
+                typeof extras === "object" &&
+                "actualOutput" in (extras as any)
+                  ? (extras as any).actualOutput
+                  : undefined
+
+              const expectedValue =
+                typeof expectedNew === "string" && expectedNew.trim() !== ""
+                  ? expectedNew
+                  : expectedLegacy
+              const actualValue =
+                typeof actualNew === "string" && actualNew.trim() !== ""
+                  ? actualNew
+                  : actualLegacy
+
+              if (expectedValue == null && actualValue == null) return null
+
+              return (
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium text-gray-900">
+                      Expected vs Actual Output
+                    </h4>
+                    <button
+                      className="p-1 rounded hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsExpActExpanded((v) => !v)}
+                      aria-label={
+                        isExpActExpanded ? "Collapse outputs" : "Expand outputs"
+                      }
+                      title={isExpActExpanded ? "Collapse" : "Expand"}
+                    >
+                      <ChevronDown
+                        size={14}
+                        className={`text-gray-600 transition-transform ${isExpActExpanded ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
+                  {isExpActExpanded && (
+                    <div className="bg-gray-50 p-4 rounded-lg border">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {expectedValue != null && expectedValue !== "" && (
+                          <div>
+                            <div className="font-medium text-sm text-gray-900 mb-1">
+                              Expected Output
+                            </div>
+                            <div
+                              className={`bg-white p-3 rounded border overflow-y-auto ${
+                                isLongContent(expectedValue)
+                                  ? "max-h-[65vh]"
+                                  : "max-h-40"
+                              }`}
+                            >
+                              <SmartContent
+                                value={expectedValue}
+                                collapsed={false}
+                                enableClipboard
+                                showExpanders
+                                jsonTheme="auto"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {actualValue != null && actualValue !== "" && (
+                          <div>
+                            <div className="font-medium text-sm text-gray-900 mb-1">
+                              Actual Output
+                            </div>
+                            <div
+                              className={`bg-white p-3 rounded border overflow-y-auto ${
+                                isLongContent(actualValue)
+                                  ? "max-h-[65vh]"
+                                  : "max-h-40"
+                              }`}
+                            >
+                              <SmartContent
+                                value={actualValue}
+                                collapsed={false}
+                                enableClipboard
+                                showExpanders
+                                jsonTheme="auto"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
             {/* Expected Output Type - Only in collapsible section */}
             {workflow.expected_output_type && (
               <div className="p-4 border-b border-gray-200">
@@ -493,74 +571,7 @@ export default function PerformanceOverview({
                 </div>
               )}
 
-            {/* Workflow Feedback - Only in collapsible section */}
-            {workflow.feedback && (
-              <div className="p-4">
-                <h4 className="font-medium text-gray-900 mb-3">
-                  Workflow Feedback
-                </h4>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <div className="text-sm text-gray-900">
-                    {isMarkdownContent(workflow.feedback) ? (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
-                        components={{
-                          pre: ({ children }) => (
-                            <pre className="bg-gray-100 rounded-lg p-3 overflow-x-auto text-xs">
-                              {children}
-                            </pre>
-                          ),
-                          code: ({ children, className }) => {
-                            const isInline = !className
-                            return isInline ? (
-                              <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
-                                {children}
-                              </code>
-                            ) : (
-                              <code className={className}>{children}</code>
-                            )
-                          },
-                          p: ({ children }) => (
-                            <p className="mb-2 last:mb-0">{children}</p>
-                          ),
-                          h1: ({ children }) => (
-                            <h1 className="text-lg font-bold mb-2">
-                              {children}
-                            </h1>
-                          ),
-                          h2: ({ children }) => (
-                            <h2 className="text-base font-bold mb-2">
-                              {children}
-                            </h2>
-                          ),
-                          h3: ({ children }) => (
-                            <h3 className="text-sm font-bold mb-1">
-                              {children}
-                            </h3>
-                          ),
-                          ul: ({ children }) => (
-                            <ul className="list-disc pl-4 mb-2">{children}</ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol className="list-decimal pl-4 mb-2">
-                              {children}
-                            </ol>
-                          ),
-                          li: ({ children }) => (
-                            <li className="mb-1">{children}</li>
-                          ),
-                        }}
-                      >
-                        {workflow.feedback}
-                      </ReactMarkdown>
-                    ) : (
-                      workflow.feedback
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Workflow Feedback moved next to input above */}
           </div>
         )}
       </div>

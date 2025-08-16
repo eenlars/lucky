@@ -348,6 +348,7 @@ export class Workflow {
       workflowVersionId: this.workflowVersionId,
       workflowConfig: this.config,
       commitMessage: this.goal,
+      operation: this.parent1Id ? "mutation" : "init",
       parent1Id: this.parent1Id,
       parent2Id: this.parent2Id,
       generation: this.evolutionContext?.generationId,

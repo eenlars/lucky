@@ -3,9 +3,14 @@ import type { ModelName } from "@core/utils/spending/models.types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { z } from "zod"
 
+type RubricItem = {
+  evaluationCriterion: string
+  maxPoints: number
+}
+
 export interface FitnessOfWorkflow {
   score: number
-  accuracy: number // 1-100
+  accuracy: number // 0-100
   totalCostUsd: number
   totalTimeSeconds: number
 }
@@ -17,9 +22,9 @@ export const FitnessOfWorkflowSchema = z.object({
     .int()
     .min(0)
     .max(100)
-    .default(1)
-    .transform((val) => Math.max(1, Math.min(100, val)))
-    .describe("Accuracy score 1-100 based on matching ground truth"),
+    .default(0)
+    .transform((val) => Math.max(0, Math.min(100, val)))
+    .describe("Accuracy score 0-100 based on matching ground truth"),
   feedback: z
     .string()
     .min(1)
@@ -35,4 +40,5 @@ export type FitnessFunctionInput = {
   evaluation: string
   outputSchema?: OutputSchema
   overrideModel?: ModelName
+  rubric?: RubricItem[]
 }

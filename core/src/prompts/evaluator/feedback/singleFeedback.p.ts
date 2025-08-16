@@ -1,6 +1,6 @@
-import { feedbackPrompt } from "@core/prompts/feedback.p"
+import { feedbackPrompt } from "@core/prompts/evaluator/feedback/feedback.p"
+import { rcaPrompt } from "@core/prompts/evaluator/root-cause/rca"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
-import { rcaPrompt } from "@core/prompts/rca"
 
 export const singleFeedbackSystemPrompt = (
   evaluation: string,

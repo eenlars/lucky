@@ -220,17 +220,11 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
             })
           }
 
-          // Merge server data with cached items (server wins)
-          const mergedMap = new Map<string, EvolutionRunWithStats>()
-          const cachedMap = get().cachedRunsById
-          for (const r of Object.values(cachedMap)) mergedMap.set(r.run_id, r)
-          for (const r of data) mergedMap.set(r.run_id, r)
-          const mergedList = Array.from(mergedMap.values())
-
+          // Use server data for the displayed list (do not merge cached items here)
           if (reset) {
-            set({ loadedRuns: mergedList, evolutionRuns: mergedList })
+            set({ loadedRuns: data, evolutionRuns: data })
           } else {
-            const newRuns = [...currentLoadedRuns, ...mergedList]
+            const newRuns = [...currentLoadedRuns, ...data]
             // De-dupe by run_id while preserving last occurrence
             const uniqueMap = new Map<string, EvolutionRunWithStats>()
             for (const r of newRuns) uniqueMap.set(r.run_id, r)

@@ -150,6 +150,7 @@ export default function Workflow({
         onDrop={onDrop}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
+        selectNodesOnDrag={false}
         colorMode={colorMode}
         defaultEdgeOptions={{ type: "workflow" }}
         proOptions={proOptions}

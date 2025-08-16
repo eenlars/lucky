@@ -1,5 +1,5 @@
 // taken a few small bits from https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/systemprompts/debug_prompt.py
-import { GENERALIZATION_LIMITS } from "./generalizationLimits"
+import { GENERALIZATION_LIMITS } from "../../generalizationLimits"
 
 export const rcaPrompt = `
 ROLE
