@@ -1,13 +1,13 @@
 /**
  * Multi-step agent loop implementation with tool orchestration and memory management.
- * 
+ *
  * This module implements the core execution loop for autonomous agents that can:
  * - Execute multiple tools in sequence based on AI-driven decisions
  * - Track and validate tool outputs with self-checking
  * - Generate learnings and update memory after execution
  * - Handle errors gracefully with fallback mechanisms
  * - Provide detailed execution traces for debugging
- * 
+ *
  * The loop continues until either:
  * - The AI decides to terminate (goal achieved)
  * - Maximum rounds are reached
@@ -28,10 +28,10 @@ import { toolUsageToString, type MultiStepLoopContext } from "./utils"
 
 /**
  * Executes a multi-step agent loop with tool orchestration and memory updates.
- * 
+ *
  * @param context - Execution context containing node configuration, tools, and state
  * @returns Processed response with execution trace, debug info, and memory updates
- * 
+ *
  * @remarks
  * Core execution flow:
  * 1. **Strategy Selection**: AI decides next action (tool or terminate)
@@ -39,13 +39,13 @@ import { toolUsageToString, type MultiStepLoopContext } from "./utils"
  * 3. **Validation**: Checks tool output against expected results
  * 4. **Memory Update**: Generates learnings from execution
  * 5. **Loop Control**: Continues until termination or max rounds
- * 
+ *
  * Memory management:
  * - Tracks execution costs throughout the loop
  * - Generates learnings after completion
  * - Updates node memory with new insights
  * - Handles memory persistence failures gracefully
- * 
+ *
  * Error handling:
  * - Continues execution after tool failures
  * - Provides fallback summaries on errors

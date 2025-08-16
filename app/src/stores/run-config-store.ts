@@ -77,7 +77,8 @@ export const useRunConfigStore = create<RunConfigState>()(
       cases: [],
       resultsById: {},
       busyIds: new Set<string>(),
-      options: { concurrency: 2 },
+      // Increase default timeout to accommodate longer runs (10 minutes)
+      options: { concurrency: 2, timeoutMs: 600000 },
 
       addCase: (row) =>
         set((s) => ({
@@ -137,7 +138,7 @@ export const useRunConfigStore = create<RunConfigState>()(
         controllers.set(row.id, controller)
 
         const signal = externalSignal ?? controller.signal
-        const { maxRetries = 0, timeoutMs = 120000 } = get().options
+        const { maxRetries = 0, timeoutMs = 600000 } = get().options
 
         // Set timeout if configured
         let timeoutId: NodeJS.Timeout | undefined

@@ -1,3 +1,5 @@
+import { Button } from "@/ui/button"
+
 type VerificationResult = {
   isValid: boolean
   errors: string[]
@@ -73,9 +75,11 @@ export default function VerificationBanner({
               </ul>
             )}
         </div>
-        <button
+        <Button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+          variant="ghost"
+          size="sm"
+          className="h-auto p-1 text-gray-400 hover:text-gray-600"
         >
           <svg
             className="w-5 h-5"
@@ -90,7 +94,7 @@ export default function VerificationBanner({
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-        </button>
+        </Button>
       </div>
     </div>
   )

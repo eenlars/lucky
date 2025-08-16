@@ -12,6 +12,7 @@ import {
   StructureMiniMap,
   getNodeCountFromDsl,
 } from "../trace/[wf_inv_id]/structure/StructureMiniMap"
+import { Button } from "@/ui/button"
 
 // Calculate workflow complexity based on structure
 function getComplexityScore(config: WorkflowConfig): number {
@@ -279,12 +280,11 @@ export default function StructuresPage() {
         <h1 className="text-3xl font-bold">Workflow Structure Visualization</h1>
 
         <div className="flex items-center gap-4">
-          <button
+          <Button
             onClick={() => setShowTestBed(!showTestBed)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             {showTestBed ? "Show Database" : "Show Test Bed"}
-          </button>
+          </Button>
 
           {!showTestBed && (
             <>

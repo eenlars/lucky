@@ -1,5 +1,7 @@
 "use client"
 
+import { Button } from "@/ui/button"
+
 type SaveModalProps = {
   open: boolean
   onClose: () => void
@@ -42,9 +44,11 @@ export default function SaveModal({
               </svg>
               Save Workflow Version
             </h3>
-            <button
+            <Button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+              variant="ghost"
+              size="sm"
+              className="h-auto p-1"
             >
               <svg
                 className="w-5 h-5"
@@ -59,7 +63,7 @@ export default function SaveModal({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -128,13 +132,15 @@ export default function SaveModal({
                   "Updated node connections",
                   "Improved error handling",
                 ].map((suggestion) => (
-                  <button
+                  <Button
                     key={suggestion}
                     onClick={() => setCommitMessage(suggestion)}
-                    className="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-auto py-1.5"
                   >
                     {suggestion}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -148,24 +154,15 @@ export default function SaveModal({
               save
             </p>
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
+                variant="ghost"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onSave}
                 disabled={!commitMessage.trim() || isLoading}
-                className={`
-                  px-6 py-2 rounded-md text-sm font-medium
-                  transition-all duration-200 flex items-center gap-2
-                  ${
-                    commitMessage.trim() && !isLoading
-                      ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }
-                `}
               >
                 {isLoading ? (
                   <>
@@ -208,7 +205,7 @@ export default function SaveModal({
                     Save Version
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

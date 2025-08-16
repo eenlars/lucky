@@ -2,42 +2,42 @@
 
 /**
  * Main entry point for the evolutionary workflow system.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * Orchestrates two evolution modes:
  * - **Cultural Evolution**: Iterative self-improvement through analysis
  * - **Genetic Programming**: Population-based evolution with crossover/mutation
- * 
+ *
  * ## Command Line Interface
- * 
+ *
  * ```bash
  * tsx src/core/main.ts --mode=<cultural|GP> [options]
  * ```
- * 
+ *
  * Options:
  * - `--generations=<num>`: Override generation count for GP
  * - `--population=<num>`: Override population size for GP
  * - `--setup-file=<path>`: Use custom workflow setup file
- * 
+ *
  * ## Execution Flow
- * 
+ *
  * 1. **Initialization**: Parse CLI args, load configuration
  * 2. **Mode Selection**: Route to cultural or GP evolution
  * 3. **Evolution Loop**: Execute iterations with progress tracking
  * 4. **Result Saving**: Persist evolved workflows incrementally
  * 5. **Final Report**: Display performance metrics and costs
- * 
+ *
  * ## Robust Execution
- * 
+ *
  * Cultural evolution includes:
  * - Retry mechanism for failed iterations (2 retries)
  * - Circuit breaker for consecutive failures (10% tolerance)
  * - Incremental saving of successful configurations
  * - Rollback to last successful state on failure
- * 
+ *
  * ## Resource Management
- * 
+ *
  * - Spending limits enforced via SpendingTracker
  * - Cost aggregation across all iterations
  * - Early termination on budget exhaustion
@@ -173,7 +173,7 @@ type GeneticResult = {
 /**
  * Executes either cultural or genetic evolution depending on the configured mode.
  * Both share a common logging and result-handling structure, so we unify them here.
- * 
+ *
  * Cultural evolution iteratively improves a single workflow through analysis.
  * Genetic evolution maintains a population and uses crossover/mutation.
  */
@@ -423,6 +423,18 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
 
   const evolutionEngine = new EvolutionEngine(evolutionSettings, "iterative")
 
+  // Determine optional base workflow for GP mode using the Loader (centralized logging)
+  let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<
+    infer T
+  >
+    ? T | undefined
+    : undefined
+  if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
+    const requestedGPFile =
+      cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
+    baseWorkflowForGP = await loadSingleWorkflow(requestedGPFile)
+  }
+
   lgg.log("evolving workflow to handle all cases optimally", {
     workflowCasesCount:
       SELECTED_QUESTION.type === "csv"
@@ -437,12 +449,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     evolutionResult = await evolutionEngine.evolve({
       evaluationInput: SELECTED_QUESTION,
       evaluator,
-      _baseWorkflow:
-        CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow"
-          ? await loadSingleWorkflow(
-              cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
-            )
-          : undefined,
+      _baseWorkflow: baseWorkflowForGP,
       problemAnalysis,
     })
   } catch (error) {

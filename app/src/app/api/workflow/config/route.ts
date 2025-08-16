@@ -11,6 +11,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const wfVersionId = searchParams.get("wf_version_id") || undefined
     const workflowId = searchParams.get("workflow_id") || undefined
+    // Frontend should not control backend file selection; always use loader's current config
 
     // Storage-adapter: file locally, DB in production.
     // Supports querying a specific version or the latest per workflow.
@@ -18,6 +19,8 @@ export async function GET(req: Request) {
       wfVersionId,
       workflowId,
     })
+
+    // Return only the workflow itself
     return NextResponse.json(workflowConfig)
   } catch (error) {
     console.error("Failed to load workflow config:", error)

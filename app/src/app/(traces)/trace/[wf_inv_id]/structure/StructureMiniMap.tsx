@@ -1,15 +1,18 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, type MouseEvent } from "react"
 
+import { Button } from "@/ui/button"
 import {
-  type WorkflowConfig,
   toWorkflowConfig,
+  type WorkflowConfig,
 } from "@core/workflow/schema/workflow.types"
 import { MODELS } from "@runtime/settings/constants.client"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig
+  width?: number
+  height?: number
 }
 
 // Utility function to get node count from DSL
@@ -25,7 +28,11 @@ export function getNodeCountFromDsl(dsl: WorkflowConfig): number {
   }
 }
 
-export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
+export function StructureMiniMap({
+  dsl,
+  width,
+  height,
+}: StructureMiniMapProps) {
   const [showDslInspector, setShowDslInspector] = useState(false)
   const { nodePositions, scale, lines, parsedNodes } = useMemo(() => {
     // Parse DSL if it's a string, otherwise use it directly
@@ -48,8 +55,8 @@ export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
     const nodeHeight = 24
     const verticalSpacing = 40
     const horizontalSpacing = 140
-    const containerWidth = 250
-    const containerHeight = 200
+    const containerWidth = width ?? 250
+    const containerHeight = height ?? 200
     const nodeWidth = 120
 
     // add implicit end node for nodes that don't hand off to anything
@@ -241,18 +248,26 @@ export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
       lines: lineElements,
       parsedNodes: finalNodes,
     }
-  }, [dsl])
+  }, [dsl, width, height])
 
   return (
-    <div className="w-full h-[200px] relative overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div
+      className="w-full relative overflow-hidden bg-white dark:bg-gray-900"
+      style={{ height: height ?? 200 }}
+    >
       {/* DSL Inspector Button */}
-      <button
-        onClick={() => setShowDslInspector(!showDslInspector)}
-        className="absolute top-2 right-2 z-10 w-6 h-6 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono flex items-center justify-center transition-colors"
+      <Button
+        onClick={(e: MouseEvent<HTMLButtonElement>) => {
+          e.stopPropagation()
+          setShowDslInspector(!showDslInspector)
+        }}
+        variant="outline"
+        size="icon"
+        className="absolute top-2 right-2 z-10 w-6 h-6 text-xs font-mono"
         title="Inspect DSL"
       >
         &lt;/&gt;
-      </button>
+      </Button>
 
       {/* DSL Inspector Modal */}
       {showDslInspector && (
@@ -260,12 +275,14 @@ export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl max-h-[80vh] overflow-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">DSL Inspector</h3>
-              <button
+              <Button
                 onClick={() => setShowDslInspector(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                variant="ghost"
+                size="sm"
+                className="h-auto p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 ✕
-              </button>
+              </Button>
             </div>
             <pre className="bg-gray-50 dark:bg-gray-900 p-4 rounded text-sm overflow-auto">
               {JSON.stringify(dsl, null, 2)}
@@ -292,14 +309,14 @@ export function StructureMiniMap({ dsl }: StructureMiniMapProps) {
           return (
             <div
               key={line.key}
-              className="absolute bg-gray-400 dark:bg-gray-600"
+              className="absolute bg-gray-300 dark:bg-gray-600"
               style={{
                 left: `${line.x1}px`,
                 top: `${line.y1}px`,
                 width: `${length}px`,
                 height: "2px",
+                transform: `translateZ(0) rotate(${angle}deg)`,
                 transformOrigin: "0 0",
-                transform: `rotate(${angle}deg)`,
               }}
             />
           )

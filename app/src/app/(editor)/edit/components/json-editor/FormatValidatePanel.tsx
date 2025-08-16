@@ -1,6 +1,7 @@
 "use client"
 
 import { WORKFLOW_TEMPLATES } from "../workflow-templates"
+import { Button } from "@/ui/button"
 
 type VerificationResult = {
   isValid: boolean
@@ -48,7 +49,7 @@ export default function FormatValidatePanel({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <button
+            <Button
               onClick={() => {
                 try {
                   const parsed = JSON.parse(workflowJSON)
@@ -58,7 +59,8 @@ export default function FormatValidatePanel({
                   // Invalid JSON, do nothing
                 }
               }}
-              className="w-full px-4 py-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-700 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
+              variant="outline"
+              className="w-full"
             >
               <svg
                 className="w-4 h-4"
@@ -74,21 +76,13 @@ export default function FormatValidatePanel({
                 />
               </svg>
               Format JSON
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={onVerify}
               disabled={isVerifying || !!jsonParseError}
-              className={`
-                w-full px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2
-                ${
-                  jsonParseError
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : isVerifying
-                      ? "bg-purple-50 text-purple-700 border border-purple-200"
-                      : "bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 cursor-pointer"
-                }
-              `}
+              variant="outline"
+              className="w-full"
             >
               {isVerifying ? (
                 <>
@@ -148,7 +142,7 @@ export default function FormatValidatePanel({
                   Validate Workflow
                 </>
               )}
-            </button>
+            </Button>
           </div>
 
           <div
@@ -261,7 +255,7 @@ export default function FormatValidatePanel({
             </h4>
             <div className="space-y-2">
               {WORKFLOW_TEMPLATES.map((template) => (
-                <button
+                <Button
                   key={template.id}
                   onClick={() => {
                     updateWorkflowJSON(
@@ -269,15 +263,18 @@ export default function FormatValidatePanel({
                     )
                     setIsDirty(true)
                   }}
-                  className="w-full px-3 py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-left transition-colors cursor-pointer"
+                  variant="outline"
+                  className="w-full justify-start text-left h-auto py-2.5"
                 >
-                  <div className="text-sm font-medium text-gray-900">
-                    {template.name}
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {template.name}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      {template.description}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {template.description}
-                  </div>
-                </button>
+                </Button>
               ))}
             </div>
           </div>

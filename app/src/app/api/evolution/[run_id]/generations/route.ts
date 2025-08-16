@@ -38,11 +38,12 @@ export async function GET(
       return NextResponse.json([])
     }
 
-    // Get all workflow versions for this run
+    // Get workflow versions for these generations (WorkflowVersion has generation_id, not run_id)
+    const generationIds = generations.map((g) => g.generation_id)
     const { data: versions, error: versionError } = await supabase
       .from("WorkflowVersion")
       .select("*")
-      .eq("run_id", run_id)
+      .in("generation_id", generationIds)
 
     if (versionError) {
       return NextResponse.json({ error: versionError.message }, { status: 500 })
@@ -51,7 +52,8 @@ export async function GET(
     // Get all invocations for this run with selected fields
     const { data: invocations, error: invError } = await supabase
       .from("WorkflowInvocation")
-      .select(`
+      .select(
+        `
         wf_invocation_id,
         wf_version_id,
         start_time,
@@ -62,7 +64,8 @@ export async function GET(
         accuracy,
         run_id,
         generation_id
-      `)
+      `
+      )
       .eq("run_id", run_id)
 
     if (invError) {
@@ -70,14 +73,19 @@ export async function GET(
     }
 
     // Group data by generation
-    const generationsWithData = generations.map(generation => {
-      const genVersions = versions?.filter(v => v.generation_id === generation.generation_id) || []
-      const genInvocations = invocations?.filter(i => i.generation_id === generation.generation_id) || []
+    const generationsWithData = generations.map((generation) => {
+      const genVersions =
+        versions?.filter((v) => v.generation_id === generation.generation_id) ||
+        []
+      const genInvocations =
+        invocations?.filter(
+          (i) => i.generation_id === generation.generation_id
+        ) || []
 
       return {
         generation,
         versions: genVersions,
-        invocations: genInvocations as WorkflowInvocationSubset[]
+        invocations: genInvocations as WorkflowInvocationSubset[],
       }
     })
 
@@ -85,7 +93,12 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching generations data:", error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to fetch generations data" },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch generations data",
+      },
       { status: 500 }
     )
   }

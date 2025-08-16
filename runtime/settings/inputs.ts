@@ -205,4 +205,4 @@ const QUESTIONS = {
 } satisfies Record<string, EvaluationInput>
 
 export { QUESTIONS }
-export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.albertHeijn
+export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.simpleCsv

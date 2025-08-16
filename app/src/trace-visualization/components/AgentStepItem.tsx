@@ -1,5 +1,6 @@
 "use client"
 
+import { SmartContent } from "@/components/utils/SmartContent"
 import { Card } from "@/ui/card"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { ChevronDown } from "lucide-react"
@@ -140,8 +141,16 @@ export const AgentStepItem = ({
             </div>
             <div
               className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
-              {(step as any).return}
+              <SmartContent
+                value={(step as any).return}
+                collapsed={1}
+                enableClipboard
+                showExpanders
+                jsonTheme="auto"
+              />
             </div>
           </div>
         </div>

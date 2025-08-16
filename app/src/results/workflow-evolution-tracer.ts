@@ -15,7 +15,7 @@ export async function traceWorkflowEvolution(
     .from("WorkflowInvocation")
     .select("*")
     .eq("wf_invocation_id", invocationId)
-    .single()
+    .maybeSingle()
 
   if (invError || !targetInvocation) {
     console.error("Failed to fetch target invocation:", invError)
@@ -27,7 +27,7 @@ export async function traceWorkflowEvolution(
     .from("WorkflowVersion")
     .select("*")
     .eq("wf_version_id", targetInvocation.wf_version_id)
-    .single()
+    .maybeSingle()
 
   if (versionError || !targetVersion) {
     console.error("Failed to fetch target version:", versionError)

@@ -1,5 +1,6 @@
 import type { Tables } from "@lucky/shared"
 import Link from "next/link"
+import { Button } from "@/ui/button"
 
 type EditorHeaderProps = {
   workflowVersion?: Tables<"WorkflowVersion">
@@ -112,7 +113,7 @@ export default function EditorHeader({
           )}
 
           <div className="relative group">
-            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+            <Button variant="ghost" size="sm" className="p-2 text-gray-400 hover:text-gray-600">
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -126,7 +127,7 @@ export default function EditorHeader({
                   d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-            </button>
+            </Button>
             <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
               <div className="p-4">
                 <h4 className="text-sm font-medium text-gray-900 mb-3">
@@ -168,18 +169,10 @@ export default function EditorHeader({
             </div>
           </div>
 
-          <button
+          <Button
             onClick={onOpenSaveModal}
             disabled={!isDirty || isLoading || !!jsonParseError}
-            className={`
-              px-4 py-2 rounded-md font-medium text-sm
-              transition-all duration-200 flex items-center gap-2
-              ${
-                isDirty && !jsonParseError
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm cursor-pointer"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
-              }
-            `}
+            variant={isDirty && !jsonParseError ? "default" : "secondary"}
             title={
               jsonParseError
                 ? "Fix JSON errors before saving"
@@ -229,7 +222,7 @@ export default function EditorHeader({
                 Save
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

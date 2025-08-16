@@ -42,8 +42,8 @@ export interface FullWorkflowResult {
 }
 
 export const fullWorkflow = cache(
-  async (workflowInvocationId: string): Promise<FullWorkflowResult> => {
-    const { data: workflow, error } = await supabase
+  async (workflowInvocationId: string): Promise<FullWorkflowResult | null> => {
+    const { data, error } = await supabase
       .from("WorkflowInvocation")
       .select(
         `
@@ -62,10 +62,14 @@ export const fullWorkflow = cache(
       )
       .eq("wf_invocation_id", workflowInvocationId)
       .order("start_time", { referencedTable: "NodeInvocation" })
-      .single()
+      .limit(1)
 
-    if (error) throw error
-    if (!workflow) throw new Error("Workflow not found")
+    if (error) {
+      throw new Error("Failed to fetch workflow details")
+    }
+    const workflow =
+      data && Array.isArray(data) && data.length > 0 ? (data[0] as any) : null
+    if (!workflow) return null
 
     const {
       WorkflowVersion: workflowVersionRaw,
@@ -76,7 +80,7 @@ export const fullWorkflow = cache(
 
     const nodeInvocations: NodeInvocationExtended[] = (
       nodeInvocationRaw ?? []
-    ).map((raw) => {
+    ).map((raw: any) => {
       const {
         NodeVersion: nodeDef,
         inputs = [],

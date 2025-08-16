@@ -158,8 +158,14 @@ export default function TraceDetailPage({
 
       try {
         // Fetch basic workflow info first for immediate display
-        const { workflowInvocation, workflowVersion, workflow } =
-          await basicWorkflow(wf_inv_id)
+        const basic = await basicWorkflow(wf_inv_id)
+        if (!basic) {
+          setError("Trace not found")
+          setLoading(false)
+          setTimelineLoading(false)
+          return
+        }
+        const { workflowInvocation, workflowVersion, workflow } = basic
         setWorkflow(workflowInvocation)
         setWorkflowVersion(workflowVersion)
         setWorkflowDetails(workflow)
@@ -206,8 +212,12 @@ export default function TraceDetailPage({
           const refreshData = async () => {
             try {
               // Refresh basic data
-              const { workflowInvocation, workflowVersion, workflow } =
-                await basicWorkflow(wf_inv_id)
+              const basic = await basicWorkflow(wf_inv_id)
+              if (!basic) {
+                setError("Trace not found")
+                return
+              }
+              const { workflowInvocation, workflowVersion, workflow } = basic
               setWorkflow(workflowInvocation)
               setWorkflowVersion(workflowVersion)
               setWorkflowDetails(workflow)

@@ -1,5 +1,6 @@
 "use client"
 
+import { SmartContent } from "@/components/utils/SmartContent"
 interface ResultsPanelProps {
   results: any
   error?: string | null
@@ -39,9 +40,11 @@ export default function ResultsPanel({ results, error }: ResultsPanelProps) {
               <div className="text-sm font-medium text-gray-700 mb-2">
                 Raw Results
               </div>
-              <pre className="text-xs text-gray-600 whitespace-pre-wrap overflow-x-auto">
-                {JSON.stringify(results, null, 2)}
-              </pre>
+              <SmartContent
+                value={results}
+                className="text-xs text-gray-700"
+                collapsed={2}
+              />
             </div>
           </div>
         ) : (

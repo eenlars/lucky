@@ -23,6 +23,16 @@ export default defineConfig({
       exclude: ["node_modules/"],
       all: true,
     },
+    deps: {
+      // Avoid prebundling puppeteer/stealth which use dynamic requires for evasions
+      inline: [/(?!.*)/],
+      external: [
+        "puppeteer",
+        "puppeteer-extra",
+        "puppeteer-extra-plugin",
+        "puppeteer-extra-plugin-stealth",
+      ],
+    },
     projects: [
       {
         // Unit tests: *.test.ts but NOT *.spec.test.ts

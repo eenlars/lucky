@@ -27,6 +27,7 @@ import {
 import { Workflow } from "@core/workflow/Workflow"
 import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
+import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
@@ -101,6 +102,9 @@ export async function invokeWorkflow(
     if (CONFIG.limits.enableSpendingLimits) {
       SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
     }
+
+    // Strictly validate before creating workflow
+    await verifyWorkflowConfigStrict(config)
 
     // Create workflow
     const workflow = Workflow.create({

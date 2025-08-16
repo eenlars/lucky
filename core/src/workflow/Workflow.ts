@@ -49,12 +49,12 @@ import type {
   RunResult,
 } from "@core/workflow/runner/types"
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
+import { hashWorkflow } from "@core/workflow/schema/hash"
 import type {
   WorkflowConfig,
   WorkflowNodeConfig,
 } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
-import { createHash } from "crypto"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -98,9 +98,7 @@ export class Workflow {
     if (workflowVersionId) {
       this.workflowVersionId = workflowVersionId
     } else {
-      const fullHash = createHash("sha256")
-        .update(JSON.stringify(config))
-        .digest("hex")
+      const fullHash = hashWorkflow(config)
       this.workflowVersionId = "wf_ver_" + fullHash.substring(0, 8)
     }
     this.mainGoal = evaluationInput.goal
@@ -586,8 +584,7 @@ export class Workflow {
    * Generate a deterministic hash for a workflow
    */
   hash(): string {
-    const jsonString = JSON.stringify(this.config)
-    return createHash("sha256").update(jsonString).digest("hex")
+    return hashWorkflow(this.config)
   }
 
   clone(): Workflow {

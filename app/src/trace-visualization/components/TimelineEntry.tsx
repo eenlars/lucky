@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
-import { PayloadRender } from "@/trace-visualization/components/InputRender"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
@@ -25,25 +24,13 @@ import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
-import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { AgentStepItem } from "./AgentStepItem"
 import { filterRelevantSteps, generateStepKey } from "./agent-steps/utils"
 import { STATUS_TO_COLOR, formatCost } from "./constants"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
-
-// Helper function to get ReactJson theme based on current theme
-const getReactJsonTheme = () => {
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
-    return "monokai"
-  }
-  return "rjv-default"
-}
+import { SmartContent } from "@/components/utils/SmartContent"
 
 interface TimelineEntryProps {
   entry: FullTraceEntry
@@ -215,14 +202,12 @@ export const TimelineEntry = ({
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Node Invocation
                     </div>
-                    <ReactJson
-                      src={invocation}
-                      theme={getReactJsonTheme()}
+                    <SmartContent
+                      value={invocation}
                       collapsed={2}
-                      displayObjectSize={false}
-                      displayDataTypes={false}
-                      enableClipboard={true}
-                      style={{ fontSize: "12px" }}
+                      enableClipboard
+                      showExpanders
+                      jsonTheme="auto"
                     />
                   </div>
                   {nodeDefinition && (
@@ -230,14 +215,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Node Definition
                       </div>
-                      <ReactJson
-                        src={nodeDefinition}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={nodeDefinition}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -246,14 +229,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Inputs
                       </div>
-                      <ReactJson
-                        src={inputs}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={inputs}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -262,14 +243,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Output
                       </div>
-                      <ReactJson
-                        src={output}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={output}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -337,9 +316,12 @@ export const TimelineEntry = ({
                                     ? `from ${msg.from_node_id}`
                                     : ""}
                                 </div>
-                                <pre className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto">
-                                  {JSON.stringify(msg, null, 2)}
-                                </pre>
+                                <SmartContent
+                                  value={msg}
+                                  collapsed={2}
+                                  enableClipboard
+                                  showExpanders
+                                />
                               </div>
                             ))
                           }
@@ -377,10 +359,12 @@ export const TimelineEntry = ({
                     </DialogHeader>
                     <div className="mt-4">
                       <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                        <PayloadRender
-                          payload={inputs[0]?.payload}
-                          msgId={`input-${index}`}
-                          inspectable
+                        <SmartContent
+                          value={inputs[0]?.payload}
+                          collapsed={1}
+                          enableClipboard
+                          showExpanders
+                          stringifySpacing={2}
                         />
                       </div>
                     </div>

@@ -86,22 +86,50 @@ export interface EvolutionGraph {
 
 // export function to create visualization data
 export function createEvolutionVisualizationData(graph: EvolutionGraph) {
+  // Defensive guards: tolerate partial graphs (e.g., no explicit target node)
+  const targetNode: EvolutionNode | undefined =
+    (graph as any)?.targetNode ||
+    graph.allNodes.find((n) => n.status === "completed") ||
+    graph.allNodes[graph.allNodes.length - 1]
+
+  const totalInvocations: number =
+    (graph as any)?.stats?.totalInvocations ?? graph.allNodes.length ?? 0
+  const successfulInvocations: number =
+    (graph as any)?.stats?.successfulInvocations ??
+    graph.allNodes.filter((n) => n.status === "completed").length
+  const successRateStr =
+    totalInvocations > 0
+      ? ((successfulInvocations / totalInvocations) * 100).toFixed(1)
+      : "0.0"
+  const peakAccuracy: number =
+    (graph as any)?.stats?.maxAccuracy ??
+    (graph.allNodes.length > 0
+      ? Math.max(
+          0,
+          ...graph.allNodes.map((n) =>
+            typeof n.accuracy === "number" ? n.accuracy : 0
+          )
+        )
+      : 0)
+  const totalCostStr = ((graph as any)?.stats?.totalCost ?? 0).toFixed(4)
+  const evolutionDurationHours = Math.round(
+    ((graph as any)?.stats?.totalDuration ?? 0) / (1000 * 60 * 60)
+  )
+
   return {
     // summary info
     summary: {
-      targetAccuracy: graph.targetNode.accuracy,
-      targetFitness: graph.targetNode.fitnessScore,
-      evolutionGoal: graph.evolutionRun.goalText,
-      totalIterations: graph.stats.totalInvocations,
-      successRate: (
-        (graph.stats.successfulInvocations / graph.stats.totalInvocations) *
-        100
-      ).toFixed(1),
-      peakAccuracy: graph.stats.maxAccuracy,
-      totalCost: graph.stats.totalCost.toFixed(4),
-      evolutionDuration: Math.round(
-        graph.stats.totalDuration / (1000 * 60 * 60)
-      ), // hours
+      targetAccuracy: targetNode?.accuracy ?? peakAccuracy ?? 0,
+      targetFitness:
+        targetNode?.fitnessScore ??
+        (graph as any)?.stats?.peakFitnessScore ??
+        0,
+      evolutionGoal: (graph as any)?.evolutionRun?.goalText ?? "",
+      totalIterations: totalInvocations,
+      successRate: successRateStr,
+      peakAccuracy: peakAccuracy,
+      totalCost: totalCostStr,
+      evolutionDuration: evolutionDurationHours, // hours
     },
 
     // timeline data for visualization
@@ -110,7 +138,9 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
       y: point.accuracy,
       invocationId: point.invocationId,
       timestamp: point.timestamp,
-      isTarget: point.invocationId === graph.targetNode.invocationId,
+      isTarget: targetNode
+        ? point.invocationId === targetNode.invocationId
+        : false,
       generationNumber: point.generationNumber,
     })),
 
@@ -151,7 +181,9 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
       status: node.status,
       operation: node.operation,
       timestamp: node.startTime,
-      isTarget: node.invocationId === graph.targetNode.invocationId,
+      isTarget: targetNode
+        ? node.invocationId === targetNode.invocationId
+        : false,
       duration: node.duration || 0,
       cost: node.usdCost || 0,
     })),
@@ -161,7 +193,8 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
       .filter((point, index, arr) => {
         // include first, last, target, and significant jumps
         if (index === 0 || index === arr.length - 1) return true
-        if (point.invocationId === graph.targetNode.invocationId) return true
+        if (targetNode && point.invocationId === targetNode.invocationId)
+          return true
 
         const prevAccuracy = index > 0 ? arr[index - 1].accuracy : 0
         return point.accuracy - prevAccuracy >= 10 // 10% jump
@@ -170,9 +203,11 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
         invocationId: point.invocationId,
         accuracy: point.accuracy,
         timestamp: point.timestamp,
-        isTarget: point.invocationId === graph.targetNode.invocationId,
+        isTarget: targetNode
+          ? point.invocationId === targetNode.invocationId
+          : false,
         description:
-          point.invocationId === graph.targetNode.invocationId
+          targetNode && point.invocationId === targetNode.invocationId
             ? `Target reached: ${point.accuracy}% accuracy`
             : `Milestone: ${point.accuracy}% accuracy`,
       })),

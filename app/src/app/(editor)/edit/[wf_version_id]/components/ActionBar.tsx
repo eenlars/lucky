@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Button } from "@/ui/button"
 
 interface ActionBarProps {
   onSave: (commitMessage: string) => Promise<void>
@@ -38,10 +39,9 @@ export default function ActionBar({
   return (
     <>
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={handleSaveClick}
           disabled={!isDirty || isLoading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
           data-save-button
         >
           {isLoading ? (
@@ -52,12 +52,12 @@ export default function ActionBar({
           ) : (
             "Save"
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={onRun}
           disabled={isLoading}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700"
         >
           {isLoading ? (
             <>
@@ -67,7 +67,7 @@ export default function ActionBar({
           ) : (
             "Run"
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Save Modal */}
@@ -96,19 +96,18 @@ export default function ActionBar({
             </div>
 
             <div className="flex justify-end gap-2">
-              <button
+              <Button
                 onClick={handleSaveCancel}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                variant="ghost"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSaveConfirm}
                 disabled={!commitMessage.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Save
-              </button>
+              </Button>
             </div>
           </div>
         </div>

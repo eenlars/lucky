@@ -10,8 +10,8 @@ export interface BasicWorkflowResult {
 }
 
 export const basicWorkflow = cache(
-  async (workflowInvocationId: string): Promise<BasicWorkflowResult> => {
-    const { data: workflow, error } = await supabase
+  async (workflowInvocationId: string): Promise<BasicWorkflowResult | null> => {
+    const { data, error } = await supabase
       .from("WorkflowInvocation")
       .select(
         `
@@ -23,10 +23,15 @@ export const basicWorkflow = cache(
       `
       )
       .eq("wf_invocation_id", workflowInvocationId)
-      .single()
+      .limit(1)
 
-    if (error) throw error
-    if (!workflow) throw new Error("Workflow not found")
+    // Return null for not-found; only throw on actual fetch errors
+    if (error) {
+      throw new Error("Failed to fetch workflow details")
+    }
+    const workflow =
+      data && Array.isArray(data) && data.length > 0 ? (data[0] as any) : null
+    if (!workflow) return null
 
     const { WorkflowVersion: workflowVersionRaw, ...workflowInvocation } =
       workflow

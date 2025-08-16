@@ -12,12 +12,6 @@
     "test:integration": "bunx vitest run --config vite.integration.config.ts",
     "coverage": "bunx vitest run --coverage",
     "tsc": "tsc --noEmit",
-    "exp:baseline": "tsx scripts/run-baseline.ts",
-    "exp:v3": "tsx scripts/run-v3.ts",
-    "exp:v3:quick": "tsx --env-file=.env scripts/run-v3-quick.ts",
-    "exp:analyze": "tsx scripts/analyze-v3-vs-baseline.ts",
-    "exp:capacity": "tsx scripts/run-capacity.ts",
-    "exp:sequential:analyze": "tsx scripts/analyze-sequential-chains.ts",
     "deps:check": "bun scripts/check-deps.ts"
   },
   "dependencies": {

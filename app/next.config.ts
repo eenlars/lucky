@@ -1,7 +1,14 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["bullmq"],
+  serverExternalPackages: [
+    "bullmq",
+    // Ensure puppeteer and stealth plugin resolve their internal dynamic requires at runtime
+    "puppeteer",
+    "puppeteer-extra",
+    "puppeteer-extra-plugin",
+    "puppeteer-extra-plugin-stealth",
+  ],
   /* config options here */
   webpack: (config, { isServer }) => {
     if (!isServer) {

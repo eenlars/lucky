@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
+import { Button } from "@/ui/button"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"
@@ -251,13 +252,14 @@ export default function EditModeSelector({
 
       return (
         <>
-          <button
+          <Button
             onClick={() => setPromptDialogOpen(true)}
             disabled={isRunning}
-            className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors duration-75 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="outline"
+            size="sm"
           >
             {isRunning ? "Running..." : "Run with Prompt"}
-          </button>
+          </Button>
           <PromptInputDialog
             open={promptDialogOpen}
             onOpenChange={handleDialogOpenChange}
@@ -271,15 +273,17 @@ export default function EditModeSelector({
 
     const HeaderRight = (
       <div className="flex items-center space-x-2">
-        <button
+        <Button
           onClick={organizeLayout}
-          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-all duration-150 cursor-pointer group relative"
+          variant="ghost"
+          size="sm"
+          className="group relative"
         >
           <span className="opacity-60 group-hover:opacity-100">Organize</span>
           <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 bg-gray-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
             Cmd+L
           </span>
-        </button>
+        </Button>
         <GraphHeaderButtons />
         <ModeSwitcher mode={mode} onChange={handleModeChange} />
       </div>
@@ -361,12 +365,7 @@ export default function EditModeSelector({
                 />
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  className={`px-4 py-1 rounded text-sm font-medium ${
-                    !cases.length
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-black text-white hover:bg-gray-800 cursor-pointer"
-                  }`}
+                <Button
                   onClick={async () => {
                     const json = exportToJSON()
                     const parsed = JSON.parse(json)
@@ -379,9 +378,10 @@ export default function EditModeSelector({
                     await runAll(cfg)
                   }}
                   disabled={!cases.length}
+                  className="bg-black hover:bg-gray-800"
                 >
                   Run All ({cases.length})
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -403,12 +403,14 @@ export default function EditModeSelector({
               />
 
               <div className="p-3 border-t flex items-center justify-between">
-                <button
-                  className="text-sm text-gray-600 hover:text-black cursor-pointer"
+                <Button
+                  variant="link"
+                  size="sm"
                   onClick={() => createCase({ input: "", expected: "" })}
+                  className="text-gray-600 hover:text-black"
                 >
                   + Add Test
-                </button>
+                </Button>
                 <div className="text-xs text-gray-400">
                   Tab = Next · Enter = Run
                 </div>

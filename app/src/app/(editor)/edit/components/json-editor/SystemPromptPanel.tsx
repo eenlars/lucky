@@ -2,15 +2,17 @@
 
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { useState } from "react"
+import { Button } from "@/ui/button"
 
 export default function SystemPromptPanel() {
   const [showSystemPrompt, setShowSystemPrompt] = useState(false)
 
   return (
     <div className="bg-white border-b border-gray-200">
-      <button
+      <Button
         onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-        className="w-full px-6 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors cursor-pointer"
+        variant="ghost"
+        className="w-full px-6 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-none h-auto font-normal"
       >
         <span className="text-sm font-medium text-gray-700">
           AI System Prompt
@@ -28,7 +30,7 @@ export default function SystemPromptPanel() {
             d="M19 9l-7 7-7-7"
           />
         </svg>
-      </button>
+      </Button>
 
       {showSystemPrompt && (
         <div className="px-6 pb-4">

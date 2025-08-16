@@ -1,8 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { toast } from "sonner"
-import { Button } from "@/react-flow-visualization/components/ui/button"
+import { SmartContent } from "@/components/utils/SmartContent"
 import {
   Dialog,
   DialogContent,
@@ -12,7 +10,10 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
-import type { Metrics, FeedbackData } from "./types/evaluation"
+import { Button } from "@/ui/button"
+import { useState } from "react"
+import { toast } from "sonner"
+import type { FeedbackData, Metrics } from "./types/evaluation"
 
 type FeedbackDialogProps = {
   open: boolean
@@ -48,26 +49,27 @@ export default function FeedbackDialog({
 
     // Mock feedback submission
     console.log("Feedback submitted:", feedbackData)
-    
+
     // Reset form and close dialog
     setFeedbackText("")
     setFeedbackRating(null)
     onOpenChange(false)
-    
+
     // Show success toast
     toast.success("Feedback submitted successfully!")
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="w-[90vw] max-w-[1200px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Provide Feedback</DialogTitle>
           <DialogDescription>
-            Share your thoughts on this workflow execution. Your feedback helps improve future performance.
+            Share your thoughts on this workflow execution. Your feedback helps
+            improve future performance.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           {/* Rating Section */}
           <div>
@@ -76,17 +78,17 @@ export default function FeedbackDialog({
             </label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((rating) => (
-                <button
+                <Button
                   key={rating}
                   onClick={() => setFeedbackRating(rating)}
-                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer ${
-                    feedbackRating === rating
-                      ? "border-blue-500 bg-blue-500 text-white"
-                      : "border-gray-300 hover:border-blue-300"
+                  variant={feedbackRating === rating ? "default" : "outline"}
+                  size="icon"
+                  className={`w-8 h-8 rounded-full ${
+                    feedbackRating === rating ? "" : "hover:border-blue-300"
                   }`}
                 >
                   {rating}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -107,33 +109,43 @@ export default function FeedbackDialog({
           {/* Mock Analysis Section */}
           {hasResults && (
             <div className="border rounded-lg p-3 bg-gray-50">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Execution Summary</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Execution Summary
+              </h4>
               <div className="text-xs text-gray-600 space-y-1">
-                <div>Score: {metrics.score}% | Time: {metrics.time} | Cost: {metrics.cost}</div>
-                <div>Criteria Achievement: {totalAchievedPoints}/{totalMaxPoints} points</div>
+                <div>
+                  Score: {metrics.score}% | Time: {metrics.time} | Cost:{" "}
+                  {metrics.cost}
+                </div>
+                <div>
+                  Criteria Achievement: {totalAchievedPoints}/{totalMaxPoints}{" "}
+                  points
+                </div>
                 <div className="text-gray-500 italic">
-                  {metrics.output ? `Output: "${metrics.output.substring(0, 80)}..."` : "No output available"}
+                  {metrics.output
+                    ? `Output: "${metrics.output.substring(0, 80)}..."`
+                    : "No output available"}
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* Workflow Feedback Section */}
           {workflowFeedback && (
             <div className="border rounded-lg p-3 bg-blue-50">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">AI Evaluation Feedback</h4>
-              <div className="text-xs text-gray-600 whitespace-pre-wrap">
-                {workflowFeedback}
-              </div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                AI Evaluation Feedback
+              </h4>
+              <SmartContent
+                value={workflowFeedback}
+                className="text-xs text-gray-700"
+              />
             </div>
           )}
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button

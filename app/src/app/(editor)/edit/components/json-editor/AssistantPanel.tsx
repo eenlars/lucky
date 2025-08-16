@@ -1,5 +1,7 @@
 "use client"
 
+import { Button } from "@/ui/button"
+
 type AssistantPanelProps = {
   feedback: string
   setFeedback: (value: string) => void
@@ -84,18 +86,10 @@ export default function AssistantPanel({
             </div>
           </div>
 
-          <button
+          <Button
             onClick={onOptimize}
             disabled={isOptimizing || !feedback.trim()}
-            className={`
-              w-full px-4 py-2.5 rounded-lg font-medium text-sm
-              transition-all duration-200 flex items-center justify-center gap-2
-              ${
-                feedback.trim() && !isOptimizing
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-sm cursor-pointer"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
-              }
-            `}
+            className="w-full"
           >
             {isOptimizing ? (
               <>
@@ -138,7 +132,7 @@ export default function AssistantPanel({
                 Generate with AI
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -19,51 +19,51 @@ import type { QueueRunParams, QueueRunResult } from "./types"
 
 /**
  * Core workflow execution engine using a message queue-based approach.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * This module implements the heart of workflow execution through an event-driven
  * message queue system. Workflows are directed acyclic graphs (DAGs) where nodes
  * communicate by passing messages.
- * 
+ *
  * ## Execution Flow
- * 
+ *
  * 1. **Initialization**: Creates initial message from workflow input to entry node
  * 2. **Queue Processing**: Processes messages sequentially from the queue
  * 3. **Node Invocation**: Each message triggers target node execution
  * 4. **Message Routing**: Nodes produce new messages for downstream nodes
  * 5. **Termination**: Execution ends when queue is empty or "end" node is reached
- * 
+ *
  * ## Message Aggregation
- * 
+ *
  * Nodes can wait for multiple upstream messages before executing using `waitingFor`.
  * This enables fan-in patterns where a node processes results from multiple sources.
  * Messages are collected until all required inputs arrive, then aggregated into
  * a single message with all payloads.
- * 
+ *
  * ## Coordination Modes
- * 
+ *
  * - **Sequential**: Flexible routing where any node can message any other node
  * - **Hierarchical**: Enforces orchestrator-worker patterns with validation rules:
  *   - Workers cannot message other workers directly
  *   - Only orchestrators can send delegation messages
  *   - Workers communicate through the orchestrator
- * 
+ *
  * ## Memory Persistence
- * 
+ *
  * Terminal nodes (those routing to "end") trigger memory persistence. Updated
  * memory from node execution is saved back to the workflow configuration and
  * optionally persisted to the database for learning across invocations.
- * 
+ *
  * ## Error Handling
- * 
+ *
  * - Node invocation errors are captured but don't halt execution
  * - Error messages are propagated downstream as error payloads
  * - Max invocation limits prevent infinite loops
  * - Memory persistence failures are logged but don't fail the run
- * 
+ *
  * ## Performance Considerations
- * 
+ *
  * - Sequential message processing ensures deterministic execution
  * - Message aggregation minimizes redundant node invocations
  * - Configurable max node invocations (default: 50) prevents runaway execution

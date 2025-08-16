@@ -6,7 +6,7 @@ import { useAppStore } from "@/react-flow-visualization/store"
 import { genShortId } from "@core/utils/common/utils"
 import type { Tables } from "@lucky/shared"
 import { useRouter } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 import ImprovedJSONEditor from "../[wf_version_id]/components/ImprovedJSONEditor"
 import AssistantPanel from "./json-editor/AssistantPanel"
@@ -88,7 +88,7 @@ export default function JSONEditor({
     onContentChange?.(newContent)
   }
 
-  // Auto-save functionality with debounce
+  // Auto-save functionality with debounce (10s)
   useEffect(() => {
     if (!isDirty || !_autoSaveEnabled || !workflowVersion) return
 
@@ -101,24 +101,25 @@ export default function JSONEditor({
         )
         setLastSaved(new Date())
       }
-    }, 2000) // 2 second debounce
+    }, 10000)
 
     return () => clearTimeout(autoSaveTimeout)
   }, [workflowJSON, isDirty, _autoSaveEnabled, workflowVersion, jsonParseError])
 
   // Load draft on mount
+  const hasRestoredDraftRef = useRef(false)
   useEffect(() => {
-    if (workflowVersion?.wf_version_id) {
-      const draft = localStorage.getItem(
-        `workflow_draft_${workflowVersion.wf_version_id}`
-      )
-      if (draft && draft !== workflowJSON) {
-        // Auto-restore draft and notify user
-        updateWorkflowJSON(draft)
-        setIsDirty(true)
-      }
+    if (!workflowVersion?.wf_version_id || hasRestoredDraftRef.current) return
+
+    const draft = localStorage.getItem(
+      `workflow_draft_${workflowVersion.wf_version_id}`
+    )
+    if (draft) {
+      updateWorkflowJSON(draft)
+      setIsDirty(true)
     }
-  }, [workflowVersion?.wf_version_id, workflowJSON, updateWorkflowJSON])
+    hasRestoredDraftRef.current = true
+  }, [workflowVersion?.wf_version_id, updateWorkflowJSON])
 
   const handleVerify = useCallback(async () => {
     setIsVerifying(true)
@@ -129,7 +130,9 @@ export default function JSONEditor({
       const verificationResult = await verifyWorkflowWithAPI(workflow)
       setVerificationResult(verificationResult)
       if (!verificationResult.isValid) {
-        showToast.error.validation(`Validation failed: ${verificationResult.errors[0]}`)
+        showToast.error.validation(
+          `Validation failed: ${verificationResult.errors[0]}`
+        )
       }
     } catch (error) {
       const errorResult = createErrorResult(error)

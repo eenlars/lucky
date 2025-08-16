@@ -1,8 +1,8 @@
 import type { CodeToolName } from "@core/tools/tool.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
-import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
+import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
 import type {
   WorkflowConfig,
@@ -175,19 +175,6 @@ export class WorkflowConfigHandler {
     }
 
     try {
-      if (isNir(filePath)) {
-        lgg.onlyIf(
-          this.verbose,
-          "no file path provided, using default setupfile.json"
-        )
-      } else {
-        lgg.onlyIf(
-          this.verbose,
-          "[WorkflowConfigHandler] Loading workflow from setupfile.json or custom file:",
-          { filePath }
-        )
-      }
-
       const path = await import("path")
       const fs = await import("fs")
       const { readText } = await import("@lucky/shared")
@@ -197,11 +184,31 @@ export class WorkflowConfigHandler {
       const filename = path.basename(filePath)
       const normalizedPath = path.join(setupFolderPath, filename)
 
+      // Determine source (default vs custom)
+      const defaultFilename = path.basename(PATHS.setupFile)
+      const isDefault =
+        filename === defaultFilename || filePath === PATHS.setupFile
+
       // Check if file exists, if not create it
       let actualFilePath = normalizedPath
+      let wasCreated = false
       if (!fs.existsSync(normalizedPath)) {
         actualFilePath = await this.createMissingSetupFile(filePath)
+        wasCreated = true
       }
+
+      // Clarify exactly what will be used
+      lgg.onlyIf(
+        this.verbose,
+        "[WorkflowConfigHandler] Resolved workflow file",
+        {
+          source: isDefault ? "default" : "custom",
+          requested: filePath,
+          resolved: normalizedPath,
+          used: actualFilePath,
+          created: wasCreated,
+        }
+      )
 
       let fileContent: string
       let rawData: any
@@ -280,7 +287,8 @@ export class WorkflowConfigHandler {
           entryNodeId: workflowConfig.entryNodeId,
           nodeCount: workflowConfig.nodes.length,
           hasToolsInfo: !!workflowConfig.toolsInformation,
-          filePath: normalizedPath,
+          filePath: actualFilePath,
+          source: isDefault ? "default" : "custom",
         }
       )
 
@@ -427,7 +435,13 @@ export class WorkflowConfigHandler {
         "[WorkflowConfigHandler] Loading workflow from DSL config"
       )
 
+      console.log("dslConfig", JSON.stringify(dslConfig, null, 2))
+
       const parsedConfig = WorkflowConfigSchema.parse(dslConfig)
+      await verifyWorkflowConfig(parsedConfig, {
+        throwOnError: true,
+      })
+
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
       throw new WorkflowConfigError(
