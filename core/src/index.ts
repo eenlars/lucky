@@ -12,7 +12,7 @@ export type {
 export { Workflow } from "./workflow/Workflow"
 
 // Node exports
-export { invokeNode } from "./node/invokeNode"
+export { invokeAgent } from "./node/invokeNode"
 export { WorkFlowNode } from "./node/WorkFlowNode"
 
 // Message exports
