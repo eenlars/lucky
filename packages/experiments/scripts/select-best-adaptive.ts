@@ -1,7 +1,7 @@
 /**
  * select-best-adaptive.ts
  *
- * Finds the best configuration across our multi-loop system (v3) and GPT-5,
+ * Finds the best configuration across our multi-loop system (our-algorithm) and GPT-5,
  * optimizing for highest accuracy and lowest cost + time.
  *
  * Run:
@@ -94,22 +94,22 @@ function summarizeGroup(label: string, runs: Run[]) {
 
 async function main() {
   const cwd = process.cwd()
-  const v3Path = path.resolve(
+  const ourAlgorithmPath = path.resolve(
     cwd,
-    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.v3.json"
+    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.our-algorithm.json"
   )
   const g5Path = path.resolve(
     cwd,
     "app/public/research-experiments/tool-real/experiments/03-context-adaptation/gpt5.json"
   )
 
-  const v3 = JSON.parse(await fs.readFile(v3Path, "utf-8")) as Results
+  const ourAlgorithm = JSON.parse(await fs.readFile(ourAlgorithmPath, "utf-8")) as Results
   const g5 = JSON.parse(await fs.readFile(g5Path, "utf-8")) as Results
 
-  // Group v3 by model
+  // Group our-algorithm by model
   const map = new Map<string, Run[]>()
-  for (const r of v3.runs) {
-    const key = `v3:${r.model}`
+  for (const r of ourAlgorithm.runs) {
+    const key = `our-algorithm:${r.model}`
     const arr = map.get(key)
     if (arr) arr.push(r)
     else map.set(key, [r])
@@ -136,7 +136,7 @@ async function main() {
 
   const lines: string[] = []
   lines.push(
-    `Best overall: ${system === "v3" ? "our multi-loop" : "GPT-5"} with ${model} — accuracy ${best.finalAcc}%, cost $${best.avgCostUsd}, time ${best.avgDurationMs} ms (N=${best.n}, within-limit excluded).`
+    `Best overall: ${system === "our-algorithm" ? "our multi-loop" : "GPT-5"} with ${model} — accuracy ${best.finalAcc}%, cost $${best.avgCostUsd}, time ${best.avgDurationMs} ms (N=${best.n}, within-limit excluded).`
   )
   lines.push(
     `Next best candidates: ${rows
@@ -150,7 +150,7 @@ async function main() {
 
   console.log("\nParagraph:\n")
   console.log(lines.join(" "))
-  console.log("\n(From:\n  v3:", v3Path, "\n  gpt-5:", g5Path, ")\n")
+  console.log("\n(From:\n  our-algorithm:", ourAlgorithmPath, "\n  gpt-5:", g5Path, ")\n")
 }
 
 main().catch((err) => {

@@ -2,42 +2,42 @@
 
 /**
  * Main entry point for the evolutionary workflow system.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * Orchestrates two evolution modes:
  * - **Cultural Evolution**: Iterative self-improvement through analysis
  * - **Genetic Programming**: Population-based evolution with crossover/mutation
- * 
+ *
  * ## Command Line Interface
- * 
+ *
  * ```bash
  * tsx src/core/main.ts --mode=<cultural|GP> [options]
  * ```
- * 
+ *
  * Options:
  * - `--generations=<num>`: Override generation count for GP
  * - `--population=<num>`: Override population size for GP
  * - `--setup-file=<path>`: Use custom workflow setup file
- * 
+ *
  * ## Execution Flow
- * 
+ *
  * 1. **Initialization**: Parse CLI args, load configuration
- * 2. **Mode Selection**: Route to cultural or GP evolution
+ * 2. **Mode Selection**: Route to iterative or GP evolution
  * 3. **Evolution Loop**: Execute iterations with progress tracking
  * 4. **Result Saving**: Persist evolved workflows incrementally
  * 5. **Final Report**: Display performance metrics and costs
- * 
+ *
  * ## Robust Execution
- * 
- * Cultural evolution includes:
+ *
+ * Iterative evolution includes:
  * - Retry mechanism for failed iterations (2 retries)
  * - Circuit breaker for consecutive failures (10% tolerance)
  * - Incremental saving of successful configurations
  * - Rollback to last successful state on failure
- * 
+ *
  * ## Resource Management
- * 
+ *
  * - Spending limits enforced via SpendingTracker
  * - Cost aggregation across all iterations
  * - Early termination on budget exhaustion
@@ -62,6 +62,7 @@ import { displayResults } from "@core/utils/logging/displayResults"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { hashWorkflow } from "@core/workflow/schema/hash"
 import {
   loadSingleWorkflow,
   persistWorkflow,
@@ -173,13 +174,13 @@ type GeneticResult = {
 /**
  * Executes either cultural or genetic evolution depending on the configured mode.
  * Both share a common logging and result-handling structure, so we unify them here.
- * 
- * Cultural evolution iteratively improves a single workflow through analysis.
+ *
+ * Iterative evolution iteratively improves a single workflow through analysis.
  * Genetic evolution maintains a population and uses crossover/mutation.
  */
 async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   /* ------------------------------------------------------------------
-   * CULTURAL EVOLUTION (ITERATIVE)
+   * ITERATIVE IMPROVEMENT
    * ------------------------------------------------------------------ */
   if (mode === "iterative") {
     const runService = new RunService(true, mode)
@@ -204,7 +205,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     guard(setup, "Setup not found")
 
     let totalCost = 0
-    const parent1Id: string | undefined = undefined
+    let parent1Id: string | undefined = undefined
     const parent2Id: string | undefined = undefined
     const results: IterativeResult["results"] = []
     const stats = { successful: 0, failed: 0, recovered: 0 }
@@ -215,6 +216,25 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       mainQuestion: SELECTED_QUESTION.goal,
       iterations: ITERATIVE_EVOLUTION_ITERATIONS,
     })
+
+    // Save initial workflow to Generation 0 before any iterations
+    const initialConfigHash = hashWorkflow(setup).substring(0, 8)
+    const runSuffix = runService.getRunId().slice(-6)
+    const initialWfVersionId = `wf_ver_${initialConfigHash}_${runSuffix}_00`
+
+    Workflow.create({
+      config: setup,
+      evaluationInput: SELECTED_QUESTION,
+      parent1Id: undefined,
+      parent2Id: undefined,
+      evolutionContext: runService.getEvolutionContext(),
+      toolContext: SELECTED_QUESTION.outputSchema
+        ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
+        : undefined,
+      workflowVersionId: initialWfVersionId,
+    })
+
+    lgg.log(`💾 Saved initial workflow to Generation 0: ${initialWfVersionId}`)
 
     // create aggregated evaluator for all questions
     const aggregatedEvaluator = new AggregatedEvaluator()
@@ -240,19 +260,24 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             )
           }
 
+          // Create a unique workflow version per generation/iteration to capture lineage
+          const configHash = hashWorkflow(setup).substring(0, 8)
+          const runSuffix = runService.getRunId().slice(-6)
+          const iterationSuffix = String(
+            runService.getEvolutionContext().generationNumber
+          ).padStart(2, "0")
+          const wfVersionId = `wf_ver_${configHash}_${runSuffix}_${iterationSuffix}`
+
           const runner = Workflow.create({
             config: setup,
             evaluationInput: SELECTED_QUESTION,
             parent1Id,
             parent2Id,
-            evolutionContext: {
-              runId: runService.getRunId(),
-              generationId: runService.getCurrentGenerationId(),
-              generationNumber: iterationIndex + 1,
-            },
+            evolutionContext: runService.getEvolutionContext(),
             toolContext: SELECTED_QUESTION.outputSchema
               ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
               : undefined,
+            workflowVersionId: wfVersionId,
           })
 
           await runner.prepareWorkflow(
@@ -312,6 +337,9 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             `💾 Saved evolved configuration after iteration ${iteration}: ${targetFile}`
           )
 
+          // Chain lineage to next iteration
+          parent1Id = runner.getWorkflowVersionId()
+
           if (retry > 0) stats.recovered++
           stats.successful++
           return true
@@ -323,6 +351,25 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           lgg.error(
             `❌ Iteration ${iteration} attempt ${retry + 1} failed:`,
             error
+          )
+          // Persist detailed error to a file for retries
+          await lgg.logAndSave(
+            `iterative-retry-error-it${iteration}-try${retry + 1}.json`,
+            {
+              iteration,
+              attempt: retry + 1,
+              workflowVersionId: parent1Id,
+              runId: runService.getRunId(),
+              generationId: runService.getCurrentGenerationId(),
+              error:
+                error instanceof Error
+                  ? {
+                      name: error.name,
+                      message: error.message,
+                      stack: error.stack,
+                    }
+                  : String(error),
+            }
           )
         }
       }
@@ -349,6 +396,9 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       lgg.log(
         `\n🔄 Evolution Iteration ${i + 1}/${ITERATIVE_EVOLUTION_ITERATIONS}`
       )
+
+      // 1 iteration = 1 generation (create once per iteration, retries reuse this)
+      await runService.createNewGeneration()
 
       const success = await executeIteration(i)
       consecutiveFailures = success ? 0 : consecutiveFailures + 1
@@ -421,7 +471,19 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   // the genomes have not been reset after running this.
   const evaluator = new GPEvaluatorAdapter(workflowIO, newGoal, problemAnalysis)
 
-  const evolutionEngine = new EvolutionEngine(evolutionSettings, "iterative")
+  const evolutionEngine = new EvolutionEngine(evolutionSettings, "GP")
+
+  // Determine optional base workflow for GP mode using the Loader (centralized logging)
+  let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<
+    infer T
+  >
+    ? T | undefined
+    : undefined
+  if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
+    const requestedGPFile =
+      cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
+    baseWorkflowForGP = await loadSingleWorkflow(requestedGPFile)
+  }
 
   lgg.log("evolving workflow to handle all cases optimally", {
     workflowCasesCount:
@@ -437,12 +499,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     evolutionResult = await evolutionEngine.evolve({
       evaluationInput: SELECTED_QUESTION,
       evaluator,
-      _baseWorkflow:
-        CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow"
-          ? await loadSingleWorkflow(
-              cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
-            )
-          : undefined,
+      _baseWorkflow: baseWorkflowForGP,
       problemAnalysis,
     })
   } catch (error) {

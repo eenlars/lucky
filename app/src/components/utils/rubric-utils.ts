@@ -31,3 +31,30 @@ export function generateFakeScores(criteria: RubricCriteria[]): RubricCriteria[]
     achievedPoints: Math.round(Math.random() * c.maxPoints)
   }))
 }
+
+export function parseRubricString(rubricString: string): RubricCriteria[] {
+  if (!rubricString || !rubricString.includes('Evaluation Rubric')) {
+    return []
+  }
+  
+  const lines = rubricString.split('\n')
+  const criteria: RubricCriteria[] = []
+  
+  // Parse lines that match the pattern: "1. Name (X points)"
+  const criterionRegex = /^(\d+)\.\s*(.+?)\s*\((\d+)\s*points?\)/
+  
+  for (const line of lines) {
+    const match = line.match(criterionRegex)
+    if (match) {
+      const [, id, name, points] = match
+      criteria.push({
+        id: id,
+        name: name.trim(),
+        maxPoints: parseInt(points, 10),
+        achievedPoints: null
+      })
+    }
+  }
+  
+  return criteria.length > 0 ? criteria : []
+}

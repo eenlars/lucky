@@ -89,14 +89,10 @@ export async function chooseHandoffSequential({
     ? `\n\nContent:\n${JSON.stringify(content)}`
     : ""
 
-  const effectiveHandOffs = [...handOffs]
-  if (workflowMessage.fromNodeId !== "start") {
-    effectiveHandOffs.push("clarify")
-  }
-
+  const sanitizedHandOffs = handOffs
   const handOffsContext =
-    effectiveHandOffs.length > 0
-      ? `\n\nAvailable handoffs: ${effectiveHandOffs.join(", ")}`
+    sanitizedHandOffs.length > 0
+      ? `\n\nAvailable handoffs: ${sanitizedHandOffs.join(", ")}`
       : ""
 
   const prompt = `
@@ -106,13 +102,12 @@ export async function chooseHandoffSequential({
       this just happened: ${usageContext}
       these are your memories: ${memoryContext}
       ${handOffsContext}
-      ${effectiveHandOffs.includes("end") ? handoffPrompts.end : "Choose one of the available handoffs based on what needs to be done next."}
-      If you need clarification from the previous node, choose 'clarify' and provide the question in handoffContext.
+      ${sanitizedHandOffs.includes("end") ? handoffPrompts.end : "Choose one of the available handoffs based on what needs to be done next."}
     `
 
   const { data, error, usdCost } = await callModelHandoff({
     prompt,
-    handOffs: effectiveHandOffs,
+    handOffs: sanitizedHandOffs,
   })
 
   const replyMessage: Payload = {

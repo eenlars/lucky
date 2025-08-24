@@ -1,32 +1,33 @@
 /**
  * Unified tool framework for code and MCP tool integration.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * Provides a single interface for defining and executing tools with:
  * - Type-safe parameter validation via Zod schemas
  * - Automatic parameter correction for common AI mistakes
  * - Context propagation to tools (workflow ID, files, goals)
  * - Error handling and result wrapping
- * 
+ *
  * ## Tool Definition Pattern
- * 
+ *
  * All tools follow the same pattern:
  * 1. Define parameters with Zod schema
  * 2. Implement execute function with typed params
  * 3. Convert to AI framework format for runtime use
- * 
+ *
  * ## Runtime Flow
- * 
+ *
  * 1. AI generates tool call with parameters
  * 2. Parameters validated and auto-corrected
  * 3. Tool executed with workflow context
  * 4. Result wrapped in success/error envelope
  * 5. Response returned to AI for processing
- * 
+ *
  * @module tools/toolFactory
  */
 
+import Tools from "@core/tools/code/output.types"
 import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { CodeToolName } from "@core/tools/tool.types"
@@ -62,15 +63,15 @@ export interface DefineToolConfig<TParams = any, TResult = any> {
 
 /**
  * 🔧 The unified way to create tools with type safety and validation.
- * 
+ *
  * Runtime behavior:
  * 1. Validates input parameters against Zod schema
  * 2. Executes tool function with validated params and context
  * 3. Wraps result in success/error envelope for consistent handling
- * 
+ *
  * @param config Tool configuration with name, params schema, and execute function
  * @returns Tool definition ready for AI framework integration
- * 
+ *
  * @example
  * const searchTool = defineTool({
  *   name: "search",
@@ -125,9 +126,9 @@ export function defineTool<
 
 /**
  * Convert a tool definition to the AI framework Tool type.
- * 
+ *
  * ## Runtime Processing
- * 
+ *
  * 1. **Parameter Validation**: AI-generated params validated against schema
  * 2. **Auto-Correction**: Common AI mistakes corrected automatically
  *    - Missing required fields filled with defaults
@@ -135,14 +136,14 @@ export function defineTool<
  *    - Invalid values replaced with nearest valid option
  * 3. **Execution**: Tool runs with corrected params and context
  * 4. **Error Handling**: Failures return error messages, not exceptions
- * 
+ *
  * ## Auto-Correction Examples
- * 
+ *
  * - `null` → default value for optional params
  * - String numbers → parsed numbers
  * - Missing array → empty array
  * - Invalid enum → first valid option
- * 
+ *
  * @param toolDef Tool definition from defineTool
  * @param toolExecutionContext Runtime context for tool execution
  * @returns AI framework compatible tool
@@ -184,7 +185,10 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
         return result.error || "Tool execution failed"
       }
 
-      return result.data
+      // Unwrap CodeToolResult for AI runtime: return only the tool output
+      return Tools.isCodeToolResult(result.data)
+        ? (result.data as { output: unknown }).output
+        : result.data
     },
   })
 }

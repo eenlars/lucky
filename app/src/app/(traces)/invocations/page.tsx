@@ -1,17 +1,13 @@
 "use client"
 
-import {
-  deleteWorkflowInvocations,
-  retrieveWorkflowInvocations,
-  type WorkflowInvocationFilters,
-  type WorkflowInvocationSortOptions,
-} from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { showToast } from "@/lib/toast-utils"
 import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { Button } from "@/ui/button"
 
 // Temporary type extension for new scoring fields
 type Tables<T extends keyof Database["public"]["Tables"]> =
@@ -21,6 +17,33 @@ type WorkflowInvocationWithScores = Tables<"WorkflowInvocation"> & {
   accuracy?: number | null
   fitness_score?: number | null
 }
+// Type definitions
+interface WorkflowInvocationFilters {
+  status?: string | string[]
+  runId?: string
+  generationId?: string
+  wfVersionId?: string
+  dateRange?: {
+    start: string
+    end: string
+  }
+  dateFrom?: string
+  dateTo?: string
+  hasFitnessScore?: boolean
+  hasAccuracy?: boolean
+  minCost?: number
+  maxCost?: number
+  minAccuracy?: number
+  maxAccuracy?: number
+  minFitnessScore?: number
+  maxFitnessScore?: number
+}
+
+interface WorkflowInvocationSortOptions {
+  field: string
+  order: "asc" | "desc"
+}
+
 // initialize dayjs plugins
 dayjs.extend(relativeTime)
 
@@ -155,14 +178,21 @@ export default function InvocationsPage() {
         order: sortOrder,
       }
 
-      const response = await retrieveWorkflowInvocations(
-        currentPage,
-        itemsPerPage,
-        filterParams,
-        sortParams
-      )
-      setInvocations(response.data)
-      setTotalCount(response.totalCount)
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        pageSize: itemsPerPage.toString(),
+        filters: JSON.stringify(filterParams),
+        sort: JSON.stringify(sortParams),
+      })
+
+      const response = await fetch(`/api/workflow/invocations?${params}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch invocations: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+      setInvocations(result.data)
+      setTotalCount(result.totalCount)
     } catch (err) {
       setError(
         err instanceof Error
@@ -262,7 +292,19 @@ export default function InvocationsPage() {
 
     try {
       const idsToDelete = Array.from(selectedRows)
-      await deleteWorkflowInvocations(idsToDelete)
+      
+      const response = await fetch("/api/workflow/invocations", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: idsToDelete }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Failed to delete invocations")
+      }
 
       // Remove deleted items from the invocations list
       setInvocations(
@@ -270,12 +312,15 @@ export default function InvocationsPage() {
       )
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
+      
+      const count = idsToDelete.length
+      showToast.success.delete(`Deleted ${count} invocation${count > 1 ? 's' : ''}`)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to delete selected invocations"
-      )
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to delete selected invocations"
+      setError(errorMessage)
+      showToast.error.generic(errorMessage)
       console.error("Error deleting invocations:", err)
     } finally {
       setDeleteLoading(false)
@@ -666,35 +711,30 @@ export default function InvocationsPage() {
 
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-3 items-center">
-          <button
+          <Button
             onClick={fetchWorkflowInvocations}
             disabled={loading}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors cursor-pointer"
           >
             {loading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
             )}
             {loading ? "Loading..." : "Refresh Invocations"}
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
+            variant="outline"
           >
             <Filter className="w-4 h-4 mr-2" />
             {showFilters ? "Hide Filters" : "Show Filters"}
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setShowCompletedOnly(!showCompletedOnly)}
-            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer ${
-              showCompletedOnly
-                ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
-                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
+            variant={showCompletedOnly ? "default" : "outline"}
           >
             ✓ {showCompletedOnly ? "Show All" : "Completed Only"}
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2">
             <label
@@ -724,19 +764,21 @@ export default function InvocationsPage() {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 bg-blue-50 px-3 py-1 rounded-full">
                 {selectedRows.size} selected
               </span>
-              <button
+              <Button
                 onClick={() => setSelectedRows(new Set())}
-                className="text-sm font-medium text-gray-600 hover:text-gray-800 underline cursor-pointer transition-colors"
+                variant="link"
+                size="sm"
               >
                 Clear selection
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setDeleteConfirmOpen(true)}
-                className="inline-flex items-center px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                variant="destructive"
+                size="sm"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Selected
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -900,13 +942,13 @@ export default function InvocationsPage() {
               </div>
 
               <div className="flex items-end">
-                <button
+                <Button
                   onClick={clearFilters}
-                  className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                  variant="outline"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Clear Filters
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -932,15 +974,17 @@ export default function InvocationsPage() {
               <h3 className="text-sm font-medium text-blue-900">
                 Active Filters
               </h3>
-              <button
+              <Button
                 onClick={() => {
                   clearFilters()
                   setShowCompletedOnly(false)
                 }}
-                className="text-sm text-blue-700 hover:text-blue-900 underline"
+                variant="link"
+                size="sm"
+                className="text-blue-700 hover:text-blue-900"
               >
                 Clear All
-              </button>
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {showCompletedOnly && (
@@ -1015,13 +1059,14 @@ export default function InvocationsPage() {
               <span>results</span>
             </div>
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Previous
-              </button>
+              </Button>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   Page
@@ -1032,15 +1077,16 @@ export default function InvocationsPage() {
                 </span>
                 <span className="font-medium text-sm">{totalPages}</span>
               </div>
-              <button
+              <Button
                 onClick={() =>
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -1304,13 +1350,14 @@ export default function InvocationsPage() {
               <span>results</span>
             </div>
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Previous
-              </button>
+              </Button>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   Page
@@ -1321,15 +1368,16 @@ export default function InvocationsPage() {
                 </span>
                 <span className="font-medium text-sm">{totalPages}</span>
               </div>
-              <button
+              <Button
                 onClick={() =>
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                variant="outline"
+                size="sm"
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1389,23 +1437,23 @@ export default function InvocationsPage() {
               be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
                 onClick={() => setDeleteConfirmOpen(false)}
                 disabled={deleteLoading}
-                className="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white text-sm font-medium rounded-lg border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors cursor-pointer"
+                variant="outline"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDeleteSelected}
                 disabled={deleteLoading}
-                className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600 transition-colors cursor-pointer"
+                variant="destructive"
               >
                 {deleteLoading && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 )}
                 {deleteLoading ? "Deleting..." : "Delete"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

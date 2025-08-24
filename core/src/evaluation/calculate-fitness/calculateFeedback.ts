@@ -1,7 +1,10 @@
 import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { feedbackPrompt } from "@core/prompts/feedback.p"
-import { rcaPrompt } from "@core/prompts/rca"
+import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
+import {
+  singleFeedbackSystemPrompt,
+  singleFeedbackUserPrompt,
+} from "@core/prompts/evaluator/feedback/singleFeedback.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -17,45 +20,36 @@ export async function calculateFeedback({
 >): Promise<RS<string>> {
   if (isNir(agentSteps)) {
     lgg.warn("No outputs found")
-    return R.error("No outputs to evaluate", 0)
+    // Gracefully handle missing outputs by returning default feedback
+    return R.success(
+      "No outputs produced by the workflow run, skipping feedback.",
+      0
+    )
   }
-  const outputStr = llmify(JSON.stringify(agentSteps))
-  const systemPrompt = `.
-    ${rcaPrompt}
+  const outputStr = toolUsageToString(agentSteps, 1000, {
+    includeArgs: false,
+  })
 
-    # ground truth
-    Ground Truth Solution:
-    ${evaluation}
+  const useReasoning = true
 
-    # response output
-    ${feedbackPrompt}
-    - In your feedback, include the required elements as specified.
-`
-  const userPrompt = `
-Workflow Final Output:
-<output>
-${outputStr}
-</output>
+  const systemPrompt = singleFeedbackSystemPrompt(
+    evaluation,
+    outputStr,
+    useReasoning
+  )
+  const userPrompt = singleFeedbackUserPrompt(outputStr)
 
-Evaluate how well the workflow's final output matches the expected ground truth solution, considering the evaluation criteria above.
-if not good, you need to give examples why it's not good.
-
-VERY IMPORTANT!!! : the feedback may NEVER include the answer, or parts of the answer to the question. if it does, it will be rejected.
-You may include the original question in the feedback, but you have to note that this is a general question for this workflow, and it may not generalize for the netire workflow.
-
-keep the feedback short and dense with information.
-`
-  console.log("evaluation", evaluation)
-  console.log("outputStr", outputStr)
   const response = await sendAI({
     messages: [
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: getDefaultModels().fitness,
+    model: useReasoning
+      ? getDefaultModels().reasoning
+      : getDefaultModels().fitness,
     mode: "text",
     opts: {
-      reasoning: false,
+      reasoning: useReasoning,
     },
   })
 

@@ -41,7 +41,10 @@ export function workflowToString(
     totalString += explainSubsetOfTools(
       workflow
         .getConfig()
-        .nodes.flatMap((node) => [...node.mcpTools, ...node.codeTools])
+        .nodes.flatMap((node) => [
+          ...(Array.isArray(node.mcpTools) ? node.mcpTools : []),
+          ...(Array.isArray(node.codeTools) ? node.codeTools : []),
+        ])
     )
   }
   if (includeAdjacencyList)
@@ -68,7 +71,10 @@ export function workflowToStringFromConfig(
   let totalString = ""
   if (includeToolExplanations) {
     totalString += explainSubsetOfTools(
-      config.nodes.flatMap((node) => [...node.mcpTools, ...node.codeTools])
+      config.nodes.flatMap((node) => [
+        ...(Array.isArray(node.mcpTools) ? node.mcpTools : []),
+        ...(Array.isArray(node.codeTools) ? node.codeTools : []),
+      ])
     )
   }
   if (includeAdjacencyList) {

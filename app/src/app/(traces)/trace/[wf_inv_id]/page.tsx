@@ -5,10 +5,7 @@ import { use, useEffect, useState } from "react"
 
 import { Timeline } from "@/trace-visualization/components/Timeline"
 import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
-import {
-  NodeInvocationExtended,
-  nodeInvocations,
-} from "@/trace-visualization/db/Workflow/nodeInvocations"
+import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared"
@@ -158,17 +155,31 @@ export default function TraceDetailPage({
 
       try {
         // Fetch basic workflow info first for immediate display
-        const { workflowInvocation, workflowVersion, workflow } =
-          await basicWorkflow(wf_inv_id)
+        const basic = await basicWorkflow(wf_inv_id)
+        if (!basic) {
+          setError("Trace not found")
+          setLoading(false)
+          setTimelineLoading(false)
+          return
+        }
+        const { workflowInvocation, workflowVersion, workflow } = basic
         setWorkflow(workflowInvocation)
         setWorkflowVersion(workflowVersion)
         setWorkflowDetails(workflow)
         setLoading(false)
 
-        // Then fetch detailed node data asynchronously
+        // Then fetch detailed node data asynchronously (via API)
         setTimelineLoading(true)
-        const { nodeInvocations: nodeInvocationData } =
-          await nodeInvocations(wf_inv_id)
+        const res = await fetch(`/api/trace/${wf_inv_id}/node-invocations`, {
+          cache: "no-store",
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          throw new Error(err?.error || "Failed to fetch node invocations")
+        }
+        const { nodeInvocations: nodeInvocationData } = (await res.json()) as {
+          nodeInvocations: NodeInvocationExtended[]
+        }
 
         // Convert nodeInvocations to timeline entries
         const timelineEntries = createTimelineEntries(
@@ -206,15 +217,31 @@ export default function TraceDetailPage({
           const refreshData = async () => {
             try {
               // Refresh basic data
-              const { workflowInvocation, workflowVersion, workflow } =
-                await basicWorkflow(wf_inv_id)
+              const basic = await basicWorkflow(wf_inv_id)
+              if (!basic) {
+                setError("Trace not found")
+                return
+              }
+              const { workflowInvocation, workflowVersion, workflow } = basic
               setWorkflow(workflowInvocation)
               setWorkflowVersion(workflowVersion)
               setWorkflowDetails(workflow)
 
-              // Refresh node data
+              // Refresh node data (via API)
+              const res = await fetch(
+                `/api/trace/${wf_inv_id}/node-invocations`,
+                { cache: "no-store" }
+              )
+              if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                throw new Error(
+                  err?.error || "Failed to refresh node invocations"
+                )
+              }
               const { nodeInvocations: nodeInvocationData } =
-                await nodeInvocations(wf_inv_id)
+                (await res.json()) as {
+                  nodeInvocations: NodeInvocationExtended[]
+                }
               const timelineEntries = createTimelineEntries(
                 nodeInvocationData,
                 workflowVersion

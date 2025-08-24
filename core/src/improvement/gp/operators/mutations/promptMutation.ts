@@ -1,6 +1,6 @@
 /**
  * Prompt mutation operations for evolving node system prompts.
- * 
+ *
  * This module provides mutations that modify the system prompts of workflow
  * nodes using AI-driven variations. These mutations explore different
  * prompting strategies and styles to improve node performance.
@@ -8,6 +8,7 @@
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
@@ -21,12 +22,12 @@ import type { IntensityLevel, MutationOperator } from "./mutation.types"
 
 /**
  * Mutates node system prompts using AI-generated variations.
- * 
+ *
  * Applies semantic mutations to node prompts while preserving core functionality.
  * The mutation intensity determines how dramatically the prompt changes, from
  * minimal tweaks to extreme rewrites. Can optionally apply specific prompt
  * patterns to guide the mutation process.
- * 
+ *
  * @remarks
  * Prompt mutations are crucial for optimizing how nodes interpret and respond
  * to tasks. They enable evolution of communication styles, instruction clarity,
@@ -35,12 +36,12 @@ import type { IntensityLevel, MutationOperator } from "./mutation.types"
 export class PromptMutation implements MutationOperator {
   /**
    * Executes prompt mutation on a randomly selected node.
-   * 
+   *
    * @param mutatedConfig - The workflow configuration to mutate (modified in-place)
    * @param parent - Parent genome providing context and goals
    * @param intensity - Mutation strength (0.0-1.0) determining variation level
    * @returns The cost in USD of the AI call for mutation
-   * 
+   *
    * @remarks
    * - Selects a random non-entry node for mutation
    * - Uses intensity to determine mutation severity (minimal/moderate/extreme)
@@ -76,6 +77,8 @@ export class PromptMutation implements MutationOperator {
       }
 
       The goal of the workflow is : ${parent.getGoal()}
+
+      ${GENERALIZATION_LIMITS}
       `
 
       const result = await sendAI({
@@ -104,10 +107,10 @@ export class PromptMutation implements MutationOperator {
 
   /**
    * Maps numerical intensity to semantic intensity levels.
-   * 
+   *
    * @param intensity - Mutation strength (0.0-1.0)
    * @returns Semantic intensity level for prompt variation
-   * 
+   *
    * @remarks
    * - 0.0-0.3: minimal changes (minor rewording, clarifications)
    * - 0.3-0.6: moderate changes (restructuring, style changes)
@@ -121,10 +124,10 @@ export class PromptMutation implements MutationOperator {
 
   /**
    * Selects a random node eligible for prompt mutation.
-   * 
+   *
    * @param workflow - The workflow configuration to search
    * @returns A randomly selected node, or null if none available
-   * 
+   *
    * @remarks
    * - Prefers non-entry nodes to preserve workflow stability
    * - Falls back to entry node for single-node workflows

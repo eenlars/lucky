@@ -1,9 +1,79 @@
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
-import { describe, expect, it } from "vitest"
-import { verifyModelNameExists, verifyNoDuplicateHandoffs } from "../index"
-import { verifyToolsUnique } from "../toolsVerification"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  verifyModelNameExists,
+  verifyModelsAreActive,
+  verifyNoDuplicateHandoffs,
+} from "../index"
+import {
+  verifyAllToolsAreActive,
+  verifyMaxToolsPerAgent,
+  verifyToolSetEachNodeIsUnique,
+  verifyToolsUnique,
+} from "../toolsVerification"
+
+// Mock the constants module
+vi.mock("@runtime/settings/constants", () => ({
+  CONFIG: {
+    tools: {
+      uniqueToolsPerAgent: true,
+      uniqueToolSetsPerAgent: true,
+      maxToolsPerAgent: 3,
+      defaultTools: new Set(["urlToMarkdown", "csvReader"]),
+      inactive: new Set(["readFileLegacy"]),
+    },
+    models: {
+      inactive: new Set(["inactive-model"]),
+    },
+  },
+}))
+
+// Mock the tool types
+vi.mock("@core/tools/tool.types", () => ({
+  ALL_ACTIVE_TOOL_NAMES: [
+    "searchGoogleMaps",
+    "saveFileLegacy",
+    "readFileLegacy",
+    "verifyLocation",
+    "locationDataManager",
+    "locationDataInfo",
+    "browserAutomation",
+    "firecrawlAPI",
+    "urlToMarkdown",
+    "csvReader",
+    "csvInfo",
+    "csvWriter",
+    "csvFilter",
+    "contextHandler",
+    "contextList",
+    "contextGet",
+    "contextSet",
+    "contextManage",
+    "csvRowProcessor",
+    "todoRead",
+    "todoWrite",
+    "expectedOutputHandler",
+    "memoryManager",
+    "humanApproval",
+    "humanHelp",
+    "runInspector",
+    "jsExecutor",
+    // MCP
+    "proxy",
+    "tavily",
+    "filesystem",
+    "firecrawl",
+    "browserUse",
+    "googleScholar",
+    "playwright",
+    "serpAPI",
+  ],
+  INACTIVE_TOOLS: new Set(["readFileLegacy", "deprecatedTool"]),
+}))
+
+import { CONFIG } from "@runtime/settings/constants"
 
 const validModel = getDefaultModels().medium
 const wrongExample: WorkflowConfig = {
@@ -135,16 +205,13 @@ const duplicateHandoffsExample: WorkflowConfig = {
 }
 
 describe("verifyToolsUnique", () => {
-  // TODO: major test coverage issues:
-  // 1. main test is skipped - needs implementation to alter constants for testing
-  // 2. no tests for MCP tools validation
-  // 3. no tests for tool availability checking
-  // 4. no tests for tool parameter validation
-  // 5. no tests for mixed MCP and code tools in same node
-  // 6. no tests for empty tool arrays
-  // 7. no tests for tool configuration validation
-  it.skip("should detect tools used by multiple nodes", async () => {
-    // TODO: need to make we can alter constants from the test, otherwise we can't test this nicely.
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // Ensure unique tools are enforced
+    ;(CONFIG.tools as any).uniqueToolsPerAgent = true
+  })
+
+  it("should detect tools used by multiple nodes", async () => {
     // Using the provided example with duplicate tool usage
     const errors = await verifyToolsUnique(wrongExample)
 
@@ -157,6 +224,95 @@ describe("verifyToolsUnique", () => {
     // Verify that the error mentions the nodes using this tool
     expect(errors[0]).toContain("google-maps-scraper")
     expect(errors[0]).toContain("store-data-automation")
+  })
+
+  it("should allow duplicate tools when uniqueToolsPerAgent is false", async () => {
+    ;(CONFIG.tools as any).uniqueToolsPerAgent = false
+
+    const errors = await verifyToolsUnique(wrongExample)
+    expect(errors).toEqual([])
+  })
+
+  it("should handle workflows with no tools", async () => {
+    const noToolsWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with no tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolsUnique(noToolsWorkflow)
+    expect(errors).toEqual([])
+  })
+
+  it("should handle mixed MCP and code tools", async () => {
+    const mixedToolsWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with mixed tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "node with same tool names",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"], // Duplicate MCP tool
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolsUnique(mixedToolsWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("tavily")
+    expect(errors[0]).toContain("node1")
+    expect(errors[0]).toContain("node2")
+  })
+
+  it("should detect MCP tools used by multiple nodes", async () => {
+    const mcpDuplicateWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "first mcp user",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["firecrawl"],
+          codeTools: [],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "second mcp user",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["firecrawl"], // Duplicate
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolsUnique(mcpDuplicateWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("firecrawl")
   })
 })
 
@@ -179,5 +335,417 @@ describe("verifyNoDuplicateHandoffs", () => {
     const errors = await verifyNoDuplicateHandoffs(duplicateHandoffsExample)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("duplicate handoffs")
+  })
+})
+
+describe("verifyAllToolsAreActive", () => {
+  it("should detect inactive tools", async () => {
+    const inactiveToolWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with inactive tool",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: ["readFileLegacy"], // This is in INACTIVE_TOOLS
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyAllToolsAreActive(inactiveToolWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("inactive tools")
+    expect(errors[0]).toContain("readFileLegacy")
+    expect(errors[0]).toContain("node1")
+  })
+
+  it("should detect unknown tools", async () => {
+    const unknownToolWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with unknown tool",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["unknownMcpTool" as any],
+          codeTools: ["unknownCodeTool" as any],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyAllToolsAreActive(unknownToolWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors.some((error) => error.includes("unknown tools"))).toBe(true)
+    expect(errors.some((error) => error.includes("unknownMcpTool"))).toBe(true)
+    expect(errors.some((error) => error.includes("unknownCodeTool"))).toBe(true)
+  })
+
+  it("should allow default tools", async () => {
+    const defaultToolWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with default tool",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: ["urlToMarkdown"], // This is in defaultTools
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyAllToolsAreActive(defaultToolWorkflow)
+    expect(errors).toEqual([])
+  })
+
+  it("should allow active tools", async () => {
+    const activeToolWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with active tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["saveFileLegacy"],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyAllToolsAreActive(activeToolWorkflow)
+    expect(errors).toEqual([])
+  })
+})
+
+describe("verifyToolSetEachNodeIsUnique", () => {
+  beforeEach(() => {
+    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = true
+  })
+
+  it("should detect nodes with identical tool sets", async () => {
+    const duplicateToolSetWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "first node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "second node with same tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolSetEachNodeIsUnique(duplicateToolSetWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("same tool set")
+    expect(errors[0]).toContain("node1")
+    expect(errors[0]).toContain("node2")
+  })
+
+  it("should detect duplicate tools within same node", async () => {
+    const internalDuplicateWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with duplicate tools internally",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: ["readFileLegacy", "readFileLegacy"], // Duplicate
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolSetEachNodeIsUnique(
+      internalDuplicateWorkflow
+    )
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("duplicate tools in its own tool set")
+    expect(errors[0]).toContain("node1")
+  })
+
+  it("should allow empty tool sets", async () => {
+    const emptyToolSetWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "empty tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "also empty tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolSetEachNodeIsUnique(emptyToolSetWorkflow)
+    expect(errors).toEqual([])
+  })
+
+  it("should skip validation when uniqueToolSetsPerAgent is false", async () => {
+    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = false
+
+    const duplicateToolSetWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "first node",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "second node with same tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy"],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyToolSetEachNodeIsUnique(duplicateToolSetWorkflow)
+    expect(errors).toEqual([])
+  })
+})
+
+describe("verifyMaxToolsPerAgent", () => {
+  it("should detect MCP tools exceeding limit", async () => {
+    const tooManyMcpToolsWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with too many mcp tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [
+            "tavily",
+            "firecrawl",
+            "browserUse",
+            "proxy",
+            "googleScholar",
+            "serpAPI",
+          ], // 6 tools, limit is 3 + 2 defaultTools = 5
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyMaxToolsPerAgent(tooManyMcpToolsWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("exceeding the limit")
+    expect(errors[0]).toContain("mcp tools")
+    expect(errors[0]).toContain("node1")
+  })
+
+  it("should detect code tools exceeding limit", async () => {
+    const tooManyCodeToolsWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with too many code tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: [
+            "readFileLegacy",
+            "saveFileLegacy",
+            "searchGoogleMaps",
+            "verifyLocation",
+            "urlToMarkdown",
+            "csvReader",
+          ], // 6 tools, limit is 3 + 2 defaultTools = 5
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyMaxToolsPerAgent(tooManyCodeToolsWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("exceeding the limit")
+    expect(errors[0]).toContain("code tools")
+    expect(errors[0]).toContain("node1")
+  })
+
+  it("should allow tools within limit", async () => {
+    const validToolCountWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with acceptable tool count",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["readFileLegacy", "saveFileLegacy"],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyMaxToolsPerAgent(validToolCountWorkflow)
+    expect(errors).toEqual([])
+  })
+})
+
+describe("verifyModelsAreActive", () => {
+  it("should detect inactive models", async () => {
+    const inactiveModelWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with inactive model",
+          systemPrompt: "test",
+          modelName: "inactive-model" as AllowedModelName,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyModelsAreActive(inactiveModelWorkflow)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0]).toContain("inactive model")
+    expect(errors[0]).toContain("inactive-model")
+    expect(errors[0]).toContain("node1")
+  })
+
+  it("should allow active models", async () => {
+    const activeModelWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with active model",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: [],
+          codeTools: [],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    const errors = await verifyModelsAreActive(activeModelWorkflow)
+    expect(errors).toEqual([])
+  })
+})
+
+// Test for edge cases and comprehensive scenarios
+describe("Edge cases and comprehensive validation", () => {
+  it("should handle nodes with undefined tool arrays", async () => {
+    const undefinedToolsWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "node with undefined tools",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: undefined as any,
+          codeTools: undefined as any,
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    // Should not crash and should handle gracefully
+    const uniqueErrors = await verifyToolsUnique(undefinedToolsWorkflow)
+    const activeErrors = await verifyAllToolsAreActive(undefinedToolsWorkflow)
+    const setErrors = await verifyToolSetEachNodeIsUnique(
+      undefinedToolsWorkflow
+    )
+    const maxErrors = await verifyMaxToolsPerAgent(undefinedToolsWorkflow)
+
+    // All should handle undefined gracefully
+    expect(uniqueErrors).toEqual([])
+    expect(activeErrors).toEqual([])
+    expect(setErrors).toEqual([])
+    expect(maxErrors).toEqual([])
+  })
+
+  it("should handle complex mixed validation scenarios", async () => {
+    const complexWorkflow: WorkflowConfig = {
+      entryNodeId: "node1",
+      nodes: [
+        {
+          nodeId: "node1",
+          description: "complex node 1",
+          systemPrompt: "test",
+          modelName: getDefaultModels().medium,
+          mcpTools: ["tavily"],
+          codeTools: ["saveFileLegacy", "verifyLocation"],
+          handOffs: ["node2"],
+        },
+        {
+          nodeId: "node2",
+          description: "complex node 2",
+          systemPrompt: "test",
+          modelName: getDefaultModels().nano,
+          mcpTools: ["firecrawl"],
+          codeTools: ["searchGoogleMaps"],
+          handOffs: ["end"],
+        },
+      ],
+    }
+
+    // All validations should pass for this well-formed workflow
+    const uniqueErrors = await verifyToolsUnique(complexWorkflow)
+    const activeErrors = await verifyAllToolsAreActive(complexWorkflow)
+    const setErrors = await verifyToolSetEachNodeIsUnique(complexWorkflow)
+    const maxErrors = await verifyMaxToolsPerAgent(complexWorkflow)
+    const modelErrors = await verifyModelNameExists(complexWorkflow)
+    const activeModelErrors = await verifyModelsAreActive(complexWorkflow)
+
+    expect(uniqueErrors).toEqual([])
+    expect(activeErrors).toEqual([])
+    expect(setErrors).toEqual([])
+    expect(maxErrors).toEqual([])
+    expect(modelErrors).toEqual([])
+    expect(activeModelErrors).toEqual([])
   })
 })

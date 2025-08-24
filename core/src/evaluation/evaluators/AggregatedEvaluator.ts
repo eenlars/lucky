@@ -41,9 +41,9 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
 
     lgg.log("[AggregatedEvaluator] Workflow execution complete", {
       workflowLink: workflow.getLink(workflow.getWorkflowInvocationId()),
-      cost: usdCost,
-      time: totalTime / 1000,
-      resultsLength: data.results.length,
+      cost: Math.round(usdCost ?? 0),
+      time: Math.round(totalTime / 1000),
+      resultsLength: Math.round(data.results.length),
       fitness: averageFitness,
     })
 

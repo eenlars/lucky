@@ -31,10 +31,18 @@ export const verifyModelNameExists = async (
   for (const node of config.nodes) {
     if (!node.modelName) {
       errors.push(`Node '${node.nodeId}' is missing a modelName`)
-    } else if (!getModelV2(node.modelName)) {
-      errors.push(
-        `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
-      )
+    } else {
+      try {
+        if (!getModelV2(node.modelName)) {
+          errors.push(
+            `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
+          )
+        }
+      } catch {
+        errors.push(
+          `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
+        )
+      }
     }
   }
   return errors

@@ -4,7 +4,7 @@
  */
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"
+import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
 
 class WorkflowConfigError extends Error {
   constructor(
@@ -48,11 +48,29 @@ export class ClientWorkflowLoader {
       )
     }
   }
+
+  /**
+   * Load workflow config from DSL object with flexible validation for UI display
+   */
+  async loadFromDSLDisplay(dslConfig: WorkflowConfig): Promise<WorkflowConfig> {
+    try {
+      const parsedConfig = WorkflowConfigSchemaDisplay.parse(dslConfig)
+      return this.normalizeWorkflowConfig(parsedConfig)
+    } catch (error) {
+      throw new WorkflowConfigError(
+        "Failed to parse DSL config",
+        error as Error
+      )
+    }
+  }
 }
 
 // Export singleton for convenience
 export const clientWorkflowLoader = new ClientWorkflowLoader()
 
-// Export convenience function
+// Export convenience functions
 export const loadFromDSLClient = (dslConfig: WorkflowConfig) =>
   clientWorkflowLoader.loadFromDSL(dslConfig)
+
+export const loadFromDSLClientDisplay = (dslConfig: WorkflowConfig) =>
+  clientWorkflowLoader.loadFromDSLDisplay(dslConfig)

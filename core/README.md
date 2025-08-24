@@ -701,7 +701,7 @@ The system represents a **complete, production-ready implementation** of a self-
 
 ### Evolution System (Complete Implementation)
 
-#### 🧬 **Genetic Programming**
+#### 🧬 **Cultural evolution**
 
 - **Population Management**: 10-50 genomes with diversity metrics and parallel processing
 - **Evolution Engine**: μ+λ strategy with convergence detection and cost tracking
@@ -709,7 +709,7 @@ The system represents a **complete, production-ready implementation** of a self-
 - **Selection Algorithms**: Tournament and elite selection with diversity preservation
 - **Database Integration**: Complete persistence with evolution run tracking
 
-#### 📈 **Cultural Evolution**
+#### 📈 **Iterative Evolution with memory**
 
 - **Iterative Improvement**: Performance analysis with targeted optimization
 - **Self-Improvement**: Nodes autonomously optimize their configurations

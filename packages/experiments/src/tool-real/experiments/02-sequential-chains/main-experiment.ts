@@ -42,7 +42,7 @@ const MODELS: OpenRouterModelName[] = [
   experimentalModels.mistral.id,
   experimentalModels.gpt35turbo.id,
   experimentalModels.claude35haiku.id,
-  experimentalModels.gemini25pro.id,
+  // experimentalModels.gemini25pro.id,
 ]
 const REPETITIONS = 2
 const MAX_CONCURRENCY = 20

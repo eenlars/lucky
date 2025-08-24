@@ -202,7 +202,25 @@ const QUESTIONS = {
     goal: "I want to have dinner in bilbao with 5 friends. Find me the best restaurants in bilbao. no pizza.",
     workflowId: "wf-prompt-test",
   },
+
+  datasetTest: {
+    type: "dataset-records",
+    goal: `
+    This is data of sustainable companies.
+    We need to find the physical stores of every certified sustainable company in the Netherlands.
+    If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
+    We only want the physical stores where customers can go to (B2C). if not, do not include it.
+    `,
+    workflowId: "wf-dataset-test",
+    recordIds: [
+      "test-patagonia-amsterdam",
+      // "amstelhof",
+      // "maxhealth",
+      // "bcboncar",
+      // "bocca",
+    ], // Will need actual record ID from database
+  },
 } satisfies Record<string, EvaluationInput>
 
 export { QUESTIONS }
-export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.albertHeijn
+export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.datasetTest

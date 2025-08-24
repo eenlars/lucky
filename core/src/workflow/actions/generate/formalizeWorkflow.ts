@@ -3,6 +3,7 @@ import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
+import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@core/tools/tool.types"
 import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
@@ -16,15 +17,21 @@ import {
   handleWorkflowCompletion,
   WorkflowConfigSchemaEasy,
 } from "@core/workflow/schema/workflowSchema"
+import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
 import { getDefaultModels } from "@runtime/settings/models"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
-  prompt: string,
+  prompt: string, // try not to input a full workflow here. the aim is to give an instruction to change a workflow.
   options: GenerationOptions & AfterGenerationOptions
 ): Promise<RS<WorkflowConfig>> {
   console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))
-  const normalizedConfigNodes = options.workflowConfig?.nodes.map((node) => {
+  // Sanitize base workflow for the prompt to avoid advertising inactive tools
+  const baseSanitized = options.workflowConfig
+    ? sanitizeConfigTools(options.workflowConfig)
+    : undefined
+
+  const normalizedConfigNodes = baseSanitized?.nodes.map((node) => {
     return {
       ...node,
       modelName: mapModelNameToEasyName(node.modelName),
@@ -40,12 +47,12 @@ The workflow should:
 4. Choose relevant tools from the available options
 
 ${
-  options.workflowConfig
+  baseSanitized
     ? `
 BASE WORKFLOW:
 ${JSON.stringify(
   {
-    ...options.workflowConfig,
+    ...baseSanitized,
     nodes: normalizedConfigNodes,
   },
   null,
@@ -64,7 +71,9 @@ ${createWorkflowPrompt}
 }
 
 Available code tools: ${toolsExplanations("code")}
-Available MCP tools: (currently empty array)
+Available MCP tools: ${Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).join(
+    ", "
+  )}
 ${WORKFLOW_GENERATION_RULES}
 `
   const userPrompt = `
@@ -97,11 +106,14 @@ Create 1 workflow configuration for: ${prompt}
     workflowConfig
   )
 
+  // defensively sanitize any inactive/unknown tools that may have crept in
+  const sanitizedHandledWorkflow = sanitizeConfigTools(handledWorkflow)
+
   // For immediate UI feedback, skip verification by default unless explicitly requested
   if (options.verifyWorkflow === "none" || !options.verifyWorkflow) {
     return {
       success: true,
-      data: handledWorkflow,
+      data: sanitizedHandledWorkflow,
       usdCost: response.usdCost,
     }
   }
@@ -115,7 +127,7 @@ Create 1 workflow configuration for: ${prompt}
   }
 
   const { finalConfig, cost } = await validateAndRepairWorkflow(
-    handledWorkflow,
+    sanitizedHandledWorkflow,
     repairOptions
   )
 

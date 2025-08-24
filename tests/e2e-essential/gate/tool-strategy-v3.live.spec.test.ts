@@ -1,4 +1,4 @@
-import { selectToolStrategyV3 } from "@core/tools/any/selectToolStrategyV3"
+import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { ToolSet } from "ai"
 import { zodSchema } from "ai"

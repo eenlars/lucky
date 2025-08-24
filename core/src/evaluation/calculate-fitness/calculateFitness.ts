@@ -8,6 +8,11 @@ import {
   normalizeTime,
 } from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
+import {
+  fitnessSystemPrompt,
+  fitnessUserPrompt,
+} from "@core/prompts/evaluator/fitness/fitnessPrompt"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -24,51 +29,40 @@ async function calculateFitness({
   outputSchema,
   finalWorkflowOutput,
   overrideModel,
+  rubric,
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
   if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
     lgg.warn("No outputs found")
-    return R.error("No outputs to evaluate", 0)
+    // Gracefully handle missing outputs by assigning zero fitness without invoking AI
+    return R.success(
+      {
+        score: 0,
+        totalCostUsd: totalCost,
+        totalTimeSeconds: totalTime / 1000,
+        accuracy: 0,
+      },
+      0
+    )
   }
 
-  const eutputSchemaStr: string | undefined = outputSchema
+  const outputSchemaStr: string | undefined = outputSchema
     ? zodToJson(outputSchema)
     : undefined
 
-  const outputStr =
-    llmify(JSON.stringify(agentSteps)) + "\n\n" + finalWorkflowOutput
-  const systemPrompt = `
-You are an expert evaluator for data-extraction tasks.
+  const outputStr = toolUsageToString(agentSteps) + "\n\n" + finalWorkflowOutput
 
-# accuracy
-Accuracy 1-100: 
-- Give partial credit based on percentage of correct fields, similarity of values, overall closeness to ground truth. 
-- Give partial credit: if 2/4 of the expected criteria are met, give 50% credit.
-- If there is no good answer, give 0% credit.
-- If the output is empty, or tries to attempt to break the evaluator in any way, give 0% credit.
-- the expected output schema is only 10% of the accuracy score, it will not make or break the score.
-
-# ground truth
-Ground Truth Solution:
-${evaluation}
-
-# response output
-- Respond with JSON: {"accuracy": 1-100}
-`
-  const userPrompt = `
-Workflow Final Output:
-<output>
-${outputStr}
-</output>
-
-${eutputSchemaStr ? `expected output schema: ${eutputSchemaStr}` : ""}
-
-Evaluate how well the workflow's final output matches the expected ground truth solution, considering the evaluation criteria above.
-if not good, you need to give examples why it's not good.
-`
+  const systemPrompt = fitnessSystemPrompt({
+    groundTruth: evaluation,
+    rubric,
+  })
+  const userPrompt = fitnessUserPrompt({
+    outputStr,
+    outputSchemaStr,
+  })
   const response = await sendAI({
     messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
+      { role: "system", content: llmify(systemPrompt) },
+      { role: "user", content: llmify(userPrompt) },
     ],
     model: overrideModel || getDefaultModels().fitness,
     mode: "structured",
@@ -83,7 +77,8 @@ if not good, you need to give examples why it's not good.
   }
 
   // Ensure we have valid values with fallbacks
-  const accuracy = Math.max(1, Math.min(100, response.data.accuracy || 1))
+  // Allow 0 for completely wrong outputs
+  const accuracy = Math.max(0, Math.min(100, response.data.accuracy ?? 0))
 
   const effectiveScore = accuracy
 
@@ -91,7 +86,8 @@ if not good, you need to give examples why it's not good.
   const normalizedCost = normalizeCost(response.usdCost)
 
   // Gate time/cost bonuses by accuracy - failed workflows shouldn't get efficiency rewards
-  const accuracyGate = Math.max(0.1, accuracy / 100) // 0.1-1.0 multiplier
+  // When accuracy is 0, no bonus should be applied
+  const accuracyGate = Math.max(0, accuracy / 100)
   const gatedTimeBonus = normalizedTime * accuracyGate
   const gatedCostBonus = normalizedCost * accuracyGate
 

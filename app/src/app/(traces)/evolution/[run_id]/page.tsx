@@ -2,23 +2,45 @@
 
 import { StructureMiniMap } from "@/app/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
-import {
-  cleanupStaleEvolutionRuns,
-  retrieveAllInvocationsForRunGroupedByGeneration,
-  retrieveEvolutionRun,
-  type GenerationWithData,
-  type WorkflowInvocationSubset,
-} from "@/trace-visualization/db/Evolution/retrieveEvolution"
-import { retrieveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { Button } from "@/ui/button"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
-import { use, useCallback, useEffect, useState } from "react"
+import { use, useCallback, useEffect, useRef, useState } from "react"
 
 dayjs.extend(relativeTime)
+
+// Type definitions (moved from server action file)
+interface WorkflowInvocationSubset {
+  wf_invocation_id: string
+  wf_version_id: string
+  start_time: string
+  end_time: string | null
+  status: "running" | "completed" | "failed" | "rolled_back"
+  usd_cost: number
+  fitness_score: number | null
+  accuracy: number | null
+  run_id: string | null
+  generation_id: string | null
+}
+
+interface GenerationWithData {
+  generation: Tables<"Generation">
+  versions: Tables<"WorkflowVersion">[]
+  invocations: WorkflowInvocationSubset[]
+}
+
+interface WorkflowStructureGroup {
+  dslHash: string
+  dsl: WorkflowConfig
+  versions: Tables<"WorkflowVersion">[]
+  invocations: WorkflowInvocationSubset[]
+  firstSeenGeneration: number
+  lastSeenGeneration: number
+}
 
 const getTimeDifference = (timestamp: string) => {
   const startTime = new Date(timestamp).getTime()
@@ -66,6 +88,80 @@ const getFitnessRange = (invocations: WorkflowInvocationSubset[]) => {
   }
 }
 
+const formatNumberTrim = (value: number) => {
+  const str = value.toFixed(2)
+  return str.replace(/\.00$/, "").replace(/(\.[1-9])0$/, "$1")
+}
+
+const formatFitnessDisplay = (range: {
+  min: number
+  max: number
+  count: number
+}) => {
+  if (range.count === 1 || range.min === range.max) {
+    return formatNumberTrim(range.min)
+  }
+  return `${formatNumberTrim(range.min)}-${formatNumberTrim(range.max)}`
+}
+
+const groupByWorkflowStructure = (
+  generationsData: GenerationWithData[],
+  _workflowVersions: Map<string, Tables<"WorkflowVersion">>
+): WorkflowStructureGroup[] => {
+  const structureGroups = new Map<string, WorkflowStructureGroup>()
+
+  // Process all generations to group by DSL structure
+  generationsData.forEach(({ generation, versions, invocations }) => {
+    versions.forEach((version) => {
+      if (!isWorkflowConfig(version.dsl)) return
+
+      // Simple hash using stringified DSL
+      const dslHash = JSON.stringify(version.dsl)
+
+      if (!structureGroups.has(dslHash)) {
+        structureGroups.set(dslHash, {
+          dslHash,
+          dsl: version.dsl,
+          versions: [],
+          invocations: [],
+          firstSeenGeneration: generation.number,
+          lastSeenGeneration: generation.number,
+        })
+      }
+
+      const group = structureGroups.get(dslHash)!
+
+      // Add version if not already present
+      if (
+        !group.versions.find((v) => v.wf_version_id === version.wf_version_id)
+      ) {
+        group.versions.push(version)
+      }
+
+      // Add related invocations
+      const versionInvocations = invocations.filter(
+        (inv) => inv.wf_version_id === version.wf_version_id
+      )
+      group.invocations.push(...versionInvocations)
+
+      // Update generation range
+      group.firstSeenGeneration = Math.min(
+        group.firstSeenGeneration,
+        generation.number
+      )
+      group.lastSeenGeneration = Math.max(
+        group.lastSeenGeneration,
+        generation.number
+      )
+    })
+  })
+
+  // Sort by first appearance
+  return Array.from(structureGroups.values()).sort(
+    (a, b) => a.firstSeenGeneration - b.firstSeenGeneration
+  )
+}
+
 export default function EvolutionRunPage({
   params,
 }: {
@@ -82,6 +178,9 @@ export default function EvolutionRunPage({
   const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(
     new Set()
   )
+  const [expandedStructures, setExpandedStructures] = useState<Set<string>>(
+    new Set()
+  )
   const [_lastFetchTime, setLastFetchTime] = useState<number>(0)
   const [showGraph, setShowGraph] = useState<boolean>(true)
 
@@ -94,6 +193,13 @@ export default function EvolutionRunPage({
   const [workflowVersions, setWorkflowVersions] = useState<
     Map<string, Tables<"WorkflowVersion">>
   >(new Map())
+  const workflowVersionsRef = useRef(workflowVersions)
+  useEffect(() => {
+    workflowVersionsRef.current = workflowVersions
+  }, [workflowVersions])
+  const inFlightRequests = useRef(
+    new Map<string, Promise<Tables<"WorkflowVersion">>>()
+  )
 
   const { run_id } = use(params)
 
@@ -102,9 +208,17 @@ export default function EvolutionRunPage({
     setError(null)
 
     try {
-      await cleanupStaleEvolutionRuns()
-      const runData = await retrieveEvolutionRun(run_id)
-      setEvolutionRun(runData)
+      // Clean up stale runs first
+      await fetch("/api/evolution-runs/cleanup", { method: "POST" })
+
+      // Fetch evolution run data
+      const response = await fetch(`/api/evolution/${run_id}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch evolution run: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      setEvolutionRun(data)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to fetch evolution run"
@@ -118,8 +232,12 @@ export default function EvolutionRunPage({
   const fetchGenerationsData = useCallback(async () => {
     setGenerationsLoading(true)
     try {
-      const generationsWithInvocations =
-        await retrieveAllInvocationsForRunGroupedByGeneration(run_id)
+      const response = await fetch(`/api/evolution/${run_id}/generations`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch generations: ${response.statusText}`)
+      }
+
+      const generationsWithInvocations = await response.json()
       setGenerationsData(generationsWithInvocations)
       setLastFetchTime(Date.now())
     } catch (err) {
@@ -139,20 +257,46 @@ export default function EvolutionRunPage({
     setExpandedGenerations(newExpanded)
   }
 
-  const fetchWorkflowVersion = async (versionId: string) => {
-    if (workflowVersions.has(versionId)) {
-      return workflowVersions.get(versionId)!
+  const toggleStructure = (structureHash: string) => {
+    const newExpanded = new Set(expandedStructures)
+    if (newExpanded.has(structureHash)) {
+      newExpanded.delete(structureHash)
+    } else {
+      newExpanded.add(structureHash)
     }
-
-    try {
-      const version = await retrieveWorkflowVersion(versionId)
-      setWorkflowVersions((prev) => new Map(prev).set(versionId, version))
-      return version
-    } catch (err) {
-      console.error("Error fetching workflow version:", err)
-      throw err
-    }
+    setExpandedStructures(newExpanded)
   }
+
+  const fetchWorkflowVersion = useCallback(async (versionId: string) => {
+    const cached = workflowVersionsRef.current.get(versionId)
+    if (cached) return cached
+
+    const inflight = inFlightRequests.current.get(versionId)
+    if (inflight) return await inflight
+
+    const promise = (async () => {
+      const response = await fetch(`/api/workflow/version/${versionId}`)
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch workflow version: ${response.statusText}`
+        )
+      }
+      const version = await response.json()
+      setWorkflowVersions((prev) => {
+        const next = new Map(prev)
+        next.set(versionId, version)
+        return next
+      })
+      return version
+    })()
+
+    inFlightRequests.current.set(versionId, promise)
+    try {
+      return await promise
+    } finally {
+      inFlightRequests.current.delete(versionId)
+    }
+  }, [])
 
   const showDslModal = async (versionId: string) => {
     setDslLoading(true)
@@ -171,7 +315,7 @@ export default function EvolutionRunPage({
 
   useEffect(() => {
     fetchEvolutionRun()
-  }, [run_id])
+  }, [run_id, fetchEvolutionRun])
 
   useEffect(() => {
     if (evolutionRun) {
@@ -322,17 +466,30 @@ export default function EvolutionRunPage({
 
       {/* Evolution Graph */}
       <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
-        <button
-          onClick={() => setShowGraph(!showGraph)}
-          className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors"
+        <Button
+          asChild
+          variant="ghost"
+          className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Evolution Graph
-          </h2>
-          <span className="text-gray-400 dark:text-gray-500">
-            {showGraph ? "▼" : "▶"}
-          </span>
-        </button>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setShowGraph(!showGraph)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                setShowGraph(!showGraph)
+              }
+            }}
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Evolution Graph
+            </h2>
+            <span className="text-gray-400 dark:text-gray-500">
+              {showGraph ? "▼" : "▶"}
+            </span>
+          </div>
+        </Button>
         {showGraph && (
           <div className="border-t border-gray-200 dark:border-gray-700">
             <EvolutionGraph runId={run_id} className="p-4" />
@@ -362,45 +519,55 @@ export default function EvolutionRunPage({
                 key={generation.generation_id}
                 className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900"
               >
-                <button
-                  onClick={() => toggleGeneration(generation.generation_id)}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors"
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                      Generation {generation.number}
-                    </span>
-                    <Link
-                      href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/96125?filter=generation_id:eq:${generation.generation_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded border border-blue-200 dark:border-blue-700"
-                      onClick={(e) => e.stopPropagation()}
-                      title="View in Supabase Dashboard"
-                    >
-                      {generation.generation_id}
-                    </Link>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {invocations.length} invocations
-                    </span>
-                    {fitnessRange && (
-                      <span className="text-sm text-green-600 font-medium">
-                        Fitness:{" "}
-                        {fitnessRange.count === 1
-                          ? fitnessRange.min.toFixed(2)
-                          : `${fitnessRange.min.toFixed(2)}-${fitnessRange.max.toFixed(2)}`}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleGeneration(generation.generation_id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        toggleGeneration(generation.generation_id)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        Generation {generation.number}
                       </span>
-                    )}
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {getTimeDifference(generation.start_time)}
+                      <Link
+                        href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/96125?filter=generation_id:eq:${generation.generation_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded border border-blue-200 dark:border-blue-700"
+                        onClick={(e) => e.stopPropagation()}
+                        title="View in Supabase Dashboard"
+                      >
+                        {generation.generation_id}
+                      </Link>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {invocations.length} invocations
+                      </span>
+                      {fitnessRange && (
+                        <span className="text-sm text-green-600 font-medium">
+                          Fitness: {formatFitnessDisplay(fitnessRange)}
+                        </span>
+                      )}
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {getTimeDifference(generation.start_time)}
+                      </span>
+                    </div>
+                    <span className="text-gray-400 dark:text-gray-500">
+                      {expandedGenerations.has(generation.generation_id)
+                        ? "▼"
+                        : "▶"}
                     </span>
                   </div>
-                  <span className="text-gray-400 dark:text-gray-500">
-                    {expandedGenerations.has(generation.generation_id)
-                      ? "▼"
-                      : "▶"}
-                  </span>
-                </button>
+                </Button>
 
                 {expandedGenerations.has(generation.generation_id) && (
                   <div className="px-4 pb-4">
@@ -415,28 +582,28 @@ export default function EvolutionRunPage({
                       </div>
                     )}
 
-                    {/* Workflow Invocations */}
-                    {invocations.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Executed Invocations ({invocations.length})
-                        </h4>
-                        <div className="space-y-2">
-                          {invocations.map((invocation) => (
-                            <InvocationRow
-                              key={invocation.wf_invocation_id}
-                              invocation={invocation}
-                              workflowVersions={workflowVersions}
-                              fetchWorkflowVersion={fetchWorkflowVersion}
-                              showDslModal={showDslModal}
-                              dslLoading={dslLoading}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Workflow Structures grouped within this generation */}
+                    <WorkflowStructuresView
+                      generationsData={[
+                        {
+                          generation,
+                          versions:
+                            generationsData.find(
+                              (g) =>
+                                g.generation.generation_id ===
+                                generation.generation_id
+                            )?.versions || [],
+                          invocations,
+                        },
+                      ]}
+                      workflowVersions={workflowVersions}
+                      expandedStructures={expandedStructures}
+                      toggleStructure={toggleStructure}
+                      showDslModal={showDslModal}
+                      dslLoading={dslLoading}
+                      idPrefix={`gen-${generation.generation_id}-`}
+                    />
 
-                    {/* Empty state */}
                     {invocations.length === 0 && (
                       <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                         No invocations in this generation
@@ -456,12 +623,14 @@ export default function EvolutionRunPage({
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-6xl max-h-[90vh] overflow-auto w-full mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Workflow DSL</h3>
-              <button
+              <Button
                 onClick={() => setDslModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl"
+                variant="ghost"
+                size="sm"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl h-auto p-1"
               >
                 ✕
-              </button>
+              </Button>
             </div>
             <pre className="bg-gray-50 dark:bg-gray-900 p-4 rounded text-sm overflow-auto max-h-[70vh] whitespace-pre-wrap">
               {JSON.stringify(currentDsl, null, 2)}
@@ -475,64 +644,18 @@ export default function EvolutionRunPage({
 
 interface InvocationRowProps {
   invocation: WorkflowInvocationSubset
-  workflowVersions: Map<string, Tables<"WorkflowVersion">>
-  fetchWorkflowVersion: (
-    versionId: string
-  ) => Promise<Tables<"WorkflowVersion">>
   showDslModal: (versionId: string) => Promise<void>
   dslLoading: boolean
 }
 
 function InvocationRow({
   invocation,
-  workflowVersions: _workflowVersions,
-  fetchWorkflowVersion,
   showDslModal,
   dslLoading,
 }: InvocationRowProps) {
-  const [structureLoaded, setStructureLoaded] = useState(false)
-  const [workflowVersion, setWorkflowVersion] =
-    useState<Tables<"WorkflowVersion"> | null>(null)
-
-  useEffect(() => {
-    const loadWorkflowVersion = async () => {
-      try {
-        const version = await fetchWorkflowVersion(invocation.wf_version_id)
-        setWorkflowVersion(version)
-        setStructureLoaded(true)
-      } catch (err) {
-        console.error("Failed to load workflow version:", err)
-      }
-    }
-
-    loadWorkflowVersion()
-  }, [invocation.wf_version_id, fetchWorkflowVersion])
-
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-900">
-      <div className="flex items-start gap-4">
-        {/* Workflow Structure Visualization */}
-        <div className="flex-shrink-0">
-          {structureLoaded &&
-          workflowVersion &&
-          isWorkflowConfig(workflowVersion.dsl) ? (
-            <div className="w-32 h-20 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 overflow-hidden">
-              <div
-                style={{ transform: "scale(0.5)", transformOrigin: "top left" }}
-              >
-                <StructureMiniMap dsl={workflowVersion.dsl} />
-              </div>
-            </div>
-          ) : (
-            <div className="w-32 h-20 border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                Loading...
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Main Invocation Info */}
+      <div className="flex items-start">
         <div className="flex-grow">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -557,14 +680,16 @@ function InvocationRow({
               </span>
 
               {/* DSL Button */}
-              <button
+              <Button
                 onClick={() => showDslModal(invocation.wf_version_id)}
                 disabled={dslLoading}
-                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono flex items-center justify-center transition-colors disabled:opacity-50 text-gray-700 dark:text-gray-300"
+                variant="outline"
+                size="sm"
+                className="h-auto px-2 py-1 text-xs font-mono"
                 title="View DSL"
               >
                 {dslLoading ? "..." : "</>"}
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -600,6 +725,190 @@ function InvocationRow({
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+interface WorkflowStructuresViewProps {
+  generationsData: GenerationWithData[]
+  workflowVersions: Map<string, Tables<"WorkflowVersion">>
+  expandedStructures: Set<string>
+  toggleStructure: (structureHash: string) => void
+  showDslModal: (versionId: string) => Promise<void>
+  dslLoading: boolean
+  idPrefix?: string
+}
+
+function WorkflowStructuresView({
+  generationsData,
+  workflowVersions,
+  expandedStructures,
+  toggleStructure,
+  showDslModal,
+  dslLoading,
+  idPrefix = "",
+}: WorkflowStructuresViewProps) {
+  const structureGroups = groupByWorkflowStructure(
+    generationsData,
+    workflowVersions
+  )
+
+  if (structureGroups.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        No workflow structures found
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        Found {structureGroups.length} unique workflow structure
+        {structureGroups.length !== 1 ? "s" : ""}
+      </div>
+
+      {structureGroups.map((group, index) => {
+        const fitnessRange = getFitnessRange(group.invocations)
+        const structureId = `${idPrefix}structure-${index}`
+
+        return (
+          <div
+            key={structureId}
+            className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900"
+          >
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full px-4 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => toggleStructure(structureId)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    toggleStructure(structureId)
+                  }
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    {isWorkflowConfig(group.dsl) && (
+                      <div className="w-32 h-32 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 overflow-hidden">
+                        <StructureMiniMap
+                          dsl={group.dsl}
+                          width={128}
+                          height={128}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      Structure #{index + 1}
+                    </span>
+                    <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                      <span>
+                        Generations {group.firstSeenGeneration}-
+                        {group.lastSeenGeneration}
+                      </span>
+                      <span>{group.versions.length} versions</span>
+                      <span>{group.invocations.length} invocations</span>
+                      {fitnessRange && (
+                        <span className="text-green-600 font-medium">
+                          Fitness: {formatFitnessDisplay(fitnessRange)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <span className="text-gray-400 dark:text-gray-500">
+                  {expandedStructures.has(structureId) ? "▼" : "▶"}
+                </span>
+              </div>
+            </Button>
+
+            {expandedStructures.has(structureId) && (
+              <div className="px-4 pb-4 border-t border-gray-200 dark:border-gray-700">
+                {/* Workflow Versions */}
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Workflow Versions ({group.versions.length})
+                  </h4>
+                  <div className="space-y-2">
+                    {group.versions.map((version) => {
+                      const versionInvocations = group.invocations.filter(
+                        (inv) => inv.wf_version_id === version.wf_version_id
+                      )
+
+                      return (
+                        <div
+                          key={version.wf_version_id}
+                          className="border border-gray-200 dark:border-gray-700 rounded p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Link
+                                href={`/edit/${version.wf_version_id}`}
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono text-sm"
+                              >
+                                {version.wf_version_id}
+                              </Link>
+                              {version.commit_message && (
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {version.commit_message}
+                                </span>
+                              )}
+                              <Button
+                                onClick={() =>
+                                  showDslModal(version.wf_version_id)
+                                }
+                                disabled={dslLoading}
+                                variant="outline"
+                                size="sm"
+                                className="h-auto px-2 py-1 text-xs font-mono"
+                                title="View DSL"
+                              >
+                                {dslLoading ? "..." : "</>"}
+                              </Button>
+                            </div>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                              {versionInvocations.length} invocations
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Invocations */}
+                {group.invocations.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Invocations ({group.invocations.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {group.invocations.map((invocation) => (
+                        <InvocationRow
+                          key={invocation.wf_invocation_id}
+                          invocation={invocation}
+                          showDslModal={showDslModal}
+                          dslLoading={dslLoading}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

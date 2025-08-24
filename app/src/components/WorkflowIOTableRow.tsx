@@ -1,5 +1,6 @@
 "use client"
 
+import { SmartContent } from "@/components/utils/SmartContent"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { useEffect, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
@@ -43,7 +44,7 @@ export default function WorkflowIOTableRow({
     )
 
   // Use custom hooks
-  const rubric = useRubricManagement(io.id, (id, expected) =>
+  const rubric = useRubricManagement(io.id, io.expected, (id, expected) =>
     updateCase(id, { expected })
   )
   const metricsHook = useMetrics()
@@ -156,7 +157,7 @@ export default function WorkflowIOTableRow({
             </div>
 
             {/* Rubric */}
-            <div className="col-span-6 flex flex-col">
+            <div className="col-span-4 flex flex-col">
               <div className="flex justify-between items-baseline mb-1">
                 <label className="text-xs font-medium text-gray-600">
                   Rubric
@@ -195,7 +196,7 @@ export default function WorkflowIOTableRow({
                       <span className="text-gray-400">/</span>
                       <input
                         type="number"
-                        className="w-10 border border-gray-300 rounded px-1 py-0.5 text-sm text-center tabular-nums focus:border-blue-500 focus:outline-none"
+                        className="w-12 border border-gray-300 rounded px-1 py-0.5 text-sm text-center tabular-nums focus:border-blue-500 focus:outline-none"
                         value={criterion.maxPoints}
                         onChange={(e) =>
                           rubric.updateCriteria(criterion.id, {
@@ -242,45 +243,63 @@ export default function WorkflowIOTableRow({
               </div>
             </div>
 
-            {/* Metrics */}
-            <div className="col-span-2 flex flex-col gap-1 text-xs">
-              <div className="flex justify-between items-baseline py-0.5">
-                <span className="text-gray-600">Score</span>
-                <span
-                  className={`font-bold ${
-                    metricsHook.metrics.score !== null
-                      ? metricsHook.metrics.score >= 70
-                        ? "text-green-600"
-                        : "text-amber-600"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {metricsHook.metrics.score !== null
-                    ? `${metricsHook.metrics.score}%`
-                    : "—"}
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline py-0.5">
-                <span className="text-gray-600">Time</span>
-                <span className="font-medium text-gray-700">
-                  {metricsHook.metrics.time || "—"}
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline py-0.5">
-                <span className="text-gray-600">Cost</span>
-                <span className="font-medium text-gray-700">
-                  {metricsHook.metrics.cost || "—"}
-                </span>
-              </div>
-
-              {metricsHook.metrics.output && (
-                <div className="mt-2">
-                  <span className="text-gray-600 block mb-0.5">Output</span>
-                  <div className="text-gray-700 bg-gray-50 rounded p-1.5 max-h-16 overflow-y-auto">
-                    {metricsHook.metrics.output}
-                  </div>
+            {/* Output */}
+            <div className="col-span-3 flex flex-col">
+              <label className="text-xs font-medium text-gray-600 mb-1">
+                Output
+              </label>
+              {metricsHook.metrics.output ? (
+                <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
+                  <SmartContent
+                    value={metricsHook.metrics.output}
+                    className="text-xs text-gray-700"
+                    showExpanders={false}
+                    enableClipboard={false}
+                    stringifySpacing={2}
+                  />
+                </div>
+              ) : (
+                <div className="flex-1 text-xs text-gray-400 bg-gray-50 rounded p-2 flex items-center justify-center">
+                  No output yet
                 </div>
               )}
+            </div>
+
+            {/* Metrics */}
+            <div className="col-span-1 flex flex-col">
+              <label className="text-xs font-medium text-gray-600 mb-1">
+                Metrics
+              </label>
+              <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-500 font-medium">Score</span>
+                  <span
+                    className={`text-xs font-bold tabular-nums ${
+                      metricsHook.metrics.score !== null
+                        ? metricsHook.metrics.score >= 70
+                          ? "text-green-600"
+                          : "text-amber-600"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {metricsHook.metrics.score !== null
+                      ? `${metricsHook.metrics.score}%`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-500 font-medium">Time</span>
+                  <span className="text-xs font-medium text-gray-700 tabular-nums">
+                    {metricsHook.metrics.time || "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-500 font-medium">Cost</span>
+                  <span className="text-xs font-medium text-gray-700 tabular-nums">
+                    {metricsHook.metrics.cost || "—"}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Actions */}

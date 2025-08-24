@@ -57,6 +57,10 @@ describe("cleanupStaleRecords", () => {
     mockFrom.mockReturnValue({
       update: vi.fn().mockReturnValue(mockChain),
       delete: vi.fn().mockReturnValue(mockDeleteChain),
+      // Support direct select().is() chain used when fetching runs missing end_time
+      select: vi.fn().mockReturnValue({
+        is: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
     } as unknown as ReturnType<typeof supabase.from>)
   })
 
@@ -77,6 +81,10 @@ describe("cleanupStaleRecords", () => {
 
     mockFrom.mockReturnValueOnce({
       update: vi.fn().mockReturnValue(mockChain),
+      // also include select in this specific call path for completeness
+      select: vi.fn().mockReturnValue({
+        is: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
     } as unknown as ReturnType<typeof supabase.from>)
 
     const stats = await cleanupStaleRecords()

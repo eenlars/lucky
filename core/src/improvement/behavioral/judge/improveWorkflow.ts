@@ -5,6 +5,7 @@ import { type CodeToolName } from "@core/tools/tool.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"
+import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 
@@ -38,10 +39,13 @@ export async function improveWorkflowUnified(
   guard(feedback, "Feedback not set")
 
   // step 4: llm judge with full json input/output
+  // Sanitize tools in the input config to prevent disabled tools from being reinforced
+  const inputConfig = sanitizeConfigTools(config)
+
   const { data, success, error, usdCost } = await sendAI({
     // watch out: this is without the easyModelNames option!
     messages: WorkflowEvolutionPrompts.createJudgePrompt(
-      config,
+      inputConfig,
       fitness,
       feedback
     ),
@@ -54,7 +58,10 @@ export async function improveWorkflowUnified(
     },
   })
 
-  improvedConfig = data as WorkflowConfig | null
+  improvedConfig = (data as WorkflowConfig | null) || null
+  if (improvedConfig) {
+    improvedConfig = sanitizeConfigTools(improvedConfig)
+  }
 
   if (improvedConfig) {
     // add the default tools to the config

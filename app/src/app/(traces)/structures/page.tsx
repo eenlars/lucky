@@ -1,6 +1,5 @@
 "use client"
 
-import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import {
   toWorkflowConfig,
   type WorkflowConfig,
@@ -13,6 +12,7 @@ import {
   StructureMiniMap,
   getNodeCountFromDsl,
 } from "../trace/[wf_inv_id]/structure/StructureMiniMap"
+import { Button } from "@/ui/button"
 
 // Calculate workflow complexity based on structure
 function getComplexityScore(config: WorkflowConfig): number {
@@ -221,7 +221,11 @@ export default function StructuresPage() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const versions = await retrieveLatestWorkflowVersions(200)
+        const response = await fetch("/api/workflow/versions/latest?limit=200")
+        if (!response.ok) {
+          throw new Error(`Failed to fetch versions: ${response.statusText}`)
+        }
+        const versions = await response.json()
         setAllVersions(versions)
       } catch (error) {
         console.error("Error fetching workflow versions:", error)
@@ -276,12 +280,11 @@ export default function StructuresPage() {
         <h1 className="text-3xl font-bold">Workflow Structure Visualization</h1>
 
         <div className="flex items-center gap-4">
-          <button
+          <Button
             onClick={() => setShowTestBed(!showTestBed)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             {showTestBed ? "Show Database" : "Show Test Bed"}
-          </button>
+          </Button>
 
           {!showTestBed && (
             <>

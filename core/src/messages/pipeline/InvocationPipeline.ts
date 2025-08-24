@@ -22,6 +22,7 @@ import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"
 import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
+import { isNir } from "@core/utils/common/isNir"
 import { JSONN } from "@lucky/shared"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
@@ -38,31 +39,31 @@ const verbose = CONFIG.logging.override.InvocationPipeline
 
 /**
  * Core agent invocation pipeline that orchestrates message processing.
- * 
+ *
  * ## Architecture Overview
- * 
+ *
  * The pipeline implements a three-phase execution model:
  * 1. **Prepare**: Tool initialization, message preparation, strategy selection
  * 2. **Execute**: Single-call or multi-step loop execution with AI
  * 3. **Process**: Response handling, memory extraction, result formatting
- * 
+ *
  * ## Execution Strategies
- * 
+ *
  * - **Single Call**: Direct AI invocation with optional tool use
  * - **Multi-Step Loop V2**: Iterative tool execution with context accumulation
  * - **Multi-Step Loop V3**: Advanced strategy with parallel tool execution
- * 
+ *
  * ## Runtime State Management
- * 
+ *
  * The pipeline maintains critical state throughout execution:
  * - `sdkMessages`: Conversation history for AI context
  * - `tools`: Available tools mapped by name
  * - `agentSteps`: Detailed execution transcript
  * - `usdCost`: Accumulated cost tracking
  * - `updatedMemory`: Extracted learnings for persistence
- * 
+ *
  * ## Error Recovery
- * 
+ *
  * Errors during execution are captured and transformed into error responses
  * rather than throwing, ensuring workflow continuity. Critical context is
  * logged for debugging including node ID, workflow version, and available tools.
@@ -91,22 +92,26 @@ export class InvocationPipeline {
 
   /**
    * Prepares the pipeline for execution by initializing tools and messages.
-   * 
+   *
    * Runtime operations:
    * 1. Initializes all tools through ToolManager (MCP and code tools)
    * 2. Prepares incoming message with context and memory
    * 3. Determines tool selection strategy based on configuration
-   * 
+   *
    * Strategy selection:
    * - Multi-step loop: Defers tool choice to execution phase
    * - Single tool: Forces that tool's usage
    * - Multiple tools: Uses "auto" for AI-driven selection
-   * 
+   *
    * @returns this instance for method chaining
    */
   public async prepare(): Promise<this> {
     await this.toolManager.initializeTools()
     this.tools = await this.toolManager.getAllTools(this.ctx)
+    if (isNir(this.tools)) {
+      this.toolChoice = "auto"
+      return this
+    }
 
     await prepareIncomingMessage(
       this.ctx,
@@ -115,10 +120,10 @@ export class InvocationPipeline {
       this.agentSteps
     )
 
-    const hasOneTool = Object.keys(this.tools).length === 1
-
     // no need to prepare. this is handled in the multi-step loop.
     if (CONFIG.tools.experimentalMultiStepLoop) return this
+
+    const hasOneTool = Object.keys(this.tools).length === 1
 
     if (!hasOneTool && CONFIG.tools.usePrepareStepStrategy) {
       this.toolChoice = "auto"
@@ -133,27 +138,27 @@ export class InvocationPipeline {
 
   /**
    * Executes the main invocation logic using the configured strategy.
-   * 
+   *
    * ## Runtime Flow
-   * 
+   *
    * ### Multi-Step Loop Path (when tools available):
    * 1. Selects V2 or V3 strategy based on override
    * 2. Runs iterative tool execution with AI guidance
    * 3. Synchronizes agent steps and cost from result
-   * 
+   *
    * ### Single Call Path (no tools or disabled):
    * 1. Makes single AI call with optional tool use
    * 2. Processes response and extracts agent steps
    * 3. Finalizes summary with additional metadata
-   * 
+   *
    * ## Error Handling
-   * 
+   *
    * Catches all errors and transforms them into error responses.
    * Logs critical context for debugging:
    * - Node ID and workflow version
    * - Model name and available tools
    * - Full error stack trace
-   * 
+   *
    * @returns this instance for method chaining
    * @throws Never - errors are caught and transformed into responses
    */
@@ -428,6 +433,7 @@ export class InvocationPipeline {
       toolLogs,
       nodeSystemPrompt: this.ctx.nodeConfig.systemPrompt,
       currentMemory: this.ctx.nodeMemory ?? {},
+      mainWorkflowGoal: this.ctx.mainWorkflowGoal,
     })
 
     // Store memory updates

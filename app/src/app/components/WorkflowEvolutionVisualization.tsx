@@ -1,18 +1,9 @@
 "use client"
 
-import React, { useMemo } from "react"
-import {
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Scatter,
-  ReferenceLine,
-  ComposedChart,
-} from "recharts"
+import Link from "next/link"
+import { useMemo } from "react"
+import { GPEvolutionGraph } from "./charts/GPEvolutionGraph"
+import { IterativeEvolutionChart } from "./charts/IterativeEvolutionChart"
 
 interface InvocationData {
   invocationId: string
@@ -26,15 +17,7 @@ interface GenerationData {
   averageAccuracy: number
 }
 
-interface ChartDataPoint {
-  generation: number
-  accuracy?: number
-  averageAccuracy?: number
-  invocationId?: string
-  timestamp?: string
-  isTarget?: boolean
-  type: "invocation" | "average"
-}
+// Local types retained for props typing only
 
 interface EvolutionVisualizationProps {
   graph: any
@@ -57,98 +40,7 @@ interface EvolutionVisualizationProps {
   }
 }
 
-function prepareChartData(
-  invocationsByGeneration: GenerationData[] | undefined,
-  targetNodeId: string
-): ChartDataPoint[] {
-  if (!invocationsByGeneration || invocationsByGeneration.length === 0)
-    return []
-
-  const allData: ChartDataPoint[] = []
-
-  // Check if all invocations are in the same generation (common for cultural evolution)
-  const uniqueGenerations = new Set(
-    invocationsByGeneration.map((g) => g.generation)
-  )
-  const isSingleGeneration = uniqueGenerations.size === 1
-
-  if (isSingleGeneration && invocationsByGeneration[0]) {
-    // For single generation, spread invocations across x-axis by order
-    const singleGenData = invocationsByGeneration[0]
-    const invocationsWithAccuracy = singleGenData.invocations.filter(
-      (inv) => inv.accuracy !== undefined
-    )
-
-    invocationsWithAccuracy.forEach((inv, index) => {
-      allData.push({
-        generation: index, // Use index as x-coordinate for better visualization
-        accuracy: inv.accuracy!,
-        invocationId: inv.invocationId,
-        timestamp: inv.startTime,
-        isTarget: inv.invocationId === targetNodeId,
-        type: "invocation",
-      })
-    })
-
-    // Add average line as horizontal line across all invocations
-    // Need at least 2 points to draw a line
-    if (invocationsWithAccuracy.length > 0) {
-      allData.push({
-        generation: 0,
-        averageAccuracy: singleGenData.averageAccuracy,
-        type: "average",
-      })
-      allData.push({
-        generation: invocationsWithAccuracy.length - 1,
-        averageAccuracy: singleGenData.averageAccuracy,
-        type: "average",
-      })
-    }
-  } else {
-    // Multiple generations - use actual generation numbers
-    invocationsByGeneration.forEach((genData) => {
-      genData.invocations.forEach((inv) => {
-        if (inv.accuracy !== undefined) {
-          allData.push({
-            generation: genData.generation,
-            accuracy: inv.accuracy,
-            invocationId: inv.invocationId,
-            timestamp: inv.startTime,
-            isTarget: inv.invocationId === targetNodeId,
-            type: "invocation",
-          })
-        }
-      })
-    })
-
-    // Add average line data
-    invocationsByGeneration.forEach((genData) => {
-      allData.push({
-        generation: genData.generation,
-        averageAccuracy: genData.averageAccuracy,
-        type: "average",
-      })
-    })
-  }
-
-  return allData.sort((a, b) => a.generation - b.generation)
-}
-
-function renderScatterPoint(props: any) {
-  const { cx, cy, payload } = props
-  const isTarget = payload.isTarget
-
-  return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={isTarget ? 6 : 3}
-      fill={isTarget ? "#10b981" : "#2563eb"}
-      stroke={isTarget ? "#065f46" : "#1d4ed8"}
-      strokeWidth={isTarget ? 2 : 1}
-    />
-  )
-}
+// All chart-specific rendering moved to IterativeEvolutionChart
 
 export function WorkflowEvolutionVisualization({
   graph,
@@ -158,26 +50,80 @@ export function WorkflowEvolutionVisualization({
   const {
     summary,
     timeline: _timeline,
-    milestones,
+    milestones: _milestones,
     invocationsByGeneration,
   } = visualization
 
-  // Memoize expensive chart data calculations
-  const chartData = useMemo(() => {
-    return prepareChartData(
-      invocationsByGeneration,
-      graph?.targetNode?.invocationId || ""
-    )
-  }, [invocationsByGeneration, graph?.targetNode?.invocationId])
+  const gpNodes = useMemo(
+    () => visualization.nodes || [],
+    [visualization.nodes]
+  )
+
+  // Legacy workaround: some cultural runs recorded everything in a single generation
+  // with many invocations. Normalize those by mapping each invocation to its own
+  // pseudo-generation so downstream visuals that rely on generation counts behave well.
+  const normalizedInvocationsByGeneration = useMemo(() => {
+    if (!invocationsByGeneration || invocationsByGeneration.length !== 1)
+      return invocationsByGeneration
+    const first = invocationsByGeneration[0]
+    if (!first || !first.invocations || first.invocations.length <= 1)
+      return invocationsByGeneration
+
+    const avg = first.averageAccuracy
+    return first.invocations.map((inv, idx) => ({
+      generation: idx,
+      invocations: [inv],
+      averageAccuracy: avg,
+    }))
+  }, [invocationsByGeneration])
+
+  // Fallback source for failed runs: synthesize generations from GP nodes when
+  // no generation data is present, so the chart can still display progression.
+  const fallbackInvocationsByGeneration = useMemo(() => {
+    if (
+      !normalizedInvocationsByGeneration ||
+      normalizedInvocationsByGeneration.length === 0
+    ) {
+      if (!gpNodes || gpNodes.length === 0) return undefined
+      const nodesSorted = [...gpNodes].sort((a: any, b: any) => {
+        const ta = a.timestamp ? new Date(a.timestamp).getTime() : 0
+        const tb = b.timestamp ? new Date(b.timestamp).getTime() : 0
+        return ta - tb
+      })
+      const values: number[] = nodesSorted
+        .map((n: any) =>
+          typeof n.accuracy === "number" ? n.accuracy : undefined
+        )
+        .filter((v: any) => typeof v === "number")
+      const overallAvg = values.length
+        ? values.reduce((s: number, v: number) => s + v, 0) / values.length
+        : 0
+      return nodesSorted.map((n: any, idx: number) => ({
+        generation: idx,
+        invocations: [
+          {
+            invocationId: n.id,
+            accuracy: typeof n.accuracy === "number" ? n.accuracy : 0,
+            startTime: n.timestamp ?? "",
+          },
+        ],
+        averageAccuracy: overallAvg,
+      }))
+    }
+    return undefined
+  }, [normalizedInvocationsByGeneration, gpNodes])
+
+  const effectiveInvocationsByGeneration =
+    fallbackInvocationsByGeneration ?? normalizedInvocationsByGeneration
 
   const { successCount, failureCount, successRate } = useMemo(() => {
-    if (!invocationsByGeneration)
+    if (!effectiveInvocationsByGeneration)
       return { successCount: 0, failureCount: 0, successRate: 0 }
 
     let success = 0
     let failure = 0
 
-    invocationsByGeneration.forEach((gen) => {
+    effectiveInvocationsByGeneration.forEach((gen) => {
       gen.invocations.forEach((inv) => {
         if (inv.accuracy !== undefined && inv.accuracy > 0) {
           success++
@@ -193,7 +139,7 @@ export function WorkflowEvolutionVisualization({
       failureCount: failure,
       successRate: total > 0 ? Math.round((success / total) * 100) : 0,
     }
-  }, [invocationsByGeneration])
+  }, [effectiveInvocationsByGeneration])
 
   const isStaleRun = (run: { status: string; start_time: string }) => {
     if (run.status !== "running") return false
@@ -356,115 +302,12 @@ export function WorkflowEvolutionVisualization({
         </div>
       </div>
 
-      {/* Accuracy Timeline Chart */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold mb-4">
-          Accuracy Progression Over Time
-        </h3>
-        {!invocationsByGeneration || invocationsByGeneration.length === 0 ? (
-          <div className="h-[400px] flex items-center justify-center text-gray-500">
-            <p>No generation data available. Using timeline view.</p>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={400}>
-            <ComposedChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="generation"
-                label={{
-                  value:
-                    invocationsByGeneration.length === 1
-                      ? "Invocation Order"
-                      : "Generation",
-                  position: "insideBottom",
-                  offset: -5,
-                }}
-                domain={["dataMin", "dataMax"]}
-                type="number"
-              />
-              <YAxis
-                label={{
-                  value: "Accuracy (%)",
-                  angle: -90,
-                  position: "insideLeft",
-                }}
-                domain={[0, 100]}
-              />
-              <Tooltip
-                content={({ active, payload, label: _label }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload
-                    const isSingleGen = invocationsByGeneration.length === 1
-                    if (data.type === "invocation") {
-                      return (
-                        <div className="bg-white p-3 border rounded shadow-lg">
-                          <p className="font-medium">
-                            {isSingleGen
-                              ? `Invocation ${data.generation + 1}`
-                              : `Generation ${data.generation}`}
-                          </p>
-                          <p className="text-blue-600">
-                            Accuracy: {data.accuracy}%
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            ID: {data.invocationId}
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            {new Date(data.timestamp).toLocaleString()}
-                          </p>
-                          {data.isTarget && (
-                            <p className="text-green-600 font-medium">
-                              🎯 Target
-                            </p>
-                          )}
-                        </div>
-                      )
-                    } else {
-                      return (
-                        <div className="bg-white p-3 border rounded shadow-lg">
-                          <p className="font-medium">
-                            {isSingleGen
-                              ? "Overall Average"
-                              : `Generation ${data.generation}`}
-                          </p>
-                          <p className="text-purple-600">
-                            Average: {data.averageAccuracy?.toFixed(1)}%
-                          </p>
-                        </div>
-                      )
-                    }
-                  }
-                  return null
-                }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="averageAccuracy"
-                stroke="#8b5cf6"
-                strokeWidth={2}
-                dot={false}
-                name="Average Accuracy"
-              />
-              <Scatter
-                dataKey="accuracy"
-                fill="#2563eb"
-                shape={renderScatterPoint}
-                name="Individual Invocations"
-              />
-              <ReferenceLine
-                y={summary.targetAccuracy}
-                stroke="#10b981"
-                strokeDasharray="5 5"
-                label={{
-                  value: `Target: ${summary.targetAccuracy}%`,
-                  position: "top",
-                }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      {/* Accuracy Timeline Chart (Iterative Evolution) */}
+      <IterativeEvolutionChart
+        invocationsByGeneration={effectiveInvocationsByGeneration}
+        targetNodeId={graph?.targetNode?.invocationId || ""}
+        targetAccuracy={summary.targetAccuracy}
+      />
 
       {/* Success vs Failure Distribution */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -524,16 +367,24 @@ export function WorkflowEvolutionVisualization({
         </div>
       </div>
 
-      {/* Generation Details */}
+      {/* GP Graph */}
+      <GPEvolutionGraph nodes={gpNodes} />
+
+      {/* Evolution Details */}
       <div className="bg-white p-6 rounded-lg border">
         <h3 className="text-lg font-semibold mb-4">Evolution Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="font-medium">Evolution Run ID:</span>
             <br />
-            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-              {graph.evolutionRun.runId}
-            </code>
+            <Link
+              href={`/evolution/${graph.evolutionRun.runId}`}
+              className="hover:underline"
+            >
+              <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                {graph.evolutionRun.runId}
+              </code>
+            </Link>
           </div>
           <div>
             <span className="font-medium">Generation:</span>
@@ -545,9 +396,14 @@ export function WorkflowEvolutionVisualization({
           <div>
             <span className="font-medium">Target Invocation:</span>
             <br />
-            <code className="text-xs bg-green-100 px-2 py-1 rounded">
-              {graph.targetNode.invocationId}
-            </code>
+            <Link
+              href={`/trace/${graph.targetNode.invocationId}`}
+              className="hover:underline"
+            >
+              <code className="text-xs bg-green-100 px-2 py-1 rounded">
+                {graph.targetNode.invocationId}
+              </code>
+            </Link>
           </div>
         </div>
       </div>

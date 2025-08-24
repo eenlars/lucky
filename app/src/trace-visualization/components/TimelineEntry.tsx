@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
-import { PayloadRender } from "@/trace-visualization/components/InputRender"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
@@ -17,53 +16,21 @@ import type {
   AgentSteps,
   AgentStepsLegacy,
 } from "@core/messages/pipeline/AgentStep.types"
+import {
+  isLegacyToolUsage,
+  normalizeLegacyToolUsage,
+} from "@core/messages/pipeline/LegacyToolUsage.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
-import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { AgentStepItem } from "./AgentStepItem"
+import { filterRelevantSteps, generateStepKey } from "./agent-steps/utils"
 import { STATUS_TO_COLOR, formatCost } from "./constants"
-import { ToolCallsDisplay } from "./ToolCallsDisplay"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
-
-// Helper function to get ReactJson theme based on current theme
-const getReactJsonTheme = () => {
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
-    return "monokai"
-  }
-  return "rjv-default"
-}
-
-// Helper function to detect if content contains markdown
-const isMarkdownContent = (content: string): boolean => {
-  const markdownPatterns = [
-    /^#{1,6}\s+/m, // Headers
-    /\*\*[^*]+\*\*/, // Bold
-    /\*[^*]+\*/, // Italic
-    /`[^`]+`/, // Inline code
-    /```[\s\S]*?```/, // Code blocks
-    /^\s*[-*+]\s+/m, // Unordered lists
-    /^\s*\d+\.\s+/m, // Ordered lists
-    /\[([^\]]+)\]\(([^)]+)\)/, // Links
-    /^\s*>\s+/m, // Blockquotes
-    /\|.*\|/, // Tables
-  ]
-  return markdownPatterns.some((pattern) => pattern.test(content))
-}
-
-const _SUPABASE_TABLES = {
-  NodeInvocation: 17579,
-  WorkflowInvocation: 17720,
-  WorkflowVersion: 17463,
-  NodeVersion: 17514,
-  Message: 17634,
-} as const
+import { SmartContent } from "@/components/utils/SmartContent"
 
 interface TimelineEntryProps {
   entry: FullTraceEntry
@@ -83,6 +50,16 @@ export const getAgentSteps = (
   return agentSteps
 }
 
+function getLegacyAgentSteps(
+  extras: unknown
+): { steps: AgentSteps; totalCost?: number } | null {
+  if (!extras || typeof extras !== "object") return null
+  const anyExtras = extras as Record<string, unknown>
+  const toolUsage = anyExtras.toolUsage
+  if (!isLegacyToolUsage(toolUsage)) return null
+  return normalizeLegacyToolUsage(toolUsage)
+}
+
 export const TimelineEntry = ({
   entry,
   index,
@@ -92,11 +69,44 @@ export const TimelineEntry = ({
   const router = useRouter()
   const [isPromptExpanded, setIsPromptExpanded] = useState(false)
   const [expandAllLogs, setExpandAllLogs] = useState<boolean | null>(null)
+  const [isUpdatedMemoryExpanded, setIsUpdatedMemoryExpanded] = useState(false)
+  const [expandedCalls, setExpandedCalls] = useState<Set<number>>(new Set())
+  const [collapsedCalls, setCollapsedCalls] = useState<Set<number>>(new Set())
+  const resultRefs = useRef<Record<number, HTMLDivElement | null>>({})
+  // Effects are defined below after agentSteps is declared
 
   // Extract tool usage from invocation extras with proper typing
   const extras = invocation.extras as NodeInvocationExtras | null
   const agentSteps = getAgentSteps(extras)
+  const legacySteps = getLegacyAgentSteps(extras as unknown)
   const updatedMemory = extras?.updatedMemory
+
+  // Initialize collapsed state based on step types when steps load
+  useEffect(() => {
+    if (!agentSteps || expandAllLogs !== null) return
+    const initial = new Set<number>()
+    agentSteps.forEach((output, index) => {
+      if (
+        output.type === "reasoning" ||
+        output.type === "plan" ||
+        output.type === "tool"
+      ) {
+        initial.add(index)
+      }
+    })
+    setCollapsedCalls(initial)
+  }, [agentSteps, expandAllLogs])
+  // Expand/collapse all handler
+  useEffect(() => {
+    if (expandAllLogs === null || !agentSteps) return
+    if (expandAllLogs) {
+      setCollapsedCalls(new Set())
+      setExpandedCalls(new Set(agentSteps.map((_, idx) => idx)))
+    } else {
+      setCollapsedCalls(new Set(agentSteps.map((_, idx) => idx)))
+      setExpandedCalls(new Set())
+    }
+  }, [expandAllLogs, agentSteps])
 
   const durationMs: number | null = invocation.end_time
     ? new Date(invocation.end_time).getTime() -
@@ -192,14 +202,12 @@ export const TimelineEntry = ({
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Node Invocation
                     </div>
-                    <ReactJson
-                      src={invocation}
-                      theme={getReactJsonTheme()}
+                    <SmartContent
+                      value={invocation}
                       collapsed={2}
-                      displayObjectSize={false}
-                      displayDataTypes={false}
-                      enableClipboard={true}
-                      style={{ fontSize: "12px" }}
+                      enableClipboard
+                      showExpanders
+                      jsonTheme="auto"
                     />
                   </div>
                   {nodeDefinition && (
@@ -207,14 +215,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Node Definition
                       </div>
-                      <ReactJson
-                        src={nodeDefinition}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={nodeDefinition}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -223,14 +229,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Inputs
                       </div>
-                      <ReactJson
-                        src={inputs}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={inputs}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -239,14 +243,12 @@ export const TimelineEntry = ({
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Output
                       </div>
-                      <ReactJson
-                        src={output}
-                        theme={getReactJsonTheme()}
+                      <SmartContent
+                        value={output}
                         collapsed={2}
-                        displayObjectSize={false}
-                        displayDataTypes={false}
-                        enableClipboard={true}
-                        style={{ fontSize: "12px" }}
+                        enableClipboard
+                        showExpanders
+                        jsonTheme="auto"
                       />
                     </div>
                   )}
@@ -314,9 +316,12 @@ export const TimelineEntry = ({
                                     ? `from ${msg.from_node_id}`
                                     : ""}
                                 </div>
-                                <pre className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto">
-                                  {JSON.stringify(msg, null, 2)}
-                                </pre>
+                                <SmartContent
+                                  value={msg}
+                                  collapsed={2}
+                                  enableClipboard
+                                  showExpanders
+                                />
                               </div>
                             ))
                           }
@@ -354,10 +359,12 @@ export const TimelineEntry = ({
                     </DialogHeader>
                     <div className="mt-4">
                       <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                        <PayloadRender
-                          payload={inputs[0]?.payload}
-                          msgId={`input-${index}`}
-                          inspectable
+                        <SmartContent
+                          value={inputs[0]?.payload}
+                          collapsed={false}
+                          enableClipboard
+                          showExpanders
+                          stringifySpacing={2}
                         />
                       </div>
                     </div>
@@ -450,26 +457,62 @@ export const TimelineEntry = ({
             {/* Updated Memory */}
             {!isNir(updatedMemory) && Object.keys(updatedMemory).length > 0 && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                <div className="text-xs font-medium text-green-700 dark:text-green-300 mb-2">
-                  Updated Memory (After Execution)
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-green-700 dark:text-green-300">
+                    Updated Memory (After Execution)
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600"
+                          onClick={() => setIsUpdatedMemoryExpanded(true)}
+                          title="Expand updated memory"
+                        >
+                          <Maximize2
+                            size={14}
+                            className="text-gray-600 dark:text-gray-400"
+                          />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Expand updated memory</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600"
+                          onClick={() => setIsUpdatedMemoryExpanded(false)}
+                          title="Collapse updated memory"
+                        >
+                          <Minimize2
+                            size={14}
+                            className="text-gray-600 dark:text-gray-400"
+                          />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Collapse updated memory</TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
-                <ul className="space-y-1">
-                  {Object.entries(updatedMemory).map(([key, value], idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-xs">
-                      <span className="text-green-600 dark:text-green-400 mt-0.5">
-                        •
-                      </span>
-                      <div className="flex-1">
-                        <span className="font-medium text-green-900 dark:text-green-200">
-                          {key}:
-                        </span>{" "}
-                        <span className="text-green-800 dark:text-green-300">
-                          {value}
+                {isUpdatedMemoryExpanded && (
+                  <ul className="space-y-1">
+                    {Object.entries(updatedMemory).map(([key, value], idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs">
+                        <span className="text-green-600 dark:text-green-400 mt-0.5">
+                          •
                         </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                        <div className="flex-1">
+                          <span className="font-medium text-green-900 dark:text-green-200">
+                            {key}:
+                          </span>{" "}
+                          <span className="text-green-800 dark:text-green-300">
+                            {value}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>
@@ -601,10 +644,89 @@ export const TimelineEntry = ({
                 </Tooltip>
               </div>
             </div>
-            <ToolCallsDisplay
-              agentSteps={agentSteps}
-              expandAll={expandAllLogs}
-            />
+
+            {filterRelevantSteps(agentSteps).map((output, i) => (
+              <AgentStepItem
+                key={generateStepKey("step", i, output as any)}
+                index={i}
+                step={output as any}
+                isCollapsed={collapsedCalls.has(i)}
+                isExpanded={expandedCalls.has(i)}
+                onToggleCollapsed={() => {
+                  const next = new Set(collapsedCalls)
+                  if (next.has(i)) {
+                    next.delete(i)
+                  } else {
+                    next.add(i)
+                  }
+                  setCollapsedCalls(next)
+                }}
+                onToggleExpanded={() => {
+                  const next = new Set(expandedCalls)
+                  if (next.has(i)) {
+                    next.delete(i)
+                  } else {
+                    next.add(i)
+                  }
+                  setExpandedCalls(next)
+                }}
+                setResultRef={(el) => {
+                  resultRefs.current[i] = el
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Legacy tool execution details (deprecated) */}
+        {legacySteps && legacySteps.steps.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-amber-700 dark:text-amber-300 border-b border-amber-200 dark:border-amber-800 pb-2 flex-1">
+                Legacy Execution Steps (deprecated)
+              </div>
+              <div className="flex items-center gap-2 ml-2">
+                {typeof legacySteps.totalCost === "number" && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                    cost: ${""}
+                    {formatCost(legacySteps.totalCost)}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  legacy
+                </span>
+              </div>
+            </div>
+            {filterRelevantSteps(legacySteps.steps).map((output, i) => (
+              <AgentStepItem
+                key={generateStepKey("legacy", i, output as any)}
+                index={i}
+                step={output as any}
+                isCollapsed={collapsedCalls.has(i)}
+                isExpanded={expandedCalls.has(i)}
+                onToggleCollapsed={() => {
+                  const next = new Set(collapsedCalls)
+                  if (next.has(i)) {
+                    next.delete(i)
+                  } else {
+                    next.add(i)
+                  }
+                  setCollapsedCalls(next)
+                }}
+                onToggleExpanded={() => {
+                  const next = new Set(expandedCalls)
+                  if (next.has(i)) {
+                    next.delete(i)
+                  } else {
+                    next.add(i)
+                  }
+                  setExpandedCalls(next)
+                }}
+                setResultRef={(el) => {
+                  resultRefs.current[i] = el
+                }}
+              />
+            ))}
           </div>
         )}
 

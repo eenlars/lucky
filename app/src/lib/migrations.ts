@@ -36,7 +36,7 @@ interface MiddleFitnessData {
   usdCost: number
 }
 
-type FitnessData = NewerFitnessData | MiddleFitnessData | OlderFitnessData
+type _FitnessData = NewerFitnessData | MiddleFitnessData | OlderFitnessData
 
 function isNewerFormat(data: unknown): data is NewerFitnessData {
   return (

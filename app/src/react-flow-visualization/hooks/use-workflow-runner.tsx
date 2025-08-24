@@ -15,11 +15,11 @@ export function useWorkflowRunner() {
   // runner removed; keep noop API for compatibility
   const [logMessages] = useState<string[]>([])
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
-  const [pendingStartNodeId, setPendingStartNodeId] = useState<
+  const [_pendingStartNodeId, _setPendingStartNodeId] = useState<
     string | undefined
   >()
   const isRunning = useRef(false)
-  const { getNodes, setNodes, getEdges, exportToJSON, currentWorkflowId } =
+  const { getNodes, setNodes, getEdges, exportToJSON: _exportToJSON, currentWorkflowId: _currentWorkflowId } =
     useAppStore(
       useShallow((s) => ({
         getNodes: s.getNodes,
@@ -34,7 +34,7 @@ export function useWorkflowRunner() {
     isRunning.current = false
   }, [])
 
-  const resetNodeStatus = useCallback(() => {
+  const _resetNodeStatus = useCallback(() => {
     setNodes(
       getNodes().map((node: AppNode) => ({
         ...node,
@@ -43,33 +43,18 @@ export function useWorkflowRunner() {
     )
   }, [getNodes, setNodes])
 
-  const updateNodeStatus = useCallback(
-    (nodeId: string, status: string) => {
-      setNodes(
-        getNodes().map((node: AppNode) =>
-          node.id === nodeId
-            ? ({ ...node, data: { ...node.data, status } } as AppNode)
-            : node
-        )
-      )
+  const _updateNodeStatus = useCallback(
+    (_nodeId: string, _status: string) => {
+      // Functionality removed
     },
-    [setNodes, getNodes]
+    []
   )
 
-  const processNode = useCallback(
-    async (node: AppNode) => {
-      updateNodeStatus(node.id, "loading")
-
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      if (!isRunning.current) {
-        resetNodeStatus()
-        return
-      }
-
-      updateNodeStatus(node.id, "success")
+  const _processNode = useCallback(
+    async (_node: AppNode) => {
+      // Functionality removed
     },
-    [updateNodeStatus, resetNodeStatus]
+    []
   )
 
   const executeWorkflowWithPrompt = useCallback(
@@ -78,14 +63,14 @@ export function useWorkflowRunner() {
   )
 
   const runWorkflow = useCallback(
-    async (startNodeId?: string) => {
+    async (_startNodeId?: string) => {
       if (isRunning.current) return
-      const nodes = getNodes()
-      const edges = getEdges()
+      const _nodes = getNodes()
+      const _edges = getEdges()
       isRunning.current = true
 
       // runner removed
-      setPendingStartNodeId(startNodeId)
+      _setPendingStartNodeId(_startNodeId)
       setPromptDialogOpen(false)
       isRunning.current = false
     },
@@ -107,30 +92,30 @@ export function useWorkflowRunner() {
  * This is a very simplified example of how you might traverse a graph and collect nodes to process.
  * It's not meant to be used in production, but you can use it as a starting point for your own logic.
  */
-function collectNodesToProcess(
-  nodes: AppNode[],
-  edges: AppEdge[],
-  startNodeId: string
+function _collectNodesToProcess(
+  _nodes: AppNode[],
+  _edges: AppEdge[],
+  _startNodeId: string
 ) {
-  const nodesToProcess: AppNode[] = []
-  const visited = new Set()
+  const _nodesToProcess: AppNode[] = []
+  const _visited = new Set()
 
-  function visit(nodeId: string) {
-    if (visited.has(nodeId)) return
-    visited.add(nodeId)
+  function _visit(_nodeId: string) {
+    if (_visited.has(_nodeId)) return
+    _visited.add(_nodeId)
 
-    const node = nodes.find((n) => n.id === nodeId)
-    if (!node) return
+    const _node = _nodes.find((n) => n.id === _nodeId)
+    if (!_node) return
 
-    nodesToProcess.push(node)
+    _nodesToProcess.push(_node)
 
-    const outgoingEdges = edges.filter((e) => e.source === nodeId)
-    for (const edge of outgoingEdges) {
-      visit(edge.target)
+    const _outgoingEdges = _edges.filter((e) => e.source === _nodeId)
+    for (const _edge of _outgoingEdges) {
+      _visit(_edge.target)
     }
   }
 
-  visit(startNodeId)
+  _visit(_startNodeId)
 
-  return nodesToProcess
+  return _nodesToProcess
 }

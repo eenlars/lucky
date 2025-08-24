@@ -7,17 +7,45 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
+      DatasetRecord: {
+        Row: {
+          created_at: string
+          dataset_record_id: string
+          ground_truth: Json | null
+          output_schema_json: Json | null
+          rubric: Json | null
+          workflow_input: string | null
+        }
+        Insert: {
+          created_at?: string
+          dataset_record_id?: string
+          ground_truth?: Json | null
+          output_schema_json?: Json | null
+          rubric?: Json | null
+          workflow_input?: string | null
+        }
+        Update: {
+          created_at?: string
+          dataset_record_id?: string
+          ground_truth?: Json | null
+          output_schema_json?: Json | null
+          rubric?: Json | null
+          workflow_input?: string | null
+        }
+        Relationships: []
+      }
       EvolutionRun: {
         Row: {
           config: Json
           end_time: string | null
+          evolution_type: string | null
           goal_text: string
           notes: string | null
           run_id: string
@@ -27,6 +55,7 @@ export type Database = {
         Insert: {
           config: Json
           end_time?: string | null
+          evolution_type?: string | null
           goal_text: string
           notes?: string | null
           run_id?: string
@@ -36,6 +65,7 @@ export type Database = {
         Update: {
           config?: Json
           end_time?: string | null
+          evolution_type?: string | null
           goal_text?: string
           notes?: string | null
           run_id?: string
@@ -49,6 +79,7 @@ export type Database = {
           best_workflow_version_id: string | null
           comment: string | null
           end_time: string | null
+          feedback: string | null
           generation_id: string
           number: number
           run_id: string
@@ -58,6 +89,7 @@ export type Database = {
           best_workflow_version_id?: string | null
           comment?: string | null
           end_time?: string | null
+          feedback?: string | null
           generation_id?: string
           number: number
           run_id: string
@@ -67,6 +99,7 @@ export type Database = {
           best_workflow_version_id?: string | null
           comment?: string | null
           end_time?: string | null
+          feedback?: string | null
           generation_id?: string
           number?: number
           run_id?: string

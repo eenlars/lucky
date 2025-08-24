@@ -5,6 +5,7 @@ import { ColorMode } from "@xyflow/react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import NextTopLoader from "nextjs-toploader"
+import { Toaster } from "sonner"
 
 import "./globals.css"
 
@@ -53,6 +54,17 @@ export default async function RootLayout({
           >
             {children}
           </main>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: theme === "dark" ? "#1a1a1a" : "#fff",
+                color: theme === "dark" ? "#fff" : "#000",
+                border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
+              },
+            }}
+          />
         </body>
       </html>
     </AppStoreProvider>

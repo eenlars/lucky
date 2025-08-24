@@ -156,6 +156,7 @@ export class RunService {
         config: JSONN.show(config),
         status: "running",
         start_time: new Date().toISOString(),
+        evolution_type: config.mode === "iterative" ? "iterative" : "gp",
         notes,
       }
       const { data, error } = await supabase
@@ -396,12 +397,15 @@ export class RunService {
         activeGenerationId,
         operator
       )
+      const genomeFeedback = bestGenome.getFeedback()
+      lgg.log("[RunService] Best genome feedback before saving:", genomeFeedback)
       const updateData: TablesUpdate<"Generation"> = {
         end_time: new Date().toISOString(),
         best_workflow_version_id: workflowVersionId,
         comment: stats
           ? `Best: ${stats.bestFitness.toFixed(3)}, Avg: ${stats.avgFitness.toFixed(3)}, Cost: $${stats.evaluationCost.toFixed(2)}`
           : `Best genome: ${bestGenome.getWorkflowVersionId()}`,
+        feedback: genomeFeedback ?? undefined,
       }
       const { error } = await supabase
         .from("Generation")

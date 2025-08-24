@@ -40,7 +40,12 @@ export const saveNodeVersionToDB = async ({
     version: nextVersion,
     llm_model: config.modelName,
     system_prompt: config.systemPrompt,
-    tools: [...config.mcpTools, ...config.codeTools],
+    tools: [
+      ...((Array.isArray(config.mcpTools) ? config.mcpTools : []) as string[]),
+      ...((Array.isArray(config.codeTools)
+        ? config.codeTools
+        : []) as string[]),
+    ],
     extras: {},
     description: config.description,
     memory,

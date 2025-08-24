@@ -144,7 +144,8 @@ export const quickSummary = async (input: string): Promise<string> => {
 
 export const quickSummaryNull = async (
   input: string,
-  retries = 1
+  retries = 1,
+  outputLength = "1-2 sentences"
 ): Promise<string | null> => {
   if (isNir(input)) return null
   try {
@@ -153,7 +154,7 @@ export const quickSummaryNull = async (
       messages: [
         {
           role: "user",
-          content: `Give a small and concise summary about this data: ${JSON.stringify(input)}`,
+          content: `Give a small and concise summary about this data: ${JSON.stringify(input)}. output length: ${outputLength}`,
         },
       ],
       model: getDefaultModels().summary,
@@ -163,6 +164,32 @@ export const quickSummaryNull = async (
     return null
   } catch (error) {
     lgg.error("quickSummaryNull failed", error)
+    return null
+  }
+}
+
+export const askLLM = async (
+  input: string,
+  retries = 1,
+  outputInstruction = "output length 1-2 sentences"
+): Promise<string | null> => {
+  if (isNir(input)) return null
+  try {
+    const { data } = await sendAI({
+      mode: "text",
+      messages: [
+        {
+          role: "user",
+          content: `${llmify(input)}. output: ${llmify(outputInstruction)}`,
+        },
+      ],
+      model: getDefaultModels().summary,
+      retries,
+    })
+    if (!isNir(data?.text)) return data.text
+    return null
+  } catch (error) {
+    lgg.error("askLLM failed", error)
     return null
   }
 }

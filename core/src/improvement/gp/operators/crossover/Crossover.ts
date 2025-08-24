@@ -30,6 +30,7 @@ import {
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
@@ -44,14 +45,14 @@ export class Crossover {
   /**
    * Builds crossover prompt that describes the operation conceptually
    * rather than expecting raw JSON generation.
-   * 
+   *
    * @param parent1 - First parent genome
-   * @param parent2 - Second parent genome  
+   * @param parent2 - Second parent genome
    * @param crossoverType - Type of crossover operation
    * @param aggression - Intensity level description
    * @param instructions - Specific crossover instructions
    * @returns Formatted prompt for LLM crossover
-   * 
+   *
    * @remarks
    * Creates natural language instructions for LLM to understand
    * crossover goals without requiring JSON manipulation
@@ -139,25 +140,27 @@ Create a hybrid workflow that combines the best elements from both parents. Focu
 - Follow proper tool usage patterns
 - Have a coherent execution path from entry to completion
 - Remain highly functional for the following goal: "${parent1.getGoal()}"
+ 
+${GENERALIZATION_LIMITS}
 
 Focus on creating a functional workflow rather than exact JSON structure.`
   }
 
   /**
    * Performs crossover between two parent genomes using LLM.
-   * 
+   *
    * @param parents - Array of parent genomes (requires exactly 2)
    * @param verbose - Whether to use verbose/dummy mode
    * @param evaluationInput - Input for workflow evaluation
    * @param _evolutionContext - Evolution context for the offspring
    * @returns Result containing offspring genome or error
-   * 
+   *
    * @remarks
    * - Selects crossover strategy dynamically
    * - Uses LLM to generate conceptual crossover
    * - Preserves memory from both parents
    * - Validates offspring workflow before returning
-   * 
+   *
    * @throws Error if fewer than 2 parents provided
    */
   static async crossover({

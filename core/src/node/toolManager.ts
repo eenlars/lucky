@@ -10,28 +10,28 @@ import { Tool, type ToolSet } from "ai"
 
 /**
  * Manages tool initialization and runtime access for workflow nodes.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * Handles two types of tools:
  * - **MCP Tools**: External tools via Model Context Protocol (initialized once)
  * - **Code Tools**: Internal TypeScript functions (context-aware initialization)
- * 
+ *
  * ## Initialization Strategy
- * 
+ *
  * - MCP tools initialized eagerly on first call (network setup required)
  * - Code tools initialized lazily with execution context (file access needed)
  * - Idempotent initialization prevents duplicate setup
- * 
+ *
  * ## Runtime Flow
- * 
+ *
  * 1. Node creation → ToolManager instantiated with tool lists
  * 2. Pipeline prepare → initializeTools() sets up MCP connections
  * 3. Pipeline execute → getAllTools() provides context-aware tool set
  * 4. Tool invocation → Parameters validated and executed
- * 
+ *
  * ## Error Handling
- * 
+ *
  * - MCP initialization failures bubble up (critical for node operation)
  * - Code tool failures fall back to cached tools (graceful degradation)
  * - Missing tools logged but don't crash execution
@@ -40,22 +40,28 @@ export class ToolManager {
   private mcpTools: ToolSet = {}
   private codeTools: ToolSet = {}
   private toolsInitialized = false
+  private readonly mcpToolNames: MCPToolName[]
+  private readonly codeToolNames: CodeToolName[]
 
   constructor(
     private readonly nodeId: string,
-    private readonly mcpToolNames: MCPToolName[],
-    private readonly codeToolNames: CodeToolName[],
+    mcpToolNames: MCPToolName[] | null | undefined,
+    codeToolNames: CodeToolName[] | null | undefined,
     private readonly workflowVersionId: string
-  ) {}
+  ) {
+    // Normalize undefined/null to empty arrays to simplify downstream logic
+    this.mcpToolNames = Array.isArray(mcpToolNames) ? mcpToolNames : []
+    this.codeToolNames = Array.isArray(codeToolNames) ? codeToolNames : []
+  }
 
   /**
    * Idempotent tool initialization with error bubbling.
-   * 
+   *
    * Runtime behavior:
    * - First call: Sets up MCP connections and marks initialized
    * - Subsequent calls: Return immediately (no-op)
    * - No tools: Mark initialized without setup
-   * 
+   *
    * @throws Error if MCP tool initialization fails
    */
   public async initializeTools(): Promise<void> {
@@ -110,18 +116,18 @@ export class ToolManager {
 
   /**
    * Gets all available tools merged into a single object.
-   * 
+   *
    * Runtime behavior:
    * 1. MCP tools returned from cache (pre-initialized)
    * 2. Code tools created with execution context (file access)
    * 3. Tools merged and filtered for undefined entries
    * 4. Validation ensures tool count consistency
-   * 
+   *
    * Context-aware initialization enables code tools to:
    * - Access workflow files
    * - Read/write to context store
    * - Understand workflow goals
-   * 
+   *
    * @param toolExecutionContext Optional context for code tool initialization
    * @returns Combined toolset ready for AI execution
    */

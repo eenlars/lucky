@@ -151,9 +151,9 @@ vi.mock("@runtime/settings/constants", () => ({
     free2: "deepseek/deepseek-r1-0528:free",
     low: "openai/gpt-4.1-nano",
     medium: "openai/gpt-4.1-mini",
-    high: "anthropic/claude-sonnet-4",
+    high: "openai/gpt-4.1-mini",
     fitness: "openai/gpt-4.1-mini",
-    reasoning: "anthropic/claude-sonnet-4",
+    reasoning: "openai/gpt-4.1-mini",
     fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {

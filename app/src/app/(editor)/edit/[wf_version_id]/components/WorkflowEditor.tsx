@@ -1,11 +1,11 @@
 "use client"
 
-import { saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { showToast } from "@/lib/toast-utils"
 import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
+import { loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
 import type { Tables } from "@lucky/shared"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-// Removed server action import - using API route instead
 import ActionBar from "./ActionBar"
 import DSLEditor from "./DSLEditor"
 import ResultsPanel from "./ResultsPanel"
@@ -24,7 +24,6 @@ export default function WorkflowEditor({
   const [isDirty, setIsDirty] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [executionResults, setExecutionResults] = useState<any>(null)
-  const [saveError, setSaveError] = useState<string | null>(null)
   const [runError, setRunError] = useState<string | null>(null)
   const [_showUnsavedWarning, _setShowUnsavedWarning] = useState(false)
 
@@ -35,32 +34,45 @@ export default function WorkflowEditor({
 
   const handleSave = async (commitMessage: string) => {
     setIsLoading(true)
-    setSaveError(null)
 
     try {
       // Parse and validate DSL content
       const parsedDsl = JSON.parse(dslContent)
       const validatedConfig = await loadFromDSL(parsedDsl)
 
-      // Save new workflow version
-      const newWorkflowVersion = await saveWorkflowVersion({
-        dsl: validatedConfig,
-        commitMessage,
-        workflowId: workflowVersion.workflow_id,
-        parentId: workflowVersion.wf_version_id,
-        iterationBudget: workflowVersion.iteration_budget,
-        timeBudgetSeconds: workflowVersion.time_budget_seconds,
+      // Save new workflow version via API route
+      const response = await fetch("/api/workflow/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dsl: validatedConfig,
+          commitMessage,
+          workflowId: workflowVersion.workflow_id,
+          parentId: workflowVersion.wf_version_id,
+          iterationBudget: workflowVersion.iteration_budget,
+          timeBudgetSeconds: workflowVersion.time_budget_seconds,
+        }),
       })
 
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Failed to save workflow")
+      }
+
+      const result = await response.json()
+      const newWorkflowVersion = result.data
+
       setIsDirty(false)
+      showToast.success.save("Workflow saved successfully")
 
       // Navigate to the new workflow version
       router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
       console.error("Failed to save workflow:", error)
-      setSaveError(
-        error instanceof Error ? error.message : "Failed to save workflow"
-      )
+      const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
+      showToast.error.save(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -72,9 +84,9 @@ export default function WorkflowEditor({
     setExecutionResults(null)
 
     try {
-      // Parse and validate DSL content
+      // Parse and validate DSL content (use flexible validation for UI)
       const parsedDsl = JSON.parse(dslContent)
-      const validatedConfig = await loadFromDSL(parsedDsl)
+      const validatedConfig = await loadFromDSLClientDisplay(parsedDsl)
 
       // Run the workflow via API route
       const response = await fetch("/api/workflow/run", {
@@ -102,13 +114,15 @@ export default function WorkflowEditor({
           message: "Workflow executed successfully",
         })
       } else {
-        setRunError(result.error || "Workflow execution failed")
+        const errorMessage = result.error || "Workflow execution failed"
+        setRunError(errorMessage)
+        showToast.error.run(errorMessage)
       }
     } catch (error) {
       console.error("Failed to run workflow:", error)
-      setRunError(
-        error instanceof Error ? error.message : "Failed to run workflow"
-      )
+      const errorMessage = error instanceof Error ? error.message : "Failed to run workflow"
+      setRunError(errorMessage)
+      showToast.error.run(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -176,7 +190,6 @@ export default function WorkflowEditor({
               onRun={handleRun}
               isDirty={isDirty}
               isLoading={isLoading}
-              saveError={saveError}
             />
           </div>
         </div>

@@ -42,15 +42,15 @@ export const MODELS: OpenRouterModelName[] = [
   experimentalModels.mistral.id,
   experimentalModels.gpt35turbo.id,
   experimentalModels.claude35haiku.id,
-  experimentalModels.gemini25pro.id,
+  // experimentalModels.gemini25pro.id,
   experimentalModels.geminiLite.id,
   experimentalModels.llama318bInstruct.id,
 ]
 
-// Curated subset for faster v3 runs (chosen for comparative value vs. baseline)
-export const MODELS_V3: OpenRouterModelName[] = [
+// Curated subset for faster our-algorithm runs (chosen for comparative value vs. baseline)
+export const MODELS_OUR_ALGORITHM: OpenRouterModelName[] = [
   experimentalModels.gpt35turbo.id,
   experimentalModels.claude35haiku.id,
-  experimentalModels.gemini25pro.id,
+  // experimentalModels.gemini25pro.id,
   experimentalModels.geminiLite.id,
 ]

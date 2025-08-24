@@ -1,9 +1,9 @@
 import type { OpenRouterModelName } from "../../../../../../../core/src/utils/spending/models.types"
 import type { ToolExecution } from "../../02-sequential-chains/types"
 import { TEST_SCENARIOS } from "../constants"
-import type { Condition, LoopMetrics, V3Loop, V3Run } from "../types"
+import type { Condition, LoopMetrics, OurAlgorithmLoop, OurAlgorithmRun } from "../types"
 
-export type RunKind = "baseline" | "v3"
+export type RunKind = "baseline" | "our-algorithm"
 
 export interface ScoredRun {
   // identity
@@ -18,7 +18,7 @@ export interface ScoredRun {
   requested: number
   successPct: number // successItems / requested * 100
 
-  // efficiency (aggregated for v3 across loops)
+  // efficiency (aggregated for our-algorithm across loops)
   costUsd: number
   durationMs: number
 
@@ -39,7 +39,7 @@ function getRequestedCount(scenarioId: string): number {
 }
 
 // Aggregate a list of loops into a single metrics rollup (sum cost/duration, last-loop strategy, average adherence/error)
-function aggregateLoops(loops: V3Loop[]): {
+function aggregateLoops(loops: OurAlgorithmLoop[]): {
   costUsd: number
   durationMs: number
   totalFetchCalls: number
@@ -94,17 +94,17 @@ function aggregateLoops(loops: V3Loop[]): {
 }
 
 /**
- * scoreRun - normalizes a V3-style run (baseline single loop or multi-loop v3) into comparable metrics
+ * scoreRun - normalizes a OurAlgorithm-style run (baseline single loop or multi-loop our-algorithm) into comparable metrics
  *
- * - runKind: "baseline" uses only the single loop; "v3" aggregates across loops
+ * - runKind: "baseline" uses only the single loop; "our-algorithm" aggregates across loops
  * - successPct computed against scenario expected value
- * - efficiency metrics are summed across loops for v3
+ * - efficiency metrics are summed across loops for our-algorithm
  */
-export function scoreRun(run: V3Run, runKind: RunKind): ScoredRun {
+export function scoreRun(run: OurAlgorithmRun, runKind: RunKind): ScoredRun {
   const requested = getRequestedCount(run.scenario)
   const loops = run.loops ?? []
   const loopAgg =
-    runKind === "v3" ? aggregateLoops(loops) : aggregateLoops(loops.slice(0, 1))
+    runKind === "our-algorithm" ? aggregateLoops(loops) : aggregateLoops(loops.slice(0, 1))
 
   const successItems = run.successItems ?? 0
   const successPct = requested ? (successItems / requested) * 100 : 0
@@ -132,7 +132,7 @@ export function scoreRun(run: V3Run, runKind: RunKind): ScoredRun {
 /**
  * scoreMany - convenience helper to score a list of runs
  */
-export function scoreMany(runs: V3Run[], runKind: RunKind): ScoredRun[] {
+export function scoreMany(runs: OurAlgorithmRun[], runKind: RunKind): ScoredRun[] {
   return runs.map((r) => scoreRun(r, runKind))
 }
 
@@ -171,7 +171,7 @@ export function groupAndAggregate<T extends keyof ScoredRun>(
 }
 
 /**
- * scoreLoop - unified per-loop metrics extraction used by baseline and v3
+ * scoreLoop - unified per-loop metrics extraction used by baseline and our-algorithm
  * If toolUsageOutputs is provided, errorRate is computed from it; otherwise it
  * is approximated from tool execution outputs.
  */

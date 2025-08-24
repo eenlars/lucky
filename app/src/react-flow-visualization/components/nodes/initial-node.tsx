@@ -1,7 +1,7 @@
 import nodesConfig, { COMPACT_NODE_SIZE, WorkflowNodeProps } from "."
 import { AppHandle } from "./workflow-node/app-handle"
 
-export function InitialNode({ id, data }: WorkflowNodeProps) {
+export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
   return (
     <div
       id={id}

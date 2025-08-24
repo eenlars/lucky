@@ -1,14 +1,14 @@
 /**
  * Workflow invocation module - Entry point for executing workflows.
- * 
+ *
  * Supports three methods of workflow loading:
  * - From database by workflow version ID
  * - From local file by filename
  * - From direct DSL configuration object
- * 
+ *
  * Handles workflow preparation, execution, evaluation, and memory persistence.
  * Tracks spending limits and saves memory updates back to source when applicable.
- * 
+ *
  * @module workflow/runner/invokeWorkflow
  */
 
@@ -17,6 +17,7 @@ import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
+import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import {
@@ -40,27 +41,27 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
  * Invokes a workflow with the provided input configuration.
- * 
+ *
  * @param input - Invocation configuration containing evaluation input and one of:
  *   - workflowVersionId: ID to load workflow from database
  *   - filename: Path to load workflow from file
  *   - dslConfig: Direct workflow configuration object
- * 
+ *
  * @returns Result containing array of invocation results with:
  *   - queueRunResult: Raw execution results
  *   - fitness: Evaluation score (if evaluation is needed)
  *   - feedback: Evaluation feedback (if evaluation is needed)
  *   - finalWorkflowOutputs: Final outputs from workflow
- * 
+ *
  * @throws Error if evalInput is missing or no valid workflow source provided
- * 
+ *
  * @example
  * // Load from database
  * const result = await invokeWorkflow({
  *   workflowVersionId: "wf_123",
  *   evalInput: { type: "text", input: "Hello", workflowId: "test" }
  * })
- * 
+ *
  * @remarks
  * - Automatically saves memory updates back to file-based workflows
  * - Tracks spending limits when enabled in configuration
@@ -78,7 +79,7 @@ export async function invokeWorkflow(
     }
 
     // Set defaults
-    evalInput.workflowId ??= "ad-hoc-" + genShortId()
+    evalInput.workflowId ??= "wf_id_" + genShortId()
     if (evalInput.type === "text" && !evalInput.answer) {
       evalInput.answer = ""
     }
@@ -101,6 +102,9 @@ export async function invokeWorkflow(
     if (CONFIG.limits.enableSpendingLimits) {
       SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
     }
+
+    // Strictly validate before creating workflow
+    await verifyWorkflowConfigStrict(config)
 
     // Create workflow
     const workflow = Workflow.create({

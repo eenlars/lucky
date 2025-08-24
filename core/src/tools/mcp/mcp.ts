@@ -113,16 +113,17 @@ const clientCache = new Map<string, any>()
  * Clients are cached per workflow to maintain persistent sessions (e.g., browser state).
  */
 export async function setupMCPForNode(
-  toolNames: MCPToolName[],
+  toolNames: MCPToolName[] | null | undefined,
   workflowId: string
 ): Promise<ToolSet> {
-  if (toolNames.length === 0) {
+  const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
+  if (safeToolNames.length === 0) {
     return {}
   }
 
   // 1. Get or create clients (reuse cached clients for session persistence)
   const clientPromises = await Promise.all(
-    toolNames.map(async (name) => {
+    safeToolNames.map(async (name) => {
       // Create cache key combining workflow ID and tool name
       const cacheKey = workflowId ? `${workflowId}:${name}` : name
 
@@ -159,8 +160,6 @@ export async function setupMCPForNode(
 
   // 2. Fetch each client's tool set
   const toolSets = await Promise.all(clients.map((client) => client.tools()))
-
-  console.log(toolSets)
 
   // 3. Merge all tool definitions into one flat object
   const tools = Object.assign({}, ...toolSets)

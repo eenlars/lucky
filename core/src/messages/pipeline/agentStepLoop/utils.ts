@@ -21,9 +21,16 @@ export interface MultiStepLoopContext {
   getTotalCost: () => number
 }
 
+type ToolUsageToStringOptions = {
+  includeArgs?: boolean
+}
+
 export const toolUsageToString = (
   usage: AgentStep[],
-  truncate = 100
+  truncate = 100,
+  options: ToolUsageToStringOptions = {
+    includeArgs: false,
+  }
 ): string => {
   if (!usage) {
     lgg.error("toolUsageToString: usage is null/undefined", usage)
@@ -39,21 +46,27 @@ export const toolUsageToString = (
           : u.return
       switch (u.type) {
         case "prepare":
-          return `prepare:${u.return}`
+          return `<prepare_step>${u.return}</prepare_step>`
         case "tool":
-          return `tool:"${u.name}"\n${truncater(JSON.stringify(data), truncate)}\n${u.summary ? `summary:${u.summary}` : ""}`
+          return `<tool_call_step_${u.name}>
+          ${options.includeArgs ? `<args>${truncater(JSON.stringify(u.args), 200)}</args>` : ""}
+          <data>
+          ${truncater(JSON.stringify(data), truncate)}
+          </data>
+          ${u.summary ? `<summary>${u.summary}</summary>` : ""}
+          </tool_call_step_${u.name}>`
         case "text":
-          return `text:${u.return}`
+          return `<text_step>${u.return}</text_step>`
         case "error":
-          return `error:${u.return}`
+          return `<error_step>${u.return}</error_step>`
         case "reasoning":
-          return `reasoning:${u.return}`
+          return `<reasoning_step>${u.return}</reasoning_step>`
         case "terminate":
-          return `terminate:${u.return}`
+          return `<terminate_step>${u.return}</terminate_step>`
         case "plan":
-          return `plan:${u.return}`
+          return `<plan_step>${u.return}</plan_step>`
         case "learning":
-          return `learning:${u.return}`
+          return `<learning_step>${u.return}</learning_step>`
         case "debug":
           return `` // nothing!
         default: {

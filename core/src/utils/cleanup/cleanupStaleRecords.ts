@@ -1,5 +1,6 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
+import type { Tables } from "@lucky/shared"
 
 interface CleanupStats {
   workflowInvocations: number
@@ -7,6 +8,8 @@ interface CleanupStats {
   evolutionRuns: number
   generations: number
   messages: number
+  // number of EvolutionRun rows whose end_time was set by cleanup
+  evolutionRunsEndTimes: number
 }
 
 /**
@@ -21,6 +24,7 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
     evolutionRuns: 0,
     generations: 0,
     messages: 0,
+    evolutionRunsEndTimes: 0,
   }
 
   try {
@@ -73,6 +77,61 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
       lgg.info(
         `marked ${stats.evolutionRuns} stale evolution runs as interrupted`
       )
+    }
+
+    // set end_time for any evolution runs missing it (default: start_time + 1 hour)
+    try {
+      type EvoRunMin = Pick<
+        Tables<"EvolutionRun">,
+        "run_id" | "start_time" | "end_time"
+      >
+      const { data: runsMissingEnd, error: runsMissingEndError } =
+        await supabase
+          .from("EvolutionRun")
+          .select("run_id,start_time,end_time")
+          .is("end_time", null)
+
+      if (runsMissingEndError) {
+        lgg.error(
+          "failed to fetch evolution runs missing end_time:",
+          runsMissingEndError
+        )
+      } else if (runsMissingEnd && runsMissingEnd.length > 0) {
+        let updatedCount = 0
+        // Update each run with computed end_time
+        for (const run of runsMissingEnd as EvoRunMin[]) {
+          const startMs = new Date(run.start_time).getTime()
+          if (Number.isNaN(startMs)) {
+            // skip invalid dates but log for visibility
+            // use info to be compatible with minimal logger mocks in tests
+            lgg.info(
+              `skipping EvolutionRun ${run.run_id} due to invalid start_time: ${run.start_time}`
+            )
+            continue
+          }
+          const computedEnd = new Date(startMs + 60 * 60 * 1000).toISOString()
+          const { error: updateEndError } = await supabase
+            .from("EvolutionRun")
+            .update({ end_time: computedEnd })
+            .eq("run_id", run.run_id)
+
+          if (updateEndError) {
+            lgg.error(
+              `failed to set end_time for EvolutionRun ${run.run_id}:`,
+              updateEndError
+            )
+          } else {
+            updatedCount++
+          }
+        }
+        stats.evolutionRunsEndTimes = updatedCount
+        lgg.info(
+          `set end_time for ${stats.evolutionRunsEndTimes} evolution runs missing end_time (start_time + 1h)`
+        )
+      }
+    } catch (err) {
+      // if the supabase client or mocks don't support this chain, continue without blocking cleanup
+      lgg.error("failed to set end_time for runs missing it", err)
     }
 
     // cleanup stale generations (no end_time and start_time > 10 minutes)

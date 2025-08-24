@@ -12,7 +12,7 @@ export type {
 export { Workflow } from "./workflow/Workflow"
 
 // Node exports
-export { invokeNode } from "./node/invokeNode"
+export { invokeAgent } from "./node/invokeNode"
 export { WorkFlowNode } from "./node/WorkFlowNode"
 
 // Message exports
@@ -36,3 +36,4 @@ export type { ToolExecutionContext } from "./tools/toolFactory"
 export { genShortId } from "./utils/common/utils"
 export { lgg } from "./utils/logging/Logger"
 export { R, type RS } from "./utils/types"
+export { hashWorkflow, hashWorkflowNode } from "./workflow/schema/hash"

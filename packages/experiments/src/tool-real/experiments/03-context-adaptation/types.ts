@@ -29,7 +29,7 @@ export interface LoopMetrics {
   strategy: LoopStrategy
 }
 
-export interface V3Loop {
+export interface OurAlgorithmLoop {
   loop: number
   success: boolean
   cost?: number
@@ -49,7 +49,7 @@ export interface LearningEffects {
   memoryGrowth: number
 }
 
-export interface V3Run {
+export interface OurAlgorithmRun {
   model: OpenRouterModelName
   scenario: string
   condition: Condition
@@ -59,11 +59,11 @@ export interface V3Run {
   success: boolean
   cost: number
   durationMs: number
-  loops: V3Loop[]
+  loops: OurAlgorithmLoop[]
   learningEffects: LearningEffects | null
 }
 
-export interface V3ExperimentResults {
+export interface OurAlgorithmExperimentResults {
   timestamp: string
-  runs: V3Run[]
+  runs: OurAlgorithmRun[]
 }

@@ -29,6 +29,7 @@ describe("makeLearning Integration Test", () => {
       toolLogs: "text: Rituals has physical stores",
       nodeSystemPrompt: "check if this company has physical stores",
       currentMemory: {},
+      mainWorkflowGoal: "analyze company information",
     })
 
     expect(result.updatedMemory).toEqual({
@@ -64,6 +65,7 @@ describe("makeLearning Integration Test", () => {
       toolLogs: "no significant learnings",
       nodeSystemPrompt: "simple task",
       currentMemory: {},
+      mainWorkflowGoal: "perform simple analysis",
     })
 
     expect(result.updatedMemory).toEqual({})
@@ -85,6 +87,7 @@ describe("makeLearning Integration Test", () => {
       toolLogs: "some logs",
       nodeSystemPrompt: "some prompt",
       currentMemory: {},
+      mainWorkflowGoal: "test error handling",
     })
 
     expect(result.agentStep.type).toBe("error")

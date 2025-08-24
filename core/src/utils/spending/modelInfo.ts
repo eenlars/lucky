@@ -96,7 +96,7 @@ export const providersV2 = {
       output: 10,
       info: "IQ:7/10;speed:medium;pricing:medium;",
       context_length: 1048576,
-      active: true,
+      active: false,
     },
     "anthropic/claude-sonnet-4": {
       id: "anthropic/claude-sonnet-4",

@@ -84,11 +84,11 @@ export default function Workflow({
 
   const { onDragOver, onDrop } = useDragAndDrop()
   const runLayout = useLayout(true)
-  const promptDialogOpen = false
-  const setPromptDialogOpen = (_: boolean) => {}
-  const executeWorkflowWithPrompt = async () => {}
-  const isRunning = false
-  const logMessages: string[] = []
+  const _promptDialogOpen = false
+  const _setPromptDialogOpen = (_: boolean) => {}
+  const _executeWorkflowWithPrompt = async () => {}
+  const _isRunning = false
+  const _logMessages: string[] = []
 
   const proOptions = {
     // passing in the account property will enable hiding the attribution
@@ -150,6 +150,7 @@ export default function Workflow({
         onDrop={onDrop}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
+        selectNodesOnDrag={false}
         colorMode={colorMode}
         defaultEdgeOptions={{ type: "workflow" }}
         proOptions={proOptions}

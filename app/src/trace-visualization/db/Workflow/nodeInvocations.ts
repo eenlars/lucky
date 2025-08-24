@@ -30,7 +30,9 @@ export const nodeInvocations = cache(
       .eq("wf_invocation_id", workflowInvocationId)
       .order("start_time")
 
-    if (error) throw error
+    if (error) {
+      throw new Error("Failed to fetch node invocations")
+    }
 
     const nodeInvocations: NodeInvocationExtended[] = (invocations ?? []).map(
       normalizeNodeInvocation

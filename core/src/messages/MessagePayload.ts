@@ -11,7 +11,7 @@ import type { Enums } from "@lucky/shared"
 // acknowledgement: the source node will acknowledge the target node's task
 
 // ASK
-// clarification: the source node will clarify the target node's task
+//
 // consensus_request: the source node will ask the target node for consensus on a task
 
 /**

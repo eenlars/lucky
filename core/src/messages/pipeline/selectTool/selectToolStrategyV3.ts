@@ -1,3 +1,4 @@
+import { askLLM } from "@core/messages/api/genObject"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import type {
@@ -62,6 +63,63 @@ export async function selectToolStrategyV3<T extends ToolSet>(
         return { strategyResult: result, debugPrompt: "" }
       }
 
+      let agentStepsString = ""
+      let agentStepsAnalysis: string | null = null
+
+      if (!isNir(agentSteps)) {
+        agentStepsString = toolUsageToString(agentSteps, 1000, {
+          includeArgs: true,
+        })
+        agentStepsAnalysis = await askLLM(
+          `
+          # role
+          you are the trace observer.
+          - you talk as if you are talking to someone who has no idea what is going on.
+          - you explain what you see in concise words.
+          
+          # task:
+          - Analyze the following data: ${agentStepsString}
+          - explain which steps already happened, what our assumptions are.
+        
+          # context
+          this was the identity prompt, which must have been strictly followed.
+          <identity_prompt>
+          ${identityPrompt}
+          </identity_prompt>
+
+          # limitations
+          never do more than observing. you are the observer, and you do not synthesize or decide, and never advice.
+          do the output in the same format as the style in the example.
+          
+          # output
+          the following is a good output *example* of when the trace is not going well (the things in brackets help guide you):
+
+          input: identity prompt: 'you must find a recipe from italy, do one tool call max'.
+
+          trace until now (organize it in logical steps - it doesn't have to follow the exact schema, it needs to follow logical steps):
+          1. we called the GetRecipe tool because we need to get a good recipe
+          2. it returned an error, our request asked for asian recipes.
+          3. we ran it again, and it showed us a recipe that showed promise
+          4. since our objective is to continue searching, we used another tool: doGoogleSearch
+          5. it returned empty
+
+          the observations from looking at the trace:
+          1. Until now, the agent trace has shown misalignment of the identity prompt. (observation)
+            - the prompt said to check for italy, but it looked for asian recipes. (specific explanation what happened)
+          2. We see that the tool call to 'doGoogleSearch' was done, even though not allowed. (observation)
+            - from the instructions, it says we can only find a recipe from italy (specific explanation)
+          `,
+          1,
+          `
+          first show the full trace until now. 
+          then do a maximum 2 observations that would aid in next tool calls to make a good decision,
+          keep it as concise and dense as possible
+          `
+        )
+      } else {
+        agentStepsString = "no past calls"
+      }
+
       const toolKeys = Object.keys(tools) as (keyof T)[]
 
       // Use provided system message as primary directive
@@ -101,31 +159,36 @@ export async function selectToolStrategyV3<T extends ToolSet>(
         }
       }
 
-      const agentStepsString = !isNir(agentSteps)
-        ? toolUsageToString(agentSteps, 1000)
-        : "no past calls"
-
       // Analysis prompt
       const analysisMessages: CoreMessage[] = [
         {
           role: "system",
           content: `
+      OBJECTIVE
+      - You should make the optimal decision on how to go forward to get closer to achieving our task.
+      - Follow the Primary Instruction strictly.
+      - Use the tools to achieve the objective. Do not over-use tools. use them intelligently.
+
       DECIDE NEXT ACTION
       - Output must be JSON and match the schema (see "Structured Output Rules").
       - Choose exactly one: {type: "tool"} or {type: "terminate"}.
 
-      OBJECTIVE
-      - Follow the Primary Instruction strictly.
-
       PRIMARY INSTRUCTION
       ${primaryInstruction}
 
+      ${
+        agentStepsAnalysis
+          ? `
+        PAST TRACE OBSERVATIONS
+        these are the past trace observations. These should aid you in decision making.
+        <past_trace_observations>${agentStepsAnalysis}</past_trace_observations>`
+          : ""
+      }
+
       CONTEXT
-      - Rounds left: ${roundsLeft}
+      - Rounds left: ${roundsLeft} (if 0, terminate)
       - you are:
       ${identityPrompt}
-      - Past calls:
-      ${agentStepsString}
       ${
         previousToolExpectedMutation
           ? `
@@ -142,9 +205,9 @@ export async function selectToolStrategyV3<T extends ToolSet>(
       - Select only ONE tool when using a tool.
       - Provide clear reasoning.
       - Provide a concrete plan with explicit parameters.
-      - If a read/check step already happened, choose a write/create tool next.
+      - NEVER run the same tool twice with the same intent.
 
-      DIAGNOSE & ADAPT (GENERIC)
+      DIAGNOSE & ADAPT
       - From recent outputs/logs, infer likely issues:
         range constraints, required fields, type mismatches, quota/rate,
         auth/state, or other.
@@ -245,25 +308,9 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           }
 
           // Invalid toolName
-          {
-            const result: StrategyResult<T> = {
-              type: "terminate",
-              reasoning: "Invalid tool selected: " + decision.toolName,
-              usdCost: usdCost ?? 0,
-            }
-            obs.event("strategy.selectTool:decision", {
-              type: result.type,
-              cost_usd: result.usdCost,
-            })
-            return { strategyResult: result, debugPrompt }
-          }
-        }
-
-        // Handle failed request case
-        {
           const result: StrategyResult<T> = {
-            type: "error",
-            reasoning: error ?? "Unknown error",
+            type: "terminate",
+            reasoning: "Invalid tool selected: " + decision.toolName,
             usdCost: usdCost ?? 0,
           }
           obs.event("strategy.selectTool:decision", {
@@ -272,6 +319,18 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           })
           return { strategyResult: result, debugPrompt }
         }
+
+        // Handle failed request case
+        const result: StrategyResult<T> = {
+          type: "error",
+          reasoning: error ?? "Unknown error",
+          usdCost: usdCost ?? 0,
+        }
+        obs.event("strategy.selectTool:decision", {
+          type: result.type,
+          cost_usd: result.usdCost,
+        })
+        return { strategyResult: result, debugPrompt }
       } catch (error) {
         lgg.error("Error in selectToolStrategyV3:", error)
         let message = "Error in strategy selection."

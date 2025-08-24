@@ -1,3 +1,4 @@
+import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { truncater } from "@core/utils/common/llmify"
 
 export const CreateSummaryPrompt = {
@@ -20,14 +21,27 @@ ${truncater(content, 1000)}
 </rules>
     `
   },
-  summaryLongPromptText: (content: string): string => {
+  summaryLongPromptText: (content: string, outputLength?: string): string => {
+    const missingText = content.length > 2000 ? content.length - 2000 : 0
+    const missingTextMessage =
+      missingText > 0 ? `${missingText} characters removed for brevity` : ""
     return `
 <task>
-summarize this text data in 1-2 paragraphs focusing on what information it contains
+imagine you are reporting to a human about data. 
+the human has 0 context about the data and needs to understand the internals, so you need to be very specific and detailed.
+summarize this text data in ${outputLength ? outputLength : "1-2 paragraphs"} focusing on what information it contains.
+if anomalies are detected, mention them.
+humans would want to know: 
+  - numbers of items
+  - errors
+  - missing fields
+  - duplicates
+  - malformed values
 </task>
 
 <data>
 ${truncater(content, 2000)}
+${missingTextMessage}
 </data>
 
 <rules>
@@ -36,6 +50,7 @@ ${truncater(content, 2000)}
 - easy to understand at a glance
 - include example if it helps clarify
 - english only
+- do not only mention generic information. this will not help the human understand the data.
 </rules>
     `
   },
@@ -71,6 +86,7 @@ for limited results:
 - keep it concise but informative
 - if there was an error, mention the error type/message
 - english only
+${GENERALIZATION_LIMITS}
 </rules>
     `
   },

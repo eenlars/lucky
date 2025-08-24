@@ -26,6 +26,10 @@ export default function WorkflowStructurePage({
 
       try {
         const data = await fullWorkflow(wf_inv_id)
+        if (!data) {
+          setError("Trace not found")
+          return
+        }
         setWorkflowData(data)
       } catch (err) {
         console.error("Error fetching workflow structure:", err)

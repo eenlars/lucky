@@ -104,6 +104,7 @@ export async function runMultiStepLoopV2Helper(
         toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
+        mainWorkflowGoal: ctx.mainWorkflowGoal,
       })
 
       if (learningResult.agentStep.type !== "error") {

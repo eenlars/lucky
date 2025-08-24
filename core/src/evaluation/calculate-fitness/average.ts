@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { truncater } from "@core/utils/common/llmify"
+import { groupedFeedback } from "@core/prompts/evaluator/feedback/averageFeedback.p"
 import { R, type RS } from "@core/utils/types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -34,7 +34,7 @@ export const calculateAverageFitness = (
   }
 }
 
-export const calculateAverageFeedback = async (
+export const calculateFeedbackGrouped = async (
   feedbacks: string[]
 ): Promise<RS<string>> => {
   guard(feedbacks, "No feedbacks to average")
@@ -52,18 +52,8 @@ export const calculateAverageFeedback = async (
     .map((feedback, index) => `Feedback ${index + 1}:\n${feedback}`)
     .join("\n\n")
 
-  // Use AI to synthesize common themes from multiple feedbacks
-  const prompt = `
-  Analyze the following feedback entries and synthesize them:
-
-${truncater(feedbacksString, 12000)}
-
-Please provide a synthesized feedback that:
-- Identifies the most common issues or patterns
-- Combines recurring themes and recommendations
-- Maintains the analytical depth of the original feedbacks
-- Provides actionable insights based on the collective feedback
-`
+  // Use AI to synthesize the feedback.
+  const prompt = groupedFeedback(feedbacksString)
 
   const result = await sendAI({
     messages: [{ role: "user", content: prompt }],
