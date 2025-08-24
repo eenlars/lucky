@@ -7,7 +7,7 @@ import {
   VAGUE_SYSTEM_PROMPT,
 } from "../src/tool-real/experiments/03-context-adaptation/constants"
 import type { Condition } from "../src/tool-real/experiments/03-context-adaptation/types"
-import { runMultiToolV3 } from "../src/tool-real/experiments/03-context-adaptation/v3helper-runner"
+import { runMultiToolOurAlgorithm } from "../src/tool-real/experiments/03-context-adaptation/our-algorithm-helper-runner"
 import { adaptiveTools } from "../src/tool-real/shared/tools/adaptive/adaptiveTools"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -27,7 +27,7 @@ async function runOnce(model: string, condition: Condition) {
   console.log(`Scenario: ${scenario.id}`)
   console.log(`Request: ${scenario.prompt}`)
 
-  const result = await runMultiToolV3(
+  const result = await runMultiToolOurAlgorithm(
     model as any,
     scenario.prompt,
     adaptiveTools,

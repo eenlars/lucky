@@ -31,11 +31,13 @@ export function processResponseVercel({
   modelUsed,
   nodeId,
   summary,
+  originatedFrom,
 }: {
   response: GenerateTextResult<ToolSet, unknown>
   modelUsed: ModelName
   nodeId: string
   summary?: string
+  originatedFrom?: string
 }): ProcessedResponse {
   // Validate input
   if (!response || typeof response !== "object") {
@@ -47,6 +49,7 @@ export function processResponseVercel({
       cost: 0,
       type: "error",
       agentSteps: [{ type: "error", return: "Invalid response format" }],
+      originatedFrom,
     }
   }
 
@@ -122,6 +125,7 @@ export function processResponseVercel({
     cost: 0,
     type: "error",
     agentSteps: [{ type: "error", return: "Unrecognized response format" }],
+    originatedFrom,
   }
 }
 

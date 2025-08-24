@@ -68,7 +68,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
       // defaults
       limit: 15,
-      hideEmptyRuns: true,
+      hideEmptyRuns: false,
       sortField: null,
       sortDirection: "desc",
       searchTerm: "",
@@ -116,22 +116,23 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
             const cachedList = Object.values(cachedRunsById).filter((run) => {
               // Always exclude runs with no generations (mirrors API)
-              if (!run || (run as any).generation_count === 0) return false
+              if (!run || (run.generation_count ?? 0) === 0) return false
 
-              if (
-                hideEmptyRuns &&
-                (!run.total_invocations || run.total_invocations === 0)
-              ) {
-                return false
+              if (hideEmptyRuns) {
+                const hasInvocations =
+                  !!run.total_invocations && run.total_invocations > 0
+                const hasGenerations = (run.generation_count ?? 0) > 0
+                if (!hasInvocations && !hasGenerations) return false
               }
 
               if (statusFilter !== "all" && run.status !== statusFilter)
                 return false
-              if (
-                modeFilter !== "all" &&
-                (run as any).config?.mode !== modeFilter
-              )
-                return false
+              // evolution_type filter
+              if (modeFilter !== "all") {
+                const normalized = modeFilter.toLowerCase()
+                if (run.evolution_type?.toLowerCase() !== normalized)
+                  return false
+              }
 
               // date filter
               if (dateFilter !== "all") {
@@ -247,7 +248,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
       },
     }),
     {
-      name: "evolution-runs/v1",
+      name: "evolution-runs/v2",
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         cachedRunsById: s.cachedRunsById,

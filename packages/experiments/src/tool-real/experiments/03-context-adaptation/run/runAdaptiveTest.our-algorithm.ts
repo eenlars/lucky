@@ -1,5 +1,5 @@
 /**
- * runAdaptiveTest.v3.ts - Sanity test using MultiStep v3 on the hidden-constraint scenarios
+ * runAdaptiveTest.our-algorithm.ts - Sanity test using MultiStep our-algorithm on the hidden-constraint scenarios
  */
 import { mkdirSync, writeFileSync } from "fs"
 import { dirname, join } from "path"
@@ -11,40 +11,40 @@ import type { ToolExecution } from "../../02-sequential-chains/types"
 import { scoreLoop } from "../analyze/scoreRun"
 import {
   CLEAR_SYSTEM_PROMPT as CLEAR,
-  MODELS_V3 as MODELS,
+  MODELS_OUR_ALGORITHM as MODELS,
   TEST_SCENARIOS as SCENARIOS,
   VAGUE_SYSTEM_PROMPT as VAGUE,
 } from "../constants"
 import type {
   LearningEffects,
-  V3ExperimentResults,
-  V3Loop,
-  V3Run,
+  OurAlgorithmExperimentResults,
+  OurAlgorithmLoop,
+  OurAlgorithmRun,
 } from "../types"
-import { runMultiToolV3 } from "../v3helper-runner"
+import { runMultiToolOurAlgorithm } from "../our-algorithm-helper-runner"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // MODELS, prompts, and scenarios centralized in ./constants
 
-async function runSanityV3() {
+async function runSanityOurAlgorithm() {
   // Ensure results directory exists
   const resultsDir = join(__dirname, "results")
   mkdirSync(resultsDir, { recursive: true })
 
-  const runs: V3Run[] = []
+  const runs: OurAlgorithmRun[] = []
   for (const model of MODELS) {
     for (const scenario of SCENARIOS) {
       for (const cond of ["vague", "clear"] as const) {
         const sys = cond === "vague" ? VAGUE : CLEAR
         // Run 3 multi-step loops, accumulating memory between rounds
         let memory: Record<string, string> = {}
-        const loops: V3Loop[] = []
+        const loops: OurAlgorithmLoop[] = []
         for (let loop = 1; loop <= 3; loop++) {
           const t0 = Date.now()
           const res = await withQuietLogs(() =>
-            runMultiToolV3(model, scenario.prompt, adaptiveTools, sys, memory)
+            runMultiToolOurAlgorithm(model, scenario.prompt, adaptiveTools, sys, memory)
           )
           const durationMs = Date.now() - t0
           const metrics = scoreLoop(
@@ -106,8 +106,8 @@ async function runSanityV3() {
   const now = new Date()
   const hh = String(now.getHours()).padStart(2, "0")
   const mm = String(now.getMinutes()).padStart(2, "0")
-  const out = join(resultsDir, `adaptive-results.v3-${hh}${mm}.json`)
-  const payload: V3ExperimentResults = {
+  const out = join(resultsDir, `adaptive-results.our-algorithm-${hh}${mm}.json`)
+  const payload: OurAlgorithmExperimentResults = {
     timestamp: new Date().toISOString(),
     runs,
   }
@@ -121,18 +121,18 @@ async function runSanityV3() {
       "public/research-experiments/tool-real/experiments/03-context-adaptation"
     )
     mkdirSync(publicDir, { recursive: true })
-    const fixed = join(publicDir, "adaptive-results.v3.json")
+    const fixed = join(publicDir, "adaptive-results.our-algorithm.json")
     writeFileSync(fixed, JSON.stringify(payload, null, 2))
-    console.log(`Public v3 copy saved: ${fixed}`)
+    console.log(`Public our-algorithm copy saved: ${fixed}`)
   } catch (err) {
     console.warn(
-      `Failed to write public adaptive v3 copy: ${err instanceof Error ? err.message : String(err)}`
+      `Failed to write public adaptive our-algorithm copy: ${err instanceof Error ? err.message : String(err)}`
     )
   }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  runSanityV3().catch(console.error)
+  runSanityOurAlgorithm().catch(console.error)
 }
 
 // Quiet noisy internal logs for cleaner experiment output
@@ -165,7 +165,7 @@ function withQuietLogs<T>(fn: () => Promise<T> | T): Promise<T> | T {
 
 // per-loop metrics now unified in analyze/scoreRun.scoreLoop
 
-function computeLearningEffects(loops: V3Loop[]): LearningEffects | null {
+function computeLearningEffects(loops: OurAlgorithmLoop[]): LearningEffects | null {
   if (!loops?.length) return null
   const l1 = loops[0]?.metrics
   const l3 = loops[loops.length - 1]?.metrics

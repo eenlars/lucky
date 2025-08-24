@@ -29,6 +29,7 @@ export type EvaluationInput =
   | SWEBenchInput
   | GAIAInput
   | WebArenaInput
+  | DatasetRecordInput
 
 /** CSV-backed evaluation input definition. */
 export interface EvaluationCSV extends MainGoal {
@@ -75,6 +76,13 @@ export interface WebArenaInput extends MainGoal {
   taskId?: number
   sites?: string[]
   limit?: number
+  outputSchema?: OutputSchema
+}
+
+/** Dataset record evaluation input definition. */
+export interface DatasetRecordInput extends MainGoal {
+  type: "dataset-records"
+  recordIds: string[]
   outputSchema?: OutputSchema
 }
 

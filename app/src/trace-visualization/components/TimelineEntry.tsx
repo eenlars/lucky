@@ -361,7 +361,7 @@ export const TimelineEntry = ({
                       <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                         <SmartContent
                           value={inputs[0]?.payload}
-                          collapsed={1}
+                          collapsed={false}
                           enableClipboard
                           showExpanders
                           stringifySpacing={2}

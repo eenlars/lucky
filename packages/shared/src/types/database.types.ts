@@ -79,6 +79,7 @@ export type Database = {
           best_workflow_version_id: string | null
           comment: string | null
           end_time: string | null
+          feedback: string | null
           generation_id: string
           number: number
           run_id: string
@@ -88,6 +89,7 @@ export type Database = {
           best_workflow_version_id?: string | null
           comment?: string | null
           end_time?: string | null
+          feedback?: string | null
           generation_id?: string
           number: number
           run_id: string
@@ -97,6 +99,7 @@ export type Database = {
           best_workflow_version_id?: string | null
           comment?: string | null
           end_time?: string | null
+          feedback?: string | null
           generation_id?: string
           number?: number
           run_id?: string

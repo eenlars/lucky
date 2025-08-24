@@ -1,7 +1,8 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
+import { adjustWorkflowOneNode } from "@core/improvement/behavioral/judge/adjustWorkflowOneNode"
 import { improveNodesSelfImprovement } from "@core/improvement/behavioral/judge/improveNode"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
-import { judge } from "@core/improvement/behavioral/judge/judge"
+import { adjustWorkflowStructure } from "@core/improvement/behavioral/judge/judgeWithStructure"
 import { parseCliArguments } from "@core/utils/cli/argumentParser"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
@@ -72,7 +73,7 @@ export async function improveNodesIterativelyImpl(
   // step 2: unified workflow improvement (includes analysis)
   // if self-improvement happened, we need to create a workflow with the improved nodes
   const workflowForImprovement = selfImproveNodes
-    ? await Workflow.create({
+    ? Workflow.create({
         config: finalConfig,
         evaluationInput: workflow.getEvaluationInput(),
         toolContext: workflow.getToolExecutionContext(workflowInvocationId),
@@ -81,15 +82,27 @@ export async function improveNodesIterativelyImpl(
 
   switch (improvementType) {
     case "judge": {
-      // Use judge function to make improvement decisions
-      const judgeResult = await judge(
-        workflowForImprovement.getConfig(),
-        workflowForImprovement.getFeedback() ?? "No feedback available",
-        workflowForImprovement.getFitness()!
-      )
+      const mechanicChangesNode = Math.random() < 0.5
 
-      if (!judgeResult.success) {
-        lgg.error("Judge function failed:", judgeResult.error)
+      let mechanicResult
+      if (mechanicChangesNode) {
+        // Adjustor applies a single-node change (with internal formalization)
+        mechanicResult = await adjustWorkflowOneNode(
+          workflowForImprovement.getConfig(),
+          workflowForImprovement.getFeedback() ?? "No feedback available",
+          workflowForImprovement.getFitness()!
+        )
+      } else {
+        // Adjustor applies a structural change (with internal formalization)
+        mechanicResult = await adjustWorkflowStructure(
+          workflowForImprovement.getConfig(),
+          workflowForImprovement.getFeedback() ?? "No feedback available",
+          workflowForImprovement.getFitness()!
+        )
+      }
+
+      if (!mechanicResult.success) {
+        lgg.error("Judge function failed:", mechanicResult.error)
         // Fall back to unified approach
         const { improvedConfig, cost: improvementCost } =
           await improveWorkflowUnified({
@@ -102,8 +115,8 @@ export async function improveNodesIterativelyImpl(
         finalConfig = improvedConfig ?? workflowForImprovement.getConfig()
       } else {
         // Use the judge result
-        totalCost += judgeResult.usdCost || 0
-        finalConfig = judgeResult.data
+        totalCost += mechanicResult.usdCost || 0
+        finalConfig = mechanicResult.data
       }
       break
     }

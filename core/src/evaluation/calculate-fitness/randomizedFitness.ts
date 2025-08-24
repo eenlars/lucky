@@ -2,6 +2,7 @@ import type {
   FitnessFunctionInput,
   FitnessOfWorkflow,
 } from "@core/evaluation/calculate-fitness/fitness.types"
+import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { calculateAverageFitness } from "./average"
@@ -51,7 +52,17 @@ export async function calculateFitness(
   }
 
   if (results.length === 0) {
-    return R.error("Failed to calculate fitness in all rounds", totalUsdCost)
+    lgg.warn("No results from fitness calculations")
+    // Fallback: produce a zeroed fitness result to keep evaluation pipeline resilient
+    return R.success(
+      {
+        score: 0,
+        totalCostUsd: totalUsdCost,
+        totalTimeSeconds: (input.totalTime ?? 0) / 1000,
+        accuracy: 0,
+      },
+      totalUsdCost
+    )
   }
 
   const averaged = calculateAverageFitness(results)

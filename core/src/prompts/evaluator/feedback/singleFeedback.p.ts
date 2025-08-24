@@ -4,7 +4,8 @@ import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 
 export const singleFeedbackSystemPrompt = (
   evaluation: string,
-  outputStr: string
+  outputStr: string,
+  hasReasoning: boolean
 ) => `
     ${rcaPrompt}
 
@@ -15,6 +16,11 @@ export const singleFeedbackSystemPrompt = (
     # response output
     ${feedbackPrompt}
     - In your feedback, include the required elements as specified.
+    - keep your output concise. at most 100 words. ${
+      hasReasoning
+        ? "only provide the final feedback, in one short paragraph."
+        : ""
+    } 
 `
 
 export const singleFeedbackUserPrompt = (outputStr: string) => `

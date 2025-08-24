@@ -34,7 +34,7 @@ const __dirname = dirname(__filename)
 const TEST_MODELS: AllowedModelName<"openrouter">[] = [
   "google/gemini-2.5-flash-lite",
   "anthropic/claude-sonnet-4",
-  "google/gemini-2.5-pro-preview",
+  // "google/gemini-2.5-pro-preview",
 ]
 
 interface ChainConfig {

@@ -77,8 +77,8 @@ export const TOOL_CONFIG = {
   inactive: new Set<AllToolNames>([
     // DO NOT CHANGE THIS!
     // "tavily",
-    "todoWrite",
-    "todoRead",
+    // "todoWrite",
+    // "todoRead",
     "urlToMarkdown",
     "browserUse",
     "serpAPI",

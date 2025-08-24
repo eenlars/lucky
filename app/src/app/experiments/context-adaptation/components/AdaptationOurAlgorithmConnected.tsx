@@ -25,8 +25,8 @@ import {
 } from "@experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
-  V3ExperimentResults,
-  V3Run,
+  OurAlgorithmExperimentResults,
+  OurAlgorithmRun,
 } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 
@@ -89,7 +89,7 @@ type Connection = {
 
 const MODEL_SHAPES: ShapeName[] = ["circle", "triangle", "diamond", "square"]
 
-function computeModelOrder(runs: V3Run[]): string[] {
+function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
   const fromResults = Array.from(
     new Set(runs.map((r) => r.model))
   ) as OpenRouterModelName[]
@@ -100,7 +100,7 @@ function computeModelOrder(runs: V3Run[]): string[] {
   return order.map((m) => String(m))
 }
 
-function aggregateLoopMetrics(run: V3Run) {
+function aggregateLoopMetrics(run: OurAlgorithmRun) {
   const loops = run.loops ?? []
   const n = loops.length || 1
   let adherenceSum = 0
@@ -118,7 +118,7 @@ function aggregateLoopMetrics(run: V3Run) {
   }
 }
 
-function buildPoints(results: V3ExperimentResults | null): {
+function buildPoints(results: OurAlgorithmExperimentResults | null): {
   modelOrder: string[]
   allPoints: PointDatum[]
 } {
@@ -284,12 +284,12 @@ function CustomTooltip({ active, payload }: any) {
   )
 }
 
-export default function AdaptationV3Connected({
+export default function AdaptationOurAlgorithmConnected({
   className = "",
 }: {
   className?: string
 }) {
-  const [data, setData] = useState<V3ExperimentResults | null>(null)
+  const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -303,7 +303,7 @@ export default function AdaptationV3Connected({
           { cache: "no-store" }
         )
         if (!res.ok) throw new Error(`Failed to load results: ${res.status}`)
-        const json = (await res.json()) as V3ExperimentResults
+        const json = (await res.json()) as OurAlgorithmExperimentResults
         if (!cancelled) setData(json)
       } catch (e: any) {
         if (!cancelled) setErrors([(e?.message ?? String(e)) as string])

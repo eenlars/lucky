@@ -42,6 +42,10 @@ export function GPEvolutionSelector({
   const gpRuns = useMemo(
     () =>
       runs.filter((r) => {
+        // Prefer evolution_type if available; fallback to legacy config mode
+        const t = (r as EvolutionRun & { evolution_type?: string })
+          .evolution_type
+        if (t) return t.toLowerCase() === "gp"
         const mode = r.config?.mode || r.config?.evolution?.mode
         return mode === "genetic" || mode === "GP"
       }),

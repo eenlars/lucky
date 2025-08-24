@@ -144,6 +144,8 @@ The framework implements two primary optimization approaches:
 - [ ] 3-second MCP tool integration via visual dashboard
 - [ ] Workflow-to-MCP conversion for composability
 - [ ] Parallel multi-message node communication
+- [ ] Tool spec: for tool selection: description for selection of tool + metrics to do this
+- [ ] Tool spec: for using the tool: a long description on how to use the tool + metrics
 
 ## Research Contribution
 

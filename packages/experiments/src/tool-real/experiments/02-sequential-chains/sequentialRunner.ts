@@ -13,7 +13,8 @@ export async function runSequentialTools(
   model: ModelName,
   userContent: string,
   tools: ToolSet,
-  systemPrompt?: string
+  systemPrompt?: string,
+  maxSteps?: number
 ): Promise<SequentialRunResult> {
   const overallStart = Date.now()
   const messages: CoreMessage[] = [
@@ -47,7 +48,7 @@ export async function runSequentialTools(
       opts: {
         tools,
         toolChoice: "auto",
-        maxSteps: 6,
+        maxSteps: maxSteps ?? 6,
         reasoning: false,
         // Let the model use multiple steps; default maxSteps from config will apply
       },

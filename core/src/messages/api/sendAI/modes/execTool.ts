@@ -117,9 +117,19 @@ export async function execTool(
 
     // TODO: expand error categorization beyond validation errors
     // TODO: implement error-specific logging strategies
+    // prepare normalized info for logging without dumping full error object
+    const { message: errMessageForLog, debug: debugForLog } =
+      normalizeError(error)
+
     if (!isArgValidationError && !isTypeValidationText) {
-      // only log full details for unexpected errors
-      lgg.error("execTool error", error, opts.toolChoice, opts.tools)
+      // only log concise details for unexpected errors
+      lgg.error("execTool error", errMessageForLog, {
+        statusCode: (debugForLog as any)?.statusCode,
+        provider: (debugForLog as any)?.provider,
+        url: (debugForLog as any)?.url,
+        toolChoice: opts.toolChoice,
+        tools: Object.keys(opts.tools ?? {}),
+      })
     } else {
       // keep logs concise for validation errors
       lgg.warn(

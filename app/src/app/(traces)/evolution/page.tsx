@@ -104,7 +104,7 @@ export default function EvolutionPage() {
     run: EvolutionRunWithStats,
     field: keyof EvolutionRunWithStats
   ) => {
-    if (field === "config") return run.config?.mode || ""
+    if (field === "config") return run.evolution_type || run.config?.mode || ""
     return run[field]
   }
 
@@ -224,16 +224,16 @@ export default function EvolutionPage() {
 
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Mode
+                Type
               </label>
               <select
                 value={modeFilter}
                 onChange={(e) => setModeFilter(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Modes</option>
-                <option value="cultural">Cultural</option>
-                <option value="GP">Genetic Programming</option>
+                <option value="all">All Types</option>
+                <option value="iterative">Iterative</option>
+                <option value="gp">Genetic Programming</option>
               </select>
             </div>
 
@@ -490,11 +490,13 @@ export default function EvolutionPage() {
                           href={`/evolution/${run.run_id}`}
                           className="capitalize"
                         >
-                          {typeof run.config?.mode === "string"
-                            ? run.config.mode
-                            : run.config?.mode != null
-                              ? JSON.stringify(run.config.mode)
-                              : "unknown"}
+                          {run.evolution_type
+                            ? String(run.evolution_type)
+                            : typeof run.config?.mode === "string"
+                              ? run.config.mode
+                              : run.config?.mode != null
+                                ? JSON.stringify(run.config.mode)
+                                : "unknown"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">

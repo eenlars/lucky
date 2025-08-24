@@ -17,9 +17,9 @@ import {
 import type {
   Condition,
   LoopMetrics,
-  V3ExperimentResults,
-  V3Loop,
-  V3Run,
+  OurAlgorithmExperimentResults,
+  OurAlgorithmLoop,
+  OurAlgorithmRun,
 } from "../types"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -34,7 +34,7 @@ async function runBaselineSingleLoop() {
 
   // Build all repeat tasks across all combinations
   type RepeatResult = {
-    model: V3Run["model"]
+    model: OurAlgorithmRun["model"]
     scenarioId: string
     condition: Condition
     durationMs: number
@@ -53,7 +53,7 @@ async function runBaselineSingleLoop() {
           taskFactories.push(async (): Promise<RepeatResult> => {
             const t0 = Date.now()
             const res = await withQuietLogs(() =>
-              runSequentialTools(model, scenario.prompt, adaptiveTools, sys)
+              runSequentialTools(model, scenario.prompt, adaptiveTools, sys, 5)
             )
             const durationMs = Date.now() - t0
             const metrics: LoopMetrics = scoreLoop(
@@ -108,14 +108,14 @@ async function runBaselineSingleLoop() {
     else grouped.set(key, [r])
   }
 
-  const runs: V3Run[] = []
+  const runs: OurAlgorithmRun[] = []
   for (const [key, group] of grouped.entries()) {
     const [modelKey, scenarioId, condition] = key.split("|") as [
       string,
       string,
       Condition,
     ]
-    const model = modelKey as V3Run["model"]
+    const model = modelKey as OurAlgorithmRun["model"]
     const repeatMetrics = group.map((g) => g.metrics)
     const repeatCosts = group.map((g) => g.cost)
     const repeatDurations = group.map((g) => g.durationMs)
@@ -132,7 +132,7 @@ async function runBaselineSingleLoop() {
     }
 
     // Build a single aggregated "repeat" as a loop for compatibility
-    const aggregatedLoop: V3Loop = {
+    const aggregatedLoop: OurAlgorithmLoop = {
       loop: 1,
       success: avg(repeatMetrics.map((m) => (m.adapted ? 1 : 0))) >= 0.5,
       cost: avg(repeatCosts),
@@ -186,7 +186,7 @@ async function runBaselineSingleLoop() {
   const hh = String(now.getHours()).padStart(2, "0")
   const mm = String(now.getMinutes()).padStart(2, "0")
   const out = join(resultsDir, `adaptive-results-${hh}${mm}.json`)
-  const payload: V3ExperimentResults = {
+  const payload: OurAlgorithmExperimentResults = {
     timestamp: new Date().toISOString(),
     runs,
   }

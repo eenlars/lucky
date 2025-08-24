@@ -52,6 +52,7 @@ export interface ErrorProcessed extends AnyProcessed {
   readonly message: string
   readonly details?: unknown
   readonly learnings?: string
+  readonly originatedFrom?: string
 }
 
 /**

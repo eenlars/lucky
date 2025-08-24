@@ -54,6 +54,7 @@ export type AgentStep<TOOL_CALL_OUTPUT_TYPE = unknown> = // output depends on wh
         name?: never
         args?: never
         return: string // error message
+        cause?: string // cause of the error, if known
       }
     | LearningStep
     | {

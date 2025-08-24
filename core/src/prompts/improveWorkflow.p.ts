@@ -93,37 +93,42 @@ VARIATION HINTS:
     ]
   }
 
-  static judgeOnlyNode(
+  static mechanicAdvisorOneNode(
     config: WorkflowConfig,
     fitness: FitnessOfWorkflow | undefined,
     feedback: string | undefined
   ) {
-    const systemPrompt = `You are an expert workflow optimization judge. Your role is to analyze a workflow and decide what single node operation would most improve it.
+    const systemPrompt = `
+    You are an expert workflow optimization mechanic advisor. 
+    Your role is to analyze a workflow and ADVISE what single node operation would most improve it. 
+    You DO NOT return a full workflow; you return advice that another system will formalize.
 
 You must return one of these actions:
 1. "addNode" - Add one new node to address a specific bottleneck
 2. "removeNode" - Remove one redundant or problematic node
 3. "modifyNode" - Modify one existing node to improve performance
 4. "doNothing" - The workflow is already optimal
+5. "customOperation" - A precise workflow-level change beyond single-node operations
 
-You make decisions based on:
-- The current workflow performance (fitness score)
-- Identified bottlenecks and improvement suggestions
-- The execution transcript showing what actually happened
-- The main goal of the workflow
+Return advice with the following fields:
+- action: one of the actions above
+- explanation: why this action is the best
+- newNode (if action is addNode): the FULL JSON of the proposed node
+- predecessors (if action is addNode): string[] of predecessor nodeIds for connections
+- nodeId (if action is removeNode or modifyNode): target node id
+- modifiedNode (if action is modifyNode): natural language instructions detailing the modification
+- customOperation (if action is customOperation): natural language description of the operation
 
-IMPORTANT PRINCIPLES:
+Principles:
 - Focus on the single most impactful change
-- Consider node relationships and dependencies
-- Only suggest changes that directly address identified issues
-- Preserve workflow functionality while improving performance`
+- Consider dependencies and handOffs
+- Preserve functionality while improving performance
+- Optimize for increased accuracy and generalization across inputs
+`
 
-    const generalizationDirective = "\n\n" + GENERALIZATION_LIMITS
-
-    const userPrompt = `Analyze this workflow and decide what single node operation would most improve it.
-
-CURRENT WORKFLOW CONFIG (JSON):
-${JSON.stringify(config, null, 2)}
+    const userPrompt = `
+    Analyze this workflow and ADVISE the single node operation that would most improve it. 
+    Do NOT output a full workflow; only provide the advisory fields requested.
 
 # Generation Rules:
 ${WORKFLOW_GENERATION_RULES}
@@ -132,11 +137,11 @@ SIMPLIFIED VIEW:
 ${workflowToStringFromConfig(config, {
   includeToolExplanations: true,
   includeAdjacencyList: true,
-  includeAgents: false, // keep it focused on structure
+  includeAgents: false,
   easyModelNames: false,
 })}
 
-FITNESS:
+Feedback and Fitness:
 ${JSON.stringify(feedback ?? "No feedback available", null, 2)}
 ${
   fitness
@@ -151,28 +156,19 @@ FITNESS METRICS:
 }
 
 TASK:
-Return the single most impactful node operation:
-- "addNode" if adding one specific node would address the biggest bottleneck
-- "removeNode" if removing one node would improve efficiency without losing functionality
-- "modifyNode" if changing one existing node would solve the main performance issue
-- "doNothing" if the fitness score is 100 or no single node change would meaningfully improve performance
-
-Focus on the ONE change that would have the biggest positive impact.
-
-explain in detail which connections need to be made.
-
+Return the advisory object with fields described above. Include enough details that a separate formalizer can apply the change safely.
 `
 
     return [
       {
         role: "system" as const,
-        content: systemPrompt + generalizationDirective,
+        content: systemPrompt + GENERALIZATION_LIMITS,
       },
       { role: "user" as const, content: userPrompt },
     ]
   }
 
-  static judgeWithExploration(
+  static mechanicModifiesStructure(
     config: WorkflowConfig,
     fitness: FitnessOfWorkflow | undefined,
     feedback: string | undefined,
@@ -190,7 +186,10 @@ explain in detail which connections need to be made.
       structureInfo?.structuralReason ||
       "No prior structural analysis available"
 
-    const systemPrompt = `You are an expert workflow structural optimization judge. Your role is to analyze a workflow and generate an improved workflow configuration that implements better structural patterns.
+    const systemPrompt = `
+You are an expert workflow structural optimization judge. 
+Your role is to analyze a workflow and generate an improved workflow configuration 
+that implements better structural patterns.
 
 Your job is to return a complete improved WorkflowConfig (full JSON) that implements the recommended structural pattern, or return null if the current structure is already optimal.
 
@@ -223,9 +222,6 @@ ${
     const generalizationDirective = "\n\n" + GENERALIZATION_LIMITS
 
     const userPrompt = `Analyze this workflow and generate an improved WorkflowConfig that implements better structural patterns, or return null if no structural improvements are needed.
-
-CURRENT WORKFLOW CONFIG (JSON):
-${JSON.stringify(config, null, 2)}
 
 # Generation Rules:
 ${WORKFLOW_GENERATION_RULES}
@@ -269,5 +265,86 @@ Focus on structural transformation that would have the biggest positive impact. 
 Explain how the new structure addresses identified performance issues and implements the structural recommendations.`
 
     return systemPrompt + generalizationDirective + "\n\n" + userPrompt
+  }
+
+  static mechanicAdvisorStructure(
+    config: WorkflowConfig,
+    fitness: FitnessOfWorkflow | undefined,
+    feedback: string | undefined,
+    structureInfo?: {
+      recommendedStructure: string
+      structuralReason: string
+      shouldImplement: boolean
+    }
+  ) {
+    const workflowStructure =
+      structureInfo?.recommendedStructure ||
+      SharedWorkflowPrompts.randomWorkflowStructure()
+    const shouldImplementStructure = structureInfo?.shouldImplement ?? true
+    const structuralAnalysis =
+      structureInfo?.structuralReason ||
+      "No prior structural analysis available"
+
+    const systemPrompt = `You are a structural workflow optimization mechanic advisor. Your role is to ADVISE structural changes, not to produce a final workflow. Another system will formalize your advice.
+
+Your output MUST be advisory and include:
+- instruction: a precise, single-instruction string describing how to restructure the workflow
+- explanation: brief rationale
+- recommendedStructure (optional): the structure pattern name
+- shouldImplement (optional): boolean recommendation whether to implement the structure
+
+Principles:
+- Focus on structural transformation (parallelization, aggregation, branching, etc.)
+- Only advise changes that address performance issues
+- Preserve functionality while improving efficiency
+`
+
+    const userPrompt = `Analyze this workflow and ADVISE a structural change instruction. Do NOT output a full workflow configuration.
+
+# Generation Rules:
+${WORKFLOW_GENERATION_RULES}
+
+SIMPLIFIED VIEW:
+${workflowToStringFromConfig(config, {
+  includeToolExplanations: true,
+  includeAdjacencyList: true,
+  includeAgents: false,
+  easyModelNames: false,
+})}
+
+FITNESS:
+${JSON.stringify(feedback ?? "No feedback available", null, 2)}
+${
+  fitness
+    ? `
+FITNESS METRICS:
+- Score: ${fitness.score}/100
+- Total Cost: $${fitness.totalCostUsd.toFixed(2)}
+- Total Time: ${fitness.totalTimeSeconds}s
+- Data Accuracy: ${fitness.accuracy}
+`
+    : ""
+}
+
+STRUCTURAL GUIDANCE:
+Structure Pattern: ${workflowStructure}
+Recommendation: ${shouldImplementStructure ? "IMPLEMENT" : "AVOID"}
+Analysis: ${structuralAnalysis}
+
+TASK:
+Provide a single, precise instruction suitable for a workflow formalizer to apply. Example formats:
+- "Restructure into parallel-aggregation: split validation into two nodes in parallel (A,B), then aggregate to C"
+- "Introduce a hub node 'router' that Dispatches to X/Y based on condition Z, then merges to 'end'"
+
+Return an object with: instruction, explanation, and optionally recommendedStructure, shouldImplement.
+`
+
+    return [
+      {
+        role: "system" as const,
+        content: systemPrompt + GENERALIZATION_LIMITS,
+      },
+      { role: "user" as const, content: userPrompt },
+    ]
   }
 }

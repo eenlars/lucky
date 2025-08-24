@@ -181,7 +181,7 @@ export const createToolSummary = async (
   }
 
   if (verbose) {
-    lgg.log("response", JSON.stringify(response, null, 2))
+    // lgg.log("response", JSON.stringify(response, null, 2))
     lgg.log("rawData length", JSON.stringify(agentSteps, null, 2).length)
   }
 
@@ -214,7 +214,8 @@ export const createToolSummary = async (
 }
 
 export const generateSummaryFromUnknownData = async (
-  data: unknown
+  data: unknown,
+  outputLength?: string
 ): Promise<SummaryResult> => {
   try {
     const { str, size, readable } = getDataInfo(data)
@@ -224,7 +225,7 @@ export const generateSummaryFromUnknownData = async (
     }
 
     const aiResult = await createAISummary(
-      CreateSummaryPrompt.summaryLongPromptText(str),
+      CreateSummaryPrompt.summaryLongPromptText(str, outputLength),
       "data summarizer for context storage"
     )
 

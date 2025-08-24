@@ -1,13 +1,17 @@
 import AdaptationMetricsChart from "@/app/experiments/context-adaptation/components/AdaptationMetricsChart"
-import AdaptationV3Connected from "@/app/experiments/context-adaptation/components/AdaptationV3Connected"
-import AdaptationV3Special from "@/app/experiments/context-adaptation/components/AdaptationV3Special"
+import AdaptationOurAlgorithmConnected from "@/app/experiments/context-adaptation/components/AdaptationOurAlgorithmConnected"
+import AdaptationOurAlgorithmSpecial from "@/app/experiments/context-adaptation/components/AdaptationOurAlgorithmSpecial"
 import AdaptationSuccessChart from "./components/AdaptationSuccessChart"
+import PerformanceComparisonTable from "./components/PerformanceComparisonTable"
 
 type DataRow = { model: string; vague: number; clear: number }
 
 async function fetchChartData() {
   try {
-    const res = await fetch(`/api/experiments/context-adaptation`, {
+    const baseUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:3000' 
+      : ''
+    const res = await fetch(`${baseUrl}/api/experiments/context-adaptation`, {
       cache: "no-store",
     })
     if (!res.ok)
@@ -18,19 +22,19 @@ async function fetchChartData() {
         datasets: {
           final: [] as DataRow[],
           baseline: [] as DataRow[],
-          v3: [] as DataRow[],
+          ourAlgorithm: [] as DataRow[],
         },
         errors: ["Request failed"],
         info: [] as string[],
       }
     return (await res.json()) as {
       ok: boolean
-      source: "final" | "baseline" | "v3" | "none"
+      source: "final" | "baseline" | "our-algorithm" | "none"
       chartData: DataRow[]
       datasets?: {
         final?: DataRow[]
         baseline?: DataRow[]
-        v3?: DataRow[]
+        ourAlgorithm?: DataRow[]
         metrics?: any[]
       }
       errors?: string[]
@@ -44,7 +48,7 @@ async function fetchChartData() {
       datasets: {
         final: [] as DataRow[],
         baseline: [] as DataRow[],
-        v3: [] as DataRow[],
+        ourAlgorithm: [] as DataRow[],
       },
       errors: [e?.message ?? String(e)],
       info: [] as string[],
@@ -91,6 +95,21 @@ export default async function ContextAdaptationPage() {
           </div>
         ) : null}
 
+        {/* PRIMARY FOCAL POINT: Performance Comparison Table */}
+        <div className="mb-8">
+          <PerformanceComparisonTable />
+        </div>
+
+        {/* SUPPORTING VISUALIZATIONS */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+            Supporting Visualizations
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Additional charts and detailed analysis supporting the main findings above.
+          </p>
+        </div>
+
         {/* Row 1: 3 charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
@@ -132,12 +151,12 @@ export default async function ContextAdaptationPage() {
         </div>
 
         <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
-          <AdaptationV3Special />
+          <AdaptationOurAlgorithmSpecial />
         </div>
 
         {/* Big combined graph with connections */}
         <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
-          <AdaptationV3Connected />
+          <AdaptationOurAlgorithmConnected />
         </div>
 
         <div className="grid grid-cols-1 gap-6 mt-6">

@@ -1,12 +1,13 @@
 import { z } from "zod"
 
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
+import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,
 } from "@core/tools/tool.types"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
-import type { ModelName } from "@core/utils/spending/models.types"
+import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type {
@@ -63,7 +64,8 @@ export const WorkflowNodeConfigSchemaEasy = z.object({
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
-  modelName: z.enum(modelNames),
+  // Accept either 'low' | 'medium' | 'high' or any provider model string; we'll normalize later
+  modelName: z.string(),
   mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES)),
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)),
   handOffs: z.array(z.string()),
@@ -72,11 +74,18 @@ export const WorkflowNodeConfigSchemaEasy = z.object({
   waitFor: z.array(z.string()).optional(),
 })
 
+// For the easy schema, guide the model to use only complexity levels (not provider model names)
+const agentDescriptionsWithToolsEasy = {
+  ...agentDescriptionsWithTools,
+  modelName:
+    "Model complexity level. Must be exactly one of: 'low' | 'medium' | 'high'. Choose based on task complexity. Do NOT output provider model IDs here; mapping to actual models happens later.",
+} as const
+
 export const WorkflowConfigSchemaEasy = z.object({
   nodes: z.array(
     withDescriptions(
       WorkflowNodeConfigSchemaEasy.shape,
-      agentDescriptionsWithTools
+      agentDescriptionsWithToolsEasy
     )
   ),
   entryNodeId: z.string(),
@@ -92,12 +101,33 @@ export const handleWorkflowCompletion = (
       const oldNode = oldWorkflow?.nodes?.find(
         (n) => n.nodeId === partialNode.nodeId
       )
-      const modelName: ModelName =
-        partialNode.modelName === "medium"
-          ? getDefaultModels().medium
-          : partialNode.modelName === "high"
-            ? getDefaultModels().high
-            : getDefaultModels().default
+      // Normalize model: if an active provider model is specified, keep it.
+      // If the easy levels 'low' | 'medium' | 'high' are used, map to configured defaults.
+      // Otherwise, map the provider string to an easy level and then to defaults.
+      let modelName: ModelName
+      if (
+        (ACTIVE_MODEL_NAMES as readonly string[]).includes(
+          partialNode.modelName as unknown as string
+        )
+      ) {
+        modelName = partialNode.modelName as unknown as ModelName
+      } else {
+        const easyLevel: (typeof modelNames)[number] =
+          partialNode.modelName === "low" ||
+          partialNode.modelName === "medium" ||
+          partialNode.modelName === "high"
+            ? (partialNode.modelName as (typeof modelNames)[number])
+            : mapModelNameToEasyName(
+                partialNode.modelName as unknown as AnyModelName
+              )
+
+        modelName =
+          easyLevel === "medium"
+            ? getDefaultModels().medium
+            : easyLevel === "high"
+              ? getDefaultModels().high
+              : getDefaultModels().default
+      }
 
       const fullNode = { ...partialNode, modelName }
       return oldNode ? { ...oldNode, ...fullNode } : fullNode

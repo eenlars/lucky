@@ -217,9 +217,9 @@ import type {
 } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { invokeNode } from "../invokeNode"
+import { invokeAgent } from "../invokeNode"
 
-describe("invokeNode", () => {
+describe("invokeAgent", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -282,7 +282,7 @@ describe("invokeNode", () => {
     const prompt = "Hello, this is a test prompt."
 
     // Invoke the node with database persistence skipped for testing
-    const result = await invokeNode({
+    const result = await invokeAgent({
       nodeConfig,
       prompt,
       skipDatabasePersistence: true,
@@ -358,7 +358,7 @@ describe("invokeNode", () => {
       memory: {},
     }
 
-    const result = await invokeNode({
+    const result = await invokeAgent({
       nodeConfig,
       prompt: "Process this with tools",
       handOffs: ["next-node", "end"],
@@ -385,7 +385,7 @@ describe("invokeNode", () => {
       },
     }
 
-    const result = await invokeNode({
+    const result = await invokeAgent({
       nodeConfig,
       prompt: "Use your memory",
       skipDatabasePersistence: true,
@@ -411,7 +411,7 @@ describe("invokeNode", () => {
       memory: {},
     }
 
-    const result = await invokeNode({
+    const result = await invokeAgent({
       nodeConfig,
       prompt: "Analyze this data",
       mainWorkflowGoal: "Extract key insights from customer feedback",

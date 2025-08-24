@@ -15,12 +15,14 @@ export interface StructureExplorationResult {
 export async function exploreStructure(
   workflow: WorkflowConfig,
   feedback: string,
-  fitness: FitnessOfWorkflow
+  fitness: FitnessOfWorkflow,
+  goal: string
 ): Promise<RS<StructureExplorationResult>> {
   const randomWorkflowStructure =
     SharedWorkflowPrompts.randomWorkflowStructure()
 
-  const systemPrompt = `You are an expert workflow structure analyst. Your role is to evaluate if a specific workflow structure pattern would improve the current workflow.
+  const systemPrompt = `
+  You are an expert workflow structure analyst. Your role is to evaluate if a specific workflow structure pattern would improve the current workflow.
 
 You must analyze the current workflow and decide if implementing the suggested structure pattern would be beneficial.
 
@@ -37,7 +39,7 @@ IMPORTANT PRINCIPLES:
 CURRENT WORKFLOW CONFIG (JSON):
 ${JSON.stringify(workflow, null, 2)}
 
-FITNESS:
+FEEDBACK:
 ${JSON.stringify(feedback ?? "No feedback available", null, 2)}
 ${
   fitness
@@ -51,6 +53,8 @@ FITNESS METRICS:
     : ""
 }
 
+workflow goal: ${workflow}
+
 STRUCTURE PATTERN TO EVALUATE: ${randomWorkflowStructure}
 
 TASK:
@@ -59,6 +63,7 @@ Evaluate if implementing this structural pattern would improve the workflow:
 - Would it improve performance, accuracy, or efficiency?
 - How could this pattern be implemented in the current workflow?
 - Should we recommend implementing this structure?
+- the structure should never become too big for its task. keep it good. 
 
 Return your analysis with a clear recommendation.`
 

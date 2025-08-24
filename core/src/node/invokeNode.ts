@@ -1,14 +1,14 @@
 /**
  * Single node invocation module - Execute individual workflow nodes.
- * 
+ *
  * Allows testing and executing single nodes without full workflow infrastructure.
  * Automatically generates required contexts, IDs, and message structures.
- * 
+ *
  * Useful for:
  * - Node testing and debugging
  * - Simple single-agent tasks
  * - Tool development and validation
- * 
+ *
  * @module node/invokeNode
  */
 
@@ -25,7 +25,7 @@ import { type NodeInvocationResult, WorkFlowNode } from "./WorkFlowNode"
 /**
  * Configuration for single node invocation.
  */
-export interface InvokeNodeInput {
+export interface InvokeAgentInput {
   /** Node configuration including ID, model, tools, and prompts */
   nodeConfig: WorkflowNodeConfig
   /** Input prompt/message for the node */
@@ -44,12 +44,12 @@ export interface InvokeNodeInput {
 
 /**
  * Invokes a single workflow node without requiring a full workflow.
- * 
+ *
  * @param input - Node invocation configuration
  * @returns Node invocation result with output and metadata
- * 
+ *
  * @throws Error if node creation or invocation fails
- * 
+ *
  * @example
  * const result = await invokeNode({
  *   nodeConfig: {
@@ -60,14 +60,14 @@ export interface InvokeNodeInput {
  *   },
  *   prompt: "Analyze this TypeScript function for complexity"
  * })
- * 
+ *
  * @remarks
  * - Generates synthetic workflow context for standalone execution
  * - Creates initial message from "start" node
  * - Handles tool context creation automatically
  */
-export async function invokeNode(
-  input: InvokeNodeInput
+export async function invokeAgent(
+  input: InvokeAgentInput
 ): Promise<NodeInvocationResult> {
   const {
     nodeConfig,
@@ -80,9 +80,9 @@ export async function invokeNode(
   } = input
 
   // Generate required IDs
-  const workflowVersionId = `node-${genShortId()}`
-  const workflowInvocationId = genShortId()
-  const workflowId = `single-node-${genShortId()}`
+  const workflowVersionId = `wf_ver_${genShortId()}`
+  const workflowInvocationId = `wf_inv_${genShortId()}`
+  const workflowId = `wf_id_${genShortId()}`
 
   try {
     lgg.log(`[invokeNode] Creating node: ${nodeConfig.nodeId}`)

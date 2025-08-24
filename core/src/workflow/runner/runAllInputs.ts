@@ -207,7 +207,8 @@ export async function aggregateResults(
   let averageFeedback: string | undefined
   const evalFeedback = evals.map((r) => r.feedback)
   guard(evalFeedback.length > 0, "No feedback to average")
-  console.log(evalFeedback, evals)
+  lgg.log("[aggregateResults] Individual feedback from evaluations:", evalFeedback)
+  lgg.log("[aggregateResults] operatorsWithFeedback flag:", CONFIG.improvement.flags.operatorsWithFeedback)
   if (CONFIG.improvement.flags.operatorsWithFeedback) {
     const { success, data, error } =
       await calculateFeedbackGrouped(evalFeedback)
@@ -216,6 +217,7 @@ export async function aggregateResults(
       return R.error(error, 0)
     }
     averageFeedback = data
+    lgg.log("[aggregateResults] Generated averageFeedback:", averageFeedback)
   }
 
   return R.success(

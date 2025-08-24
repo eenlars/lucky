@@ -17,21 +17,38 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, "**/e2e/**"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "html"],
+      reporter: ["text", "html", "json"],
       reportsDirectory: "coverage",
-      include: ["src/**/*.{ts,js}"],
-      exclude: ["node_modules/"],
+      include: ["src/**/*.{ts}"],
+      exclude: [
+        "node_modules/",
+        "**/*.d.ts",
+        "**/*.test.ts",
+        "**/*.spec.test.ts",
+        "**/__tests__/**/*.test.ts",
+        "**/__tests__/**/*.spec.test.ts",
+        "**/__mocks__/**",
+        "**/debug/**",
+        "**/*.debug.*",
+        "**/test-*.ts",
+        "**/*.test.*.ts",
+        "**/mocks/**",
+        "**/examples/**",
+        "**/scripts/**",
+      ],
       all: true,
     },
-    deps: {
-      // Avoid prebundling puppeteer/stealth which use dynamic requires for evasions
-      inline: [/(?!.*)/],
-      external: [
-        "puppeteer",
-        "puppeteer-extra",
-        "puppeteer-extra-plugin",
-        "puppeteer-extra-plugin-stealth",
-      ],
+    server: {
+      deps: {
+        // Avoid prebundling puppeteer/stealth which use dynamic requires for evasions
+        inline: [/(?!.*)/],
+        external: [
+          "puppeteer",
+          "puppeteer-extra",
+          "puppeteer-extra-plugin",
+          "puppeteer-extra-plugin-stealth",
+        ],
+      },
     },
     projects: [
       {

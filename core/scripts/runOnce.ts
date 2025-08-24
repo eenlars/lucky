@@ -1,14 +1,8 @@
 #!/usr/bin/env bun
 // core/scripts/runOnce.ts
 
-import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
-import { NoEvaluator } from "@core/evaluation/evaluators/NoEvaluator"
-import type { ToolExecutionContext } from "@core/tools/toolFactory"
-import { llmify } from "@core/utils/common/llmify"
+import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import { lgg } from "@core/utils/logging/Logger"
-import { WorkflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
-import { Workflow } from "@core/workflow/Workflow"
-import { JSONN } from "@lucky/shared"
 import { PATHS } from "@runtime/settings/constants"
 import { SELECTED_QUESTION } from "@runtime/settings/inputs"
 import chalk from "chalk"
@@ -16,7 +10,6 @@ import { resolve } from "path"
 
 async function runOnce(setupFilePath?: string) {
   try {
-    // use provided setup file or default
     const setupPath = setupFilePath ? resolve(setupFilePath) : PATHS.setupFile
     lgg.log(
       chalk.green(
@@ -24,60 +17,28 @@ async function runOnce(setupFilePath?: string) {
       )
     )
 
-    // load workflow setup
-    const setup = await WorkflowConfigHandler.getInstance().loadSingleWorkflow(
-      setupFilePath ?? PATHS.setupFile
-    )
-
-    lgg.log(JSONN.show(setup, 2))
-
-    const toolContext: Partial<ToolExecutionContext> | undefined =
-      SELECTED_QUESTION.outputSchema
-        ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
-        : undefined
-
-    // create workflow
-    const runner = Workflow.create({
-      config: setup,
-      evaluationInput: SELECTED_QUESTION,
-      toolContext,
+    const { success, error, data: results, usdCost } = await invokeWorkflow({
+      filename: setupPath,
+      evalInput: SELECTED_QUESTION,
     })
 
-    // set workflow IO with ingestion
-    await runner.prepareWorkflow(SELECTED_QUESTION, "none")
-
-    // choose evaluator: for prompt-only, skip evaluation and AI enhancements
-    const isPromptOnly = SELECTED_QUESTION.type === "prompt-only"
-    const evaluator = isPromptOnly
-      ? new NoEvaluator()
-      : new AggregatedEvaluator()
-
-    // run (and optionally evaluate)
-    lgg.log(
-      isPromptOnly
-        ? "running workflow (prompt-only: NoEvaluator, no correctness evaluation)"
-        : "running and evaluating workflow..."
-    )
-    const {
-      success,
-      error,
-      data: evaluationResult,
-    } = await evaluator.evaluate(runner)
-
-    if (!success) {
-      lgg.error(
-        `[RunOnce] Evaluation failed for workflow ${runner.getWorkflowVersionId()}: ${error}`
-      )
+    if (!success || !results) {
+      lgg.error(`[RunOnce] Workflow failed: ${error}`)
       process.exit(1)
     }
 
     // display results
-    const workflowInvocationId = runner.getWorkflowInvocationId()
-    lgg.log(`\n📊 Results (aggregated ${runner.getWorkflowIO().length} cases):`)
-    lgg.log(
-      `${isPromptOnly ? "Fitness Score" : "Average Fitness Score"}: ${evaluationResult.fitness.score.toFixed(3)}`
-    )
-    lgg.log(`Total Cost: $${evaluationResult.cost.toFixed(4)}`)
+    const firstResult = results[0]
+    const workflowInvocationId = firstResult.workflowInvocationId
+    const isPromptOnly = SELECTED_QUESTION.type === "prompt-only"
+    
+    lgg.log(`\n📊 Results (${results.length} cases):`)
+    if (firstResult.fitness) {
+      lgg.log(
+        `${isPromptOnly ? "Fitness Score" : "Average Fitness Score"}: ${firstResult.fitness.score.toFixed(3)}`
+      )
+    }
+    lgg.log(`Total Cost: $${(usdCost || 0).toFixed(4)}`)
     lgg.log(
       `Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`
     )
@@ -85,9 +46,10 @@ async function runOnce(setupFilePath?: string) {
     // save minimal results
     const resultsPath = `${PATHS.node.logging}/runOnce/runOnce_results.json`
     await lgg.logAndSave(resultsPath, {
-      fitness: evaluationResult.fitness,
-      cost: evaluationResult.cost,
-      feedback: llmify(evaluationResult.feedback),
+      fitness: firstResult.fitness,
+      cost: usdCost || 0,
+      feedback: firstResult.feedback,
+      finalOutput: firstResult.queueRunResult.finalWorkflowOutput,
     })
 
     lgg.log(`\n✅ Results saved to: ${resultsPath}`)

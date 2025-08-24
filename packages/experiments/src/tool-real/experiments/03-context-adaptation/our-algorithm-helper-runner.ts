@@ -1,5 +1,5 @@
 /**
- * multiToolV3Runner.ts - Integrate core MultiStep v3 strategy into the context-adaptation experiment
+ * multiToolOurAlgorithmRunner.ts - Integrate core MultiStep our-algorithm strategy into the context-adaptation experiment
  *
  * Uses the core runMultiStepLoopV3Helper with the experiment's adaptive tools to evaluate
  * adaptive behavior under hidden tool constraints. Mirrors the core pipeline setup used in
@@ -17,7 +17,7 @@ import type { ToolSet } from "ai"
 import { adaptiveTools } from "../../shared/tools/adaptive/adaptiveTools"
 import type { ToolExecution } from "../02-sequential-chains/types"
 
-export interface V3RunResult {
+export interface OurAlgorithmRunResult {
   toolExecutions: ToolExecution[]
   finalResponse: string
   success: boolean
@@ -44,19 +44,19 @@ function buildNodeSystemPrompt(
 }
 
 /**
- * Run the MultiStep v3 loop against a provided ToolSet (defaults to adaptive tools).
+ * Run the MultiStep our-algorithm loop against a provided ToolSet (defaults to adaptive tools).
  * We mock the minimal workflow context required by the helper.
  */
-export async function runMultiToolV3(
+export async function runMultiToolOurAlgorithm(
   model: ModelName,
   userTask: string,
   tools: ToolSet = adaptiveTools,
   baseSystemPrompt?: string,
   initialMemory: Record<string, string> = {}
-): Promise<V3RunResult> {
-  const nodeId = "context-adapt-v3-node"
-  const workflowInvocationId = `v3-adapt-${Date.now()}`
-  const workflowVersionId = "v3-adapt-version"
+): Promise<OurAlgorithmRunResult> {
+  const nodeId = "context-adapt-our-algorithm-node"
+  const workflowInvocationId = `our-algorithm-adapt-${Date.now()}`
+  const workflowVersionId = "our-algorithm-adapt-version"
   const nodeSystemPrompt = buildNodeSystemPrompt(baseSystemPrompt, userTask)
 
   const workflowMessageIncoming = new WorkflowMessage({
@@ -80,7 +80,7 @@ export async function runMultiToolV3(
   // Minimal mock for the helper – mirrors MultiStep3.integration.test
   const nodeConfig: WorkflowNodeConfig = {
     nodeId,
-    description: "Context adaptation experiment node (v3)",
+    description: "Context adaptation experiment node (our-algorithm)",
     systemPrompt: nodeSystemPrompt,
     modelName: model,
     mcpTools: [],
@@ -181,21 +181,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const systemPrompt =
       "You are a helpful assistant with tools. If a tool fails, retry with adjusted parameters to reach the requested item count."
 
-    console.log("[v3 demo] starting...")
-    const result = await runMultiToolV3(
+    console.log("[our-algorithm demo] starting...")
+    const result = await runMultiToolOurAlgorithm(
       model,
       userTask,
       adaptiveTools,
       systemPrompt
     )
     console.log(
-      "[v3 demo] tool calls:",
+      "[our-algorithm demo] tool calls:",
       result.toolExecutions.map((t) => ({
         name: t.toolName,
         args: t.inputData,
       }))
     )
-    console.log("[v3 demo] final:", {
+    console.log("[our-algorithm demo] final:", {
       success: result.success,
       cost: result.totalCostUsd,
       text: result.finalResponse?.slice(0, 160),
@@ -203,7 +203,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   demo().catch((e) => {
-    console.error("[v3 demo] error:", e)
+    console.error("[our-algorithm demo] error:", e)
     process.exit(1)
   })
 }

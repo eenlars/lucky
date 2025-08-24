@@ -1,5 +1,6 @@
 import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import {
   singleFeedbackSystemPrompt,
   singleFeedbackUserPrompt,
@@ -19,11 +20,23 @@ export async function calculateFeedback({
 >): Promise<RS<string>> {
   if (isNir(agentSteps)) {
     lgg.warn("No outputs found")
-    return R.error("No outputs to evaluate", 0)
+    // Gracefully handle missing outputs by returning default feedback
+    return R.success(
+      "No outputs produced by the workflow run, skipping feedback.",
+      0
+    )
   }
-  const outputStr = llmify(JSON.stringify(agentSteps))
+  const outputStr = toolUsageToString(agentSteps, 1000, {
+    includeArgs: false,
+  })
 
-  const systemPrompt = singleFeedbackSystemPrompt(evaluation, outputStr)
+  const useReasoning = true
+
+  const systemPrompt = singleFeedbackSystemPrompt(
+    evaluation,
+    outputStr,
+    useReasoning
+  )
   const userPrompt = singleFeedbackUserPrompt(outputStr)
 
   const response = await sendAI({
@@ -31,10 +44,12 @@ export async function calculateFeedback({
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: getDefaultModels().fitness,
+    model: useReasoning
+      ? getDefaultModels().reasoning
+      : getDefaultModels().fitness,
     mode: "text",
     opts: {
-      reasoning: false,
+      reasoning: useReasoning,
     },
   })
 

@@ -18,8 +18,10 @@ export function calculateUsageCost(
   }
   const { promptTokens = 0, completionTokens = 0 } = usage
 
-  const modelPricing = getModelV2(modelName)
-  if (!modelPricing) {
+  let modelPricing
+  try {
+    modelPricing = getModelV2(modelName)
+  } catch (err) {
     console.error(`Model pricing not found for: ${modelName}`)
     return 0
   }

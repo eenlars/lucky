@@ -19,17 +19,20 @@ export function responseToAgentSteps({
   modelUsed,
   nodeId,
   summary,
+  originatedFrom,
 }: {
   response: GenerateTextResult<ToolSet, unknown>
   modelUsed: ModelName
   nodeId: string
   summary?: string
+  originatedFrom?: string // to find the origin of the caller, in case an error happens.
 }): { agentSteps: AgentSteps; usdCost: number } {
   const processed = processResponseVercel({
     response,
     modelUsed,
     nodeId,
     summary,
+    originatedFrom,
   })
 
   const agentSteps: AgentSteps = []
@@ -44,11 +47,12 @@ export function responseToAgentSteps({
     })
   } else if (isErrorProcessed(processed)) {
     const details = processed.details
-      ? " details:" + truncater(JSON.stringify(processed.details), 100)
+      ? " details:" + truncater(JSON.stringify(processed.details), 200)
       : ""
     agentSteps.push({
       type: "error",
       return: processed.message + details,
+      cause: originatedFrom,
     })
   } else {
     agentSteps.push({

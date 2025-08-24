@@ -31,8 +31,8 @@ export function isActiveModel(model: string): model is AllowedModelName {
   return modelConfig?.active === true && !MODEL_CONFIG.inactive.has(model)
 }
 
-// Get model pricing for a given model name
-export function getModelV2(model: string): ModelPricingV2 | null {
+// Get model pricing for a given model name. Throws if the model is unknown.
+export function getModelV2(model: string): ModelPricingV2 {
   // get current provider
   const provider = CURRENT_PROVIDER
 
@@ -43,9 +43,19 @@ export function getModelV2(model: string): ModelPricingV2 | null {
   const modelConfig = providersV2[provider]?.[model as ModelName]
 
   if (!modelConfig) {
-    lgg.warn(`getModelV2: Model ${model} not found`)
-    return null
+    const available = getActiveModelNames().join(", ")
+    lgg.warn(
+      `getModelV2: Model ${model} not found. Available models: ${available}`
+    )
+    throw new Error(
+      `getModelV2: Model ${model} not found. Available models: ${available}`
+    )
   }
+
+  // if (!modelConfig.active) {
+  //   lgg.warn(`getModelV2: Model ${model} is not active`)
+  //   return null
+  // }
 
   return modelConfig
 }

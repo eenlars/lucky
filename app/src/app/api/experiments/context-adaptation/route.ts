@@ -16,7 +16,7 @@ type BaselineResult = {
   adaptiveBehavior: { successfulStrategy: boolean }
 }
 
-type V3Run = {
+type OurAlgorithmRun = {
   model: string
   scenario: string
   condition: Condition
@@ -39,7 +39,7 @@ async function _getLatestBaselinePath(baseDir: string) {
       .filter(
         (f) =>
           f.startsWith("adaptive-results") &&
-          !f.startsWith("adaptive-results.v3")
+          !f.startsWith("adaptive-results.our-algorithm")
       )
       .filter((f) => f.endsWith(".json"))
       .map((f) => path.join(baseDir, f))
@@ -97,7 +97,7 @@ function aggregateBaselineResults(results: BaselineResult[]) {
   return chartData
 }
 
-function aggregateV3Runs(runs: V3Run[]) {
+function aggregateOurAlgorithmRuns(runs: OurAlgorithmRun[]) {
   const byModel: Record<
     string,
     { vSucc: number; vTot: number; cSucc: number; cTot: number }
@@ -167,7 +167,7 @@ type MetricsRow = {
   clearCostPerItem?: number
 }
 
-function aggregateTimeAndCostFromRuns(runs: V3Run[]): MetricsRow[] {
+function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
   const byModel: Record<
     string,
     {
@@ -277,15 +277,15 @@ export async function GET() {
     )
     const PROD_BASELINE_URL = ADAPTIVE_RESULTS_URL
 
-    // Collect all datasets: final, baseline, v3
-    const files: { final?: string; baseline?: string; v3?: string } = {}
+    // Collect all datasets: final, baseline, our-algorithm
+    const files: { final?: string; baseline?: string; ourAlgorithm?: string } = {}
     const errors: string[] = []
     const info: string[] = []
     const finalChart: Array<{ model: string; vague: number; clear: number }> =
       []
     let baselineChart: Array<{ model: string; vague: number; clear: number }> =
       []
-    let v3Chart: Array<{ model: string; vague: number; clear: number }> = []
+    let ourAlgorithmChart: Array<{ model: string; vague: number; clear: number }> = []
     let metricsChart: MetricsRow[] = []
 
     // // Final validation (if present)
@@ -348,8 +348,8 @@ export async function GET() {
           `baseline: results=${results.length}, models=${baselineChart.length}`
         )
       } else if (Array.isArray(baselineJson?.runs)) {
-        const runs = baselineJson.runs as V3Run[]
-        baselineChart = aggregateV3Runs(runs)
+        const runs = baselineJson.runs as OurAlgorithmRun[]
+        baselineChart = aggregateOurAlgorithmRuns(runs)
         metricsChart = aggregateTimeAndCostFromRuns(runs)
         info.push(
           `baseline (runs): runs=${runs.length}, models=${baselineChart.length}`
@@ -359,36 +359,36 @@ export async function GET() {
       }
     }
 
-    // V3 runs
-    const v3Path = await getLatestByPrefix(resultsDir, ["adaptive-results.v3"])
-    if (v3Path) {
+    // Our Algorithm runs
+    const ourAlgorithmPath = await getLatestByPrefix(resultsDir, ["adaptive-results.our-algorithm"])
+    if (ourAlgorithmPath) {
       try {
-        const raw = await fs.readFile(v3Path, "utf-8")
-        const json = JSON.parse(raw) as { runs?: V3Run[] }
+        const raw = await fs.readFile(ourAlgorithmPath, "utf-8")
+        const json = JSON.parse(raw) as { runs?: OurAlgorithmRun[] }
         const runs = json?.runs || []
         if (runs.length) {
-          v3Chart = aggregateV3Runs(runs)
-          files.v3 = v3Path
-          info.push(`v3: runs=${runs.length}, models=${v3Chart.length}`)
+          ourAlgorithmChart = aggregateOurAlgorithmRuns(runs)
+          files.ourAlgorithm = ourAlgorithmPath
+          info.push(`our-algorithm: runs=${runs.length}, models=${ourAlgorithmChart.length}`)
         } else {
-          info.push("V3 file parsed but contains no runs")
+          info.push("Our Algorithm file parsed but contains no runs")
         }
       } catch (e: any) {
-        const msg = `Failed reading/parsing v3 file: ${v3Path}: ${e?.message ?? e}`
+        const msg = `Failed reading/parsing our-algorithm file: ${ourAlgorithmPath}: ${e?.message ?? e}`
         errors.push(msg)
         console.error(msg)
       }
     }
 
     // Always prefer baseline for the primary dataset
-    let source: "final" | "baseline" | "v3" | "none" = "none"
+    let source: "final" | "baseline" | "our-algorithm" | "none" = "none"
     let chartData: Array<{ model: string; vague: number; clear: number }> = []
     if (baselineChart.length) {
       source = "baseline"
       chartData = baselineChart
-    } else if (v3Chart.length) {
-      source = "v3"
-      chartData = v3Chart
+    } else if (ourAlgorithmChart.length) {
+      source = "our-algorithm"
+      chartData = ourAlgorithmChart
     }
 
     if (source === "none") {
@@ -405,7 +405,7 @@ export async function GET() {
       datasets: {
         final: finalChart,
         baseline: baselineChart,
-        v3: v3Chart,
+        ourAlgorithm: ourAlgorithmChart,
         metrics: metricsChart,
       },
       files,

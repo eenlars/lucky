@@ -1,5 +1,6 @@
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
+import { supabase } from "@core/utils/clients/supabase/client"
 import { truncater } from "@core/utils/common/llmify"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
@@ -45,6 +46,10 @@ export class IngestionLayer {
 
     if (evaluation.type === "gaia") {
       return await this.convertGAIAEvaluation(evaluation)
+    }
+
+    if (evaluation.type === "dataset-records") {
+      return await this.convertDatasetRecordEvaluation(evaluation)
     }
 
     // needs work: error message should include the actual type for debugging
@@ -366,6 +371,80 @@ Fallback Question: What is 2 + 2?`,
       lgg.error("[IngestionLayer] failed to process GAIA", error)
       throw new Error(
         `failed to convert GAIA evaluation: ${error instanceof Error ? error.message : String(error)}`
+      )
+    }
+  }
+
+  /**
+   * converts dataset record evaluation to multiple WorkflowIO cases
+   */
+  private static async convertDatasetRecordEvaluation(
+    evaluation: EvaluationInput & { type: "dataset-records" }
+  ): Promise<WorkflowIO[]> {
+    const { recordIds } = evaluation
+
+    guard(
+      recordIds,
+      "dataset-records evaluation requires at least one record ID"
+    )
+
+    try {
+      lgg.onlyIf(this.verbose, "[IngestionLayer] fetching dataset records", {
+        recordIds: recordIds,
+        count: recordIds.length,
+      })
+
+      // query the database for the specified records
+      const { data: records, error } = await supabase
+        .from("DatasetRecord")
+        .select("*")
+        .in("dataset_record_id", recordIds)
+
+      if (error) {
+        throw new Error(`failed to fetch dataset records: ${error.message}`)
+      }
+
+      if (!records || records.length === 0) {
+        throw new Error(
+          `no dataset records found for IDs: ${recordIds.join(", ")}`
+        )
+      }
+
+      lgg.onlyIf(this.verbose, "[IngestionLayer] loaded dataset records", {
+        requested: recordIds.length,
+        found: records.length,
+      })
+
+      // convert each record to WorkflowIO
+      const workflowCases: WorkflowIO[] = records.map((record) => ({
+        workflowInput: record.workflow_input || evaluation.goal,
+        workflowOutput: {
+          output: record.ground_truth,
+          outputSchema: evaluation.outputSchema,
+        },
+      }))
+
+      const randomIndex = Math.floor(Math.random() * workflowCases.length)
+      lgg.onlyIf(
+        this.verbose,
+        "[IngestionLayer] generated workflow cases from dataset records. this is one example:",
+        {
+          count: workflowCases.length,
+          firstInput: workflowCases[randomIndex]?.workflowInput,
+          firstInputLength:
+            workflowCases[randomIndex]?.workflowInput?.length || 0,
+          firstOutput: workflowCases[randomIndex]?.workflowOutput?.output,
+          firstOutputLength:
+            workflowCases[randomIndex]?.workflowOutput?.output?.toString()
+              ?.length || 0,
+        }
+      )
+
+      return workflowCases
+    } catch (error) {
+      lgg.error("[IngestionLayer] failed to process dataset records", error)
+      throw new Error(
+        `failed to convert dataset record evaluation: ${error instanceof Error ? error.message : String(error)}`
       )
     }
   }

@@ -1,6 +1,8 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get("limit") || "1000")
@@ -24,6 +26,7 @@ export async function GET(request: Request) {
         status,
         start_time,
         end_time,
+        evolution_type,
         config,
         notes
       `
@@ -91,6 +94,7 @@ export async function GET(request: Request) {
     // Compute min/max generation number per run and a lookup for generation number by id
     const minGenByRun = new Map<string, number>()
     const maxGenByRun = new Map<string, number>()
+    const genCountsByRun = new Map<string, number>()
     const genNumberById = new Map<string, number>()
     if (generations) {
       generations.forEach((gen: any) => {
@@ -103,11 +107,20 @@ export async function GET(request: Request) {
         if (currentMax == null || gen.number > currentMax) {
           maxGenByRun.set(gen.run_id, gen.number)
         }
+        // track unique generation numbers per run to compute count accurately
+        genCountsByRun.set(
+          gen.run_id,
+          (genCountsByRun.get(gen.run_id) || 0) + 1
+        )
       })
 
+      // Ensure we represent generation_count as a count, not the max index
       maxGenByRun.forEach((maxGen, runId) => {
         if (runCounts.has(runId)) {
-          runCounts.get(runId).generations = maxGen
+          // Prefer explicit counts if available; otherwise fallback to maxGen + 1
+          const explicitCount = genCountsByRun.get(runId)
+          runCounts.get(runId).generations =
+            explicitCount != null ? explicitCount : maxGen + 1
         }
       })
     }
@@ -174,15 +187,14 @@ export async function GET(request: Request) {
         }
       })
       .filter((run) => {
-        // always filter runs with no generations
-        if (run.generation_count === 0) return false
+        // include runs even with 0 generations (e.g., just created)
 
         // hide empty runs filter
-        if (
-          hideEmpty &&
-          (!run.total_invocations || run.total_invocations === 0)
-        ) {
-          return false
+        if (hideEmpty) {
+          const hasInvocations =
+            !!run.total_invocations && run.total_invocations > 0
+          const hasGenerations = (run.generation_count ?? 0) > 0
+          if (!hasInvocations && !hasGenerations) return false
         }
 
         // search filter
@@ -201,9 +213,10 @@ export async function GET(request: Request) {
           return false
         }
 
-        // mode filter
-        if (modeFilter !== "all" && run.config?.mode !== modeFilter) {
-          return false
+        // evolution type filter (mode param carries evolution_type)
+        if (modeFilter !== "all") {
+          const normalized = modeFilter.toLowerCase()
+          if (run.evolution_type?.toLowerCase() !== normalized) return false
         }
 
         // date filter
@@ -236,7 +249,11 @@ export async function GET(request: Request) {
     // Apply pagination
     const paginatedRuns = processedRuns.slice(offset, offset + limit)
 
-    return NextResponse.json(paginatedRuns)
+    return NextResponse.json(paginatedRuns, {
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    })
   } catch (error) {
     console.error("Error in evolution-runs API:", error)
     return NextResponse.json(

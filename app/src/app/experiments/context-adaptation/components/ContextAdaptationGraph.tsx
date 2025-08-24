@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react"
 import AdaptationSuccessChart from "./AdaptationSuccessChart"
 
 type DataRow = { model: string; vague: number; clear: number }
-type DatasetKey = "final" | "baseline" | "v3" | "auto"
+type DatasetKey = "final" | "baseline" | "our-algorithm" | "auto"
 
 type ApiResponse = {
   ok: boolean
-  source: "final" | "baseline" | "v3" | "none"
+  source: "final" | "baseline" | "our-algorithm" | "none"
   chartData: DataRow[]
-  datasets?: { final?: DataRow[]; baseline?: DataRow[]; v3?: DataRow[] }
+  datasets?: { final?: DataRow[]; baseline?: DataRow[]; ourAlgorithm?: DataRow[] }
   errors?: string[]
   info?: string[]
 }
@@ -66,11 +66,11 @@ export default function ContextAdaptationGraph({
     if (!apiData) return []
     const ds = apiData.datasets ?? {}
     if (dataset === "baseline") return ds.baseline ?? apiData.chartData
-    if (dataset === "v3") return ds.v3 ?? apiData.chartData
+    if (dataset === "our-algorithm") return ds.ourAlgorithm ?? apiData.chartData
     // auto: pick the api's selected source first, then fallback
     if (apiData.source === "final") return ds.final ?? apiData.chartData
     if (apiData.source === "baseline") return ds.baseline ?? apiData.chartData
-    if (apiData.source === "v3") return ds.v3 ?? apiData.chartData
+    if (apiData.source === "our-algorithm") return ds.ourAlgorithm ?? apiData.chartData
     return apiData.chartData
   }, [apiData, dataset])
 
@@ -80,8 +80,8 @@ export default function ContextAdaptationGraph({
       ? "Baseline (aggregated)"
       : dataset === "final"
         ? "Final (aggregated)"
-        : dataset === "v3"
-          ? "V3 (aggregated)"
+        : dataset === "our-algorithm"
+          ? "Our Algorithm (aggregated)"
           : "Context Adaptation")
 
   const sourceLabel = useMemo(() => {

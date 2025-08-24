@@ -8,6 +8,7 @@ import {
   normalizeTime,
 } from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import {
   fitnessSystemPrompt,
   fitnessUserPrompt,
@@ -32,15 +33,23 @@ async function calculateFitness({
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
   if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
     lgg.warn("No outputs found")
-    return R.error("No outputs to evaluate", 0)
+    // Gracefully handle missing outputs by assigning zero fitness without invoking AI
+    return R.success(
+      {
+        score: 0,
+        totalCostUsd: totalCost,
+        totalTimeSeconds: totalTime / 1000,
+        accuracy: 0,
+      },
+      0
+    )
   }
 
-  const eutputSchemaStr: string | undefined = outputSchema
+  const outputSchemaStr: string | undefined = outputSchema
     ? zodToJson(outputSchema)
     : undefined
 
-  const outputStr =
-    llmify(JSON.stringify(agentSteps)) + "\n\n" + finalWorkflowOutput
+  const outputStr = toolUsageToString(agentSteps) + "\n\n" + finalWorkflowOutput
 
   const systemPrompt = fitnessSystemPrompt({
     groundTruth: evaluation,
@@ -48,7 +57,7 @@ async function calculateFitness({
   })
   const userPrompt = fitnessUserPrompt({
     outputStr,
-    eutputSchemaStr,
+    outputSchemaStr,
   })
   const response = await sendAI({
     messages: [
@@ -62,8 +71,6 @@ async function calculateFitness({
       reasoning: true,
     },
   })
-
-  console.log("response", response)
 
   if (!response.success) {
     return R.error(response.error, response.usdCost)

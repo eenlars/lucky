@@ -1,5 +1,5 @@
 /**
- * analyzeV3vsBaseline.ts - Score baseline vs v3 using scoreRun and emit structured JSON
+ * analyzeOurAlgorithmVsBaseline.ts - Score baseline vs our-algorithm using scoreRun and emit structured JSON
  */
 import { readdirSync, readFileSync, writeFileSync } from "fs"
 import { dirname, join } from "path"
@@ -24,7 +24,7 @@ function analyze() {
   }
 
   const baseline = latestByPrefix("adaptive-results-")
-  const v3 = latestByPrefix("adaptive-results.v3-")
+  const ourAlgorithm = latestByPrefix("adaptive-results.our-algorithm-")
 
   // Support { runs } or { results }
   const baselineRuns = Array.isArray(baseline.json?.runs)
@@ -32,21 +32,21 @@ function analyze() {
     : Array.isArray(baseline.json?.results)
       ? baseline.json.results
       : []
-  const v3Runs = Array.isArray(v3.json?.runs) ? v3.json.runs : []
+  const ourAlgorithmRuns = Array.isArray(ourAlgorithm.json?.runs) ? ourAlgorithm.json.runs : []
 
   // Intersect by model and scenario to make apples-to-apples comparisons
   const keyMS = (r: any) => `${r.model}::${r.scenario}`
   const baselineKeys = new Set(baselineRuns.map(keyMS))
-  const v3Keys = new Set(v3Runs.map(keyMS))
+  const ourAlgorithmKeys = new Set(ourAlgorithmRuns.map(keyMS))
   const intersect = new Set(
-    Array.from(baselineKeys).filter((k) => v3Keys.has(k))
+    Array.from(baselineKeys).filter((k) => ourAlgorithmKeys.has(k))
   )
   const bFiltered = baselineRuns.filter((r: any) => intersect.has(keyMS(r)))
-  const vFiltered = v3Runs.filter((r: any) => intersect.has(keyMS(r)))
+  const vFiltered = ourAlgorithmRuns.filter((r: any) => intersect.has(keyMS(r)))
 
   const baselineScores = scoreMany(bFiltered as any, "baseline")
-  const v3Scores = scoreMany(vFiltered as any, "v3")
-  const allScores: ScoredRun[] = [...baselineScores, ...v3Scores]
+  const ourAlgorithmScores = scoreMany(vFiltered as any, "our-algorithm")
+  const allScores: ScoredRun[] = [...baselineScores, ...ourAlgorithmScores]
 
   // Helper to compare aggregates for a key across run kinds
   const compareBy = <K extends keyof ScoredRun>(
@@ -56,7 +56,7 @@ function analyze() {
     const filt = (s: ScoredRun) =>
       excludeWithinLimitForAdaptation ? s.scenario !== "within-limit" : true
     const bAgg = groupAndAggregate(baselineScores.filter(filt), key)
-    const vAgg = groupAndAggregate(v3Scores.filter(filt), key)
+    const vAgg = groupAndAggregate(ourAlgorithmScores.filter(filt), key)
     const toMap = (arr: any[]) => new Map(arr.map((r) => [r.key, r]))
     const bm = toMap(bAgg)
     const vm = toMap(vAgg)
@@ -64,7 +64,7 @@ function analyze() {
     return keys.map((k) => ({
       key: k,
       baseline: bm.get(k) || null,
-      v3: vm.get(k) || null,
+      ourAlgorithm: vm.get(k) || null,
       deltas:
         bm.get(k) && vm.get(k)
           ? {
@@ -96,11 +96,11 @@ function analyze() {
   const now = new Date()
   const hh = String(now.getHours()).padStart(2, "0")
   const mm = String(now.getMinutes()).padStart(2, "0")
-  const outPath = join(basePath, `scores.v3_vs_baseline-${hh}${mm}.json`)
+  const outPath = join(basePath, `scores.our-algorithm_vs_baseline-${hh}${mm}.json`)
   const payload = {
     timestamp: new Date().toISOString(),
-    files: { baseline: baseline.path, v3: v3.path },
-    counts: { baseline: baselineScores.length, v3: v3Scores.length },
+    files: { baseline: baseline.path, ourAlgorithm: ourAlgorithm.path },
+    counts: { baseline: baselineScores.length, ourAlgorithm: ourAlgorithmScores.length },
     intersection: {
       models: Array.from(new Set(bFiltered.map((r: any) => r.model))),
       scenarios: Array.from(new Set(bFiltered.map((r: any) => r.scenario))),
@@ -113,7 +113,7 @@ function analyze() {
     },
     scores: {
       baseline: baselineScores,
-      v3: v3Scores,
+      ourAlgorithm: ourAlgorithmScores,
     },
   }
   writeFileSync(outPath, JSON.stringify(payload, null, 2))

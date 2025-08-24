@@ -8,6 +8,7 @@ import {
 } from "@core/utils/memory/memorySchema"
 import { getDefaultModels } from "@runtime/settings/models"
 import { isNir } from "../utils/common/isNir"
+import { GENERALIZATION_LIMITS } from "./generalizationLimits"
 
 export const MEMORY_FORMAT = `
   <concise_label>: "<type_of_memory>:<one_sentence_insight>:<usage_count>:<timestamp>:<rating>",  ...
@@ -23,10 +24,12 @@ export const makeLearning = async ({
   toolLogs,
   nodeSystemPrompt,
   currentMemory,
+  mainWorkflowGoal,
 }: {
   toolLogs: string
   nodeSystemPrompt: string
   currentMemory: NodeMemory
+  mainWorkflowGoal: string
 }): Promise<{
   agentStep: AgentStep
   updatedMemory: NodeMemory
@@ -37,6 +40,7 @@ export const makeLearning = async ({
         
 Based on this node's execution, update the persistent memory with any durable insights.
 
+Main workflow goal: ${mainWorkflowGoal}
 Node's instructions: ${nodeSystemPrompt}
 Current memory:
 ${
@@ -78,6 +82,8 @@ RULES
 7. if you have not found any insights, you should return the existing memory.
 8. you cannot store more than 40 memories.
 9. the memory is always about future runs, so any data for this run should not be stored.
+
+${GENERALIZATION_LIMITS}
 
 IF UNSURE
 When in doubt, *do not* write new memory, but keep the existing ones if they are valid.

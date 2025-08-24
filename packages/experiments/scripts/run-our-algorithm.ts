@@ -7,7 +7,7 @@ const __dirname = dirname(__filename)
 
 const target = resolve(
   __dirname,
-  "../src/research-experiments/tool-real/experiments/03-context-adaptation/runAdaptiveTest.v3.ts"
+  "../src/tool-real/experiments/03-context-adaptation/run/runAdaptiveTest.our-algorithm.ts"
 )
 
 const p = spawn("bunx", ["tsx", "--env-file=.env", target], {

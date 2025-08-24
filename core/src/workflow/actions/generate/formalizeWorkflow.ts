@@ -22,7 +22,7 @@ import { getDefaultModels } from "@runtime/settings/models"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
-  prompt: string,
+  prompt: string, // try not to input a full workflow here. the aim is to give an instruction to change a workflow.
   options: GenerationOptions & AfterGenerationOptions
 ): Promise<RS<WorkflowConfig>> {
   console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))

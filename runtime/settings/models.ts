@@ -1,5 +1,6 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type {
+  ModelName,
   ModelPricingV2,
   StandardModels,
 } from "@core/utils/spending/models.types"
@@ -28,10 +29,10 @@ export const DEFAULT_MODELS = {
     nano: "google/gemini-2.5-flash-lite",
     low: "google/gemini-2.5-flash-lite",
     medium: "openai/gpt-4.1-mini",
-    high: "google/gemini-2.5-pro-preview",
+    high: "openai/gpt-4.1",
     default: "openai/gpt-4.1-nano",
     fitness: "openai/gpt-4.1-mini",
-    reasoning: "anthropic/claude-sonnet-4",
+    reasoning: "openai/gpt-4.1-mini",
     fallback: "switchpoint/router",
   },
   groq: {
@@ -66,6 +67,34 @@ type DEFAULT_MODELS_BY_CURRENT_PROVIDER =
 export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
   const provider = MODEL_CONFIG.provider
   return DEFAULT_MODELS[provider]
+}
+
+/**
+ * Returns the cheapest active model id for the current provider, preferring
+ * the lowest input-token price. Falls back to the configured summary model.
+ */
+export const getCheapestActiveModelId = (): ModelName => {
+  const provider = MODEL_CONFIG.provider
+  const models = providersV2[provider]
+  const inactive = MODEL_CONFIG.inactive
+
+  let cheapestId = DEFAULT_MODELS[provider].summary as ModelName
+  let lowestInput = Number.POSITIVE_INFINITY
+
+  for (const [modelId, pricing] of Object.entries(models)) {
+    if (!pricing?.active) continue
+    if (inactive.has(modelId)) continue
+    const inputPrice =
+      typeof pricing.input === "number"
+        ? pricing.input
+        : Number.POSITIVE_INFINITY
+    if (inputPrice < lowestInput) {
+      lowestInput = inputPrice
+      cheapestId = modelId as ModelName
+    }
+  }
+
+  return cheapestId
 }
 
 export const experimentalModels = {

@@ -23,14 +23,14 @@
  * ## Execution Flow
  *
  * 1. **Initialization**: Parse CLI args, load configuration
- * 2. **Mode Selection**: Route to cultural or GP evolution
+ * 2. **Mode Selection**: Route to iterative or GP evolution
  * 3. **Evolution Loop**: Execute iterations with progress tracking
  * 4. **Result Saving**: Persist evolved workflows incrementally
  * 5. **Final Report**: Display performance metrics and costs
  *
  * ## Robust Execution
  *
- * Cultural evolution includes:
+ * Iterative evolution includes:
  * - Retry mechanism for failed iterations (2 retries)
  * - Circuit breaker for consecutive failures (10% tolerance)
  * - Incremental saving of successful configurations
@@ -175,12 +175,12 @@ type GeneticResult = {
  * Executes either cultural or genetic evolution depending on the configured mode.
  * Both share a common logging and result-handling structure, so we unify them here.
  *
- * Cultural evolution iteratively improves a single workflow through analysis.
+ * Iterative evolution iteratively improves a single workflow through analysis.
  * Genetic evolution maintains a population and uses crossover/mutation.
  */
 async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   /* ------------------------------------------------------------------
-   * CULTURAL EVOLUTION (ITERATIVE)
+   * ITERATIVE IMPROVEMENT
    * ------------------------------------------------------------------ */
   if (mode === "iterative") {
     const runService = new RunService(true, mode)
@@ -216,6 +216,25 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       mainQuestion: SELECTED_QUESTION.goal,
       iterations: ITERATIVE_EVOLUTION_ITERATIONS,
     })
+
+    // Save initial workflow to Generation 0 before any iterations
+    const initialConfigHash = hashWorkflow(setup).substring(0, 8)
+    const runSuffix = runService.getRunId().slice(-6)
+    const initialWfVersionId = `wf_ver_${initialConfigHash}_${runSuffix}_00`
+
+    Workflow.create({
+      config: setup,
+      evaluationInput: SELECTED_QUESTION,
+      parent1Id: undefined,
+      parent2Id: undefined,
+      evolutionContext: runService.getEvolutionContext(),
+      toolContext: SELECTED_QUESTION.outputSchema
+        ? { expectedOutputType: SELECTED_QUESTION.outputSchema }
+        : undefined,
+      workflowVersionId: initialWfVersionId,
+    })
+
+    lgg.log(`💾 Saved initial workflow to Generation 0: ${initialWfVersionId}`)
 
     // create aggregated evaluator for all questions
     const aggregatedEvaluator = new AggregatedEvaluator()
@@ -452,7 +471,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   // the genomes have not been reset after running this.
   const evaluator = new GPEvaluatorAdapter(workflowIO, newGoal, problemAnalysis)
 
-  const evolutionEngine = new EvolutionEngine(evolutionSettings, "iterative")
+  const evolutionEngine = new EvolutionEngine(evolutionSettings, "GP")
 
   // Determine optional base workflow for GP mode using the Loader (centralized logging)
   let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<

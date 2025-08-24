@@ -4,10 +4,10 @@
  */
 
 import type { FlowCoordinationType, FlowRuntimeConfig } from "@core/types"
-import { LoggingTypes } from "./logging"
 import { EVOLUTION_CONFIG } from "./evolution"
-import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
+import { LoggingTypes } from "./logging"
 import { MODEL_CONFIG, getDefaultModels } from "./models"
+import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
 
 export const MODELS = getDefaultModels()
 export { getDefaultModels }
@@ -80,7 +80,7 @@ export const CONFIG = {
     taskLimit: 100, // Max number of tasks to load from benchmarks (SWE-bench, GAIA)
   },
   limits: {
-    maxConcurrentWorkflows: 2, // Max concurrent WorkflowIO executions to respect rate limits
+    maxConcurrentWorkflows: 10, // Max concurrent WorkflowIO executions to respect rate limits
     maxConcurrentAIRequests: 30, // Max concurrent requests to openrouter to respect rate limits
     maxCostUsdPerRun: 30.0, // max spend per evolution run
     enableSpendingLimits: true,

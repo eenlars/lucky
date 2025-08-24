@@ -328,6 +328,7 @@ export class Workflow {
     this.fitness = data.averageFitness
     this.totalCost += usdCost ?? 0
     this.feedback = data.averageFeedback
+    lgg.log("[Workflow] Setting feedback:", data.averageFeedback)
     return R.success(data, usdCost)
   }
 

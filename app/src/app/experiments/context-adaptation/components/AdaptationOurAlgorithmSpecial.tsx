@@ -21,6 +21,7 @@ import {
   ZAxis,
 } from "recharts"
 
+import type { OpenRouterModelName } from "@core/utils/spending/models.types"
 import { accuracyScorePct } from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
 import {
   MODELS,
@@ -29,10 +30,9 @@ import {
 import type {
   Condition,
   LoopMetrics,
-  V3ExperimentResults,
-  V3Run,
+  OurAlgorithmExperimentResults,
+  OurAlgorithmRun,
 } from "@experiments/tool-real/experiments/03-context-adaptation/types"
-import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 
 // Condition type comes from shared experiment types
 
@@ -68,7 +68,7 @@ interface PointDatum {
   avgErrorRate: number
   totalCombineCalls: number
   countsUsed: LoopMetrics["countsUsed"]
-  strategyCounts: Record<V3Run["loops"][number]["metrics"]["strategy"], number>
+  strategyCounts: Record<OurAlgorithmRun["loops"][number]["metrics"]["strategy"], number>
 }
 
 // Convert provider/model slugs into human-friendly display names
@@ -101,7 +101,7 @@ function formatModelDisplayName(modelId: string): string {
 
 // Scenario palette comes from centralized chart colors
 
-// Stable shapes assignment for models (in MODELS_V3 order)
+// Stable shapes assignment for models (in MODELS order)
 const MODEL_SHAPES: ShapeName[] = ["circle", "triangle", "diamond", "square"]
 
 function formatPct(n: number): string {
@@ -117,18 +117,8 @@ function formatMs(ms: number): string {
   return `${m}m ${rs}s`
 }
 
-// function clamp(min: number, v: number, max: number): number {
-//   return Math.max(min, Math.min(v, max))
-// }
-
-// Slight, deterministic jitter by model and condition to reduce point overlap
-function _jitterFor(modelIndex: number, condition: Condition): number {
-  const base = [-0.28, -0.12, 0.12, 0.28][modelIndex % 4]
-  return condition === "clear" ? base : base * 0.7
-}
-
-// Build stable model order based on MODELS_V3 but fall back to discovered models in results
-function computeModelOrder(runs: V3Run[]): string[] {
+// Build stable model order based on MODELS but fall back to discovered models in results
+function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
   const fromResults = Array.from(
     new Set(runs.map((r) => r.model))
   ) as OpenRouterModelName[]
@@ -139,7 +129,7 @@ function computeModelOrder(runs: V3Run[]): string[] {
   return order.map((m) => String(m))
 }
 
-function aggregateLoopMetrics(run: V3Run) {
+function aggregateLoopMetrics(run: OurAlgorithmRun) {
   const loops = run.loops ?? []
   const n = loops.length || 1
 
@@ -176,7 +166,7 @@ function aggregateLoopMetrics(run: V3Run) {
   }
 }
 
-function buildPoints(results: V3ExperimentResults | null): {
+function buildPoints(results: OurAlgorithmExperimentResults | null): {
   modelOrder: string[]
   byScenario: Record<string, PointDatum[]>
 } {
@@ -484,12 +474,12 @@ function LegendByModel({ modelOrder }: { modelOrder: string[] }) {
   )
 }
 
-export default function AdaptationV3Special({
+export default function AdaptationOurAlgorithmSpecial({
   className = "",
 }: {
   className?: string
 }) {
-  const [data, setData] = useState<V3ExperimentResults | null>(null)
+  const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [enabledScenarios, setEnabledScenarios] = useState<
@@ -512,11 +502,11 @@ export default function AdaptationV3Special({
       setLoading(true)
       try {
         const res = await fetch(
-          `/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.v3.json?t=${Date.now()}`,
+          `/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.our-algorithm.json?t=${Date.now()}`,
           { cache: "no-store" }
         )
         if (!res.ok) throw new Error(`Failed to load results: ${res.status}`)
-        const json = (await res.json()) as V3ExperimentResults
+        const json = (await res.json()) as OurAlgorithmExperimentResults
         if (!cancelled) setData(json)
       } catch (e: any) {
         if (!cancelled) setErrors([(e?.message ?? String(e)) as string])
@@ -560,7 +550,7 @@ export default function AdaptationV3Special({
     for (const run of Object.values(byScenario).flat()) {
       if (!enabledScenarios[run.scenario] || !enabledConditions[run.condition])
         continue
-      // We need the underlying V3Run to get per-loop success; approximate with metrics fields from tooltip data
+      // We need the underlying OurAlgorithmRun to get per-loop success; approximate with metrics fields from tooltip data
       // Our PointDatum does not carry individual loop success; instead, use countsUsed as proxy and avgAdherence/errorRate
       // To still show learning trend, we simulate per-loop with 3 buckets: 1, 2, 3 (treat >3 as 4)
       const loops = [1, 2, 3, 4]
@@ -657,7 +647,7 @@ export default function AdaptationV3Special({
       <div className="flex items-baseline justify-between gap-3 mb-2">
         <div>
           <h2 className="text-xl font-semibold">
-            Context Adaptation · V3 scatter
+            Context Adaptation · Our Algorithm scatter
           </h2>
           <p className="text-xs text-gray-500">
             Shapes encode model; color encodes scenario; outline encodes

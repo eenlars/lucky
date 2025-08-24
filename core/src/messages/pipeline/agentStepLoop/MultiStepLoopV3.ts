@@ -19,8 +19,8 @@ import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { responseToAgentSteps } from "@core/messages/api/vercel/responseToAgentSteps"
-import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
+import { generateSummaryFromUnknownData } from "@core/messages/summaries"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -70,14 +70,11 @@ export async function runMultiStepLoopV3Helper(
     getTotalCost,
   } = context
 
-  const incomingText = extractTextFromPayload(
-    ctx.workflowMessageIncoming.payload
-  )
   const identityPrompt = `
         How you should act: ${ctx.nodeConfig.systemPrompt}
         You are a node within a workflow helping with the main goal: ${ctx.mainWorkflowGoal}
+        You are agent ${ctx.nodeConfig.nodeId}
         this is your memory: ${ctx.nodeMemory ? JSON.stringify(ctx.nodeMemory) : "none"}
-        incoming_input: ${incomingText || "<no user input provided>"}
         `
 
   // todo-memoryleak: agentSteps array grows unbounded in long-running processes
@@ -154,6 +151,7 @@ export async function runMultiStepLoopV3Helper(
         toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
+        mainWorkflowGoal: ctx.mainWorkflowGoal,
       })
 
       if (learningResult.agentStep.type !== "error") {
@@ -278,9 +276,25 @@ export async function runMultiStepLoopV3Helper(
         response: toolUseResponse,
         modelUsed: ctx.nodeConfig.modelName,
         nodeId: ctx.nodeConfig.nodeId,
+        originatedFrom: `tool_used:${selected}:with_plan:${strategy.plan}`,
       })
 
-    agentSteps.push(...processedAgentSteps)
+    // Immediately summarize each tool step as we append it
+    for (const step of processedAgentSteps) {
+      if (step.type === "tool") {
+        try {
+          const { summary, usdCost } = await generateSummaryFromUnknownData(
+            step.return,
+            "1-2 sentences"
+          )
+          if (summary) step.summary = summary
+          addCost(usdCost ?? 0)
+        } catch {
+          // ignore summary errors; keep original return
+        }
+      }
+      agentSteps.push(step)
+    }
 
     addCost(processedUsdCost)
 
@@ -337,6 +351,7 @@ export async function runMultiStepLoopV3Helper(
     toolLogs: toolUsageToString(agentSteps),
     nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
     currentMemory: ctx.nodeMemory ?? {},
+    mainWorkflowGoal: ctx.mainWorkflowGoal,
   })
 
   if (fallbackLearning.agentStep.type !== "error") {
