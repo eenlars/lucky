@@ -21,7 +21,8 @@
   },
   "scripts": {
     "prepare": "husky",
-    "build:shared": "bun -C packages/shared run build",
+    "postinstall": "bun run build:shared",
+    "build:shared": "cd packages/shared && bun run build",
     "build:app": "bun -C app run build",
     "build": "bun run build:shared && bun run build:app",
     "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.ts",
