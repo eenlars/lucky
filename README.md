@@ -127,10 +127,17 @@ Two complementary optimization strategies:
 
 ## Development Roadmap
 
+### Architectual/first-use Todos (HIGH PRIORITY)
+
+- [ ] Running a workflow should be possible without supabase
+- [ ] Login for external users
+- [ ] Isolate core module
+- [ ] Isolate Evolutionary module
+
 ### System Robustness
 
-- [ ] Message contracts and validation (priority 2)
 - [ ] Partial workflow execution from dashboard (priority 1)
+- [ ] Message contracts and validation (priority 2)
 - [ ] Deterministic node execution modes
 
 ### Observability Infrastructure
