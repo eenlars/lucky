@@ -1,16 +1,16 @@
 # Self-Evolving Multi-Agent Workflows: An Evolutionary Optimization Framework
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
+[![Bun](https://img.shields.io/badge/Bun-1.2+-purple)](https://bun.sh)
 [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
 [![Tests](docs/badges/tests.svg)](docs/badges/tests.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey)](LICENSE)
 
-![Evolutionary agentic workflows screenshot](docs/example.png)
-
 Multi-agent systems require explicit workflow design - developers must manually configure agent roles, communication patterns, and coordination strategies. This framework addresses this limitation through evolutionary optimization of multi-agent workflows.
 
 The system discovers effective agent collaboration patterns by treating workflows as evolvable data structures, optimized through genetic programming and iterative improvement algorithms.
+
+![Evolutionary agentic workflows screenshot](docs/example.png)
 
 ## Technical Contributions
 
@@ -23,20 +23,59 @@ Workflows defined as JSON data structures enable programmatic manipulation throu
 **3. Execution Observability**  
 Provides real-time visualization of workflow execution graphs, evolutionary fitness metrics, and performance tracking across accuracy, cost, and latency dimensions.
 
+## Monorepo Layout
+
+- `app/` — Next.js UI, pages, API routes.
+- `core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
+- `runtime/` — Runtime settings and model utilities.
+- `packages/shared/` — Shared TypeScript utilities (built with tsup).
+- `tests/e2e-essential/` — Minimal smoke + gate tests with golden trace.
+- `scripts/`, `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
+
 ## Installation
+
+Prerequisites: Bun 1.2+, Node 18+, Git.
 
 ```bash
 # Clone and install dependencies at the repo root
 git clone <repository-url>
-cd lucky
+cd together
 bun install  # This also builds required packages
 
 # (Optional) Create environment file(s) where needed
-# For the web app, create app/.env and set your API keys (e.g., OpenAI, Supabase)
+# For the web app, create app/.env and set your provider/database keys
 
 # Start the web interface (from app/)
-cd app && bun dev
+bun -C app run dev
 ```
+
+## Common Tasks
+
+- Build all: `bun run build` (shared → app)
+- Typecheck all: `bun run tsc`
+- Core: run once `bun -C core run once` · iterative `bun -C core run iterative`
+- App: dev `bun -C app run dev` · start `bun -C app run start`
+
+## Testing
+
+- Smoke: `bun run test:smoke`
+- Gate: `bun run test:gate`
+- Core unit (watch): `bun -C core run dev` · one‑shot: `bun -C core run test:unit`
+- Coverage: `bun -C app run coverage` or `bun -C core run coverage`
+
+Golden updates (after intentional behavior change):
+
+```bash
+bunx tsx tests/e2e-essential/scripts/update-golden.ts
+```
+
+Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + gate.
+
+## Configuration
+
+- App env: `app/.env` (see `app/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
+- Path aliases: prefer `@core`, `@runtime`, `@shared` in tests and code where available.
+- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `bun -C app run format` or `bun -C core run format`.
 
 ## How It Works
 
@@ -49,19 +88,19 @@ The system represents workflows as directed acyclic graphs (DAGs) where nodes ar
 
 ## Architecture
 
-### Core Execution Engine (`/src/core/`)
+### Core Execution Engine (core/src)
 
-- **Workflow Engine** (`/workflow/`): Message queue-based DAG execution with cycle detection
-- **Node System** (`/node/`): Autonomous agents with configurable prompts and tool sets
-- **Tool Framework** (`/tools/`): TypeScript function discovery via AST parsing, MCP protocol support
-- **Memory System** (`/memory/`): Chunked storage for multi-gigabyte contexts with 80-95% compression
+- Workflow engine: DAG execution with cycle detection and message passing
+- Node system: autonomous agents with configurable prompts and tool sets
+- Tool framework: TypeScript tool discovery and MCP protocol support
+- Memory system: chunked storage and summarization for large contexts
 
-### Evolution Module (`/src/core/improvement/`)
+### Evolution Module (core/src/improvement)
 
-- **Genetic Programming** (`/gp/`): Tournament selection, semantic crossover, multi-objective fitness
-- **Iterative Evolution** (`/by-judgement/`): Root cause analysis with targeted improvements
-- **Fitness Functions**: Weighted evaluation of accuracy (primary), cost, and execution time
-- **Mutation Operators**: Prompt rewording, tool addition/removal, topology modifications
+- Genetic programming: tournament selection, semantic crossover, multi-objective fitness
+- Iterative evolution: root cause analysis with targeted improvements
+- Fitness functions: weighted evaluation of accuracy (primary), cost, and execution time
+- Mutation operators: prompt rewording, tool addition/removal, topology modifications
 
 ## Usage
 
@@ -88,23 +127,18 @@ const addresses = await workflow.ask("Find all Tony Chocolonely stores")
 ## Development
 
 ```bash
-# Install Bun (if not already installed)
-
 # Install dependencies (also builds shared packages)
 bun install
 
-# Add your OPENROUTER_API_KEY to .env
-cp .env.example .env
+# App environment
+cp app/.env.example app/.env
 
 # Run your first workflow:
 cd core && bun once
 
 # Or train your first workflow (iteratively):
 cd core && bun iterative
-
 ```
-
-## Optimization Algorithms
 
 ## Optimization Algorithms
 
@@ -175,4 +209,4 @@ This framework serves as an experimental platform for studying evolutionary opti
 
 ## License
 
-CC BY-NC 4.0 - see [LICENSE](LICENSE) for details.
+CC BY‑NC 4.0 — see [LICENSE](LICENSE).

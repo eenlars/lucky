@@ -4,6 +4,9 @@
       "path": "./packages/shared/tsconfig.json"
     },
     {
+      "path": "./packages/gp-lite/tsconfig.json"
+    },
+    {
       "path": "./core/tsconfig.json"
     },
     {
