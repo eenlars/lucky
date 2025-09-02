@@ -2,12 +2,10 @@ import { ApproveData } from "@/app/(test)/approve/page"
 import { NextRequest, NextResponse } from "next/server"
 import * as fs from "fs/promises"
 import * as path from "path"
+import { PATHS } from "@runtime/settings/constants"
 
-const APPROVAL_STORAGE_PATH = path.join(
-  process.cwd(),
-  "logging_folder",
-  "approvals"
-)
+// Use shared runtime path so writers and readers agree
+const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
 
 interface ApprovalRequest {
   id: string
@@ -38,13 +36,33 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // read the approval request file
-    const requestFilePath = path.join(
+    // Determine the request file path (supports legacy locations)
+    const candidateDirs = [
       APPROVAL_STORAGE_PATH,
-      `${approvalId}.json`
+      // legacy: root/logging_folder/approvals
+      path.join(PATHS.root, "logging_folder", "approvals"),
+      // legacy: CWD/logging_folder/approvals
+      path.join(process.cwd(), "logging_folder", "approvals"),
+    ]
+    const candidateFiles = candidateDirs.map((dir) =>
+      path.join(dir, `${approvalId}.json`)
     )
 
     try {
+      // Find the first existing candidate file
+      let requestFilePath: string | null = null
+      for (const filePath of candidateFiles) {
+        try {
+          await fs.access(filePath)
+          requestFilePath = filePath
+          break
+        } catch {}
+      }
+
+      if (!requestFilePath) {
+        throw new Error("Approval request file not found in any location")
+      }
+
       const requestData = await fs.readFile(requestFilePath, "utf-8")
       const approvalRequest: ApprovalRequest = JSON.parse(requestData)
 
@@ -53,10 +71,7 @@ export async function GET(request: NextRequest) {
       approvalRequest.response = response
 
       // save the updated request
-      await fs.writeFile(
-        requestFilePath,
-        JSON.stringify(approvalRequest, null, 2)
-      )
+      await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
 
       return NextResponse.json<ApproveData>({
         text: `Approval ${approvalRequest.status}: ${response}`,

@@ -31,6 +31,7 @@ export const nodeInvocations = cache(
       .order("start_time")
 
     if (error) {
+      console.error(error)
       throw new Error("Failed to fetch node invocations")
     }
 

@@ -4,12 +4,10 @@ import * as fs from "fs/promises"
 import { nanoid } from "nanoid"
 import * as path from "path"
 import { z } from "zod"
+import { PATHS } from "@runtime/settings/constants"
 
-const APPROVAL_STORAGE_PATH = path.join(
-  process.cwd(),
-  "logging_folder",
-  "approvals"
-)
+// Centralize path with runtime constants to avoid CWD mismatches
+const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
 
 export interface ApprovalRequest {
   id: string

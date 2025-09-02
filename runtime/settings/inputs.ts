@@ -199,7 +199,7 @@ const QUESTIONS = {
   },
   promptOnly: {
     type: "prompt-only",
-    goal: "I want to have dinner in bilbao with 5 friends. Find me the best restaurants in bilbao. no pizza.",
+    goal: "kruidvat amsterdam",
     workflowId: "wf-prompt-test",
   },
 
@@ -223,4 +223,4 @@ const QUESTIONS = {
 } satisfies Record<string, EvaluationInput>
 
 export { QUESTIONS }
-export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.datasetTest
+export const SELECTED_QUESTION: EvaluationInput = QUESTIONS.promptOnly
