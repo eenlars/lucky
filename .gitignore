@@ -64,6 +64,8 @@ dev-debug.log
 *.sln
 *.sw?
 **/CLAUDE.md
+AGENTS.md
+agents.md
 
 # Custom
 /resources

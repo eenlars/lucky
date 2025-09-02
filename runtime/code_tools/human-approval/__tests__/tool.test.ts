@@ -2,12 +2,9 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { tool as humanApproval } from "../tool"
 import * as fs from "fs/promises"
 import * as path from "path"
+import { PATHS } from "@runtime/settings/constants"
 
-const APPROVAL_STORAGE_PATH = path.join(
-  process.cwd(),
-  "logging_folder",
-  "approvals"
-)
+const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
 
 describe("humanApproval tool", () => {
   beforeEach(async () => {

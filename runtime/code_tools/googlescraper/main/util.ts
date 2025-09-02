@@ -1,6 +1,6 @@
+import { lgg } from "@core/utils/logging/Logger"
 import type { LocationMapLink } from "@runtime/code_tools/googlescraper/main/data_manager"
 import type { ProxyResponse } from "@runtime/code_tools/googlescraper/utils/proxies"
-import { lgg } from "@core/utils/logging/Logger"
 import { type Browser, type CookieData, type Page } from "puppeteer"
 import puppeteerExtra from "puppeteer-extra"
 import stealthPlugin from "puppeteer-extra-plugin-stealth"
@@ -59,7 +59,7 @@ export async function setupBrowser(proxy?: ProxyResponse): Promise<{
   puppeteerExtra.use(stealthPlugin())
 
   const launchOptions: any = {
-    headless: true,
+    headless: false,
     executablePath: "", // your path here
   }
 
