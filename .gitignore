@@ -99,3 +99,7 @@ mcp/*
 **/resilience/**
 **/resilience/
 resilience/
+
+# Ignore any directory named "private" anywhere in the repo
+**/private/
+**/private/**
