@@ -1,6 +1,7 @@
 // Workflow templates for quick start
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { getDefaultModels } from "@runtime/settings/models"
 
 export interface WorkflowTemplate {
   id: string
@@ -24,7 +25,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: "openai/gpt-4o-mini",
+          modelName: getDefaultModels().default,
         },
       ],
     },
@@ -44,7 +45,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: ["recipe_generator"],
-          modelName: "openai/gpt-4o-mini",
+          modelName: getDefaultModels().default,
         },
         {
           nodeId: "recipe_generator",
@@ -54,7 +55,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: ["nutrition_analyzer"],
-          modelName: "openai/gpt-4o-mini",
+          modelName: getDefaultModels().default,
         },
         {
           nodeId: "nutrition_analyzer",
@@ -63,7 +64,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: "openai/gpt-4o-mini",
+          modelName: getDefaultModels().default,
         },
       ],
     },
