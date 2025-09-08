@@ -7,6 +7,7 @@ import { Timeline } from "@/trace-visualization/components/Timeline"
 import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
 import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
+import { fetchWithRetry } from "@/utils/fetch-with-retry"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared"
 import PerformanceOverview from "./components/PerformanceOverview"
@@ -168,11 +169,14 @@ export default function TraceDetailPage({
         setWorkflowDetails(workflow)
         setLoading(false)
 
-        // Then fetch detailed node data asynchronously (via API)
+        // Then fetch detailed node data asynchronously (via API) with retry
         setTimelineLoading(true)
-        const res = await fetch(`/api/trace/${wf_inv_id}/node-invocations`, {
-          cache: "no-store",
-        })
+        const res = await fetchWithRetry(
+          `/api/trace/${wf_inv_id}/node-invocations`,
+          {
+            cache: "no-store",
+          }
+        )
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err?.error || "Failed to fetch node invocations")
@@ -227,8 +231,8 @@ export default function TraceDetailPage({
               setWorkflowVersion(workflowVersion)
               setWorkflowDetails(workflow)
 
-              // Refresh node data (via API)
-              const res = await fetch(
+              // Refresh node data (via API) with retry
+              const res = await fetchWithRetry(
                 `/api/trace/${wf_inv_id}/node-invocations`,
                 { cache: "no-store" }
               )
