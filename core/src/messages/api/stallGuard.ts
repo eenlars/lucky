@@ -1,12 +1,12 @@
 /**
  * Stall detection for AI model requests.
- * 
+ *
  * Implements dual-timeout system to detect and handle stalled AI model calls:
  * - Overall timeout: Maximum total time for request completion
  * - Stall timeout: Maximum time between tokens/progress updates
- * 
+ *
  * Prevents hanging requests that stop producing tokens but don't terminate.
- * 
+ *
  * @module messages/api/stallGuard
  */
 
@@ -16,26 +16,26 @@ import pTimeout from "p-timeout"
 
 /**
  * Executes AI text generation with stall detection and timeout protection.
- * 
+ *
  * @param base - Parameters for generateText function
  * @param options - Timeout configuration
  * @param options.modelName - Model name for error messages
  * @param options.overallTimeoutMs - Maximum total execution time
  * @param options.stallTimeoutMs - Maximum time between progress updates
- * 
+ *
  * @returns Generated text result of type R
- * 
+ *
  * @throws Error on overall timeout or stall detection
- * 
+ *
  * @remarks
  * - Disabled when CONFIG.limits.enableStallGuard is false
  * - Resets stall timer on each token/step completion
  * - Aborts request on stall detection
- * 
+ *
  * @example
  * const result = await runWithStallGuard(
  *   { messages, model },
- *   { 
+ *   {
  *     modelName: "claude-3",
  *     overallTimeoutMs: 60000,
  *     stallTimeoutMs: 10000

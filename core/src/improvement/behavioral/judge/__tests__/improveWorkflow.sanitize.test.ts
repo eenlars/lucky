@@ -26,6 +26,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
+import { getDefaultModels } from "@runtime/settings/models"
 
 describe("improveWorkflowUnified sanitization", () => {
   beforeEach(() => vi.clearAllMocks())
@@ -38,7 +39,7 @@ describe("improveWorkflowUnified sanitization", () => {
           nodeId: "step-1",
           description: "desc",
           systemPrompt: "sp",
-          modelName: "openai/gpt-4.1-mini",
+          modelName: getDefaultModels().reasoning,
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

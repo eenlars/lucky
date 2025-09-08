@@ -8,7 +8,7 @@ import {
 } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { workflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
-import { PATHS } from "@runtime/settings/constants"
+import { getDefaultModels, PATHS } from "@runtime/settings/constants"
 
 /**
  * Decide whether to use database-backed storage for live workflow config.
@@ -30,7 +30,7 @@ function makeDefaultConfig(): WorkflowConfig {
         description: "Main workflow node",
         systemPrompt:
           "You are a helpful assistant. Complete the task as requested.",
-        modelName: "openai/gpt-4.1-mini",
+        modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
         handOffs: ["end"],

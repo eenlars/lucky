@@ -25,6 +25,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
+import { getDefaultModels } from "@runtime/settings/models"
 
 describe("formalizeWorkflow sanitization", () => {
   beforeEach(() => {
@@ -39,7 +40,7 @@ describe("formalizeWorkflow sanitization", () => {
           nodeId: "main",
           description: "Main node",
           systemPrompt: "Do the thing",
-          modelName: "openai/gpt-4.1-mini",
+          modelName: getDefaultModels().default,
           // inactive tool present in base config to simulate creep
           mcpTools: ["browserUse" as any],
           codeTools: [],

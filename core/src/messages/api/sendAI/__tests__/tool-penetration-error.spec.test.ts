@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { getDefaultModels } from "@runtime/settings/models"
 
 // Integration test that attempts to break tool handling and exercises
 // AI SDK error normalization. We intentionally construct invalid tools
@@ -29,7 +30,7 @@ describe("sendAI tool mode – penetration error", () => {
 
     const result = await sendAI({
       mode: "tool",
-      model: "google/gemini-2.5-flash-lite",
+      model: getDefaultModels().default,
       messages: [
         {
           role: "user",

@@ -22,16 +22,19 @@ import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { lgg } from "@core/utils/logging/Logger"
+import { isNir } from "@core/utils/common/isNir"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
+import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 import { generateText, GenerateTextResult, ToolSet } from "ai"
 import {
   getFallbackModel,
   shouldUseModelFallback,
   trackTimeoutForModel,
 } from "../fallbacks"
+import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import type { TextRequest, TResponse } from "../types"
 
 const spending = SpendingTracker.getInstance()
@@ -74,52 +77,87 @@ export async function execText(
     const baseOptions: Parameters<typeof generateText>[0] = {
       model,
       messages,
-      maxRetries: retries,
+      // Let the SDK retry thrown/transient errors once per attempt; we handle empty-response retries below
+      maxRetries: Math.max(0, Math.min(retries, 1)),
       maxSteps: opts.maxSteps ?? CONFIG.tools.maxStepsVercel,
     }
 
     const isReasoning = Boolean(opts.reasoning)
 
-    // TODO: implement adaptive timeout based on prompt complexity
-    // TODO: add timeout prediction using historical data
-    // TODO: create reasoning-aware performance optimization
-    const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
-      baseOptions,
-      {
-        modelName: modelName,
-        // text generations can reasonably take longer than 30s, especially with reasoning models.
-        // use higher defaults and scale with reasoning flag.
-        overallTimeoutMs: isReasoning ? 240_000 : 120_000,
-        stallTimeoutMs: isReasoning ? 120_000 : 60_000,
+    const overallTimeoutMs = isReasoning ? 240_000 : 120_000
+    const stallTimeoutMs = isReasoning ? 120_000 : 60_000
+
+    const attempts = Math.max(1, (retries ?? 0) + 1)
+    const attemptsDebug: Array<{
+      attempt: number
+      reason: string
+      usage?: any
+      provider: string
+      model: string
+    }> = []
+
+    const attemptOnce = async () => {
+      const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
+        baseOptions,
+        {
+          modelName: modelName,
+          overallTimeoutMs,
+          stallTimeoutMs,
+        }
+      )
+
+      const usd = calculateUsageCost((gen as any)?.usage, modelName)
+      if (opts.saveOutputs && gen) await saveResultOutput(gen)
+      spending.addCost(usd)
+      return gen
+    }
+
+    const result = await retryWithBackoff(attemptOnce, {
+      attempts,
+      backoffMs: 300,
+      shouldRetry: (gen) => {
+        const text = (gen as any)?.text
+        const hasText = !isNir(text?.trim?.())
+        if (!hasText) {
+          attemptsDebug.push({
+            attempt: attemptsDebug.length + 1,
+            reason: "empty-text",
+            usage: (gen as any)?.usage,
+            provider: String(CURRENT_PROVIDER),
+            model: String(modelName),
+          })
+          lgg.warn(
+            `execText empty response (attempt ${attemptsDebug.length}/${attempts}) from ${String(
+              CURRENT_PROVIDER
+            )} for ${String(modelName)}`
+          )
+        }
+        return !hasText
+      },
+    })
+
+    const usd = calculateUsageCost((result as any)?.usage, modelName)
+    const text = (result as any)?.text
+    const hasText = !isNir(text?.trim?.())
+    if (hasText) {
+      return {
+        success: true,
+        data: { text, reasoning: (result as any)?.reasoning },
+        usdCost: usd,
+        error: null,
+        debug_input: messages,
+        debug_output: result,
       }
-    )
+    }
 
-    // TODO: add cost validation and budget alerting
-    // TODO: implement cost optimization suggestions
-    const usd = calculateUsageCost(gen.usage, modelName)
-    if (opts.saveOutputs) await saveResultOutput(gen)
-    spending.addCost(usd)
-
-    // TODO: add text quality validation
-    // TODO: implement response filtering and safety checks
-    // TODO: add text generation metrics collection
-    return gen.text
-      ? {
-          success: true,
-          data: { text: gen.text, reasoning: gen.reasoning },
-          usdCost: usd,
-          error: null,
-          debug_input: messages,
-          debug_output: gen,
-        }
-      : {
-          success: false,
-          data: null,
-          usdCost: usd,
-          error: "Empty response",
-          debug_input: messages,
-          debug_output: gen,
-        }
+    return {
+      success: false,
+      data: null,
+      usdCost: usd,
+      error: `Empty response from ${String(CURRENT_PROVIDER)} for model ${String(modelName)} after ${attempts} attempt(s).`,
+      debug_input: messages,
+      debug_output: { lastGen: result, attempts: attemptsDebug },
+    }
   } catch (err) {
     // TODO: implement comprehensive error classification system
     // TODO: add error recovery strategies beyond fallback

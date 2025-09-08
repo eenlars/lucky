@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { getDefaultModels } from "@runtime/settings/models"
 
 // Integration test: use a valid Tool that always throws in execute to
 // exercise our normalization path after a provider call. Use gemini lite.
@@ -22,7 +23,7 @@ describe("sendAI tool mode – execute throw penetration", () => {
 
     const result = await sendAI({
       mode: "tool",
-      model: "google/gemini-2.5-flash-lite",
+      model: getDefaultModels().default,
       messages: [
         {
           role: "user",
