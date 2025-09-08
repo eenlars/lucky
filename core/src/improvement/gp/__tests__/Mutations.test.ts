@@ -78,6 +78,17 @@ vi.mock("@core/utils/common/isNir", () => ({
   isNir: vi.fn(),
 }))
 
+// Mock sendAI to avoid real model calls in unit tests
+// Structured mode returns a safe error (so callers no-op), text mode returns dummy text
+vi.mock("@core/messages/api/sendAI/sendAI", () => ({
+  sendAI: vi.fn().mockImplementation(async (req: any) => {
+    if (req?.mode === "structured") {
+      return { success: false, data: null, error: "mocked", usdCost: 0 }
+    }
+    return { success: true, data: { text: "ok" }, error: null, usdCost: 0 }
+  }),
+}))
+
 vi.mock("@core/improvement/GP/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi.fn(),
 }))
