@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { wf_inv_id } = await params
 
-    // Verify the workflow invocation exists; if not, return 404
+    // Verify the workflow invocation exists
     const { data: exists, error: existsError } = await supabase
       .from("WorkflowInvocation")
       .select("wf_invocation_id")
