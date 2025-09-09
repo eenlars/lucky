@@ -7,6 +7,13 @@ export async function fetchWithRetry(
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
+      // If the request was already aborted, do not attempt fetch
+      if (options?.signal?.aborted) {
+        const abortError = new Error("The operation was aborted")
+        abortError.name = "AbortError"
+        throw abortError
+      }
+
       const response = await fetch(url, options)
       if (response.ok) {
         return response
@@ -19,6 +26,13 @@ export async function fetchWithRetry(
 
       lastError = new Error(`HTTP ${response.status}`)
     } catch (error) {
+      // AbortError should not be retried; surface immediately
+      const isAbortError =
+        (typeof error === "object" && error !== null && "name" in error && (error as any).name === "AbortError") ||
+        options?.signal?.aborted
+      if (isAbortError) {
+        throw (error instanceof Error ? error : new Error("The operation was aborted"))
+      }
       lastError = error instanceof Error ? error : new Error("Network error")
     }
 
