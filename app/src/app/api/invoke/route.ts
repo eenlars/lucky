@@ -1,9 +1,13 @@
 // app/src/app/api/invoke/route.ts
 
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function POST(req: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await requireAuth()
+    if (authResult instanceof NextResponse) return authResult
     const body = await req.json()
     const { workflowVersionId, prompt } = body as {
       workflowVersionId: string
@@ -29,16 +33,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Call the workflow invocation API instead of importing invokeWorkflow directly
-    const invokeResponse = await fetch(
-      `${req.nextUrl.origin}/api/workflow/invoke`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input),
-      }
-    )
+    const invokeResponse = await fetch(`${req.nextUrl.origin}/api/workflow/invoke`, {
+      method: "POST",
+      // Forward auth cookies so the nested API call remains authenticated
+      headers: {
+        "Content-Type": "application/json",
+        cookie: req.headers.get("cookie") ?? "",
+      },
+      body: JSON.stringify(input),
+    })
 
     if (!invokeResponse.ok) {
       const errorData = await invokeResponse.json()

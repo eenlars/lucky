@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta } from "../_lib/meta"
 import { getDataSet, getDatasetRecords } from "@/lib/db/dataset"
 
@@ -6,6 +7,10 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { datasetId: string } }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     // First try database
     try {

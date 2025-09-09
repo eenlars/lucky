@@ -1,8 +1,9 @@
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import path from "path"
 
-interface RunResult {
+interface _RunResult {
   model: string
   scenario: string
   condition: "vague" | "clear"
@@ -464,6 +465,10 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 }
 
 export async function GET() {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const data = await loadExperimentalData()
 

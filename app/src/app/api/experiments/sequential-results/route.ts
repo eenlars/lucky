@@ -3,6 +3,7 @@ import {
   readJsonLocal,
 } from "@/lib/experiments/file-utils"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import { z } from "zod"
 
 const RawResultSchema = z.object({
@@ -17,6 +18,10 @@ const RawResultSchema = z.object({
 type RawResult = z.infer<typeof RawResultSchema>
 
 export async function GET() {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     // Single canonical local path under public
     const latestResultsPath = publicExperimentDir(

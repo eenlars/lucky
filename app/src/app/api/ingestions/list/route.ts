@@ -1,8 +1,13 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { NextRequest, NextResponse } from "next/server"
 import { listDataSets } from "@/lib/db/dataset"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function GET(_req: NextRequest) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     // First try to get datasets from the database
     try {

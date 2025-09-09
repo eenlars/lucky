@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import type { RS } from "@core/utils/types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type {
@@ -8,6 +9,10 @@ import type {
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 export async function POST(req: NextRequest) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const body = await req.json()
     const { prompt, options } = body as {

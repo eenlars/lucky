@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 import type { WorkflowIO } from "../../_lib/types"
 
@@ -16,6 +17,10 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { datasetId: string } }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const meta = await loadDatasetMeta(params.datasetId)
     return NextResponse.json(meta.ios ?? [])
@@ -34,6 +39,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { datasetId: string } }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const { input, expected } = (await req.json()) as {
       input?: unknown
