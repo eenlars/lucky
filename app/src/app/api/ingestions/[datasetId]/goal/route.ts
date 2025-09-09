@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: { datasetId: string } }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const { goal } = (await req.json()) as { goal?: unknown }
     if (typeof goal !== "string") {

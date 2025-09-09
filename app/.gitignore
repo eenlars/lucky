@@ -46,3 +46,5 @@ next-env.d.ts
 
 # local MCP configuration
 **/mcp-secret.json
+# clerk configuration (can include secrets)
+/.clerk/
