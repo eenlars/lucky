@@ -92,11 +92,34 @@ export default function EditModeSelector({
     }))
   )
 
+  const [datasetLoading, setDatasetLoading] = useState(false)
+
   const createCase = useCallback(
     async (payload: { input: string; expected: string }) => {
       addCase({ input: payload.input, expected: payload.expected })
     },
     [addCase]
+  )
+
+  const handleDatasetSelect = useCallback(
+    async (datasetId: string) => {
+      setDatasetLoading(true)
+      try {
+        await loadDataset(datasetId)
+        if (datasetId) {
+          // Get the updated case count after loading
+          const currentState = useRunConfigStore.getState()
+          toast.success(`Dataset loaded with ${currentState.cases.length} test cases`)
+        } else {
+          toast.success("Dataset selection cleared")
+        }
+      } catch (error) {
+        toast.error(`Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`)
+      } finally {
+        setDatasetLoading(false)
+      }
+    },
+    [loadDataset]
   )
 
   // Note: runner context is consumed inside a child component to avoid
@@ -381,8 +404,12 @@ export default function EditModeSelector({
                 <div className="w-full max-w-xs">
                   <DatasetSelector 
                     selectedDatasetId={datasetId}
-                    onSelect={loadDataset}
+                    onSelect={handleDatasetSelect}
+                    disabled={datasetLoading}
                   />
+                  {datasetLoading && (
+                    <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
