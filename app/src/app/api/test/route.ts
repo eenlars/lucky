@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await requireAuth()
+    if (authResult instanceof NextResponse) return authResult
     // Check if API key is available
     if (!process.env.XAI_API_KEY) {
       return NextResponse.json(
@@ -89,6 +93,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    // Require authentication
+    const authResult = await requireAuth()
+    if (authResult instanceof NextResponse) return authResult
     // Check if API key is available
     if (!process.env.XAI_API_KEY) {
       return NextResponse.json({

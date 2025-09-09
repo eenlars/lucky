@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import path from "path"
 
 export async function GET() {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const _resultsDir = path.resolve(
       process.cwd(),

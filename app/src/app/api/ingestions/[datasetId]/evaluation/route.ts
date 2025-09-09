@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 import type { EvaluationConfig } from "../../_lib/types"
 
@@ -6,6 +7,10 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { datasetId: string } }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const body = (await req.json()) as Partial<EvaluationConfig> | null
     if (!body || !body.type) {

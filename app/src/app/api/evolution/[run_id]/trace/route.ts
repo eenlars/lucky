@@ -2,11 +2,16 @@ import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
 import { traceWorkflowEvolution } from "@/results/workflow-evolution-tracer"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ run_id: string }> }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const { run_id: runId } = await params
 

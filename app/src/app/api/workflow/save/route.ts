@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth } from "@/lib/api-auth"
 import { ensureWorkflowExists, saveWorkflowVersion } from '@/trace-visualization/db/Workflow/retrieveWorkflow'
 
 export async function POST(request: NextRequest) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const body = await request.json()
     const {

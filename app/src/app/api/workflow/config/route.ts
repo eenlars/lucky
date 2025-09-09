@@ -5,8 +5,13 @@ import {
 } from "@core/utils/persistence/liveConfig"
 import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function GET(req: Request) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const { searchParams } = new URL(req.url)
     const wfVersionId = searchParams.get("wf_version_id") || undefined
@@ -66,6 +71,10 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const body = await req.json()
     const dsl = body?.dsl ?? body?.workflow ?? body

@@ -1,0 +1,23 @@
+# Exclude non-runtime artifacts from Vercel deployments
+
+# Docs and markdown
+**/*.md
+
+# Tests and mocks
+**/__tests__/**
+**/*.test.*
+tests/**
+
+# Local configs and dotfiles
+.github/**
+.husky/**
+.vscode/**
+.DS_Store
+
+# Logs and caches
+**/*.log
+.next/cache/**
+
+# Misc
+coverage/**
+scripts/**
