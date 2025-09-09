@@ -6,6 +6,7 @@ import {
 import type { Condition } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 import path from "path"
 
 type BaselineResult = {
@@ -270,6 +271,10 @@ function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
 }
 
 export async function GET() {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const resultsDir = path.resolve(
       process.cwd(),

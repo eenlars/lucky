@@ -5,6 +5,7 @@ import {
 import type { ToolCapacityResponse } from "@experiments/tool-real/experiments/01-capacity-limits/main-experiment"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 type ToolCountPerf = {
   toolCount: number
@@ -37,6 +38,10 @@ async function getLatestFile(baseDir: string, prefix: string) {
 }
 
 export async function GET() {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const resultsDir = publicExperimentDir("01-capacity-limits")
 

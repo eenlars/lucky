@@ -1,11 +1,16 @@
 import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ wf_inv_id: string }> }
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const { wf_inv_id } = await params
 

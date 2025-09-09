@@ -2,6 +2,7 @@ import { genShortId } from "@core/utils/common/utils"
 import type { EvaluationText } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 interface AsyncWorkflowExecution {
   invocationId: string
@@ -73,6 +74,10 @@ async function executeWorkflowAsync(
   prompt: string,
   invocationId: string
 ) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const execution = asyncExecutions.get(invocationId)
     if (!execution) return

@@ -1,9 +1,13 @@
 // app/src/app/api/invoke/route.ts
 
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function POST(req: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await requireAuth()
+    if (authResult instanceof NextResponse) return authResult
     const body = await req.json()
     const { workflowVersionId, prompt } = body as {
       workflowVersionId: string

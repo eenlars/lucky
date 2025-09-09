@@ -1,5 +1,6 @@
 "use client"
 
+import { UserButton } from "@clerk/nextjs"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -42,6 +43,9 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+            <div className="ml-4">
+              <UserButton afterSignOutUrl="/sign-in" />
+            </div>
           </div>
         </div>
       </div>

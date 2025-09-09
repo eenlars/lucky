@@ -2,8 +2,13 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/api-auth"
 
 export async function POST(req: NextRequest) {
+  // Require authentication
+  const authResult = await requireAuth()
+  if (authResult instanceof NextResponse) return authResult
+
   try {
     const body = await req.json()
     const { dslConfig, cases, goal } = body as {
