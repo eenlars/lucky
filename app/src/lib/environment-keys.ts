@@ -54,11 +54,12 @@ export class EnvironmentKeysManager {
     if (!name.trim()) {
       return "Key name is required"
     }
-    
-    if (!/^[A-Z][A-Z0-9_]*$/.test(name)) {
-      return "Key name must start with a letter and contain only uppercase letters, numbers, and underscores"
+
+    // Allow ENV-style names: start with uppercase letter or underscore, then A-Z/0-9/_
+    if (!/^[A-Z_][A-Z0-9_]*$/.test(name)) {
+      return "Key name must start with an uppercase letter or underscore and contain only A-Z, 0-9, and underscores"
     }
-    
+
     return null
   }
 

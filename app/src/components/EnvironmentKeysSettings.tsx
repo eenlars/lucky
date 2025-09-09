@@ -54,7 +54,8 @@ export default function EnvironmentKeysSettings() {
 
   const deleteKey = (id: string) => {
     const updatedKeys = keys.filter(key => key.id !== id)
-    saveKeys(updatedKeys)
+    setKeys(updatedKeys)
+    toast.message("Key removed", { description: "Click Save to apply changes" })
   }
 
   const toggleVisibility = (id: string) => {
@@ -110,6 +111,7 @@ export default function EnvironmentKeysSettings() {
               <Input
                 id={`key-name-${key.id}`}
                 placeholder="e.g., OPENAI_API_KEY"
+                autoComplete="off"
                 value={key.name}
                 onChange={(e) => updateKey(key.id, "name", e.target.value)}
                 className="mb-2"
@@ -124,6 +126,7 @@ export default function EnvironmentKeysSettings() {
                   id={`key-value-${key.id}`}
                   type={key.isVisible ? "text" : "password"}
                   placeholder="Enter your API key"
+                  autoComplete="new-password"
                   value={key.value}
                   onChange={(e) => updateKey(key.id, "value", e.target.value)}
                   className="pr-10"
@@ -133,6 +136,8 @@ export default function EnvironmentKeysSettings() {
                   variant="ghost"
                   size="sm"
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  aria-label={key.isVisible ? "Hide key value" : "Show key value"}
+                  title={key.isVisible ? "Hide key value" : "Show key value"}
                   onClick={() => toggleVisibility(key.id)}
                 >
                   {key.isVisible ? (
@@ -150,6 +155,8 @@ export default function EnvironmentKeysSettings() {
                 size="sm"
                 onClick={() => deleteKey(key.id)}
                 className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                aria-label="Remove key"
+                title="Remove key"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -175,15 +182,25 @@ export default function EnvironmentKeysSettings() {
           <span>Add New Key</span>
         </Button>
 
-        <Button
-          type="button"
-          onClick={handleSave}
-          disabled={isLoading}
-          className="flex items-center space-x-2"
-        >
-          <Save className="h-4 w-4" />
-          <span>{isLoading ? "Saving..." : "Save Changes"}</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={loadKeys}
+            disabled={isLoading}
+          >
+            Reset
+          </Button>
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={isLoading}
+            className="flex items-center space-x-2"
+          >
+            <Save className="h-4 w-4" />
+            <span>{isLoading ? "Saving..." : "Save Changes"}</span>
+          </Button>
+        </div>
       </div>
 
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">

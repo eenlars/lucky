@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import EnvironmentKeysSettings from "@/components/EnvironmentKeysSettings"
+
+export const metadata: Metadata = {
+  title: "Settings • Environment Keys",
+  description: "Manage local API keys and environment variables",
+}
 
 export default function SettingsPage() {
   return (

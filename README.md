@@ -71,6 +71,14 @@ bunx tsx tests/e2e-essential/scripts/update-golden.ts
 
 Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + gate.
 
+## Environment Keys (UI)
+
+- Location: `Settings` page (`/settings`).
+- Purpose: Store API keys and environment-style variables locally in the browser for use by workflows on this device.
+- Storage: LocalStorage in the current browser; never synced to server or version control.
+- Behavior: Add/update/remove keys, then click `Save Changes`. Use `Reset` to discard unsaved edits.
+- Format: Keys must match `^[A-Z_][A-Z0-9_]*$` (e.g., `OPENAI_API_KEY`, `_DEBUG`).
+
 ## Configuration
 
 - App env: `app/.env` (see `app/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
