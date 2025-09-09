@@ -206,9 +206,10 @@ export default function EnvironmentKeysSettings() {
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <h3 className="font-medium text-blue-900 mb-2">Security Notice</h3>
         <p className="text-sm text-blue-700">
-          Environment keys are stored locally in your browser. They will be available
-          to workflows running on this device. Never share your API keys or store them
-          in version control.
+          Environment keys are stored locally in your browser (localStorage).
+          They are accessible to scripts running on this page; avoid pasting
+          untrusted code and keep your browser free of extensions you don’t trust.
+          Never share your API keys or store them in version control.
         </p>
       </div>
     </div>
