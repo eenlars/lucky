@@ -1,6 +1,7 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
 import { NextRequest, NextResponse } from "next/server"
+import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
 
 type IngestionType = "csv" | "text"
 
@@ -175,6 +176,27 @@ export async function POST(req: NextRequest) {
         { error: `Failed to write manifest: ${manifestError.message}` },
         { status: 500 }
       )
+    }
+
+    // Create database entries
+    try {
+      const dataset = await createDataSet({
+        name: fileName || `Dataset ${datasetId}`,
+        description: goal,
+        data_format: type,
+      })
+
+      // For text type, create a single dataset record
+      if (type === "text") {
+        await createDatasetRecord({
+          dataset_id: dataset.dataset_id,
+          workflow_input: question,
+          ground_truth: answer,
+        })
+      }
+    } catch (dbError) {
+      console.error("Database creation failed:", dbError)
+      // Don't fail the entire request - storage upload succeeded
     }
 
     return NextResponse.json({ success: true, dataset: meta })

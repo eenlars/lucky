@@ -1,11 +1,31 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { NextRequest, NextResponse } from "next/server"
+import { listDataSets } from "@/lib/db/dataset"
 
 export async function GET(_req: NextRequest) {
   try {
-    const bucket = "input"
+    // First try to get datasets from the database
+    try {
+      const datasets = await listDataSets()
+      if (datasets.length > 0) {
+        return NextResponse.json({
+          success: true,
+          datasets: datasets.map(ds => ({
+            datasetId: ds.dataset_id,
+            name: ds.name,
+            description: ds.description,
+            data_format: ds.data_format,
+            createdAt: ds.created_at,
+            type: ds.data_format,
+          })),
+        })
+      }
+    } catch (dbError) {
+      console.error("Database query failed, falling back to storage:", dbError)
+    }
 
-    // List marker files at ingestions/*.json to avoid recursive folder walking
+    // Fallback to storage-based approach for backward compatibility
+    const bucket = "input"
     const { data, error } = await supabase.storage
       .from(bucket)
       .list("ingestions", {
@@ -20,7 +40,6 @@ export async function GET(_req: NextRequest) {
     }
 
     const manifests = data?.filter((f) => f.name.endsWith(".json")) || []
-
     const results = await Promise.all(
       manifests.map(async (file) => {
         const path = `ingestions/${file.name}`

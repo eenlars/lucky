@@ -25,6 +25,7 @@ export type ResultsById = Record<
 
 type RunConfigState = {
   datasetName?: string
+  datasetId?: string
   goal: string
   prompt: string
   cases: CaseRow[]
@@ -39,11 +40,13 @@ type RunConfigState = {
   importCases: (rows: CaseRow[]) => void
   exportCases: () => CaseRow[]
   clearResults: () => void
+  loadDataset: (datasetId: string) => Promise<void>
 
   // Meta
   setGoal: (goal: string) => void
   setPrompt: (prompt: string) => void
   setDatasetName: (name?: string) => void
+  setDatasetId: (id?: string) => void
   setOptions: (opts: Partial<RunOptions>) => void
 
   // Running
@@ -72,6 +75,7 @@ export const useRunConfigStore = create<RunConfigState>()(
   persist(
     (set, get) => ({
       datasetName: undefined,
+      datasetId: undefined,
       goal: "",
       prompt: "",
       cases: [],
@@ -124,10 +128,34 @@ export const useRunConfigStore = create<RunConfigState>()(
       importCases: (rows) => set({ cases: rows }),
       exportCases: () => get().cases,
       clearResults: () => set({ resultsById: {} }),
+      
+      loadDataset: async (datasetId) => {
+        try {
+          const response = await fetch(`/api/ingestions/${datasetId}`)
+          const data = await response.json()
+          
+          if (data.records) {
+            const cases: CaseRow[] = data.records.map((record: any) => ({
+              id: record.dataset_record_id,
+              input: record.workflow_input || "",
+              expected: record.ground_truth || "",
+            }))
+            set({ 
+              cases,
+              datasetId,
+              datasetName: data.name,
+              goal: data.description || "",
+            })
+          }
+        } catch (error) {
+          console.error("Failed to load dataset:", error)
+        }
+      },
 
       setGoal: (goal) => set({ goal }),
       setPrompt: (prompt) => set({ prompt }),
       setDatasetName: (name) => set({ datasetName: name }),
+      setDatasetId: (id) => set({ datasetId: id }),
       setOptions: (opts) =>
         set((s) => ({ options: { ...s.options, ...opts } })),
 
