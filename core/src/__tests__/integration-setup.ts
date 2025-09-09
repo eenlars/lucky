@@ -21,7 +21,6 @@ dotenv.config({ path: path.join(PATHS.root, ".env.local") })
 const requiredEnvVars = [
   "GOOGLE_API_KEY",
   "OPENAI_API_KEY",
-  "ANTHROPIC_API_KEY",
   "SUPABASE_ANON_KEY",
   "SUPABASE_PROJECT_ID",
 ]

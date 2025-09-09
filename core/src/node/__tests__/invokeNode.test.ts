@@ -4,7 +4,6 @@ vi.mock("@core/utils/env.mjs", () => ({
     GOOGLE_API_KEY: "test-google-key",
     OPENAI_API_KEY: "test-openai-key",
     SERPAPI_API_KEY: "test-serp-key",
-    ANTHROPIC_API_KEY: "test-anthropic-key",
     TAVILY_API_KEY: "test-tavily-key",
     FIRECRAWL_API_KEY: "test-firecrawl-key",
     SUPABASE_ANON_KEY: "test-supabase-key",

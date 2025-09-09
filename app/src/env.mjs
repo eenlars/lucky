@@ -5,7 +5,6 @@ export const envi = createEnv({
   server: {
     CLERK_SECRET_KEY: z.string(),
     TAVILY_API_KEY: z.string().nullish(),
-    ANTHROPIC_API_KEY: z.string().nullish(),
     WEBSHARE_API_KEY: z.string().nullish(),
     MAPBOX_TOKEN: z.string().nullish(),
     OPENROUTER_API_KEY: z.string().nullish(),
@@ -36,8 +35,8 @@ export const envi = createEnv({
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     TAVILY_API_KEY: process.env.TAVILY_API_KEY,
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-    NEXT_PUBLIC_SUPABASE_PROJECT_ID: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID,
+    NEXT_PUBLIC_SUPABASE_PROJECT_ID:
+      process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     // Server-side Supabase optional fallbacks
     SUPABASE_PROJECT_ID: process.env.SUPABASE_PROJECT_ID,
