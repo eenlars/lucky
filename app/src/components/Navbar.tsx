@@ -13,6 +13,7 @@ export default function Navbar() {
     { href: "/invocations", label: "Traces", icon: "📊" },
     { href: "/structures", label: "Structures", icon: "🏗️" },
     { href: "/evolution", label: "Evolution", icon: "🧬" },
+    { href: "/settings", label: "Settings", icon: "⚙️" },
   ]
 
   return (
