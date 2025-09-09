@@ -1,6 +1,7 @@
-import Navbar from "@/components/Navbar"
+import Sidebar from "@/components/Sidebar"
 import { AppStoreProvider } from "@/react-flow-visualization/store"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
+import { cn } from "@/lib/utils"
 import { ColorMode } from "@xyflow/react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
@@ -45,12 +46,12 @@ export default async function RootLayout({
       <html lang="en" className={theme}>
         <body className="h-screen">
           <NextTopLoader />
-          {authCookie?.value && <Navbar />}
+          {authCookie?.value && <Sidebar />}
           <main
-            className="h-full overflow-auto"
-            style={{
-              height: authCookie?.value ? "calc(100vh - 56px)" : "100vh",
-            }}
+            className={cn(
+              "h-screen overflow-auto transition-all duration-300 ease-out",
+              authCookie?.value ? "ml-64" : "ml-0"
+            )}
           >
             {children}
           </main>
