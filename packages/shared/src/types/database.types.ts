@@ -14,9 +14,40 @@ export type Database = {
   }
   public: {
     Tables: {
+      DataSet: {
+        Row: {
+          created_at: string
+          data_format: string | null
+          dataset_id: string
+          description: string | null
+          name: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_format?: string | null
+          dataset_id?: string
+          description?: string | null
+          name: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_format?: string | null
+          dataset_id?: string
+          description?: string | null
+          name?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       DatasetRecord: {
         Row: {
           created_at: string
+          dataset_id: string
           dataset_record_id: string
           ground_truth: Json | null
           output_schema_json: Json | null
@@ -25,6 +56,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          dataset_id: string
           dataset_record_id?: string
           ground_truth?: Json | null
           output_schema_json?: Json | null
@@ -33,13 +65,22 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          dataset_id?: string
           dataset_record_id?: string
           ground_truth?: Json | null
           output_schema_json?: Json | null
           rubric?: Json | null
           workflow_input?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "DatasetRecord_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "DataSet"
+            referencedColumns: ["dataset_id"]
+          },
+        ]
       }
       EvolutionRun: {
         Row: {
