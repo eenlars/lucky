@@ -1,13 +1,16 @@
 import { ClerkProvider } from "@clerk/nextjs"
-import Navbar from "@/components/Navbar"
+import { auth } from "@clerk/nextjs/server"
+import Sidebar from "@/components/Sidebar"
+import MainContent from "@/components/MainContent"
 import { AppStoreProvider } from "@/react-flow-visualization/store"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
+import { cn } from "@/lib/utils"
 import { ColorMode } from "@xyflow/react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import NextTopLoader from "nextjs-toploader"
 import { Toaster } from "sonner"
-import { auth } from "@clerk/nextjs/server"
+import { SidebarProvider } from "@/contexts/SidebarContext"
 
 import "./globals.css"
 
@@ -47,16 +50,19 @@ export default async function RootLayout({
       <AppStoreProvider initialState={{ ...defaultState, colorMode: theme }}>
         <html lang="en" className={theme}>
           <body className="h-screen">
-            <NextTopLoader />
-            {userId && <Navbar />}
-            <main
-              className="h-full overflow-auto"
-              style={{
-                height: userId ? "calc(100vh - 56px)" : "100vh",
-              }}
-            >
-              {children}
-            </main>
+            <SidebarProvider>
+              {/* Skip link for accessibility */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-sidebar-accent focus:px-3 focus:py-2 focus:text-sidebar-accent-foreground"
+              >
+                Skip to content
+              </a>
+              <NextTopLoader />
+              {userId && <Sidebar />}
+              <MainContent hasAuth={!!userId}>
+                {children}
+              </MainContent>
             <Toaster
               position="bottom-right"
               toastOptions={{
@@ -68,6 +74,7 @@ export default async function RootLayout({
                 },
               }}
             />
+            </SidebarProvider>
           </body>
         </html>
       </AppStoreProvider>
