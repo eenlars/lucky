@@ -15,10 +15,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import type { ComponentType, SVGProps } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { useSidebar } from "@/contexts/SidebarContext"
+import UserProfile from "@/components/UserProfile"
 
 interface SidebarItem {
   href: string
@@ -171,7 +172,7 @@ export default function Sidebar() {
                     <TooltipContent 
                       side="right" 
                       sideOffset={8}
-                      className="bg-background/95 backdrop-blur-sm border-border text-foreground shadow-lg"
+                      className="bg-popover text-popover-foreground border border-border shadow-md"
                     >
                       <p className="font-medium">{item.label}</p>
                       {item.description && (
@@ -216,49 +217,7 @@ export default function Sidebar() {
         "mt-auto border-t border-sidebar-border/30 px-5 py-3 transition-all duration-300",
         isCollapsed && !isMobile && "px-2"
       )}>
-        <div className={cn(
-          "text-[11px] text-sidebar-foreground/50 font-medium tracking-wide transition-all duration-300",
-          isCollapsed && !isMobile && "text-center"
-        )}>
-          {isCollapsed && !isMobile ? "AAW" : "Agentic Workflows"}
-        </div>
-        
-        {/* Clerk branding */}
-        <div className={cn(
-          "flex items-center justify-center mt-3 pt-3 border-t border-sidebar-border/20 transition-all duration-300",
-          isCollapsed && !isMobile && "px-1"
-        )}>
-          <a 
-            href="https://clerk.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sidebar-foreground/40 hover:text-sidebar-foreground/60 transition-colors text-[10px] font-medium"
-            title="Powered by Clerk"
-          >
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 200 200" 
-              className={cn(
-                "transition-all duration-300",
-                isCollapsed && !isMobile && "w-4 h-4"
-              )}
-              aria-hidden="true"
-            >
-              <path 
-                fill="currentColor" 
-                d="M114 0H86v86h28c15.464 0 28 12.536 28 28s-12.536 28-28 28H86v58h28c47.128 0 86-38.872 86-86V86c0-47.128-38.872-86-86-86Z"
-              />
-              <path 
-                fill="currentColor" 
-                d="M86 200H58c-32.032 0-58-25.968-58-58v-28h28c15.464 0 28-12.536 28-28S43.464 58 28 58H0V30C0 13.432 13.432 0 30 0h28c15.464 0 28 12.536 28 28v172Z"
-              />
-            </svg>
-            {!isCollapsed || isMobile ? (
-              <span className="transition-all duration-300">Secured by Clerk</span>
-            ) : null}
-          </a>
-        </div>
+        <UserProfile isCollapsed={isCollapsed} isMobile={isMobile} />
       </div>
     </div>
   )

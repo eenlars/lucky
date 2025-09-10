@@ -156,7 +156,7 @@ function DraggableItem(props: NodeConfig) {
           <Plus className="size-4" />
         </span>
       )}
-      <SidebarMenuButton className="bg-card cursor-grab active:cursor-grabbing">
+      <SidebarMenuButton className="bg-card cursor-grab active:cursor-grabbing cursor-pointer">
         {IconComponent ? <IconComponent aria-label={props?.icon} /> : null}
         <span>{props.displayName}</span>
         <GripVertical className="ml-auto" />

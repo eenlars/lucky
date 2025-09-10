@@ -9,7 +9,7 @@ const elk = new ELK()
 
 const layoutOptions = {
   "elk.algorithm": "layered",
-  "elk.direction": "RIGHT",
+  "elk.direction": "RIGHT", // Left-to-right flow direction
   "elk.layered.spacing.edgeNodeBetweenLayers": "40",
   "elk.spacing.nodeNode": "80",
   "elk.layered.nodePlacement.strategy": "SIMPLE",
@@ -21,7 +21,7 @@ function createTargetPort(id: string) {
   return {
     id,
     layoutOptions: {
-      side: "WEST",
+      side: "WEST", // Input ports on the left side for left-to-right flow
     },
   }
 }
@@ -30,7 +30,7 @@ function createSourcePort(id: string) {
   return {
     id,
     layoutOptions: {
-      side: "EAST",
+      side: "EAST", // Output ports on the right side for left-to-right flow
     },
   }
 }
