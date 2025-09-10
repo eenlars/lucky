@@ -20,9 +20,6 @@ type FeedbackDialogProps = {
   onOpenChange: (open: boolean) => void
   taskId: string
   metrics: Metrics
-  hasResults: boolean
-  totalAchievedPoints: number
-  totalMaxPoints: number
   workflowFeedback?: string | null
 }
 
@@ -31,9 +28,6 @@ export default function FeedbackDialog({
   onOpenChange,
   taskId,
   metrics,
-  hasResults,
-  totalAchievedPoints,
-  totalMaxPoints,
   workflowFeedback,
 }: FeedbackDialogProps) {
   const [feedbackText, setFeedbackText] = useState("")
@@ -106,8 +100,8 @@ export default function FeedbackDialog({
             />
           </div>
 
-          {/* Mock Analysis Section */}
-          {hasResults && (
+          {/* Execution Summary */}
+          {(metrics.score !== null || metrics.time || metrics.cost) && (
             <div className="border rounded-lg p-3 bg-gray-50">
               <h4 className="text-sm font-medium text-gray-700 mb-2">
                 Execution Summary
@@ -116,10 +110,6 @@ export default function FeedbackDialog({
                 <div>
                   Score: {metrics.score}% | Time: {metrics.time} | Cost:{" "}
                   {metrics.cost}
-                </div>
-                <div>
-                  Criteria Achievement: {totalAchievedPoints}/{totalMaxPoints}{" "}
-                  points
                 </div>
                 <div className="text-gray-500 italic">
                   {metrics.output
