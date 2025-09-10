@@ -164,7 +164,7 @@ export default function Sidebar() {
                     <TooltipContent 
                       side="right" 
                       sideOffset={8}
-                      className="bg-background/95 backdrop-blur-sm border-border text-foreground shadow-lg"
+                      className="bg-popover text-popover-foreground border border-border shadow-md"
                     >
                       <p className="font-medium">{item.label}</p>
                       {item.description && (
