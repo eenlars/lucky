@@ -12,11 +12,11 @@ const wrapperClassNames: Record<Position, string> = {
 
 export const ButtonHandle = ({
   showButton = true,
-  position = Position.Bottom,
+  position = Position.Right,
   children,
   ...props
 }: HandleProps & { showButton?: boolean }) => {
-  const wrapperClassName = wrapperClassNames[position || Position.Bottom]
+  const wrapperClassName = wrapperClassNames[position || Position.Right]
   const vertical = position === Position.Top || position === Position.Bottom
 
   return (

@@ -14,10 +14,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import type { ComponentType, SVGProps } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { useSidebar } from "@/contexts/SidebarContext"
+import UserProfile from "@/components/UserProfile"
 
 interface SidebarItem {
   href: string
@@ -209,12 +210,7 @@ export default function Sidebar() {
         "mt-auto border-t border-sidebar-border/30 px-5 py-3 transition-all duration-300",
         isCollapsed && !isMobile && "px-2"
       )}>
-        <div className={cn(
-          "text-[11px] text-sidebar-foreground/50 font-medium tracking-wide transition-all duration-300",
-          isCollapsed && !isMobile && "text-center"
-        )}>
-          {isCollapsed && !isMobile ? "AAW" : "Agentic Workflows"}
-        </div>
+        <UserProfile isCollapsed={isCollapsed} isMobile={isMobile} />
       </div>
     </div>
   )
