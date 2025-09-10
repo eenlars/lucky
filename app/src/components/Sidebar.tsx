@@ -9,6 +9,7 @@ import {
   BarChart2,
   Boxes,
   Dna,
+  Settings,
   Menu,
   X,
   ChevronLeft,
@@ -57,6 +58,12 @@ const sidebarItems: SidebarItem[] = [
     label: "Evolution",
     icon: Dna,
     description: "Evolution tracking",
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: Settings,
+    description: "Application settings",
   },
 ]
 

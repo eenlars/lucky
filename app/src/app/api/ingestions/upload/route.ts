@@ -1,6 +1,7 @@
 import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
 import { NextRequest, NextResponse } from "next/server"
+import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
 import { requireAuth } from "@/lib/api-auth"
 
 type IngestionType = "csv" | "text"
@@ -180,6 +181,66 @@ export async function POST(req: NextRequest) {
         { error: `Failed to write manifest: ${manifestError.message}` },
         { status: 500 }
       )
+    }
+
+    // Create database entries
+    try {
+      const dataset = await createDataSet({
+        name: type === "csv" && fileName ? fileName : `Dataset ${datasetId}`,
+        description: goal,
+        data_format: type,
+      })
+
+      // Create dataset records based on type
+      if (type === "text") {
+        await createDatasetRecord({
+          dataset_id: dataset.dataset_id,
+          workflow_input: question,
+          ground_truth: answer,
+        })
+      } else if (type === "csv" && file) {
+        // Parse CSV and create records
+        try {
+          const csvText = await file.text()
+          const lines = csvText.split('\n').filter(line => line.trim())
+          if (lines.length > 1) {
+            const headers = lines[0].split(',').map(h => h.trim())
+            
+            // Find input and output columns
+            const inputCol = headers.findIndex(h => h.toLowerCase().includes('input') || h.toLowerCase().includes('question'))
+            let outputCol = headers.findIndex(h => h.toLowerCase().includes('output') || h.toLowerCase().includes('answer') || h.toLowerCase().includes('expected'))
+            
+            // If evaluation column is specified, use that
+            if (evaluation && evaluation.startsWith('column:')) {
+              const evalColName = evaluation.slice(7)
+              outputCol = headers.findIndex(h => h === evalColName)
+            }
+            
+            // Create records for each row
+            for (let i = 1; i < lines.length && i <= 50; i++) { // Limit to 50 records for performance
+              const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+              if (values.length >= headers.length) {
+                const input = inputCol >= 0 ? values[inputCol] : values[0] || ''
+                const output = outputCol >= 0 ? values[outputCol] : values[values.length - 1] || ''
+                
+                if (input && output) {
+                  await createDatasetRecord({
+                    dataset_id: dataset.dataset_id,
+                    workflow_input: input,
+                    ground_truth: output,
+                  })
+                }
+              }
+            }
+          }
+        } catch (csvError) {
+          console.error("CSV parsing failed:", csvError)
+          // Don't fail - the dataset is still created
+        }
+      }
+    } catch (dbError) {
+      console.error("Database creation failed:", dbError)
+      // Don't fail the entire request - storage upload succeeded
     }
 
     return NextResponse.json({ success: true, dataset: meta })
