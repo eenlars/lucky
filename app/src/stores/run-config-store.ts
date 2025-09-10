@@ -25,6 +25,7 @@ export type ResultsById = Record<
 
 type RunConfigState = {
   datasetName?: string
+  datasetId?: string
   goal: string
   prompt: string
   cases: CaseRow[]
@@ -39,11 +40,13 @@ type RunConfigState = {
   importCases: (rows: CaseRow[]) => void
   exportCases: () => CaseRow[]
   clearResults: () => void
+  loadDataset: (datasetId: string) => Promise<void>
 
   // Meta
   setGoal: (goal: string) => void
   setPrompt: (prompt: string) => void
   setDatasetName: (name?: string) => void
+  setDatasetId: (id?: string) => void
   setOptions: (opts: Partial<RunOptions>) => void
 
   // Running
@@ -72,6 +75,7 @@ export const useRunConfigStore = create<RunConfigState>()(
   persist(
     (set, get) => ({
       datasetName: undefined,
+      datasetId: undefined,
       goal: "",
       prompt: "",
       cases: [],
@@ -124,10 +128,65 @@ export const useRunConfigStore = create<RunConfigState>()(
       importCases: (rows) => set({ cases: rows }),
       exportCases: () => get().cases,
       clearResults: () => set({ resultsById: {} }),
+      
+      loadDataset: async (datasetId) => {
+        // Handle clear selection
+        if (!datasetId) {
+          set({ 
+            cases: [],
+            datasetId: undefined,
+            datasetName: undefined,
+          })
+          return
+        }
+
+        try {
+          const response = await fetch(`/api/ingestions/${datasetId}`)
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+          const data = await response.json()
+          
+          if (data.records && Array.isArray(data.records)) {
+            const cases: CaseRow[] = data.records
+              .filter((record: any) => record.workflow_input && record.ground_truth)
+              .map((record: any) => ({
+                id: record.dataset_record_id || newId(),
+                input: String(record.workflow_input || ""),
+                expected: String(record.ground_truth || ""),
+              }))
+            
+            set({ 
+              cases,
+              datasetId,
+              datasetName: data.name,
+              goal: data.description || get().goal, // Don't override existing goal if none provided
+            })
+          } else {
+            // No records found, but dataset exists
+            set({ 
+              cases: [],
+              datasetId,
+              datasetName: data.name,
+              goal: data.description || get().goal,
+            })
+          }
+        } catch (error) {
+          console.error("Failed to load dataset:", error)
+          // Reset state on error
+          set({ 
+            cases: [],
+            datasetId: undefined,
+            datasetName: undefined,
+          })
+          throw error // Re-throw so UI can handle it
+        }
+      },
 
       setGoal: (goal) => set({ goal }),
       setPrompt: (prompt) => set({ prompt }),
       setDatasetName: (name) => set({ datasetName: name }),
+      setDatasetId: (id) => set({ datasetId: id }),
       setOptions: (opts) =>
         set((s) => ({ options: { ...s.options, ...opts } })),
 

@@ -18,6 +18,7 @@ import ModeSwitcher from "./ModeSwitcher"
 
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
+import DatasetSelector from "@/components/DatasetSelector"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -65,9 +66,11 @@ export default function EditModeSelector({
     resultsById: _resultsById,
     goal,
     setGoal,
+    datasetId,
     addCase,
     updateCase: _updateCase,
     removeCase: _removeCase,
+    loadDataset,
     runOne,
     runAll,
     cancel: _cancel,
@@ -78,20 +81,45 @@ export default function EditModeSelector({
       resultsById: s.resultsById,
       goal: s.goal,
       setGoal: s.setGoal,
+      datasetId: s.datasetId,
       addCase: s.addCase,
       updateCase: s.updateCase,
       removeCase: s.removeCase,
+      loadDataset: s.loadDataset,
       runOne: s.runOne,
       runAll: s.runAll,
       cancel: s.cancel,
     }))
   )
 
+  const [datasetLoading, setDatasetLoading] = useState(false)
+
   const createCase = useCallback(
     async (payload: { input: string; expected: string }) => {
       addCase({ input: payload.input, expected: payload.expected })
     },
     [addCase]
+  )
+
+  const handleDatasetSelect = useCallback(
+    async (datasetId: string) => {
+      setDatasetLoading(true)
+      try {
+        await loadDataset(datasetId)
+        if (datasetId) {
+          // Get the updated case count after loading
+          const currentState = useRunConfigStore.getState()
+          toast.success(`Dataset loaded with ${currentState.cases.length} test cases`)
+        } else {
+          toast.success("Dataset selection cleared")
+        }
+      } catch (error) {
+        toast.error(`Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`)
+      } finally {
+        setDatasetLoading(false)
+      }
+    },
+    [loadDataset]
   )
 
   // Note: runner context is consumed inside a child component to avoid
@@ -363,6 +391,26 @@ export default function EditModeSelector({
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                 />
+                
+                {/* Dataset Selection */}
+                <div className="flex items-center gap-2 mt-2">
+                  <label className="text-sm font-semibold text-gray-700 uppercase">
+                    Dataset
+                  </label>
+                  <span className="text-xs text-gray-500 italic">
+                    (Load test cases from database)
+                  </span>
+                </div>
+                <div className="w-full max-w-xs">
+                  <DatasetSelector 
+                    selectedDatasetId={datasetId}
+                    onSelect={handleDatasetSelect}
+                    disabled={datasetLoading}
+                  />
+                  {datasetLoading && (
+                    <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
