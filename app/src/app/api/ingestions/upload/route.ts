@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
     // Create database entries
     try {
       const dataset = await createDataSet({
-        name: fileName || `Dataset ${datasetId}`,
+        name: type === "csv" && fileName ? fileName : `Dataset ${datasetId}`,
         description: goal,
         data_format: type,
       })
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
             const headers = lines[0].split(',').map(h => h.trim())
             
             // Find input and output columns
-            let inputCol = headers.findIndex(h => h.toLowerCase().includes('input') || h.toLowerCase().includes('question'))
+            const inputCol = headers.findIndex(h => h.toLowerCase().includes('input') || h.toLowerCase().includes('question'))
             let outputCol = headers.findIndex(h => h.toLowerCase().includes('output') || h.toLowerCase().includes('answer') || h.toLowerCase().includes('expected'))
             
             // If evaluation column is specified, use that
