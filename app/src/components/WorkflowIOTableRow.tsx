@@ -7,10 +7,8 @@ import { useShallow } from "zustand/react/shallow"
 import FeedbackDialog from "./FeedbackDialog"
 import type { WorkflowIO } from "./WorkflowIOTable"
 import { useMetrics } from "./hooks/useMetrics"
-import { useRubricManagement } from "./hooks/useRubricManagement"
 import { isErrorResult, isInvokeWorkflowResult } from "./utils/result-utils"
 import {
-  calculateRubricScores,
   parseWorkflowResultToMetrics,
 } from "./utils/workflow-integration"
 
@@ -44,12 +42,8 @@ export default function WorkflowIOTableRow({
     )
 
   // Use custom hooks
-  const rubric = useRubricManagement(io.id, io.expected, (id, expected) =>
-    updateCase(id, { expected })
-  )
   const metricsHook = useMetrics()
   const { setMetrics } = metricsHook
-  const { setCriteria } = rubric
 
   const busy = busyIds?.has(io.id)
   const res = resultsById[io.id]
@@ -57,23 +51,14 @@ export default function WorkflowIOTableRow({
 
   // Determine row state
   const isTaskEditable = !res && !busy // Task only editable before first run
-  const isRubricEditable = !busy // Rubric always editable except during run
 
-  // Update metrics and rubric scores when workflow results come in
+  // Update metrics when workflow results come in
   useEffect(() => {
     if (!res) return
 
     if (isInvokeWorkflowResult(res)) {
       const metrics = parseWorkflowResultToMetrics(res)
       setMetrics(metrics)
-
-      setCriteria((prev) =>
-        calculateRubricScores(
-          prev,
-          res.queueRunResult.finalWorkflowOutput,
-          res.fitness
-        )
-      )
     } else if (isErrorResult(res)) {
       setMetrics({
         score: null,
@@ -82,7 +67,7 @@ export default function WorkflowIOTableRow({
         output: `Error: ${res.error}`,
       })
     }
-  }, [res, setMetrics, setCriteria])
+  }, [res, setMetrics])
 
   const handleSave = () => {
     const updates: Partial<WorkflowIO> = {}
@@ -333,9 +318,6 @@ export default function WorkflowIOTableRow({
         onOpenChange={setFeedbackOpen}
         taskId={io.id}
         metrics={metricsHook.metrics}
-        hasResults={rubric.hasRubricResults}
-        totalAchievedPoints={rubric.totalAchievedPoints}
-        totalMaxPoints={rubric.totalMaxPoints}
         workflowFeedback={isInvokeWorkflowResult(res) ? res.feedback : null}
       />
     </>
