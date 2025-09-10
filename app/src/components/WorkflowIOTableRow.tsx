@@ -99,21 +99,20 @@ export default function WorkflowIOTableRow({
   const handleRun = async () => {
     if (!canRun) return
 
-    // Create the current rubric string and update the case
-    const rubricString = rubric.createRubricString()
+    // Create the updated case with current input and expected values
     const updatedCase: WorkflowIO = {
       ...io,
       input: task,
-      expected: rubricString,
+      expected: io.expected,
     }
 
     // Save the updated case first
-    updateCase(io.id, { input: task, expected: rubricString })
+    updateCase(io.id, { input: task })
 
     // Clear previous results
     metricsHook.resetMetrics()
 
-    // Run the workflow with task + rubric string
+    // Run the workflow with the case
     if (onRun) {
       await onRun(updatedCase)
     } else if (workflowConfig) {
@@ -121,10 +120,8 @@ export default function WorkflowIOTableRow({
     }
   }
 
-  // Compact dynamic height
-  const baseHeight = 140
-  const criteriaHeight = rubric.criteria.length * 28
-  const dynamicHeight = baseHeight + criteriaHeight
+  // Fixed height for simpler layout
+  const dynamicHeight = 140
 
   return (
     <>
@@ -156,91 +153,18 @@ export default function WorkflowIOTableRow({
               )}
             </div>
 
-            {/* Rubric */}
+            {/* Expected Output */}
             <div className="col-span-4 flex flex-col">
-              <div className="flex justify-between items-baseline mb-1">
-                <label className="text-xs font-medium text-gray-600">
-                  Rubric
-                </label>
-                <span className="text-xs text-gray-500">Points</span>
-              </div>
-
-              <div className="flex-1 space-y-0.5">
-                {rubric.criteria.map((criterion) => (
-                  <div
-                    key={criterion.id}
-                    className="flex items-center gap-2 group"
-                  >
-                    <input
-                      type="text"
-                      className="flex-1 border border-gray-300 rounded px-2 py-0.5 text-sm focus:border-blue-500 focus:outline-none"
-                      value={criterion.name}
-                      onChange={(e) =>
-                        rubric.updateCriteria(criterion.id, {
-                          name: e.target.value,
-                        })
-                      }
-                      placeholder="Criterion"
-                      disabled={!isRubricEditable}
-                    />
-                    <div className="flex items-center gap-1 text-sm">
-                      <span
-                        className={`w-8 text-right tabular-nums ${
-                          criterion.achievedPoints !== null
-                            ? "font-semibold text-green-600"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {criterion.achievedPoints ?? "—"}
-                      </span>
-                      <span className="text-gray-400">/</span>
-                      <input
-                        type="number"
-                        className="w-12 border border-gray-300 rounded px-1 py-0.5 text-sm text-center tabular-nums focus:border-blue-500 focus:outline-none"
-                        value={criterion.maxPoints}
-                        onChange={(e) =>
-                          rubric.updateCriteria(criterion.id, {
-                            maxPoints: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        min="0"
-                        disabled={!isRubricEditable}
-                      />
-                      {isRubricEditable && (
-                        <button
-                          onClick={() => rubric.removeCriteria(criterion.id)}
-                          className="text-gray-400 hover:text-red-600 text-sm w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {isRubricEditable && (
-                  <button
-                    onClick={rubric.addCriteria}
-                    className="text-xs text-blue-600 hover:text-blue-700 mt-1"
-                  >
-                    + Add
-                  </button>
-                )}
-
-                {rubric.hasRubricResults && (
-                  <div className="border-t pt-1 mt-1 flex justify-between items-center">
-                    <span className="text-xs text-gray-600">Total</span>
-                    <span className="text-sm font-bold">
-                      <span className="text-green-600">
-                        {rubric.totalAchievedPoints}
-                      </span>
-                      <span className="text-gray-400">
-                        /{rubric.totalMaxPoints}
-                      </span>
-                    </span>
-                  </div>
-                )}
-              </div>
+              <label className="text-xs font-medium text-gray-600 mb-1">
+                Expected Output
+              </label>
+              <textarea
+                className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
+                value={io.expected}
+                onChange={(e) => updateCase(io.id, { expected: e.target.value })}
+                placeholder="Enter expected output..."
+                disabled={busy}
+              />
             </div>
 
             {/* Output */}
