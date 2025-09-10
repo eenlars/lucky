@@ -9,6 +9,7 @@ import {
   BarChart2,
   Boxes,
   Dna,
+  Settings,
   Menu,
   X,
   ChevronLeft,
@@ -56,6 +57,12 @@ const sidebarItems: SidebarItem[] = [
     label: "Evolution",
     icon: Dna,
     description: "Evolution tracking",
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: Settings,
+    description: "Application settings",
   },
 ]
 
@@ -214,6 +221,43 @@ export default function Sidebar() {
           isCollapsed && !isMobile && "text-center"
         )}>
           {isCollapsed && !isMobile ? "AAW" : "Agentic Workflows"}
+        </div>
+        
+        {/* Clerk branding */}
+        <div className={cn(
+          "flex items-center justify-center mt-3 pt-3 border-t border-sidebar-border/20 transition-all duration-300",
+          isCollapsed && !isMobile && "px-1"
+        )}>
+          <a 
+            href="https://clerk.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sidebar-foreground/40 hover:text-sidebar-foreground/60 transition-colors text-[10px] font-medium"
+            title="Powered by Clerk"
+          >
+            <svg 
+              width="16" 
+              height="16" 
+              viewBox="0 0 200 200" 
+              className={cn(
+                "transition-all duration-300",
+                isCollapsed && !isMobile && "w-4 h-4"
+              )}
+              aria-hidden="true"
+            >
+              <path 
+                fill="currentColor" 
+                d="M114 0H86v86h28c15.464 0 28 12.536 28 28s-12.536 28-28 28H86v58h28c47.128 0 86-38.872 86-86V86c0-47.128-38.872-86-86-86Z"
+              />
+              <path 
+                fill="currentColor" 
+                d="M86 200H58c-32.032 0-58-25.968-58-58v-28h28c15.464 0 28-12.536 28-28S43.464 58 28 58H0V30C0 13.432 13.432 0 30 0h28c15.464 0 28 12.536 28 28v172Z"
+              />
+            </svg>
+            {!isCollapsed || isMobile ? (
+              <span className="transition-all duration-300">Secured by Clerk</span>
+            ) : null}
+          </a>
         </div>
       </div>
     </div>
