@@ -5,14 +5,13 @@ import {
   deleteMemory,
   getAllMemories,
   getMemories,
-  updateMemory,
 } from "@core/utils/clients/mem0/client"
 import { z } from "zod"
 
 const MemoryActionSchema = z
   .object({
     action: z
-      .enum(["add", "get", "getAll", "update", "delete"])
+      .enum(["add", "get", "getAll", "delete"])
       .describe("Action to perform"),
     message: z
       .string()
@@ -51,10 +50,6 @@ export const tool = defineTool({
           "memoryManager",
           await getAllMemories(workflowId)
         )
-      case "update":
-        if (!memoryId || !message)
-          throw new Error("MemoryId and message are required for update action")
-        return await updateMemory(memoryId, message)
       case "delete":
         if (!memoryId) throw new Error("MemoryId is required for delete action")
         await deleteMemory(memoryId)

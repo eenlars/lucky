@@ -42,15 +42,6 @@ export async function getMemories(
   })
 }
 
-export async function updateMemory(
-  memoryId: string,
-  message: string
-): Promise<any> {
-  const client = getMem0Client()
-  if (!client) throw new Error("Memory service unavailable")
-  return await client.update(memoryId, { text: message })
-}
-
 export async function deleteMemory(memoryId: string): Promise<void> {
   const client = getMem0Client()
   if (!client) throw new Error("Memory service unavailable")
