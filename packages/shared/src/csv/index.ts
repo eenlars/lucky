@@ -1,5 +1,5 @@
 import Papa from "papaparse"
-export { CSVLoader } from "./CSVLoader"
+export { CSVLoader } from "./CSVLoader.js"
 
 export function parseCsv(input: string) {
   return Papa.parse(input, { header: true, skipEmptyLines: true })
