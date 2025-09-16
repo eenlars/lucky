@@ -11,6 +11,7 @@ interface WorkflowItem {
   version?: number
   publishedAt?: Date
   triggerType: "Manual" | "API" | "Schedule"
+  wf_version_id?: string // For linking to edit page
 }
 
 function WorkflowRow({ 
@@ -88,7 +89,7 @@ function WorkflowRow({
         </button>
         
         <Link
-          href={`/edit/${workflow.id}`}
+          href={`/edit/${workflow.wf_version_id || workflow.id}`}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
         >
           <Pencil className="size-3" />
@@ -189,19 +190,22 @@ export default function WorkflowsPage() {
           name: "Customer Onboarding Flow",
           version: 3,
           publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-          triggerType: "Manual"
+          triggerType: "Manual",
+          wf_version_id: "550e8400-e29b-41d4-a716-446655440001"
         },
         {
           id: "2", 
           name: "Data Processing Pipeline",
           version: 1,
           publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-          triggerType: "Manual"
+          triggerType: "Manual",
+          wf_version_id: "550e8400-e29b-41d4-a716-446655440002"
         },
         {
           id: "3",
           name: "Email Campaign Workflow",
-          triggerType: "Manual"
+          triggerType: "Manual",
+          wf_version_id: "550e8400-e29b-41d4-a716-446655440003"
         }
       ])
       setLoading(false)

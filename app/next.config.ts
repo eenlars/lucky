@@ -1,6 +1,7 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@lucky/shared"],
   serverExternalPackages: [
     "bullmq",
     // Ensure puppeteer and stealth plugin resolve their internal dynamic requires at runtime
