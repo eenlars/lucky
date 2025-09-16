@@ -28,6 +28,7 @@ import {
   type MCPToolName,
 } from "@core/tools/tool.types"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
+import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 import type {
   AllowedModelName,
   ModelPricingV2,
@@ -218,31 +219,11 @@ export function NodeDetailsDialog({
     []
   )
 
-  const formatModelDisplayName = (modelName?: string) => {
-    if (!modelName) return ""
-    const parts = modelName.split("/")
-    const raw = parts.length > 1 ? parts[1] : parts[0]
-    return raw
-      .replace(/(\d)-(\d)/g, "$1.$2")
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ")
-  }
+  // show raw model id (e.g., openai/gpt-4.1-mini)
+  const formatModelDisplayName = (modelName?: string) => modelName || ""
 
-  const getProviderName = (modelName?: string) => {
-    if (!modelName) return ""
-    const p = (modelName.split("/")[0] || "").toLowerCase()
-    if (p === "openai") return "OpenAI"
-    if (p === "openrouter") return "OpenRouter"
-    if (p === "anthropic") return "Anthropic"
-    if (p === "mistralai") return "Mistral"
-    if (p === "meta-llama") return "Meta Llama"
-    if (p === "x-ai") return "xAI"
-    if (p === "google") return "Google"
-    if (p === "groq") return "Groq"
-    if (p === "moonshotai") return "Moonshot"
-    return p.charAt(0).toUpperCase() + p.slice(1)
-  }
+  // provider comes from CURRENT_PROVIDER (e.g., openrouter, groq, openai)
+  const providerId = CURRENT_PROVIDER
 
   // Keep helpers in case we reintroduce richer display; unused for simple dropdown
   const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
@@ -362,7 +343,7 @@ export function NodeDetailsDialog({
                 <SelectContent position="popper">
                   {activeModels.map((model) => (
                     <SelectItem key={model} value={model}>
-                      {getProviderName(model)} / {formatModelDisplayName(model)}
+                      {formatModelDisplayName(model)} + {providerId}
                     </SelectItem>
                   ))}
                 </SelectContent>

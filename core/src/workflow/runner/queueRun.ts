@@ -103,10 +103,15 @@ export async function queueRun({
   const agentSteps: AgentSteps = []
   let seq = 0 // message sequence counter for ordering
   let totalCost = 0
-  let nodeInvocations = 0
+  // track invocations per node and globally
+  const perNodeInvocationCounts = new Map<string, number>()
+  let totalNodeInvocationsCount = 0
+  const maxTotalNodeInvocations = CONFIG.workflow.maxTotalNodeInvocations
+  const maxPerNodeInvocations =
+    CONFIG.workflow.maxPerNodeInvocations ??
+    CONFIG.workflow.maxTotalNodeInvocations
   const summaries: InvocationSummary[] = []
   const startTime = Date.now()
-  const maxNodeInvocations = CONFIG.workflow.maxNodeInvocations
   let lastNodeOutput = "" // tracks final output for workflow result
 
   // message queue to process - FIFO queue ensures deterministic execution order
@@ -150,10 +155,23 @@ export async function queueRun({
       `[queueRun] Processing message to node ${currentMessage.toNodeId}`
     )
 
-    // Check max node invocations limit
-    if (nodeInvocations >= maxNodeInvocations) {
-      lgg.warn(`[queueRun] Max node invocations reached: ${maxNodeInvocations}`)
+    // Check global and per-node max invocations limits
+    if (totalNodeInvocationsCount >= maxTotalNodeInvocations) {
+      lgg.warn(
+        `[queueRun] Max node invocations reached: ${maxTotalNodeInvocations}`
+      )
       break
+    }
+
+    // Check per-node max invocations limit
+    const toNodeId = currentMessage.toNodeId
+    const currentCount = perNodeInvocationCounts.get(toNodeId) ?? 0
+    if (currentCount >= maxPerNodeInvocations) {
+      lgg.warn(
+        `[queueRun] Max node invocations reached for ${toNodeId}: ${maxPerNodeInvocations}`
+      )
+      // skip invoking this node; continue processing other messages
+      continue
     }
 
     // Handle 'end' node as a special case - don't skip processing
@@ -303,7 +321,12 @@ export async function queueRun({
       )
     }
 
-    nodeInvocations++
+    // increment per-node and global invocation counts after invocation (even on error)
+    perNodeInvocationCounts.set(
+      targetNode.nodeId,
+      (perNodeInvocationCounts.get(targetNode.nodeId) ?? 0) + 1
+    )
+    totalNodeInvocationsCount++
 
     // Aggregate agent steps from this node invocation into the run-level transcript
     if (Array.isArray(nodeAgentSteps) && nodeAgentSteps.length > 0) {

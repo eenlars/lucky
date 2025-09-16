@@ -14,6 +14,7 @@ import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mappi
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
 // Unused tool imports removed
+import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
@@ -61,15 +62,11 @@ function WorkflowNode({
 
   const _IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
-  // derive a clean, human-readable model name (Stripe-like chip)
+  // show raw model id plus provider (e.g., openai/gpt-4.1-mini + openrouter)
   const displayModelName = (() => {
     const full = data?.modelName || ""
     if (!full) return null
-    const raw = full.includes("/") ? full.split("/")[1] : full
-    return raw
-      .split("-")
-      .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
-      .join(" ")
+    return `${full} + ${CURRENT_PROVIDER}`
   })()
 
   const _totalTools =

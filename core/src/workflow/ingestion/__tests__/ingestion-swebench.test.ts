@@ -19,7 +19,8 @@ vi.mock("@runtime/settings/constants", () => {
     workflow: {
       parallelExecution: true,
       asyncExecution: true,
-      maxNodeInvocations: 20,
+      maxTotalNodeInvocations: 20,
+      maxPerNodeInvocations: 20,
       maxNodes: 20,
       handoffContent: "full",
       prepareProblem: false,

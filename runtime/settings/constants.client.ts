@@ -28,7 +28,8 @@ export const CONFIG = {
   workflow: {
     parallelExecution: true,
     asyncExecution: true,
-    maxNodeInvocations: 20,
+    maxTotalNodeInvocations: 20,
+    maxPerNodeInvocations: 20,
     maxNodes: 20,
     handoffContent: "full" as "summary" | "full",
     prepareProblem: true,
@@ -77,7 +78,7 @@ export const CONFIG = {
     ...EVOLUTION_CONFIG,
   },
   ingestion: {
-    taskLimit: 100, // Max number of tasks to load from benchmarks (SWE-bench, GAIA)
+    taskLimit: 5, // Max number of tasks to load from benchmarks (SWE-bench, GAIA)
   },
   limits: {
     maxConcurrentWorkflows: 10, // Max concurrent WorkflowIO executions to respect rate limits

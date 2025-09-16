@@ -133,6 +133,9 @@ export default function WorkflowEditor({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isInInput = ["INPUT", "TEXTAREA"].includes(
+        (e.target as Element)?.tagName
+      )
       if (e.ctrlKey || e.metaKey) {
         if (e.key === "s") {
           e.preventDefault()
@@ -148,6 +151,12 @@ export default function WorkflowEditor({
         } else if (e.key === "r") {
           e.preventDefault()
           if (!isLoading) {
+            handleRun()
+          }
+        } else if (e.key === "Enter") {
+          // Cmd/Ctrl+Enter to run the workflow (only when not typing in inputs)
+          if (!isInInput && !isLoading) {
+            e.preventDefault()
             handleRun()
           }
         }

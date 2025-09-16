@@ -39,7 +39,8 @@ if (typeof (vi as any).mock === "function")
         },
       },
       workflow: {
-        maxNodeInvocations: 14,
+        maxTotalNodeInvocations: 14,
+        maxPerNodeInvocations: 14,
         maxNodes: 20,
         handoffContent: "full" as const,
         prepareProblem: true,
