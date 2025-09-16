@@ -318,12 +318,6 @@ export default function JSONEditor({
               setShowSaveModal(true)
             }
             break
-          case "Enter":
-            if (e.shiftKey && !isVerifying && !jsonParseError) {
-              e.preventDefault()
-              handleVerify()
-            }
-            break
           case "k":
             if (!isInInput) {
               e.preventDefault()

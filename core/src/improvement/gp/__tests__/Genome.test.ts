@@ -41,7 +41,8 @@ vi.mock("@runtime/settings/constants", () => ({
       provider: "openai",
     },
     workflow: {
-      maxNodeInvocations: 14,
+      maxTotalNodeInvocations: 14,
+      maxPerNodeInvocations: 14,
       maxNodes: 100,
       handoffContent: "summary",
       prepareProblem: true,

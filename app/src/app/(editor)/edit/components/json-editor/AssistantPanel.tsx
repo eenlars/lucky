@@ -70,6 +70,8 @@ export default function AssistantPanel({
                 if (
                   e.key === "Enter" &&
                   (e.metaKey || e.ctrlKey) &&
+                  // avoid conflict with global validate shortcut (Cmd/Ctrl+Shift+Enter)
+                  !e.shiftKey &&
                   !isOptimizing &&
                   feedback.trim()
                 ) {

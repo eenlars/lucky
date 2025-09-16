@@ -709,7 +709,8 @@ export const createMockFullFlowRuntimeConfig = (
     workflow: {
       parallelExecution: true,
       asyncExecution: true,
-      maxNodeInvocations: 14,
+      maxTotalNodeInvocations: 14,
+      maxPerNodeInvocations: 14,
       maxNodes: 100,
       handoffContent: "summary",
       prepareProblem: true,
@@ -840,7 +841,8 @@ export const createMockRuntimeConstants = () => ({
       },
     },
     workflow: {
-      maxNodeInvocations: 14,
+      maxTotalNodeInvocations: 14,
+      maxPerNodeInvocations: 14,
       maxNodes: 20,
       handoffContent: "full" as const,
       prepareProblem: true,

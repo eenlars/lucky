@@ -74,10 +74,17 @@ const baseSidebarItems: SidebarItem[] = [
   },
 ]
 
-// Show workflows item only in development
-const sidebarItems: SidebarItem[] = process.env.NODE_ENV === 'development' 
-  ? baseSidebarItems
-  : baseSidebarItems.filter(item => item.href !== "/workflows")
+// In production, hide some sections entirely; in development, show but disabled
+const isProd = process.env.NODE_ENV === "production"
+const disabledHrefs = new Set(["/structures", "/evolution"]) // disabled in dev
+
+// Build items list per environment
+const sidebarItems: SidebarItem[] = isProd
+  ? baseSidebarItems.filter(
+      (item) =>
+        item.href !== "/workflows" && !disabledHrefs.has(item.href) // hide in prod
+    )
+  : baseSidebarItems
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -128,46 +135,88 @@ export default function Sidebar() {
       )} aria-label="Primary navigation">
         <ul className="space-y-0.5">
           {sidebarItems.map((item) => {
+            const isDisabled = !isProd && disabledHrefs.has(item.href)
             const isActive =
               pathname === item.href || pathname?.startsWith(`${item.href}/`)
             const Icon = item.icon
             
-            const linkContent = (
-              <Link
-                href={item.href}
-                onClick={() => setIsMobileOpen(false)}
-                className={cn(
-                  "group relative flex items-center gap-3 rounded-md px-2.5 py-2 text-[13px] font-medium",
-                  "transition-all duration-200 ease-out",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background,transparent)]",
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
-                  isCollapsed && !isMobile && "px-2 justify-center"
-                )}
-                title={item.description ?? item.label}
-                aria-current={isActive ? "page" : undefined}
+            const commonClasses = cn(
+              "group relative flex items-center gap-3 rounded-md px-2.5 py-2 text-[13px] font-medium",
+              "transition-all duration-200 ease-out",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background,transparent)]",
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+              isCollapsed && !isMobile && "px-2 justify-center",
+              isDisabled && "pointer-events-none opacity-50"
+            )
+
+            const linkContent = isDisabled ? (
+              <div
+                role="link"
+                aria-disabled="true"
+                className={commonClasses}
+                title={`${item.label} (disabled in development)`}
               >
-                {/* Active indicator */}
                 {isActive && (
-                  <div 
+                  <div
                     className={cn(
                       "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-300",
                       isCollapsed && !isMobile && "h-3"
-                    )} 
-                    aria-hidden="true" 
+                    )}
+                    aria-hidden="true"
                   />
                 )}
-                
-                <Icon className={cn(
-                  "size-4 shrink-0 transition-all duration-200",
-                  isActive && "text-sidebar-primary",
-                  isCollapsed && !isMobile && "size-5"
-                )} aria-hidden="true" />
-                <span className={cn(
-                  "truncate transition-all duration-300 ease-out",
-                  isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
-                )}>{item.label}</span>
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0 transition-all duration-200",
+                    isActive && "text-sidebar-primary",
+                    isCollapsed && !isMobile && "size-5"
+                  )}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn(
+                    "truncate transition-all duration-300 ease-out",
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
+                  )}
+                >
+                  {item.label}
+                </span>
+              </div>
+            ) : (
+              <Link
+                href={item.href}
+                onClick={() => setIsMobileOpen(false)}
+                className={commonClasses}
+                title={item.description ?? item.label}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {isActive && (
+                  <div
+                    className={cn(
+                      "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-300",
+                      isCollapsed && !isMobile && "h-3"
+                    )}
+                    aria-hidden="true"
+                  />
+                )}
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0 transition-all duration-200",
+                    isActive && "text-sidebar-primary",
+                    isCollapsed && !isMobile && "size-5"
+                  )}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn(
+                    "truncate transition-all duration-300 ease-out",
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
+                  )}
+                >
+                  {item.label}
+                </span>
                 {isActive && !isCollapsed && !isMobile && (
                   <span className="sr-only">(current)</span>
                 )}

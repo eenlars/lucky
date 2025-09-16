@@ -141,12 +141,6 @@ export default function EditorHeader({
                     </kbd>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Validate workflow</span>
-                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
-                      ⌘⇧Enter
-                    </kbd>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="text-gray-600">Focus AI assistant</span>
                     <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
                       ⌘K

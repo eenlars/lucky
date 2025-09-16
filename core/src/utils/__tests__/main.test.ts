@@ -187,7 +187,8 @@ vi.mock("@runtime/settings/constants", () => ({
       override: {},
     },
     workflow: {
-      maxNodeInvocations: 14,
+      maxTotalNodeInvocations: 14,
+      maxPerNodeInvocations: 14,
       maxNodes: 20,
       handoffContent: "full",
       prepareProblem: true,

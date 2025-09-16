@@ -147,7 +147,8 @@ export const TEST_CONSTANTS = {
       },
     },
     workflow: {
-      maxNodeInvocations: 14,
+      maxTotalNodeInvocations: 14,
+      maxPerNodeInvocations: 14,
     },
     tools: {
       inactive: new Set([]),

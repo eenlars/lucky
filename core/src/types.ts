@@ -32,7 +32,8 @@ export type FlowRuntimeConfig = {
   readonly workflow: {
     readonly parallelExecution: boolean
     readonly asyncExecution: boolean
-    readonly maxNodeInvocations: number
+    readonly maxTotalNodeInvocations: number
+    readonly maxPerNodeInvocations?: number
     readonly maxNodes: number
     readonly handoffContent: "summary" | "full"
     readonly prepareProblem: boolean
