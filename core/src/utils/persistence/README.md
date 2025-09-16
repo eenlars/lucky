@@ -215,16 +215,6 @@ class NodePersistenceManager {
   getMemory(): Record<string, string> {
     return Object.fromEntries(this.memory)
   }
-
-  updateMemory(newMemory: Record<string, string>): void {
-    // Strict formatting validation
-    for (const [key, value] of Object.entries(newMemory)) {
-      if (typeof value !== "string") {
-        throw new Error(`Memory value must be string, got ${typeof value}`)
-      }
-    }
-    this.memory = new Map(Object.entries(newMemory))
-  }
 }
 ```
 
