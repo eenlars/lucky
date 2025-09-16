@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
-import { ensureWorkflowExists, saveWorkflowVersion } from '@/trace-visualization/db/Workflow/retrieveWorkflow'
+import {
+  ensureWorkflowExists,
+  saveWorkflowVersion,
+} from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 
 export async function POST(request: NextRequest) {
   // Require authentication
@@ -21,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!dsl || !commitMessage || !workflowId) {
       return NextResponse.json(
-        { error: 'Missing required fields: dsl, commitMessage, or workflowId' },
+        { error: "Missing required fields: dsl, commitMessage, or workflowId" },
         { status: 400 }
       )
     }
@@ -44,10 +47,13 @@ export async function POST(request: NextRequest) {
       data: newWorkflowVersion,
     })
   } catch (error) {
-    console.error('Error saving workflow version:', error)
+    console.error("Error saving workflow version:", error)
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : 'Failed to save workflow version',
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to save workflow version",
       },
       { status: 500 }
     )

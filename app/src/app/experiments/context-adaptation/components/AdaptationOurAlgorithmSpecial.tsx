@@ -68,7 +68,10 @@ interface PointDatum {
   avgErrorRate: number
   totalCombineCalls: number
   countsUsed: LoopMetrics["countsUsed"]
-  strategyCounts: Record<OurAlgorithmRun["loops"][number]["metrics"]["strategy"], number>
+  strategyCounts: Record<
+    OurAlgorithmRun["loops"][number]["metrics"]["strategy"],
+    number
+  >
 }
 
 // Convert provider/model slugs into human-friendly display names

@@ -1,6 +1,6 @@
 /**
  * Structural mutation operations for workflow topology evolution.
- * 
+ *
  * This module provides mutations that transform the overall structure
  * of workflows by applying common architectural patterns. These mutations
  * enable exploration of different workflow organizations during evolution.
@@ -15,11 +15,11 @@ import type { NodeMutationOperator } from "./mutation.types"
 
 /**
  * Applies structural patterns to transform workflow topology.
- * 
+ *
  * Uses predefined workflow patterns (e.g., pipeline, fan-out, hierarchical)
  * to reorganize the workflow structure. This mutation helps discover more
  * efficient or effective workflow architectures during evolution.
- * 
+ *
  * @remarks
  * Structural mutations are high-impact changes that can significantly
  * alter workflow behavior by reorganizing node connections and flow patterns.
@@ -27,9 +27,9 @@ import type { NodeMutationOperator } from "./mutation.types"
 export class StructureMutation implements NodeMutationOperator {
   /**
    * Executes structural mutation on the workflow configuration.
-   * 
+   *
    * @param mutatedConfig - The workflow configuration to mutate (modified in-place)
-   * 
+   *
    * @remarks
    * - Randomly selects a structural pattern from predefined templates
    * - Has 80% chance to strongly suggest the pattern, 20% to allow AI flexibility

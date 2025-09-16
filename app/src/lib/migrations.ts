@@ -141,8 +141,7 @@ export async function migrateFitnessToColumns() {
         }
 
         // Extract values using type-safe function
-        const { accuracy, fitness_score } =
-          extractFitnessValues(fitnessData)
+        const { accuracy, fitness_score } = extractFitnessValues(fitnessData)
 
         // Only update if we have at least one value to update and it's currently null
         const updates: any = {}

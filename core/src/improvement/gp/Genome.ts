@@ -165,7 +165,7 @@ export class Genome extends Workflow {
       // apply poisson distribution for mutation aggression randomness
       // poisson(1, 4, 5) generates values between 1-5 with bias towards lower values
       const randomness = EvolutionUtils.poisson(1, 4, 5)
-      
+
       // in verbose mode, skip expensive workflow generation for testing
       if (CONFIG.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
@@ -202,7 +202,7 @@ export class Genome extends Workflow {
         })
         return formalizedWorkflow
       }
-      
+
       // default method: generate completely new workflow from scratch
       // select random model for diversity in initial population
       const activeModels = getActiveModelNames()
@@ -344,7 +344,7 @@ export class Genome extends Workflow {
 
   /**
    * Converts a WorkflowGenome to a WorkflowConfig.
-   * 
+   *
    * @param genome - The genome to convert
    * @returns WorkflowConfig containing nodes and entry node ID
    */
@@ -357,7 +357,7 @@ export class Genome extends Workflow {
 
   /**
    * Gets the workflow configuration from this genome.
-   * 
+   *
    * @returns The workflow configuration
    */
   getWorkflowConfig(): WorkflowConfig {
@@ -366,7 +366,7 @@ export class Genome extends Workflow {
 
   /**
    * Gets the goal/objective for this genome's workflow.
-   * 
+   *
    * @returns The workflow goal string
    */
   getGoal(): string {
@@ -375,7 +375,7 @@ export class Genome extends Workflow {
 
   /**
    * Convenience helper so callers can retrieve the raw genome again.
-   * 
+   *
    * @returns The raw WorkflowGenome structure
    */
   getRawGenome(): WorkflowGenome {
@@ -384,14 +384,14 @@ export class Genome extends Workflow {
 
   /**
    * Sets the fitness score and feedback for this genome after evaluation.
-   * 
+   *
    * @param fitness - The fitness metrics from workflow evaluation
    * @param feedback - Human-readable feedback about performance
-   * 
+   *
    * @remarks
    * Updates both genomeEvaluationResults and base workflow properties.
    * Marks the genome as evaluated.
-   * 
+   *
    * TODO: fix memory leak - genome evaluation results persist through improvement operations
    * TODO: implement proper cleanup of evaluation results between generations
    * TODO: consider using WeakMap for storing transient evaluation data
@@ -426,7 +426,7 @@ export class Genome extends Workflow {
 
   /**
    * Gets the complete evaluation results for this genome.
-   * 
+   *
    * @returns Evaluation results including fitness, feedback, and metadata
    */
   getFitnessAndFeedback(): GenomeEvaluationResults {
@@ -435,7 +435,7 @@ export class Genome extends Workflow {
 
   /**
    * Adds to the cumulative evolution cost for this genome.
-   * 
+   *
    * @param cost - The cost in USD to add
    */
   addCost(cost: number): void {
@@ -444,7 +444,7 @@ export class Genome extends Workflow {
 
   /**
    * Get the evolution context from the workflow.
-   * 
+   *
    * @returns The evolution context containing generation and run information
    * @throws Error if evolution context is not set
    */
@@ -455,9 +455,9 @@ export class Genome extends Workflow {
 
   /**
    * Generate a unique hash for this genome for caching and deduplication.
-   * 
+   *
    * @returns SHA256 hash of the genome structure prefixed with workflow version ID
-   * 
+   *
    * @remarks
    * Used for caching evaluation results and detecting duplicate genomes
    */

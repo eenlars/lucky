@@ -751,8 +751,12 @@ export const ToolCallsDisplay = ({
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className={`${themeUnknown.iconClass}`}>{getStepIcon(output.type)}</div>
-                <span className={`${themeUnknown.labelClass} text-xs`}>{output.type}</span>
+                <div className={`${themeUnknown.iconClass}`}>
+                  {getStepIcon(output.type)}
+                </div>
+                <span className={`${themeUnknown.labelClass} text-xs`}>
+                  {output.type}
+                </span>
               </div>
               {output.return && (
                 <div

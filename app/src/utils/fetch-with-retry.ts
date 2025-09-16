@@ -28,10 +28,15 @@ export async function fetchWithRetry(
     } catch (error) {
       // AbortError should not be retried; surface immediately
       const isAbortError =
-        (typeof error === "object" && error !== null && "name" in error && (error as any).name === "AbortError") ||
+        (typeof error === "object" &&
+          error !== null &&
+          "name" in error &&
+          (error as any).name === "AbortError") ||
         options?.signal?.aborted
       if (isAbortError) {
-        throw (error instanceof Error ? error : new Error("The operation was aborted"))
+        throw error instanceof Error
+          ? error
+          : new Error("The operation was aborted")
       }
       lastError = error instanceof Error ? error : new Error("Network error")
     }

@@ -13,7 +13,7 @@ describe("rubric-utils", () => {
 
       // Create rubric string
       const rubricString = createRubricString(originalCriteria)
-      
+
       // Verify string format
       expect(rubricString).toContain("Evaluation Rubric (Total: 30 points):")
       expect(rubricString).toContain("1. Accuracy (10 points)")
@@ -22,7 +22,7 @@ describe("rubric-utils", () => {
 
       // Parse it back
       const parsed = parseRubricString(rubricString)
-      
+
       // Verify parsed data
       expect(parsed).toHaveLength(3)
       expect(parsed[0]).toMatchObject({ name: "Accuracy", maxPoints: 10 })
@@ -33,7 +33,7 @@ describe("rubric-utils", () => {
     it("should handle empty rubric", () => {
       const emptyString = createRubricString([])
       expect(emptyString).toBe("")
-      
+
       const parsed = parseRubricString("")
       expect(parsed).toEqual([])
     })
@@ -47,7 +47,7 @@ describe("rubric-utils", () => {
       const criteria: RubricCriteria[] = [
         { id: "1", name: "", maxPoints: 10, achievedPoints: null },
       ]
-      
+
       const rubricString = createRubricString(criteria)
       expect(rubricString).toContain("1. Criterion 1 (10 points)")
     })

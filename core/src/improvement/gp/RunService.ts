@@ -398,7 +398,10 @@ export class RunService {
         operator
       )
       const genomeFeedback = bestGenome.getFeedback()
-      lgg.log("[RunService] Best genome feedback before saving:", genomeFeedback)
+      lgg.log(
+        "[RunService] Best genome feedback before saving:",
+        genomeFeedback
+      )
       const updateData: TablesUpdate<"Generation"> = {
         end_time: new Date().toISOString(),
         best_workflow_version_id: workflowVersionId,

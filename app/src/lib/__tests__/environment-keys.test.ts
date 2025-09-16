@@ -1,13 +1,24 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { EnvironmentKeysManager, type EnvironmentKey } from "../environment-keys"
+import {
+  EnvironmentKeysManager,
+  type EnvironmentKey,
+} from "../environment-keys"
 
 // Minimal in-memory localStorage stub
 class MemoryStorage {
   private store = new Map<string, string>()
-  getItem(key: string) { return this.store.has(key) ? this.store.get(key)! : null }
-  setItem(key: string, value: string) { this.store.set(key, value) }
-  removeItem(key: string) { this.store.delete(key) }
-  clear() { this.store.clear() }
+  getItem(key: string) {
+    return this.store.has(key) ? this.store.get(key)! : null
+  }
+  setItem(key: string, value: string) {
+    this.store.set(key, value)
+  }
+  removeItem(key: string) {
+    this.store.delete(key)
+  }
+  clear() {
+    this.store.clear()
+  }
 }
 
 describe("EnvironmentKeysManager", () => {

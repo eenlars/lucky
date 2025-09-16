@@ -4,7 +4,10 @@
  */
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
+import {
+  WorkflowConfigSchema,
+  WorkflowConfigSchemaDisplay,
+} from "@core/workflow/schema/workflowSchema"
 
 class WorkflowConfigError extends Error {
   constructor(

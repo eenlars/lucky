@@ -3,9 +3,9 @@
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/contexts/SidebarContext"
 
-export default function MainContent({ 
+export default function MainContent({
   children,
-  hasAuth 
+  hasAuth,
 }: {
   children: React.ReactNode
   hasAuth: boolean

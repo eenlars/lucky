@@ -44,7 +44,8 @@ export async function POST() {
       .update({
         status: "interrupted",
         end_time: new Date().toISOString(),
-        notes: "Automatically marked as interrupted due to being stale (>5 hours runtime)"
+        notes:
+          "Automatically marked as interrupted due to being stale (>5 hours runtime)",
       })
       .in("run_id", staleRunIds)
 
@@ -54,7 +55,10 @@ export async function POST() {
     }
 
     console.log(`Cleaned up ${staleRunIds.length} stale evolution runs`)
-    return NextResponse.json({ cleaned: staleRunIds.length, runIds: staleRunIds })
+    return NextResponse.json({
+      cleaned: staleRunIds.length,
+      runIds: staleRunIds,
+    })
   } catch (error) {
     console.error("Error in cleanup:", error)
     return NextResponse.json(

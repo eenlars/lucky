@@ -8,9 +8,7 @@ import FeedbackDialog from "./FeedbackDialog"
 import type { WorkflowIO } from "./WorkflowIOTable"
 import { useMetrics } from "./hooks/useMetrics"
 import { isErrorResult, isInvokeWorkflowResult } from "./utils/result-utils"
-import {
-  parseWorkflowResultToMetrics,
-} from "./utils/workflow-integration"
+import { parseWorkflowResultToMetrics } from "./utils/workflow-integration"
 
 type Props = {
   io: WorkflowIO
@@ -132,6 +130,7 @@ export default function WorkflowIOTableRow({
                 onBlur={handleSave}
                 disabled={!isTaskEditable}
                 placeholder="Min 10 characters..."
+                data-testid={`test-case-input-${io.id}`}
               />
               {task && task.trim().length < 10 && (
                 <p className="text-xs text-red-600 mt-1">Too short</p>
@@ -146,9 +145,12 @@ export default function WorkflowIOTableRow({
               <textarea
                 className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
                 value={io.expected}
-                onChange={(e) => updateCase(io.id, { expected: e.target.value })}
+                onChange={(e) =>
+                  updateCase(io.id, { expected: e.target.value })
+                }
                 placeholder="Enter expected output..."
                 disabled={busy}
+                data-testid={`test-case-expected-${io.id}`}
               />
             </div>
 
@@ -181,7 +183,9 @@ export default function WorkflowIOTableRow({
               </label>
               <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Score</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Score
+                  </span>
                   <span
                     className={`text-xs font-bold tabular-nums ${
                       metricsHook.metrics.score !== null
@@ -197,13 +201,17 @@ export default function WorkflowIOTableRow({
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Time</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Time
+                  </span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.time || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Cost</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Cost
+                  </span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.cost || "—"}
                   </span>
@@ -224,6 +232,7 @@ export default function WorkflowIOTableRow({
                       : "bg-gray-200 cursor-not-allowed"
                 }`}
                 title="Run"
+                data-testid={`run-test-case-${io.id}`}
               >
                 {busy ? (
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -251,6 +260,7 @@ export default function WorkflowIOTableRow({
                   }
                 }}
                 disabled={!res || !isInvokeWorkflowResult(res)}
+                data-testid={`view-trace-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-gray-600"
@@ -271,6 +281,7 @@ export default function WorkflowIOTableRow({
                 onClick={() => setFeedbackOpen(true)}
                 className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                 title="Feedback"
+                data-testid={`feedback-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-gray-600"
@@ -292,6 +303,7 @@ export default function WorkflowIOTableRow({
                 disabled={busy}
                 className="w-7 h-7 rounded-full border border-red-300 flex items-center justify-center hover:bg-red-50 transition-colors disabled:opacity-50"
                 title="Delete"
+                data-testid={`delete-test-case-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-red-600"

@@ -128,11 +128,11 @@ export const useRunConfigStore = create<RunConfigState>()(
       importCases: (rows) => set({ cases: rows }),
       exportCases: () => get().cases,
       clearResults: () => set({ resultsById: {} }),
-      
+
       loadDataset: async (datasetId) => {
         // Handle clear selection
         if (!datasetId) {
-          set({ 
+          set({
             cases: [],
             datasetId: undefined,
             datasetName: undefined,
@@ -146,17 +146,20 @@ export const useRunConfigStore = create<RunConfigState>()(
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
           const data = await response.json()
-          
+
           if (data.records && Array.isArray(data.records)) {
             const cases: CaseRow[] = data.records
-              .filter((record: any) => record.workflow_input && record.ground_truth)
+              .filter(
+                (record: any) => record.workflow_input !== null && record.workflow_input !== undefined && 
+                                record.ground_truth !== null && record.ground_truth !== undefined
+              )
               .map((record: any) => ({
                 id: record.dataset_record_id || newId(),
                 input: String(record.workflow_input || ""),
                 expected: String(record.ground_truth || ""),
               }))
-            
-            set({ 
+
+            set({
               cases,
               datasetId,
               datasetName: data.name,
@@ -164,7 +167,7 @@ export const useRunConfigStore = create<RunConfigState>()(
             })
           } else {
             // No records found, but dataset exists
-            set({ 
+            set({
               cases: [],
               datasetId,
               datasetName: data.name,
@@ -174,7 +177,7 @@ export const useRunConfigStore = create<RunConfigState>()(
         } catch (error) {
           console.error("Failed to load dataset:", error)
           // Reset state on error
-          set({ 
+          set({
             cases: [],
             datasetId: undefined,
             datasetName: undefined,

@@ -10,7 +10,11 @@ type ApiResponse = {
   ok: boolean
   source: "final" | "baseline" | "our-algorithm" | "none"
   chartData: DataRow[]
-  datasets?: { final?: DataRow[]; baseline?: DataRow[]; ourAlgorithm?: DataRow[] }
+  datasets?: {
+    final?: DataRow[]
+    baseline?: DataRow[]
+    ourAlgorithm?: DataRow[]
+  }
   errors?: string[]
   info?: string[]
 }
@@ -70,7 +74,8 @@ export default function ContextAdaptationGraph({
     // auto: pick the api's selected source first, then fallback
     if (apiData.source === "final") return ds.final ?? apiData.chartData
     if (apiData.source === "baseline") return ds.baseline ?? apiData.chartData
-    if (apiData.source === "our-algorithm") return ds.ourAlgorithm ?? apiData.chartData
+    if (apiData.source === "our-algorithm")
+      return ds.ourAlgorithm ?? apiData.chartData
     return apiData.chartData
   }, [apiData, dataset])
 

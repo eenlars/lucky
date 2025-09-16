@@ -10,34 +10,34 @@ interface MemoryStoreFile extends ContextFileInfo {
 
 /**
  * In-memory implementation of context storage for workflow execution.
- * 
+ *
  * ## Runtime Architecture
- * 
+ *
  * Provides ephemeral storage during workflow execution with:
  * - Hierarchical key scoping (workflow vs node level)
  * - Automatic summary generation for stored data
  * - Metadata tracking (creation time, size, type)
- * 
+ *
  * ## Key Structure
- * 
+ *
  * Keys follow pattern: `{workflowInvocationId}:{scope}:{key}`
  * - Workflow scope: Shared across all nodes
  * - Node scope: Isolated to specific node instances
- * 
+ *
  * ## Performance Characteristics
- * 
+ *
  * - O(1) get/set operations via Map
  * - O(n) list operations with prefix filtering
  * - No persistence between invocations
  * - Memory limited by Node.js heap size
- * 
+ *
  * ## Summary Generation
- * 
+ *
  * All stored data gets LLM-generated summaries for:
  * - Quick context understanding without full data retrieval
  * - Efficient memory usage in agent prompts
  * - Better decision making about what data to access
- * 
+ *
  * @remarks
  * This is the default store for development and testing.
  * Production may use persistent stores like file or database.
@@ -70,14 +70,14 @@ export class InMemoryContextStore implements ContextStore {
 
   /**
    * Stores data with automatic summary generation and metadata tracking.
-   * 
+   *
    * Runtime operations:
    * 1. Generates key based on scope and workflow invocation
    * 2. Calculates data size and type for metadata
    * 3. Invokes LLM to generate data summary
    * 4. Preserves creation time on updates
    * 5. Updates both data and metadata maps atomically
-   * 
+   *
    * @throws May throw if summary generation fails
    */
   async set<T>(

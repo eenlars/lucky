@@ -235,22 +235,22 @@ export class EvolutionEngine {
 
   /**
    * Evaluate all genomes in population with parallel execution.
-   * 
+   *
    * ## Runtime Behavior
-   * 
+   *
    * - Identifies unevaluated genomes in current population
    * - Evaluates genomes in parallel with concurrency limits
    * - Tracks success/failure counts for quality metrics
    * - Updates genome fitness and feedback on success
    * - Accumulates costs and evaluation counts
-   * 
+   *
    * ## Parallelization Strategy
-   * 
+   *
    * Uses `parallelLimit` to control concurrent evaluations:
    * - Prevents API rate limit exhaustion
    * - Manages memory usage during evaluation
    * - Balances speed vs resource consumption
-   * 
+   *
    * @param evaluator External evaluator for genome fitness calculation
    * @returns Counts of successful and failed evaluations
    */
@@ -308,29 +308,29 @@ export class EvolutionEngine {
 
   /**
    * Evaluate single genome with retry logic for robustness.
-   * 
+   *
    * ## Runtime Retry Mechanism
-   * 
+   *
    * Implements exponential backoff retry pattern:
    * 1. Initial attempt
    * 2. On failure: Reset genome state, wait 1s, retry
    * 3. On second failure: Reset again, wait 2s, retry
    * 4. On third failure: Mark as failed evaluation
-   * 
+   *
    * ## Failure Recovery
-   * 
+   *
    * - Genome state reset between attempts (clears partial results)
    * - Exponential backoff prevents API overwhelming
    * - Detailed logging for debugging evaluation issues
    * - Failure tracking for evolution statistics
-   * 
+   *
    * ## Success Path
-   * 
+   *
    * - Fitness and feedback extracted from evaluation result
    * - Cost tracked for budget management
    * - Evaluation timestamp recorded
    * - Result returned for population update
-   * 
+   *
    * @param genome Genome to evaluate
    * @param evaluator External fitness evaluator
    * @returns Evaluation results or null on failure
@@ -446,7 +446,7 @@ export class EvolutionEngine {
 
   /**
    * Gets the statistics tracker for this evolution run.
-   * 
+   *
    * @returns The stats tracker instance
    */
   getStatsTracker(): StatsTracker {
@@ -455,7 +455,7 @@ export class EvolutionEngine {
 
   /**
    * Gets the run service managing database persistence.
-   * 
+   *
    * @returns The run service instance
    */
   getRunService(): RunService {
@@ -464,7 +464,7 @@ export class EvolutionEngine {
 
   /**
    * Creates default evolution settings with optional overrides.
-   * 
+   *
    * @param overrides - Partial settings to override defaults
    * @returns Complete evolution settings
    */

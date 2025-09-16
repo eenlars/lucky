@@ -10,7 +10,13 @@ interface StatisticalResult {
 }
 
 interface ComparisonRow {
-  method: "Vague Prompt" | "Clear Prompt" | "This Paper (1 Run, Vague)" | "This Paper (1 Run, Clear)" | "This Paper (3 Runs, Vague)" | "This Paper (3 Runs, Clear)"
+  method:
+    | "Vague Prompt"
+    | "Clear Prompt"
+    | "This Paper (1 Run, Vague)"
+    | "This Paper (1 Run, Clear)"
+    | "This Paper (3 Runs, Vague)"
+    | "This Paper (3 Runs, Clear)"
   model: string
   n: number
   adaptationRate: StatisticalResult
@@ -65,24 +71,26 @@ export default function PerformanceComparisonTable() {
         setLoading(true)
         setError(null)
         const result = await loadPerformanceData()
-        
+
         // Filter out specific models from frontend display
         const excludedModels = [
           "gpt-4o-mini",
-          "gpt-4o", 
+          "gpt-4o",
           "mistral-small-3.2-24b-instruct",
           "mistralai/mistral-small-3.2-24b-instruct",
           "llama-3.1-8b-instruct",
           "meta-llama/llama-3.1-8b-instruct",
-          "gpt-5"
+          "gpt-5",
         ]
-        
-        const filteredData = result.filter(row => 
-          !excludedModels.some(excluded => 
-            row.model === excluded || row.model.includes(excluded)
-          )
+
+        const filteredData = result.filter(
+          (row) =>
+            !excludedModels.some(
+              (excluded) =>
+                row.model === excluded || row.model.includes(excluded)
+            )
         )
-        
+
         setData(filteredData)
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load data")
@@ -101,7 +109,7 @@ export default function PerformanceComparisonTable() {
   const formatCI = (ci: [number, number], formatter: (n: number) => string) =>
     `[${formatter(ci[0])}, ${formatter(ci[1])}]`
   const formatPValue = (p: number | null) =>
-    !p || p >= 1 
+    p === null || p === undefined || p >= 1
       ? "1.000"
       : p < 0.001
         ? "<0.001"
@@ -210,11 +218,11 @@ export default function PerformanceComparisonTable() {
               <tr
                 key={index}
                 className={
-                  row.significant && (row.method.startsWith("This Paper"))
+                  row.significant && row.method.startsWith("This Paper")
                     ? "bg-blue-50 border-l-4 border-blue-500"
                     : row.significant && row.method === "Clear Prompt"
                       ? "bg-green-50 border-l-4 border-green-500"
-                      : (row.method.startsWith("This Paper"))
+                      : row.method.startsWith("This Paper")
                         ? "bg-blue-100 border-l-2 border-blue-300"
                         : row.method === "Clear Prompt"
                           ? "bg-gray-50"
@@ -245,7 +253,7 @@ export default function PerformanceComparisonTable() {
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
                   <span
                     className={
-                      row.significant && (row.method.startsWith("This Paper"))
+                      row.significant && row.method.startsWith("This Paper")
                         ? "text-blue-600 font-semibold"
                         : row.significant
                           ? "text-green-600 font-semibold"
@@ -307,8 +315,8 @@ export default function PerformanceComparisonTable() {
               <li>
                 •{" "}
                 <strong>
-                  Our method shows superior adaptive performance vs
-                  both baselines (1 run vs 3 runs comparison)
+                  Our method shows superior adaptive performance vs both
+                  baselines (1 run vs 3 runs comparison)
                 </strong>
               </li>
             </ul>

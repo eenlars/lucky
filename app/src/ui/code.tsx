@@ -67,9 +67,7 @@ export function CodeInput({
         : String(children)
 
   // If it's JSON/JSON5, extract & re-stringify with 2-space indent
-  const displayText = isJSON(rawText)
-    ? showJSON(extractJSON(rawText))
-    : rawText
+  const displayText = isJSON(rawText) ? showJSON(extractJSON(rawText)) : rawText
 
   const handleCopy = () => {
     navigator.clipboard.writeText(displayText).then(() => {

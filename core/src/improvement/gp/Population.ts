@@ -123,7 +123,7 @@ export class Population {
 
   /**
    * Gets the run service managing evolution run state.
-   * 
+   *
    * @returns The run service instance
    */
   getRunService(): RunService {
@@ -149,7 +149,7 @@ export class Population {
 
   /**
    * Gets all genomes in the current population.
-   * 
+   *
    * @returns A copy of the genome array
    */
   getGenomes(): Genome[] {
@@ -158,7 +158,7 @@ export class Population {
 
   /**
    * Gets only the successfully evaluated genomes from the population.
-   * 
+   *
    * @returns Array of genomes that have been evaluated
    * @throws Error if population is empty
    */
@@ -171,7 +171,7 @@ export class Population {
 
   /**
    * Gets the current generation ID from the run service.
-   * 
+   *
    * @returns The generation ID string
    */
   getGenerationId(): string {
@@ -180,7 +180,7 @@ export class Population {
 
   /**
    * Gets the current generation number.
-   * 
+   *
    * @returns The generation number (0-indexed)
    */
   getGenerationNumber(): number {
@@ -196,7 +196,7 @@ export class Population {
 
   /**
    * Gets the total population size.
-   * 
+   *
    * @returns The number of genomes in the population
    */
   size(): number {
@@ -205,10 +205,10 @@ export class Population {
 
   /**
    * Gets the genome with the highest fitness score.
-   * 
+   *
    * @returns The best performing genome
    * @throws Error if population is empty
-   * 
+   *
    * @remarks
    * Only considers evaluated genomes
    */
@@ -226,10 +226,10 @@ export class Population {
 
   /**
    * Gets the genome with the lowest fitness score.
-   * 
+   *
    * @returns The worst performing genome
    * @throws Error if population is empty
-   * 
+   *
    * TODO: refactor to use getValidGenomes() like getBest() for consistency
    * TODO: add validation that population contains evaluated genomes
    */
@@ -243,7 +243,7 @@ export class Population {
 
   /**
    * Gets the top N genomes sorted by fitness score (descending).
-   * 
+   *
    * @param n - Number of top genomes to return
    * @returns Array of top performing genomes
    */
@@ -255,9 +255,9 @@ export class Population {
 
   /**
    * Resets all genomes for a new generation.
-   * 
+   *
    * @throws Error if population is empty
-   * 
+   *
    * @remarks
    * Marks all genomes as unevaluated and clears their fitness data
    */
@@ -349,7 +349,7 @@ export class Population {
 
   /**
    * Gets all genomes that have been successfully evaluated.
-   * 
+   *
    * @returns Array of evaluated genomes
    * @throws Error if population is empty
    */
@@ -366,7 +366,7 @@ export class Population {
 
   /**
    * Calculates comprehensive population statistics.
-   * 
+   *
    * @param additionalMetrics - Optional metrics to include in stats
    * @returns Population statistics including fitness metrics and diversity
    * @throws Error if population is empty
@@ -394,7 +394,7 @@ export class Population {
 
   /**
    * Finds genomes that are structurally similar to the target.
-   * 
+   *
    * @param target - The genome to compare against
    * @param threshold - Similarity threshold (0=identical, higher=less similar)
    * @returns Array of similar genomes
@@ -438,7 +438,7 @@ export class Population {
 
   /**
    * Adds a new genome to the population.
-   * 
+   *
    * @param genome - The genome to add
    */
   addGenome(genome: Genome): void {
@@ -447,7 +447,7 @@ export class Population {
 
   /**
    * Removes a genome from the population by ID.
-   * 
+   *
    * @param genomeId - The workflow version ID of the genome to remove
    * @returns True if a genome was removed, false otherwise
    */
@@ -469,11 +469,11 @@ export class Population {
 
   /**
    * Generates random genomes for population replenishment.
-   * 
+   *
    * @param count - Number of genomes to generate
    * @returns Array of newly generated genomes
    * @throws Error if required context is not available
-   * 
+   *
    * @remarks
    * Uses the same logic as initial population generation.
    * Requires evaluationInput, problemAnalysis to be set from initialization.
@@ -535,7 +535,7 @@ export class Population {
 
   /**
    * Helper method to initialize population with random or base workflow genomes.
-   * 
+   *
    * @private
    */
   async initializePopulationHelper({
@@ -608,7 +608,7 @@ export class Population {
 
   /**
    * Initializes population with prepared genomes using deep problem analysis.
-   * 
+   *
    * @private
    */
   async initializePreparedPopulation({

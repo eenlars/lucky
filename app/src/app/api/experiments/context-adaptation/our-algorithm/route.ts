@@ -14,7 +14,8 @@ export async function GET() {
     )
 
     // Collect all datasets: final, baseline, our-algorithm
-    const _files: { final?: string; baseline?: string; ourAlgorithm?: string } = {}
+    const _files: { final?: string; baseline?: string; ourAlgorithm?: string } =
+      {}
     const _errors: string[] = []
     const _info: string[] = []
   } catch (error) {

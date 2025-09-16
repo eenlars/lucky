@@ -123,9 +123,34 @@ export interface WebArenaInstance {
 }
 
 /** True if the input type implies an evaluation phase is possible. */
-export const needsEvaluation = (evaluation: EvaluationInput) => {
-  return evaluation.type !== "prompt-only"
+export const hasGroundTruth = (evaluation: EvaluationInput): boolean => {
+  switch (evaluation.type) {
+    case "prompt-only":
+      return false
+    case "text":
+      return (evaluation.answer ?? "").trim().length > 0
+    case "csv":
+      // evaluable only when a column is specified to compare against
+      return (
+        typeof evaluation.evaluation === "string" &&
+        evaluation.evaluation.trim().length > 0
+      )
+    case "gaia":
+    case "swebench":
+    case "webarena":
+    case "dataset-records":
+      return true
+  }
+
+  // Exhaustiveness guard: if a new type is added to EvaluationInput
+  // and not handled above, this will fail type-checking.
+  const _exhaustive: never = evaluation as never
+  throw new Error("Unhandled evaluation type in hasGroundTruth")
 }
+
+/** True if the input type implies an evaluation phase is possible. */
+export const needsEvaluation = (evaluation: EvaluationInput) =>
+  hasGroundTruth(evaluation)
 
 // the goal of this is to convert the evaluation to an array of WorkflowIO.
 // one workflow has to work on many types of evaluations, so we need to

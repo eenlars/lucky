@@ -280,9 +280,7 @@ export default function StructuresPage() {
         <h1 className="text-3xl font-bold">Workflow Structure Visualization</h1>
 
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => setShowTestBed(!showTestBed)}
-          >
+          <Button onClick={() => setShowTestBed(!showTestBed)}>
             {showTestBed ? "Show Database" : "Show Test Bed"}
           </Button>
 
