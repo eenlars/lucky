@@ -15,6 +15,7 @@
 import { isNir } from "@core/utils/common/isNir"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import { obs } from "@core/utils/observability/obs"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
@@ -179,6 +180,13 @@ export async function invokeWorkflow(
       }
 
       return R.success(resultsWithEvaluation, evaluationResult.totalCost)
+    }
+
+    // Prompt-only: no evaluation needed, just track it
+    if (evalInput.type === "prompt-only") {
+      obs.event("prompt_only_invocation", {
+        workflow_version_id: workflow.getWorkflowVersionId()
+      })
     }
 
     // Save workflow to file if it was loaded from file and has memory updates

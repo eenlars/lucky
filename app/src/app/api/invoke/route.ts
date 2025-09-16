@@ -14,21 +14,37 @@ export async function POST(req: NextRequest) {
       prompt: string
     }
 
-    //a1373554
-
-    if (!workflowVersionId || !prompt) {
+    // Validate required fields
+    if (!workflowVersionId || typeof workflowVersionId !== 'string' || workflowVersionId.trim().length === 0) {
       return NextResponse.json(
-        { error: "Missing workflowVersionId or prompt" },
+        { error: "Invalid or missing workflowVersionId" },
         { status: 400 }
       )
     }
 
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Invalid or missing prompt" },
+        { status: 400 }
+      )
+    }
+
+    if (prompt.length > 50000) {
+      return NextResponse.json(
+        { error: "Prompt too long (max 50,000 characters)" },
+        { status: 400 }
+      )
+    }
+
+    // Generate unique workflow ID for this prompt-only invocation
+    const workflowId = `prompt-only-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    
     const input = {
-      workflowVersionId,
+      workflowVersionId: workflowVersionId.trim(),
       evalInput: {
         type: "prompt-only",
-        goal: prompt,
-        workflowId: "dummy-workflow-id",
+        goal: prompt.trim(),
+        workflowId,
       },
     }
 
@@ -54,9 +70,9 @@ export async function POST(req: NextRequest) {
     const result = await invokeResponse.json()
     return NextResponse.json(result.data, { status: 200 })
   } catch (error) {
-    console.error("API Error:", error)
+    console.error("Prompt-only API Error:", error)
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to process prompt-only request" },
       { status: 500 }
     )
   }
