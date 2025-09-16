@@ -321,7 +321,7 @@ export async function queueRun({
       )
     }
 
-    // increment per-node and global invocation counts after successful invocation
+    // increment per-node and global invocation counts after invocation (even on error)
     perNodeInvocationCounts.set(
       targetNode.nodeId,
       (perNodeInvocationCounts.get(targetNode.nodeId) ?? 0) + 1
