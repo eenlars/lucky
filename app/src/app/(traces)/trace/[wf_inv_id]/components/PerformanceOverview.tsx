@@ -179,9 +179,9 @@ export default function PerformanceOverview({
               (() => {
                 let fitness: any
                 if (typeof workflow.fitness === "string") {
-                  try {
-                    fitness = extractJSON(workflow.fitness)
-                  } catch {
+                  fitness = extractJSON(workflow.fitness)
+                  // If extractJSON couldn't parse it (returns original string), show fallback
+                  if (typeof fitness === "string" && fitness === workflow.fitness) {
                     return (
                       <div className="text-center">
                         <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">

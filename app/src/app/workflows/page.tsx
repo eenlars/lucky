@@ -211,7 +211,7 @@ export default function WorkflowsPage() {
   }, [])
 
   const handleRun = async (workflow: WorkflowItem) => {
-    if (!workflow.version) return
+    if (workflow.version === undefined) return
 
     setRunningWorkflows(prev => new Set(prev).add(workflow.id))
     
