@@ -1,7 +1,44 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { JSONN } from "@lucky/shared"
+// Local JSON utilities
+const isJSON = (str: unknown): boolean => {
+  try {
+    if (typeof str === "object" && str !== null) {
+      JSON.stringify(str)
+      return true
+    }
+    if (typeof str === "string") {
+      JSON.parse(str)
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
+
+const extractJSON = (input: unknown): any => {
+  if (typeof input === "object" && input !== null) {
+    return input
+  }
+  if (typeof input !== "string") {
+    return input
+  }
+  try {
+    return JSON.parse(input)
+  } catch {
+    return input
+  }
+}
+
+const showJSON = (obj: unknown, indent: number = 2): string => {
+  try {
+    return JSON.stringify(obj, null, indent)
+  } catch {
+    return String(obj)
+  }
+}
 import { CheckIcon, ClipboardIcon } from "lucide-react"
 import { useState } from "react"
 
@@ -30,8 +67,8 @@ export function CodeInput({
         : String(children)
 
   // If it's JSON/JSON5, extract & re-stringify with 2-space indent
-  const displayText = JSONN.isJSON(rawText)
-    ? JSONN.show(JSONN.extract(rawText))
+  const displayText = isJSON(rawText)
+    ? showJSON(extractJSON(rawText))
     : rawText
 
   const handleCopy = () => {

@@ -2,7 +2,20 @@
 
 import { SmartContent } from "@/components/utils/SmartContent"
 import type { Tables } from "@lucky/shared"
-import { JSONN } from "@lucky/shared"
+// Simple JSON extraction function
+const extractJSON = (input: unknown): any => {
+  if (typeof input === "object" && input !== null) {
+    return input
+  }
+  if (typeof input !== "string") {
+    return input
+  }
+  try {
+    return JSON.parse(input)
+  } catch {
+    return input
+  }
+}
 import { ChevronDown, ChevronRight, Files, FileText } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -167,7 +180,7 @@ export default function PerformanceOverview({
                 let fitness: any
                 if (typeof workflow.fitness === "string") {
                   try {
-                    fitness = JSONN.extract(workflow.fitness)
+                    fitness = extractJSON(workflow.fitness)
                   } catch {
                     return (
                       <div className="text-center">
