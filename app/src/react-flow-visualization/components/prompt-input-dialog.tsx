@@ -45,7 +45,7 @@ export function PromptInputDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px]" data-testid="prompt-input-dialog">
         <DialogHeader>
           <DialogTitle>{isExecuting ? "Workflow Execution" : "Run Workflow"}</DialogTitle>
           <DialogDescription>
@@ -68,6 +68,7 @@ export function PromptInputDialog({
                 className="min-h-[120px] resize-none"
                 disabled={loading}
                 autoFocus
+                data-testid="prompt-input-textarea"
               />
               <p className="text-xs text-muted-foreground">
                 Press Cmd/Ctrl + Enter to execute
@@ -89,11 +90,16 @@ export function PromptInputDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
+            data-testid="prompt-dialog-cancel-button"
           >
             {logs.length > 0 && !loading ? "Close" : "Cancel"}
           </Button>
           {!isExecuting && (
-            <Button onClick={handleExecute} disabled={!prompt.trim() || loading}>
+            <Button 
+              onClick={handleExecute} 
+              disabled={!prompt.trim() || loading}
+              data-testid="execute-workflow-button"
+            >
               Execute Workflow
             </Button>
           )}

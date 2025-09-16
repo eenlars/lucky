@@ -132,6 +132,7 @@ export default function WorkflowIOTableRow({
                 onBlur={handleSave}
                 disabled={!isTaskEditable}
                 placeholder="Min 10 characters..."
+                data-testid={`test-case-input-${io.id}`}
               />
               {task && task.trim().length < 10 && (
                 <p className="text-xs text-red-600 mt-1">Too short</p>
@@ -149,6 +150,7 @@ export default function WorkflowIOTableRow({
                 onChange={(e) => updateCase(io.id, { expected: e.target.value })}
                 placeholder="Enter expected output..."
                 disabled={busy}
+                data-testid={`test-case-expected-${io.id}`}
               />
             </div>
 
@@ -224,6 +226,7 @@ export default function WorkflowIOTableRow({
                       : "bg-gray-200 cursor-not-allowed"
                 }`}
                 title="Run"
+                data-testid={`run-test-case-${io.id}`}
               >
                 {busy ? (
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -251,6 +254,7 @@ export default function WorkflowIOTableRow({
                   }
                 }}
                 disabled={!res || !isInvokeWorkflowResult(res)}
+                data-testid={`view-trace-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-gray-600"
@@ -271,6 +275,7 @@ export default function WorkflowIOTableRow({
                 onClick={() => setFeedbackOpen(true)}
                 className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                 title="Feedback"
+                data-testid={`feedback-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-gray-600"
@@ -292,6 +297,7 @@ export default function WorkflowIOTableRow({
                 disabled={busy}
                 className="w-7 h-7 rounded-full border border-red-300 flex items-center justify-center hover:bg-red-50 transition-colors disabled:opacity-50"
                 title="Delete"
+                data-testid={`delete-test-case-${io.id}`}
               >
                 <svg
                   className="w-3 h-3 text-red-600"
