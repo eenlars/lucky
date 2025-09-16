@@ -87,7 +87,11 @@ export async function invokeWorkflow(
 
     // Validate prompt-only inputs at core level to prevent bypass
     if (evalInput.type === "prompt-only") {
-      if (!evalInput.goal || typeof evalInput.goal !== "string" || evalInput.goal.trim().length === 0) {
+      if (
+        !evalInput.goal ||
+        typeof evalInput.goal !== "string" ||
+        evalInput.goal.trim().length === 0
+      ) {
         return R.error("Invalid or missing goal for prompt-only invocation", 0)
       }
       if (evalInput.goal.length > 50000) {
@@ -198,7 +202,7 @@ export async function invokeWorkflow(
     if (evalInput.type === "prompt-only") {
       obs.event("prompt_only_invocation", {
         unique_invocation_id: evalInput.workflowId,
-        workflow_version_id: workflow.getWorkflowVersionId()
+        workflow_version_id: workflow.getWorkflowVersionId(),
       })
     }
 

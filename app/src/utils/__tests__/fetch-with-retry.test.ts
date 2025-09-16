@@ -7,12 +7,10 @@ describe("fetchWithRetry", () => {
   })
 
   it("should return immediately on successful response", async () => {
-    const mockFetch = vi
-      .spyOn(globalThis as any, "fetch")
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-      } as any)
+    const mockFetch = vi.spyOn(globalThis as any, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: "test" }),
+    } as any)
 
     const response = await fetchWithRetry("http://test.com")
 
@@ -55,13 +53,11 @@ describe("fetchWithRetry", () => {
   })
 
   it("should not retry on 404 Not Found", async () => {
-    const mockFetch = vi
-      .spyOn(globalThis as any, "fetch")
-      .mockResolvedValue({
-        ok: false,
-        status: 404,
-        json: async () => ({ error: "Not found" }),
-      } as any)
+    const mockFetch = vi.spyOn(globalThis as any, "fetch").mockResolvedValue({
+      ok: false,
+      status: 404,
+      json: async () => ({ error: "Not found" }),
+    } as any)
 
     const response = await fetchWithRetry("http://test.com")
 

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Generate unique workflow ID for this prompt-only invocation
     const workflowId = `prompt_only_${genShortId()}`
-    
+
     const input = {
       workflowVersionId,
       evalInput: {
@@ -36,15 +36,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Call the workflow invocation API instead of importing invokeWorkflow directly
-    const invokeResponse = await fetch(`${req.nextUrl.origin}/api/workflow/invoke`, {
-      method: "POST",
-      // Forward auth cookies so the nested API call remains authenticated
-      headers: {
-        "Content-Type": "application/json",
-        cookie: req.headers.get("cookie") ?? "",
-      },
-      body: JSON.stringify(input),
-    })
+    const invokeResponse = await fetch(
+      `${req.nextUrl.origin}/api/workflow/invoke`,
+      {
+        method: "POST",
+        // Forward auth cookies so the nested API call remains authenticated
+        headers: {
+          "Content-Type": "application/json",
+          cookie: req.headers.get("cookie") ?? "",
+        },
+        body: JSON.stringify(input),
+      }
+    )
 
     if (!invokeResponse.ok) {
       const errorData = await invokeResponse.json()

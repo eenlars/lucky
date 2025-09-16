@@ -71,7 +71,10 @@ export async function GET(request: NextRequest) {
       approvalRequest.response = response
 
       // save the updated request
-      await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
+      await fs.writeFile(
+        requestFilePath,
+        JSON.stringify(approvalRequest, null, 2)
+      )
 
       return NextResponse.json<ApproveData>({
         text: `Approval ${approvalRequest.status}: ${response}`,

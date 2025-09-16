@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
-  
+
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get("limit") || "1000")
   const offset = parseInt(searchParams.get("offset") || "0")

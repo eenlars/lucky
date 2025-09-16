@@ -8,9 +8,8 @@ type DataRow = { model: string; vague: number; clear: number }
 
 async function fetchChartData() {
   try {
-    const baseUrl = process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:3000' 
-      : ''
+    const baseUrl =
+      process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""
     const res = await fetch(`${baseUrl}/api/experiments/context-adaptation`, {
       cache: "no-store",
     })
@@ -106,7 +105,8 @@ export default async function ContextAdaptationPage() {
             Supporting Visualizations
           </h2>
           <p className="text-gray-600 mb-6">
-            Additional charts and detailed analysis supporting the main findings above.
+            Additional charts and detailed analysis supporting the main findings
+            above.
           </p>
         </div>
 

@@ -28,6 +28,7 @@
     "build": "bun run build:shared && bun run build:app",
     "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.ts",
     "test:gate": "bunx vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.ts",
-    "tsc": "cd app && tsc --noEmit && cd ../core && tsc --noEmit && cd ../runtime && tsc --noEmit && cd ../packages/shared && tsc --noEmit"
+    "tsc": "cd app && tsc --noEmit && cd ../core && tsc --noEmit && cd ../runtime && tsc --noEmit && cd ../packages/shared && tsc --noEmit",
+    "format": "cd app && bun run format && cd ../core && bun run format && cd ../runtime && bun run format"
   }
 }

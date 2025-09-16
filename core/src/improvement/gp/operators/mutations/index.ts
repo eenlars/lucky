@@ -1,6 +1,6 @@
 /**
  * MutationCoordinator - Central orchestrator for genetic programming mutations.
- * 
+ *
  * Handles various mutation strategies including:
  * - Model mutations (changing AI models)
  * - Prompt mutations (modifying system prompts)
@@ -8,7 +8,7 @@
  * - Structure mutations (changing workflow topology)
  * - Node operations (adding/deleting nodes)
  * - Iterative mutations (using behavioral evolution)
- * 
+ *
  * Mutations are selected based on weighted probability distribution
  * and preserve memory from parent genomes.
  */
@@ -45,14 +45,14 @@ export class MutationCoordinator {
 
   /**
    * Mutates a workflow genome using various mutation strategies.
-   * 
+   *
    * @param options - Mutation configuration including:
    *   - parent: The genome to mutate
    *   - intensity: Mutation strength (0.0-1.0), affects probability of additional changes
    *   - evolutionMode: The evolution mode determining available mutation types
-   * 
+   *
    * @returns Result containing the mutated genome or error with associated costs
-   * 
+   *
    * @remarks
    * - Selects mutation type based on weighted probability
    * - Preserves memory from parent genome
@@ -152,10 +152,10 @@ export class MutationCoordinator {
 
   /**
    * Selects a mutation type based on weighted probability distribution.
-   * 
+   *
    * @param evolutionMode - The evolution mode that determines available mutations
    * @returns The selected mutation type
-   * 
+   *
    * @remarks
    * Filters mutation weights to only include mutations valid for the evolution mode,
    * then uses weighted random selection to choose a mutation type.
@@ -197,7 +197,7 @@ export class MutationCoordinator {
 
   /**
    * Executes a specific mutation type on the workflow configuration.
-   * 
+   *
    * @param mutationType - The type of mutation to apply
    * @param config - The workflow configuration to mutate (modified in-place)
    * @param parent - The parent genome providing context

@@ -5,5 +5,3 @@ export const SUPABASE_TABLES = {
   NodeVersion: 17514,
   Message: 17634,
 } as const
-
-

@@ -32,6 +32,6 @@ export function useMetrics() {
     metrics,
     setMetrics,
     simulateMetrics,
-    resetMetrics
+    resetMetrics,
   }
 }

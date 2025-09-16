@@ -22,12 +22,116 @@ import DatasetSelector from "@/components/DatasetSelector"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { loadFromDSLClient, loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
+import {
+  loadFromDSLClient,
+  loadFromDSLClientDisplay,
+} from "@core/workflow/setup/WorkflowLoader.client"
 
 type EditMode = "graph" | "json" | "eval"
 
 interface EditModeSelectorProps {
   workflowVersion?: Tables<"WorkflowVersion">
+}
+
+// Stable, top-level component to avoid remounts that close the dialog
+function GraphRunWithPromptButton({
+  exportToJSON,
+}: {
+  exportToJSON: () => string
+}) {
+  const [promptDialogOpen, setPromptDialogOpen] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+  const [logs, setLogs] = useState<string[]>([])
+
+  const addLog = (message: string) => {
+    setLogs((prev) => [...prev, message])
+  }
+
+  const handleExecuteWorkflow = async (prompt: string) => {
+    setIsRunning(true)
+    setLogs([])
+
+    try {
+      addLog("Starting workflow execution...")
+      await new Promise((resolve) => setTimeout(resolve, 300))
+
+      addLog("Exporting workflow configuration...")
+      const json = exportToJSON()
+      const parsed = JSON.parse(json)
+      const cfgMaybe = toWorkflowConfig(parsed)
+
+      if (!cfgMaybe) {
+        addLog("❌ Error: Invalid workflow configuration")
+        return
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      addLog("Loading workflow configuration...")
+      const cfg = await loadFromDSLClient(cfgMaybe)
+
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      addLog("Sending request to workflow API...")
+      const response = await fetch("/api/workflow/invoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dslConfig: cfg,
+          evalInput: {
+            type: "text",
+            question: prompt,
+            answer: "",
+            goal: "Prompt run",
+            workflowId: "adhoc-ui",
+          },
+        }),
+      })
+
+      addLog("Processing response...")
+      const result = await response.json()
+
+      if (result?.success) {
+        const first = result?.data?.[0]
+        const out =
+          first?.queueRunResult?.finalWorkflowOutput ??
+          first?.finalWorkflowOutputs
+        addLog("✅ Workflow completed successfully!")
+        addLog(`Result: ${out || "No response"}`)
+      } else {
+        addLog(`❌ Error: ${result?.error || "Unknown error"}`)
+      }
+    } catch (error) {
+      addLog(`❌ Error: ${error}`)
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (isRunning) return // prevent closing during execution
+    setPromptDialogOpen(open)
+    // Clear logs when opening/closing to ensure fresh state
+    setLogs([])
+  }
+
+  return (
+    <>
+      <Button
+        onClick={() => setPromptDialogOpen(true)}
+        disabled={isRunning}
+        variant="outline"
+        size="sm"
+      >
+        {isRunning ? "Running..." : "Run with Prompt"}
+      </Button>
+      <PromptInputDialog
+        open={promptDialogOpen}
+        onOpenChange={handleDialogOpenChange}
+        onExecute={handleExecuteWorkflow}
+        loading={isRunning}
+        logs={logs}
+      />
+    </>
+  )
 }
 
 export default function EditModeSelector({
@@ -109,12 +213,16 @@ export default function EditModeSelector({
         if (datasetId) {
           // Get the updated case count after loading
           const currentState = useRunConfigStore.getState()
-          toast.success(`Dataset loaded with ${currentState.cases.length} test cases`)
+          toast.success(
+            `Dataset loaded with ${currentState.cases.length} test cases`
+          )
         } else {
           toast.success("Dataset selection cleared")
         }
       } catch (error) {
-        toast.error(`Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`)
+        toast.error(
+          `Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`
+        )
       } finally {
         setDatasetLoading(false)
       }
@@ -202,104 +310,7 @@ export default function EditModeSelector({
   }
 
   if (mode === "graph") {
-    const GraphHeaderButtons = () => {
-      const [promptDialogOpen, setPromptDialogOpen] = useState(false)
-      const [isRunning, setIsRunning] = useState(false)
-      const [logs, setLogs] = useState<string[]>([])
-
-      const addLog = (message: string) => {
-        setLogs((prev) => [...prev, message])
-      }
-
-      const handleExecuteWorkflow = async (prompt: string) => {
-        setIsRunning(true)
-        setLogs([])
-
-        try {
-          addLog("Starting workflow execution...")
-          await new Promise((resolve) => setTimeout(resolve, 300))
-
-          addLog("Exporting workflow configuration...")
-          const json = exportToJSON()
-          const parsed = JSON.parse(json)
-          const cfgMaybe = toWorkflowConfig(parsed)
-
-          if (!cfgMaybe) {
-            addLog("❌ Error: Invalid workflow configuration")
-            return
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, 200))
-          addLog("Loading workflow configuration...")
-          const cfg = await loadFromDSLClient(cfgMaybe)
-
-          await new Promise((resolve) => setTimeout(resolve, 200))
-          addLog("Sending request to workflow API...")
-          const response = await fetch("/api/workflow/invoke", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              dslConfig: cfg,
-              evalInput: {
-                type: "text",
-                question: prompt,
-                answer: "",
-                goal: "Prompt run",
-                workflowId: "adhoc-ui",
-              },
-            }),
-          })
-
-          addLog("Processing response...")
-          const result = await response.json()
-
-          if (result?.success) {
-            const first = result?.data?.[0]
-            const out =
-              first?.queueRunResult?.finalWorkflowOutput ??
-              first?.finalWorkflowOutputs
-            addLog("✅ Workflow completed successfully!")
-            addLog(`Result: ${out || "No response"}`)
-          } else {
-            addLog(`❌ Error: ${result?.error || "Unknown error"}`)
-          }
-        } catch (error) {
-          addLog(`❌ Error: ${error}`)
-        } finally {
-          setIsRunning(false)
-        }
-      }
-
-      const handleDialogOpenChange = (open: boolean) => {
-        if (isRunning) return // prevent closing during execution
-        setPromptDialogOpen(open)
-        if (!open) {
-          setLogs([])
-        }
-      }
-
-      return (
-        <>
-          <Button
-            onClick={() => setPromptDialogOpen(true)}
-            disabled={isRunning}
-            variant="outline"
-            size="sm"
-            data-testid="run-with-prompt-button"
-          >
-            {isRunning ? "Running..." : "Run with Prompt"}
-          </Button>
-          <PromptInputDialog
-            open={promptDialogOpen}
-            onOpenChange={handleDialogOpenChange}
-            onExecute={handleExecuteWorkflow}
-            loading={isRunning}
-            logs={logs}
-          />
-        </>
-      )
-    }
-
+    // Use a stable, top-level component to avoid remounts
     const HeaderRight = (
       <div className="flex items-center space-x-2">
         <Button
@@ -314,7 +325,7 @@ export default function EditModeSelector({
             Cmd+L
           </span>
         </Button>
-        <GraphHeaderButtons />
+        <GraphRunWithPromptButton exportToJSON={exportToJSON} />
         <ModeSwitcher mode={mode} onChange={handleModeChange} />
       </div>
     )
@@ -394,7 +405,7 @@ export default function EditModeSelector({
                   onChange={(e) => setGoal(e.target.value)}
                   data-testid="evaluation-goal-input"
                 />
-                
+
                 {/* Dataset Selection */}
                 <div className="flex items-center gap-2 mt-2">
                   <label className="text-sm font-semibold text-gray-700 uppercase">
@@ -405,13 +416,15 @@ export default function EditModeSelector({
                   </span>
                 </div>
                 <div className="w-full max-w-xs">
-                  <DatasetSelector 
+                  <DatasetSelector
                     selectedDatasetId={datasetId}
                     onSelect={handleDatasetSelect}
                     disabled={datasetLoading}
                   />
                   {datasetLoading && (
-                    <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Loading dataset records...
+                    </div>
                   )}
                 </div>
               </div>

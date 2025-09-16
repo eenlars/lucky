@@ -113,7 +113,11 @@ export default function EditorHeader({
           )}
 
           <div className="relative group">
-            <Button variant="ghost" size="sm" className="p-2 text-gray-400 hover:text-gray-600">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2 text-gray-400 hover:text-gray-600"
+            >
               <svg
                 className="w-4 h-4"
                 fill="none"

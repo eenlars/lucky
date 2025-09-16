@@ -75,9 +75,10 @@ const baseSidebarItems: SidebarItem[] = [
 ]
 
 // Show workflows item only in development
-const sidebarItems: SidebarItem[] = process.env.NODE_ENV === 'development' 
-  ? baseSidebarItems
-  : baseSidebarItems.filter(item => item.href !== "/workflows")
+const sidebarItems: SidebarItem[] =
+  process.env.NODE_ENV === "development"
+    ? baseSidebarItems
+    : baseSidebarItems.filter((item) => item.href !== "/workflows")
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -91,10 +92,12 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="flex h-full flex-col relative">
       {/* Header */}
-      <div className={cn(
-        "flex h-14 items-center border-b border-sidebar-border/30 px-5 transition-all duration-300 ease-out",
-        isCollapsed && !isMobile && "px-0 justify-center"
-      )}>
+      <div
+        className={cn(
+          "flex h-14 items-center border-b border-sidebar-border/30 px-5 transition-all duration-300 ease-out",
+          isCollapsed && !isMobile && "px-0 justify-center"
+        )}
+      >
         <Link
           href="/"
           className={cn(
@@ -123,16 +126,19 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className={cn(
-        "flex-1 px-2.5 py-3 transition-all duration-300 ease-out",
-        isCollapsed && !isMobile && "px-2"
-      )} aria-label="Primary navigation">
+      <nav
+        className={cn(
+          "flex-1 px-2.5 py-3 transition-all duration-300 ease-out",
+          isCollapsed && !isMobile && "px-2"
+        )}
+        aria-label="Primary navigation"
+      >
         <ul className="space-y-0.5">
           {sidebarItems.map((item) => {
             const isActive =
               pathname === item.href || pathname?.startsWith(`${item.href}/`)
             const Icon = item.icon
-            
+
             const linkContent = (
               <Link
                 href={item.href}
@@ -152,45 +158,52 @@ export default function Sidebar() {
               >
                 {/* Active indicator */}
                 {isActive && (
-                  <div 
+                  <div
                     className={cn(
                       "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-300",
                       isCollapsed && !isMobile && "h-3"
-                    )} 
-                    aria-hidden="true" 
+                    )}
+                    aria-hidden="true"
                   />
                 )}
-                
-                <Icon className={cn(
-                  "size-4 shrink-0 transition-all duration-200",
-                  isActive && "text-sidebar-primary",
-                  isCollapsed && !isMobile && "size-5"
-                )} aria-hidden="true" />
-                <span className={cn(
-                  "truncate transition-all duration-300 ease-out",
-                  isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
-                )}>{item.label}</span>
+
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0 transition-all duration-200",
+                    isActive && "text-sidebar-primary",
+                    isCollapsed && !isMobile && "size-5"
+                  )}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn(
+                    "truncate transition-all duration-300 ease-out",
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
+                  )}
+                >
+                  {item.label}
+                </span>
                 {isActive && !isCollapsed && !isMobile && (
                   <span className="sr-only">(current)</span>
                 )}
               </Link>
             )
-            
+
             return (
               <li key={item.href}>
                 {isCollapsed && !isMobile ? (
                   <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      {linkContent}
-                    </TooltipTrigger>
-                    <TooltipContent 
-                      side="right" 
+                    <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                    <TooltipContent
+                      side="right"
                       sideOffset={8}
                       className="bg-popover text-popover-foreground border border-border shadow-md"
                     >
                       <p className="font-medium">{item.label}</p>
                       {item.description && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {item.description}
+                        </p>
                       )}
                     </TooltipContent>
                   </Tooltip>
@@ -228,10 +241,12 @@ export default function Sidebar() {
       )}
 
       {/* Footer */}
-      <div className={cn(
-        "mt-auto border-t border-sidebar-border/30 px-5 py-3 transition-all duration-300",
-        isCollapsed && !isMobile && "px-2"
-      )}>
+      <div
+        className={cn(
+          "mt-auto border-t border-sidebar-border/30 px-5 py-3 transition-all duration-300",
+          isCollapsed && !isMobile && "px-2"
+        )}
+      >
         <UserProfile isCollapsed={isCollapsed} isMobile={isMobile} />
       </div>
     </div>
@@ -270,11 +285,13 @@ export default function Sidebar() {
         className={cn(
           "fixed left-0 top-0 z-40 h-screen bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border/50",
           "transition-all duration-300 ease-out",
-          isMobile ? (
-            isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"
-          ) : (
-            isCollapsed ? "w-16" : "w-64"
-          )
+          isMobile
+            ? isMobileOpen
+              ? "translate-x-0 w-64"
+              : "-translate-x-full w-64"
+            : isCollapsed
+              ? "w-16"
+              : "w-64"
         )}
         aria-label="Primary sidebar"
       >

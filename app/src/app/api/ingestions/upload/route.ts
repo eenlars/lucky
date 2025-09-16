@@ -92,19 +92,17 @@ export async function POST(req: NextRequest) {
       }
       uploadPath = `${folder}/data.json`
       fileName = "data.json"
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(
-          uploadPath,
-          new Blob([JSON.stringify(textData, null, 2)], {
-            type: "application/json",
-          }),
-          {
-            cacheControl: "3600",
-            upsert: true,
-            contentType: "application/json",
-          }
-        )
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(
+        uploadPath,
+        new Blob([JSON.stringify(textData, null, 2)], {
+          type: "application/json",
+        }),
+        {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: "application/json",
+        }
+      )
       if (uploadError) {
         return NextResponse.json(
           { error: `Upload failed: ${uploadError.message}` },
@@ -202,27 +200,42 @@ export async function POST(req: NextRequest) {
         // Parse CSV and create records
         try {
           const csvText = await file.text()
-          const lines = csvText.split('\n').filter(line => line.trim())
+          const lines = csvText.split("\n").filter((line) => line.trim())
           if (lines.length > 1) {
-            const headers = lines[0].split(',').map(h => h.trim())
-            
+            const headers = lines[0].split(",").map((h) => h.trim())
+
             // Find input and output columns
-            const inputCol = headers.findIndex(h => h.toLowerCase().includes('input') || h.toLowerCase().includes('question'))
-            let outputCol = headers.findIndex(h => h.toLowerCase().includes('output') || h.toLowerCase().includes('answer') || h.toLowerCase().includes('expected'))
-            
+            const inputCol = headers.findIndex(
+              (h) =>
+                h.toLowerCase().includes("input") ||
+                h.toLowerCase().includes("question")
+            )
+            let outputCol = headers.findIndex(
+              (h) =>
+                h.toLowerCase().includes("output") ||
+                h.toLowerCase().includes("answer") ||
+                h.toLowerCase().includes("expected")
+            )
+
             // If evaluation column is specified, use that
-            if (evaluation && evaluation.startsWith('column:')) {
+            if (evaluation && evaluation.startsWith("column:")) {
               const evalColName = evaluation.slice(7)
-              outputCol = headers.findIndex(h => h === evalColName)
+              outputCol = headers.findIndex((h) => h === evalColName)
             }
-            
+
             // Create records for each row
-            for (let i = 1; i < lines.length && i <= 50; i++) { // Limit to 50 records for performance
-              const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+            for (let i = 1; i < lines.length && i <= 50; i++) {
+              // Limit to 50 records for performance
+              const values = lines[i]
+                .split(",")
+                .map((v) => v.trim().replace(/^"|"$/g, ""))
               if (values.length >= headers.length) {
-                const input = inputCol >= 0 ? values[inputCol] : values[0] || ''
-                const output = outputCol >= 0 ? values[outputCol] : values[values.length - 1] || ''
-                
+                const input = inputCol >= 0 ? values[inputCol] : values[0] || ""
+                const output =
+                  outputCol >= 0
+                    ? values[outputCol]
+                    : values[values.length - 1] || ""
+
                 if (input && output) {
                   await createDatasetRecord({
                     dataset_id: dataset.dataset_id,

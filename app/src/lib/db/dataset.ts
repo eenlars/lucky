@@ -44,7 +44,8 @@ export async function createDatasetRecord(data: {
     .select()
     .single()
 
-  if (error) throw new Error(`Failed to create dataset record: ${error.message}`)
+  if (error)
+    throw new Error(`Failed to create dataset record: ${error.message}`)
   return result
 }
 
@@ -72,7 +73,9 @@ export async function listDataSets(): Promise<DataSet[]> {
   return data || []
 }
 
-export async function getDatasetRecords(dataset_id: string): Promise<DatasetRecord[]> {
+export async function getDatasetRecords(
+  dataset_id: string
+): Promise<DatasetRecord[]> {
   const { data, error } = await supabase
     .from("DatasetRecord")
     .select("*")

@@ -283,14 +283,19 @@ export async function GET() {
     const PROD_BASELINE_URL = ADAPTIVE_RESULTS_URL
 
     // Collect all datasets: final, baseline, our-algorithm
-    const files: { final?: string; baseline?: string; ourAlgorithm?: string } = {}
+    const files: { final?: string; baseline?: string; ourAlgorithm?: string } =
+      {}
     const errors: string[] = []
     const info: string[] = []
     const finalChart: Array<{ model: string; vague: number; clear: number }> =
       []
     let baselineChart: Array<{ model: string; vague: number; clear: number }> =
       []
-    let ourAlgorithmChart: Array<{ model: string; vague: number; clear: number }> = []
+    let ourAlgorithmChart: Array<{
+      model: string
+      vague: number
+      clear: number
+    }> = []
     let metricsChart: MetricsRow[] = []
 
     // // Final validation (if present)
@@ -365,7 +370,9 @@ export async function GET() {
     }
 
     // Our Algorithm runs
-    const ourAlgorithmPath = await getLatestByPrefix(resultsDir, ["adaptive-results.our-algorithm"])
+    const ourAlgorithmPath = await getLatestByPrefix(resultsDir, [
+      "adaptive-results.our-algorithm",
+    ])
     if (ourAlgorithmPath) {
       try {
         const raw = await fs.readFile(ourAlgorithmPath, "utf-8")
@@ -374,7 +381,9 @@ export async function GET() {
         if (runs.length) {
           ourAlgorithmChart = aggregateOurAlgorithmRuns(runs)
           files.ourAlgorithm = ourAlgorithmPath
-          info.push(`our-algorithm: runs=${runs.length}, models=${ourAlgorithmChart.length}`)
+          info.push(
+            `our-algorithm: runs=${runs.length}, models=${ourAlgorithmChart.length}`
+          )
         } else {
           info.push("Our Algorithm file parsed but contains no runs")
         }

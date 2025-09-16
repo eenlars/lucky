@@ -32,12 +32,12 @@ export function useRubricManagement(
   // Auto-save rubric when criteria change (with debounce)
   useEffect(() => {
     if (criteria.length === 0) return
-    
+
     const timeoutId = setTimeout(() => {
       const rubricString = createRubricString(criteria)
       updateExpectedRef.current(ioId, rubricString)
     }, 500) // 500ms debounce
-    
+
     return () => clearTimeout(timeoutId)
   }, [criteria, ioId])
 

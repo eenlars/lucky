@@ -47,14 +47,15 @@ export function PromptInputDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]" data-testid="prompt-input-dialog">
         <DialogHeader>
-          <DialogTitle>{isExecuting ? "Workflow Execution" : "Run Workflow"}</DialogTitle>
+          <DialogTitle>
+            {isExecuting ? "Workflow Execution" : "Run Workflow"}
+          </DialogTitle>
           <DialogDescription>
-            {loading 
+            {loading
               ? "Workflow is running. Please wait for completion."
               : logs.length > 0
-              ? "Workflow execution completed. You can view the results below."
-              : "Enter a prompt to execute the workflow with. This will be used as the initial input for the workflow."
-            }
+                ? "Workflow execution completed. You can view the results below."
+                : "Enter a prompt to execute the workflow with. This will be used as the initial input for the workflow."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -95,8 +96,8 @@ export function PromptInputDialog({
             {logs.length > 0 && !loading ? "Close" : "Cancel"}
           </Button>
           {!isExecuting && (
-            <Button 
-              onClick={handleExecute} 
+            <Button
+              onClick={handleExecute}
               disabled={!prompt.trim() || loading}
               data-testid="execute-workflow-button"
             >

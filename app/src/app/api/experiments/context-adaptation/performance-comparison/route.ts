@@ -29,7 +29,13 @@ interface StatisticalResult {
 }
 
 interface ComparisonRow {
-  method: "Vague Prompt" | "Clear Prompt" | "This Paper (1 Run, Vague)" | "This Paper (1 Run, Clear)" | "This Paper (3 Runs, Vague)" | "This Paper (3 Runs, Clear)"
+  method:
+    | "Vague Prompt"
+    | "Clear Prompt"
+    | "This Paper (1 Run, Vague)"
+    | "This Paper (1 Run, Clear)"
+    | "This Paper (3 Runs, Vague)"
+    | "This Paper (3 Runs, Clear)"
   model: string
   n: number
   adaptationRate: StatisticalResult
@@ -142,7 +148,10 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
     const baselineData = JSON.parse(baselineRaw)
 
     // Load Our Algorithm data (adaptive-results.our-algorithm.json)
-    const ourAlgorithmPath = path.join(experimentsDir, "adaptive-results.our-algorithm.json")
+    const ourAlgorithmPath = path.join(
+      experimentsDir,
+      "adaptive-results.our-algorithm.json"
+    )
     const ourAlgorithmRaw = await fs.readFile(ourAlgorithmPath, "utf-8")
     const ourAlgorithmData = JSON.parse(ourAlgorithmRaw)
 
@@ -155,7 +164,6 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
     // Group baseline runs (include all scenarios)
     for (const run of baselineRuns) {
-
       if (!groupedBaseline.has(run.model)) {
         groupedBaseline.set(run.model, { vague: [], clear: [] })
       }
@@ -168,12 +176,18 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
     }
 
     // Extract loop-specific results from our algorithm runs
-    const groupedOurAlgorithmLoop1 = new Map<string, { vague: any[]; clear: any[] }>()
-    const groupedOurAlgorithmLoop3 = new Map<string, { vague: any[]; clear: any[] }>()
-    
+    const groupedOurAlgorithmLoop1 = new Map<
+      string,
+      { vague: any[]; clear: any[] }
+    >()
+    const groupedOurAlgorithmLoop3 = new Map<
+      string,
+      { vague: any[]; clear: any[] }
+    >()
+
     for (const run of ourAlgorithmRuns) {
       const loops = run.loops || []
-      
+
       // Extract loop 1 results
       const loop1 = loops.find((l: any) => l.loop === 1)
       if (loop1) {
@@ -186,7 +200,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           adapted: loop1.metrics?.adapted || false,
           success: loop1.success || false,
           cost: loop1.cost || 0,
-          durationMs: loop1.durationMs || 0
+          durationMs: loop1.durationMs || 0,
         }
         if (run.condition === "vague") {
           modelGroup.vague.push(loopResult)
@@ -194,7 +208,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           modelGroup.clear.push(loopResult)
         }
       }
-      
+
       // Extract loop 3 results
       const loop3 = loops.find((l: any) => l.loop === 3)
       if (loop3) {
@@ -207,7 +221,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           adapted: loop3.metrics?.adapted || false,
           success: loop3.success || false,
           cost: loop3.cost || 0,
-          durationMs: loop3.durationMs || 0
+          durationMs: loop3.durationMs || 0,
         }
         if (run.condition === "vague") {
           modelGroup.vague.push(loopResult)
@@ -219,7 +233,11 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
     // Get all models that have data
     const models = Array.from(
-      new Set([...groupedBaseline.keys(), ...groupedOurAlgorithmLoop1.keys(), ...groupedOurAlgorithmLoop3.keys()])
+      new Set([
+        ...groupedBaseline.keys(),
+        ...groupedOurAlgorithmLoop1.keys(),
+        ...groupedOurAlgorithmLoop3.keys(),
+      ])
     ).filter(Boolean)
 
     const results: ComparisonRow[] = []
@@ -231,8 +249,14 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       }
       const vagueRuns = baselineGroup.vague
       const clearRuns = baselineGroup.clear
-      const ourAlgorithmLoop1Group = groupedOurAlgorithmLoop1.get(model) || { vague: [], clear: [] }
-      const ourAlgorithmLoop3Group = groupedOurAlgorithmLoop3.get(model) || { vague: [], clear: [] }
+      const ourAlgorithmLoop1Group = groupedOurAlgorithmLoop1.get(model) || {
+        vague: [],
+        clear: [],
+      }
+      const ourAlgorithmLoop3Group = groupedOurAlgorithmLoop3.get(model) || {
+        vague: [],
+        clear: [],
+      }
 
       if (
         vagueRuns.length === 0 &&
@@ -261,10 +285,18 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
       const vagueMetrics = extractMetrics(vagueRuns)
       const clearMetrics = extractMetrics(clearRuns)
-      const thisMethod1RunVagueMetrics = extractMetrics(ourAlgorithmLoop1Group.vague)
-      const thisMethod1RunClearMetrics = extractMetrics(ourAlgorithmLoop1Group.clear)
-      const thisMethod3RunsVagueMetrics = extractMetrics(ourAlgorithmLoop3Group.vague)
-      const thisMethod3RunsClearMetrics = extractMetrics(ourAlgorithmLoop3Group.clear)
+      const thisMethod1RunVagueMetrics = extractMetrics(
+        ourAlgorithmLoop1Group.vague
+      )
+      const thisMethod1RunClearMetrics = extractMetrics(
+        ourAlgorithmLoop1Group.clear
+      )
+      const thisMethod3RunsVagueMetrics = extractMetrics(
+        ourAlgorithmLoop3Group.vague
+      )
+      const thisMethod3RunsClearMetrics = extractMetrics(
+        ourAlgorithmLoop3Group.clear
+      )
 
       // Statistical analysis for each condition
       const vagueAdaptationStats = calculateStats(
@@ -288,10 +320,18 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
       const vagueCostStats = calculateStats(vagueMetrics.costs)
       const clearCostStats = calculateStats(clearMetrics.costs)
-      const thisMethod1RunVagueCostStats = calculateStats(thisMethod1RunVagueMetrics.costs)
-      const thisMethod1RunClearCostStats = calculateStats(thisMethod1RunClearMetrics.costs)
-      const thisMethod3RunsVagueCostStats = calculateStats(thisMethod3RunsVagueMetrics.costs)
-      const thisMethod3RunsClearCostStats = calculateStats(thisMethod3RunsClearMetrics.costs)
+      const thisMethod1RunVagueCostStats = calculateStats(
+        thisMethod1RunVagueMetrics.costs
+      )
+      const thisMethod1RunClearCostStats = calculateStats(
+        thisMethod1RunClearMetrics.costs
+      )
+      const thisMethod3RunsVagueCostStats = calculateStats(
+        thisMethod3RunsVagueMetrics.costs
+      )
+      const thisMethod3RunsClearCostStats = calculateStats(
+        thisMethod3RunsClearMetrics.costs
+      )
 
       const vagueDurationStats = calculateStats(vagueMetrics.durations)
       const clearDurationStats = calculateStats(clearMetrics.durations)
@@ -405,7 +445,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
             thisMethod1RunVagueVsVagueAdaptationP < 0.05,
         })
       }
-      
+
       if (ourAlgorithmLoop1Group.clear.length > 0) {
         results.push({
           method: "This Paper (1 Run, Clear)",
@@ -421,7 +461,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
             thisMethod1RunClearVsVagueAdaptationP < 0.05,
         })
       }
-      
+
       if (ourAlgorithmLoop3Group.vague.length > 0) {
         results.push({
           method: "This Paper (3 Runs, Vague)",
@@ -437,7 +477,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
             thisMethod3RunsVagueVsVagueAdaptationP < 0.05,
         })
       }
-      
+
       if (ourAlgorithmLoop3Group.clear.length > 0) {
         results.push({
           method: "This Paper (3 Runs, Clear)",
