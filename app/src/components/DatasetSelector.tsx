@@ -17,7 +17,11 @@ interface DatasetSelectorProps {
   disabled?: boolean
 }
 
-export default function DatasetSelector({ onSelect, selectedDatasetId, disabled = false }: DatasetSelectorProps) {
+export default function DatasetSelector({
+  onSelect,
+  selectedDatasetId,
+  disabled = false,
+}: DatasetSelectorProps) {
   const [datasets, setDatasets] = useState<Dataset[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -50,14 +54,18 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
       }
     } catch (error) {
       console.error("Failed to load datasets:", error)
-      setError(error instanceof Error ? error.message : "Failed to load datasets")
+      setError(
+        error instanceof Error ? error.message : "Failed to load datasets"
+      )
       setDatasets([])
     } finally {
       setLoading(false)
     }
   }
 
-  const selectedDataset = datasets.find(d => d.datasetId === selectedDatasetId)
+  const selectedDataset = datasets.find(
+    (d) => d.datasetId === selectedDatasetId
+  )
 
   return (
     <div className="relative">
@@ -68,15 +76,21 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
         className="w-full justify-between"
         data-testid="dataset-selector-trigger"
       >
-        {loading ? "Loading..." : selectedDataset ? selectedDataset.name : error ? "Error loading datasets" : "Select Dataset"}
+        {loading
+          ? "Loading..."
+          : selectedDataset
+            ? selectedDataset.name
+            : error
+              ? "Error loading datasets"
+              : "Select Dataset"}
         <span className="ml-2">▼</span>
       </Button>
 
       {error && (
         <div className="mt-1 text-xs text-red-600">
           {error}
-          <button 
-            onClick={loadDatasets} 
+          <button
+            onClick={loadDatasets}
             className="ml-2 underline hover:no-underline"
           >
             Retry
@@ -114,7 +128,8 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
                 >
                   <div className="font-medium">{dataset.name}</div>
                   <div className="text-xs text-gray-500">
-                    {dataset.description} • {new Date(dataset.createdAt).toLocaleDateString()}
+                    {dataset.description} •{" "}
+                    {new Date(dataset.createdAt).toLocaleDateString()}
                   </div>
                 </button>
               ))}

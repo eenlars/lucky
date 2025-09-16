@@ -32,15 +32,12 @@ function WorkflowNode({
   const _updateNode = useAppStore((state) => state.updateNode)
   const [_isToolSelectorOpen, _setIsToolSelectorOpen] = useState(false)
 
-  const onRunClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
-      // When clicking run from a node in graph mode, just open the prompt dialog.
-      // Optionally, we could pre-fill a startNodeId here.
-      // runner removed
-    },
-    []
-  )
+  const onRunClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    // When clicking run from a node in graph mode, just open the prompt dialog.
+    // Optionally, we could pre-fill a startNodeId here.
+    // runner removed
+  }, [])
 
   // check if this is a start or end node by type
   const isStartOrEndNode =
@@ -54,12 +51,9 @@ function WorkflowNode({
 
   // Node ID is edited in the Node Details dialog; inline editing removed
 
-  const _handleToolSelect = useCallback(
-    (_toolName: string) => {
-      // Functionality removed
-    },
-    []
-  )
+  const _handleToolSelect = useCallback((_toolName: string) => {
+    // Functionality removed
+  }, [])
 
   const _onAddToolClick = useCallback((_e: React.MouseEvent) => {
     // Functionality removed

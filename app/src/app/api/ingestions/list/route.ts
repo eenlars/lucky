@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest) {
       if (datasets.length > 0) {
         return NextResponse.json({
           success: true,
-          datasets: datasets.map(ds => ({
+          datasets: datasets.map((ds) => ({
             datasetId: ds.dataset_id,
             name: ds.name,
             description: ds.description,

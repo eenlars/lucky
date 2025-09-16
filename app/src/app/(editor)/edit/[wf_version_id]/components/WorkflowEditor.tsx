@@ -71,7 +71,8 @@ export default function WorkflowEditor({
       router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
       console.error("Failed to save workflow:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save workflow"
       showToast.error.save(errorMessage)
     } finally {
       setIsLoading(false)
@@ -120,7 +121,8 @@ export default function WorkflowEditor({
       }
     } catch (error) {
       console.error("Failed to run workflow:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to run workflow"
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to run workflow"
       setRunError(errorMessage)
       showToast.error.run(errorMessage)
     } finally {

@@ -17,7 +17,12 @@ async function runOnce(setupFilePath?: string) {
       )
     )
 
-    const { success, error, data: results, usdCost } = await invokeWorkflow({
+    const {
+      success,
+      error,
+      data: results,
+      usdCost,
+    } = await invokeWorkflow({
       filename: setupPath,
       evalInput: SELECTED_QUESTION,
     })
@@ -31,7 +36,7 @@ async function runOnce(setupFilePath?: string) {
     const firstResult = results[0]
     const workflowInvocationId = firstResult.workflowInvocationId
     const isPromptOnly = SELECTED_QUESTION.type === "prompt-only"
-    
+
     lgg.log(`\n📊 Results (${results.length} cases):`)
     if (firstResult.fitness) {
       lgg.log(

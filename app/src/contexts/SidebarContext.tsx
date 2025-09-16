@@ -1,6 +1,12 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react"
 
 interface SidebarContextType {
   isCollapsed: boolean
@@ -15,8 +21,8 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const savedState = localStorage.getItem('sidebar-collapsed')
-    if (savedState === 'true') {
+    const savedState = localStorage.getItem("sidebar-collapsed")
+    if (savedState === "true") {
       setIsCollapsed(true)
     }
   }, [])
@@ -25,20 +31,22 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
+
     checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
+    window.addEventListener("resize", checkMobile)
+
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
   const handleSetCollapsed = (collapsed: boolean) => {
     setIsCollapsed(collapsed)
-    localStorage.setItem('sidebar-collapsed', collapsed.toString())
+    localStorage.setItem("sidebar-collapsed", collapsed.toString())
   }
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed: handleSetCollapsed, isMobile }}>
+    <SidebarContext.Provider
+      value={{ isCollapsed, setIsCollapsed: handleSetCollapsed, isMobile }}
+    >
       {children}
     </SidebarContext.Provider>
   )
@@ -47,7 +55,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 export function useSidebar() {
   const context = useContext(SidebarContext)
   if (context === undefined) {
-    throw new Error('useSidebar must be used within a SidebarProvider')
+    throw new Error("useSidebar must be used within a SidebarProvider")
   }
   return context
 }

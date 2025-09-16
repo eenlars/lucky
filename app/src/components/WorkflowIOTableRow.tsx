@@ -8,9 +8,7 @@ import FeedbackDialog from "./FeedbackDialog"
 import type { WorkflowIO } from "./WorkflowIOTable"
 import { useMetrics } from "./hooks/useMetrics"
 import { isErrorResult, isInvokeWorkflowResult } from "./utils/result-utils"
-import {
-  parseWorkflowResultToMetrics,
-} from "./utils/workflow-integration"
+import { parseWorkflowResultToMetrics } from "./utils/workflow-integration"
 
 type Props = {
   io: WorkflowIO
@@ -147,7 +145,9 @@ export default function WorkflowIOTableRow({
               <textarea
                 className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
                 value={io.expected}
-                onChange={(e) => updateCase(io.id, { expected: e.target.value })}
+                onChange={(e) =>
+                  updateCase(io.id, { expected: e.target.value })
+                }
                 placeholder="Enter expected output..."
                 disabled={busy}
                 data-testid={`test-case-expected-${io.id}`}
@@ -183,7 +183,9 @@ export default function WorkflowIOTableRow({
               </label>
               <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Score</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Score
+                  </span>
                   <span
                     className={`text-xs font-bold tabular-nums ${
                       metricsHook.metrics.score !== null
@@ -199,13 +201,17 @@ export default function WorkflowIOTableRow({
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Time</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Time
+                  </span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.time || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">Cost</span>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Cost
+                  </span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.cost || "—"}
                   </span>

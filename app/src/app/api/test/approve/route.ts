@@ -36,6 +36,14 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Sanitize approvalId to prevent path traversal attacks
+    const sanitizedApprovalId = path.basename(approvalId).replace(/[^a-zA-Z0-9_-]/g, '')
+    if (!sanitizedApprovalId || sanitizedApprovalId !== approvalId) {
+      return NextResponse.json<ApproveData>({
+        text: "Error: Invalid approval ID format",
+      })
+    }
+
     // Determine the request file path (supports legacy locations)
     const candidateDirs = [
       APPROVAL_STORAGE_PATH,
@@ -45,7 +53,7 @@ export async function GET(request: NextRequest) {
       path.join(process.cwd(), "logging_folder", "approvals"),
     ]
     const candidateFiles = candidateDirs.map((dir) =>
-      path.join(dir, `${approvalId}.json`)
+      path.join(dir, `${sanitizedApprovalId}.json`)
     )
 
     try {
@@ -71,7 +79,10 @@ export async function GET(request: NextRequest) {
       approvalRequest.response = response
 
       // save the updated request
-      await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
+      await fs.writeFile(
+        requestFilePath,
+        JSON.stringify(approvalRequest, null, 2)
+      )
 
       return NextResponse.json<ApproveData>({
         text: `Approval ${approvalRequest.status}: ${response}`,

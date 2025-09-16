@@ -13,7 +13,7 @@ const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(
 
 export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
-  
+
   const value = {
     promptDialogOpen,
     setPromptDialogOpen,
@@ -26,7 +26,7 @@ export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
     setPendingStartNodeId: () => {},
     executeWorkflowWithPrompt: async () => {},
   }
-  
+
   return (
     <WorkflowRunnerContext.Provider value={value}>
       {children}

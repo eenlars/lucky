@@ -24,11 +24,11 @@ export default function ImprovedJSONEditor({
   const jsonLinter = linter((view) => {
     const diagnostics: Diagnostic[] = []
     const doc = view.state.doc.toString()
-    
+
     try {
       if (doc.trim()) {
         const parsed = JSON.parse(doc)
-        
+
         // basic workflow structure validation
         if (typeof parsed === "object" && parsed !== null) {
           if (!parsed.nodes || !Array.isArray(parsed.nodes)) {
@@ -58,11 +58,11 @@ export default function ImprovedJSONEditor({
       }
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "Invalid JSON"
-      
+
       // try to find the position of the error
       const match = errorMessage.match(/position (\d+)/)
       const position = match ? parseInt(match[1]) : 0
-      
+
       diagnostics.push({
         from: position,
         to: Math.min(position + 1, doc.length),
@@ -71,7 +71,7 @@ export default function ImprovedJSONEditor({
       })
       setError(errorMessage)
     }
-    
+
     return diagnostics
   })
 
@@ -90,7 +90,7 @@ export default function ImprovedJSONEditor({
       // parse and stringify to ensure valid json format
       const parsed = JSON.parse(content)
       const validJson = JSON.stringify(parsed, null, 2)
-      
+
       await navigator.clipboard.writeText(validJson)
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
@@ -151,9 +151,7 @@ export default function ImprovedJSONEditor({
     <div className="h-full flex flex-col">
       {/* header */}
       <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex justify-between items-center">
-        <span className="text-sm text-gray-600 font-medium">
-          JSON Editor
-        </span>
+        <span className="text-sm text-gray-600 font-medium">JSON Editor</span>
         <div className="flex items-center gap-2">
           <button
             onClick={handleFormat}
@@ -169,15 +167,35 @@ export default function ImprovedJSONEditor({
           >
             {isCopied ? (
               <>
-                <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-3.5 h-3.5 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 Copied!
               </>
             ) : (
               <>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
                 </svg>
                 Copy
               </>
@@ -200,12 +218,16 @@ export default function ImprovedJSONEditor({
           onChange={(value) => onChange(value)}
           onKeyDown={(e) => {
             // format shortcut
-            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'f') {
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "f") {
               e.preventDefault()
               handleFormat()
             }
             // copy shortcut
-            if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !window.getSelection()?.toString()) {
+            if (
+              (e.metaKey || e.ctrlKey) &&
+              e.key === "c" &&
+              !window.getSelection()?.toString()
+            ) {
               e.preventDefault()
               handleCopy()
             }

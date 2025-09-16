@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         .download(meta.file.path)
       if (csvErr || !csvBlob) {
         return NextResponse.json(
-          { error: `Failed to download CSV: ${csvErr?.message || "unknown"}` },
+          { error: "Failed to download CSV" },
           { status: 500 }
         )
       }
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         .download(meta.file.path)
       if (textErr || !textBlob) {
         return NextResponse.json(
-          { error: `Failed to download text data: ${textErr?.message || "unknown"}` },
+          { error: "Failed to download text data" },
           { status: 500 }
         )
       }
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, cases })
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
+      { error: "Internal server error" },
       { status: 500 }
     )
   }

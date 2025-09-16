@@ -96,10 +96,7 @@ export default function ActionBar({
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button
-                onClick={handleSaveCancel}
-                variant="ghost"
-              >
+              <Button onClick={handleSaveCancel} variant="ghost">
                 Cancel
               </Button>
               <Button

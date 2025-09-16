@@ -292,7 +292,7 @@ export default function InvocationsPage() {
 
     try {
       const idsToDelete = Array.from(selectedRows)
-      
+
       const response = await fetch("/api/workflow/invocations", {
         method: "DELETE",
         headers: {
@@ -312,13 +312,16 @@ export default function InvocationsPage() {
       )
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
-      
+
       const count = idsToDelete.length
-      showToast.success.delete(`Deleted ${count} invocation${count > 1 ? 's' : ''}`)
+      showToast.success.delete(
+        `Deleted ${count} invocation${count === 1 ? "" : "s"}`
+      )
     } catch (err) {
-      const errorMessage = err instanceof Error
-        ? err.message
-        : "Failed to delete selected invocations"
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to delete selected invocations"
       setError(errorMessage)
       showToast.error.generic(errorMessage)
       console.error("Error deleting invocations:", err)
@@ -711,10 +714,7 @@ export default function InvocationsPage() {
 
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-3 items-center">
-          <Button
-            onClick={fetchWorkflowInvocations}
-            disabled={loading}
-          >
+          <Button onClick={fetchWorkflowInvocations} disabled={loading}>
             {loading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
             )}
@@ -942,10 +942,7 @@ export default function InvocationsPage() {
               </div>
 
               <div className="flex items-end">
-                <Button
-                  onClick={clearFilters}
-                  variant="outline"
-                >
+                <Button onClick={clearFilters} variant="outline">
                   <X className="w-4 h-4 mr-2" />
                   Clear Filters
                 </Button>

@@ -1,6 +1,6 @@
 /**
  * Client-safe model utilities for React components
- * Provides the same functionality as @core/utils/spending/functions 
+ * Provides the same functionality as @core/utils/spending/functions
  * without server-side dependencies
  */
 import { isNir } from "@core/utils/common/isNir"

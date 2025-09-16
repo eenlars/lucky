@@ -1,6 +1,6 @@
 /**
  * Node mutation operations for genetic programming.
- * 
+ *
  * This module provides node-level structural mutations that modify workflow
  * topology by adding or removing nodes. These operations are critical for
  * exploring different workflow architectures during evolution.
@@ -18,18 +18,18 @@ import type { NodeMutationOperator } from "./mutation.types"
 
 /**
  * Provides node addition and deletion operations for workflow mutation.
- * 
+ *
  * These operations modify the workflow graph structure while preserving
  * important properties like memory and connectivity.
  */
 export class NodeOperations {
   /**
    * Adds a new specialized node to enhance workflow capabilities.
-   * 
+   *
    * Uses AI-driven workflow formalization to intelligently insert a new node
    * that complements existing workflow functionality. The new node is positioned
    * to improve workflow performance based on the parent genome's context.
-   * 
+   *
    * @remarks
    * - Requires parent genome for context about workflow purpose
    * - Uses Workflow.formalizeWorkflow to generate appropriate node
@@ -77,11 +77,11 @@ export class NodeOperations {
 
   /**
    * Removes a leaf node from the workflow to simplify structure.
-   * 
+   *
    * Targets non-essential leaf nodes (nodes with no outgoing connections)
    * for deletion. Critically preserves any memory from the deleted node
    * by transferring it to remaining nodes or workflow-level memory.
-   * 
+   *
    * @remarks
    * - Only deletes leaf nodes to maintain workflow connectivity
    * - Never deletes the entry node
@@ -139,10 +139,10 @@ export class NodeOperations {
 
   /**
    * Selects a random leaf node eligible for deletion.
-   * 
+   *
    * @param workflow - The workflow configuration to search
    * @returns A leaf node that can be safely deleted, or null if none exist
-   * 
+   *
    * @remarks
    * Leaf nodes are nodes with no outgoing connections (handOffs).
    * The entry node is never selected for deletion to maintain workflow integrity.

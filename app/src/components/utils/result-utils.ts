@@ -2,7 +2,9 @@ import type { InvokeWorkflowResult } from "@core/workflow/runner/types"
 
 export type ErrorResult = { error: string }
 
-export function isInvokeWorkflowResult(value: unknown): value is InvokeWorkflowResult {
+export function isInvokeWorkflowResult(
+  value: unknown
+): value is InvokeWorkflowResult {
   if (value === null || typeof value !== "object") return false
   const obj = value as Record<string, unknown>
   const qrr = obj["queueRunResult"] as Record<string, unknown> | undefined

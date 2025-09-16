@@ -154,10 +154,7 @@ export default function SaveModal({
               save
             </p>
             <div className="flex gap-3">
-              <Button
-                onClick={onClose}
-                variant="ghost"
-              >
+              <Button onClick={onClose} variant="ghost">
                 Cancel
               </Button>
               <Button

@@ -8,7 +8,7 @@ import type { Genome } from "../../Genome"
 
 /**
  * Options describing the context for a mutation operation.
- * 
+ *
  * @property parent - The genome to mutate
  * @property generationNumber - Current generation in evolution process
  * @property intensity - Mutation strength (0-1), defaults to 0.3. Higher values increase mutation scope
@@ -110,10 +110,10 @@ export const MUTATION_WEIGHTS: MutationWeight[] = [
 
 /**
  * Get available mutations based on evolution mode.
- * 
+ *
  * @param evolutionMode - The evolution mode (GP or iterative)
  * @returns Array of mutation types available for the given mode
- * 
+ *
  * @remarks
  * - Iterative mode only uses iterative mutations
  * - GP mode uses all structural and behavioral mutations

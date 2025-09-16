@@ -134,11 +134,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -148,10 +144,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -194,10 +187,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 3
             },
             {
@@ -207,10 +197,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 4
             },
             {
@@ -220,10 +207,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 5
             },
             {
@@ -233,10 +217,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 6
             },
             {
@@ -246,10 +227,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 7
             },
             {
@@ -259,10 +237,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 8
             }
           ],
@@ -301,11 +276,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -315,10 +286,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -328,10 +296,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 2
             },
             {
@@ -341,10 +306,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 3
             },
             {
@@ -354,10 +316,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 4
             },
             {
@@ -367,10 +326,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 5
             }
           ],
@@ -411,11 +367,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -425,10 +377,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -438,10 +387,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 2
             },
             {
@@ -451,10 +397,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 3
             },
             {
@@ -464,10 +407,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 4
             },
             {
@@ -477,10 +417,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 5
             },
             {
@@ -490,10 +427,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 6
             },
             {
@@ -502,17 +436,10 @@
               "inputData": {
                 "results": [
                   {
-                    "items": [
-                      "item1",
-                      "item2",
-                      "item3"
-                    ]
+                    "items": ["item1", "item2", "item3"]
                   },
                   {
-                    "items": [
-                      "item4",
-                      "item5"
-                    ]
+                    "items": ["item4", "item5"]
                   }
                 ]
               },
@@ -525,17 +452,10 @@
               "inputData": {
                 "results": [
                   {
-                    "items": [
-                      "item1",
-                      "item2",
-                      "item3"
-                    ]
+                    "items": ["item1", "item2", "item3"]
                   },
                   {
-                    "items": [
-                      "item4",
-                      "item5"
-                    ]
+                    "items": ["item4", "item5"]
                   }
                 ]
               },
@@ -627,9 +547,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 0
             },
             {
@@ -639,9 +557,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 1
             },
             {
@@ -719,9 +635,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 4
             },
             {
@@ -731,9 +645,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 5
             }
           ],
@@ -772,9 +684,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 0
             },
             {
@@ -784,9 +694,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 1
             },
             {
@@ -796,9 +704,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 2
             }
           ],
@@ -965,10 +871,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 3
             },
             {
@@ -1112,24 +1015,13 @@
               "inputData": {
                 "results": [
                   {
-                    "objects": [
-                      "product1",
-                      "product2",
-                      "product3"
-                    ]
+                    "objects": ["product1", "product2", "product3"]
                   },
                   {
-                    "objects": [
-                      "product4",
-                      "product5",
-                      "product6"
-                    ]
+                    "objects": ["product4", "product5", "product6"]
                   },
                   {
-                    "objects": [
-                      "product7",
-                      "product8"
-                    ]
+                    "objects": ["product7", "product8"]
                   }
                 ]
               },
@@ -1143,10 +1035,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 4
             }
           ],
@@ -1206,10 +1095,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -1219,10 +1105,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             }
           ],
@@ -1261,10 +1144,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             }
           ],
@@ -1303,10 +1183,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -1316,10 +1193,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -1329,10 +1203,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -1342,10 +1213,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -1355,10 +1223,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -1368,10 +1233,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -1381,10 +1243,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -1394,10 +1253,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -1407,10 +1263,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -1470,10 +1323,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -1483,10 +1333,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -1496,10 +1343,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -1509,10 +1353,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             }
           ],
@@ -1552,10 +1393,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -1565,10 +1403,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -1578,10 +1413,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -1591,10 +1423,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -1604,10 +1433,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -1669,10 +1495,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -1682,10 +1505,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -1695,10 +1515,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -1708,10 +1525,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -1721,10 +1535,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -1734,10 +1545,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -1747,10 +1555,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -1760,10 +1565,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -1773,10 +1575,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -1836,22 +1635,14 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665252152,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -1868,11 +1659,7 @@
               "toolName": "combine_results",
               "timestamp": 1754665252152,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -1889,11 +1676,7 @@
               "toolName": "combine_results",
               "timestamp": 1754665252152,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -1913,11 +1696,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 4
             },
             {
@@ -1927,11 +1706,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 5
             },
             {
@@ -1941,11 +1716,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -1955,11 +1726,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 7
             }
           ],
@@ -1998,22 +1765,14 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665323909,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -2033,11 +1792,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 2
             },
             {
@@ -2047,11 +1802,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 3
             },
             {
@@ -2061,22 +1812,14 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 4
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665323909,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -2096,11 +1839,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -2110,11 +1849,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 7
             },
             {
@@ -2124,11 +1859,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 8
             }
           ],
@@ -2167,22 +1898,14 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665383139,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -2202,11 +1925,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 2
             },
             {
@@ -2216,11 +1935,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 3
             },
             {
@@ -2230,11 +1945,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 4
             },
             {
@@ -2244,11 +1955,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 5
             },
             {
@@ -2258,11 +1965,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -2272,22 +1975,14 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 7
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665383139,
               "inputData": {
-                "results": [
-                  "item_object_1",
-                  "item_object_2",
-                  "item_object_3"
-                ]
+                "results": ["item_object_1", "item_object_2", "item_object_3"]
               },
               "outputData": {
                 "total_count": 3,
@@ -2357,11 +2052,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -2371,10 +2062,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -2406,11 +2094,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 4
             },
             {
@@ -2420,11 +2104,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 5
             },
             {
@@ -2434,11 +2114,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -2448,11 +2124,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 7
             },
             {
@@ -2462,11 +2134,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 8
             }
           ],
@@ -2507,11 +2175,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -2521,10 +2185,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -2575,15 +2236,8 @@
               "timestamp": 1754665512780,
               "inputData": {
                 "results": [
-                  [
-                    "item_object_1",
-                    "item_object_2",
-                    "item_object_3"
-                  ],
-                  [
-                    "item_object_1",
-                    "item_object_2"
-                  ]
+                  ["item_object_1", "item_object_2", "item_object_3"],
+                  ["item_object_1", "item_object_2"]
                 ]
               },
               "outputData": {
@@ -2604,26 +2258,13 @@
               "timestamp": 1754665512780,
               "inputData": {
                 "results": [
-                  [
-                    "item1",
-                    "item2",
-                    "item3"
-                  ],
-                  [
-                    "item4",
-                    "item5"
-                  ]
+                  ["item1", "item2", "item3"],
+                  ["item4", "item5"]
                 ]
               },
               "outputData": {
                 "total_count": 5,
-                "combined_items": [
-                  "item1",
-                  "item2",
-                  "item3",
-                  "item4",
-                  "item5"
-                ],
+                "combined_items": ["item1", "item2", "item3", "item4", "item5"],
                 "summary": "Successfully combined 5 items"
               },
               "executionIndex": 5
@@ -2635,11 +2276,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -2649,10 +2286,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 7
             },
             {
@@ -2662,11 +2296,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 8
             }
           ],
@@ -2708,11 +2338,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -2722,10 +2348,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -2760,11 +2383,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 3
             },
             {
@@ -2774,11 +2393,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 4
             },
             {
@@ -2788,11 +2403,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 5
             },
             {
@@ -2802,11 +2413,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 6
             },
             {
@@ -2816,11 +2423,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 7
             },
             {
@@ -2830,11 +2433,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 8
             }
           ],
@@ -2895,9 +2494,7 @@
                 "query": "product",
                 "count": 1
               },
-              "outputData": [
-                "product_object_1"
-              ],
+              "outputData": ["product_object_1"],
               "executionIndex": 0
             },
             {
@@ -2957,27 +2554,18 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754665642668,
               "inputData": {
-                "results": [
-                  "product1",
-                  "product2"
-                ]
+                "results": ["product1", "product2"]
               },
               "outputData": {
                 "total_count": 2,
-                "combined_items": [
-                  "product1",
-                  "product2"
-                ],
+                "combined_items": ["product1", "product2"],
                 "summary": "Successfully combined 2 items"
               },
               "executionIndex": 3
@@ -2989,10 +2577,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 4
             },
             {
@@ -3028,10 +2613,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 6
             }
           ],
@@ -3075,10 +2657,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 0
             },
             {
@@ -3130,10 +2709,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 4
             },
             {
@@ -3299,10 +2875,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -3577,10 +3150,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -3649,21 +3219,9 @@
               "timestamp": 1754665849919,
               "inputData": {
                 "results": [
-                  [
-                    "product1",
-                    "product2",
-                    "product3"
-                  ],
-                  [
-                    "product2",
-                    "product4",
-                    "product5"
-                  ],
-                  [
-                    "product6",
-                    "product7",
-                    "product8"
-                  ]
+                  ["product1", "product2", "product3"],
+                  ["product2", "product4", "product5"],
+                  ["product6", "product7", "product8"]
                 ]
               },
               "outputData": {
@@ -3917,10 +3475,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -3928,20 +3483,9 @@
               "timestamp": 1754665915542,
               "inputData": {
                 "results": [
-                  [
-                    "product_object_1",
-                    "product_object_2",
-                    "product_object_3"
-                  ],
-                  [
-                    "product_object_1",
-                    "product_object_2",
-                    "product_object_3"
-                  ],
-                  [
-                    "product_object_1",
-                    "product_object_2"
-                  ]
+                  ["product_object_1", "product_object_2", "product_object_3"],
+                  ["product_object_1", "product_object_2", "product_object_3"],
+                  ["product_object_1", "product_object_2"]
                 ]
               },
               "outputData": {
@@ -4071,10 +3615,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 8
             }
           ],
@@ -4145,10 +3686,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -4239,10 +3777,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -4252,10 +3787,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -4265,10 +3797,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -4278,10 +3807,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -4291,10 +3817,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -4304,10 +3827,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -4317,10 +3837,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -4330,10 +3847,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -4343,10 +3857,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -4385,10 +3896,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -4398,10 +3906,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -4411,10 +3916,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -4424,10 +3926,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -4437,10 +3936,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -4450,10 +3946,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -4463,10 +3956,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -4476,10 +3966,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -4489,10 +3976,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -4531,10 +4015,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -4544,10 +4025,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -4557,10 +4035,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -4570,10 +4045,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -4583,10 +4055,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -4596,10 +4065,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -4609,10 +4075,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -4622,10 +4085,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -4635,10 +4095,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -4748,10 +4205,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -4779,27 +4233,18 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754666183870,
               "inputData": {
-                "results": [
-                  "sample_object_1",
-                  "sample_object_2"
-                ]
+                "results": ["sample_object_1", "sample_object_2"]
               },
               "outputData": {
                 "total_count": 2,
-                "combined_items": [
-                  "sample_object_1",
-                  "sample_object_2"
-                ],
+                "combined_items": ["sample_object_1", "sample_object_2"],
                 "summary": "Successfully combined 2 items"
               },
               "executionIndex": 6
@@ -4811,27 +4256,18 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
               "toolName": "combine_results",
               "timestamp": 1754666183870,
               "inputData": {
-                "results": [
-                  "sample_object_1",
-                  "sample_object_2"
-                ]
+                "results": ["sample_object_1", "sample_object_2"]
               },
               "outputData": {
                 "total_count": 2,
-                "combined_items": [
-                  "sample_object_1",
-                  "sample_object_2"
-                ],
+                "combined_items": ["sample_object_1", "sample_object_2"],
                 "summary": "Successfully combined 2 items"
               },
               "executionIndex": 8
@@ -4874,10 +4310,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -4919,10 +4352,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -4932,10 +4362,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -4945,10 +4372,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -4958,10 +4382,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -4971,10 +4392,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -5033,10 +4451,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -5059,17 +4474,11 @@
               "toolName": "combine_results",
               "timestamp": 1754666298262,
               "inputData": {
-                "results": [
-                  "sample1",
-                  "sample2"
-                ]
+                "results": ["sample1", "sample2"]
               },
               "outputData": {
                 "total_count": 2,
-                "combined_items": [
-                  "sample1",
-                  "sample2"
-                ],
+                "combined_items": ["sample1", "sample2"],
                 "summary": "Successfully combined 2 items"
               },
               "executionIndex": 2
@@ -5081,10 +4490,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -5094,10 +4500,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -5107,10 +4510,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -5120,10 +4520,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -5133,10 +4530,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -5146,10 +4540,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -5210,10 +4601,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 0
             },
             {
@@ -5223,11 +4611,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 1
             },
             {
@@ -5286,10 +4670,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 0
             },
             {
@@ -5299,10 +4680,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -5312,9 +4690,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 2
             },
             {
@@ -5382,10 +4758,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 0
             },
             {
@@ -5395,10 +4768,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -5408,9 +4778,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 2
             },
             {
@@ -5479,11 +4847,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -5493,10 +4857,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -5562,11 +4923,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -5576,10 +4933,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -5636,11 +4990,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -5650,10 +5000,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -5730,10 +5077,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 0
             },
             {
@@ -5743,10 +5087,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 1
             },
             {
@@ -5756,10 +5097,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -5931,10 +5269,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -6020,10 +5355,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -6118,10 +5450,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 2
             },
             {
@@ -6208,10 +5537,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             }
           ],
@@ -6278,10 +5604,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             }
           ],
@@ -6341,10 +5664,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             }
           ],
@@ -6461,11 +5781,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -6475,10 +5791,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -6573,9 +5886,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 0
             },
             {
@@ -6585,9 +5896,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 1
             },
             {
@@ -6597,9 +5906,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 2
             },
             {
@@ -6609,9 +5916,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 3
             },
             {
@@ -6621,9 +5926,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 4
             },
             {
@@ -6633,9 +5936,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 5
             },
             {
@@ -6645,9 +5946,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 6
             },
             {
@@ -6657,9 +5956,7 @@
                 "query": "item",
                 "count": 1
               },
-              "outputData": [
-                "item_object_1"
-              ],
+              "outputData": ["item_object_1"],
               "executionIndex": 7
             }
           ],
@@ -6701,11 +5998,7 @@
                 "query": "item",
                 "count": 3
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2",
-                "item_object_3"
-              ],
+              "outputData": ["item_object_1", "item_object_2", "item_object_3"],
               "executionIndex": 0
             },
             {
@@ -6715,10 +6008,7 @@
                 "query": "item",
                 "count": 2
               },
-              "outputData": [
-                "item_object_1",
-                "item_object_2"
-              ],
+              "outputData": ["item_object_1", "item_object_2"],
               "executionIndex": 1
             },
             {
@@ -6937,10 +6227,7 @@
                 "query": "product",
                 "count": 2
               },
-              "outputData": [
-                "product_object_1",
-                "product_object_2"
-              ],
+              "outputData": ["product_object_1", "product_object_2"],
               "executionIndex": 0
             }
           ],
@@ -7193,10 +6480,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -7206,10 +6490,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -7219,10 +6500,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -7232,10 +6510,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -7245,10 +6520,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -7258,10 +6530,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -7271,10 +6540,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -7284,10 +6550,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -7297,10 +6560,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -7339,10 +6599,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -7352,10 +6609,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -7365,10 +6619,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -7378,10 +6629,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -7391,10 +6639,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -7404,10 +6649,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -7417,10 +6659,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -7430,10 +6669,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -7443,10 +6679,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -7485,10 +6718,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -7498,10 +6728,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -7511,10 +6738,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -7524,10 +6748,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -7537,10 +6758,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -7550,10 +6768,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -7563,10 +6778,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -7576,10 +6788,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -7589,10 +6798,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -7652,10 +6858,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -7665,10 +6868,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -7678,10 +6878,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -7691,10 +6888,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -7704,10 +6898,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -7717,10 +6908,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -7730,10 +6918,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -7743,10 +6928,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -7756,10 +6938,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -7799,10 +6978,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             },
             {
@@ -7812,10 +6988,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 1
             },
             {
@@ -7825,10 +6998,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 2
             },
             {
@@ -7838,10 +7008,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 3
             },
             {
@@ -7851,10 +7018,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 4
             },
             {
@@ -7864,10 +7028,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 5
             },
             {
@@ -7877,10 +7038,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 6
             },
             {
@@ -7890,10 +7048,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 7
             },
             {
@@ -7903,10 +7058,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 8
             }
           ],
@@ -7946,10 +7098,7 @@
                 "query": "sample",
                 "count": 2
               },
-              "outputData": [
-                "sample_object_1",
-                "sample_object_2"
-              ],
+              "outputData": ["sample_object_1", "sample_object_2"],
               "executionIndex": 0
             }
           ],

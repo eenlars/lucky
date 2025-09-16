@@ -9,23 +9,29 @@ interface UserProfileProps {
   isMobile?: boolean
 }
 
-export default function UserProfile({ isCollapsed, isMobile }: UserProfileProps) {
+export default function UserProfile({
+  isCollapsed,
+  isMobile,
+}: UserProfileProps) {
   const { user } = useUser()
-  
+
   if (!user) {
     return (
-      <div className={cn(
-        "text-[11px] text-sidebar-foreground/50 font-medium tracking-wide transition-all duration-300",
-        isCollapsed && !isMobile && "text-center"
-      )}>
+      <div
+        className={cn(
+          "text-[11px] text-sidebar-foreground/50 font-medium tracking-wide transition-all duration-300",
+          isCollapsed && !isMobile && "text-center"
+        )}
+      >
         {isCollapsed && !isMobile ? "AAW" : "Agentic Workflows"}
       </div>
     )
   }
 
-  const initials = user.firstName && user.lastName 
-    ? `${user.firstName[0]}${user.lastName[0]}`
-    : user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "U"
+  const initials =
+    user.firstName && user.lastName
+      ? `${user.firstName[0]}${user.lastName[0]}`
+      : user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "U"
 
   if (isCollapsed && !isMobile) {
     return (

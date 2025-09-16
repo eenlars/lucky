@@ -401,10 +401,10 @@ export class WorkflowConfigHandler {
       const path = await import("path")
       const fs = await import("fs")
 
-      const filePath = path.isAbsolute(filename) 
-        ? filename 
+      const filePath = path.isAbsolute(filename)
+        ? filename
         : path.join(PATHS.runtime, filename)
-      
+
       const fileContent = fs.readFileSync(filePath, "utf-8")
 
       if (!fileContent.trim()) {

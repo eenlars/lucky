@@ -59,20 +59,19 @@ export default async function RootLayout({
               </a>
               <NextTopLoader />
               {userId && <Sidebar />}
-              <MainContent hasAuth={!!userId}>
-                {children}
-              </MainContent>
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: theme === "dark" ? "#1a1a1a" : "#fff",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
-                },
-              }}
-            />
+              <MainContent hasAuth={!!userId}>{children}</MainContent>
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: theme === "dark" ? "#1a1a1a" : "#fff",
+                    color: theme === "dark" ? "#fff" : "#000",
+                    border:
+                      theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
+                  },
+                }}
+              />
             </SidebarProvider>
           </body>
         </html>

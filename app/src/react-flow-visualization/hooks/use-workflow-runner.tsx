@@ -19,16 +19,21 @@ export function useWorkflowRunner() {
     string | undefined
   >()
   const isRunning = useRef(false)
-  const { getNodes, setNodes, getEdges, exportToJSON: _exportToJSON, currentWorkflowId: _currentWorkflowId } =
-    useAppStore(
-      useShallow((s) => ({
-        getNodes: s.getNodes,
-        setNodes: s.setNodes,
-        getEdges: s.getEdges,
-        exportToJSON: s.exportToJSON,
-        currentWorkflowId: s.currentWorkflowId,
-      }))
-    )
+  const {
+    getNodes,
+    setNodes,
+    getEdges,
+    exportToJSON: _exportToJSON,
+    currentWorkflowId: _currentWorkflowId,
+  } = useAppStore(
+    useShallow((s) => ({
+      getNodes: s.getNodes,
+      setNodes: s.setNodes,
+      getEdges: s.getEdges,
+      exportToJSON: s.exportToJSON,
+      currentWorkflowId: s.currentWorkflowId,
+    }))
+  )
 
   const stopWorkflow = useCallback(() => {
     isRunning.current = false
@@ -43,19 +48,13 @@ export function useWorkflowRunner() {
     )
   }, [getNodes, setNodes])
 
-  const _updateNodeStatus = useCallback(
-    (_nodeId: string, _status: string) => {
-      // Functionality removed
-    },
-    []
-  )
+  const _updateNodeStatus = useCallback((_nodeId: string, _status: string) => {
+    // Functionality removed
+  }, [])
 
-  const _processNode = useCallback(
-    async (_node: AppNode) => {
-      // Functionality removed
-    },
-    []
-  )
+  const _processNode = useCallback(async (_node: AppNode) => {
+    // Functionality removed
+  }, [])
 
   const executeWorkflowWithPrompt = useCallback(
     async (_prompt: string) => {},
