@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { genShortId } from "@core/utils/common/utils"
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,8 +15,7 @@ export async function POST(req: NextRequest) {
       prompt: string
     }
 
-    //a1373554
-
+    // Basic null checks - detailed validation happens in core layer
     if (!workflowVersionId || !prompt) {
       return NextResponse.json(
         { error: "Missing workflowVersionId or prompt" },
@@ -23,12 +23,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Generate unique workflow ID for this prompt-only invocation
+    const workflowId = `prompt_only_${genShortId()}`
+    
     const input = {
       workflowVersionId,
       evalInput: {
         type: "prompt-only",
         goal: prompt,
-        workflowId: "dummy-workflow-id",
+        workflowId,
       },
     }
 
@@ -54,9 +57,9 @@ export async function POST(req: NextRequest) {
     const result = await invokeResponse.json()
     return NextResponse.json(result.data, { status: 200 })
   } catch (error) {
-    console.error("API Error:", error)
+    console.error("Prompt-only API Error:", error)
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to process prompt-only request" },
       { status: 500 }
     )
   }

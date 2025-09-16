@@ -15,6 +15,7 @@
 import { isNir } from "@core/utils/common/isNir"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import { obs } from "@core/utils/observability/obs"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
@@ -82,6 +83,18 @@ export async function invokeWorkflow(
     evalInput.workflowId ??= "wf_id_" + genShortId()
     if (evalInput.type === "text" && !evalInput.answer) {
       evalInput.answer = ""
+    }
+
+    // Validate prompt-only inputs at core level to prevent bypass
+    if (evalInput.type === "prompt-only") {
+      if (!evalInput.goal || typeof evalInput.goal !== "string" || evalInput.goal.trim().length === 0) {
+        return R.error("Invalid or missing goal for prompt-only invocation", 0)
+      }
+      if (evalInput.goal.length > 50000) {
+        return R.error("Prompt too long (max 50,000 characters)", 0)
+      }
+      // Trim the goal for consistency
+      evalInput.goal = evalInput.goal.trim()
     }
 
     let config: WorkflowConfig
@@ -179,6 +192,14 @@ export async function invokeWorkflow(
       }
 
       return R.success(resultsWithEvaluation, evaluationResult.totalCost)
+    }
+
+    // Prompt-only: no evaluation needed, just track it
+    if (evalInput.type === "prompt-only") {
+      obs.event("prompt_only_invocation", {
+        unique_invocation_id: evalInput.workflowId,
+        workflow_version_id: workflow.getWorkflowVersionId()
+      })
     }
 
     // Save workflow to file if it was loaded from file and has memory updates
