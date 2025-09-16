@@ -36,8 +36,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Call the workflow invocation API instead of importing invokeWorkflow directly
+    // Use localhost to prevent SSRF attacks
     const invokeResponse = await fetch(
-      `${req.nextUrl.origin}/api/workflow/invoke`,
+      `http://localhost:${process.env.PORT || 3000}/api/workflow/invoke`,
       {
         method: "POST",
         // Forward auth cookies so the nested API call remains authenticated

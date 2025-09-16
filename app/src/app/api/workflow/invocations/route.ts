@@ -40,12 +40,23 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const page = parseInt(searchParams.get("page") || "1", 10)
   const pageSize = parseInt(searchParams.get("pageSize") || "20", 10)
-  const filters: WorkflowInvocationFilters = JSON.parse(
-    searchParams.get("filters") || "{}"
-  )
-  const sort: WorkflowInvocationSortOptions = JSON.parse(
-    searchParams.get("sort") || '{"field": "start_time", "order": "desc"}'
-  )
+  
+  let filters: WorkflowInvocationFilters = {}
+  let sort: WorkflowInvocationSortOptions = { field: "start_time", order: "desc" }
+  
+  try {
+    filters = JSON.parse(searchParams.get("filters") || "{}")
+  } catch {
+    // Use default empty filters if parsing fails
+    filters = {}
+  }
+  
+  try {
+    sort = JSON.parse(searchParams.get("sort") || '{"field": "start_time", "order": "desc"}')
+  } catch {
+    // Use default sort if parsing fails
+    sort = { field: "start_time", order: "desc" }
+  }
 
   try {
     let query = supabase
@@ -134,12 +145,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching workflow invocations:", error)
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch invocations",
-      },
+      { error: "Failed to fetch invocations" },
       { status: 500 }
     )
   }

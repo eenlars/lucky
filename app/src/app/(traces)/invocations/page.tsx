@@ -315,7 +315,7 @@ export default function InvocationsPage() {
 
       const count = idsToDelete.length
       showToast.success.delete(
-        `Deleted ${count} invocation${count > 1 ? "s" : ""}`
+        `Deleted ${count} invocation${count === 1 ? "" : "s"}`
       )
     } catch (err) {
       const errorMessage =

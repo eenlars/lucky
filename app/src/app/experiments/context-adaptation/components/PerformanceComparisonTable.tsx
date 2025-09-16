@@ -109,7 +109,7 @@ export default function PerformanceComparisonTable() {
   const formatCI = (ci: [number, number], formatter: (n: number) => string) =>
     `[${formatter(ci[0])}, ${formatter(ci[1])}]`
   const formatPValue = (p: number | null) =>
-    !p || p >= 1
+    p === null || p === undefined || p >= 1
       ? "1.000"
       : p < 0.001
         ? "<0.001"

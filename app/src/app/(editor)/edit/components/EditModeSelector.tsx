@@ -109,14 +109,19 @@ function GraphRunWithPromptButton({
   const handleDialogOpenChange = (open: boolean) => {
     if (isRunning) return // prevent closing during execution
     setPromptDialogOpen(open)
-    // Clear logs when opening/closing to ensure fresh state
-    setLogs([])
+    if (!open) {
+      // Clear logs when closing dialog
+      setLogs([])
+    }
   }
 
   return (
     <>
       <Button
-        onClick={() => setPromptDialogOpen(true)}
+        onClick={() => {
+          setLogs([]) // Clear logs before opening to ensure fresh state
+          setPromptDialogOpen(true)
+        }}
         disabled={isRunning}
         variant="outline"
         size="sm"

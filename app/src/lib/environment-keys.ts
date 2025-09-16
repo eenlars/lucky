@@ -13,6 +13,7 @@ export class EnvironmentKeysManager {
     const g: any = globalThis as any
     if (
       typeof g.crypto !== "undefined" &&
+      g.crypto !== null &&
       typeof g.crypto.randomUUID === "function"
     ) {
       return g.crypto.randomUUID()

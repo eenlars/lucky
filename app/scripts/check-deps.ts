@@ -60,7 +60,7 @@ function runDepcheck(dir: string): DepcheckResult {
     ].join(",")
 
     const result = execSync(
-      `bunx depcheck ${dir} --json --ignore-patterns="${ignorePatterns}"`,
+      `bunx depcheck "${dir}" --json --ignore-patterns="${ignorePatterns}"`,
       {
         encoding: "utf-8",
         stdio: ["pipe", "pipe", "pipe"],

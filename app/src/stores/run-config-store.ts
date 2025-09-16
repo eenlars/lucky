@@ -150,7 +150,8 @@ export const useRunConfigStore = create<RunConfigState>()(
           if (data.records && Array.isArray(data.records)) {
             const cases: CaseRow[] = data.records
               .filter(
-                (record: any) => record.workflow_input && record.ground_truth
+                (record: any) => record.workflow_input !== null && record.workflow_input !== undefined && 
+                                record.ground_truth !== null && record.ground_truth !== undefined
               )
               .map((record: any) => ({
                 id: record.dataset_record_id || newId(),
