@@ -27,7 +27,7 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@core/tools/tool.types"
-import { getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
+import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
 import type {
   AllowedModelName,
   ModelPricingV2,

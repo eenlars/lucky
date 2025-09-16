@@ -1,7 +1,22 @@
 "use client"
 
 import { isMarkdownContent } from "@/trace-visualization/components/utils/markdown"
-import { JSONN } from "@lucky/shared"
+// Client-side JSON validation utility
+const isJSON = (str: unknown): boolean => {
+  try {
+    if (typeof str === "object" && str !== null) {
+      JSON.stringify(str)
+      return true
+    }
+    if (typeof str === "string") {
+      JSON.parse(str)
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
 import dynamic from "next/dynamic"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
@@ -99,7 +114,7 @@ export function SmartContent({
 
               const looksJson =
                 (codeClassName && /language-json/.test(codeClassName)) ||
-                JSONN.isJSON(raw)
+                isJSON(raw)
 
               if (looksJson) {
                 const parsed = tryParseJson(raw)
@@ -154,7 +169,7 @@ export function SmartContent({
     )
   }
 
-  if (JSONN.isJSON(text)) {
+  if (isJSON(text)) {
     const parsed = tryParseJson(text)
     if (parsed != null) {
       if (showExpanders) {

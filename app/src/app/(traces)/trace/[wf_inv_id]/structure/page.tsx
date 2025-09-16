@@ -6,7 +6,14 @@ import { use, useEffect, useState } from "react"
 
 import { fullWorkflow } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { JSONN } from "@lucky/shared"
+// Simple JSON formatting function
+const formatJSON = (obj: unknown, indent: number = 2): string => {
+  try {
+    return JSON.stringify(obj, null, indent)
+  } catch {
+    return String(obj)
+  }
+}
 import { StructureMiniMap } from "./StructureMiniMap"
 
 export default function WorkflowStructurePage({
@@ -93,7 +100,7 @@ export default function WorkflowStructurePage({
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Workflow DSL</h2>
         <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto max-h-[70vh] whitespace-pre-wrap">
-          {JSONN.show(workflowData?.workflowVersion?.dsl, 2, 10)}
+          {formatJSON(workflowData?.workflowVersion?.dsl, 2)}
         </pre>
       </div>
     </div>

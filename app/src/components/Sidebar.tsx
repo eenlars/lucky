@@ -14,6 +14,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Network,
 } from "lucide-react"
 import { useState } from "react"
 import type { ComponentType, SVGProps } from "react"
@@ -28,12 +29,18 @@ interface SidebarItem {
   description?: string
 }
 
-const sidebarItems: SidebarItem[] = [
+const baseSidebarItems: SidebarItem[] = [
   {
     href: "/",
     label: "Home",
     icon: Home,
     description: "Dashboard overview",
+  },
+  {
+    href: "/workflows",
+    label: "Workflows",
+    icon: Network,
+    description: "Manage individual workflows",
   },
   {
     href: "/edit",
@@ -66,6 +73,11 @@ const sidebarItems: SidebarItem[] = [
     description: "Application settings",
   },
 ]
+
+// Show workflows item only in development
+const sidebarItems: SidebarItem[] = process.env.NODE_ENV === 'development' 
+  ? baseSidebarItems
+  : baseSidebarItems.filter(item => item.href !== "/workflows")
 
 export default function Sidebar() {
   const pathname = usePathname()
