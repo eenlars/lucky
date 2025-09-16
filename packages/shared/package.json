@@ -10,8 +10,8 @@
         "dist"
     ],
     "scripts": {
-        "build": "bun x tsup",
-        "dev": "bun x tsup --watch",
+        "build": "tsup",
+        "dev": "tsup --watch",
         "clean": "rimraf dist",
         "prebuild": "rimraf dist && rm -f tsconfig.tsbuildinfo",
         "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
