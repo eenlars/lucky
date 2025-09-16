@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { genShortId } from "@core/utils/common/utils"
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,36 +15,22 @@ export async function POST(req: NextRequest) {
       prompt: string
     }
 
-    // Validate required fields
-    if (!workflowVersionId || typeof workflowVersionId !== 'string' || workflowVersionId.trim().length === 0) {
+    // Basic null checks - detailed validation happens in core layer
+    if (!workflowVersionId || !prompt) {
       return NextResponse.json(
-        { error: "Invalid or missing workflowVersionId" },
-        { status: 400 }
-      )
-    }
-
-    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Invalid or missing prompt" },
-        { status: 400 }
-      )
-    }
-
-    if (prompt.length > 50000) {
-      return NextResponse.json(
-        { error: "Prompt too long (max 50,000 characters)" },
+        { error: "Missing workflowVersionId or prompt" },
         { status: 400 }
       )
     }
 
     // Generate unique workflow ID for this prompt-only invocation
-    const workflowId = `prompt-only-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const workflowId = `prompt_only_${genShortId()}`
     
     const input = {
-      workflowVersionId: workflowVersionId.trim(),
+      workflowVersionId,
       evalInput: {
         type: "prompt-only",
-        goal: prompt.trim(),
+        goal: prompt,
         workflowId,
       },
     }
