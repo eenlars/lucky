@@ -1,1 +1,1 @@
-export { readJson, readText } from "./paths.js"
+export { readJson, readText } from "./paths"

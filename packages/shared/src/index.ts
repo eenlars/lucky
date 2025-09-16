@@ -1,10 +1,10 @@
 // Public API surface
-export * as csv from "./csv/index.js"
-export * as fs from "./fs/index.js"
+export * as csv from "./csv/index"
+export * as fs from "./fs/index"
 
 // Back-compat named exports
-export * from "./fs/index.js"
-export * from "./utils/files/json/jsonParse.js"
+export * from "./fs/index"
+export * from "./utils/files/json/jsonParse"
 
 // Types
 export type {
