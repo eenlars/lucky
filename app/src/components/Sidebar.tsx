@@ -110,6 +110,7 @@ export default function Sidebar() {
             onClick={() => setIsMobileOpen(false)}
             className="ml-auto p-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
             aria-label="Close sidebar"
+            data-testid="mobile-sidebar-close"
           >
             <X className="size-5" />
           </button>
@@ -147,6 +148,7 @@ export default function Sidebar() {
                 )}
                 title={item.description ?? item.label}
                 aria-current={isActive ? "page" : undefined}
+                data-testid={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {/* Active indicator */}
                 {isActive && (
@@ -215,6 +217,7 @@ export default function Sidebar() {
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
           )}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          data-testid="sidebar-collapse-toggle"
         >
           {isCollapsed ? (
             <ChevronRight className="size-3" />
@@ -248,6 +251,7 @@ export default function Sidebar() {
           isMobileOpen && "opacity-0 pointer-events-none"
         )}
         aria-label="Open sidebar"
+        data-testid="mobile-menu-trigger"
       >
         <Menu className="size-5" />
       </button>

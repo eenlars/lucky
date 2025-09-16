@@ -285,6 +285,7 @@ export default function EditModeSelector({
             disabled={isRunning}
             variant="outline"
             size="sm"
+            data-testid="run-with-prompt-button"
           >
             {isRunning ? "Running..." : "Run with Prompt"}
           </Button>
@@ -306,6 +307,7 @@ export default function EditModeSelector({
           variant="ghost"
           size="sm"
           className="group relative"
+          data-testid="organize-layout-button"
         >
           <span className="opacity-60 group-hover:opacity-100">Organize</span>
           <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 bg-gray-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
@@ -390,6 +392,7 @@ export default function EditModeSelector({
                   placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
+                  data-testid="evaluation-goal-input"
                 />
                 
                 {/* Dataset Selection */}
@@ -427,6 +430,7 @@ export default function EditModeSelector({
                   }}
                   disabled={!cases.length}
                   className="bg-black hover:bg-gray-800"
+                  data-testid="run-all-tests-button"
                 >
                   Run All ({cases.length})
                 </Button>
@@ -456,6 +460,7 @@ export default function EditModeSelector({
                   size="sm"
                   onClick={() => createCase({ input: "", expected: "" })}
                   className="text-gray-600 hover:text-black"
+                  data-testid="add-test-case-button"
                 >
                   + Add Test
                 </Button>

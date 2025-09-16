@@ -12,7 +12,7 @@ type Props = {
 
 export default function WorkflowIOTable({ ios, onRun }: Props) {
   return (
-    <table className="w-full text-sm">
+    <table className="w-full text-sm" data-testid="workflow-io-table">
       <thead className="text-xs uppercase text-gray-500 border-b">
         <tr>
           <th className="text-left py-2 px-3 w-10">#</th>
