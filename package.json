@@ -14,7 +14,6 @@
   "devDependencies": {
     "@lucky/core": "workspace:*",
     "@types/papaparse": "^5.3.16",
-    "esbuild": "0.25.9",
     "husky": "^9.1.7",
     "tsconfig-paths": "^4.2.0",
     "tsup": "8.5.0",
@@ -31,7 +30,7 @@
   "scripts": {
     "prepare": "husky",
     "web": "cd app && bun run dev",
-    "build:shared": "cd packages/shared && tsup",
+    "build:shared": "cd packages/shared && bun run build",
     "build:app": "cd app && bun run build",
     "build": "bun run build:shared && bun run build:app",
     "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.ts",

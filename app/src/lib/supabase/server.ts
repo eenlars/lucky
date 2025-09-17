@@ -6,12 +6,23 @@ import { envi } from "@/env.mjs"
 export async function createClient() {
   const cookieStore = await cookies()
   
-  // Use T3 OSS env with fallback pattern like core
-  const projectId = envi.SUPABASE_PROJECT_ID ?? envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID
-  const supabaseKey = envi.SUPABASE_ANON_KEY ?? envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // Use standard SUPABASE_URL env var, fallback to constructed URL
+  const supabaseUrl = envi.SUPABASE_URL ?? 
+    envi.NEXT_PUBLIC_SUPABASE_URL ??
+    (envi.SUPABASE_PROJECT_ID ? `https://${envi.SUPABASE_PROJECT_ID}.supabase.co` : null) ??
+    (envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID ? `https://${envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co` : null)
+  
+  // Prefer service role key for server-side, fallback to anon key
+  const supabaseKey = envi.SUPABASE_SERVICE_ROLE_KEY ?? 
+    envi.SUPABASE_ANON_KEY ?? 
+    envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing Supabase configuration. Please set SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY/SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY")
+  }
 
   return createServerClient<Database>(
-    `https://${projectId}.supabase.co`,
+    supabaseUrl,
     supabaseKey,
     {
       cookies: {

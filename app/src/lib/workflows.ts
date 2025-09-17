@@ -42,14 +42,20 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
     return []
   }
 
-  // Get version counts efficiently using aggregation
+  // Get version counts and latest versions efficiently
   const workflowIds = workflows.map((w) => w.wf_id)
 
-  // Count versions per workflow
-  const versionCountsPromise = supabase
-    .from("WorkflowVersion")
-    .select("workflow_id")
-    .in("workflow_id", workflowIds)
+  // Get version counts for each workflow using server-side aggregation
+  const versionCountsPromise = Promise.all(
+    workflowIds.map(async (workflowId) => {
+      const { count } = await supabase
+        .from("WorkflowVersion")
+        .select("*", { count: "exact", head: true })
+        .eq("workflow_id", workflowId)
+      
+      return { workflowId, count: count || 0 }
+    })
+  )
 
   // Get latest version for each workflow
   const latestVersionsPromise = Promise.all(
@@ -66,18 +72,15 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
     })
   )
 
-  const [versionCountsResult, latestVersionsResults] = await Promise.all([
+  const [versionCountsResults, latestVersionsResults] = await Promise.all([
     versionCountsPromise,
     latestVersionsPromise,
   ])
 
   // Build version count map
   const versionCountMap = new Map()
-  if (versionCountsResult.data) {
-    for (const version of versionCountsResult.data) {
-      const count = versionCountMap.get(version.workflow_id) || 0
-      versionCountMap.set(version.workflow_id, count + 1)
-    }
+  for (const result of versionCountsResults) {
+    versionCountMap.set(result.workflowId, result.count)
   }
 
   // Build latest version map
@@ -174,7 +177,8 @@ async function createWorkflowVersion({
 }): Promise<void> {
   const supabase = createClient()
 
-  await ensureWorkflowExists(commitMessage, workflowId)
+  // Note: ensureWorkflowExists is removed here to avoid overwriting description
+  // The workflow must already exist when saving a version
 
   const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
     wf_version_id: workflowVersionId,

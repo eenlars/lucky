@@ -39,7 +39,7 @@
     "devDependencies": {
         "@supabase/supabase-js": "^2.49.4",
         "@types/bun": "latest",
-        "@types/node": "^20.17.0",
+        "@types/node": "^18.19.0",
         "@types/papaparse": "^5.3.16",
         "prettier": "^3.4.2",
         "rimraf": "^5.0.10",

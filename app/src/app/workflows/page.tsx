@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Play, Pencil, Plus, Trash2, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useWorkflows } from "@/hooks/useWorkflows"
+import type { WorkflowWithVersions } from "@/lib/workflows"
 
 function WorkflowRow({
   workflow,
@@ -12,8 +13,8 @@ function WorkflowRow({
   onDelete,
   isRunning,
 }: {
-  workflow: any // WorkflowWithVersions from lib/workflows
-  onRun: (workflow: any) => void
+  workflow: WorkflowWithVersions
+  onRun: (workflow: WorkflowWithVersions) => void
   onDelete: (workflowId: string) => void
   isRunning: boolean
 }) {
@@ -45,9 +46,9 @@ function WorkflowRow({
       <div className="flex-shrink-0 text-[12px] text-muted-foreground min-w-[120px]">
         {versionCount > 0 ? (
           <span
-            title={`${versionCount} version${versionCount === 1 ? "" : "s"} • Updated ${timeAgo}`}
+            title={`${versionCount} version${versionCount === 1 ? "" : "s"}${timeAgo ? ` • Updated ${timeAgo}` : ""}`}
           >
-            {versionCount} version{versionCount === 1 ? "" : "s"} • {timeAgo}
+            {versionCount} version{versionCount === 1 ? "" : "s"}{timeAgo ? ` • ${timeAgo}` : ""}
           </span>
         ) : (
           <span className="text-muted-foreground/60">No versions</span>
@@ -222,7 +223,7 @@ export default function WorkflowsPage() {
         </div>
       ) : (
         <div>
-          {workflows.map((workflow) => (
+          {workflows.map((workflow: WorkflowWithVersions) => (
             <WorkflowRow
               key={workflow.wf_id}
               workflow={workflow}
