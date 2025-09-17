@@ -13,8 +13,8 @@ export const envi = createEnv({
     OPENAI_API_KEY: z.string(),
     SERPAPI_API_KEY: z.string(),
     // Allow server-side Supabase vars as in core
-    SUPABASE_PROJECT_ID: z.string().nullish(),
-    SUPABASE_ANON_KEY: z.string().nullish(),
+    SUPABASE_PROJECT_ID: z.string(),
+    SUPABASE_ANON_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -23,8 +23,8 @@ export const envi = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default("/"),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/"),
-    NEXT_PUBLIC_SUPABASE_PROJECT_ID: z.string().nullish(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().nullish(),
+    NEXT_PUBLIC_SUPABASE_PROJECT_ID: z.string(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
   },
   runtimeEnv: {
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,

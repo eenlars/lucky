@@ -40,19 +40,24 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const page = parseInt(searchParams.get("page") || "1", 10)
   const pageSize = parseInt(searchParams.get("pageSize") || "20", 10)
-  
+
   let filters: WorkflowInvocationFilters = {}
-  let sort: WorkflowInvocationSortOptions = { field: "start_time", order: "desc" }
-  
+  let sort: WorkflowInvocationSortOptions = {
+    field: "start_time",
+    order: "desc",
+  }
+
   try {
     filters = JSON.parse(searchParams.get("filters") || "{}")
   } catch {
     // Use default empty filters if parsing fails
     filters = {}
   }
-  
+
   try {
-    sort = JSON.parse(searchParams.get("sort") || '{"field": "start_time", "order": "desc"}')
+    sort = JSON.parse(
+      searchParams.get("sort") || '{"field": "start_time", "order": "desc"}'
+    )
   } catch {
     // Use default sort if parsing fails
     sort = { field: "start_time", order: "desc" }

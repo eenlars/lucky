@@ -81,8 +81,7 @@ const disabledHrefs = new Set(["/structures", "/evolution"]) // disabled in dev
 // Build items list per environment
 const sidebarItems: SidebarItem[] = isProd
   ? baseSidebarItems.filter(
-      (item) =>
-        item.href !== "/workflows" && !disabledHrefs.has(item.href) // hide in prod
+      (item) => item.href !== "/workflows" && !disabledHrefs.has(item.href) // hide in prod
     )
   : baseSidebarItems
 
@@ -145,7 +144,7 @@ export default function Sidebar() {
             const isActive =
               pathname === item.href || pathname?.startsWith(`${item.href}/`)
             const Icon = item.icon
-            
+
             const commonClasses = cn(
               "group relative flex items-center gap-3 rounded-md px-2.5 py-2 text-[13px] font-medium",
               "transition-all duration-200 ease-out",
@@ -197,7 +196,7 @@ export default function Sidebar() {
                 className={commonClasses}
                 title={item.description ?? item.label}
                 aria-current={isActive ? "page" : undefined}
-                data-testid={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                data-testid={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 {isActive && (
                   <div

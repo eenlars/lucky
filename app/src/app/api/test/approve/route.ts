@@ -37,7 +37,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Sanitize approvalId to prevent path traversal attacks
-    const sanitizedApprovalId = path.basename(approvalId).replace(/[^a-zA-Z0-9_-]/g, '')
+    const sanitizedApprovalId = path
+      .basename(approvalId)
+      .replace(/[^a-zA-Z0-9_-]/g, "")
     if (!sanitizedApprovalId || sanitizedApprovalId !== approvalId) {
       return NextResponse.json<ApproveData>({
         text: "Error: Invalid approval ID format",

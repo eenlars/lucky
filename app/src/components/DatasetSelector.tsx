@@ -99,7 +99,10 @@ export default function DatasetSelector({
       )}
 
       {showDropdown && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto" data-testid="dataset-selector-dropdown">
+        <div
+          className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+          data-testid="dataset-selector-dropdown"
+        >
           {datasets.length === 0 ? (
             <div className="p-3 text-sm text-gray-500">
               {error ? "Failed to load datasets" : "No datasets found"}
