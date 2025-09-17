@@ -1,9 +1,16 @@
 // obs.ts
 import { AsyncLocalStorage } from "async_hooks"
+import type { WorkflowEvent, WorkflowEventEmitter } from "./events/WorkflowEvents"
 
 type Attr = string | number | boolean | undefined
 export type Attrs = Record<string, Attr>
-export type Ctx = { wfId?: string; nodeId?: string; nodeInvocationId?: string }
+export type Ctx = { 
+  wfId?: string
+  nodeId?: string 
+  nodeInvocationId?: string
+  wfVersionId?: string
+  invocationId?: string
+}
 
 export interface Sink {
   event(rec: any): void
@@ -104,5 +111,36 @@ export const obs = {
   },
   span<T>(name: string, attrs: Attrs, fn: () => Promise<T>): Promise<T> {
     return withSpan(undefined, name, attrs, fn)
+  },
+  /**
+   * Emit a typed workflow event
+   */
+  workflowEvent<T extends WorkflowEvent>(event: T): void {
+    emit(undefined, event.event, event as any)
+  },
+  /**
+   * Get current workflow context from ALS
+   */
+  getWorkflowContext(): {
+    wfId?: string
+    wfVersionId?: string
+    invocationId?: string
+    nodeId?: string
+  } {
+    const ctx = currentCtx()
+    return {
+      wfId: ctx.wfId,
+      wfVersionId: ctx.wfVersionId,
+      invocationId: ctx.invocationId,
+      nodeId: ctx.nodeId,
+    }
+  },
+  /**
+   * Configure workflow event emitter
+   */
+  setupWorkflowEvents(emitter: WorkflowEventEmitter): void {
+    emitter.addSink((event: WorkflowEvent) => {
+      this.workflowEvent(event)
+    })
   },
 }

@@ -9,6 +9,8 @@ import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
+import { obs } from "@core/utils/observability/obs"
+import { WorkflowEventContext } from "@core/utils/observability/WorkflowEventContext"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
 import { CONFIG } from "@runtime/settings/constants"
@@ -99,20 +101,33 @@ export async function queueRun({
 
   lgg.onlyIf(verbose, `[queueRun] Workflow has ${nodes.length} nodes`)
 
-  // runtime state tracking
-  const agentSteps: AgentSteps = []
-  let seq = 0 // message sequence counter for ordering
-  let totalCost = 0
-  // track invocations per node and globally
-  const perNodeInvocationCounts = new Map<string, number>()
-  let totalNodeInvocationsCount = 0
-  const maxTotalNodeInvocations = CONFIG.workflow.maxTotalNodeInvocations
-  const maxPerNodeInvocations =
-    CONFIG.workflow.maxPerNodeInvocations ??
-    CONFIG.workflow.maxTotalNodeInvocations
-  const summaries: InvocationSummary[] = []
-  const startTime = Date.now()
-  let lastNodeOutput = "" // tracks final output for workflow result
+  // Initialize workflow event context for real-time updates
+  const eventContext = new WorkflowEventContext({
+    wfId: workflow.getWorkflowId(),
+    wfVersionId: workflowVersionId,
+    invocationId: workflowInvocationId,
+  })
+
+  // Set up observability scope with workflow context
+  return obs.scope({
+    wfId: workflow.getWorkflowId(),
+    wfVersionId: workflowVersionId,
+    invocationId: workflowInvocationId,
+  }, async () => {
+    // runtime state tracking
+    const agentSteps: AgentSteps = []
+    let seq = 0 // message sequence counter for ordering
+    let totalCost = 0
+    // track invocations per node and globally
+    const perNodeInvocationCounts = new Map<string, number>()
+    let totalNodeInvocationsCount = 0
+    const maxTotalNodeInvocations = CONFIG.workflow.maxTotalNodeInvocations
+    const maxPerNodeInvocations =
+      CONFIG.workflow.maxPerNodeInvocations ??
+      CONFIG.workflow.maxTotalNodeInvocations
+    const summaries: InvocationSummary[] = []
+    const startTime = Date.now()
+    let lastNodeOutput = "" // tracks final output for workflow result
 
   // message queue to process - FIFO queue ensures deterministic execution order
   const messageQueue: WorkflowMessage[] = []
@@ -147,13 +162,30 @@ export async function queueRun({
     `[queueRun] Initial message queued, starting processing loop`
   )
 
+  // Emit workflow started event
+  eventContext.workflowStarted({
+    nodeCount: nodes.length,
+    entryNodeId,
+    goal: workflowInput,
+  })
+
   // Process messages until queue is empty
   while (messageQueue.length > 0) {
     let currentMessage = messageQueue.shift()!
+    const messageStartTime = performance.now()
+    
     lgg.onlyIf(
       verbose,
       `[queueRun] Processing message to node ${currentMessage.toNodeId}`
     )
+
+    // Emit message processing started event
+    eventContext.messageQueued({
+      fromNodeId: currentMessage.fromNodeId,
+      toNodeId: currentMessage.toNodeId,
+      messageSeq: currentMessage.seq,
+      messageType: currentMessage.payload.kind,
+    })
 
     // Check global and per-node max invocations limits
     if (totalNodeInvocationsCount >= maxTotalNodeInvocations) {
@@ -290,6 +322,14 @@ export async function queueRun({
       `[queueRun] Starting node invocation for ${targetNode.nodeId}`
     )
 
+    // Emit node execution started event
+    const nodeStartTime = performance.now()
+    eventContext.nodeExecutionStarted({
+      nodeId: targetNode.nodeId,
+      nodeType: "workflow-node", // Generic type since WorkFlowNode doesn't expose type
+      attempt: 1, // TODO: track retry attempts if implemented
+    })
+
     const {
       nodeInvocationFinalOutput,
       usdCost,
@@ -301,13 +341,27 @@ export async function queueRun({
       summaryWithInfo,
       updatedMemory,
       agentSteps: nodeAgentSteps,
-    } = await targetNode.invoke({
-      workflowMessageIncoming: currentMessage,
-      workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
-      ...toolContext,
+    } = await eventContext.withNodeContext(targetNode.nodeId, async () => {
+      return await targetNode.invoke({
+        workflowMessageIncoming: currentMessage,
+        workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
+        ...toolContext,
+      })
     })
 
     lastNodeOutput = nodeInvocationFinalOutput
+    const nodeExecutionTime = Math.round(performance.now() - nodeStartTime)
+
+    // Emit node execution completed event
+    eventContext.nodeExecutionCompleted({
+      nodeId: targetNode.nodeId,
+      nodeType: "workflow-node", // Generic type since WorkFlowNode doesn't expose type
+      duration: nodeExecutionTime,
+      cost: usdCost,
+      status: error ? 'failed' : 'success',
+      error: error?.message || undefined,
+      // TODO: Add token counts if available
+    })
 
     lgg.onlyIf(
       verbose,
@@ -440,9 +494,27 @@ export async function queueRun({
         )
       }
     }
+
+    // Emit message processed event at the end of each iteration
+    const messageProcessingTime = Math.round(performance.now() - messageStartTime)
+    eventContext.messageProcessed({
+      fromNodeId: currentMessage.fromNodeId,
+      toNodeId: currentMessage.toNodeId,
+      messageSeq: currentMessage.seq,
+      processingTime: messageProcessingTime,
+    })
   }
 
   lgg.onlyIf(verbose, `[queueRun] Message processing loop completed`)
+  
+  // Emit workflow completed event
+  const workflowDuration = Math.round(performance.now() - startTime)
+  eventContext.workflowCompleted({
+    duration: workflowDuration,
+    totalCost,
+    nodeInvocations: totalNodeInvocationsCount,
+    status: 'success', // TODO: track workflow failures
+  })
 
   if (!summaries.length) {
     const error = `[queueRun] no summaries`
@@ -491,4 +563,5 @@ export async function queueRun({
     totalCost: totalCost,
     finalWorkflowOutput: lastNodeOutput,
   }
+  }) // Close obs.scope
 }

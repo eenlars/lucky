@@ -25,6 +25,12 @@ export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
     pendingStartNodeId: undefined,
     setPendingStartNodeId: () => {},
     executeWorkflowWithPrompt: async () => {},
+    // Real-time workflow information
+    currentInvocationId: null,
+    setCurrentInvocationId: () => {},
+    isStreamConnected: false,
+    workflowEvents: [],
+    getNodeStatus: () => 'initial' as const,
   }
 
   return (
