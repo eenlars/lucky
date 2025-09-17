@@ -4,6 +4,7 @@
     "moduleResolution": "bundler",
     "target": "ES2020",
     "lib": ["ESNext"],
+    "types": ["node"],
     "rootDir": "./src",
     "outDir": "./dist",
     "declaration": true,

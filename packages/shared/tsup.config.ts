@@ -1,3 +1,4 @@
+// tsup.config.ts
 import { defineConfig } from "tsup"
 
 export default defineConfig({
@@ -7,6 +8,7 @@ export default defineConfig({
     "csv/index": "src/csv/index.ts",
   },
   format: ["esm"],
+  platform: "node",
   dts: true,
   sourcemap: true,
   clean: true,

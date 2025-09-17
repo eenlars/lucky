@@ -14,7 +14,10 @@ export default function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
   const activeClass = "bg-white text-gray-900 shadow-sm"
 
   return (
-    <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg" data-testid="mode-switcher">
+    <div
+      className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg"
+      data-testid="mode-switcher"
+    >
       <button
         onClick={() => onChange("graph")}
         className={`${baseClass} ${mode === "graph" ? activeClass : inactiveClass}`}

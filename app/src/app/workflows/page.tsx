@@ -1,73 +1,71 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { Play, Pencil } from "lucide-react"
+import { Play, Pencil, Plus, Trash2, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-interface WorkflowItem {
-  id: string
-  name: string
-  version?: number
-  publishedAt?: Date
-  triggerType: "Manual" | "API" | "Schedule"
-  wf_version_id?: string // For linking to edit page
-}
+import { useWorkflows } from "@/hooks/useWorkflows"
+import type { WorkflowWithVersions } from "@/lib/workflows"
 
 function WorkflowRow({
   workflow,
   onRun,
+  onDelete,
   isRunning,
 }: {
-  workflow: WorkflowItem
-  onRun: (workflow: WorkflowItem) => void
+  workflow: WorkflowWithVersions
+  onRun: (workflow: WorkflowWithVersions) => void
+  onDelete: (workflowId: string) => void
   isRunning: boolean
 }) {
-  const hasPublishedVersion = workflow.version !== undefined
-  const timeAgo = workflow.publishedAt
-    ? formatTimeAgo(workflow.publishedAt)
+  const hasActiveVersion = workflow.activeVersion !== null
+  const versionCount = workflow.versionCount || 0
+  const timeAgo = workflow.updated_at
+    ? formatTimeAgo(new Date(workflow.updated_at))
     : null
 
   return (
     <div className="relative flex items-center gap-4 px-4 h-14 border-b border-border/30 hover:bg-black/[0.03] dark:hover:bg-white/[0.06] transition-all duration-[80ms] ease-out group">
-      {/* Active/hover indicator */}
       <div
         className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-[80ms] ease-out"
         aria-hidden="true"
       />
-      {/* Name */}
+
+      {/* Name/Description */}
       <div className="flex-1 min-w-0">
         <Link
-          href={`/edit/${workflow.id}`}
+          href={`/edit/${workflow.wf_id}`}
           className="font-semibold text-[14px] leading-[20px] text-foreground hover:underline truncate block"
-          title={workflow.name}
+          title={workflow.description}
         >
-          {workflow.name}
+          {workflow.description}
         </Link>
       </div>
 
-      {/* Version + Time */}
+      {/* Version Info */}
       <div className="flex-shrink-0 text-[12px] text-muted-foreground min-w-[120px]">
-        {hasPublishedVersion && timeAgo ? (
+        {versionCount > 0 ? (
           <span
-            title={`Last published: v${workflow.version} • ${workflow.publishedAt?.toISOString()}`}
+            title={`${versionCount} version${versionCount === 1 ? "" : "s"}${timeAgo ? ` • Updated ${timeAgo}` : ""}`}
           >
-            v{workflow.version} • {timeAgo}
+            {versionCount} version{versionCount === 1 ? "" : "s"}{timeAgo ? ` • ${timeAgo}` : ""}
           </span>
         ) : (
-          <span
-            className="text-muted-foreground/60"
-            title="No published version yet"
-          >
-            —
-          </span>
+          <span className="text-muted-foreground/60">No versions</span>
         )}
       </div>
 
-      {/* Trigger */}
+      {/* Status */}
       <div className="flex-shrink-0">
-        <span className="inline-flex items-center rounded-lg bg-muted px-2.5 py-1 text-[12px] text-muted-foreground">
-          {workflow.triggerType}
+        <span
+          className={cn(
+            "inline-flex items-center rounded-lg px-2.5 py-1 text-[12px]",
+            hasActiveVersion
+              ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+              : "bg-muted text-muted-foreground"
+          )}
+        >
+          {hasActiveVersion ? "Active" : "Draft"}
         </span>
       </div>
 
@@ -75,15 +73,15 @@ function WorkflowRow({
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => onRun(workflow)}
-          disabled={!hasPublishedVersion || isRunning}
+          disabled={!hasActiveVersion || isRunning}
           className={cn(
             "inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md transition-all duration-[80ms] ease-out active:scale-[0.98]",
             "focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2",
-            hasPublishedVersion && !isRunning
+            hasActiveVersion && !isRunning
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
               : "bg-muted text-muted-foreground cursor-not-allowed"
           )}
-          title={!hasPublishedVersion ? "Publish before running" : undefined}
+          title={!hasActiveVersion ? "No active version" : undefined}
         >
           {isRunning ? (
             <>
@@ -93,88 +91,26 @@ function WorkflowRow({
           ) : (
             <>
               <Play className="size-3" />
-              {hasPublishedVersion ? `Run v${workflow.version}` : "Run"}
+              Run
             </>
           )}
         </button>
 
         <Link
-          href={`/edit/${workflow.wf_version_id || workflow.id}`}
+          href={`/edit/${workflow.wf_id}`}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
         >
           <Pencil className="size-3" />
           Edit
         </Link>
+
+        <button
+          onClick={() => onDelete(workflow.wf_id)}
+          className="inline-flex items-center gap-1.5 px-2 py-1.5 text-[12px] font-medium rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500/70 focus:ring-offset-2"
+        >
+          <Trash2 className="size-3" />
+        </button>
       </div>
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <h2 className="text-lg font-semibold text-foreground mb-2">
-        No workflows yet
-      </h2>
-      <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-        Create your first workflow. You can publish and run it any time.
-      </p>
-      <button className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2">
-        Create Workflow
-      </button>
-    </div>
-  )
-}
-
-function LoadingState() {
-  const skeletonWidths = [
-    { name: "w-48", version: "w-16", actions1: "w-20", actions2: "w-12" }, // Customer Onboarding Flow
-    { name: "w-40", version: "w-20", actions1: "w-24", actions2: "w-12" }, // Data Processing
-    { name: "w-52", version: "w-14", actions1: "w-16", actions2: "w-12" }, // Email Campaign Workflow
-    { name: "w-36", version: "w-18", actions1: "w-20", actions2: "w-12" }, // API Integration
-    { name: "w-44", version: "w-16", actions1: "w-20", actions2: "w-12" }, // Report Generator
-  ]
-
-  return (
-    <div className="space-y-0">
-      {Array.from({ length: 5 }).map((_, index) => {
-        const widths = skeletonWidths[index]
-        return (
-          <div
-            key={index}
-            className="flex items-center gap-4 px-4 h-14 border-b border-border/30"
-          >
-            {/* Name skeleton */}
-            <div className="flex-1 min-w-0">
-              <div
-                className={`h-4 bg-muted rounded animate-[pulse_1.2s_linear_infinite] ${widths.name}`}
-              />
-            </div>
-
-            {/* Version/time skeleton */}
-            <div className="flex-shrink-0 min-w-[120px]">
-              <div
-                className={`h-3 bg-muted rounded animate-[pulse_1.2s_linear_infinite] ${widths.version}`}
-              />
-            </div>
-
-            {/* Trigger skeleton */}
-            <div className="flex-shrink-0">
-              <div className="h-6 bg-muted animate-[pulse_1.2s_linear_infinite] rounded-lg w-16" />
-            </div>
-
-            {/* Actions skeleton */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div
-                className={`h-7 bg-muted rounded animate-[pulse_1.2s_linear_infinite] ${widths.actions1}`}
-              />
-              <div
-                className={`h-7 bg-muted rounded animate-[pulse_1.2s_linear_infinite] ${widths.actions2}`}
-              />
-            </div>
-          </div>
-        )
-      })}
     </div>
   )
 }
@@ -186,74 +122,44 @@ function formatTimeAgo(date: Date): string {
   )
 
   if (diffInMinutes < 1) return "just now"
-  if (diffInMinutes < 60) return `${diffInMinutes}m`
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`
 
   const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) return `${diffInHours}h`
+  if (diffInHours < 24) return `${diffInHours}h ago`
 
   const diffInDays = Math.floor(diffInHours / 24)
-  if (diffInDays <= 7) return `${diffInDays}d`
+  if (diffInDays <= 7) return `${diffInDays}d ago`
 
   return date.toLocaleDateString()
 }
 
 export default function WorkflowsPage() {
-  const [workflows, setWorkflows] = useState<WorkflowItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(
     new Set()
   )
+  const { workflows, loading, saving, error, refresh, deleteWorkflow } =
+    useWorkflows()
 
-  useEffect(() => {
-    // Simulate loading
-    const timeout = setTimeout(() => {
-      // Mock data for demonstration
-      setWorkflows([
-        {
-          id: "1",
-          name: "Customer Onboarding Flow",
-          version: 3,
-          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-          triggerType: "Manual",
-          wf_version_id: "550e8400-e29b-41d4-a716-446655440001",
-        },
-        {
-          id: "2",
-          name: "Data Processing Pipeline",
-          version: 1,
-          publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-          triggerType: "Manual",
-          wf_version_id: "550e8400-e29b-41d4-a716-446655440002",
-        },
-        {
-          id: "3",
-          name: "Email Campaign Workflow",
-          triggerType: "Manual",
-          wf_version_id: "550e8400-e29b-41d4-a716-446655440003",
-        },
-      ])
-      setLoading(false)
-    }, 1000)
+  const handleRun = async (workflow: any) => {
+    if (!workflow.activeVersion) return
 
-    return () => clearTimeout(timeout)
-  }, [])
+    setRunningWorkflows((prev) => new Set(prev).add(workflow.wf_id))
 
-  const handleRun = async (workflow: WorkflowItem) => {
-    if (workflow.version === undefined) return
-
-    setRunningWorkflows((prev) => new Set(prev).add(workflow.id))
-
-    // Simulate API call
+    // TODO: Implement actual workflow execution
     setTimeout(() => {
       setRunningWorkflows((prev) => {
         const next = new Set(prev)
-        next.delete(workflow.id)
+        next.delete(workflow.wf_id)
         return next
       })
-
-      // Show success toast (would integrate with your toast system)
-      console.log(`Run started (v${workflow.version}). View run →`)
+      console.log(`Workflow "${workflow.description}" started`)
     }, 2000)
+  }
+
+  const handleDelete = async (workflowId: string) => {
+    if (confirm("Are you sure you want to delete this workflow?")) {
+      await deleteWorkflow(workflowId)
+    }
   }
 
   return (
@@ -265,29 +171,75 @@ export default function WorkflowsPage() {
             Workflows
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Last published versions run by default.
+            Manage your workflow configurations and versions
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2">
-          Create Workflow
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={refresh}
+            disabled={loading}
+            className="inline-flex items-center gap-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+          </button>
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
+          >
+            <Plus className="size-4" />
+            Create Workflow
+          </Link>
+        </div>
       </div>
 
+      {/* Error state */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-200 text-red-700 rounded-md dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
       {/* Content */}
-      {loading ? (
-        <LoadingState />
+      {loading && workflows.length === 0 ? (
+        <div className="flex justify-center py-16">
+          <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
       ) : workflows.length === 0 ? (
-        <EmptyState />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
+            No workflows yet
+          </h2>
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+            Create your first workflow to get started
+          </p>
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
+          >
+            <Plus className="size-4" />
+            Create Workflow
+          </Link>
+        </div>
       ) : (
         <div>
-          {workflows.map((workflow) => (
+          {workflows.map((workflow: WorkflowWithVersions) => (
             <WorkflowRow
-              key={workflow.id}
+              key={workflow.wf_id}
               workflow={workflow}
               onRun={handleRun}
-              isRunning={runningWorkflows.has(workflow.id)}
+              onDelete={handleDelete}
+              isRunning={runningWorkflows.has(workflow.wf_id)}
             />
           ))}
+        </div>
+      )}
+
+      {/* Saving indicator */}
+      {saving && (
+        <div className="fixed bottom-4 right-4 bg-black/80 text-white px-4 py-2 rounded-md flex items-center gap-2">
+          <div className="size-4 animate-spin rounded-full border border-current border-t-transparent" />
+          Saving...
         </div>
       )}
     </div>

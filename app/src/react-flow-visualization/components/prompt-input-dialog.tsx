@@ -45,7 +45,10 @@ export function PromptInputDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]" data-testid="prompt-input-dialog">
+      <DialogContent
+        className="sm:max-w-[600px]"
+        data-testid="prompt-input-dialog"
+      >
         <DialogHeader>
           <DialogTitle>
             {isExecuting ? "Workflow Execution" : "Run Workflow"}
