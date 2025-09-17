@@ -10,7 +10,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "tsup",
+        "build": "tsup --silent",
         "dev": "tsup --watch",
         "clean": "rimraf dist",
         "prebuild": "rimraf dist && rm -f tsconfig.tsbuildinfo",
