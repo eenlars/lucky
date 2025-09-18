@@ -1,4 +1,8 @@
 import type { NextConfig } from "next"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lucky/shared"],
@@ -10,6 +14,11 @@ const nextConfig: NextConfig = {
     "puppeteer-extra-plugin",
     "puppeteer-extra-plugin-stealth",
   ],
+
+  // turbo resolves to the root (website folder). however, we need to import a shared folder, so need to set the outputFileTracingRoot to the root of the project.
+  // the error if not set to the right directory is: Error: ENOENT: no such file or directory, lstat '/vercel/path0/path0/website/.next/routes-manifest.json'
+  // the error if not set at all: An unexpected Turbopack error occurred.
+  outputFileTracingRoot: path.resolve(__dirname, ".."),
   /* config options here */
   webpack: (config, { isServer }) => {
     if (!isServer) {
