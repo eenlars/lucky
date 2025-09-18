@@ -306,9 +306,10 @@ export class WorkflowEventContext {
       const result = await fn()
       const duration = Math.round(performance.now() - startTime)
 
+      // Emit a single completed event with duration_ms for consistency
       obs.event(`${operation}:completed`, {
         nodeId,
-        duration,
+        duration_ms: duration,
         status: "success",
       })
 
@@ -316,9 +317,10 @@ export class WorkflowEventContext {
     } catch (error) {
       const duration = Math.round(performance.now() - startTime)
 
+      // Emit a single completed event with error context
       obs.event(`${operation}:completed`, {
         nodeId,
-        duration,
+        duration_ms: duration,
         status: "failed",
         error: error instanceof Error ? error.message : String(error),
       })

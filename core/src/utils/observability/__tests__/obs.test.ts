@@ -93,12 +93,13 @@ describe("obs - Core Observability Module", () => {
       // Act
       obs.event("unscoped-event", testEvent)
 
-      // Assert
-      expect(mockSink.event).toHaveBeenCalledWith({
-        name: "unscoped-event",
-        attrs: testEvent,
-      })
-      expect((mockSink.event as any).mock.calls[0][0].ctx).toBeUndefined()
+      // Assert (single-record shape)
+      expect(mockSink.event).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: "unscoped-event",
+          action: "unscoped-action",
+        })
+      )
     })
   })
 
@@ -131,10 +132,8 @@ describe("obs - Core Observability Module", () => {
       // Act
       obs.workflowEvent(nodeEvent)
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:started",
         expect.objectContaining({
           event: "node:execution:started",
           nodeId: "test-node-123",
@@ -158,10 +157,8 @@ describe("obs - Core Observability Module", () => {
       // Act
       obs.workflowEvent(completionEvent)
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "workflow:completed",
         expect.objectContaining({
           event: "workflow:completed",
           status: "success",
@@ -233,6 +230,8 @@ describe("obs - Core Observability Module", () => {
 
       // Act & Assert
       await obs.scope(context, async () => {
+        // Use mock sink for verification
+        setSink(mockSink)
         // Simulate async operation
         await new Promise((resolve) => setTimeout(resolve, 10))
 
@@ -243,10 +242,9 @@ describe("obs - Core Observability Module", () => {
         obs.event("async-event", { step: "middle" })
         expect(mockSink.event).toHaveBeenCalledWith(
           expect.objectContaining({
-            name: "async-event",
-            ctx: expect.objectContaining({
-              invocationId: "async-test-invocation",
-            }),
+            event: "async-event",
+            step: "middle",
+            invocationId: "async-test-invocation",
           })
         )
       })
@@ -350,7 +348,7 @@ describe("obs - Core Observability Module", () => {
       })
 
       expect(calls[2][0]).toMatchObject({
-        event: "timed-operation:end",
+        event: "test-operation:end",
         duration_ms: expect.any(Number),
       })
     })

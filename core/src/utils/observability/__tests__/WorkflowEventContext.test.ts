@@ -122,10 +122,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         attempt: 1,
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:started",
         expect.objectContaining({
           event: "node:execution:started",
           nodeId: "transform-node-001",
@@ -149,10 +147,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         inputTokens: 50,
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:completed",
         expect.objectContaining({
           event: "node:execution:completed",
           nodeId: "llm-node-002",
@@ -177,11 +173,10 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         error: "API rate limit exceeded",
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:completed",
         expect.objectContaining({
+          event: "node:execution:completed",
           status: "failed",
           error: "API rate limit exceeded",
         })
@@ -199,10 +194,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         messageType: "workflow-message",
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "message:queued",
         expect.objectContaining({
           event: "message:queued",
           fromNodeId: "input-node",
@@ -222,10 +215,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         processingTime: 1200,
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "message:processed",
         expect.objectContaining({
           event: "message:processed",
           processingTime: 1200,
@@ -368,12 +359,13 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         )
       ).rejects.toThrow("Operation failed")
 
-      // Assert timing events still emitted
+      // Assert a single completed event with failure details
       const calls = (mockSink.event as any).mock.calls
-      expect(calls).toHaveLength(2)
+      expect(calls).toHaveLength(1)
 
-      const endEvent = calls[1][2]
-      expect(endEvent.event).toBe("timing:end")
+      const endEvent = calls[0][0]
+      expect(endEvent.event).toBe("failing-operation:completed")
+      expect(endEvent.status).toBe("failed")
       expect(endEvent.error).toBe("Operation failed")
     })
   })
@@ -398,11 +390,10 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         attempt: 1,
       })
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:started",
         expect.objectContaining({
+          event: "node:execution:started",
           wfId: "custom-workflow",
           wfVersionId: "v3.0.0",
           invocationId: "custom-invocation",
@@ -421,11 +412,10 @@ describe("WorkflowEventContext - Event Context Manager", () => {
         wfId: "overridden-workflow-id",
       } as any)
 
-      // Assert
+      // Assert (single-record sink call)
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "workflow:started",
         expect.objectContaining({
+          event: "workflow:started",
           wfId: "overridden-workflow-id", // Should use override
           invocationId: "test-invocation-456", // Should keep base
         })
@@ -470,9 +460,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
       }).not.toThrow()
 
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "node:execution:completed",
         expect.objectContaining({
+          event: "node:execution:completed",
           nodeId: "minimal-node",
           status: "success",
         })
@@ -496,9 +485,8 @@ describe("WorkflowEventContext - Event Context Manager", () => {
       }).not.toThrow()
 
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        "workflow:started",
         expect.objectContaining({
+          event: "workflow:started",
           wfId: "minimal-workflow",
           nodeCount: 1,
         })

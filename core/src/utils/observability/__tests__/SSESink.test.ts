@@ -8,9 +8,7 @@
  * - Error handling and edge cases
  */
 
-import {
-  WorkflowEventBuilder
-} from "@core/__tests__/test-data-builders"
+import { WorkflowEventBuilder } from "@core/__tests__/test-data-builders"
 import { SSESink, globalSSESink } from "@core/utils/observability/sinks/SSESink"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -92,11 +90,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
       // Act
       clients.forEach((client) => {
         const controller = new MockStreamController()
-        sink.addConnection(
-          client.id,
-          controller as any,
-          { metadata: { invocationId: client.invocationId } }
-        )
+        sink.addConnection(client.id, controller as any, {
+          metadata: { invocationId: client.invocationId },
+        })
       })
 
       // Assert
@@ -113,11 +109,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
     it("should remove connections correctly", () => {
       // Arrange
       const clientId = "remove-test-client"
-      sink.addConnection(
-        clientId,
-        mockController1 as any,
-        { metadata: { invocationId: "test-invocation" } }
-      )
+      sink.addConnection(clientId, mockController1 as any, {
+        metadata: { invocationId: "test-invocation" },
+      })
       expect(sink.getConnectionCount()).toBe(1)
 
       // Act
@@ -140,11 +134,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
     it("should mark connections as disconnected when controller closes", () => {
       // Arrange
       const clientId = "disconnect-test-client"
-      sink.addConnection(
-        clientId,
-        mockController1 as any,
-        { metadata: { invocationId: "test-invocation" } }
-      )
+      sink.addConnection(clientId, mockController1 as any, {
+        metadata: { invocationId: "test-invocation" },
+      })
 
       // Act
       mockController1.close()
@@ -164,16 +156,12 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         .build()
 
       // Add multiple clients
-      sink.addConnection(
-        "client-1",
-        mockController1 as any,
-        { metadata: { invocationId: "broadcast-test" } }
-      )
-      sink.addConnection(
-        "client-2",
-        mockController2 as any,
-        { metadata: { invocationId: "broadcast-test" } }
-      )
+      sink.addConnection("client-1", mockController1 as any, {
+        metadata: { invocationId: "broadcast-test" },
+      })
+      sink.addConnection("client-2", mockController2 as any, {
+        metadata: { invocationId: "broadcast-test" },
+      })
 
       // Act
       sink.event(event)
@@ -201,8 +189,12 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         .build()
 
       // Add clients for different invocations
-      sink.addConnection("client-A", mockController1 as any, { metadata: { invocationId: "invocation-A" } })
-      sink.addConnection("client-B", mockController2 as any, { metadata: { invocationId: "invocation-B" } })
+      sink.addConnection("client-A", mockController1 as any, {
+        metadata: { invocationId: "invocation-A" },
+      })
+      sink.addConnection("client-B", mockController2 as any, {
+        metadata: { invocationId: "invocation-B" },
+      })
 
       // Act
       sink.event(event1)
@@ -227,8 +219,12 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         message: "System operational",
       } as any
 
-      sink.addConnection("client-1", mockController1 as any, { metadata: { invocationId: "invocation-1" } })
-      sink.addConnection("client-2", mockController2 as any, { metadata: { invocationId: "invocation-2" } })
+      sink.addConnection("client-1", mockController1 as any, {
+        metadata: { invocationId: "invocation-1" },
+      })
+      sink.addConnection("client-2", mockController2 as any, {
+        metadata: { invocationId: "invocation-2" },
+      })
 
       // Act
       sink.event(globalEvent)
@@ -249,14 +245,12 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
       ]
 
       // Pre-buffer the events
-      initialEvents.forEach(event => sink.event(event))
-      
+      initialEvents.forEach((event) => sink.event(event))
+
       // Act
-      sink.addConnection(
-        "client-with-initial",
-        mockController1 as any,
-        { metadata: { invocationId: "test-invocation" } }
-      )
+      sink.addConnection("client-with-initial", mockController1 as any, {
+        metadata: { invocationId: "test-invocation" },
+      })
 
       // Assert
       expect(mockController1.enqueued).toHaveLength(2)
@@ -277,11 +271,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         })
         .build()
 
-      sink.addConnection(
-        "format-test",
-        mockController1 as any,
-        { metadata: { invocationId: "test-invocation" } }
-      )
+      sink.addConnection("format-test", mockController1 as any, {
+        metadata: { invocationId: "test-invocation" },
+      })
 
       // Act
       sink.event(event)
@@ -313,11 +305,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         invocationId: "special-test",
       } as any
 
-      sink.addConnection(
-        "special-chars",
-        mockController1 as any,
-        { metadata: { invocationId: "special-test" } }
-      )
+      sink.addConnection("special-chars", mockController1 as any, {
+        metadata: { invocationId: "special-test" },
+      })
 
       // Act
       sink.event(event)
@@ -341,11 +331,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
         }),
       }
 
-      sink.addConnection(
-        "faulty-client",
-        faultyController as any,
-        { metadata: { invocationId: "test-invocation" } }
-      )
+      sink.addConnection("faulty-client", faultyController as any, {
+        metadata: { invocationId: "test-invocation" },
+      })
 
       const event = WorkflowEventBuilder.create().workflowStarted().build()
 
@@ -362,11 +350,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
 
     it("should handle malformed events", () => {
       // Arrange
-      sink.addConnection(
-        "malformed-test",
-        mockController1 as any,
-        { metadata: { invocationId: "test-inv" } }
-      )
+      sink.addConnection("malformed-test", mockController1 as any, {
+        metadata: { invocationId: "test-inv" },
+      })
 
       const malformedEvents = [
         null,
@@ -388,8 +374,12 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
 
     it("should clean up disconnected clients during broadcast", () => {
       // Arrange
-      sink.addConnection("client-1", mockController1 as any, { metadata: { invocationId: "test-inv" } })
-      sink.addConnection("client-2", mockController2 as any, { metadata: { invocationId: "test-inv" } })
+      sink.addConnection("client-1", mockController1 as any, {
+        metadata: { invocationId: "test-inv" },
+      })
+      sink.addConnection("client-2", mockController2 as any, {
+        metadata: { invocationId: "test-inv" },
+      })
 
       // Simulate one client disconnecting
       mockController1.close()
@@ -415,11 +405,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
       for (let i = 0; i < connectionCount; i++) {
         const controller = new MockStreamController()
         controllers.push(controller)
-        sink.addConnection(
-          `client-${i}`,
-          controller as any,
-          { metadata: { invocationId: `invocation-${i % 10}` } }
-        )
+        sink.addConnection(`client-${i}`, controller as any, {
+          metadata: { invocationId: `invocation-${i % 10}` },
+        })
       }
 
       // Assert
@@ -452,11 +440,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
       for (let i = 0; i < 100; i++) {
         const clientId = `temp-client-${i}`
         clientIds.push(clientId)
-        sink.addConnection(
-          clientId,
-          new MockStreamController() as any,
-          { metadata: { invocationId: "temp-invocation" } }
-        )
+        sink.addConnection(clientId, new MockStreamController() as any, {
+          metadata: { invocationId: "temp-invocation" },
+        })
       }
 
       expect(sink.getConnectionCount()).toBe(100)
@@ -472,11 +458,9 @@ describe.skip("SSESink - Server-Sent Events Sink", () => {
     it("should handle high-frequency event emission", () => {
       // Arrange
       const eventCount = 10000
-      sink.addConnection(
-        "high-freq-client",
-        mockController1 as any,
-        { metadata: { invocationId: "test-inv" } }
-      )
+      sink.addConnection("high-freq-client", mockController1 as any, {
+        metadata: { invocationId: "test-inv" },
+      })
 
       // Act
       const startTime = performance.now()

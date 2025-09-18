@@ -29,7 +29,7 @@
   "scripts": {
     "prepare": "husky",
     "web": "cd app && bun run dev",
-    "check:all": "bun run tsc && bun run format && bun run test:smoke && bun run test:gate && bun run test:unit",
+    "check:all": "bun run tsc && bun run format && bun run test:smoke && bun run test:gate && bun run unit",
     "build:shared": "cd packages/shared && bun run build",
     "build:app": "cd app && bun run build",
     "build": "bun run build:shared && bun run build:app",
@@ -39,6 +39,6 @@
     "format": "cd app && bun run format && cd ../core && bun run format",
     "install:ci": "bun install --ignore-scripts",
     "cleanup": "bun scripts/cleanup.ts",
-    "test:unit": "cd core && bun run test:unit:ci"
+    "unit": "cd core && bun run unit:ci"
   }
 }
