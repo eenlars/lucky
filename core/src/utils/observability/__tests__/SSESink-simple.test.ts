@@ -2,8 +2,8 @@
  * Simple SSESink Test - Basic functionality verification
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { SSESink } from '@core/utils/observability/sinks/SSESink'
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { SSESink } from "@core/utils/observability/sinks/SSESink"
 
 // Simple mock controller
 class TestController {
@@ -27,7 +27,7 @@ class TestController {
   }
 }
 
-describe('SSESink - Simple Test', () => {
+describe("SSESink - Simple Test", () => {
   let sink: SSESink
   let controller: TestController
 
@@ -38,41 +38,41 @@ describe('SSESink - Simple Test', () => {
 
   afterEach(() => {
     // Clean up connections
-    sink.getConnections().forEach(conn => sink.removeConnection(conn.id))
+    sink.getConnections().forEach((conn) => sink.removeConnection(conn.id))
   })
 
-  it('should add and remove connections', () => {
+  it("should add and remove connections", () => {
     // Act
-    sink.addConnection('test-client', controller as any, {})
-    
+    sink.addConnection("test-client", controller as any, {})
+
     // Assert
     expect(sink.getConnectionCount()).toBe(1)
-    
+
     // Remove
-    sink.removeConnection('test-client')
+    sink.removeConnection("test-client")
     expect(sink.getConnectionCount()).toBe(0)
   })
 
-  it('should broadcast simple events', () => {
+  it("should broadcast simple events", () => {
     // Arrange
-    sink.addConnection('test-client', controller as any, {})
-    
-    const testEvent = { event: 'test:simple', message: 'hello' }
-    
+    sink.addConnection("test-client", controller as any, {})
+
+    const testEvent = { event: "test:simple", message: "hello" }
+
     // Act
     sink.event(testEvent)
-    
+
     // Assert
     expect(controller.messages.length).toBe(1)
     const message = controller.getLastMessage()
-    expect(message).toContain('test:simple')
-    expect(message).toContain('hello')
+    expect(message).toContain("test:simple")
+    expect(message).toContain("hello")
   })
 
-  it('should handle no connections gracefully', () => {
+  it("should handle no connections gracefully", () => {
     // Act & Assert - Should not throw
     expect(() => {
-      sink.event({ event: 'test:orphan', message: 'no listeners' })
+      sink.event({ event: "test:orphan", message: "no listeners" })
     }).not.toThrow()
   })
 })

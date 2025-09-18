@@ -1,6 +1,6 @@
 /**
  * SSE Connection Management API
- * 
+ *
  * Provides endpoints to monitor and manage active SSE connections
  * for workflow event streaming.
  */
@@ -22,14 +22,17 @@ export async function GET(req: NextRequest) {
     const connectionCount = globalSSESink.getConnectionCount()
 
     // Group connections by invocation ID for analytics
-    const connectionsByInvocation = connections.reduce((acc, conn) => {
-      const invocationId = conn.metadata?.invocationId || 'global'
-      if (!acc[invocationId]) {
-        acc[invocationId] = []
-      }
-      acc[invocationId].push(conn)
-      return acc
-    }, {} as Record<string, typeof connections>)
+    const connectionsByInvocation = connections.reduce(
+      (acc, conn) => {
+        const invocationId = conn.metadata?.invocationId || "global"
+        if (!acc[invocationId]) {
+          acc[invocationId] = []
+        }
+        acc[invocationId].push(conn)
+        return acc
+      },
+      {} as Record<string, typeof connections>
+    )
 
     return Response.json({
       success: true,
@@ -38,13 +41,19 @@ export async function GET(req: NextRequest) {
         connections,
         connectionsByInvocation,
         timestamp: new Date().toISOString(),
-      }
+      },
     })
   } catch (error) {
-    return Response.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to get connection info'
-    }, { status: 500 })
+    return Response.json(
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get connection info",
+      },
+      { status: 500 }
+    )
   }
 }
 
@@ -60,10 +69,13 @@ export async function DELETE(req: NextRequest) {
     const { connectionId } = await req.json()
 
     if (!connectionId) {
-      return Response.json({
-        success: false,
-        error: 'connectionId is required'
-      }, { status: 400 })
+      return Response.json(
+        {
+          success: false,
+          error: "connectionId is required",
+        },
+        { status: 400 }
+      )
     }
 
     globalSSESink.removeConnection(connectionId)
@@ -74,9 +86,13 @@ export async function DELETE(req: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    return Response.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to close connection'
-    }, { status: 500 })
+    return Response.json(
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Failed to close connection",
+      },
+      { status: 500 }
+    )
   }
 }

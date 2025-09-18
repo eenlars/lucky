@@ -1,6 +1,6 @@
 /**
  * Server-Sent Events endpoint for real-time workflow updates
- * 
+ *
  * Provides streaming updates for workflow execution including:
  * - Node execution progress
  * - Message queue processing
@@ -12,13 +12,16 @@
 
 import { NextRequest } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
-import { globalSSESink, type EventFilter } from "@core/utils/observability/sinks/SSESink"
+import {
+  globalSSESink,
+  type EventFilter,
+} from "@core/utils/observability/sinks/SSESink"
 import { setSink, TeeSink, StdoutSink } from "@core/utils/observability/obs"
 import { genShortId } from "@core/utils/common/utils"
 
 /**
  * Stream workflow events via Server-Sent Events
- * 
+ *
  * Query parameters:
  * - invocationId: Filter events for specific workflow invocation
  * - nodeId: Filter events for specific node
@@ -31,10 +34,10 @@ export async function GET(req: NextRequest) {
   if (authResult instanceof Response) return authResult
 
   const { searchParams } = new URL(req.url)
-  const invocationId = searchParams.get('invocationId')
-  const nodeId = searchParams.get('nodeId')
-  const events = searchParams.get('events')
-  const excludeHeartbeat = searchParams.get('excludeHeartbeat') === 'true'
+  const invocationId = searchParams.get("invocationId")
+  const nodeId = searchParams.get("nodeId")
+  const events = searchParams.get("events")
+  const excludeHeartbeat = searchParams.get("excludeHeartbeat") === "true"
 
   // Generate unique connection ID
   const connectionId = `sse_${genShortId()}`
@@ -47,25 +50,25 @@ export async function GET(req: NextRequest) {
     filters.push({
       type: "include",
       patterns: ["*"],
-      attributes: { invocationId }
+      attributes: { invocationId },
     })
   }
 
   // Filter by node ID if specified
   if (nodeId) {
     filters.push({
-      type: "include", 
+      type: "include",
       patterns: ["*"],
-      attributes: { nodeId }
+      attributes: { nodeId },
     })
   }
 
   // Filter by event types if specified
   if (events) {
-    const eventPatterns = events.split(',').map(e => e.trim())
+    const eventPatterns = events.split(",").map((e) => e.trim())
     filters.push({
       type: "include",
-      patterns: eventPatterns
+      patterns: eventPatterns,
     })
   }
 
@@ -73,7 +76,7 @@ export async function GET(req: NextRequest) {
   if (excludeHeartbeat) {
     filters.push({
       type: "exclude",
-      patterns: ["heartbeat"]
+      patterns: ["heartbeat"],
     })
   }
 
@@ -87,27 +90,29 @@ export async function GET(req: NextRequest) {
           invocationId,
           nodeId,
           connectedAt: new Date().toISOString(),
-          userAgent: req.headers.get('user-agent'),
+          userAgent: req.headers.get("user-agent"),
         },
         sendBuffered: true, // Send recent events to new connections
       })
 
       // Set up global sink to include SSE if not already configured
       try {
-        setSink(new TeeSink([
-          new StdoutSink(), // Keep console logging
-          globalSSESink,     // Add SSE streaming
-        ]))
+        setSink(
+          new TeeSink([
+            new StdoutSink(), // Keep console logging
+            globalSSESink, // Add SSE streaming
+          ])
+        )
       } catch (error) {
-        console.warn('SSE sink already configured or error setting up:', error)
+        console.warn("SSE sink already configured or error setting up:", error)
       }
 
       // Send initial connection confirmation
       const welcomeEvent = {
-        event: 'connection:established',
+        event: "connection:established",
         ts: new Date().toISOString(),
         connectionId,
-        message: 'Real-time workflow updates connected',
+        message: "Real-time workflow updates connected",
         filters: filters.length > 0 ? filters : undefined,
       }
 
@@ -119,18 +124,18 @@ export async function GET(req: NextRequest) {
       // Clean up connection when client disconnects
       globalSSESink.removeConnection(connectionId)
       console.log(`SSE connection closed: ${connectionId}`)
-    }
+    },
   })
 
   // Return SSE response with proper headers
   return new Response(stream, {
     headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache, no-transform',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control',
-      'X-Accel-Buffering': 'no', // Disable nginx buffering
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Cache-Control",
+      "X-Accel-Buffering": "no", // Disable nginx buffering
     },
   })
 }
@@ -153,12 +158,16 @@ export async function POST(req: NextRequest) {
         connectionCount,
         connections,
         timestamp: new Date().toISOString(),
-      }
+      },
     })
   } catch (error) {
-    return Response.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to get connections'
-    }, { status: 500 })
+    return Response.json(
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Failed to get connections",
+      },
+      { status: 500 }
+    )
   }
 }

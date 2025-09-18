@@ -1,6 +1,6 @@
 /**
  * Server-Sent Events sink for real-time observability
- * 
+ *
  * Broadcasts events to connected clients via SSE streams.
  * Maintains connection registry and handles cleanup.
  */
@@ -31,10 +31,12 @@ export class SSESink implements Sink {
   private readonly heartbeatInterval: number
   private heartbeatTimer?: NodeJS.Timeout
 
-  constructor(options: {
-    maxBufferSize?: number
-    heartbeatInterval?: number
-  } = {}) {
+  constructor(
+    options: {
+      maxBufferSize?: number
+      heartbeatInterval?: number
+    } = {}
+  ) {
     this.maxBufferSize = options.maxBufferSize ?? 1000
     this.heartbeatInterval = options.heartbeatInterval ?? 30000
 
@@ -56,7 +58,10 @@ export class SSESink implements Sink {
           this.sendEvent(connection, record)
         }
       } catch (error) {
-        console.warn(`Failed to send event to connection ${connectionId}:`, error)
+        console.warn(
+          `Failed to send event to connection ${connectionId}:`,
+          error
+        )
         this.removeConnection(connectionId)
       }
     }
@@ -117,8 +122,8 @@ export class SSESink implements Sink {
   /**
    * Get connection metadata
    */
-  getConnections(): Array<Pick<SSEConnection, 'id' | 'metadata'>> {
-    return Array.from(this.connections.values()).map(conn => ({
+  getConnections(): Array<Pick<SSEConnection, "id" | "metadata">> {
+    return Array.from(this.connections.values()).map((conn) => ({
       id: conn.id,
       metadata: conn.metadata,
     }))
@@ -132,7 +137,7 @@ export class SSESink implements Sink {
       this.removeConnection(connectionId)
     }
     this.eventBuffer = []
-    
+
     // Clear heartbeat timer
     if (this.heartbeatTimer) {
       clearInterval(this.heartbeatTimer)
@@ -167,7 +172,7 @@ export class SSESink implements Sink {
 
     for (const filter of connection.filters) {
       const matches = this.eventMatchesFilter(record, filter)
-      
+
       if (filter.type === "include" && matches) {
         return true
       }
@@ -177,18 +182,20 @@ export class SSESink implements Sink {
     }
 
     // Default to include if no include filters matched
-    const hasIncludeFilters = connection.filters.some(f => f.type === "include")
+    const hasIncludeFilters = connection.filters.some(
+      (f) => f.type === "include"
+    )
     return !hasIncludeFilters
   }
 
   private eventMatchesFilter(record: any, filter: EventFilter): boolean {
     // Check event name patterns
-    const eventMatches = filter.patterns.some(pattern => {
-      if (pattern.includes('*')) {
-        const regex = new RegExp(pattern.replace(/\*/g, '.*'))
-        return regex.test(record.event || '')
+    const eventMatches = filter.patterns.some((pattern) => {
+      if (pattern.includes("*")) {
+        const regex = new RegExp(pattern.replace(/\*/g, ".*"))
+        return regex.test(record.event || "")
       }
-      return (record.event || '') === pattern
+      return (record.event || "") === pattern
     })
 
     if (!eventMatches) {
@@ -215,7 +222,7 @@ export class SSESink implements Sink {
   private startHeartbeat(): void {
     this.heartbeatTimer = setInterval(() => {
       const heartbeat = {
-        event: 'heartbeat',
+        event: "heartbeat",
         ts: new Date().toISOString(),
         connections: this.getConnectionCount(),
       }

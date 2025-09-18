@@ -1,6 +1,6 @@
 /**
  * Type-safe workflow event definitions for observability
- * 
+ *
  * Defines all events emitted during workflow execution
  * with proper TypeScript types for better DX and safety.
  */
@@ -13,42 +13,42 @@ export interface BaseWorkflowEvent {
 }
 
 export interface WorkflowStartedEvent extends BaseWorkflowEvent {
-  event: 'workflow:started'
+  event: "workflow:started"
   nodeCount: number
   entryNodeId: string
   goal: string
 }
 
 export interface WorkflowCompletedEvent extends BaseWorkflowEvent {
-  event: 'workflow:completed'
+  event: "workflow:completed"
   duration: number
   totalCost: number
   nodeInvocations: number
-  status: 'success' | 'failed'
+  status: "success" | "failed"
   error?: string
 }
 
 export interface NodeExecutionStartedEvent extends BaseWorkflowEvent {
-  event: 'node:execution:started'
+  event: "node:execution:started"
   nodeId: string
   nodeType: string
   attempt: number
 }
 
 export interface NodeExecutionCompletedEvent extends BaseWorkflowEvent {
-  event: 'node:execution:completed'
+  event: "node:execution:completed"
   nodeId: string
   nodeType: string
   duration: number
   cost: number
-  status: 'success' | 'failed'
+  status: "success" | "failed"
   error?: string
   outputTokens?: number
   inputTokens?: number
 }
 
 export interface MessageQueuedEvent extends BaseWorkflowEvent {
-  event: 'message:queued'
+  event: "message:queued"
   fromNodeId: string
   toNodeId: string
   messageSeq: number
@@ -56,7 +56,7 @@ export interface MessageQueuedEvent extends BaseWorkflowEvent {
 }
 
 export interface MessageProcessedEvent extends BaseWorkflowEvent {
-  event: 'message:processed'
+  event: "message:processed"
   fromNodeId: string
   toNodeId: string
   messageSeq: number
@@ -64,26 +64,26 @@ export interface MessageProcessedEvent extends BaseWorkflowEvent {
 }
 
 export interface ToolExecutionStartedEvent extends BaseWorkflowEvent {
-  event: 'tool:execution:started'
+  event: "tool:execution:started"
   nodeId: string
   toolName: string
-  toolType: 'code' | 'mcp'
+  toolType: "code" | "mcp"
   parameters?: Record<string, any>
 }
 
 export interface ToolExecutionCompletedEvent extends BaseWorkflowEvent {
-  event: 'tool:execution:completed'
+  event: "tool:execution:completed"
   nodeId: string
   toolName: string
-  toolType: 'code' | 'mcp'
+  toolType: "code" | "mcp"
   duration: number
-  status: 'success' | 'failed'
+  status: "success" | "failed"
   error?: string
   resultSize?: number
 }
 
 export interface LLMCallStartedEvent extends BaseWorkflowEvent {
-  event: 'llm:call:started'
+  event: "llm:call:started"
   nodeId: string
   model: string
   provider: string
@@ -91,7 +91,7 @@ export interface LLMCallStartedEvent extends BaseWorkflowEvent {
 }
 
 export interface LLMCallCompletedEvent extends BaseWorkflowEvent {
-  event: 'llm:call:completed'
+  event: "llm:call:completed"
   nodeId: string
   model: string
   provider: string
@@ -99,19 +99,19 @@ export interface LLMCallCompletedEvent extends BaseWorkflowEvent {
   inputTokens: number
   outputTokens: number
   cost: number
-  status: 'success' | 'failed'
+  status: "success" | "failed"
   error?: string
 }
 
 export interface MemoryUpdatedEvent extends BaseWorkflowEvent {
-  event: 'memory:updated'
+  event: "memory:updated"
   nodeId: string
   memoryKeys: string[]
-  updateType: 'create' | 'update' | 'delete'
+  updateType: "create" | "update" | "delete"
 }
 
 export interface WorkflowProgressEvent extends BaseWorkflowEvent {
-  event: 'workflow:progress'
+  event: "workflow:progress"
   completedNodes: number
   totalNodes: number
   currentNodeId: string
@@ -119,9 +119,9 @@ export interface WorkflowProgressEvent extends BaseWorkflowEvent {
 }
 
 export interface WorkflowErrorEvent extends BaseWorkflowEvent {
-  event: 'workflow:error'
+  event: "workflow:error"
   error: string
-  errorType: 'validation' | 'execution' | 'timeout' | 'resource'
+  errorType: "validation" | "execution" | "timeout" | "resource"
   nodeId?: string
   recoverable: boolean
 }
@@ -129,7 +129,7 @@ export interface WorkflowErrorEvent extends BaseWorkflowEvent {
 /**
  * Union type of all workflow events for type safety
  */
-export type WorkflowEvent = 
+export type WorkflowEvent =
   | WorkflowStartedEvent
   | WorkflowCompletedEvent
   | NodeExecutionStartedEvent
@@ -175,7 +175,7 @@ export class WorkflowEventEmitter {
       try {
         sink(event)
       } catch (error) {
-        console.error('Error in workflow event sink:', error)
+        console.error("Error in workflow event sink:", error)
       }
     }
   }

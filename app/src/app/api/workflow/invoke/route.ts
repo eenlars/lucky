@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
     // Return result with invocation IDs for real-time event subscription
     const response = {
       ...result,
-      invocationIds: result.data?.map(r => r.workflowInvocationId) || []
+      invocationIds: result.data?.map((r) => r.workflowInvocationId) || [],
     }
-    
+
     return NextResponse.json(response, { status: 200 })
   } catch (error) {
     console.error("Workflow Invocation API Error:", error)

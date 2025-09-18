@@ -30,7 +30,7 @@ export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
     setCurrentInvocationId: () => {},
     isStreamConnected: false,
     workflowEvents: [],
-    getNodeStatus: () => 'initial' as const,
+    getNodeStatus: () => "initial" as const,
   }
 
   return (

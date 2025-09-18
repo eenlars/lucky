@@ -52,7 +52,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
         .from("WorkflowVersion")
         .select("*", { count: "exact", head: true })
         .eq("workflow_id", workflowId)
-      
+
       return { workflowId, count: count || 0 }
     })
   )

@@ -20,7 +20,9 @@ export function useWorkflowRunner() {
   const [_pendingStartNodeId, _setPendingStartNodeId] = useState<
     string | undefined
   >()
-  const [currentInvocationId, setCurrentInvocationId] = useState<string | null>(null)
+  const [currentInvocationId, setCurrentInvocationId] = useState<string | null>(
+    null
+  )
   const isRunning = useRef(false)
   const {
     getNodes,
@@ -41,26 +43,34 @@ export function useWorkflowRunner() {
   // Real-time workflow stream integration
   const { events, isConnected } = useWorkflowStream({
     invocationId: currentInvocationId || undefined,
-    events: ['node:execution:started', 'node:execution:completed', 'workflow:completed'],
+    events: [
+      "node:execution:started",
+      "node:execution:completed",
+      "workflow:completed",
+    ],
   })
 
   // Update node statuses based on real-time events
   useEffect(() => {
     if (!currentInvocationId || events.length === 0) return
 
-    const nodeStatusMap = new Map<string, "loading" | "success" | "error" | "initial">()
-    
+    const nodeStatusMap = new Map<
+      string,
+      "loading" | "success" | "error" | "initial"
+    >()
+
     // Process events to determine current node statuses
     for (const event of events) {
       const nodeId = (event as any).nodeId
       if (!nodeId) continue
 
       switch (event.event) {
-        case 'node:execution:started':
-          nodeStatusMap.set(nodeId, 'loading')
+        case "node:execution:started":
+          nodeStatusMap.set(nodeId, "loading")
           break
-        case 'node:execution:completed':
-          const status = (event as any).status === 'failed' ? 'error' : 'success'
+        case "node:execution:completed":
+          const status =
+            (event as any).status === "failed" ? "error" : "success"
           nodeStatusMap.set(nodeId, status)
           break
       }
@@ -73,19 +83,25 @@ export function useWorkflowRunner() {
       if (status && node.data.status !== status) {
         return {
           ...node,
-          data: { ...node.data, status }
+          data: { ...node.data, status },
         }
       }
       return node
     })
 
     // Only update if there are actual changes
-    if (updatedNodes.some((node, index) => node.data.status !== currentNodes[index]?.data.status)) {
+    if (
+      updatedNodes.some(
+        (node, index) => node.data.status !== currentNodes[index]?.data.status
+      )
+    ) {
       setNodes(updatedNodes)
     }
 
     // Check if workflow is completed
-    const workflowCompleted = events.some(e => e.event === 'workflow:completed')
+    const workflowCompleted = events.some(
+      (e) => e.event === "workflow:completed"
+    )
     if (workflowCompleted && isRunning.current) {
       isRunning.current = false
     }
@@ -146,20 +162,22 @@ export function useWorkflowRunner() {
     isStreamConnected: isConnected,
     workflowEvents: events,
     getNodeStatus: (nodeId: string) => {
-      const nodeStarted = events.some(e => 
-        e.event === 'node:execution:started' && (e as any).nodeId === nodeId
+      const nodeStarted = events.some(
+        (e) =>
+          e.event === "node:execution:started" && (e as any).nodeId === nodeId
       )
-      const nodeCompleted = events.find(e => 
-        e.event === 'node:execution:completed' && (e as any).nodeId === nodeId
+      const nodeCompleted = events.find(
+        (e) =>
+          e.event === "node:execution:completed" && (e as any).nodeId === nodeId
       )
-      
+
       if (nodeCompleted) {
-        return (nodeCompleted as any).status === 'failed' ? 'error' : 'success'
+        return (nodeCompleted as any).status === "failed" ? "error" : "success"
       }
       if (nodeStarted) {
-        return 'loading'
+        return "loading"
       }
-      return 'initial'
+      return "initial"
     },
   }
 }

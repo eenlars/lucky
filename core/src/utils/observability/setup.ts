@@ -1,6 +1,6 @@
 /**
  * Observability Setup and Configuration
- * 
+ *
  * Initializes the observability system with proper sinks
  * and workflow event routing for real-time updates.
  */
@@ -11,18 +11,17 @@ import { workflowEvents } from "./events/WorkflowEvents"
 
 /**
  * Initialize observability system with SSE support
- * 
+ *
  * This should be called once at application startup to ensure
  * workflow events are properly routed to both console and SSE streams.
  */
-export function initializeObservability(options: {
-  enableConsoleLogging?: boolean
-  enableSSEStreaming?: boolean
-} = {}) {
-  const {
-    enableConsoleLogging = true,
-    enableSSEStreaming = true,
-  } = options
+export function initializeObservability(
+  options: {
+    enableConsoleLogging?: boolean
+    enableSSEStreaming?: boolean
+  } = {}
+) {
+  const { enableConsoleLogging = true, enableSSEStreaming = true } = options
 
   const sinks = []
 
@@ -50,7 +49,7 @@ export function initializeObservability(options: {
   if (enableConsoleLogging) {
     console.log(`[Observability] Initialized with ${sinks.length} sinks`)
   }
-  
+
   return {
     sseConnectionCount: () => globalSSESink.getConnectionCount(),
     sseConnections: () => globalSSESink.getConnections(),

@@ -1,13 +1,13 @@
 /**
  * Workflow Event Context Manager
- * 
+ *
  * Provides a clean interface for emitting workflow events
  * with proper context tracking using AsyncLocalStorage.
  */
 
 import { obs } from "./obs"
-import type { 
-  WorkflowEvent, 
+import type {
+  WorkflowEvent,
   BaseWorkflowEvent,
   WorkflowStartedEvent,
   WorkflowCompletedEvent,
@@ -21,7 +21,7 @@ import type {
   LLMCallCompletedEvent,
   MemoryUpdatedEvent,
   WorkflowProgressEvent,
-  WorkflowErrorEvent
+  WorkflowErrorEvent,
 } from "./events/WorkflowEvents"
 
 /**
@@ -64,7 +64,7 @@ export class WorkflowEventContext {
   }): void {
     const event: WorkflowStartedEvent = {
       ...this.updateTimestamp(),
-      event: 'workflow:started',
+      event: "workflow:started",
       ...data,
     }
     obs.workflowEvent(event)
@@ -77,12 +77,12 @@ export class WorkflowEventContext {
     duration: number
     totalCost: number
     nodeInvocations: number
-    status: 'success' | 'failed'
+    status: "success" | "failed"
     error?: string
   }): void {
     const event: WorkflowCompletedEvent = {
       ...this.updateTimestamp(),
-      event: 'workflow:completed',
+      event: "workflow:completed",
       ...data,
     }
     obs.workflowEvent(event)
@@ -98,7 +98,7 @@ export class WorkflowEventContext {
   }): void {
     const event: NodeExecutionStartedEvent = {
       ...this.updateTimestamp(),
-      event: 'node:execution:started',
+      event: "node:execution:started",
       ...data,
     }
     obs.workflowEvent(event)
@@ -112,14 +112,14 @@ export class WorkflowEventContext {
     nodeType: string
     duration: number
     cost: number
-    status: 'success' | 'failed'
+    status: "success" | "failed"
     error?: string
     outputTokens?: number
     inputTokens?: number
   }): void {
     const event: NodeExecutionCompletedEvent = {
       ...this.updateTimestamp(),
-      event: 'node:execution:completed',
+      event: "node:execution:completed",
       ...data,
     }
     obs.workflowEvent(event)
@@ -136,7 +136,7 @@ export class WorkflowEventContext {
   }): void {
     const event: MessageQueuedEvent = {
       ...this.updateTimestamp(),
-      event: 'message:queued',
+      event: "message:queued",
       ...data,
     }
     obs.workflowEvent(event)
@@ -153,7 +153,7 @@ export class WorkflowEventContext {
   }): void {
     const event: MessageProcessedEvent = {
       ...this.updateTimestamp(),
-      event: 'message:processed',
+      event: "message:processed",
       ...data,
     }
     obs.workflowEvent(event)
@@ -165,12 +165,12 @@ export class WorkflowEventContext {
   toolExecutionStarted(data: {
     nodeId: string
     toolName: string
-    toolType: 'code' | 'mcp'
+    toolType: "code" | "mcp"
     parameters?: Record<string, any>
   }): void {
     const event: ToolExecutionStartedEvent = {
       ...this.updateTimestamp(),
-      event: 'tool:execution:started',
+      event: "tool:execution:started",
       ...data,
     }
     obs.workflowEvent(event)
@@ -182,15 +182,15 @@ export class WorkflowEventContext {
   toolExecutionCompleted(data: {
     nodeId: string
     toolName: string
-    toolType: 'code' | 'mcp'
+    toolType: "code" | "mcp"
     duration: number
-    status: 'success' | 'failed'
+    status: "success" | "failed"
     error?: string
     resultSize?: number
   }): void {
     const event: ToolExecutionCompletedEvent = {
       ...this.updateTimestamp(),
-      event: 'tool:execution:completed',
+      event: "tool:execution:completed",
       ...data,
     }
     obs.workflowEvent(event)
@@ -207,7 +207,7 @@ export class WorkflowEventContext {
   }): void {
     const event: LLMCallStartedEvent = {
       ...this.updateTimestamp(),
-      event: 'llm:call:started',
+      event: "llm:call:started",
       ...data,
     }
     obs.workflowEvent(event)
@@ -224,12 +224,12 @@ export class WorkflowEventContext {
     inputTokens: number
     outputTokens: number
     cost: number
-    status: 'success' | 'failed'
+    status: "success" | "failed"
     error?: string
   }): void {
     const event: LLMCallCompletedEvent = {
       ...this.updateTimestamp(),
-      event: 'llm:call:completed',
+      event: "llm:call:completed",
       ...data,
     }
     obs.workflowEvent(event)
@@ -241,11 +241,11 @@ export class WorkflowEventContext {
   memoryUpdated(data: {
     nodeId: string
     memoryKeys: string[]
-    updateType: 'create' | 'update' | 'delete'
+    updateType: "create" | "update" | "delete"
   }): void {
     const event: MemoryUpdatedEvent = {
       ...this.updateTimestamp(),
-      event: 'memory:updated',
+      event: "memory:updated",
       ...data,
     }
     obs.workflowEvent(event)
@@ -262,7 +262,7 @@ export class WorkflowEventContext {
   }): void {
     const event: WorkflowProgressEvent = {
       ...this.updateTimestamp(),
-      event: 'workflow:progress',
+      event: "workflow:progress",
       ...data,
     }
     obs.workflowEvent(event)
@@ -273,13 +273,13 @@ export class WorkflowEventContext {
    */
   workflowError(data: {
     error: string
-    errorType: 'validation' | 'execution' | 'timeout' | 'resource'
+    errorType: "validation" | "execution" | "timeout" | "resource"
     nodeId?: string
     recoverable: boolean
   }): void {
     const event: WorkflowErrorEvent = {
       ...this.updateTimestamp(),
-      event: 'workflow:error',
+      event: "workflow:error",
       ...data,
     }
     obs.workflowEvent(event)
@@ -288,10 +288,7 @@ export class WorkflowEventContext {
   /**
    * Create a scoped context with additional correlation data
    */
-  withNodeContext<T>(
-    nodeId: string, 
-    fn: (ctx: WorkflowEventContext) => T
-  ): T {
+  withNodeContext<T>(nodeId: string, fn: (ctx: WorkflowEventContext) => T): T {
     return obs.scope({ nodeId }, () => fn(this)) as T
   }
 
@@ -304,28 +301,28 @@ export class WorkflowEventContext {
     fn: () => Promise<T>
   ): Promise<{ result: T; duration: number }> {
     const startTime = performance.now()
-    
+
     try {
       const result = await fn()
       const duration = Math.round(performance.now() - startTime)
-      
+
       obs.event(`${operation}:completed`, {
         nodeId,
         duration,
-        status: 'success',
+        status: "success",
       })
-      
+
       return { result, duration }
     } catch (error) {
       const duration = Math.round(performance.now() - startTime)
-      
+
       obs.event(`${operation}:completed`, {
         nodeId,
         duration,
-        status: 'failed',
+        status: "failed",
         error: error instanceof Error ? error.message : String(error),
       })
-      
+
       throw error
     }
   }

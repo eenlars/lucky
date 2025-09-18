@@ -1,6 +1,6 @@
 /**
  * Comprehensive workflow execution dashboard with real-time updates
- * 
+ *
  * Features:
  * - Live node execution status
  * - Event timeline
@@ -9,29 +9,29 @@
  * - Tool and LLM call monitoring
  */
 
-'use client'
+"use client"
 
-import React, { useState, useMemo } from 'react'
-import { useWorkflowStream, useNodeEvents } from '@/hooks/useWorkflowStream'
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card'
-import { Badge } from '@/ui/badge'
-import { Button } from '@/ui/button'
-import { ScrollArea } from '@/ui/scroll-area'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
-import { 
-  Activity, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Zap, 
+import React, { useState, useMemo } from "react"
+import { useWorkflowStream, useNodeEvents } from "@/hooks/useWorkflowStream"
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card"
+import { Badge } from "@/ui/badge"
+import { Button } from "@/ui/button"
+import { ScrollArea } from "@/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs"
+import {
+  Activity,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Zap,
   Database,
   DollarSign,
   AlertTriangle,
   Play,
   Pause,
-  RotateCcw
-} from 'lucide-react'
-import type { WorkflowEvent } from '@core/utils/observability/events/WorkflowEvents'
+  RotateCcw,
+} from "lucide-react"
+import type { WorkflowEvent } from "@core/utils/observability/events/WorkflowEvents"
 
 interface WorkflowExecutionDashboardProps {
   invocationId: string
@@ -41,30 +41,30 @@ interface WorkflowExecutionDashboardProps {
 
 interface NodeStatus {
   nodeId: string
-  status: 'idle' | 'running' | 'completed' | 'failed'
+  status: "idle" | "running" | "completed" | "failed"
   duration?: number
   cost?: number
   error?: string
   lastActivity?: Date
 }
 
-export function WorkflowExecutionDashboard({ 
-  invocationId, 
+export function WorkflowExecutionDashboard({
+  invocationId,
   workflowVersionId,
-  className = "" 
+  className = "",
 }: WorkflowExecutionDashboardProps) {
-  const [selectedTab, setSelectedTab] = useState('overview')
+  const [selectedTab, setSelectedTab] = useState("overview")
   const [isPaused, setIsPaused] = useState(false)
 
-  const { 
-    events, 
-    lastEvent, 
-    isConnected, 
+  const {
+    events,
+    lastEvent,
+    isConnected,
     connectionState,
     eventCount,
     clearEvents,
     connect,
-    disconnect 
+    disconnect,
   } = useWorkflowStream({
     invocationId,
     autoReconnect: true,
@@ -73,14 +73,14 @@ export function WorkflowExecutionDashboard({
   // Calculate node statuses from events
   const nodeStatuses = useMemo(() => {
     const statuses = new Map<string, NodeStatus>()
-    
+
     for (const event of events) {
       const nodeId = (event as any).nodeId
       if (!nodeId) continue
 
       const existing: NodeStatus = statuses.get(nodeId) || {
         nodeId,
-        status: 'idle' as const,
+        status: "idle" as const,
         lastActivity: new Date(event.ts),
         duration: undefined,
         cost: undefined,
@@ -88,13 +88,14 @@ export function WorkflowExecutionDashboard({
       }
 
       switch (event.event) {
-        case 'node:execution:started':
-          existing.status = 'running'
+        case "node:execution:started":
+          existing.status = "running"
           existing.lastActivity = new Date(event.ts)
           break
-        case 'node:execution:completed':
+        case "node:execution:completed":
           const completedEvent = event as any
-          existing.status = completedEvent.status === 'failed' ? 'failed' : 'completed'
+          existing.status =
+            completedEvent.status === "failed" ? "failed" : "completed"
           existing.duration = completedEvent.duration
           existing.cost = completedEvent.cost
           existing.error = completedEvent.error
@@ -110,21 +111,30 @@ export function WorkflowExecutionDashboard({
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const totalCost = nodeStatuses.reduce((sum, node) => sum + (node.cost || 0), 0)
-    const completedNodes = nodeStatuses.filter(n => n.status === 'completed').length
-    const failedNodes = nodeStatuses.filter(n => n.status === 'failed').length
-    const runningNodes = nodeStatuses.filter(n => n.status === 'running').length
-    
-    const toolEvents = events.filter(e => e.event.startsWith('tool:'))
-    const llmEvents = events.filter(e => e.event.startsWith('llm:'))
-    const errorEvents = events.filter(e => e.event === 'workflow:error')
+    const totalCost = nodeStatuses.reduce(
+      (sum, node) => sum + (node.cost || 0),
+      0
+    )
+    const completedNodes = nodeStatuses.filter(
+      (n) => n.status === "completed"
+    ).length
+    const failedNodes = nodeStatuses.filter((n) => n.status === "failed").length
+    const runningNodes = nodeStatuses.filter(
+      (n) => n.status === "running"
+    ).length
 
-    const workflowStarted = events.find(e => e.event === 'workflow:started')
-    const workflowCompleted = events.find(e => e.event === 'workflow:completed')
-    
+    const toolEvents = events.filter((e) => e.event.startsWith("tool:"))
+    const llmEvents = events.filter((e) => e.event.startsWith("llm:"))
+    const errorEvents = events.filter((e) => e.event === "workflow:error")
+
+    const workflowStarted = events.find((e) => e.event === "workflow:started")
+    const workflowCompleted = events.find(
+      (e) => e.event === "workflow:completed"
+    )
+
     let duration = 0
     if (workflowStarted) {
-      const endTime = workflowCompleted 
+      const endTime = workflowCompleted
         ? new Date(workflowCompleted.ts)
         : new Date()
       duration = endTime.getTime() - new Date(workflowStarted.ts).getTime()
@@ -137,19 +147,23 @@ export function WorkflowExecutionDashboard({
       runningNodes,
       totalNodes: nodeStatuses.length,
       toolCallCount: toolEvents.length / 2, // start + complete
-      llmCallCount: llmEvents.length / 2,   // start + complete
+      llmCallCount: llmEvents.length / 2, // start + complete
       errorCount: errorEvents.length,
       duration,
       isComplete: !!workflowCompleted,
     }
   }, [events, nodeStatuses])
 
-  const getNodeStatusIcon = (status: NodeStatus['status']) => {
+  const getNodeStatusIcon = (status: NodeStatus["status"]) => {
     switch (status) {
-      case 'running': return <Activity className="h-4 w-4 text-blue-500 animate-pulse" />
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-500" />
-      case 'failed': return <XCircle className="h-4 w-4 text-red-500" />
-      default: return <Clock className="h-4 w-4 text-gray-400" />
+      case "running":
+        return <Activity className="h-4 w-4 text-blue-500 animate-pulse" />
+      case "completed":
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case "failed":
+        return <XCircle className="h-4 w-4 text-red-500" />
+      default:
+        return <Clock className="h-4 w-4 text-gray-400" />
     }
   }
 
@@ -160,9 +174,9 @@ export function WorkflowExecutionDashboard({
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 4,
     }).format(amount)
   }
@@ -175,9 +189,15 @@ export function WorkflowExecutionDashboard({
           <h2 className="text-lg font-semibold">Workflow Execution</h2>
           <Badge variant={isConnected ? "default" : "secondary"}>
             {isConnected ? (
-              <><Zap className="h-3 w-3 mr-1" />Live</>
+              <>
+                <Zap className="h-3 w-3 mr-1" />
+                Live
+              </>
             ) : (
-              <><AlertTriangle className="h-3 w-3 mr-1" />Offline</>
+              <>
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                Offline
+              </>
             )}
           </Badge>
         </div>
@@ -196,14 +216,14 @@ export function WorkflowExecutionDashboard({
             }}
             disabled={false}
           >
-            {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-            {isPaused ? 'Resume' : 'Pause'}
+            {isPaused ? (
+              <Play className="h-4 w-4" />
+            ) : (
+              <Pause className="h-4 w-4" />
+            )}
+            {isPaused ? "Resume" : "Pause"}
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={clearEvents}
-          >
+          <Button variant="outline" size="sm" onClick={clearEvents}>
             <RotateCcw className="h-4 w-4" />
             Clear
           </Button>
@@ -218,9 +238,12 @@ export function WorkflowExecutionDashboard({
               <div>
                 <p className="text-sm text-gray-600">Progress</p>
                 <p className="text-2xl font-bold">
-                  {metrics.totalNodes > 0 
-                    ? Math.round((metrics.completedNodes / metrics.totalNodes) * 100)
-                    : 0}%
+                  {metrics.totalNodes > 0
+                    ? Math.round(
+                        (metrics.completedNodes / metrics.totalNodes) * 100
+                      )
+                    : 0}
+                  %
                 </p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500" />
@@ -320,7 +343,11 @@ export function WorkflowExecutionDashboard({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">Errors</span>
-                    <Badge variant={metrics.errorCount > 0 ? "destructive" : "outline"}>
+                    <Badge
+                      variant={
+                        metrics.errorCount > 0 ? "destructive" : "outline"
+                      }
+                    >
                       {metrics.errorCount}
                     </Badge>
                   </div>
@@ -339,7 +366,10 @@ export function WorkflowExecutionDashboard({
               <ScrollArea className="h-64">
                 <div className="space-y-2">
                   {nodeStatuses.map((node) => (
-                    <div key={node.nodeId} className="flex items-center justify-between p-2 border rounded">
+                    <div
+                      key={node.nodeId}
+                      className="flex items-center justify-between p-2 border rounded"
+                    >
                       <div className="flex items-center gap-2">
                         {getNodeStatusIcon(node.status)}
                         <span className="font-medium">{node.nodeId}</span>
@@ -348,9 +378,7 @@ export function WorkflowExecutionDashboard({
                         {node.duration && (
                           <span>{formatDuration(node.duration)}</span>
                         )}
-                        {node.cost && (
-                          <span>{formatCurrency(node.cost)}</span>
-                        )}
+                        {node.cost && <span>{formatCurrency(node.cost)}</span>}
                         {node.error && (
                           <Badge variant="destructive" className="text-xs">
                             Error
@@ -373,21 +401,29 @@ export function WorkflowExecutionDashboard({
             <CardContent>
               <ScrollArea className="h-64">
                 <div className="space-y-1">
-                  {events.slice(-20).reverse().map((event, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 text-xs border-b">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {event.event}
-                        </Badge>
-                        {(event as any).nodeId && (
-                          <span className="text-gray-600">{(event as any).nodeId}</span>
-                        )}
+                  {events
+                    .slice(-20)
+                    .reverse()
+                    .map((event, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 text-xs border-b"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {event.event}
+                          </Badge>
+                          {(event as any).nodeId && (
+                            <span className="text-gray-600">
+                              {(event as any).nodeId}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-gray-400">
+                          {new Date(event.ts).toLocaleTimeString()}
+                        </span>
                       </div>
-                      <span className="text-gray-400">
-                        {new Date(event.ts).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </ScrollArea>
             </CardContent>
@@ -404,29 +440,29 @@ export function WorkflowExecutionDashboard({
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Total Duration</span>
-                    <span className="font-medium">{formatDuration(metrics.duration)}</span>
+                    <span className="font-medium">
+                      {formatDuration(metrics.duration)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Avg Node Duration</span>
                     <span className="font-medium">
-                      {nodeStatuses.length > 0 
+                      {nodeStatuses.length > 0
                         ? formatDuration(
                             nodeStatuses
-                              .filter(n => n.duration)
-                              .reduce((sum, n) => sum + (n.duration || 0), 0) / 
-                            nodeStatuses.filter(n => n.duration).length
+                              .filter((n) => n.duration)
+                              .reduce((sum, n) => sum + (n.duration || 0), 0) /
+                              nodeStatuses.filter((n) => n.duration).length
                           )
-                        : 'N/A'
-                      }
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Events/sec</span>
                     <span className="font-medium">
-                      {metrics.duration > 0 
+                      {metrics.duration > 0
                         ? (eventCount / (metrics.duration / 1000)).toFixed(1)
-                        : '0'
-                      }
+                        : "0"}
                     </span>
                   </div>
                 </div>
@@ -441,15 +477,18 @@ export function WorkflowExecutionDashboard({
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Total Cost</span>
-                    <span className="font-medium">{formatCurrency(metrics.totalCost)}</span>
+                    <span className="font-medium">
+                      {formatCurrency(metrics.totalCost)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Avg Cost/Node</span>
                     <span className="font-medium">
-                      {metrics.completedNodes > 0 
-                        ? formatCurrency(metrics.totalCost / metrics.completedNodes)
-                        : 'N/A'
-                      }
+                      {metrics.completedNodes > 0
+                        ? formatCurrency(
+                            metrics.totalCost / metrics.completedNodes
+                          )
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">

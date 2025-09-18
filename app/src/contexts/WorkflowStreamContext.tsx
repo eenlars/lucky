@@ -1,14 +1,21 @@
 /**
  * React Context for managing workflow event streams globally
- * 
+ *
  * Provides a centralized way to manage multiple workflow streams,
  * subscription management, and event aggregation across the app.
  */
 
-'use client'
+"use client"
 
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
-import type { WorkflowEvent } from '@core/utils/observability/events/WorkflowEvents'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react"
+import type { WorkflowEvent } from "@core/utils/observability/events/WorkflowEvents"
 
 export interface WorkflowStreamSubscription {
   id: string
@@ -21,7 +28,7 @@ export interface WorkflowStreamSubscription {
 
 export interface ActiveWorkflow {
   invocationId: string
-  status: 'running' | 'completed' | 'failed'
+  status: "running" | "completed" | "failed"
   progress: {
     completedNodes: number
     totalNodes: number
@@ -34,33 +41,37 @@ export interface ActiveWorkflow {
 interface WorkflowStreamContextValue {
   // Active workflows being tracked
   activeWorkflows: Map<string, ActiveWorkflow>
-  
+
   // Connection state
   isConnected: boolean
   connectionError: string | null
-  
+
   // Subscription management
-  subscribe: (subscription: Omit<WorkflowStreamSubscription, 'id' | 'active'>) => string
+  subscribe: (
+    subscription: Omit<WorkflowStreamSubscription, "id" | "active">
+  ) => string
   unsubscribe: (subscriptionId: string) => void
-  
+
   // Workflow management
   startTracking: (invocationId: string) => void
   stopTracking: (invocationId: string) => void
-  
+
   // Event access
   getWorkflowEvents: (invocationId: string) => WorkflowEvent[]
   getLatestEvent: (invocationId: string) => WorkflowEvent | null
-  
+
   // Connection control
   connect: () => void
   disconnect: () => void
-  
+
   // Statistics
   getTotalEventCount: () => number
   getActiveWorkflowCount: () => number
 }
 
-const WorkflowStreamContext = createContext<WorkflowStreamContextValue | null>(null)
+const WorkflowStreamContext = createContext<WorkflowStreamContextValue | null>(
+  null
+)
 
 interface WorkflowStreamProviderProps {
   children: React.ReactNode
@@ -68,16 +79,20 @@ interface WorkflowStreamProviderProps {
   cleanupInactiveAfter?: number // milliseconds
 }
 
-export function WorkflowStreamProvider({ 
-  children, 
+export function WorkflowStreamProvider({
+  children,
   maxEventsPerWorkflow = 500,
   cleanupInactiveAfter = 5 * 60 * 1000, // 5 minutes
 }: WorkflowStreamProviderProps) {
-  const [activeWorkflows, setActiveWorkflows] = useState<Map<string, ActiveWorkflow>>(new Map())
+  const [activeWorkflows, setActiveWorkflows] = useState<
+    Map<string, ActiveWorkflow>
+  >(new Map())
   const [isConnected, setIsConnected] = useState(false)
   const [connectionError, setConnectionError] = useState<string | null>(null)
-  
-  const subscriptionsRef = useRef<Map<string, WorkflowStreamSubscription>>(new Map())
+
+  const subscriptionsRef = useRef<Map<string, WorkflowStreamSubscription>>(
+    new Map()
+  )
   const eventSourceRef = useRef<EventSource | null>(null)
   const subscriptionIdCounter = useRef(0)
 
@@ -93,8 +108,8 @@ export function WorkflowStreamProvider({
     }
 
     setConnectionError(null)
-    
-    const eventSource = new EventSource('/api/workflow/stream')
+
+    const eventSource = new EventSource("/api/workflow/stream")
     eventSourceRef.current = eventSource
 
     eventSource.onopen = () => {
@@ -105,38 +120,58 @@ export function WorkflowStreamProvider({
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data)
-        
+
         // Skip heartbeat and connection events
-        if (data.event === 'heartbeat' || data.event === 'connection:established') {
+        if (
+          data.event === "heartbeat" ||
+          data.event === "connection:established"
+        ) {
           return
         }
 
         const workflowEvent = data as WorkflowEvent
 
         // Update active workflows
-        setActiveWorkflows(prev => {
+        setActiveWorkflows((prev) => {
           const updated = new Map(prev)
           const invocationId = workflowEvent.invocationId
-          
+
           if (invocationId) {
             const existing = updated.get(invocationId)
-            const newEvents = existing 
+            const newEvents = existing
               ? [...existing.events, workflowEvent].slice(-maxEventsPerWorkflow)
               : [workflowEvent]
 
             // Calculate progress
-            const nodeStartEvents = newEvents.filter(e => e.event === 'node:execution:started')
-            const nodeCompleteEvents = newEvents.filter(e => e.event === 'node:execution:completed')
-            const workflowStartEvent = newEvents.find(e => e.event === 'workflow:started') as any
-            const workflowCompleteEvent = newEvents.find(e => e.event === 'workflow:completed')
+            const nodeStartEvents = newEvents.filter(
+              (e) => e.event === "node:execution:started"
+            )
+            const nodeCompleteEvents = newEvents.filter(
+              (e) => e.event === "node:execution:completed"
+            )
+            const workflowStartEvent = newEvents.find(
+              (e) => e.event === "workflow:started"
+            ) as any
+            const workflowCompleteEvent = newEvents.find(
+              (e) => e.event === "workflow:completed"
+            )
 
-            const totalNodes = workflowStartEvent?.nodeCount || existing?.progress.totalNodes || 0
+            const totalNodes =
+              workflowStartEvent?.nodeCount ||
+              existing?.progress.totalNodes ||
+              0
             const completedNodes = nodeCompleteEvents.length
-            const percentage = totalNodes > 0 ? Math.round((completedNodes / totalNodes) * 100) : 0
+            const percentage =
+              totalNodes > 0
+                ? Math.round((completedNodes / totalNodes) * 100)
+                : 0
 
-            let status: 'running' | 'completed' | 'failed' = 'running'
+            let status: "running" | "completed" | "failed" = "running"
             if (workflowCompleteEvent) {
-              status = (workflowCompleteEvent as any).status === 'failed' ? 'failed' : 'completed'
+              status =
+                (workflowCompleteEvent as any).status === "failed"
+                  ? "failed"
+                  : "completed"
             }
 
             updated.set(invocationId, {
@@ -151,7 +186,7 @@ export function WorkflowStreamProvider({
               events: newEvents,
             })
           }
-          
+
           return updated
         })
 
@@ -161,36 +196,46 @@ export function WorkflowStreamProvider({
 
           // Check if event matches subscription filters
           let matches = true
-          
-          if (subscription.invocationId && workflowEvent.invocationId !== subscription.invocationId) {
+
+          if (
+            subscription.invocationId &&
+            workflowEvent.invocationId !== subscription.invocationId
+          ) {
             matches = false
           }
-          
-          if (subscription.nodeId && (workflowEvent as any).nodeId !== subscription.nodeId) {
+
+          if (
+            subscription.nodeId &&
+            (workflowEvent as any).nodeId !== subscription.nodeId
+          ) {
             matches = false
           }
-          
+
           if (subscription.events && subscription.events.length > 0) {
-            matches = matches && subscription.events.includes(workflowEvent.event)
+            matches =
+              matches && subscription.events.includes(workflowEvent.event)
           }
 
           if (matches) {
             try {
               subscription.callback(workflowEvent)
             } catch (error) {
-              console.error('Error in workflow event subscription callback:', error)
+              console.error(
+                "Error in workflow event subscription callback:",
+                error
+              )
             }
           }
         }
       } catch (error) {
-        console.error('Failed to parse workflow event:', error)
+        console.error("Failed to parse workflow event:", error)
       }
     }
 
     eventSource.onerror = (error) => {
-      console.error('Workflow stream connection error:', error)
+      console.error("Workflow stream connection error:", error)
       setIsConnected(false)
-      setConnectionError('Connection error occurred')
+      setConnectionError("Connection error occurred")
     }
   }, [maxEventsPerWorkflow])
 
@@ -204,15 +249,18 @@ export function WorkflowStreamProvider({
   }, [])
 
   // Subscribe to workflow events
-  const subscribe = useCallback((subscription: Omit<WorkflowStreamSubscription, 'id' | 'active'>) => {
-    const id = generateSubscriptionId()
-    subscriptionsRef.current.set(id, {
-      ...subscription,
-      id,
-      active: true,
-    })
-    return id
-  }, [generateSubscriptionId])
+  const subscribe = useCallback(
+    (subscription: Omit<WorkflowStreamSubscription, "id" | "active">) => {
+      const id = generateSubscriptionId()
+      subscriptionsRef.current.set(id, {
+        ...subscription,
+        id,
+        active: true,
+      })
+      return id
+    },
+    [generateSubscriptionId]
+  )
 
   // Unsubscribe from workflow events
   const unsubscribe = useCallback((subscriptionId: string) => {
@@ -225,12 +273,12 @@ export function WorkflowStreamProvider({
 
   // Start tracking a specific workflow
   const startTracking = useCallback((invocationId: string) => {
-    setActiveWorkflows(prev => {
+    setActiveWorkflows((prev) => {
       if (!prev.has(invocationId)) {
         const updated = new Map(prev)
         updated.set(invocationId, {
           invocationId,
-          status: 'running',
+          status: "running",
           progress: { completedNodes: 0, totalNodes: 0, percentage: 0 },
           lastActivity: new Date(),
           events: [],
@@ -243,7 +291,7 @@ export function WorkflowStreamProvider({
 
   // Stop tracking a specific workflow
   const stopTracking = useCallback((invocationId: string) => {
-    setActiveWorkflows(prev => {
+    setActiveWorkflows((prev) => {
       const updated = new Map(prev)
       updated.delete(invocationId)
       return updated
@@ -251,15 +299,21 @@ export function WorkflowStreamProvider({
   }, [])
 
   // Get events for a specific workflow
-  const getWorkflowEvents = useCallback((invocationId: string) => {
-    return activeWorkflows.get(invocationId)?.events || []
-  }, [activeWorkflows])
+  const getWorkflowEvents = useCallback(
+    (invocationId: string) => {
+      return activeWorkflows.get(invocationId)?.events || []
+    },
+    [activeWorkflows]
+  )
 
   // Get latest event for a specific workflow
-  const getLatestEvent = useCallback((invocationId: string) => {
-    const events = getWorkflowEvents(invocationId)
-    return events[events.length - 1] || null
-  }, [getWorkflowEvents])
+  const getLatestEvent = useCallback(
+    (invocationId: string) => {
+      const events = getWorkflowEvents(invocationId)
+      return events[events.length - 1] || null
+    },
+    [getWorkflowEvents]
+  )
 
   // Get total event count across all workflows
   const getTotalEventCount = useCallback(() => {
@@ -272,18 +326,22 @@ export function WorkflowStreamProvider({
 
   // Get number of active workflows
   const getActiveWorkflowCount = useCallback(() => {
-    return Array.from(activeWorkflows.values()).filter(w => w.status === 'running').length
+    return Array.from(activeWorkflows.values()).filter(
+      (w) => w.status === "running"
+    ).length
   }, [activeWorkflows])
 
   // Cleanup inactive workflows periodically
   useEffect(() => {
     const cleanup = () => {
       const now = Date.now()
-      setActiveWorkflows(prev => {
+      setActiveWorkflows((prev) => {
         const updated = new Map(prev)
         for (const [id, workflow] of updated.entries()) {
-          if (workflow.status !== 'running' && 
-              now - workflow.lastActivity.getTime() > cleanupInactiveAfter) {
+          if (
+            workflow.status !== "running" &&
+            now - workflow.lastActivity.getTime() > cleanupInactiveAfter
+          ) {
             updated.delete(id)
           }
         }
@@ -330,7 +388,9 @@ export function WorkflowStreamProvider({
 export function useWorkflowStreamContext() {
   const context = useContext(WorkflowStreamContext)
   if (!context) {
-    throw new Error('useWorkflowStreamContext must be used within a WorkflowStreamProvider')
+    throw new Error(
+      "useWorkflowStreamContext must be used within a WorkflowStreamProvider"
+    )
   }
   return context
 }

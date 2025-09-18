@@ -1,12 +1,15 @@
 // obs.ts
 import { AsyncLocalStorage } from "async_hooks"
-import type { WorkflowEvent, WorkflowEventEmitter } from "./events/WorkflowEvents"
+import type {
+  WorkflowEvent,
+  WorkflowEventEmitter,
+} from "./events/WorkflowEvents"
 
 type Attr = string | number | boolean | undefined
 export type Attrs = Record<string, Attr>
-export type Ctx = { 
+export type Ctx = {
   wfId?: string
-  nodeId?: string 
+  nodeId?: string
   nodeInvocationId?: string
   wfVersionId?: string
   invocationId?: string
