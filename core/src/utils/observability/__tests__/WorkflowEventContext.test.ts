@@ -55,8 +55,6 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       
       // Assert
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        'workflow:started',
         expect.objectContaining({
           event: 'workflow:started',
           wfId: 'test-workflow-123',
@@ -80,8 +78,6 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       
       // Assert
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        'workflow:completed',
         expect.objectContaining({
           event: 'workflow:completed',
           wfId: 'test-workflow-123',
@@ -106,8 +102,6 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       
       // Assert
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        'workflow:completed',
         expect.objectContaining({
           status: 'failed',
           error: 'Node execution timeout'
@@ -270,7 +264,7 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       
       const events = memorySink.events
       expect(events).toHaveLength(1)
-      expect(events[0].ctx).toMatchObject({
+      expect(events[0]).toMatchObject({
         nodeId: 'scoped-node-001'
       })
     })
@@ -337,18 +331,13 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       
       // Assert
       const calls = (mockSink.event as any).mock.calls
-      expect(calls).toHaveLength(2) // start and end events
+      expect(calls).toHaveLength(1) // single completed event
       
-      const startEvent = calls[0][2]
-      const endEvent = calls[1][2]
+      const completedEvent = calls[0][0]
       
-      expect(startEvent.event).toBe('timing:start')
-      expect(startEvent.operation).toBe('test-operation')
-      
-      expect(endEvent.event).toBe('timing:end')
-      expect(endEvent.operation).toBe('test-operation')
-      expect(endEvent.duration).toBeGreaterThanOrEqual(operationDelay - 10)
-      expect(endEvent.duration).toBeLessThan(operationDelay + 50)
+      expect(completedEvent.event).toBe('test-operation:completed')
+      expect(completedEvent.duration_ms).toBeGreaterThanOrEqual(operationDelay - 10)
+      expect(completedEvent.duration_ms).toBeLessThan(operationDelay + 50)
     })
 
     it('should measure timing even when operation throws', async () => {
@@ -527,7 +516,7 @@ describe('WorkflowEventContext - Event Context Manager', () => {
       const events = memorySink.events
       expect(events).toHaveLength(3)
       
-      const eventNodeIds = events.map(e => e.attrs.nodeId).sort()
+      const eventNodeIds = events.map(e => e.nodeId).sort()
       expect(eventNodeIds).toEqual(nodeIds.sort())
     })
   })

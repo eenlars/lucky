@@ -185,8 +185,16 @@ export function WorkflowExecutionDashboard({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsPaused(!isPaused)}
-            disabled={!isConnected}
+            onClick={() => {
+              if (isPaused) {
+                connect()
+                setIsPaused(false)
+              } else {
+                disconnect()
+                setIsPaused(true)
+              }
+            }}
+            disabled={false}
           >
             {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
             {isPaused ? 'Resume' : 'Pause'}

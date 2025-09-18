@@ -89,9 +89,9 @@ describe.skip('Observability Integration Tests', () => {
       const invocationId = 'integration-test-001'
       
       // Connect clients to different invocations
-      sseSink.addConnection(client1 as any, 'client-1', invocationId, [])
-      sseSink.addConnection(client2 as any, 'client-2', invocationId, [])
-      sseSink.addConnection(client3 as any, 'client-3', 'different-invocation', [])
+      sseSink.addConnection('client-1', client1 as any, { metadata: { invocationId } })
+      sseSink.addConnection('client-2', client2 as any, { metadata: { invocationId } })
+      sseSink.addConnection('client-3', client3 as any, { metadata: { invocationId: 'different-invocation' } })
       
       const context = ContextBuilder.create()
         .withWorkflowContext({ invocationId })
@@ -160,7 +160,7 @@ describe.skip('Observability Integration Tests', () => {
       const invocationId = 'real-time-test-001'
       const eventCollector: any[] = []
       
-      sseSink.addConnection(client1 as any, 'real-time-client', invocationId, [])
+      sseSink.addConnection('real-time-client', client1 as any, { metadata: { invocationId } })
       
       // Monitor events as they arrive
       const originalEnqueue = client1.enqueue.bind(client1)
@@ -251,7 +251,7 @@ describe.skip('Observability Integration Tests', () => {
       for (let i = 0; i < clientCount; i++) {
         const client = new MockSSEController()
         clients.push(client)
-        sseSink.addConnection(client as any, `concurrent-client-${i}`, invocationId, [])
+        sseSink.addConnection(`concurrent-client-${i}`, client as any, { metadata: { invocationId } })
       }
       
       const context = ContextBuilder.create()
@@ -324,7 +324,7 @@ describe.skip('Observability Integration Tests', () => {
         })
         
         // Connect first client immediately
-        sseSink.addConnection(client1 as any, 'early-client', invocationId, [])
+        sseSink.addConnection('early-client', client1 as any, { metadata: { invocationId } })
         
         await new Promise(resolve => setTimeout(resolve, 25))
         
@@ -335,7 +335,7 @@ describe.skip('Observability Integration Tests', () => {
         })
         
         // Connect second client mid-execution
-        sseSink.addConnection(client2 as any, 'mid-client', invocationId, [])
+        sseSink.addConnection('mid-client', client2 as any, { metadata: { invocationId } })
         
         await new Promise(resolve => setTimeout(resolve, 25))
         
@@ -348,7 +348,7 @@ describe.skip('Observability Integration Tests', () => {
         })
         
         // Connect third client near end
-        sseSink.addConnection(client3 as any, 'late-client', invocationId, [])
+        sseSink.addConnection('late-client', client3 as any, { metadata: { invocationId } })
         
         await new Promise(resolve => setTimeout(resolve, 25))
         
@@ -378,8 +378,8 @@ describe.skip('Observability Integration Tests', () => {
       // Arrange
       const invocationId = 'disconnect-test-001'
       
-      sseSink.addConnection(client1 as any, 'stable-client', invocationId, [])
-      sseSink.addConnection(client2 as any, 'unstable-client', invocationId, [])
+      sseSink.addConnection('stable-client', client1 as any, { metadata: { invocationId } })
+      sseSink.addConnection('unstable-client', client2 as any, { metadata: { invocationId } })
       
       const context = ContextBuilder.create()
         .withWorkflowContext({ invocationId })
@@ -440,8 +440,8 @@ describe.skip('Observability Integration Tests', () => {
         })
       }
       
-      sseSink.addConnection(faultyClient as any, 'faulty-client', invocationId, [])
-      sseSink.addConnection(client1 as any, 'stable-client', invocationId, [])
+      sseSink.addConnection('faulty-client', faultyClient as any, { metadata: { invocationId } })
+      sseSink.addConnection('stable-client', client1 as any, { metadata: { invocationId } })
       
       const context = ContextBuilder.create()
         .withWorkflowContext({ invocationId })
@@ -478,7 +478,7 @@ describe.skip('Observability Integration Tests', () => {
       const invocationId = 'memory-test-001'
       const eventCount = 5000
       
-      sseSink.addConnection(client1 as any, 'memory-client', invocationId, [])
+      sseSink.addConnection('memory-client', client1 as any, { metadata: { invocationId } })
       
       const context = ContextBuilder.create()
         .withWorkflowContext({ invocationId })
@@ -535,7 +535,7 @@ describe.skip('Observability Integration Tests', () => {
       for (let i = 0; i < connectionCount; i++) {
         const client = new MockSSEController()
         clients.push(client)
-        sseSink.addConnection(client as any, `cleanup-client-${i}`, `invocation-${i}`, [])
+        sseSink.addConnection(`cleanup-client-${i}`, client as any, { metadata: { invocationId: `invocation-${i}` } })
       }
       
       expect(sseSink.getConnectionCount()).toBe(connectionCount)
@@ -575,7 +575,7 @@ describe.skip('Observability Integration Tests', () => {
       
       // Test that events flow to SSE
       const testInvocationId = 'sse-only-test'
-      sseSink.addConnection(client1 as any, 'sse-only-client', testInvocationId, [])
+      sseSink.addConnection('sse-only-client', client1 as any, { metadata: { invocationId: testInvocationId } })
       
       obs.event('sse-only-event', { message: 'SSE only test' })
       

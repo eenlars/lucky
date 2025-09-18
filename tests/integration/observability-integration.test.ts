@@ -220,7 +220,7 @@ describe('Observability Integration Tests', () => {
       })
       
       // Assert real-time characteristics
-      expect(eventCollector).toHaveLength(5) // 1 workflow:started + 2*(node:started + node:completed) + 1 workflow:completed
+      expect(eventCollector).toHaveLength(6) // 1 workflow:started + 2*(node:started + node:completed) + 1 workflow:completed
       
       // Verify events arrived in chronological order
       for (let i = 1; i < eventCollector.length; i++) {

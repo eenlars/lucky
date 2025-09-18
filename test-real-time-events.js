@@ -9,9 +9,9 @@
  * 3. Event streaming to connected clients
  */
 
-import { initializeObservability } from './core/src/utils/observability/setup.js'
-import { obs } from './core/src/utils/observability/obs.js'
-import { WorkflowEventContext } from './core/src/utils/observability/WorkflowEventContext.js'
+import { initializeObservability } from './core/src/utils/observability/setup.ts'
+import { obs } from './core/src/utils/observability/obs.ts'
+import { WorkflowEventContext } from './core/src/utils/observability/WorkflowEventContext.ts'
 
 async function testRealTimeEvents() {
   console.log('🚀 Testing Real-time Workflow Event System...\n')

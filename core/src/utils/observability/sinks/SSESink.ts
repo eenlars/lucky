@@ -29,6 +29,7 @@ export class SSESink implements Sink {
   private eventBuffer: any[] = []
   private readonly maxBufferSize: number
   private readonly heartbeatInterval: number
+  private heartbeatTimer?: NodeJS.Timeout
 
   constructor(options: {
     maxBufferSize?: number
@@ -131,6 +132,12 @@ export class SSESink implements Sink {
       this.removeConnection(connectionId)
     }
     this.eventBuffer = []
+    
+    // Clear heartbeat timer
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer)
+      this.heartbeatTimer = undefined
+    }
   }
 
   private bufferEvent(record: any): void {
@@ -206,7 +213,7 @@ export class SSESink implements Sink {
   }
 
   private startHeartbeat(): void {
-    setInterval(() => {
+    this.heartbeatTimer = setInterval(() => {
       const heartbeat = {
         event: 'heartbeat',
         ts: new Date().toISOString(),

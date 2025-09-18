@@ -171,7 +171,7 @@ export function WorkflowStreamProvider({
           }
           
           if (subscription.events && subscription.events.length > 0) {
-            matches = subscription.events.includes(workflowEvent.event)
+            matches = matches && subscription.events.includes(workflowEvent.event)
           }
 
           if (matches) {

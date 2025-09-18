@@ -6,7 +6,7 @@
  */
 
 import { NextRequest } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
+import { requireAuth, requireAdmin } from "@/lib/api-auth"
 import { globalSSESink } from "@core/utils/observability/sinks/SSESink"
 
 /**
@@ -52,8 +52,8 @@ export async function GET(req: NextRequest) {
  * Force close specific connections (admin functionality)
  */
 export async function DELETE(req: NextRequest) {
-  // Require authentication
-  const authResult = await requireAuth()
+  // Require admin authentication
+  const authResult = await requireAdmin()
   if (authResult instanceof Response) return authResult
 
   try {

@@ -41,7 +41,7 @@ describe('Workflow Events Integration', () => {
 
   afterEach(() => {
     // Clean up
-    sseSink.getConnections().forEach(conn => sseSink.removeConnection(conn.id))
+    sseSink.destroy()
   })
 
   it('should emit workflow events through obs system', async () => {

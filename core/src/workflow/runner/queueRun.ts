@@ -126,7 +126,7 @@ export async function queueRun({
       CONFIG.workflow.maxPerNodeInvocations ??
       CONFIG.workflow.maxTotalNodeInvocations
     const summaries: InvocationSummary[] = []
-    const startTime = Date.now()
+    const startTime = performance.now()
     let lastNodeOutput = "" // tracks final output for workflow result
 
   // message queue to process - FIFO queue ensures deterministic execution order
@@ -559,7 +559,7 @@ export async function queueRun({
   return {
     success: true,
     agentSteps,
-    totalTime: Date.now() - startTime,
+    totalTime: Math.round(performance.now() - startTime),
     totalCost: totalCost,
     finalWorkflowOutput: lastNodeOutput,
   }

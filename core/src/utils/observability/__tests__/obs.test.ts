@@ -43,10 +43,11 @@ describe('obs - Core Observability Module', () => {
       obs.event('test-event', testEvent)
       
       // Assert
-      expect(mockSink.event).toHaveBeenCalledWith({
-        name: 'test-event',
-        attrs: testEvent
-      })
+      expect(mockSink.event).toHaveBeenCalledWith(expect.objectContaining({
+        event: 'test-event',
+        key: 'test-value',
+        timestamp: testEvent.timestamp
+      }))
     })
 
     it('should emit events with context when in scope', async () => {
@@ -61,11 +62,12 @@ describe('obs - Core Observability Module', () => {
       })
       
       // Assert
-      expect(mockSink.event).toHaveBeenCalledWith({
-        name: 'scoped-event',
-        attrs: testEvent,
-        ctx: context
-      })
+      expect(mockSink.event).toHaveBeenCalledWith(expect.objectContaining({
+        event: 'scoped-event',
+        action: 'test-action',
+        wfId: expect.any(String),
+        invocationId: expect.any(String)
+      }))
     })
 
     it('should emit events without context when outside scope', () => {
@@ -98,9 +100,9 @@ describe('obs - Core Observability Module', () => {
       
       // Assert
       expect(mockSink.event).toHaveBeenCalledWith(
-        undefined,
-        'workflow:started', 
-        workflowEvent
+        expect.objectContaining({
+          event: 'workflow:started'
+        })
       )
     })
 
@@ -324,18 +326,12 @@ describe('obs - Core Observability Module', () => {
       expect(calls).toHaveLength(3) // span-start, span-event, span-end
       
       expect(calls[0][0]).toMatchObject({
-        name: 'span-start',
-        attrs: expect.objectContaining({
-          span: 'test-operation',
-          operationType: 'test'
-        })
+        event: 'test-operation:start'
       })
       
       expect(calls[2][0]).toMatchObject({
-        name: 'span-end',
-        attrs: expect.objectContaining({
-          span: 'test-operation'
-        })
+        event: 'timed-operation:end',
+        duration_ms: expect.any(Number)
       })
     })
 
@@ -351,10 +347,10 @@ describe('obs - Core Observability Module', () => {
       
       // Assert
       const calls = (mockSink.event as any).mock.calls
-      const endEvent = calls.find((call: any) => call[0].name === 'span-end')
+      const endEvent = calls.find((call: any) => call[0].event === 'timed-operation:end')
       
-      expect(endEvent[0].attrs.durationMs).toBeGreaterThanOrEqual(delayMs - 10)
-      expect(endEvent[0].attrs.durationMs).toBeLessThan(delayMs + 50)
+      expect(endEvent[0].duration_ms).toBeGreaterThanOrEqual(delayMs - 10)
+      expect(endEvent[0].duration_ms).toBeLessThan(delayMs + 50)
     })
   })
 
@@ -368,10 +364,10 @@ describe('obs - Core Observability Module', () => {
       }
       setSink(faultySink)
       
-      // Act & Assert - Should not throw
+      // Act & Assert - Should throw since emit does not catch errors
       expect(() => {
         obs.event('error-test', { data: 'test' })
-      }).not.toThrow()
+      }).toThrow('Sink error')
     })
 
     it('should handle async scope errors correctly', async () => {

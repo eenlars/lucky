@@ -5,7 +5,7 @@
  * and workflow event routing for real-time updates.
  */
 
-import { setSink, TeeSink, StdoutSink } from "./obs"
+import { setSink, TeeSink, StdoutSink, obs } from "./obs"
 import { globalSSESink } from "./sinks/SSESink"
 import { workflowEvents } from "./events/WorkflowEvents"
 
@@ -43,7 +43,13 @@ export function initializeObservability(options: {
     setSink(sinks[0])
   }
 
-  console.log(`[Observability] Initialized with ${sinks.length} sinks`)
+  // Wire workflow events to obs
+  obs.setupWorkflowEvents(workflowEvents)
+
+  // Log initialization only if console logging is enabled
+  if (enableConsoleLogging) {
+    console.log(`[Observability] Initialized with ${sinks.length} sinks`)
+  }
   
   return {
     sseConnectionCount: () => globalSSESink.getConnectionCount(),
