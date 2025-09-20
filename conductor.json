@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "# Copy configuration files\ncp \"$CONDUCTOR_ROOT_PATH/.env\" .\ncp \"$CONDUCTOR_ROOT_PATH/.env\" ./app\ncp \"$CONDUCTOR_ROOT_PATH/.env\" ./core\ncp \"$CONDUCTOR_ROOT_PATH/.env\" ./runtime\ncp \"$CONDUCTOR_ROOT_PATH/AGENTS.md\" .\ncp \"$CONDUCTOR_ROOT_PATH/AGENTS.md\" ./CLAUDE.md\ncp -r \"$CONDUCTOR_ROOT_PATH/.claude\" ./.claude\n\n# Install dependencies\nbun i\nbun run build:shared",
+    "run": "bun run check && echo \"formatting done, typecheck ok, now running the backend\""
+  }
+}
