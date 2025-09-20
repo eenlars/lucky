@@ -30,17 +30,17 @@ interface WorkflowInvocationFilters {
 // Allowed columns for sorting to prevent SQL injection and runtime errors
 const ALLOWED_SORT_FIELDS = [
   "start_time",
-  "end_time", 
+  "end_time",
   "status",
   "usd_cost",
   "accuracy",
   "fitness_score",
   "run_id",
   "generation_id",
-  "wf_version_id"
+  "wf_version_id",
 ] as const
 
-type AllowedSortField = typeof ALLOWED_SORT_FIELDS[number]
+type AllowedSortField = (typeof ALLOWED_SORT_FIELDS)[number]
 
 interface WorkflowInvocationSortOptions {
   field: AllowedSortField
@@ -73,14 +73,14 @@ export async function GET(request: NextRequest) {
     const sortParam = JSON.parse(
       searchParams.get("sort") || '{"field": "start_time", "order": "desc"}'
     )
-    
+
     // Validate sort field against whitelist
-    const field = ALLOWED_SORT_FIELDS.includes(sortParam.field) 
-      ? sortParam.field 
+    const field = ALLOWED_SORT_FIELDS.includes(sortParam.field)
+      ? sortParam.field
       : "start_time"
-    
+
     const order = sortParam.order === "asc" ? "asc" : "desc"
-    
+
     sort = { field, order }
   } catch {
     // Use default sort if parsing fails

@@ -60,7 +60,6 @@ bun -C app run dev
 
 - Smoke: `bun run test:smoke`
 - Gate: `bun run test:gate`
-- Core unit (watch): `bun -C core run dev` · one‑shot: `bun -C core run test:unit`
 - Coverage: `bun -C app run coverage` or `bun -C core run coverage`
 
 Golden updates (after intentional behavior change):

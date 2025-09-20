@@ -10,7 +10,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "tsup --silent",
+        "build": "tsup",
         "dev": "tsup --watch",
         "clean": "rimraf dist",
         "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",

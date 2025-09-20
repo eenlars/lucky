@@ -52,7 +52,8 @@ export const envi = createEnv({
     // Fallback vars for backwards compatibility
     SUPABASE_PROJECT_ID: process.env.SUPABASE_PROJECT_ID,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_SUPABASE_PROJECT_ID: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID,
+    NEXT_PUBLIC_SUPABASE_PROJECT_ID:
+      process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID,
     WEBSHARE_API_KEY: process.env.WEBSHARE_API_KEY,
     MAPBOX_TOKEN: process.env.MAPBOX_TOKEN,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,

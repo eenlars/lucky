@@ -48,7 +48,8 @@ function WorkflowRow({
           <span
             title={`${versionCount} version${versionCount === 1 ? "" : "s"}${timeAgo ? ` • Updated ${timeAgo}` : ""}`}
           >
-            {versionCount} version{versionCount === 1 ? "" : "s"}{timeAgo ? ` • ${timeAgo}` : ""}
+            {versionCount} version{versionCount === 1 ? "" : "s"}
+            {timeAgo ? ` • ${timeAgo}` : ""}
           </span>
         ) : (
           <span className="text-muted-foreground/60">No versions</span>
