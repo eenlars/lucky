@@ -1,4 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
+import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { processResponseVercel } from "@core/messages/api/processResponse"
@@ -9,6 +10,8 @@ import {
   isToolProcessed,
   type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
+// @sdk-import - marker for easy removal when ejecting SDK
+import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import type {
   AgentStep,
   AgentSteps,
@@ -141,6 +144,11 @@ export class InvocationPipeline {
    *
    * ## Runtime Flow
    *
+   * ### Claude SDK Path (when useClaudeSDK is true):
+   * 1. Executes using Claude Code SDK wrapper
+   * 2. Maps SDK response to existing format
+   * 3. Tracks costs and agent steps
+   *
    * ### Multi-Step Loop Path (when tools available):
    * 1. Selects V2 or V3 strategy based on override
    * 2. Runs iterative tool execution with AI guidance
@@ -164,7 +172,10 @@ export class InvocationPipeline {
    */
   public async execute(): Promise<this> {
     try {
-      if (
+      // Check if this node should use Claude SDK
+      if (this.ctx.nodeConfig.useClaudeSDK) {
+        await this.runWithSDK()
+      } else if (
         CONFIG.tools.experimentalMultiStepLoop &&
         Object.keys(this.tools)?.length > 0
       ) {
@@ -289,6 +300,56 @@ export class InvocationPipeline {
   /* ---------------------------------------------------------------------- */
   /*                         🛤️   PRIVATE FLOW                              */
   /* ---------------------------------------------------------------------- */
+
+  /**
+   * Executes the node using Claude Code SDK.
+   * Maps SDK response to existing ProcessedResponse format.
+   */
+  private async runWithSDK(): Promise<void> {
+    lgg.info("[InvocationPipeline] Using Claude Code SDK", {
+      nodeId: this.ctx.nodeConfig.nodeId,
+      sdkConfig: this.ctx.nodeConfig.sdkConfig,
+    })
+
+    // Extract the prompt from incoming message
+    const incomingText = extractTextFromPayload(
+      this.ctx.workflowMessageIncoming.payload
+    )
+
+    // Combine system prompt and user message for SDK
+    const fullPrompt = `${this.ctx.nodeConfig.systemPrompt}\n\n${incomingText}`
+
+    // Use ClaudeSDKService for execution
+    const result = await ClaudeSDKService.execute(
+      this.ctx.nodeConfig.nodeId,
+      fullPrompt,
+      this.ctx.nodeConfig.sdkConfig,
+      this.ctx.workflowInvocationId
+    )
+
+    // Set the processed response and agent steps
+    this.processedResponse = result.response
+    this.agentSteps = result.agentSteps
+    this.usdCost = result.cost
+
+    // Track SDK costs in spending tracker
+    if (result.cost > 0) {
+      this.addCost(result.cost, true) // Mark as SDK cost
+    }
+
+    if (this.processedResponse.type === "text") {
+      lgg.info("[InvocationPipeline] SDK execution successful", {
+        nodeId: this.ctx.nodeConfig.nodeId,
+        responseLength: this.processedResponse.content.length,
+        cost: this.usdCost,
+      })
+    } else if (this.processedResponse.type === "error") {
+      lgg.error("[InvocationPipeline] SDK execution failed", {
+        nodeId: this.ctx.nodeConfig.nodeId,
+        error: this.processedResponse.message,
+      })
+    }
+  }
 
   private async runSingleCall(): Promise<ProcessedResponse> {
     // Log tool calling attempt
@@ -464,8 +525,19 @@ export class InvocationPipeline {
     }
   }
 
-  private addCost(c = 0): void {
+  /**
+   * Adds cost to internal tracking and SpendingTracker.
+   * @param c Cost in USD
+   * @param isSDK Whether this cost is from SDK execution
+   */
+  private addCost(c = 0, isSDK = false): void {
     this.usdCost += c
+    const tracker = SpendingTracker.getInstance()
+    if (isSDK) {
+      tracker.addSDKCost(c, this.ctx.workflowInvocationId)
+    } else {
+      tracker.addCost(c)
+    }
   }
 
   public getAgentSteps(): AgentSteps {

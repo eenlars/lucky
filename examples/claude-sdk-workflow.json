@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "nodeId": "sdk-analyzer",
+      "description": "Analyze code using Claude SDK",
+      "systemPrompt": "You are a code analyzer. Provide a concise analysis of the given code or text.",
+      "modelName": "sonnet",
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": [],
+      "useClaudeSDK": true,
+      "sdkConfig": {
+        "model": "sonnet",
+        "skipPermissions": true,
+        "timeout": 30000
+      }
+    }
+  ],
+  "entryNodeId": "sdk-analyzer",
+  "memory": {
+    "purpose": "Test Claude SDK integration"
+  }
+}

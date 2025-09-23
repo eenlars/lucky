@@ -1,0 +1,39 @@
+name: SDK Integration Test Workflow
+description: Test workflow to validate Claude Code SDK integration
+
+nodes:
+  - nodeId: analyzer
+    description: Analyze input using Claude SDK
+    systemPrompt: |
+      You are a helpful assistant that analyzes text.
+      Be concise and clear in your responses.
+    modelName: claude-3-sonnet-latest
+    useClaudeSDK: true
+    sdkConfig:
+      model: sonnet
+      skipPermissions: true
+      timeout: 30000
+      allowedTools:
+        - Read
+        - Grep
+    mcpTools: []
+    codeTools: []
+    handOffs:
+      - summarizer
+
+  - nodeId: summarizer
+    description: Summarize the analysis (using custom pipeline)
+    systemPrompt: |
+      You are a summarization expert.
+      Take the analysis provided and create a brief summary.
+    modelName: gpt-4o-mini
+    useClaudeSDK: false # This node uses the custom pipeline
+    mcpTools: []
+    codeTools: []
+    handOffs: []
+
+entryNodeId: analyzer
+
+memory:
+  workflow_type: sdk_integration_test
+  test_version: "1.0.0"
