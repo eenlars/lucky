@@ -1,15 +1,23 @@
-# Claude Code SDK Integration
+# Official Anthropic SDK Integration
 
 ## Overview
 
-This project supports minimal, pluggable integration with the Claude Code SDK (`@instantlyeasy/claude-code-sdk-ts`), allowing agents to opt-in to SDK-based execution while maintaining the existing custom tool system.
+This project supports pluggable integration with the official Anthropic SDK (`@anthropic-ai/sdk`), allowing agents to opt-in to SDK-based execution while maintaining the existing custom tool system.
 
 ## Features
 
 - **Opt-in Integration**: Existing workflows continue using custom tools by default
 - **Per-Node Configuration**: Each node can independently choose its execution mode
 - **Unified Cost Tracking**: SDK costs are tracked alongside custom tool costs
-- **Session Management**: Optional session preservation for conversational workflows
+- **Official SDK Support**: Uses the official Anthropic TypeScript SDK for reliability
+
+## Prerequisites
+
+The Anthropic SDK requires the `ANTHROPIC_API_KEY` environment variable to be set:
+
+```bash
+export ANTHROPIC_API_KEY="your-api-key-here"
+```
 
 ## Configuration
 
@@ -20,14 +28,14 @@ Add the `useClaudeSDK` flag and optional `sdkConfig` to any node:
 ```typescript
 {
   nodeId: "analyzer",
-  description: "Analyze with Claude SDK",
+  description: "Analyze with Anthropic SDK",
   systemPrompt: "You are a helpful assistant",
   modelName: "claude-3-sonnet-latest",
   useClaudeSDK: true,  // Enable SDK for this node
   sdkConfig: {
-    model: "sonnet",
-    allowedTools: ["Read", "Grep", "Glob"],
-    skipPermissions: false,
+    model: "sonnet",      // or "opus", "haiku", "sonnet-3.5", etc.
+    maxTokens: 4096,
+    temperature: 0.7,
     timeout: 60000
   },
   mcpTools: [],
@@ -40,12 +48,39 @@ Add the `useClaudeSDK` flag and optional `sdkConfig` to any node:
 
 ```typescript
 interface ClaudeSDKConfig {
-  model?: "opus" | "sonnet" | "haiku"
-  allowedTools?: string[]      // SDK tools to allow
-  skipPermissions?: boolean    // Skip permission prompts
-  timeout?: number            // Execution timeout in ms
+  // Model selection - simplified names that map to official model IDs
+  model?: "opus" | "sonnet" | "haiku" | "opus-3" | "sonnet-3" | "sonnet-3.5" | "haiku-3"
+  
+  // Maximum tokens to generate (default: 4096)
+  maxTokens?: number
+  
+  // Temperature for response generation (0-1, default: 0.7)
+  temperature?: number
+  
+  // Top-p sampling parameter (optional)
+  topP?: number
+  
+  // Execution timeout in milliseconds (default: 60000)
+  timeout?: number
+  
+  // System prompt to prepend to user message (optional)
+  systemPrompt?: string
 }
 ```
+
+### Model Mappings
+
+The integration provides simplified model names that map to official Anthropic model IDs:
+
+| Simplified Name | Official Model ID |
+|-----------------|-------------------|
+| `opus` | `claude-3-opus-latest` |
+| `sonnet` | `claude-3-5-sonnet-latest` |
+| `haiku` | `claude-3-haiku-latest` |
+| `opus-3` | `claude-3-opus-20240229` |
+| `sonnet-3` | `claude-3-sonnet-20240229` |
+| `sonnet-3.5` | `claude-3-5-sonnet-20241022` |
+| `haiku-3` | `claude-3-haiku-20240307` |
 
 ### Global SDK Settings
 
@@ -53,11 +88,12 @@ Configure defaults in `runtime/settings/claude-sdk.ts`:
 
 ```typescript
 export const CLAUDE_SDK_CONFIG = {
-  enabled: false,  // Global enable/disable
-  defaultModel: "sonnet",
-  defaultTimeout: 60000,
-  skipPermissions: true,
-  defaultAllowedTools: ["Read", "Write", "Edit", "Grep", "Glob"]
+  enabled: false,              // Global enable/disable
+  defaultModel: "sonnet",      // Default model choice
+  defaultMaxTokens: 4096,      // Default max tokens
+  defaultTimeout: 60000,       // Default timeout (ms)
+  defaultTemperature: 0.7,     // Default temperature
+  debug: false                 // Debug logging
 }
 ```
 
@@ -70,18 +106,28 @@ export const mixedWorkflow: WorkflowConfig = {
   nodes: [
     {
       nodeId: "sdk-node",
+      description: "Uses official Anthropic SDK",
+      systemPrompt: "You are an expert analyst",
+      modelName: "claude-3-sonnet-latest",
       useClaudeSDK: true,  // Uses SDK
       sdkConfig: {
-        model: "sonnet",
-        allowedTools: ["Read", "Write"]
+        model: "sonnet-3.5",
+        maxTokens: 4096,
+        temperature: 0.5
       },
-      // ... other config
+      mcpTools: [],
+      codeTools: [],
+      handOffs: ["custom-node"]
     },
     {
       nodeId: "custom-node",
+      description: "Uses custom pipeline with tools",
+      systemPrompt: "You are a data processor",
+      modelName: "claude-3-sonnet-latest",
       useClaudeSDK: false, // Uses custom pipeline (default)
+      mcpTools: ["filesystem"],
       codeTools: ["csvReader", "contextSet"],
-      // ... other config
+      handOffs: []
     }
   ],
   entryNodeId: "sdk-node"
@@ -91,35 +137,98 @@ export const mixedWorkflow: WorkflowConfig = {
 ### SDK-Only Workflow
 
 ```yaml
-name: SDK Workflow
+name: SDK Analysis Workflow
 nodes:
   - nodeId: analyzer
+    description: Deep analysis using SDK
+    systemPrompt: Analyze the provided data
+    modelName: claude-3-opus-latest
     useClaudeSDK: true
     sdkConfig:
       model: opus
-      allowedTools:
-        - Read
-        - Write
-        - Grep
-      skipPermissions: true
-    modelName: claude-3-opus-latest
+      maxTokens: 8192
+      temperature: 0.3
+    mcpTools: []
+    codeTools: []
+    handOffs:
+      - summarizer
+      
+  - nodeId: summarizer
+    description: Summarize findings
+    systemPrompt: Create a concise summary
+    modelName: claude-3-haiku-latest
+    useClaudeSDK: true
+    sdkConfig:
+      model: haiku
+      maxTokens: 1024
+      temperature: 0.5
+    mcpTools: []
+    codeTools: []
     handOffs: []
+    
 entryNodeId: analyzer
 ```
 
+### JSON Configuration Example
+
+```json
+{
+  "nodes": [
+    {
+      "nodeId": "sdk-processor",
+      "description": "Process with SDK",
+      "systemPrompt": "You are a helpful assistant",
+      "modelName": "claude-3-sonnet-latest",
+      "useClaudeSDK": true,
+      "sdkConfig": {
+        "model": "sonnet",
+        "maxTokens": 4096,
+        "temperature": 0.7
+      },
+      "mcpTools": [],
+      "codeTools": [],
+      "handOffs": []
+    }
+  ],
+  "entryNodeId": "sdk-processor"
+}
+```
+
+## Key Differences from Custom Pipeline
+
+### What SDK Nodes CAN Do:
+- Direct message generation using official Anthropic API
+- Automatic retry with exponential backoff
+- Native cost tracking through usage API
+- Temperature and sampling parameter control
+- Timeout protection
+
+### What SDK Nodes CANNOT Do:
+- Use MCP tools (filesystem, memory, etc.)
+- Use code tools (csvReader, webSearch, etc.)  
+- Multi-step tool execution loops
+- Custom tool implementations
+
+**Note**: SDK nodes are best for pure text generation and analysis tasks that don't require tool usage.
+
 ## Cost Tracking
 
-SDK costs are tracked separately for reporting:
+The SDK integration automatically tracks costs based on token usage:
 
-```typescript
-const spendingTracker = SpendingTracker.getInstance()
-const status = spendingTracker.getStatus()
-console.log({
-  totalSpend: status.currentSpend,
-  sdkSpend: status.sdkSpend,
-  customSpend: status.customSpend
-})
-```
+- **Opus**: $15/M input tokens, $75/M output tokens
+- **Sonnet 3.5**: $3/M input tokens, $15/M output tokens
+- **Sonnet 3**: $3/M input tokens, $15/M output tokens
+- **Haiku**: $0.25/M input tokens, $1.25/M output tokens
+
+Costs are calculated automatically and included in workflow spending tracking.
+
+## Error Handling
+
+The SDK service includes robust error handling:
+
+- **Retryable Errors**: Network issues, timeouts, rate limits (auto-retry with backoff)
+- **Non-Retryable Errors**: Authentication failures, invalid API keys (immediate failure)
+- **Timeout Protection**: Configurable timeout with automatic cancellation
 
 ## Testing
 
@@ -129,7 +238,7 @@ Run SDK integration tests:
 # Unit tests
 bun test core/src/tools/claude-sdk/__tests__/
 
-# Integration test workflow
+# Integration test workflow (if available)
 bun run core/src/main.ts --workflow tests/workflows/sdk-test.yaml
 ```
 
@@ -138,15 +247,15 @@ bun run core/src/main.ts --workflow tests/workflows/sdk-test.yaml
 ### Components
 
 1. **ClaudeSDKService** (`core/src/tools/claude-sdk/ClaudeSDKService.ts`)
-   - Minimal service wrapper
-   - Stateless execution
+   - Service wrapper for official Anthropic SDK
+   - Stateless execution with retry logic
    - Response formatting to match existing types
 
-3. **InvocationPipeline** (`core/src/messages/pipeline/InvocationPipeline.ts`)
+2. **InvocationPipeline** (`core/src/messages/pipeline/InvocationPipeline.ts`)
    - Branching logic for SDK vs custom execution
    - Unified response handling
 
-4. **SpendingTracker** (`core/src/utils/spending/SpendingTracker.ts`)
+3. **SpendingTracker** (`core/src/utils/spending/SpendingTracker.ts`)
    - Separate SDK cost tracking
    - Unified spending limits
 
@@ -156,7 +265,8 @@ bun run core/src/main.ts --workflow tests/workflows/sdk-test.yaml
 Node Execution
     ├── Check useClaudeSDK flag
     ├── If true: Use ClaudeSDKService
-    │   ├── Execute with SDK
+    │   ├── Initialize Anthropic client
+    │   ├── Create message via SDK
     │   ├── Map response to ProcessedResponse
     │   └── Track SDK costs
     └── If false: Use existing pipeline
@@ -165,57 +275,65 @@ Node Execution
         └── Standard cost tracking
 ```
 
-## Limitations
+## Debugging
 
-- SDK sessions are not preserved across workflow invocations by default
-- Some custom tools have no SDK equivalent
-- SDK tool names differ from custom tool names
+Enable debug logging for SDK operations:
 
-## Migration Guide
+```typescript
+// In runtime/settings/claude-sdk.ts
+export const CLAUDE_SDK_CONFIG = {
+  debug: true  // Enables detailed SDK logging
+}
+```
 
-### Converting Existing Nodes
+Check logs for:
+- Model selection and configuration
+- Token usage and costs
+- Retry attempts and failures
+- API response times
 
-To convert a node to use SDK:
+## Migration from Unofficial SDK
 
-1. Add `useClaudeSDK: true`
-2. Map tools to SDK equivalents:
-   - `readFileLegacy` → `Read`
-   - `saveFileLegacy` → `Write`
-3. Configure SDK-specific options
-4. Test thoroughly
+This integration replaces the previous `@instantlyeasy/claude-code-sdk-ts` with the official `@anthropic-ai/sdk`. Key changes:
 
-### Gradual Migration
-
-1. Start with non-critical nodes
-2. Compare performance and costs
-3. Expand usage based on results
-4. Keep fallback to custom tools
+1. **API Key Required**: Must set `ANTHROPIC_API_KEY` environment variable
+2. **No Tool Support**: SDK nodes cannot use tools (use custom pipeline for tool needs)
+3. **Model Names**: Use simplified names that map to official model IDs
+4. **Better Types**: Official SDK provides comprehensive TypeScript types
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **SDK not installed**: Run `bun add @instantlyeasy/claude-code-sdk-ts`
-2. **Tool not available**: Check SDK tool names vs custom names
-3. **Session errors**: Ensure session preservation is configured
-4. **Cost tracking**: Verify SpendingTracker initialization
-
-### Debug Mode
-
-Debug logging is handled through the standard Logger system. Set the debug flag in your runtime configuration if needed.
+1. **API Key Missing**: Ensure `ANTHROPIC_API_KEY` is set in environment
+2. **Invalid Model**: Check model name mappings in documentation
+3. **Timeout Errors**: Increase `timeout` in `sdkConfig`
+4. **Cost Tracking**: Verify SpendingTracker initialization
 
 ## Best Practices
 
 1. **Start Small**: Test SDK on single nodes first
 2. **Monitor Costs**: Compare SDK vs custom costs
-3. **Tool Selection**: Use SDK for standard operations, custom for specialized
+3. **Model Selection**: Choose appropriate model for task complexity
 4. **Error Handling**: Always handle SDK errors gracefully
 5. **Performance**: Measure latency impact before full adoption
 
+## Ejecting the SDK
+
+To remove SDK integration completely:
+
+1. Delete the `core/src/tools/claude-sdk/` directory
+2. Remove SDK imports from `InvocationPipeline.ts`
+3. Remove `useClaudeSDK` and `sdkConfig` from workflow types
+4. Remove `@anthropic-ai/sdk` from package.json
+5. Remove `runtime/settings/claude-sdk.ts`
+
+The integration is designed to be cleanly removable without affecting the rest of the codebase.
+
 ## Future Enhancements
 
-- [ ] Automatic tool mapping between custom and SDK
-- [ ] Session persistence across workflow runs
-- [ ] SDK tool result caching
-- [ ] Advanced SDK configuration per workflow
+- [ ] Streaming response support
+- [ ] Message batching for bulk operations
+- [ ] Advanced prompt caching
 - [ ] SDK performance metrics dashboard
+- [ ] Tool use support when SDK adds it

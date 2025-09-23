@@ -1,37 +1,58 @@
 /**
- * Type definitions for Claude Code SDK integration.
+ * Type definitions for official Anthropic SDK integration.
  * Keeping types separate enables clean ejection - just delete the SDK folder.
  */
 
 /**
- * Configuration options for Claude SDK execution.
- * Maps to the SDK's fluent API configuration.
+ * Configuration options for Anthropic SDK execution.
+ * Maps to the official SDK's API parameters.
  */
 export interface ClaudeSDKConfig {
   /** Model to use for SDK operations */
-  model?: "opus" | "sonnet" | "haiku"
+  model?:
+    | "opus"
+    | "sonnet"
+    | "haiku"
+    | "opus-3"
+    | "sonnet-3"
+    | "sonnet-3.5"
+    | "haiku-3"
 
-  /** Tools the SDK is allowed to use */
-  allowedTools?: string[]
+  /** Maximum tokens to generate */
+  maxTokens?: number
 
-  /** Skip permission prompts for tool usage */
-  skipPermissions?: boolean
+  /** Temperature for response generation (0-1) */
+  temperature?: number
+
+  /** Top-p sampling parameter */
+  topP?: number
 
   /** Execution timeout in milliseconds */
   timeout?: number
+
+  /** System prompt (will be prepended to user message) */
+  systemPrompt?: string
 }
 
 /**
  * Version compatibility for SDK integration.
- * Used to ensure the installed SDK version is compatible.
+ * Tracks the integration version (not SDK version).
  */
 export const SDK_VERSION = {
-  /** Minimum compatible version */
-  minVersion: "0.3.0",
-
-  /** Maximum compatible version (inclusive) */
-  maxVersion: "0.4.0",
-
   /** Current integration version */
-  integrationVersion: "1.0.0",
+  integrationVersion: "2.0.0",
+
+  /** Official SDK package name */
+  packageName: "@anthropic-ai/sdk",
+} as const
+
+/**
+ * Model pricing information (per million tokens).
+ * Updated as of December 2024.
+ */
+export const MODEL_PRICING = {
+  "claude-3-opus": { input: 15.0, output: 75.0 },
+  "claude-3-5-sonnet": { input: 3.0, output: 15.0 },
+  "claude-3-sonnet": { input: 3.0, output: 15.0 },
+  "claude-3-haiku": { input: 0.25, output: 1.25 },
 } as const

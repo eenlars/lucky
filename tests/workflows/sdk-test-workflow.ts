@@ -1,8 +1,8 @@
 /**
- * Test workflow demonstrating Claude Code SDK integration.
+ * Test workflow demonstrating official Anthropic SDK integration.
  * 
  * This workflow shows how to configure nodes to use either:
- * - Claude SDK (with useClaudeSDK: true)
+ * - Official Anthropic SDK (with useClaudeSDK: true)
  * - Custom pipeline (default)
  * - Both in the same workflow
  */
@@ -13,7 +13,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
   nodes: [
     {
       nodeId: "sdk-analyzer",
-      description: "Analyze code using Claude SDK with tools",
+      description: "Analyze code using official Anthropic SDK",
       systemPrompt: `You are a code analysis expert.
         Analyze the provided code and identify:
         1. Main functionality
@@ -23,8 +23,8 @@ export const sdkTestWorkflow: WorkflowConfig = {
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",
-        allowedTools: ["Read", "Grep", "Glob"],
-        skipPermissions: false,
+        maxTokens: 4096,
+        temperature: 0.5,
         timeout: 60000
       },
       mcpTools: [],
@@ -55,7 +55,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
     },
     {
       nodeId: "sdk-formatter",
-      description: "Format final report using Claude SDK",
+      description: "Format final report using official SDK with fast model",
       systemPrompt: `You are a technical writer.
         Format the recommendations into a professional report with:
         - Executive summary
@@ -65,7 +65,8 @@ export const sdkTestWorkflow: WorkflowConfig = {
       useClaudeSDK: true,
       sdkConfig: {
         model: "haiku", // Using faster model for formatting
-        skipPermissions: true,
+        maxTokens: 2048,
+        temperature: 0.3,
         timeout: 30000
       },
       mcpTools: [],
@@ -114,38 +115,41 @@ async function fetchUserData(userId) {
 }
 
 /**
- * Test configuration demonstrating SDK session preservation
+ * Test configuration demonstrating SDK conversation flow
+ * Note: Official SDK creates new conversations per request (stateless)
  */
-export const sdkSessionTestWorkflow: WorkflowConfig = {
+export const sdkConversationTestWorkflow: WorkflowConfig = {
   nodes: [
     {
-      nodeId: "session-start",
-      description: "Start a conversation with Claude SDK",
-      systemPrompt: "You are a helpful assistant. Remember information across our conversation.",
+      nodeId: "conversation-start",
+      description: "Start a conversation with official Anthropic SDK",
+      systemPrompt: "You are a helpful assistant providing detailed technical explanations.",
       modelName: "claude-3-sonnet-latest",
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",
-        skipPermissions: true
+        maxTokens: 4096,
+        temperature: 0.7
       },
       mcpTools: [],
       codeTools: [],
-      handOffs: ["session-continue"]
+      handOffs: ["conversation-continue"]
     },
     {
-      nodeId: "session-continue",
-      description: "Continue the conversation (SDK should preserve context)",
-      systemPrompt: "Continue helping based on our previous discussion.",
+      nodeId: "conversation-continue",
+      description: "Continue the conversation (context passed via workflow)",
+      systemPrompt: "Continue helping with technical explanations, building on previous context.",
       modelName: "claude-3-sonnet-latest",
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",
-        skipPermissions: true
+        maxTokens: 4096,
+        temperature: 0.7
       },
       mcpTools: [],
       codeTools: [],
       handOffs: []
     }
   ],
-  entryNodeId: "session-start"
+  entryNodeId: "conversation-start"
 }

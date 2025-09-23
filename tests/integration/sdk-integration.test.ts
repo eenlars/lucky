@@ -1,24 +1,24 @@
 /**
- * Integration test to verify Claude SDK integration works correctly
+ * Integration test to verify official Anthropic SDK integration works correctly
  */
 
 import { describe, it, expect } from "vitest"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
-describe("Claude SDK Integration", () => {
+describe("Anthropic SDK Integration", () => {
   it("should parse workflow config with SDK settings", () => {
     const config: WorkflowConfig = {
       nodes: [
         {
           nodeId: "test-node",
-          description: "Test node with SDK",
+          description: "Test node with official SDK",
           systemPrompt: "You are a test assistant",
           modelName: "claude-3-sonnet-latest",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
-            allowedTools: ["Read", "Write"],
-            skipPermissions: true,
+            maxTokens: 4096,
+            temperature: 0.7,
             timeout: 30000
           },
           mcpTools: [],
@@ -32,7 +32,8 @@ describe("Claude SDK Integration", () => {
     // Verify the config is valid
     expect(config.nodes[0].useClaudeSDK).toBe(true)
     expect(config.nodes[0].sdkConfig?.model).toBe("sonnet")
-    expect(config.nodes[0].sdkConfig?.allowedTools).toEqual(["Read", "Write"])
+    expect(config.nodes[0].sdkConfig?.maxTokens).toBe(4096)
+    expect(config.nodes[0].sdkConfig?.temperature).toBe(0.7)
   })
 
   it("should handle mixed SDK and custom nodes", () => {
@@ -45,7 +46,8 @@ describe("Claude SDK Integration", () => {
           modelName: "claude-3-sonnet-latest",
           useClaudeSDK: true,
           sdkConfig: {
-            model: "sonnet"
+            model: "sonnet",
+            maxTokens: 4096
           },
           mcpTools: [],
           codeTools: [],
@@ -95,5 +97,55 @@ describe("Claude SDK Integration", () => {
     // Should default to custom pipeline
     expect(config.nodes[0].useClaudeSDK).toBeUndefined()
     expect(config.nodes[0].codeTools).toHaveLength(2)
+  })
+
+  it("should support different model configurations", () => {
+    const config: WorkflowConfig = {
+      nodes: [
+        {
+          nodeId: "opus-node",
+          description: "Opus model node",
+          systemPrompt: "Using Opus",
+          modelName: "claude-3-opus-latest",
+          useClaudeSDK: true,
+          sdkConfig: {
+            model: "opus-3",
+            maxTokens: 8192,
+            temperature: 0.3,
+            topP: 0.9
+          },
+          mcpTools: [],
+          codeTools: [],
+          handOffs: []
+        },
+        {
+          nodeId: "haiku-node",
+          description: "Haiku model node",
+          systemPrompt: "Using Haiku",
+          modelName: "claude-3-haiku-latest",
+          useClaudeSDK: true,
+          sdkConfig: {
+            model: "haiku",
+            maxTokens: 1024,
+            temperature: 0.5
+          },
+          mcpTools: [],
+          codeTools: [],
+          handOffs: []
+        }
+      ],
+      entryNodeId: "opus-node"
+    }
+
+    // Verify Opus node config
+    const opusNode = config.nodes.find(n => n.nodeId === "opus-node")
+    expect(opusNode?.sdkConfig?.model).toBe("opus-3")
+    expect(opusNode?.sdkConfig?.maxTokens).toBe(8192)
+    expect(opusNode?.sdkConfig?.topP).toBe(0.9)
+
+    // Verify Haiku node config
+    const haikuNode = config.nodes.find(n => n.nodeId === "haiku-node")
+    expect(haikuNode?.sdkConfig?.model).toBe("haiku")
+    expect(haikuNode?.sdkConfig?.maxTokens).toBe(1024)
   })
 })

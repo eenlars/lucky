@@ -1,5 +1,5 @@
 /**
- * Configuration for Claude Code SDK integration.
+ * Configuration for official Anthropic SDK integration.
  * Minimal settings for pluggable SDK service.
  */
 
@@ -8,23 +8,23 @@ export const CLAUDE_SDK_CONFIG = {
   enabled: false,
   
   // Default model for SDK operations
-  defaultModel: "sonnet" as "opus" | "sonnet" | "haiku",
+  // Options: "opus", "sonnet", "haiku", "opus-3", "sonnet-3", "sonnet-3.5", "haiku-3"
+  defaultModel: "sonnet" as const,
+  
+  // Default max tokens to generate
+  defaultMaxTokens: 4096,
   
   // Default timeout in milliseconds
   defaultTimeout: 60000,
   
-  // Skip permission prompts by default
-  skipPermissions: true,
+  // Default temperature (0-1, where 0 is most deterministic)
+  defaultTemperature: 0.7,
   
-  // Tools allowed by default for SDK nodes
-  defaultAllowedTools: [
-    "Read",
-    "Write",
-    "Edit",
-    "Grep",
-    "Glob"
-  ],
+  // Default top-p sampling parameter
+  defaultTopP: undefined as number | undefined,
   
   // Debug mode for SDK operations
-  debug: false
+  debug: false,
+  
+  // Note: The official SDK requires ANTHROPIC_API_KEY environment variable
 } as const
