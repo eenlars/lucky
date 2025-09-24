@@ -180,38 +180,41 @@ export class ClaudeSDKService {
         let statusCode: number | undefined
         let isRetryable = false
 
-        if (error instanceof Anthropic.APIError) {
+        if (error instanceof Error) {
           errorMessage = error.message
-          statusCode = error.status
-          requestId = (error as any).headers?.['request-id'] || requestId
           
-          // Map specific error types
-          if (error instanceof Anthropic.BadRequestError) {
-            errorType = "BadRequestError"
-          } else if (error instanceof Anthropic.AuthenticationError) {
+          // Check for specific error patterns
+          const errorStr = error.message.toLowerCase()
+          
+          // Check for API key errors
+          if (errorStr.includes('api') && errorStr.includes('key')) {
             errorType = "AuthenticationError"
-          } else if (error instanceof Anthropic.PermissionDeniedError) {
-            errorType = "PermissionDeniedError"
-          } else if (error instanceof Anthropic.NotFoundError) {
-            errorType = "NotFoundError"
-          } else if (error instanceof Anthropic.UnprocessableEntityError) {
-            errorType = "UnprocessableEntityError"
-          } else if (error instanceof Anthropic.RateLimitError) {
-            errorType = "RateLimitError"
+            statusCode = 401
+          }
+          // Check for timeout errors
+          else if (errorStr.includes('timeout')) {
+            errorType = "TimeoutError"
             isRetryable = true
-          } else if (error instanceof Anthropic.InternalServerError) {
-            errorType = "InternalServerError"
-            isRetryable = true
-          } else if (error instanceof Anthropic.APIConnectionError) {
+          }
+          // Check for network/connection errors
+          else if (errorStr.includes('network') || errorStr.includes('connection')) {
             errorType = "APIConnectionError"
             isRetryable = true
           }
-        } else if (error instanceof Error) {
-          errorMessage = error.message
-          // Check for timeout errors
-          if (error.message.includes('timeout')) {
-            errorType = "TimeoutError"
+          // Check for rate limit errors
+          else if (errorStr.includes('rate') && errorStr.includes('limit')) {
+            errorType = "RateLimitError"
+            statusCode = 429
             isRetryable = true
+          }
+          
+          // Try to get additional info from error object
+          const anyError = error as any
+          if (anyError.status) {
+            statusCode = anyError.status
+          }
+          if (anyError.headers?.['request-id']) {
+            requestId = anyError.headers['request-id']
           }
         } else {
           errorMessage = String(error)

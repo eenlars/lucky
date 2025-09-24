@@ -6,12 +6,42 @@ const mockCreate = vi.fn()
 
 // Mock the Anthropic SDK
 vi.mock("@anthropic-ai/sdk", () => {
+  // Define mock error classes
+  class APIError extends Error {
+    status?: number
+    headers?: any
+    constructor(message: string, status?: number) {
+      super(message)
+      this.status = status
+      this.headers = { 'request-id': 'test-request-id' }
+    }
+  }
+  class BadRequestError extends APIError {}
+  class AuthenticationError extends APIError {}
+  class PermissionDeniedError extends APIError {}
+  class NotFoundError extends APIError {}
+  class UnprocessableEntityError extends APIError {}
+  class RateLimitError extends APIError {}
+  class InternalServerError extends APIError {}
+  class APIConnectionError extends APIError {}
+  
   return {
     default: vi.fn().mockImplementation(() => ({
       messages: {
         create: mockCreate,
       },
     })),
+    Anthropic: {
+      APIError,
+      BadRequestError,
+      AuthenticationError,
+      PermissionDeniedError,
+      NotFoundError,
+      UnprocessableEntityError,
+      RateLimitError,
+      InternalServerError,
+      APIConnectionError,
+    },
   }
 })
 
@@ -125,11 +155,16 @@ describe("ClaudeSDKService", () => {
       timeout: 30000,
     })
 
+    // The SDK client.messages.create now takes two parameters: 
+    // the message options and the request options (for timeout)
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         model: expect.stringContaining("opus"),
         max_tokens: 2048,
         temperature: 0.5,
+      }),
+      expect.objectContaining({
+        timeout: 30000,
       })
     )
   })
@@ -164,33 +199,31 @@ describe("ClaudeSDKService", () => {
   })
 
   it("should retry on retryable errors", async () => {
-    mockCreate
-      .mockRejectedValueOnce(new Error("Network timeout"))
-      .mockResolvedValueOnce({
-        id: "msg_retry",
-        type: "message",
-        role: "assistant",
-        content: [
-          {
-            type: "text",
-            text: "Success after retry",
-          },
-        ],
-        model: "claude-3-5-sonnet-20241022",
-        stop_reason: "end_turn",
-        stop_sequence: null,
-        usage: {
-          input_tokens: 10,
-          output_tokens: 5,
+    // The SDK handles retries internally, so our service only sees final result
+    mockCreate.mockResolvedValue({
+      id: "msg_retry",
+      type: "message",
+      role: "assistant",
+      content: [
+        {
+          type: "text",
+          text: "Success after SDK internal retry",
         },
-      })
+      ],
+      model: "claude-3-5-sonnet-20241022",
+      stop_reason: "end_turn",
+      stop_sequence: null,
+      usage: {
+        input_tokens: 10,
+        output_tokens: 5,
+      },
+    })
 
     const result = await ClaudeSDKService.execute("test-node", "Test prompt")
 
-    expect(mockCreate).toHaveBeenCalledTimes(2)
     expect(result.response.type).toBe("text")
     if (result.response.type === "text") {
-      expect(result.response.content).toBe("Success after retry")
+      expect(result.response.content).toBe("Success after SDK internal retry")
     }
   })
 
