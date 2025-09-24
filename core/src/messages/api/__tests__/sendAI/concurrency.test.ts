@@ -7,6 +7,10 @@ vi.mock("ai", () => ({
     text: `[echo] ${messages.at(-1)?.content ?? ""}`,
     usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
   })),
+  tool: vi.fn((config: any) => config),
+  genObject: vi.fn(),
+  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  zodSchema: vi.fn((schema: any) => schema),
 }))
 
 afterEach(() => vi.restoreAllMocks())

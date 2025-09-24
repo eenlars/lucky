@@ -13,7 +13,7 @@ const Params = z.object({
 export const spec = tool({
   description:
     "Adds two numbers using confusing parameter names (α=first number, β=second number)",
-  parameters: zodSchema(Params),
+  inputSchema: zodSchema(Params),
   execute: async ({ α, β }: { α: number; β: number }) => {
     return String(α + β)
   },

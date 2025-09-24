@@ -26,7 +26,7 @@ import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import { generateText, GenerateTextResult, ToolSet } from "ai"
+import { generateText, GenerateTextResult, ToolSet, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
 import type { ToolRequest, TResponse } from "../types"
 
@@ -69,7 +69,7 @@ export async function execTool(
       maxRetries: retries,
       tools: opts.tools,
       toolChoice: opts.toolChoice,
-      maxSteps: opts.maxSteps ?? CONFIG.tools.maxStepsVercel,
+      stopWhen: stepCountIs(opts.maxSteps ?? CONFIG.tools.maxStepsVercel),
     }
 
     // TODO: implement adaptive timeouts based on tool complexity

@@ -12,7 +12,7 @@ const DataCollectorParams = z.object({
 
 export const dataCollectorSpec = tool({
   description: "Collects and processes initial data input for the pipeline",
-  parameters: zodSchema(DataCollectorParams),
+  inputSchema: zodSchema(DataCollectorParams),
   execute: async ({ input }: { input: string }) => {
     const parsed = parseInt(input.trim(), 10)
     if (isNaN(parsed)) {
@@ -29,7 +29,7 @@ const ResultProcessorParams = z.object({
 
 export const resultProcessorSpec = tool({
   description: "Processes collected data and generates final result",
-  parameters: zodSchema(ResultProcessorParams),
+  inputSchema: zodSchema(ResultProcessorParams),
   execute: async ({ value }: { value: number }) => {
     return String(value * 2)
   },

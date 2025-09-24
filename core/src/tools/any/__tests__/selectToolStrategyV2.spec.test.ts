@@ -1,58 +1,36 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { getDefaultModels } from "@runtime/settings/models"
-import type { ToolSet } from "ai"
+import { tool, type ToolSet } from "ai"
 import { beforeEach, describe, expect, it } from "vitest"
+import { z } from "zod"
 
 // Mock tools for testing
-// TODO: These mock tools don't match the actual tool interface structure.
-// Real tools have 'execute' functions, but these mocks only have descriptions and parameters.
-// This means the test isn't testing against realistic tool structures.
 const mockTools: ToolSet = {
-  todoWrite: {
+  todoWrite: tool({
     description: "Write a todo item to the todo list",
-    parameters: {
-      type: "object",
-      properties: {
-        todo: {
-          type: "string",
-          description: "The todo item to write",
-        },
-      },
-      required: ["todo"],
-    },
-  },
-  todoRead: {
+    inputSchema: z.object({
+      todo: z.string().describe("The todo item to write"),
+    }),
+    execute: async () => ({}),
+  }),
+  todoRead: tool({
     description: "Read the current todo list",
-    parameters: {
-      type: "object",
-      properties: {},
-    },
-  },
-  locationDataManager: {
+    inputSchema: z.object({}),
+    execute: async () => ({}),
+  }),
+  locationDataManager: tool({
     description: "Manage location data operations",
-    parameters: {
-      type: "object",
-      properties: {
-        operation: {
-          type: "string",
-          enum: ["insertLocations", "updateLocations", "deleteLocations"],
-        },
-        locationData: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: { type: "string" },
-              lat: { type: "number" },
-              lng: { type: "number" },
-            },
-          },
-        },
-      },
-      required: ["operation"],
-    },
-  },
+    inputSchema: z.object({
+      operation: z.enum(["insertLocations", "updateLocations", "deleteLocations"]),
+      locationData: z.array(z.object({
+        name: z.string(),
+        lat: z.number(),
+        lng: z.number(),
+      })).optional(),
+    }),
+    execute: async () => ({}),
+  }),
 }
 
 describe("selectToolStrategyV2 Integration Tests", () => {

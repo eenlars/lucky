@@ -1,4 +1,4 @@
-import { tool } from "ai"
+import type { ToolSet } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -11,15 +11,15 @@ import { getDefaultModels } from "@runtime/settings/models"
 describe("sendAI tool mode – execute throw penetration", () => {
   it("normalizes thrown errors from tool execution (gemini lite)", async () => {
     const tools = {
-      explode: tool({
+      explode: {
         description: "Always throws",
-        parameters: z.object({ reason: z.string().min(1) }),
+        inputSchema: z.object({ reason: z.string().min(1) }),
         // Note: we intentionally throw here to break the pipeline
-        async execute({ reason }): Promise<any> {
+        execute: async ({ reason }: { reason: string }) => {
           throw new Error(`boom:${reason}`)
         },
-      }),
-    }
+      },
+    } as any as ToolSet
 
     const result = await sendAI({
       mode: "tool",

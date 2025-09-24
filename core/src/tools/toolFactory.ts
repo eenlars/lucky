@@ -154,7 +154,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
 ): Tool {
   return tool({
     description: toolDef.description,
-    parameters: zodSchema(toolDef.parameters),
+    inputSchema: zodSchema(toolDef.parameters),
     execute: async (params: z.infer<ParamsSchema>) => {
       // apply schema-based validation and auto-correction using the tool's own Zod schema
       const {

@@ -10,7 +10,7 @@ const NoopParams = z.object({})
 export const noopSpecs = Array.from({ length: 100 }, (_, i) =>
   tool({
     description: `Does nothing useful #${i}`,
-    parameters: zodSchema(NoopParams),
+    inputSchema: zodSchema(NoopParams),
     execute: async () => "noop",
   })
 )

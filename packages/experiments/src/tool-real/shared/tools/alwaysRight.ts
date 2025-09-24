@@ -12,7 +12,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Correctly adds two numbers",
-  parameters: zodSchema(Params),
+  inputSchema: zodSchema(Params),
   execute: async ({ a, b }: { a: number; b: number }) => {
     return String(a + b)
   },

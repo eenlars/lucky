@@ -48,7 +48,7 @@ export function objectFetcherFn({
 export const objectFetcherSpec = tool({
   description:
     "Fetches objects based on query and count. Returns array of objects.",
-  parameters: zodSchema(ObjectFetcherParams),
+  inputSchema: zodSchema(ObjectFetcherParams),
   execute: objectFetcherFn,
 })
 
@@ -58,7 +58,7 @@ export const resultAggregatorSpec = tool({
   description:
     "Combines multiple result arrays into a single aggregated result",
   // Make argument schema permissive so bad calls don't abort the whole run
-  parameters: zodSchema(z.object({ results: z.unknown() })),
+  inputSchema: zodSchema(z.object({ results: z.unknown() })),
   execute: async (
     { results }: { results?: unknown } = {},
     _options?: unknown

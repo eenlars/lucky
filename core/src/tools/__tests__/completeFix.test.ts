@@ -124,7 +124,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     // Create a mock tool that simulates searchGoogleMaps
     const mockTool = tool({
       description: "Search Google Maps for business information",
-      parameters: zodSchema(
+      inputSchema: zodSchema(
         z.object({
           query: z.string().describe("Search query"),
           maxResultCount: z

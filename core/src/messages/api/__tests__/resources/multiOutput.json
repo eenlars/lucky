@@ -1,0 +1,133 @@
+{
+  "steps": [
+    {
+      "content": [
+        {
+          "type": "tool-call",
+          "toolCallId": "call_VxhMbkWhXt8K80ZcLB7vWgfn",
+          "toolName": "tool1",
+          "input": {
+            "input": "Please provide the result you want."
+          }
+        },
+        {
+          "type": "tool-result",
+          "toolCallId": "call_VxhMbkWhXt8K80ZcLB7vWgfn",
+          "toolName": "tool1",
+          "input": {
+            "input": "Please provide the result you want."
+          },
+          "output": "result1",
+          "dynamic": false
+        }
+      ],
+      "finishReason": "tool-calls",
+      "usage": {
+        "inputTokens": 52,
+        "outputTokens": 20,
+        "totalTokens": 72,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
+      },
+      "warnings": [],
+      "request": {
+        "body": {
+          "model": "openai/gpt-4.1-nano",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Use the first tool to get a result"
+            }
+          ],
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "tool1",
+                "description": "first tool - returns fixed value",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            }
+          ],
+          "tool_choice": "auto"
+        }
+      },
+      "response": {
+        "id": "gen-1758637320-qrbg0f6BQAc0jShXL0cd",
+        "timestamp": "2025-09-23T14:21:59.895Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "983ab1151c8937c0-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Tue, 23 Sep 2025 14:22:01 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_VxhMbkWhXt8K80ZcLB7vWgfn",
+                "toolName": "tool1",
+                "input": {
+                  "input": "Please provide the result you want."
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_VxhMbkWhXt8K80ZcLB7vWgfn",
+                "toolName": "tool1",
+                "output": {
+                  "type": "text",
+                  "value": "result1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "provider": "OpenAI",
+          "usage": {
+            "promptTokens": 52,
+            "completionTokens": 20,
+            "totalTokens": 72,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "costDetails": {
+              "upstreamInferenceCost": 0
+            }
+          }
+        }
+      }
+    }
+  ]
+}

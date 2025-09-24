@@ -12,7 +12,7 @@ const RequestHandlerParams = z.object({
 
 export const requestHandlerSpec = tool({
   description: "Handles incoming business requests for processing",
-  parameters: zodSchema(RequestHandlerParams),
+  inputSchema: zodSchema(RequestHandlerParams),
   execute: async ({ request }: { request: string }) => {
     return request
       .split("")
@@ -27,7 +27,7 @@ const ComplianceCheckerParams = z.object({
 
 export const complianceCheckerSpec = tool({
   description: "Checks compliance requirements for business process",
-  parameters: zodSchema(ComplianceCheckerParams),
+  inputSchema: zodSchema(ComplianceCheckerParams),
   execute: async ({ code }: { code: number }) => {
     if (code % 3 === 0) return "high"
     if (code % 3 === 1) return "medium"
@@ -42,7 +42,7 @@ const RiskAssessorParams = z.object({
 
 export const riskAssessorSpec = tool({
   description: "Assesses risk factors for business compliance",
-  parameters: zodSchema(RiskAssessorParams),
+  inputSchema: zodSchema(RiskAssessorParams),
   execute: async ({ level }: { level: string }) => {
     if (level === "high") return 1
     if (level === "medium") return 5
@@ -57,7 +57,7 @@ const ResourceAllocatorParams = z.object({
 
 export const resourceAllocatorSpec = tool({
   description: "Allocates resources based on risk assessment",
-  parameters: zodSchema(ResourceAllocatorParams),
+  inputSchema: zodSchema(ResourceAllocatorParams),
   execute: async ({ score }: { score: number }) => {
     if (score <= 3) return "premium"
     if (score <= 7) return "standard"
@@ -72,7 +72,7 @@ const TimelinePlannerParams = z.object({
 
 export const timelinePlannerSpec = tool({
   description: "Plans project timeline based on resource allocation",
-  parameters: zodSchema(TimelinePlannerParams),
+  inputSchema: zodSchema(TimelinePlannerParams),
   execute: async ({ team }: { team: string }) => {
     if (team === "premium") return 7
     if (team === "standard") return 14
@@ -87,7 +87,7 @@ const QualityControllerParams = z.object({
 
 export const qualityControllerSpec = tool({
   description: "Controls quality standards for timeline execution",
-  parameters: zodSchema(QualityControllerParams),
+  inputSchema: zodSchema(QualityControllerParams),
   execute: async ({ days }: { days: number }) => {
     if (days <= 10) return "premium"
     if (days <= 20) return "standard"
@@ -102,7 +102,7 @@ const BudgetAnalyzerParams = z.object({
 
 export const budgetAnalyzerSpec = tool({
   description: "Analyzes budget requirements for quality standards",
-  parameters: zodSchema(BudgetAnalyzerParams),
+  inputSchema: zodSchema(BudgetAnalyzerParams),
   execute: async ({ quality }: { quality: string }) => {
     if (quality === "premium") return 10000
     if (quality === "standard") return 5000
@@ -117,7 +117,7 @@ const ApprovalGatewayParams = z.object({
 
 export const approvalGatewaySpec = tool({
   description: "Gateway for approval processing based on budget analysis",
-  parameters: zodSchema(ApprovalGatewayParams),
+  inputSchema: zodSchema(ApprovalGatewayParams),
   execute: async ({ cost }: { cost: number }) => {
     if (cost >= 8000) return "executive"
     if (cost >= 4000) return "manager"
@@ -132,7 +132,7 @@ const NotificationServiceParams = z.object({
 
 export const notificationServiceSpec = tool({
   description: "Service for sending notifications based on approval gateway",
-  parameters: zodSchema(NotificationServiceParams),
+  inputSchema: zodSchema(NotificationServiceParams),
   execute: async ({ approver }: { approver: string }) => {
     if (approver === "executive") return 5
     if (approver === "manager") return 3
@@ -147,7 +147,7 @@ const StatusReporterParams = z.object({
 
 export const statusReporterSpec = tool({
   description: "Reports final status based on notification processing",
-  parameters: zodSchema(StatusReporterParams),
+  inputSchema: zodSchema(StatusReporterParams),
   execute: async ({ notifications }: { notifications: number }) => {
     return `Business process completed: ${notifications} stakeholder${notifications > 1 ? "s" : ""} notified`
   },

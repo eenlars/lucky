@@ -22,14 +22,18 @@ export function explainTools(tools: ToolSet): string {
   const fullToolListWithArgs = toolKeys
     .map((key) => {
       const tool = tools[key]
-      const params = tool.parameters
+      const params = tool.inputSchema
 
       let argsString = "not shown"
       if (argsEnabled) {
         if (isVercelAIStructure(params)) {
           argsString = JSON.stringify(params.jsonSchema)
         } else if (isZodSchema(params)) {
-          argsString = zodToJson(params)
+          try {
+            argsString = zodToJson(params as any)
+          } catch {
+            argsString = params ? JSON.stringify(params) : "{}"
+          }
         } else {
           // Gracefully handle missing params
           argsString = params ? JSON.stringify(params) : "{}"

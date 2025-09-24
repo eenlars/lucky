@@ -10,7 +10,7 @@ const Params = z.object({})
 
 export const spec = tool({
   description: "This tool always throws an error",
-  parameters: zodSchema(Params),
+  inputSchema: zodSchema(Params),
   execute: async (): Promise<string> => {
     throw new Error("Intentional failure from always_error")
   },

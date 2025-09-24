@@ -28,7 +28,7 @@ import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
-import { generateText, GenerateTextResult, ToolSet } from "ai"
+import { generateText, GenerateTextResult, ToolSet, stepCountIs } from "ai"
 import {
   getFallbackModel,
   shouldUseModelFallback,
@@ -79,7 +79,7 @@ export async function execText(
       messages,
       // Let the SDK retry thrown/transient errors once per attempt; we handle empty-response retries below
       maxRetries: Math.max(0, Math.min(retries, 1)),
-      maxSteps: opts.maxSteps ?? CONFIG.tools.maxStepsVercel,
+      stopWhen: stepCountIs(opts.maxSteps ?? CONFIG.tools.maxStepsVercel),
     }
 
     const isReasoning = Boolean(opts.reasoning)
@@ -106,7 +106,7 @@ export async function execText(
         }
       )
 
-      const usd = calculateUsageCost((gen as any)?.usage, modelName)
+      const usd = calculateUsageCost(gen?.usage, modelName)
       if (opts.saveOutputs && gen) await saveResultOutput(gen)
       spending.addCost(usd)
       return gen
@@ -116,13 +116,13 @@ export async function execText(
       attempts,
       backoffMs: 300,
       shouldRetry: (gen) => {
-        const text = (gen as any)?.text
+        const text = gen?.text
         const hasText = !isNir(text?.trim?.())
         if (!hasText) {
           attemptsDebug.push({
             attempt: attemptsDebug.length + 1,
             reason: "empty-text",
-            usage: (gen as any)?.usage,
+            usage: gen?.usage,
             provider: String(CURRENT_PROVIDER),
             model: String(modelName),
           })
@@ -136,13 +136,13 @@ export async function execText(
       },
     })
 
-    const usd = calculateUsageCost((result as any)?.usage, modelName)
-    const text = (result as any)?.text
+    const usd = calculateUsageCost(result?.usage, modelName)
+    const text = result?.text
     const hasText = !isNir(text?.trim?.())
     if (hasText) {
       return {
         success: true,
-        data: { text, reasoning: (result as any)?.reasoning },
+        data: { text, reasoning: result?.reasoningText },
         usdCost: usd,
         error: null,
         debug_input: messages,
