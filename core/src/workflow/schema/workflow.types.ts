@@ -2,6 +2,10 @@ import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
 
+// Import SDK config type - can be removed cleanly when ejecting SDK
+// @sdk-import - marker for easy removal
+import type { ClaudeSDKConfig } from "@core/tools/claude-sdk/types"
+
 /**
  * Declarative configuration for a single workflow node.
  */
@@ -17,6 +21,8 @@ export interface WorkflowNodeConfig {
   waitingFor?: string[]
   waitFor?: string[] // Alternative name for waitingFor, both are supported
   handOffType?: "conditional" | "sequential" | "parallel"
+  useClaudeSDK?: boolean // Enable Claude Code SDK for this node
+  sdkConfig?: ClaudeSDKConfig // SDK-specific configuration
 }
 
 /**
