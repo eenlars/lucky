@@ -1,3 +1,4 @@
+// Standard workflow invocation with runtime settings support
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
 import { NextRequest, NextResponse } from "next/server"
@@ -12,13 +13,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const input = body as InvocationInput
 
-    if (!input) {
+    if (!input || !input.evalInput) {
       return NextResponse.json(
         { error: "Invalid invocation input" },
         { status: 400 }
       )
     }
 
+    // Invoke workflow with runtime settings if provided
     const result = await invokeWorkflow(input)
 
     if (!result.success) {
