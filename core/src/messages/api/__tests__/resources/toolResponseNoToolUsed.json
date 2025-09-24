@@ -9,8 +9,8 @@
       ],
       "finishReason": "stop",
       "usage": {
-        "inputTokens": 15,
-        "outputTokens": 6,
+        "promptTokens": 15,
+        "completionTokens": 6,
         "totalTokens": 21,
         "reasoningTokens": 0,
         "cachedInputTokens": 0

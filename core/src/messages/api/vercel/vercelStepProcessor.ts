@@ -35,7 +35,7 @@ const normaliseResults = <T extends ToolSet>(step: StepResult<T>) => {
 
 // Convert v5 format (content array with tool-call/tool-result/text) to v4 format
 const convertV5Step = (step: any) => {
-  if (!step.content || !Array.isArray(step.content)) {
+  if (!step || !step.content || !Array.isArray(step.content)) {
     return step // Return as-is if not v5 format
   }
   
@@ -57,7 +57,7 @@ const convertV5Step = (step: any) => {
         result: item.output // Support both formats
       })
     } else if (item.type === 'text' && item.text) {
-      textContent = item.text
+      textContent += item.text
     }
   }
   

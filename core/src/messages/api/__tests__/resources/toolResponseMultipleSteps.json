@@ -55,8 +55,8 @@
       ],
       "finishReason": "tool-calls",
       "usage": {
-        "inputTokens": 113,
-        "outputTokens": 61,
+        "promptTokens": 113,
+        "completionTokens": 61,
         "totalTokens": 174,
         "reasoningTokens": 0,
         "cachedInputTokens": 0
@@ -246,8 +246,8 @@
       ],
       "finishReason": "stop",
       "usage": {
-        "inputTokens": 202,
-        "outputTokens": 48,
+        "promptTokens": 202,
+        "completionTokens": 48,
         "totalTokens": 250,
         "reasoningTokens": 0,
         "cachedInputTokens": 0

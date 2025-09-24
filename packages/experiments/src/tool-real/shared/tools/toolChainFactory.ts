@@ -218,7 +218,7 @@ export const createBusinessChain = () => {
       description: "Reports final status based on notification processing",
       inputType: ToolParams.numberField("notifications", "Number of notifications sent"),
       execute: async ({ notifications }: { notifications: number }) => {
-        return `Business process completed: ${notifications} stakeholder${notifications > 1 ? "s" : ""} notified`
+        return `Business process completed: ${notifications} stakeholder${notifications !== 1 ? "s" : ""} notified`
       },
     },
   ])

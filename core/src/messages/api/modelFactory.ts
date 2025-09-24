@@ -51,7 +51,9 @@ export function getLanguageModelWithReasoning(
   }
 
   if (provider === "openai") {
-    return wantsReasoning ? openai(modelName) : openai(modelName)
+    // Note: OpenAI reasoning support would need to be implemented here
+    // For now, return the same model but acknowledge the reasoning flag
+    return openai(modelName)
   }
 
   if (provider === "groq") {

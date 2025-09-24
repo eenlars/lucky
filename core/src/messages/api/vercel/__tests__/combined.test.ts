@@ -37,7 +37,7 @@ describe("vercel.integration.test", () => {
       .map((s) => calculateUsageCost(s.usage, testModel))
       .reduce((a, b) => a + b, 0)
     const topLevelCost = calculateUsageCost(
-      (multiOutputFixture as any).usage,
+      (multiOutputFixture as any).steps[0].providerMetadata.openrouter.usage,
       testModel
     )
 

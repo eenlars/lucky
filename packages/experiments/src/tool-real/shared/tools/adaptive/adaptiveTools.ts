@@ -58,7 +58,7 @@ export const resultAggregatorSpec = tool({
   description:
     "Combines multiple result arrays into a single aggregated result",
   // Make argument schema permissive so bad calls don't abort the whole run
-  inputSchema: zodSchema(z.object({ results: z.unknown() })),
+  inputSchema: zodSchema(z.object({ results: z.unknown().optional() })),
   execute: async (
     { results }: { results?: unknown } = {},
     _options?: unknown
