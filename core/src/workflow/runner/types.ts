@@ -73,23 +73,31 @@ export interface RunResult {
 }
 
 /**
- * Union of supported ways to invoke a workflow.
- * Provide `evalInput` and exactly one of:
- * - workflowVersionId: load config from database by version id
- * - filename: load config from a local file
- * - dslConfig: pass a config object directly
+ * Runtime settings that control workflow behavior
  */
-export type InvocationInput = {
+export interface RuntimeSettings {
+  skipEvaluation?: boolean    
+  skipPreparation?: boolean   
+  preparationMethod?: "ai" | "workflow" | "none"
+  tools?: string[]            
+  maxCost?: number           
+}
+
+/**
+ * Workflow invocation input
+ */
+export interface InvocationInput {
+  // What to run
   evalInput: EvaluationInput
-} & (
-  | { workflowVersionId: string; filename?: never; dslConfig?: never }
-  | { filename: string; workflowVersionId?: never; dslConfig?: never }
-  | {
-      dslConfig: WorkflowConfig
-      workflowVersionId?: never
-      filename?: never
-    }
-)
+  
+  // Where to get the workflow (exactly one required)
+  workflowVersionId?: string  // From database
+  filename?: string           // From file
+  dslConfig?: WorkflowConfig  // Direct config
+  
+  // How to run it
+  runtime?: RuntimeSettings
+}
 
 /**
  * Result wrapper for ad-hoc workflow invocation with optional evaluation.

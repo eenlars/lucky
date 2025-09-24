@@ -29,7 +29,7 @@ import {
 import { Workflow } from "@core/workflow/Workflow"
 import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
-import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
+import type { InvocationInput, InvokeWorkflowResult, RunResult, RuntimeSettings } from "./types"
 
 /**
  * Union of supported ways to invoke a workflow.
@@ -72,7 +72,7 @@ export async function invokeWorkflow(
   input: InvocationInput
 ): Promise<RS<InvokeWorkflowResult[]>> {
   try {
-    const { evalInput } = input
+    const { evalInput, runtime } = input
 
     if (isNir(evalInput)) {
       lgg.error("evalInput is null/undefined", evalInput)
@@ -115,9 +115,10 @@ export async function invokeWorkflow(
       )
     }
 
-    // Initialize spending tracker if enabled
+    // Initialize spending tracker with runtime override or default
+    const maxCost = runtime?.maxCost ?? CONFIG.limits.maxCostUsdPerRun
     if (CONFIG.limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
+      SpendingTracker.getInstance().initialize(maxCost)
     }
 
     // Strictly validate before creating workflow
@@ -132,10 +133,11 @@ export async function invokeWorkflow(
     })
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
-    await workflow.prepareWorkflow(
-      evalInput,
-      CONFIG.workflow.prepareProblemMethod
-    )
+    const preparationMethod = runtime?.skipPreparation 
+      ? "none" 
+      : (runtime?.preparationMethod ?? CONFIG.workflow.prepareProblemMethod)
+    
+    await workflow.prepareWorkflow(evalInput, preparationMethod)
 
     const { success, error, data: runResults, usdCost } = await workflow.run()
 
@@ -151,7 +153,10 @@ export async function invokeWorkflow(
     }
 
     // Check if we need to evaluate (when there's something to compare against)
-    if (needsEvaluation(evalInput)) {
+    // Runtime can override to skip evaluation even if ground truth exists
+    const shouldEvaluate = !runtime?.skipEvaluation && needsEvaluation(evalInput)
+    
+    if (shouldEvaluate) {
       // Evaluate the results to calculate fitness and save to database
       const {
         success,
@@ -236,4 +241,39 @@ export async function invokeWorkflow(
     lgg.error("Invocation failed", err)
     return R.error(err instanceof Error ? err.message : "Unknown error", 0)
   }
+}
+
+/**
+ * Simple prompt invocation for frontend use
+ */
+export async function invokeWorkflowWithPrompt(
+  workflowVersionId: string,
+  prompt: string,
+  options?: {
+    goal?: string
+    skipEvaluation?: boolean
+    skipPreparation?: boolean
+    tools?: string[]
+    maxCost?: number
+  }
+): Promise<RS<InvokeWorkflowResult[]>> {
+  const runtime: RuntimeSettings = {
+    skipEvaluation: options?.skipEvaluation ?? true,
+    skipPreparation: options?.skipPreparation ?? false,
+    tools: options?.tools,
+    maxCost: options?.maxCost ?? 2.0,
+  }
+
+  // Use prompt-only type for simple invocations
+  const evalInput = {
+    type: "prompt-only" as const,
+    goal: options?.goal || prompt,
+    workflowId: "prompt_" + genShortId(),
+  }
+
+  return invokeWorkflow({
+    workflowVersionId,
+    evalInput,
+    runtime,
+  })
 }
