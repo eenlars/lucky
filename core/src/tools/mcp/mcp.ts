@@ -37,9 +37,11 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
       ? path.resolve(configuredPath)
       : path.join(PATHS.runtime, "mcp-secret.json")
     if (!fs.existsSync(configPath)) {
-      throw new Error(
-        "mcp-secret.json does not exist. Please create it in the runtime folder."
+      // Don't throw during build - just return empty config
+      console.warn(
+        "mcp-secret.json does not exist. MCP tools will not be available. Please create it in the runtime folder."
       )
+      return {}
     }
 
     const configContent = fs.readFileSync(configPath, "utf-8")
@@ -94,14 +96,18 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   }
 }
 
-const externalMCPConfig = loadExternalMCPConfig()
+// Lazy-loaded to avoid build-time requirements
+let externalMCPConfig: MCPConfig["mcpServers"] | null = null
 
-// All MCP tools are now configured externally
-const createTools: Record<
+// Lazy getter for MCP config - only loads when actually needed
+function getCreateTools(): Record<
   string,
   { command: string; args: string[]; env?: Record<string, string> }
-> = {
-  ...externalMCPConfig,
+> {
+  if (externalMCPConfig === null) {
+    externalMCPConfig = loadExternalMCPConfig()
+  }
+  return externalMCPConfig
 }
 
 // Cache for persistent MCP clients, keyed by workflow ID and tool name
@@ -132,6 +138,7 @@ export async function setupMCPForNode(
         return clientCache.get(cacheKey)
       }
 
+      const createTools = getCreateTools()
       const cfg = createTools[name]
       if (!cfg) {
         console.warn(

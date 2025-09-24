@@ -18,6 +18,11 @@ export class SpendingTracker {
   }
 
   addCost(cost: number): void {
+    // Validate cost to prevent negative or non-finite values
+    if (!Number.isFinite(cost) || cost < 0) {
+      console.warn(`[SpendingTracker] Invalid cost value ignored: ${cost}`)
+      return
+    }
     if (this.active) this.spend += cost
   }
 
@@ -29,6 +34,11 @@ export class SpendingTracker {
    * @param invocationId Optional workflow invocation ID for tracking
    */
   addSDKCost(cost: number, invocationId?: string): void {
+    // Validate cost to prevent negative or non-finite values
+    if (!Number.isFinite(cost) || cost < 0) {
+      console.warn(`[SpendingTracker] Invalid SDK cost value ignored: ${cost}`)
+      return
+    }
     if (this.active) {
       this.spend += cost
       this.sdkSpend += cost

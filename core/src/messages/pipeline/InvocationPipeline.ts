@@ -330,9 +330,9 @@ export class InvocationPipeline {
     // Set the processed response and agent steps
     this.processedResponse = result.response
     this.agentSteps = result.agentSteps
-    this.usdCost = result.cost
+    // Don't set usdCost directly - addCost will handle it
 
-    // Track SDK costs in spending tracker
+    // Track SDK costs in spending tracker and update usdCost
     if (result.cost > 0) {
       this.addCost(result.cost, true) // Mark as SDK cost
     }

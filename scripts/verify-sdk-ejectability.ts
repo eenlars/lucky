@@ -10,6 +10,9 @@ import * as path from "path"
 
 console.log("🔍 Verifying SDK Ejectability...\n")
 
+// Track if any errors occurred
+let hasErrors = false
+
 // Files that would be deleted when ejecting SDK
 const SDK_FILES_TO_DELETE = [
   "core/src/tools/claude-sdk/",
@@ -38,7 +41,7 @@ const FILES_WITH_SDK_REFS = [
   {
     file: "package.json",
     changes: [
-      "Remove: @instantlyeasy/claude-code-sdk-ts dependency"
+      "Remove: @anthropic-ai/sdk dependency"
     ]
   }
 ]
@@ -69,7 +72,7 @@ console.log("\n🎯 Ejection steps:")
 console.log("  1. Delete core/src/tools/claude-sdk/ folder")
 console.log("  2. Remove 3 import statements")
 console.log("  3. Remove 1 if-statement in InvocationPipeline")
-console.log("  4. Run: bun remove @instantlyeasy/claude-code-sdk-ts")
+console.log("  4. Run: bun remove @anthropic-ai/sdk")
 console.log("\n✅ Estimated time to eject: < 5 minutes")
 
 // Test that existing workflows still work without SDK
@@ -96,10 +99,18 @@ try {
   console.log("✅ Non-SDK workflows remain valid\n")
 } catch (err) {
   console.error("❌ Error:", err)
+  hasErrors = true
 }
 
-console.log("📊 Ejectability Score: 10/10")
-console.log("   - No rewrites needed ✅")
-console.log("   - Plain TypeScript stays valid ✅")
-console.log("   - No hidden dependencies ✅")
-console.log("   - Clean separation of concerns ✅")
+// Only print success message if no errors occurred
+if (!hasErrors) {
+  console.log("📊 Ejectability Score: 10/10")
+  console.log("   - No rewrites needed ✅")
+  console.log("   - Plain TypeScript stays valid ✅")
+  console.log("   - No hidden dependencies ✅")
+  console.log("   - Clean separation of concerns ✅")
+} else {
+  console.log("📊 Ejectability verification failed!")
+  console.log("   Please check the errors above")
+  process.exit(1)
+}
