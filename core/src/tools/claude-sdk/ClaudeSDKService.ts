@@ -4,7 +4,7 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk"
-import type { Message } from "@anthropic-ai/sdk/resources"
+import type { Message, Tool } from "@anthropic-ai/sdk/resources"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { lgg } from "@core/utils/logging/Logger"
@@ -15,6 +15,7 @@ export interface SDKRequest {
   nodeId: string
   invocationId?: string
   config?: ClaudeSDKConfig
+  tools?: Tool[]
 }
 
 /**
@@ -42,6 +43,7 @@ export class ClaudeSDKService {
     if (!this.client) {
       this.client = new Anthropic({
         apiKey,
+        maxRetries: 2, // SDK's built-in retry mechanism
         // Optional: Add custom headers or other config
       })
 
@@ -87,24 +89,9 @@ export class ClaudeSDKService {
     agentSteps: AgentStep[]
     cost: number
   }> {
-    const maxRetries = 2
-    const retryDelay = 1000 // 1 second base delay
-    let lastError: Error | null = null
+    let requestId: string | undefined
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        // Add delay before retry (exponential backoff)
-        if (attempt > 0) {
-          const delay = retryDelay * Math.pow(2, attempt - 1)
-          lgg.info(
-            `[ClaudeSDK] Retrying after ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`,
-            {
-              nodeId: request.nodeId,
-            }
-          )
-          await new Promise((resolve) => setTimeout(resolve, delay))
-        }
-
+    try {
         // Track execution start time for performance metrics
         const startTime = Date.now()
 
@@ -125,28 +112,30 @@ export class ClaudeSDKService {
         // Determine max tokens (default to a reasonable value)
         const maxTokens = request.config?.maxTokens || 4096
 
-        // Create message with timeout protection
-        const timeoutMs = request.config?.timeout || 60000
+        // Create message with optional timeout override
+        const timeoutMs = request.config?.timeout
 
-        const messagePromise = client.messages.create({
+        const messageOptions: Anthropic.MessageCreateParams = {
           model: modelId,
           messages,
           max_tokens: maxTokens,
           // Add any additional parameters from config
           ...(request.config?.temperature && { temperature: request.config.temperature }),
           ...(request.config?.topP && { top_p: request.config.topP }),
-        })
+          ...(request.config?.systemPrompt && { 
+            system: request.config.systemPrompt 
+          }),
+          ...(request.tools && request.tools.length > 0 && { tools: request.tools }),
+        }
 
-        // Create timeout promise
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(
-            () => reject(new Error(`SDK execution timed out after ${timeoutMs}ms`)),
-            timeoutMs
-          )
-        })
+        // Create request with optional timeout
+        const message = await client.messages.create(
+          messageOptions,
+          timeoutMs ? { timeout: timeoutMs } : {}
+        )
 
-        // Race between execution and timeout
-        const message = await Promise.race([messagePromise, timeoutPromise]) as Message
+        // Capture request ID for debugging
+        requestId = (message as any)._request_id
 
         // Extract response text from content blocks
         const responseText = this.extractTextFromMessage(message)
@@ -175,65 +164,90 @@ export class ClaudeSDKService {
         // Log successful execution
         lgg.info("[ClaudeSDK] Execution successful", {
           nodeId: request.nodeId,
+          requestId,
           model: modelId,
           inputTokens: usage?.input_tokens || 0,
           outputTokens: usage?.output_tokens || 0,
           cost,
           executionTime,
-          attempt: attempt + 1,
         })
 
         return { response: processed, cost, agentSteps }
       } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error))
+        // Handle specific SDK error types
+        let errorType = "APIError"
+        let errorMessage = "Unknown error occurred"
+        let statusCode: number | undefined
+        let isRetryable = false
 
-        // Check if error is retryable
-        const isRetryable = this.isRetryableError(lastError)
-
-        if (!isRetryable || attempt === maxRetries) {
-          // Final failure - return error response
-          const errorMsg = lastError.message
-
-          lgg.error("[ClaudeSDK] Execution failed", {
-            error: errorMsg,
-            nodeId: request.nodeId,
-            attempt: attempt + 1,
-            maxRetries: maxRetries + 1,
-            retryable: isRetryable,
-          })
-
-          const agentSteps: AgentStep[] = [
-            { type: "error", return: `SDK Error: ${errorMsg}` },
-          ]
-
-          const processed: ProcessedResponse = {
-            nodeId: request.nodeId,
-            type: "error",
-            message: errorMsg,
-            cost: 0,
-            agentSteps,
-            details: {
-              attempts: attempt + 1,
-              lastError: errorMsg,
-            },
+        if (error instanceof Anthropic.APIError) {
+          errorMessage = error.message
+          statusCode = error.status
+          requestId = (error as any).headers?.['request-id'] || requestId
+          
+          // Map specific error types
+          if (error instanceof Anthropic.BadRequestError) {
+            errorType = "BadRequestError"
+          } else if (error instanceof Anthropic.AuthenticationError) {
+            errorType = "AuthenticationError"
+          } else if (error instanceof Anthropic.PermissionDeniedError) {
+            errorType = "PermissionDeniedError"
+          } else if (error instanceof Anthropic.NotFoundError) {
+            errorType = "NotFoundError"
+          } else if (error instanceof Anthropic.UnprocessableEntityError) {
+            errorType = "UnprocessableEntityError"
+          } else if (error instanceof Anthropic.RateLimitError) {
+            errorType = "RateLimitError"
+            isRetryable = true
+          } else if (error instanceof Anthropic.InternalServerError) {
+            errorType = "InternalServerError"
+            isRetryable = true
+          } else if (error instanceof Anthropic.APIConnectionError) {
+            errorType = "APIConnectionError"
+            isRetryable = true
           }
-
-          return { response: processed, cost: 0, agentSteps }
+        } else if (error instanceof Error) {
+          errorMessage = error.message
+          // Check for timeout errors
+          if (error.message.includes('timeout')) {
+            errorType = "TimeoutError"
+            isRetryable = true
+          }
+        } else {
+          errorMessage = String(error)
         }
 
-        // Log retry attempt
-        lgg.warn("[ClaudeSDK] Execution failed, will retry", {
-          error: lastError.message,
+        // Log error with details
+        lgg.error("[ClaudeSDK] Execution failed", {
+          errorType,
+          error: errorMessage,
+          statusCode,
           nodeId: request.nodeId,
-          attempt: attempt + 1,
-          nextAttemptIn: `${retryDelay * Math.pow(2, attempt)}ms`,
+          requestId,
+          retryable: isRetryable,
         })
+
+        const agentSteps: AgentStep[] = [
+          { type: "error", return: `SDK ${errorType}: ${errorMessage}` },
+        ]
+
+        const processed: ProcessedResponse = {
+          nodeId: request.nodeId,
+          type: "error",
+          message: errorMessage,
+          cost: 0,
+          agentSteps,
+          details: {
+            errorType,
+            statusCode,
+            requestId,
+            lastError: errorMessage,
+          },
+        }
+
+        return { response: processed, cost: 0, agentSteps }
       }
     }
-
-    // This should never be reached, but TypeScript requires it
-    throw lastError || new Error("Unexpected SDK execution failure")
-  }
 
   /**
    * Maps our simplified model names to official Anthropic model IDs.
@@ -254,14 +268,22 @@ export class ClaudeSDKService {
   }
 
   /**
-   * Extracts text content from an Anthropic message response.
+   * Extracts content from an Anthropic message response.
+   * Handles both text and tool use content blocks.
    */
   private extractTextFromMessage(message: Message): string {
-    const textBlocks = message.content
-      .filter((block) => block.type === "text")
-      .map((block) => (block.type === "text" ? block.text : ""))
+    const contentParts: string[] = []
     
-    return textBlocks.join("\n")
+    for (const block of message.content) {
+      if (block.type === "text") {
+        contentParts.push(block.text)
+      } else if (block.type === "tool_use") {
+        // Include tool call information in response
+        contentParts.push(`[Tool Call: ${block.name}(${JSON.stringify(block.input)})]`)
+      }
+    }
+    
+    return contentParts.join("\n")
   }
 
   /**
@@ -289,48 +311,4 @@ export class ClaudeSDKService {
     return inputCost + outputCost
   }
 
-  /**
-   * Determines if an error is retryable.
-   * Network errors, rate limits, and timeouts are retryable.
-   * Authentication and configuration errors are not.
-   */
-  private isRetryableError(error: Error): boolean {
-    const message = error.message.toLowerCase()
-
-    // Retryable error patterns
-    const retryablePatterns = [
-      "timeout",
-      "network",
-      "econnreset",
-      "econnrefused",
-      "socket hang up",
-      "rate limit",
-      "429",
-      "503",
-      "502",
-      "504",
-      "overloaded",
-    ]
-
-    // Non-retryable error patterns
-    const nonRetryablePatterns = [
-      "authentication",
-      "unauthorized",
-      "403",
-      "invalid api key",
-      "invalid_api_key",
-      "permission",
-      "not found",
-      "404",
-      "invalid_request",
-    ]
-
-    // Check for non-retryable patterns first
-    if (nonRetryablePatterns.some((pattern) => message.includes(pattern))) {
-      return false
-    }
-
-    // Check for retryable patterns
-    return retryablePatterns.some((pattern) => message.includes(pattern))
-  }
 }

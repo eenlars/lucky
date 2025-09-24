@@ -10,6 +10,9 @@ This project supports pluggable integration with the official Anthropic SDK (`@a
 - **Per-Node Configuration**: Each node can independently choose its execution mode
 - **Unified Cost Tracking**: SDK costs are tracked alongside custom tool costs
 - **Official SDK Support**: Uses the official Anthropic TypeScript SDK for reliability
+- **Tool/Function Calling**: Full support for tool use and function calling through the SDK
+- **Request ID Tracking**: Captures request IDs for debugging and support
+- **Advanced Error Handling**: Leverages SDK's built-in error types with automatic retries
 
 ## Prerequisites
 
@@ -65,6 +68,12 @@ interface ClaudeSDKConfig {
   
   // System prompt to prepend to user message (optional)
   systemPrompt?: string
+  
+  // Enable tool/function calling support (optional)
+  enableTools?: boolean
+  
+  // Maximum number of retries for failed requests (default: 2)
+  maxRetries?: number
 }
 ```
 
@@ -198,18 +207,20 @@ entryNodeId: analyzer
 
 ### What SDK Nodes CAN Do:
 - Direct message generation using official Anthropic API
+- Tool use/function calling (when `enableTools` is set)
 - Automatic retry with exponential backoff
 - Native cost tracking through usage API
 - Temperature and sampling parameter control
 - Timeout protection
+- Request ID tracking for debugging
 
 ### What SDK Nodes CANNOT Do:
-- Use MCP tools (filesystem, memory, etc.)
-- Use code tools (csvReader, webSearch, etc.)  
-- Multi-step tool execution loops
-- Custom tool implementations
+- Use MCP tools (filesystem, memory, etc.) - these require custom pipeline
+- Use code tools (csvReader, webSearch, etc.) - these require custom pipeline
+- Multi-step tool execution loops with custom logic
+- Custom tool implementations beyond SDK-supported tools
 
-**Note**: SDK nodes are best for pure text generation and analysis tasks that don't require tool usage.
+**Note**: SDK nodes support official Anthropic tool/function calling, but custom tools and MCP integration require the custom pipeline.
 
 ## Cost Tracking
 
@@ -224,11 +235,24 @@ Costs are calculated automatically and included in workflow spending tracking.
 
 ## Error Handling
 
-The SDK service includes robust error handling:
+The SDK service includes robust error handling with specific error types:
 
-- **Retryable Errors**: Network issues, timeouts, rate limits (auto-retry with backoff)
-- **Non-Retryable Errors**: Authentication failures, invalid API keys (immediate failure)
-- **Timeout Protection**: Configurable timeout with automatic cancellation
+### Error Types (from SDK):
+- **BadRequestError** (400): Invalid request parameters
+- **AuthenticationError** (401): Invalid or missing API key
+- **PermissionDeniedError** (403): Insufficient permissions
+- **NotFoundError** (404): Resource not found
+- **UnprocessableEntityError** (422): Request cannot be processed
+- **RateLimitError** (429): Rate limit exceeded (auto-retry)
+- **InternalServerError** (500+): Server error (auto-retry)
+- **APIConnectionError**: Network/connection issues (auto-retry)
+- **APIConnectionTimeoutError**: Request timeout (auto-retry)
+
+### Features:
+- **Automatic Retry**: Rate limits, server errors, and network issues
+- **Request ID Tracking**: All errors include request ID for debugging
+- **Configurable Timeouts**: Per-request or global timeout settings
+- **Built-in Exponential Backoff**: Managed by the SDK
 
 ## Testing
 
@@ -297,9 +321,11 @@ Check logs for:
 This integration replaces the previous `@instantlyeasy/claude-code-sdk-ts` with the official `@anthropic-ai/sdk`. Key changes:
 
 1. **API Key Required**: Must set `ANTHROPIC_API_KEY` environment variable
-2. **No Tool Support**: SDK nodes cannot use tools (use custom pipeline for tool needs)
+2. **Tool Support Available**: SDK now supports official Anthropic tool/function calling (set `enableTools: true`)
 3. **Model Names**: Use simplified names that map to official model IDs
-4. **Better Types**: Official SDK provides comprehensive TypeScript types
+4. **Better Error Handling**: Specific error types with automatic retry logic
+5. **Request ID Tracking**: All responses include request IDs for debugging
+6. **Built-in Retry Logic**: SDK handles retries automatically (configurable via `maxRetries`)
 
 ## Troubleshooting
 

@@ -32,6 +32,12 @@ export interface ClaudeSDKConfig {
 
   /** System prompt (will be prepended to user message) */
   systemPrompt?: string
+
+  /** Enable tool/function calling support */
+  enableTools?: boolean
+
+  /** Maximum number of retries for failed requests */
+  maxRetries?: number
 }
 
 /**
