@@ -1,10 +1,11 @@
 import type { MCPToolName } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
-import type { ToolSet } from "ai"
+import { tool, type ToolSet } from "ai"
 import fs from "fs"
 import os from "os"
 import path from "path"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
+import { z } from "zod"
 
 // Create a temporary external MCP config and mock MCP transport/client
 // so unit tests don't require real binaries or network access.
@@ -38,6 +39,7 @@ vi.mock("ai", () => {
     env?: Record<string, string | undefined>
   }
   return {
+    tool: vi.fn((config: any) => config),
     experimental_createMCPClient: ({
       transport,
     }: {
@@ -49,30 +51,42 @@ vi.mock("ai", () => {
           switch (mcpName) {
             case "tavily":
               return {
-                "tavily-search": {
+                "tavily-search": tool({
                   description: "mock tavily search",
-                  parameters: {},
-                },
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
               }
             case "googleScholar":
               return {
-                search_google_scholar_key_words: {
+                search_google_scholar_key_words: tool({
                   description: "mock gs kw",
-                  parameters: {},
-                },
-                search_google_scholar_advanced: {
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
+                search_google_scholar_advanced: tool({
                   description: "mock gs adv",
-                  parameters: {},
-                },
-                get_author_info: {
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
+                get_author_info: tool({
                   description: "mock gs author",
-                  parameters: {},
-                },
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
               }
             case "browserUse":
               return {
-                open_url: { description: "mock open url", parameters: {} },
-                click: { description: "mock click", parameters: {} },
+                open_url: tool({
+                  description: "mock open url",
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
+                click: tool({
+                  description: "mock click",
+                  inputSchema: z.object({}),
+                  execute: async () => ({}),
+                }),
               }
             default:
               return {}
@@ -180,7 +194,7 @@ describe("browserUse MCP", () => {
     for (const [name, tool] of Object.entries(tools)) {
       lgg.log(`tool: ${name}`)
       lgg.log("  description:", tool.description)
-      lgg.log("  parameters:", JSON.stringify(tool.parameters, null, 2))
+      lgg.log("  parameters:", JSON.stringify(tool.inputSchema, null, 2))
     }
 
     lgg.log("browserUse mcp test passed ✓")

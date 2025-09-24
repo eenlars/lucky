@@ -73,7 +73,7 @@ describe("MCP Integration Tests", () => {
           }
           expect(
             response.data.steps.some(
-              (step) => step.toolCalls && step.toolCalls.length > 0
+              (step: any) => step.toolCalls && step.toolCalls.length > 0
             )
           ).toBe(true)
         } else {

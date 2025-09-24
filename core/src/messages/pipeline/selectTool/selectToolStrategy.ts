@@ -6,6 +6,7 @@ import { getDefaultModels } from "@runtime/settings/models"
 import type {
   CoreMessage,
   LanguageModel,
+  ModelMessage,
   StepResult,
   ToolChoice,
   ToolSet,
@@ -40,8 +41,8 @@ export function createPrepareStepStrategy<T extends ToolSet>(
 ): (options: {
   steps: Array<StepResult<T>>
   stepNumber: number
-  maxSteps: number
   model: LanguageModel
+  messages: ModelMessage[]
 }) => PromiseLike<
   | {
       model?: LanguageModel
@@ -50,7 +51,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     }
   | undefined
 > {
-  return async ({ steps, stepNumber, maxSteps, model: _model }) => {
+  return async ({ steps, stepNumber,  model: _model }) => {
     if (isNir(tools) || CONFIG.tools.autoSelectTools) {
       return undefined // Use default settings
     }
@@ -99,7 +100,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
 
 Initial user request: "${initialPayload}"
 
-Current step: ${stepNumber + 1} of ${maxSteps}
+Current step: ${stepNumber + 1}
 Available tools: ${Object.keys(tools).join(", ")}
 
 Previous steps context:

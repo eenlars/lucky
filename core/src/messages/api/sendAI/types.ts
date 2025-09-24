@@ -20,7 +20,8 @@ import type { ModelName } from "@core/utils/spending/models.types"
 import type {
   CoreMessage,
   GenerateTextResult,
-  LanguageModelV1,
+  LanguageModel,
+  ModelMessage,
   StepResult,
   ToolChoice,
   ToolSet,
@@ -73,12 +74,12 @@ export type TResponse<T> =
 // TODO: add step execution metrics
 export type PreparedStepsFunction<
   T extends ToolSet = ToolSet,
-  M extends LanguageModelV1 = LanguageModelV1,
+  M extends LanguageModel = LanguageModel,
 > = (o: {
   steps: StepResult<T>[]
   stepNumber: number
-  maxSteps: number
   model: M
+  messages: ModelMessage[]
 }) => PromiseLike<
   | {
       model?: M

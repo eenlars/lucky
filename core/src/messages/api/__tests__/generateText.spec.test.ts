@@ -1,8 +1,8 @@
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
-import { getDefaultModels } from "@runtime/settings/constants.client"
 import { JSONN } from "@lucky/shared"
-import { generateText, tool, zodSchema } from "ai"
+import { getDefaultModels } from "@runtime/settings/constants.client"
+import { generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -12,7 +12,7 @@ import { z } from "zod"
 // Should use meaningful names that clearly indicate test purpose
 const tool1 = tool({
   description: "nod-333",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -24,7 +24,7 @@ const tool1 = tool({
 
 const tool2 = tool({
   description: "mod-888",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -36,7 +36,7 @@ const tool2 = tool({
 
 const tool3 = tool({
   description: "rod-999",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -66,7 +66,7 @@ describe("generateText with sequential tools", () => {
         tool1,
         tool2,
       },
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
     })
 
     // convert to v2
@@ -126,7 +126,7 @@ Now, let me execute the tools as requested.`,
         tool1,
         tool2,
       },
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
     })
 
     // convert to v2

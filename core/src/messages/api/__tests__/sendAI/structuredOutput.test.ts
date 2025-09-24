@@ -31,6 +31,10 @@ vi.mock("@core/messages/api/genObject", () => {
 // Mock the dependencies
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  tool: vi.fn((config: any) => config),
+  genObject: vi.fn(),
+  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  zodSchema: vi.fn((schema: any) => schema),
   APICallError: class APICallError extends Error {
     constructor(message: string) {
       super(message)

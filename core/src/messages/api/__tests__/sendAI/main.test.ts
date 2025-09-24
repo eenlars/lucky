@@ -1,7 +1,7 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { generateText } from "ai"
-import { vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 // TODO: Test setup is overly complex with too many mocks
@@ -9,6 +9,10 @@ import { z } from "zod"
 // Mock the dependencies
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  tool: vi.fn((config: any) => config),
+  genObject: vi.fn(),
+  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  zodSchema: vi.fn((schema: any) => schema),
 }))
 
 vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
@@ -84,7 +88,7 @@ describe("sendAIRequest with expectedOutput", () => {
   })
 
   it("should validate response against provided Zod schema", async () => {
-    const mockedGenerateText = vi.mocked(generateText)
+    const mockedGenerateText = generateText as any
 
     // Define test schema
     const testSchema = z.object({
@@ -154,7 +158,7 @@ describe("sendAIRequest with expectedOutput", () => {
   })
 
   it("should fail when response doesn't match schema", async () => {
-    const mockedGenerateText = vi.mocked(generateText)
+    const mockedGenerateText = generateText as any
 
     const testSchema = z.object({
       name: z.string(),
@@ -196,7 +200,7 @@ describe("sendAIRequest with expectedOutput", () => {
   })
 
   it("should handle non-JSON response", async () => {
-    const mockedGenerateText = vi.mocked(generateText)
+    const mockedGenerateText = generateText as any
 
     const testSchema = z.object({
       result: z.string(),

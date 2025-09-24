@@ -1,255 +1,486 @@
 {
-  "text": "There are 12 Albert Heijn store locations in Den Bosch, Netherlands:\n\n1. Stationsplein 143\n2. Vughterstraat 46\n3. Arena 16\n4. Gruttostraat 23\n5. Lokerenpassage 25\n6. Helftheuvelpassage 1\n7. Rompertpassage 45\n8. Monseigneur van Roosmalenplein 19\n9. Molenhoekpassage 5\n10. Oliemaat 4\n11. Ploegveld 2\n12. Het Frontier 176\n\nAll are verified and included.",
-  "files": [],
-  "reasoningDetails": [],
-  "toolCalls": [],
-  "toolResults": [],
-  "finishReason": "stop",
-  "usage": {
-    "promptTokens": 8120,
-    "completionTokens": 830,
-    "totalTokens": 8950
-  },
-  "warnings": [],
   "steps": [
     {
-      "stepType": "initial",
-      "text": "",
-      "reasoningDetails": [],
-      "files": [],
-      "sources": [],
-      "toolCalls": [
+      "content": [
         {
           "type": "tool-call",
-          "toolCallId": "call_DGnqr8xrnCgRhAEhfHywSH4b",
-          "toolName": "searchGoogleMaps",
-          "args": {
-            "query": "Albert Heijn Den Bosch Netherlands",
-            "result_count": 20
-          }
-        }
-      ],
-      "toolResults": [
-        {
-          "placeId": "ChIJldxDgYruxkcR5DosgUlsppw",
-          "address": "Stationsplein 143",
-          "category": "Supermarkt",
-          "status": "",
-          "phone": "088 671 4083",
-          "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6ee",
-          "bizWebsite": "https://www.ah.nl/winkel/5801",
-          "storeName": "Albert Heijn",
-          "ratingText": "3,8 sterren 171 reviews",
-          "stars": "3,8 sterren 171 reviews",
-          "numberOfReviews": null,
-          "hours": null
+          "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+          "toolName": "tool1",
+          "input": {}
         },
         {
-          "placeId": "ChIJd84ARfTuxkcRdDOYVamys98",
-          "address": "Vughterstraat 46",
-          "category": "Supermarkt",
-          "status": "",
-          "phone": "073 610 0175",
-          "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6eef44500ce77",
-          "bizWebsite": "https://www.ah.nl/winkel/1655",
-          "storeName": "Albert Heijn",
-          "ratingText": "4,0 sterren 576 reviews",
-          "stars": "4,0 sterren 576 reviews",
-          "numberOfReviews": null,
-          "hours": null
+          "type": "tool-call",
+          "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+          "toolName": "tool2",
+          "input": {
+            "input": "output of tool1"
+          }
+        },
+        {
+          "type": "tool-call",
+          "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+          "toolName": "tool3",
+          "input": {
+            "input": "output of tool2"
+          }
+        },
+        {
+          "type": "tool-result",
+          "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+          "toolName": "tool1",
+          "input": {},
+          "output": "result1",
+          "dynamic": false
+        },
+        {
+          "type": "tool-result",
+          "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+          "toolName": "tool2",
+          "input": {
+            "input": "output of tool1"
+          },
+          "output": "processed_output of tool1",
+          "dynamic": false
+        },
+        {
+          "type": "tool-result",
+          "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+          "toolName": "tool3",
+          "input": {
+            "input": "output of tool2"
+          },
+          "output": "final_output of tool2",
+          "dynamic": false
         }
       ],
       "finishReason": "tool-calls",
       "usage": {
-        "promptTokens": 484,
-        "completionTokens": 25,
-        "totalTokens": 509
+        "promptTokens": 113,
+        "completionTokens": 61,
+        "totalTokens": 174,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
       },
       "warnings": [],
-      "providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 0
+      "request": {
+        "body": {
+          "model": "openai/gpt-4.1-nano",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Use tool1 first, then tool2 with tool1's result, then tool3 with tool2's result"
+            },
+            {
+              "role": "user",
+              "content": "Execute the tools in sequence"
+            }
+          ],
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "tool1",
+                "description": "first tool - returns fixed value",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            },
+            {
+              "type": "function",
+              "function": {
+                "name": "tool2",
+                "description": "second tool - processes input",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input"
+                  ],
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            },
+            {
+              "type": "function",
+              "function": {
+                "name": "tool3",
+                "description": "third tool - returns final result",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input"
+                  ],
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            }
+          ],
+          "tool_choice": "auto"
         }
       },
-      "experimental_providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 0
-        }
-      },
-      "isContinued": false
-    },
-    {
-      "stepType": "tool-result",
-      "text": "",
-      "reasoningDetails": [],
-      "files": [],
-      "sources": [],
-      "toolCalls": [
-        {
-          "type": "tool-call",
-          "toolCallId": "call_X7jWCpeicv1KKEn8tKCS8vnd",
-          "toolName": "locationDataManager",
-          "args": {
-            "operation": "insertLocations",
-            "locationData": [
+      "response": {
+        "id": "gen-1758637322-HZPIfNYPofalu3aJ0ggr",
+        "timestamp": "2025-09-23T14:22:01.112Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "983ab11ffe9037c0-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Tue, 23 Sep 2025 14:22:03 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
               {
-                "name": "Albert Heijn",
-                "address": "Stationsplein 143",
-                "city": "Den Bosch",
-                "country": "Netherlands",
-                "phone": "088 671 4083",
-                "latitude": 51.6906053,
-                "longitude": 5.2946091,
-                "opening_times": {
-                  "sunday": "closed",
-                  "monday": "closed",
-                  "tuesday": "closed",
-                  "wednesday": "closed",
-                  "thursday": "closed",
-                  "friday": "closed",
-                  "saturday": "closed"
-                },
-                "owner_imgs": [],
-                "quality": "complete",
-                "metadata": {}
+                "type": "tool-call",
+                "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+                "toolName": "tool1",
+                "input": {}
               },
               {
-                "name": "Albert Heijn",
-                "address": "Vughterstraat 46",
-                "city": "Den Bosch",
-                "country": "Netherlands",
-                "phone": "073 610 0175",
-                "latitude": 51.6872,
-                "longitude": 5.301233,
-                "opening_times": {
-                  "sunday": "closed",
-                  "monday": "closed",
-                  "tuesday": "closed",
-                  "wednesday": "closed",
-                  "thursday": "closed",
-                  "friday": "closed",
-                  "saturday": "closed"
-                },
-                "owner_imgs": [],
-                "quality": "complete",
-                "metadata": {}
+                "type": "tool-call",
+                "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+                "toolName": "tool2",
+                "input": {
+                  "input": "output of tool1"
+                }
+              },
+              {
+                "type": "tool-call",
+                "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+                "toolName": "tool3",
+                "input": {
+                  "input": "output of tool2"
+                }
               }
-            ],
-            "locationIdsToRemove": [],
-            "workflowInvocationId": "be1472e6"
+            ]
+          },
+          {
+            "role": "tool",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+                "toolName": "tool1",
+                "output": {
+                  "type": "text",
+                  "value": "result1"
+                }
+              },
+              {
+                "type": "tool-result",
+                "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+                "toolName": "tool2",
+                "output": {
+                  "type": "text",
+                  "value": "processed_output of tool1"
+                }
+              },
+              {
+                "type": "tool-result",
+                "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+                "toolName": "tool3",
+                "output": {
+                  "type": "text",
+                  "value": "final_output of tool2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "provider": "OpenAI",
+          "usage": {
+            "promptTokens": 113,
+            "completionTokens": 61,
+            "totalTokens": 174,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "costDetails": {
+              "upstreamInferenceCost": 0
+            }
           }
         }
-      ],
-      "toolResults": [
-        {
-          "placeId": "ChIJldxDgYruxkcR5DosgUlsppw",
-          "address": "Stationsplein 143",
-          "category": "Supermarkt",
-          "status": "",
-          "phone": "088 671 4083",
-          "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6ee",
-          "bizWebsite": "https://www.ah.nl/winkel/5801",
-          "storeName": "Albert Heijn",
-          "ratingText": "3,8 sterren 171 reviews",
-          "stars": "3,8 sterren 171 reviews",
-          "numberOfReviews": null,
-          "hours": null
-        },
-        {
-          "placeId": "ChIJd84ARfTuxkcRdDOYVamys98",
-          "address": "Vughterstraat 46",
-          "category": "Supermarkt",
-          "status": "",
-          "phone": "073 610 0175",
-          "googleUrl": "https://www.google.com/maps/place/Albert+Heijn/data=!4m7!3m6!1s0x47c6eef44500ce77",
-          "bizWebsite": "https://www.ah.nl/winkel/1655",
-          "storeName": "Albert Heijn",
-          "ratingText": "4,0 sterren 576 reviews",
-          "stars": "4,0 sterren 576 reviews",
-          "numberOfReviews": null,
-          "hours": null
-        }
-      ],
-      "finishReason": "tool-calls",
-      "usage": {
-        "promptTokens": 3182,
-        "completionTokens": 675,
-        "totalTokens": 3857
-      },
-      "warnings": [],
-      "providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 0
-        }
-      },
-      "experimental_providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 0
-        }
-      },
-      "isContinued": false
+      }
     },
     {
-      "stepType": "tool-result",
-      "text": "There are 2 Albert Heijn store locations in Den Bosch, Netherlands:\n\n1. Stationsplein 143\n\n2. Vughterstraat 46\n\nAll are verified and included.",
-      "reasoningDetails": [],
-      "files": [],
-      "sources": [],
-      "toolCalls": [],
-      "toolResults": [],
+      "content": [
+        {
+          "type": "text",
+          "text": "The tools have been executed in sequence. The result of tool1 is \"result1,\" the processed output from tool2 is \"processed_output of tool1,\" and the final output from tool3 is \"final_output of tool2.\""
+        }
+      ],
       "finishReason": "stop",
       "usage": {
-        "promptTokens": 4454,
-        "completionTokens": 130,
-        "totalTokens": 4584
+        "promptTokens": 202,
+        "completionTokens": 48,
+        "totalTokens": 250,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
       },
       "warnings": [],
+      "request": {
+        "body": {
+          "model": "openai/gpt-4.1-nano",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Use tool1 first, then tool2 with tool1's result, then tool3 with tool2's result"
+            },
+            {
+              "role": "user",
+              "content": "Execute the tools in sequence"
+            },
+            {
+              "role": "assistant",
+              "content": "",
+              "tool_calls": [
+                {
+                  "id": "call_teG9IYjWbjExwAu0me3HcD9r",
+                  "type": "function",
+                  "function": {
+                    "name": "tool1",
+                    "arguments": "{}"
+                  }
+                },
+                {
+                  "id": "call_xNJy7gC7O7fdcc0TINEaODQB",
+                  "type": "function",
+                  "function": {
+                    "name": "tool2",
+                    "arguments": "{\"input\":\"output of tool1\"}"
+                  }
+                },
+                {
+                  "id": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+                  "type": "function",
+                  "function": {
+                    "name": "tool3",
+                    "arguments": "{\"input\":\"output of tool2\"}"
+                  }
+                }
+              ]
+            },
+            {
+              "role": "tool",
+              "tool_call_id": "call_teG9IYjWbjExwAu0me3HcD9r",
+              "content": "result1"
+            },
+            {
+              "role": "tool",
+              "tool_call_id": "call_xNJy7gC7O7fdcc0TINEaODQB",
+              "content": "processed_output of tool1"
+            },
+            {
+              "role": "tool",
+              "tool_call_id": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+              "content": "final_output of tool2"
+            }
+          ],
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "tool1",
+                "description": "first tool - returns fixed value",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            },
+            {
+              "type": "function",
+              "function": {
+                "name": "tool2",
+                "description": "second tool - processes input",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input"
+                  ],
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            },
+            {
+              "type": "function",
+              "function": {
+                "name": "tool3",
+                "description": "third tool - returns final result",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input"
+                  ],
+                  "additionalProperties": false,
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            }
+          ],
+          "tool_choice": "auto"
+        }
+      },
+      "response": {
+        "id": "gen-1758637323-3zi1OZccdsEnBZYGODJu",
+        "timestamp": "2025-09-23T14:22:02.463Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "983ab127985237c0-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Tue, 23 Sep 2025 14:22:04 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool-call",
+                "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+                "toolName": "tool1",
+                "input": {}
+              },
+              {
+                "type": "tool-call",
+                "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+                "toolName": "tool2",
+                "input": {
+                  "input": "output of tool1"
+                }
+              },
+              {
+                "type": "tool-call",
+                "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+                "toolName": "tool3",
+                "input": {
+                  "input": "output of tool2"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "content": [
+              {
+                "type": "tool-result",
+                "toolCallId": "call_teG9IYjWbjExwAu0me3HcD9r",
+                "toolName": "tool1",
+                "output": {
+                  "type": "text",
+                  "value": "result1"
+                }
+              },
+              {
+                "type": "tool-result",
+                "toolCallId": "call_xNJy7gC7O7fdcc0TINEaODQB",
+                "toolName": "tool2",
+                "output": {
+                  "type": "text",
+                  "value": "processed_output of tool1"
+                }
+              },
+              {
+                "type": "tool-result",
+                "toolCallId": "call_dG9EBiHPXVrfB8V2chqcnNbD",
+                "toolName": "tool3",
+                "output": {
+                  "type": "text",
+                  "value": "final_output of tool2"
+                }
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "The tools have been executed in sequence. The result of tool1 is \"result1,\" the processed output from tool2 is \"processed_output of tool1,\" and the final output from tool3 is \"final_output of tool2.\""
+              }
+            ]
+          }
+        ]
+      },
       "providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 3200
+        "openrouter": {
+          "provider": "OpenAI",
+          "usage": {
+            "promptTokens": 202,
+            "completionTokens": 48,
+            "totalTokens": 250,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "costDetails": {
+              "upstreamInferenceCost": 0
+            }
+          }
         }
-      },
-      "experimental_providerMetadata": {
-        "openai": {
-          "reasoningTokens": 0,
-          "acceptedPredictionTokens": 0,
-          "rejectedPredictionTokens": 0,
-          "cachedPromptTokens": 3200
-        }
-      },
-      "isContinued": false
+      }
     }
-  ],
-  "experimental_providerMetadata": {
-    "openai": {
-      "reasoningTokens": 0,
-      "acceptedPredictionTokens": 0,
-      "rejectedPredictionTokens": 0,
-      "cachedPromptTokens": 3200
-    }
-  },
-  "providerMetadata": {
-    "openai": {
-      "reasoningTokens": 0,
-      "acceptedPredictionTokens": 0,
-      "rejectedPredictionTokens": 0,
-      "cachedPromptTokens": 3200
-    }
-  },
-  "sources": []
+  ]
 }

@@ -1,39 +1,73 @@
-import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import Tools from "@core/tools/code/output.types"
 import { isNir } from "@core/utils/common/isNir"
 import { asArray } from "@core/utils/common/utils"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { StepResult, ToolCallPart, ToolResult, ToolSet } from "ai"
+import type { StepResult, ToolCallPart, ToolSet } from "ai"
 
 const normaliseCalls = <T extends ToolSet>(step: StepResult<T>) =>
   asArray(step.toolCalls)
 
 const normaliseResults = <T extends ToolSet>(step: StepResult<T>) => {
   // Handle multiple shapes:
-  // 1) Vercel AI SDK ToolResult wrappers: [{ result: ... }]
+  // 1) Vercel AI SDK ToolResult wrappers: [{ output: ... }]
   // 2) Raw results array already (e.g., the fixture provides an array of objects)
   // 3) Single result object
-  const raw = step.toolResults as unknown
+  const raw = step.toolResults
 
   if (raw == null) return []
 
   const arrayified = Array.isArray(raw) ? raw : [raw]
 
   const looksWrapped = arrayified.every(
-    (item: any) => item && typeof item === "object" && "result" in item
+    (item) => item && typeof item === "object" && ("output" in item || "result" in item)
   )
 
   if (looksWrapped) {
-    return (arrayified as unknown as ToolResult<string, any, any>[]).map(
-      (r) => r.result
-    )
+    return arrayified.map((r) => (r as any).output ?? (r as any).result)
   }
 
   // If toolResults is already the raw payload (e.g., an array of places),
   // treat the entire payload as the single result for this step.
   return [Array.isArray(raw) ? raw : raw]
+}
+
+// Convert v5 format (content array with tool-call/tool-result/text) to v4 format
+const convertV5Step = (step: any) => {
+  if (!step || !step.content || !Array.isArray(step.content)) {
+    return step // Return as-is if not v5 format
+  }
+  
+  const toolCalls: any[] = []
+  const toolResults: any[] = []
+  let textContent = ""
+  
+  // Extract tool calls, results, and text from content array
+  for (const item of step.content) {
+    if (item.type === 'tool-call') {
+      toolCalls.push({
+        toolName: item.toolName,
+        input: item.input,
+        args: item.input // Support both formats
+      })
+    } else if (item.type === 'tool-result') {
+      toolResults.push({
+        output: item.output,
+        result: item.output // Support both formats
+      })
+    } else if (item.type === 'text' && item.text) {
+      textContent += item.text
+    }
+  }
+  
+  // Convert to v4 format
+  return {
+    ...step,
+    toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+    toolResults: toolResults.length > 0 ? toolResults : undefined,
+    text: textContent || step.text // Preserve existing text or use extracted text
+  }
 }
 
 export const processStepsV2 = <T extends ToolSet>(
@@ -43,12 +77,13 @@ export const processStepsV2 = <T extends ToolSet>(
   if (isNir(steps) || !Array.isArray(steps))
     return { usdCost: 0, agentSteps: [] }
 
+  // Convert v5 format steps to v4 format
+  const convertedSteps = steps.map(convertV5Step)
+
   /* ---------- 1. Map every step to the internal shape ---------- */
   const unwrapToolResponse = (value: unknown): unknown =>
-    Tools.isCodeToolResult(value)
-      ? (value as { output: unknown }).output
-      : value
-  const perStep = (steps as StepResult<T>[]).map((rawStep) => {
+    Tools.isCodeToolResult(value) ? value.output : value
+  const perStep = convertedSteps.map((rawStep: StepResult<T>) => {
     const step = rawStep ?? {}
 
     const calls = normaliseCalls(step) // [] if none
@@ -66,15 +101,14 @@ export const processStepsV2 = <T extends ToolSet>(
 
       return {
         toolName: c?.toolName ?? "",
-        toolArgs: c?.args ?? {},
+        toolArgs: (c as any)?.input ?? (c as any)?.args ?? {},
         toolResponse: unwrapToolResponse(finalResponse),
       }
     })
 
     return {
       toolCalls,
-      totalCost:
-        calculateUsageCost(step.usage as Partial<VercelUsage>, modelUsed) || 0,
+      totalCost: calculateUsageCost(step.usage, modelUsed) || 0,
       rawText: text, // keep for possible fallback
     }
   })
@@ -82,16 +116,16 @@ export const processStepsV2 = <T extends ToolSet>(
   /* ---------- 2. Aggregate using for loops ---------- */
   const aggregated: AgentSteps = []
   let lastText = ""
-  const hasAnyNonNullStep = (steps as unknown[]).some((s) => s != null)
+  const hasAnyNonNullStep = convertedSteps.some((s: StepResult<T>) => s != null)
 
   for (const { toolCalls, totalCost, rawText } of perStep) {
     // add tool outputs if present
     for (const call of toolCalls) {
       aggregated.push({
         type: "tool" as const,
-        name: call.toolName as string,
-        args: call.toolArgs as Record<string, any>,
-        return: call.toolResponse as unknown,
+        name: call.toolName,
+        args: call.toolArgs,
+        return: call.toolResponse,
       })
     }
 

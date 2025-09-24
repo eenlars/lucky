@@ -3,7 +3,7 @@ import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"
 import { openrouter } from "@openrouter/ai-sdk-provider"
 import { getDefaultModels } from "@runtime/settings/models"
-import { generateText } from "ai"
+import { generateText, stepCountIs } from "ai"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
@@ -33,7 +33,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_navigate",
@@ -57,7 +57,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -74,7 +74,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -91,7 +91,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -200,7 +200,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_navigate",
@@ -223,7 +223,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_get_state",
@@ -307,7 +307,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 2,
+      stopWhen: stepCountIs(2),
       toolChoice: "auto",
     })
 
@@ -324,7 +324,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_get_state",
@@ -356,7 +356,7 @@ describe.skip("browser functionality tests", () => {
         },
       ],
       tools,
-      maxSteps: 8,
+      stopWhen: stepCountIs(8),
       toolChoice: "auto",
     })
 
@@ -409,7 +409,7 @@ async function cleanupBrowser(tools: any) {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
     })
     lgg.log("browser cleanup completed")
   } catch (error) {

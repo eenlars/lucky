@@ -10,7 +10,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Specialized tool optimized for catching salmon.",
-  parameters: zodSchema(Params),
+  inputSchema: zodSchema(Params),
   execute: async ({ river }: { river: string }) => {
     return `caught_salmon_at_${river.replace(/\s+/g, "_")}`
   },

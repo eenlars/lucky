@@ -10,7 +10,7 @@ import { z } from "zod"
 describe("Parameter Schema Visibility", () => {
   const mockSearchGoogleMapsTool = tool({
     description: "Search Google Maps for business information",
-    parameters: zodSchema(
+    inputSchema: zodSchema(
       z.object({
         query: z.string().describe("Search query"),
         maxResultCount: z
@@ -131,7 +131,7 @@ describe("Parameter Schema Visibility", () => {
 
     const complexTool = tool({
       description: "Complex tool with various parameter types",
-      parameters: zodSchema(
+      inputSchema: zodSchema(
         z.object({
           query: z.string().describe("Search query"),
           options: z.object({

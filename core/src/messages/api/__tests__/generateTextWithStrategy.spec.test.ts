@@ -3,7 +3,7 @@ import { createPrepareStepStrategy } from "@core/messages/pipeline/selectTool/se
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { JSONN } from "@lucky/shared"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { generateText, tool, zodSchema, type ToolSet } from "ai"
+import { generateText, tool, zodSchema, stepCountIs, type ToolSet } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
@@ -15,7 +15,7 @@ const model = openrouter(getDefaultModels().medium)
 
 const nod_333 = tool({
   description: "nod_333",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -27,7 +27,7 @@ const nod_333 = tool({
 
 const mod_888 = tool({
   description: "mod_  888",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -39,7 +39,7 @@ const mod_888 = tool({
 
 const rod_999 = tool({
   description: "rod_999",
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -54,7 +54,7 @@ const rod_999 = tool({
 // define a few unnecessary tools
 const rod_333 = tool({
   description: "rod_333", // should be ignored, it's rod-333, not nod-333
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -66,7 +66,7 @@ const rod_333 = tool({
 
 const mod_333 = tool({
   description: "mod_333", // should be ignored, it's mod-333, not nod-333
-  parameters: zodSchema(
+  inputSchema: zodSchema(
     z.object({
       input: z.string(),
     })
@@ -111,7 +111,7 @@ describe("generateText with createPrepareStepStrategy", () => {
         },
       ],
       tools,
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
       experimental_prepareStep: prepareStep,
     })
 
@@ -184,7 +184,7 @@ Now, let me execute the tools as requested.`,
         },
       ],
       tools,
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
       experimental_prepareStep: prepareStep,
     })
 

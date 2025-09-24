@@ -3,7 +3,7 @@ import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import { openrouter } from "@openrouter/ai-sdk-provider"
 import { getDefaultModels } from "@runtime/settings/constants.client"
-import { generateText } from "ai"
+import { generateText, stepCountIs } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
 
@@ -37,7 +37,7 @@ describe.skip("browser session persistence tests", () => {
         },
       ],
       tools: tools1,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_navigate",
@@ -62,7 +62,7 @@ describe.skip("browser session persistence tests", () => {
         },
       ],
       tools: tools2,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_get_state",
@@ -109,7 +109,7 @@ describe.skip("browser session persistence tests", () => {
         },
       ],
       tools: tools3,
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -161,7 +161,7 @@ describe.skip("browser session persistence tests", () => {
         },
       ],
       tools,
-      maxSteps: 3,
+      stopWhen: stepCountIs(3),
       toolChoice: "auto",
     })
 
@@ -229,7 +229,7 @@ describe.skip("advanced browser tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_navigate",
@@ -248,7 +248,7 @@ describe.skip("advanced browser tests", () => {
         },
       ],
       tools,
-      maxSteps: 3,
+      stopWhen: stepCountIs(3),
       toolChoice: "auto",
     })
 
@@ -299,7 +299,7 @@ describe.skip("advanced browser tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_navigate",
@@ -316,7 +316,7 @@ describe.skip("advanced browser tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -337,7 +337,7 @@ describe.skip("advanced browser tests", () => {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
       toolChoice: {
         type: "tool",
         toolName: "browser_extract_content",
@@ -374,7 +374,7 @@ async function cleanupBrowser(tools: any) {
         },
       ],
       tools,
-      maxSteps: 1,
+      stopWhen: stepCountIs(1),
     })
     lgg.log("browser cleanup completed")
   } catch (error) {

@@ -12,7 +12,7 @@ const InputValidatorParams = z.object({
 
 export const inputValidatorSpec = tool({
   description: "Validates and analyzes input document for processing",
-  parameters: zodSchema(InputValidatorParams),
+  inputSchema: zodSchema(InputValidatorParams),
   execute: async ({ text }: { text: string }) => {
     return text.length
   },
@@ -30,7 +30,7 @@ const MetadataExtractorParams = z.object({
 
 export const metadataExtractorSpec = tool({
   description: "Extracts metadata properties from validated input",
-  parameters: zodSchema(MetadataExtractorParams),
+  inputSchema: zodSchema(MetadataExtractorParams),
   execute: async ({ size }: { size: number }) => {
     if (size < 5) return "small"
     if (size < 15) return "medium"
@@ -52,7 +52,7 @@ const ContentClassifierParams = z.object({
 
 export const contentClassifierSpec = tool({
   description: "Classifies content based on extracted metadata",
-  parameters: zodSchema(ContentClassifierParams),
+  inputSchema: zodSchema(ContentClassifierParams),
   execute: async ({ category }: { category: string }) => {
     if (category === "small") return 3
     if (category === "medium") return 2
@@ -78,7 +78,7 @@ const WorkflowRouterParams = z.object({
 
 export const workflowRouterSpec = tool({
   description: "Routes workflow based on classification results",
-  parameters: zodSchema(WorkflowRouterParams),
+  inputSchema: zodSchema(WorkflowRouterParams),
   execute: async ({ priority }: { priority: number }) => {
     if (priority === 3) return "urgent"
     if (priority === 2) return "standard"
@@ -100,7 +100,7 @@ const OutputFormatterParams = z.object({
 
 export const outputFormatterSpec = tool({
   description: "Formats final output from workflow routing",
-  parameters: zodSchema(OutputFormatterParams),
+  inputSchema: zodSchema(OutputFormatterParams),
   execute: async ({ department }: { department: string }) => {
     return `Document processed: ${department} queue`
   },

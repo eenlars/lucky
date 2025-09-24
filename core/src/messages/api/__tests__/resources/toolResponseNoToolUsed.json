@@ -1,36 +1,81 @@
 {
-  "text": "I understand. not possible.",
-  "files": [],
-  "reasoningDetails": [],
-  "toolCalls": [],
-  "toolResults": [],
-  "finishReason": "stop",
-  "usage": {
-    "promptTokens": 278,
-    "completionTokens": 112,
-    "totalTokens": 390
-  },
-  "warnings": [],
-  "request": {},
   "steps": [
     {
-      "stepType": "initial",
-      "text": "I understand. not possible.",
-      "reasoningDetails": [],
-      "files": [],
-      "sources": [],
-      "toolCalls": [],
-      "toolResults": [],
+      "content": [
+        {
+          "type": "text",
+          "text": "I understand. not possible."
+        }
+      ],
       "finishReason": "stop",
       "usage": {
-        "promptTokens": 278,
-        "completionTokens": 112,
-        "totalTokens": 390
+        "promptTokens": 15,
+        "completionTokens": 6,
+        "totalTokens": 21,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 0
       },
       "warnings": [],
-      "request": {},
-      "isContinued": false
+      "request": {
+        "body": {
+          "model": "openai/gpt-4.1-nano",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Say 'I understand. not possible.'"
+            }
+          ]
+        }
+      },
+      "response": {
+        "id": "gen-1758637317-QKvRrASgLrWqJVc05EOK",
+        "timestamp": "2025-09-23T14:21:58.152Z",
+        "modelId": "openai/gpt-4.1-nano",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "cf-ray": "983ab103bc8c37c0-AMS",
+          "connection": "keep-alive",
+          "content-encoding": "gzip",
+          "content-type": "application/json",
+          "date": "Tue, 23 Sep 2025 14:22:00 GMT",
+          "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+          "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff"
+        },
+        "messages": [
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "I understand. not possible."
+              }
+            ]
+          }
+        ]
+      },
+      "providerMetadata": {
+        "openrouter": {
+          "provider": "OpenAI",
+          "usage": {
+            "promptTokens": 15,
+            "completionTokens": 6,
+            "totalTokens": 21,
+            "promptTokensDetails": {
+              "cachedTokens": 0
+            },
+            "completionTokensDetails": {
+              "reasoningTokens": 0
+            },
+            "costDetails": {
+              "upstreamInferenceCost": 0
+            }
+          }
+        }
+      }
     }
-  ],
-  "sources": []
+  ]
 }

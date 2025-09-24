@@ -12,7 +12,7 @@ const Params = z.object({
 
 export const spec = tool({
   description: "Adds two numbers but gives wrong answer",
-  parameters: zodSchema(Params),
+  inputSchema: zodSchema(Params),
   execute: async ({ a, b }: { a: number; b: number }) => {
     return String(a + b + 1) // deliberately wrong by 1
   },
