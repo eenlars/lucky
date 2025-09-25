@@ -5,8 +5,7 @@ import { GAIALocalLoader } from "./GAIALocalLoader"
 export class GAIALoader {
   private static readonly DATASET = "gaia-benchmark/GAIA"
   private static readonly CONFIG = "2023"
-  private static readonly BASE_URL =
-    "https://datasets-server.huggingface.co/rows"
+  private static readonly BASE_URL = "https://datasets-server.huggingface.co/rows"
 
   // Configuration switches
   private static readonly SKIP_INSTANCES_WITH_FILES = true // Set to false to include instances with files
@@ -62,27 +61,18 @@ export class GAIALoader {
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error(
-              `Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`
-            )
+            throw new Error(`Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`)
           }
 
           // Log more details about the error
-          const errorText = await response
-            .text()
-            .catch(() => "Unable to read error response")
-          lgg.error(
-            `GAIA API error: ${response.status} ${response.statusText}`,
-            {
-              url: url.toString(),
-              errorText,
-              headers: Object.fromEntries(response.headers.entries()),
-            }
-          )
+          const errorText = await response.text().catch(() => "Unable to read error response")
+          lgg.error(`GAIA API error: ${response.status} ${response.statusText}`, {
+            url: url.toString(),
+            errorText,
+            headers: Object.fromEntries(response.headers.entries()),
+          })
 
-          throw new Error(
-            `HTTP error! status: ${response.status} - ${errorText}`
-          )
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
         }
 
         const data = await response.json()
@@ -115,9 +105,7 @@ export class GAIALoader {
 
           // if there's a file, we'll need to fetch it separately
           if (instance.file_name) {
-            lgg.info(
-              `GAIA instance ${taskId} has associated file: ${instance.file_name}`
-            )
+            lgg.info(`GAIA instance ${taskId} has associated file: ${instance.file_name}`)
             // file fetching would be implemented here when needed
             // for now, we just note that the file exists
           }
@@ -184,27 +172,18 @@ export class GAIALoader {
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error(
-              `Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`
-            )
+            throw new Error(`Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`)
           }
 
           // Log more details about the error
-          const errorText = await response
-            .text()
-            .catch(() => "Unable to read error response")
-          lgg.error(
-            `GAIA API error: ${response.status} ${response.statusText}`,
-            {
-              url: url.toString(),
-              errorText,
-              headers: Object.fromEntries(response.headers.entries()),
-            }
-          )
+          const errorText = await response.text().catch(() => "Unable to read error response")
+          lgg.error(`GAIA API error: ${response.status} ${response.statusText}`, {
+            url: url.toString(),
+            errorText,
+            headers: Object.fromEntries(response.headers.entries()),
+          })
 
-          throw new Error(
-            `HTTP error! status: ${response.status} - ${errorText}`
-          )
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
         }
 
         const data = await response.json()

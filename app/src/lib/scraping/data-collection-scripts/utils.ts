@@ -85,9 +85,7 @@ export function toDomain(urlish: string | undefined | null): string {
   if (!urlish) return ""
 
   try {
-    const url = new URL(
-      urlish.startsWith("http") ? urlish : `https://${urlish}`
-    )
+    const url = new URL(urlish.startsWith("http") ? urlish : `https://${urlish}`)
     return url.hostname.replace(/^www\./i, "")
   } catch {
     return urlish
@@ -97,9 +95,7 @@ export function toDomain(urlish: string | undefined | null): string {
   }
 }
 
-export function deduplicateBusinesses(
-  biz: GoogleMapsBusiness[] | null | undefined
-): GoogleMapsBusiness[] {
+export function deduplicateBusinesses(biz: GoogleMapsBusiness[] | null | undefined): GoogleMapsBusiness[] {
   if (isNir(biz)) return []
   if (!Array.isArray(biz)) return []
 

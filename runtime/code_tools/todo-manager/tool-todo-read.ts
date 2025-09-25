@@ -22,10 +22,7 @@ const todoRead = defineTool({
       'No input is required, leave this field blank. NOTE that we do not require a dummy object, placeholder string or a key like "input" or "empty". LEAVE IT BLANK.'
     ),
 
-  async execute(
-    params,
-    externalContext
-  ): Promise<CodeToolResult<TodoReadResult>> {
+  async execute(params, externalContext): Promise<CodeToolResult<TodoReadResult>> {
     try {
       const workflowInvocationId = externalContext.workflowInvocationId
 
@@ -43,9 +40,7 @@ const todoRead = defineTool({
         if (Array.isArray(todoData)) {
           todos = todoData
         } else {
-          lgg.warn(
-            "todoRead: stored todo data is not an array, returning empty list"
-          )
+          lgg.warn("todoRead: stored todo data is not an array, returning empty list")
         }
       }
 

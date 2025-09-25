@@ -10,13 +10,7 @@ import { truncate } from "lodash"
 import z from "zod"
 
 /** Single place to call the LLM so both modes stay identical. */
-export async function callModelHandoff({
-  prompt,
-  handOffs,
-}: {
-  prompt: string
-  handOffs: string[]
-}): Promise<{
+export async function callModelHandoff({ prompt, handOffs }: { prompt: string; handOffs: string[] }): Promise<{
   data: z.infer<ReturnType<typeof createHandoffSchema>> | null
   error: string | null
   usdCost: number
@@ -85,34 +79,25 @@ export function buildResultHandoff({
       usdCost: usdCost ?? 0,
       replyMessage: {
         kind: "result",
-        berichten: [
-          { type: "text", text: "No handoff data received from model" },
-        ],
+        berichten: [{ type: "text", text: "No handoff data received from model" }],
       },
     }
   }
 
   // Handle missing handoff property
   if (!data.handoff) {
-    lgg.error(
-      "buildResultHandoff: data.handoff is null or undefined, returning error"
-    )
+    lgg.error("buildResultHandoff: data.handoff is null or undefined, returning error")
     return {
       handoff: "end",
       usdCost: usdCost ?? 0,
       replyMessage: {
         kind: "result",
-        berichten: [
-          { type: "text", text: "Invalid handoff response from model" },
-        ],
+        berichten: [{ type: "text", text: "Invalid handoff response from model" }],
       },
     }
   }
 
-  lgg.onlyIf(
-    CONFIG.logging.override.Messaging,
-    `handoff: ${JSONN.show(data.reason)}`
-  )
+  lgg.onlyIf(CONFIG.logging.override.Messaging, `handoff: ${JSONN.show(data.reason)}`)
 
   // End workflow on “end”
   if (data.handoff === "end") {
@@ -151,12 +136,8 @@ export const createHandoffSchema = (handOffs: string[]) =>
     handoff: z.enum([...handOffs] as [string, ...string[]]),
     reason: z.string().describe("reason for handoff, max 1 short sentence."),
     error: z.string().nullish(),
-    hasError: z
-      .boolean()
-      .describe("iff you think this input was an error return true"),
-    handoffContext: z
-      .string()
-      .describe("what should the other node have to know? (plain english)"),
+    hasError: z.boolean().describe("iff you think this input was an error return true"),
+    handoffContext: z.string().describe("what should the other node have to know? (plain english)"),
   })
 
 /**

@@ -1,11 +1,5 @@
-import {
-  buildSimpleMessage,
-  type BuildSimpleMessageContext,
-} from "@core/messages/create/buildSimpleMessage"
-import {
-  extractTextFromPayload,
-  type AggregatedPayload,
-} from "@core/messages/MessagePayload"
+import { buildSimpleMessage, type BuildSimpleMessageContext } from "@core/messages/create/buildSimpleMessage"
+import { extractTextFromPayload, type AggregatedPayload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { agentSystemPrompt } from "@core/prompts/standardPrompt"
 import type { WorkflowFiles } from "@core/tools/context/contextStore.types"

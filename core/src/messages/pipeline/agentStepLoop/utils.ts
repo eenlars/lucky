@@ -40,10 +40,7 @@ export const toolUsageToString = (
   return usage
     .map((u) => {
       if (!u) return ""
-      const data =
-        u.return && typeof u.return === "object" && "data" in u.return
-          ? u.return.data
-          : u.return
+      const data = u.return && typeof u.return === "object" && "data" in u.return ? u.return.data : u.return
       switch (u.type) {
         case "prepare":
           return `<prepare_step>${u.return}</prepare_step>`

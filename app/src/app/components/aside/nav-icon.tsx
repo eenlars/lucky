@@ -7,9 +7,5 @@ interface NavIconProps {
 }
 
 export function NavIcon({ children, isActive = false, className = "" }: NavIconProps) {
-  return (
-    <div className={`${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`${className}`}>{children}</div>
 }

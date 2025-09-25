@@ -1,9 +1,18 @@
-'use client'
+"use client"
 
 import { useState } from "react"
-import { 
-  Play, Copy, Check, Terminal, Braces, ArrowRight,
-  Mail, Github, Database, Search, HardDrive
+import {
+  Play,
+  Copy,
+  Check,
+  Terminal,
+  Braces,
+  ArrowRight,
+  Mail,
+  Github,
+  Database,
+  Search,
+  HardDrive,
 } from "lucide-react"
 import { Button } from "@/ui/button"
 import { cn } from "@/lib/utils"
@@ -30,14 +39,14 @@ const tools: MCPTool[] = [
         query: { type: "string" },
         to: { type: "string", format: "email" },
         subject: { type: "string" },
-        body: { type: "string" }
+        body: { type: "string" },
       },
-      required: ["action"]
+      required: ["action"],
     },
     example: {
       action: "search",
-      query: "from:important@example.com"
-    }
+      query: "from:important@example.com",
+    },
   },
   {
     id: "github",
@@ -50,14 +59,14 @@ const tools: MCPTool[] = [
         action: { type: "string", enum: ["list_repos", "create_issue", "get_pr"] },
         owner: { type: "string" },
         repo: { type: "string" },
-        title: { type: "string" }
+        title: { type: "string" },
       },
-      required: ["action"]
+      required: ["action"],
     },
     example: {
       action: "list_repos",
-      owner: "vercel"
-    }
+      owner: "vercel",
+    },
   },
   {
     id: "postgres",
@@ -68,13 +77,13 @@ const tools: MCPTool[] = [
       type: "object",
       properties: {
         query: { type: "string" },
-        params: { type: "array" }
+        params: { type: "array" },
       },
-      required: ["query"]
+      required: ["query"],
     },
     example: {
-      query: "SELECT * FROM users LIMIT 10"
-    }
+      query: "SELECT * FROM users LIMIT 10",
+    },
   },
   {
     id: "search",
@@ -85,14 +94,14 @@ const tools: MCPTool[] = [
       type: "object",
       properties: {
         query: { type: "string" },
-        limit: { type: "number" }
+        limit: { type: "number" },
       },
-      required: ["query"]
+      required: ["query"],
     },
     example: {
       query: "latest AI developments",
-      limit: 5
-    }
+      limit: 5,
+    },
   },
   {
     id: "filesystem",
@@ -103,15 +112,15 @@ const tools: MCPTool[] = [
       type: "object",
       properties: {
         action: { type: "string", enum: ["read", "write", "list"] },
-        path: { type: "string" }
+        path: { type: "string" },
       },
-      required: ["action", "path"]
+      required: ["action", "path"],
     },
     example: {
       action: "list",
-      path: "/workspace"
-    }
-  }
+      path: "/workspace",
+    },
+  },
 ]
 
 export default function ToolsPage() {
@@ -125,38 +134,43 @@ export default function ToolsPage() {
   const handleRun = async () => {
     setIsRunning(true)
     setOutput("")
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
     const mockOutput = {
       success: true,
-      data: selectedTool.id === "gmail" ? [
-        {
-          id: "msg_001",
-          from: "important@example.com",
-          subject: "Q4 Planning Review",
-          preview: "Hi team, attached is the Q4 planning doc..."
-        },
-        {
-          id: "msg_002", 
-          from: "important@example.com",
-          subject: "Budget Approval Needed",
-          preview: "Please review and approve the attached budget..."
-        }
-      ] : selectedTool.id === "postgres" ? {
-        rows: [
-          { id: 1, name: "Alice Johnson", email: "alice@example.com" },
-          { id: 2, name: "Bob Smith", email: "bob@example.com" }
-        ],
-        rowCount: 2
-      } : {
-        result: "Operation completed successfully"
-      },
+      data:
+        selectedTool.id === "gmail"
+          ? [
+              {
+                id: "msg_001",
+                from: "important@example.com",
+                subject: "Q4 Planning Review",
+                preview: "Hi team, attached is the Q4 planning doc...",
+              },
+              {
+                id: "msg_002",
+                from: "important@example.com",
+                subject: "Budget Approval Needed",
+                preview: "Please review and approve the attached budget...",
+              },
+            ]
+          : selectedTool.id === "postgres"
+            ? {
+                rows: [
+                  { id: 1, name: "Alice Johnson", email: "alice@example.com" },
+                  { id: 2, name: "Bob Smith", email: "bob@example.com" },
+                ],
+                rowCount: 2,
+              }
+            : {
+                result: "Operation completed successfully",
+              },
       timestamp: new Date().toISOString(),
-      duration: "1.2s"
+      duration: "1.2s",
     }
-    
+
     setOutput(JSON.stringify(mockOutput, null, 2))
     setIsRunning(false)
   }
@@ -190,9 +204,9 @@ export default function ToolsPage() {
           <h1 className="text-lg font-semibold text-foreground">MCP Tools</h1>
           <p className="text-xs text-muted-foreground mt-1">Test your connections</p>
         </div>
-        
+
         <div className="p-3">
-          {tools.map(tool => (
+          {tools.map((tool) => (
             <button
               key={tool.id}
               onClick={() => handleToolSelect(tool)}
@@ -203,18 +217,16 @@ export default function ToolsPage() {
                   : "text-muted-foreground hover:text-foreground hover:bg-sidebar/50"
               )}
             >
-              <div className={cn(
-                "p-1.5 rounded-md",
-                selectedTool.id === tool.id
-                  ? "bg-primary/10 text-primary"
-                  : "bg-muted/50"
-              )}>
+              <div
+                className={cn(
+                  "p-1.5 rounded-md",
+                  selectedTool.id === tool.id ? "bg-primary/10 text-primary" : "bg-muted/50"
+                )}
+              >
                 {tool.icon}
               </div>
               <span className="font-medium">{tool.name}</span>
-              {tool.active && (
-                <div className="ml-auto size-2 rounded-full bg-green-500" />
-              )}
+              {tool.active && <div className="ml-auto size-2 rounded-full bg-green-500" />}
             </button>
           ))}
         </div>
@@ -225,14 +237,10 @@ export default function ToolsPage() {
         {/* Header */}
         <div className="border-b border-border px-8 py-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              {selectedTool.icon}
-            </div>
+            <div className="p-2 rounded-lg bg-primary/10">{selectedTool.icon}</div>
             <div>
               <h2 className="text-xl font-semibold text-foreground">{selectedTool.name}</h2>
-              <p className="text-sm text-muted-foreground">
-                {selectedTool.active ? "Connected" : "Disconnected"}
-              </p>
+              <p className="text-sm text-muted-foreground">{selectedTool.active ? "Connected" : "Disconnected"}</p>
             </div>
           </div>
         </div>
@@ -262,7 +270,7 @@ export default function ToolsPage() {
                 </button>
               </div>
             </div>
-            
+
             <div className="flex-1 p-6">
               <textarea
                 value={input}
@@ -277,11 +285,7 @@ export default function ToolsPage() {
             </div>
 
             <div className="px-6 py-4 border-t border-border">
-              <Button
-                onClick={handleRun}
-                disabled={!isValidJSON(input) || isRunning}
-                className="w-full"
-              >
+              <Button onClick={handleRun} disabled={!isValidJSON(input) || isRunning} className="w-full">
                 {isRunning ? (
                   <>
                     <div className="size-4 border-2 border-current border-r-transparent rounded-full animate-spin" />
@@ -314,12 +318,10 @@ export default function ToolsPage() {
                 </button>
               )}
             </div>
-            
+
             <div className="flex-1 p-6 overflow-auto">
               {output ? (
-                <pre className="font-mono text-sm text-foreground whitespace-pre-wrap">
-                  {output}
-                </pre>
+                <pre className="font-mono text-sm text-foreground whitespace-pre-wrap">{output}</pre>
               ) : (
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">

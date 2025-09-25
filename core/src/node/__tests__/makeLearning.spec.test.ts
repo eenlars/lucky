@@ -16,8 +16,7 @@ describe("makeLearning Integration Test", () => {
     vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
       success: true,
       data: {
-        physical_stores:
-          "common_sense:some companies have physical store locations:1",
+        physical_stores: "common_sense:some companies have physical store locations:1",
       },
       usdCost: 0,
       error: null,
@@ -33,8 +32,7 @@ describe("makeLearning Integration Test", () => {
     })
 
     expect(result.updatedMemory).toEqual({
-      physical_stores:
-        "common_sense:some companies have physical store locations:1",
+      physical_stores: "common_sense:some companies have physical store locations:1",
     })
     expect(result.agentStep.type).toBe("learning")
     expect(result.agentStep.return).toContain("physical_stores:")

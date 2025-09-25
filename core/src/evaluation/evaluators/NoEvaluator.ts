@@ -14,15 +14,11 @@ export class NoEvaluator extends WorkflowEvaluator {
   async evaluate(workflow: Workflow): Promise<RS<WorkflowEvaluationResult>> {
     const startTime = Date.now()
 
-    lgg.log(
-      `[NoEvaluator] Running workflow (no evaluation) for ${workflow.getWorkflowVersionId()}`
-    )
+    lgg.log(`[NoEvaluator] Running workflow (no evaluation) for ${workflow.getWorkflowVersionId()}`)
 
     const run = await workflow.run()
     if (!run.success || !run.data) {
-      lgg.error(
-        `[NoEvaluator] Run failed for ${workflow.getWorkflowVersionId()}: ${run.error}`
-      )
+      lgg.error(`[NoEvaluator] Run failed for ${workflow.getWorkflowVersionId()}: ${run.error}`)
       return R.error(run.error ?? "Failed to run workflow", 0)
     }
 
@@ -30,26 +26,18 @@ export class NoEvaluator extends WorkflowEvaluator {
 
     // Aggregate minimal transcript and summaries from node logs
     const transcript = runResults
-      .map(
-        (r, idx) => `Case ${idx + 1}: ${r.queueRunResult.finalWorkflowOutput}`
-      )
+      .map((r, idx) => `Case ${idx + 1}: ${r.queueRunResult.finalWorkflowOutput}`)
       .join("\n\n")
 
     const summaries = runResults.flatMap((r, caseIndex: number) =>
       r.queueRunResult.agentSteps.map((output: any, nodeIndex: number) => ({
         timestamp: Date.now(),
         nodeId: `case-${caseIndex + 1}-node-${nodeIndex + 1}`,
-        summary:
-          (output?.return
-            ? String(output.return)
-            : String(r.queueRunResult.finalWorkflowOutput)) || "",
+        summary: (output?.return ? String(output.return) : String(r.queueRunResult.finalWorkflowOutput)) || "",
       }))
     )
 
-    const totalCost = runResults.reduce(
-      (sum, r) => sum + (r.queueRunResult.totalCost || 0),
-      0
-    )
+    const totalCost = runResults.reduce((sum, r) => sum + (r.queueRunResult.totalCost || 0), 0)
 
     const totalTimeSeconds = (Date.now() - startTime) / 1000
 

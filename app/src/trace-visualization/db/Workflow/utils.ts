@@ -14,10 +14,7 @@ export interface NodeGroup {
 
 export const safeJSON = (data: unknown, maxLength = 100) => {
   if (JSONN.isJSON(data)) {
-    return (
-      JSONN.extract(data, false) ??
-      `not possible to parse this json: ${JSON.stringify(data).slice(0, maxLength)}`
-    )
+    return JSONN.extract(data, false) ?? `not possible to parse this json: ${JSON.stringify(data).slice(0, maxLength)}`
   }
   return String(data).slice(0, maxLength)
 }
@@ -34,9 +31,7 @@ export const wrapLegacyPayload = (data: unknown) => {
   return { kind: "text", content: String(data) }
 }
 
-export const groupInvocationsByNode = (
-  invocations: NodeInvocationExtended[]
-): NodeGroup[] => {
+export const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): NodeGroup[] => {
   const map = new Map<string, NodeGroup>()
 
   invocations.forEach((inv) => {
@@ -48,19 +43,11 @@ export const groupInvocationsByNode = (
     map.set(inv.node_id, group)
   })
 
-  return Array.from(map.values()).sort((a, b) =>
-    a.invocations[0].start_time.localeCompare(b.invocations[0].start_time)
-  )
+  return Array.from(map.values()).sort((a, b) => a.invocations[0].start_time.localeCompare(b.invocations[0].start_time))
 }
 
 export const normalizeNodeInvocation = (raw: any): NodeInvocationExtended => {
-  const {
-    NodeVersion: nodeDef,
-    inputs = [],
-    outputs = [],
-    output: legacyOutput,
-    ...rest
-  } = raw
+  const { NodeVersion: nodeDef, inputs = [], outputs = [], output: legacyOutput, ...rest } = raw
 
   const normalisedOutputs =
     outputs.length > 0 || legacyOutput == null

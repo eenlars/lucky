@@ -12,10 +12,7 @@ import {
 } from "@core/messages/api/vercel/processResponse.types"
 // @sdk-import - marker for easy removal when ejecting SDK
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
-import type {
-  AgentStep,
-  AgentSteps,
-} from "@core/messages/pipeline/AgentStep.types"
+import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
 import { prepareIncomingMessage } from "@core/messages/pipeline/prepare/incomingMessage"
@@ -116,12 +113,7 @@ export class InvocationPipeline {
       return this
     }
 
-    await prepareIncomingMessage(
-      this.ctx,
-      this.tools,
-      this.ctx.nodeMemory,
-      this.agentSteps
-    )
+    await prepareIncomingMessage(this.ctx, this.tools, this.ctx.nodeMemory, this.agentSteps)
 
     // no need to prepare. this is handled in the multi-step loop.
     if (CONFIG.tools.experimentalMultiStepLoop) return this
@@ -175,10 +167,7 @@ export class InvocationPipeline {
       // Check if this node should use Claude SDK
       if (this.ctx.nodeConfig.useClaudeSDK) {
         await this.runWithSDK()
-      } else if (
-        CONFIG.tools.experimentalMultiStepLoop &&
-        Object.keys(this.tools)?.length > 0
-      ) {
+      } else if (CONFIG.tools.experimentalMultiStepLoop && Object.keys(this.tools)?.length > 0) {
         if (this.ctx.toolStrategyOverride === "v3") {
           await this.runMultiStepLoopV3()
         } else {
@@ -191,10 +180,7 @@ export class InvocationPipeline {
           this.agentSteps = this.processedResponse.agentSteps
           this.usdCost = this.processedResponse.cost || this.usdCost
         } else {
-          lgg.error(
-            `[InvocationPipeline_runMultiStepLoop]:`,
-            this.processedResponse
-          )
+          lgg.error(`[InvocationPipeline_runMultiStepLoop]:`, this.processedResponse)
         }
       } else {
         this.processedResponse = await this.runSingleCall()
@@ -206,36 +192,25 @@ export class InvocationPipeline {
 
         // validate processedResponse before proceeding
         if (!this.processedResponse) {
-          throw new Error(
-            "runSingleCall() returned null/undefined processedResponse"
-          )
+          throw new Error("runSingleCall() returned null/undefined processedResponse")
         }
 
         if (!this.processedResponse.type) {
-          lgg.error(
-            `[InvocationPipeline] processedResponse missing type property:`,
-            this.processedResponse
-          )
+          lgg.error(`[InvocationPipeline] processedResponse missing type property:`, this.processedResponse)
           throw new Error("processedResponse missing required 'type' property")
         }
 
-        this.processedResponse = await this.finalizeSummary(
-          this.processedResponse
-        )
+        this.processedResponse = await this.finalizeSummary(this.processedResponse)
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       const stack = err instanceof Error ? err.stack : undefined
 
       lgg.error(`[InvocationPipeline] Execution error: ${msg}`)
-      lgg.error(
-        `[InvocationPipeline] Node context: ${this.ctx.nodeConfig.nodeId}`
-      )
+      lgg.error(`[InvocationPipeline] Node context: ${this.ctx.nodeConfig.nodeId}`)
       lgg.error(`[InvocationPipeline] Workflow: ${this.ctx.workflowVersionId}`)
       lgg.error(`[InvocationPipeline] Model: ${this.ctx.nodeConfig.modelName}`)
-      lgg.error(
-        `[InvocationPipeline] Tools available: ${Object.keys(this.tools).join(", ")}`
-      )
+      lgg.error(`[InvocationPipeline] Tools available: ${Object.keys(this.tools).join(", ")}`)
 
       if (stack) {
         lgg.error(`[InvocationPipeline] Stack trace:`, stack)
@@ -312,9 +287,7 @@ export class InvocationPipeline {
     })
 
     // Extract the prompt from incoming message
-    const incomingText = extractTextFromPayload(
-      this.ctx.workflowMessageIncoming.payload
-    )
+    const incomingText = extractTextFromPayload(this.ctx.workflowMessageIncoming.payload)
 
     // Combine system prompt and user message for SDK
     const fullPrompt = `${this.ctx.nodeConfig.systemPrompt}\n\n${incomingText}`
@@ -354,18 +327,12 @@ export class InvocationPipeline {
   private async runSingleCall(): Promise<ProcessedResponse> {
     // Log tool calling attempt
     if (verbose) {
-      lgg.log(
-        `[InvocationPipeline] Starting tool call with choice: ${JSON.stringify(this.toolChoice)}`
-      )
-      lgg.log(
-        `[InvocationPipeline] Available tools: ${Object.keys(this.tools).join(", ")}`
-      )
+      lgg.log(`[InvocationPipeline] Starting tool call with choice: ${JSON.stringify(this.toolChoice)}`)
+      lgg.log(`[InvocationPipeline] Available tools: ${Object.keys(this.tools).join(", ")}`)
     }
 
     // Build messages from incoming payload's berichten instead of sdkMessages
-    const incomingText = extractTextFromPayload(
-      this.ctx.workflowMessageIncoming.payload
-    )
+    const incomingText = extractTextFromPayload(this.ctx.workflowMessageIncoming.payload)
     const messages = [
       {
         role: "system" as const,
@@ -412,9 +379,7 @@ export class InvocationPipeline {
           message: res.error ?? "Tool call failed",
           details: res.debug_output,
           cost: res.usdCost ?? 0,
-          agentSteps: [
-            { type: "error", return: res.error ?? "Tool call failed" },
-          ],
+          agentSteps: [{ type: "error", return: res.error ?? "Tool call failed" }],
         }
 
     if (verbose) {
@@ -431,11 +396,7 @@ export class InvocationPipeline {
       finalProcessed = {
         ...processed,
         nodeId: this.ctx.nodeConfig.nodeId,
-        summary: isTextProcessed(processed)
-          ? processed.content
-          : isErrorProcessed(processed)
-            ? processed.message
-            : "",
+        summary: isTextProcessed(processed) ? processed.content : isErrorProcessed(processed) ? processed.message : "",
       }
     }
 
@@ -481,9 +442,7 @@ export class InvocationPipeline {
     return processedResponse
   }
 
-  private async finalizeSummary(
-    processed: ProcessedResponse
-  ): Promise<ProcessedResponse> {
+  private async finalizeSummary(processed: ProcessedResponse): Promise<ProcessedResponse> {
     // Generate summary if not already present
     const { summary, usdCost } = await createSummary(processed)
     this.addCost(usdCost)

@@ -1,12 +1,7 @@
 export const isNir = (value: unknown): value is null | undefined => {
   if (typeof value === "undefined" || value === null) return true
   if (typeof value === "string") {
-    return (
-      value.length === 0 ||
-      value === "undefined" ||
-      value === "null" ||
-      value === "{}"
-    )
+    return value.length === 0 || value === "undefined" || value === "null" || value === "{}"
   }
   if (Array.isArray(value)) {
     if (value.length === 0) return true

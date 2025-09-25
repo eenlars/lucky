@@ -1,9 +1,6 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 
@@ -52,9 +49,7 @@ export async function improveNodesSelfImprovement(
 /**
  * Gets existing node configurations without improvement
  */
-export function getExistingNodeConfigs(
-  workflow: Workflow
-): WorkflowNodeConfig[] {
+export function getExistingNodeConfigs(workflow: Workflow): WorkflowNodeConfig[] {
   const nodes: WorkflowNodeConfig[] = []
   for (const nodeId of workflow.getNodeIds()) {
     nodes.push(workflow.getNode(nodeId).toConfig())

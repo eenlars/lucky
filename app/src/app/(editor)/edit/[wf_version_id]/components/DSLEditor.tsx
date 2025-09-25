@@ -8,11 +8,7 @@ interface DSLEditorProps {
   isLoading: boolean
 }
 
-export default function DSLEditor({
-  content,
-  onChange,
-  isLoading,
-}: DSLEditorProps) {
+export default function DSLEditor({ content, onChange, isLoading }: DSLEditorProps) {
   const [error, setError] = useState<string | null>(null)
   const [lineCount, setLineCount] = useState(1)
 
@@ -47,8 +43,7 @@ export default function DSLEditor({
         setError(null)
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Invalid JSON format"
+      const errorMessage = err instanceof Error ? err.message : "Invalid JSON format"
       setError(`JSON Error: ${errorMessage}`)
     }
   }

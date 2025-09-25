@@ -10,7 +10,7 @@ import { useWorkflowStore } from "@/stores/workflow-store"
 export function useWorkflows() {
   // Select all needed state and actions in one selector for better performance
   const store = useWorkflowStore()
-  
+
   // Use individual destructuring for better type safety with persist middleware
   const {
     workflows,

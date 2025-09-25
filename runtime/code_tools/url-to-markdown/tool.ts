@@ -11,16 +11,8 @@ const htmlToMarkdownTool = defineTool({
   name: "urlToMarkdown",
   params: z.object({
     url: z.string().describe("The URL to convert to markdown"),
-    preserveLinks: z
-      .boolean()
-      .nullish()
-      .default(true)
-      .describe("Whether to preserve links in markdown"),
-    preserveImages: z
-      .boolean()
-      .nullish()
-      .default(true)
-      .describe("Whether to preserve images in markdown"),
+    preserveLinks: z.boolean().nullish().default(true).describe("Whether to preserve links in markdown"),
+    preserveImages: z.boolean().nullish().default(true).describe("Whether to preserve images in markdown"),
   }),
   async execute(params): Promise<CodeToolResult<string>> {
     const { url, preserveLinks = true, preserveImages = true } = params

@@ -59,11 +59,7 @@ function extractCoordinates(loc) {
   if (Array.isArray(loc.coordinates) && loc.coordinates.length === 2) {
     return loc.coordinates
   }
-  if (
-    loc.geo &&
-    Array.isArray(loc.geo.coordinates) &&
-    loc.geo.coordinates.length === 2
-  ) {
+  if (loc.geo && Array.isArray(loc.geo.coordinates) && loc.geo.coordinates.length === 2) {
     return loc.geo.coordinates
   }
   if (loc.latitude != null && loc.longitude != null) {
@@ -102,8 +98,7 @@ function transformOpeningHours(loc) {
       if (e.closed) {
         days[dayName] = "closed"
       } else if (e.opening_time && e.closing_time) {
-        days[dayName] =
-          e.opening_time.slice(0, 5) + "-" + e.closing_time.slice(0, 5)
+        days[dayName] = e.opening_time.slice(0, 5) + "-" + e.closing_time.slice(0, 5)
       }
     })
   }
@@ -152,7 +147,4 @@ function generateMetadata(loc) {
 const transformed = transformLocationData(json)
 
 // save to file
-fs.writeFileSync(
-  "./albertheijn-parsed.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("./albertheijn-parsed.json", JSON.stringify(transformed, null, 2))

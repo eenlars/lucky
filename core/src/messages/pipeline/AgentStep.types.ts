@@ -74,8 +74,7 @@ export type AgentStep<TOOL_CALL_OUTPUT_TYPE = unknown> = // output depends on wh
 /**
  * Convenience alias for an array of agent steps.
  */
-export type AgentSteps<TOOL_CALL_OUTPUT_TYPE = unknown> =
-  AgentStep<TOOL_CALL_OUTPUT_TYPE>[]
+export type AgentSteps<TOOL_CALL_OUTPUT_TYPE = unknown> = AgentStep<TOOL_CALL_OUTPUT_TYPE>[]
 
 /**
  * @deprecated Use `AgentSteps` instead.

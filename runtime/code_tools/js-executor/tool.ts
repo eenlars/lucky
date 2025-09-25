@@ -9,10 +9,7 @@ import { z } from "zod"
  * @param timeoutMs - Maximum execution time in milliseconds (default: 1000)
  * @returns Result of the last expression or throws error
  */
-export function executeJavaScript(
-  code: string,
-  timeoutMs: number = 1000
-): unknown {
+export function executeJavaScript(code: string, timeoutMs: number = 1000): unknown {
   // Try to treat as expression first
   try {
     const expressionCode = `(() => { return (${code}) })()`
@@ -41,10 +38,7 @@ const jsExecutor = defineTool({
       .describe(
         "Raw JavaScript code to execute. The result of the last expression will be returned. Do NOT include asynchronous operations or long-running loops. no need to wrap."
       ),
-    timeoutMs: z
-      .number()
-      .optional()
-      .describe("Maximum execution time in milliseconds (defaults to 1000ms)."),
+    timeoutMs: z.number().optional().describe("Maximum execution time in milliseconds (defaults to 1000ms)."),
   }),
   async execute(params) {
     const { code, timeoutMs = 1000 } = params

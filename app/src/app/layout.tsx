@@ -15,8 +15,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Automated Agentic Workflows",
-  description:
-    "Creating workflows that learn the optimal workflow to solve a specific task.",
+  description: "Creating workflows that learn the optimal workflow to solve a specific task.",
   robots: {
     index: false,
     follow: false,
@@ -36,13 +35,8 @@ export default async function RootLayout({
   const { userId } = await auth()
 
   const theme: ColorMode =
-    (colorModeCookie?.value === "dark" || colorModeCookie?.value === "light"
-      ? colorModeCookie.value
-      : null) ??
-    (typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light")
+    (colorModeCookie?.value === "dark" || colorModeCookie?.value === "light" ? colorModeCookie.value : null) ??
+    (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
 
   return (
     <ClerkProvider>
@@ -67,8 +61,7 @@ export default async function RootLayout({
                   style: {
                     background: theme === "dark" ? "#1a1a1a" : "#fff",
                     color: theme === "dark" ? "#fff" : "#000",
-                    border:
-                      theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
+                    border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
                   },
                 }}
               />

@@ -27,17 +27,13 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
       data.behaviorMetrics
         .filter((d) => d.model === model && d.condition === "vague")
         .reduce((sum, d) => sum + d.retryAttempts, 0) /
-      data.behaviorMetrics.filter(
-        (d) => d.model === model && d.condition === "vague"
-      ).length
+      data.behaviorMetrics.filter((d) => d.model === model && d.condition === "vague").length
 
     const clearAttempts =
       data.behaviorMetrics
         .filter((d) => d.model === model && d.condition === "clear")
         .reduce((sum, d) => sum + d.retryAttempts, 0) /
-      data.behaviorMetrics.filter(
-        (d) => d.model === model && d.condition === "clear"
-      ).length
+      data.behaviorMetrics.filter((d) => d.model === model && d.condition === "clear").length
 
     return {
       model: model.replace("gpt-", ""),
@@ -67,10 +63,8 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
   // Tool call efficiency data
   const efficiencyData = data.models.map((model) => {
     const modelData = data.behaviorMetrics.filter((d) => d.model === model)
-    const avgToolCalls =
-      modelData.reduce((sum, d) => sum + d.toolCalls, 0) / modelData.length
-    const successRate =
-      (modelData.filter((d) => d.success).length / modelData.length) * 100
+    const avgToolCalls = modelData.reduce((sum, d) => sum + d.toolCalls, 0) / modelData.length
+    const successRate = (modelData.filter((d) => d.success).length / modelData.length) * 100
 
     return {
       model: model.replace("gpt-", ""),
@@ -83,9 +77,7 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
     <div className="space-y-6">
       {/* Retry Attempts Analysis */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          Average Retry Attempts by Model & Condition
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">Average Retry Attempts by Model & Condition</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={retryData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -104,16 +96,14 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
           </BarChart>
         </ResponsiveContainer>
         <p className="text-sm text-gray-600 mt-2">
-          Higher retry attempts indicate more struggle with adaptation. Our
-          solution consistently requires fewer retries.
+          Higher retry attempts indicate more struggle with adaptation. Our solution consistently requires fewer
+          retries.
         </p>
       </div>
 
       {/* Tool Call Efficiency Scatter Plot */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          Tool Call Efficiency: Calls vs Final Results
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">Tool Call Efficiency: Calls vs Final Results</h3>
         <ResponsiveContainer width="100%" height={400}>
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
@@ -148,12 +138,8 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
                       <p>Condition: {data.condition}</p>
                       <p>Tool Calls: {data.x}</p>
                       <p>Objects Retrieved: {data.y}</p>
-                      <p
-                        className={`font-medium ${data.success ? "text-green-600" : "text-red-600"}`}
-                      >
-                        {data.success
-                          ? "Successful Strategy"
-                          : "Failed Strategy"}
+                      <p className={`font-medium ${data.success ? "text-green-600" : "text-red-600"}`}>
+                        {data.success ? "Successful Strategy" : "Failed Strategy"}
                       </p>
                     </div>
                   )
@@ -163,10 +149,7 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
             />
             <Scatter data={scatterData} fill={semantic.info}>
               {scatterData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={getScatterColor(entry.condition, entry.success)}
-                />
+                <Cell key={`cell-${index}`} fill={getScatterColor(entry.condition, entry.success)} />
               ))}
             </Scatter>
           </ScatterChart>
@@ -196,18 +179,11 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
         <h3 className="text-lg font-semibold mb-4">Model Efficiency Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {efficiencyData.map((model) => (
-            <div
-              key={model.model}
-              className="text-center p-4 bg-gray-50 rounded-lg"
-            >
+            <div key={model.model} className="text-center p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium text-gray-900 mb-2">{model.model}</h4>
-              <div className="text-2xl font-bold text-blue-600 mb-1">
-                {model.avgToolCalls}
-              </div>
+              <div className="text-2xl font-bold text-blue-600 mb-1">{model.avgToolCalls}</div>
               <div className="text-sm text-gray-600 mb-2">Avg Tool Calls</div>
-              <div className="text-lg font-semibold text-green-600">
-                {model.successRate}%
-              </div>
+              <div className="text-lg font-semibold text-green-600">{model.successRate}%</div>
               <div className="text-sm text-gray-600">Success Rate</div>
             </div>
           ))}

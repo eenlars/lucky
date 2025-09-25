@@ -1,15 +1,8 @@
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
-import type {
-  AllowedModelName,
-  ModelName,
-  ModelPricingV2,
-} from "@core/utils/spending/models.types"
-import {
-  CURRENT_PROVIDER,
-  type LuckyProvider,
-} from "@core/utils/spending/provider"
+import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
+import { CURRENT_PROVIDER, type LuckyProvider } from "@core/utils/spending/provider"
 import { MODEL_CONFIG } from "@runtime/settings/models"
 
 // Get all active models from provider structure
@@ -44,12 +37,8 @@ export function getModelV2(model: string): ModelPricingV2 {
 
   if (!modelConfig) {
     const available = getActiveModelNames().join(", ")
-    lgg.warn(
-      `getModelV2: Model ${model} not found. Available models: ${available}`
-    )
-    throw new Error(
-      `getModelV2: Model ${model} not found. Available models: ${available}`
-    )
+    lgg.warn(`getModelV2: Model ${model} not found. Available models: ${available}`)
+    throw new Error(`getModelV2: Model ${model} not found. Available models: ${available}`)
   }
 
   // if (!modelConfig.active) {

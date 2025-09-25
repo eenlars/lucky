@@ -5,9 +5,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 
 // check that each tool is used by only one workflow node
-export const verifyToolsUnique = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyToolsUnique = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const nodes = config.nodes
   // Create a map to track which tools are used by which workflow nodes
   const toolUsageMap = new Map<string, string[]>()
@@ -41,26 +39,20 @@ export const verifyToolsUnique = async (
   const duplicateTools: string[] = []
   toolUsageMap.forEach((nodeNames, toolName) => {
     if (nodeNames.length > 1) {
-      duplicateTools.push(
-        `tool "${toolName}" is used by multiple nodes: ${nodeNames.join(", ")}`
-      )
+      duplicateTools.push(`tool "${toolName}" is used by multiple nodes: ${nodeNames.join(", ")}`)
     }
   })
 
   // Return error messages instead of throwing
   if (duplicateTools.length > 0 && CONFIG.tools.uniqueToolsPerAgent) {
-    return [
-      `setup verification failed. each tool must be unique to one node:\n${duplicateTools.join("\n")}`,
-    ]
+    return [`setup verification failed. each tool must be unique to one node:\n${duplicateTools.join("\n")}`]
   }
 
   return []
 }
 
 // check that all tools are active (exist in the available tools list)
-export const verifyAllToolsAreActive = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyAllToolsAreActive = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const nodes = config.nodes
   const inactiveToolsUsed: string[] = []
   const unknownToolsUsed: string[] = []
@@ -72,16 +64,12 @@ export const verifyAllToolsAreActive = async (
     // check if any used tools are inactive or unknown
     for (const tool of allNodeTools) {
       if (INACTIVE_TOOLS.has(tool)) {
-        inactiveToolsUsed.push(
-          `node "${node.nodeId}" uses inactive tool "${tool}"`
-        )
+        inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
       } else if (CONFIG.tools.defaultTools.has(tool)) {
         // skip default tools, they are always active, but do not appear on the all active tools list,
         // because they shouldn't be assigned while creating a workflow. (they are assigned by default)
       } else if (!ALL_ACTIVE_TOOL_NAMES.includes(tool)) {
-        unknownToolsUsed.push(
-          `node "${node.nodeId}" uses unknown tool "${tool}" (not in available tools list)`
-        )
+        unknownToolsUsed.push(`node "${node.nodeId}" uses unknown tool "${tool}" (not in available tools list)`)
       }
     }
   }
@@ -89,24 +77,18 @@ export const verifyAllToolsAreActive = async (
   const errors: string[] = []
 
   if (inactiveToolsUsed.length > 0) {
-    errors.push(
-      `setup verification failed. inactive tools are being used:\n${inactiveToolsUsed.join("\n")}`
-    )
+    errors.push(`setup verification failed. inactive tools are being used:\n${inactiveToolsUsed.join("\n")}`)
   }
 
   if (unknownToolsUsed.length > 0) {
-    errors.push(
-      `setup verification failed. unknown tools are being used:\n${unknownToolsUsed.join("\n")}`
-    )
+    errors.push(`setup verification failed. unknown tools are being used:\n${unknownToolsUsed.join("\n")}`)
   }
 
   return errors
 }
 
 // check that each node has a unique tool set
-export const verifyToolSetEachNodeIsUnique = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyToolSetEachNodeIsUnique = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   if (!CONFIG.tools.uniqueToolSetsPerAgent) return [] // skip if disabled
 
   const nodes = config.nodes
@@ -137,18 +119,14 @@ export const verifyToolSetEachNodeIsUnique = async (
   // check for nodes with identical tool sets
   for (const [toolSet, nodeIds] of toolSetUsage.entries()) {
     if (nodeIds.length > 1) {
-      return [
-        `nodes "${nodeIds.join(", ")}" use the same tool set (a tool set must be unique to one node): ${toolSet}`,
-      ]
+      return [`nodes "${nodeIds.join(", ")}" use the same tool set (a tool set must be unique to one node): ${toolSet}`]
     }
   }
 
   return []
 }
 
-export const verifyMaxToolsPerAgent = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyMaxToolsPerAgent = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: VerificationErrors = []
 
   const defaultToolsCount = CONFIG.tools.defaultTools.size

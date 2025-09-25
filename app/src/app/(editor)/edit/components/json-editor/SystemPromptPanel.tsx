@@ -14,21 +14,14 @@ export default function SystemPromptPanel() {
         variant="ghost"
         className="w-full px-6 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-none h-auto font-normal"
       >
-        <span className="text-sm font-medium text-gray-700">
-          AI System Prompt
-        </span>
+        <span className="text-sm font-medium text-gray-700">AI System Prompt</span>
         <svg
           className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${showSystemPrompt ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </Button>
 

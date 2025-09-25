@@ -28,12 +28,7 @@ export function WorkflowEdge({
 
   return (
     <>
-      <BaseEdge
-        id={id}
-        path={edgePath}
-        markerEnd={markerEnd}
-        style={{ ...style, pointerEvents: "auto" }}
-      />
+      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ ...style, pointerEvents: "auto" }} />
       <EdgeButton
         id={id}
         x={labelX}

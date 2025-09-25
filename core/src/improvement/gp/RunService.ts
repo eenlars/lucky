@@ -22,10 +22,7 @@
  * TODO: implement run comparison and genealogy visualization support
  */
 
-import type {
-  EvolutionSettings,
-  IterativeConfig,
-} from "@core/improvement/gp/resources/evolution-types"
+import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
@@ -46,11 +43,7 @@ export class RunService {
   private verbose: boolean
   private evolutionMode: FlowEvolutionMode
 
-  constructor(
-    verbose = false,
-    evolutionMode: FlowEvolutionMode = "GP",
-    restartRunId?: string
-  ) {
+  constructor(verbose = false, evolutionMode: FlowEvolutionMode = "GP", restartRunId?: string) {
     this.verbose = verbose
     this.runId = restartRunId
     this.evolutionMode = evolutionMode
@@ -78,20 +71,13 @@ export class RunService {
         const _msg = error?.message || ""
         const code = error?.code || ""
         if (code === "23505" || code === "PGRST116") break // constraint or not found
-        lgg.warn(
-          `[RunService] ${context} failed (attempt ${attempt}/${maxRetries}):`,
-          error
-        )
+        lgg.warn(`[RunService] ${context} failed (attempt ${attempt}/${maxRetries}):`, error)
         if (attempt < maxRetries) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, retryDelay * attempt)
-          )
+          await new Promise((resolve) => setTimeout(resolve, retryDelay * attempt))
         }
       }
     }
-    throw new Error(
-      `[RunService] ${context} failed after ${maxRetries} attempts: ${lastError?.message}`
-    )
+    throw new Error(`[RunService] ${context} failed after ${maxRetries} attempts: ${lastError?.message}`)
   }
 
   getEvolutionContext(): EvolutionContext {
@@ -131,17 +117,14 @@ export class RunService {
     continueRunId?: string
   ): Promise<void> {
     if (continueRunId) {
-      const lastCompletedGeneration =
-        await this.getLastCompletedGeneration(continueRunId)
+      const lastCompletedGeneration = await this.getLastCompletedGeneration(continueRunId)
       if (lastCompletedGeneration) {
         this.runId = lastCompletedGeneration.runId
         this.currentGenerationId = lastCompletedGeneration.generationId
         this.currentGenerationNumber = lastCompletedGeneration.generationNumber
         return
       } else {
-        throw new Error(
-          `[RunService] No last completed generation found for run: ${continueRunId}`
-        )
+        throw new Error(`[RunService] No last completed generation found for run: ${continueRunId}`)
       }
     }
     return RunService.withRetry(async () => {
@@ -159,11 +142,7 @@ export class RunService {
         evolution_type: config.mode === "iterative" ? "iterative" : "gp",
         notes,
       }
-      const { data, error } = await supabase
-        .from("EvolutionRun")
-        .insert(runData)
-        .select("run_id")
-        .single()
+      const { data, error } = await supabase.from("EvolutionRun").insert(runData).select("run_id").single()
       if (error) {
         lgg.error("[RunService] Error creating evolution run:", error)
         throw error
@@ -177,9 +156,7 @@ export class RunService {
       this.runId = data.run_id
       this.currentGenerationId = generationId
       if (this.verbose) {
-        lgg.log(
-          `[RunService] Initialized run ${this.runId} with generation ${this.currentGenerationId}`
-        )
+        lgg.log(`[RunService] Initialized run ${this.runId} with generation ${this.currentGenerationId}`)
       }
     }, "createRun")
   }
@@ -212,9 +189,7 @@ export class RunService {
         .single()
       if (error) {
         if (error.code === "PGRST116") {
-          lgg.warn(
-            `[RunService] Generation ${generationNumber} does not exist for run ${activeRunId}`
-          )
+          lgg.warn(`[RunService] Generation ${generationNumber} does not exist for run ${activeRunId}`)
           return false
         }
         throw error
@@ -226,10 +201,7 @@ export class RunService {
   /**
    * Get the generation ID for a specific run and generation number
    */
-  async getGenerationIdByNumber(
-    generationNumber: number,
-    runId: string
-  ): Promise<string | null> {
+  async getGenerationIdByNumber(generationNumber: number, runId: string): Promise<string | null> {
     return RunService.withRetry(async () => {
       const { data, error } = await supabase
         .from("Generation")
@@ -264,11 +236,7 @@ export class RunService {
         run_id: evolutionContext.runId,
         start_time: new Date().toISOString(),
       }
-      const { data, error } = await supabase
-        .from("Generation")
-        .insert(generationData)
-        .select("generation_id")
-        .single()
+      const { data, error } = await supabase.from("Generation").insert(generationData).select("generation_id").single()
       if (error) {
         lgg.error("[RunService] Error creating generation:", JSONN.show(error))
         throw error
@@ -283,9 +251,7 @@ export class RunService {
   /**
    * Check if WorkflowVersion exists in database
    */
-  static async workflowVersionExists(
-    workflowVersionId: string
-  ): Promise<boolean> {
+  static async workflowVersionExists(workflowVersionId: string): Promise<boolean> {
     try {
       const { data, error } = await supabase
         .from("WorkflowVersion")
@@ -302,10 +268,7 @@ export class RunService {
       }
       return !!data
     } catch (error) {
-      lgg.error(
-        "[RunService] Failed to check WorkflowVersion existence:",
-        error
-      )
+      lgg.error("[RunService] Failed to check WorkflowVersion existence:", error)
       return false
     }
   }
@@ -334,12 +297,9 @@ export class RunService {
         description: genome.getGoal(),
       }
 
-      const { error: workflowError } = await supabase
-        .from("Workflow")
-        .upsert(workflowInsertable)
+      const { error: workflowError } = await supabase.from("Workflow").upsert(workflowInsertable)
 
-      if (workflowError)
-        throw new Error(`Failed to upsert workflow: ${workflowError.message}`)
+      if (workflowError) throw new Error(`Failed to upsert workflow: ${workflowError.message}`)
 
       // Create WorkflowVersion entry
       const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
@@ -353,18 +313,11 @@ export class RunService {
         generation_id: generationId,
       }
 
-      const { error: versionError } = await supabase
-        .from("WorkflowVersion")
-        .insert(workflowVersionInsertable)
+      const { error: versionError } = await supabase.from("WorkflowVersion").insert(workflowVersionInsertable)
 
-      if (versionError)
-        throw new Error(
-          `Failed to insert workflow version: ${versionError.message}`
-        )
+      if (versionError) throw new Error(`Failed to insert workflow version: ${versionError.message}`)
 
-      lgg.log(
-        `[RunService] Created WorkflowVersion ${workflowVersionId} for genome ${genome.getWorkflowVersionId()}`
-      )
+      lgg.log(`[RunService] Created WorkflowVersion ${workflowVersionId} for genome ${genome.getWorkflowVersionId()}`)
 
       return workflowVersionId
     } catch (error) {
@@ -392,16 +345,9 @@ export class RunService {
       return
     }
     await RunService.withRetry(async () => {
-      const workflowVersionId = await RunService.ensureWorkflowVersion(
-        bestGenome,
-        activeGenerationId,
-        operator
-      )
+      const workflowVersionId = await RunService.ensureWorkflowVersion(bestGenome, activeGenerationId, operator)
       const genomeFeedback = bestGenome.getFeedback()
-      lgg.log(
-        "[RunService] Best genome feedback before saving:",
-        genomeFeedback
-      )
+      lgg.log("[RunService] Best genome feedback before saving:", genomeFeedback)
       const updateData: TablesUpdate<"Generation"> = {
         end_time: new Date().toISOString(),
         best_workflow_version_id: workflowVersionId,
@@ -410,10 +356,7 @@ export class RunService {
           : `Best genome: ${bestGenome.getWorkflowVersionId()}`,
         feedback: genomeFeedback ?? undefined,
       }
-      const { error } = await supabase
-        .from("Generation")
-        .update(updateData)
-        .eq("generation_id", activeGenerationId)
+      const { error } = await supabase.from("Generation").update(updateData).eq("generation_id", activeGenerationId)
       if (error) {
         lgg.error("[RunService] Error completing generation:", error)
         throw error
@@ -427,11 +370,7 @@ export class RunService {
   /**
    * Update evolution run status and end time
    */
-  async completeRun(
-    status: Tables<"EvolutionRun">["status"],
-    totalCost?: number,
-    bestGenome?: Genome
-  ): Promise<void> {
+  async completeRun(status: Tables<"EvolutionRun">["status"], totalCost?: number, bestGenome?: Genome): Promise<void> {
     const activeRunId = this.runId
     if (!activeRunId) {
       lgg.warn("[RunService] No active run ID for completion")
@@ -452,19 +391,14 @@ export class RunService {
         notes,
       }
 
-      const { error } = await supabase
-        .from("EvolutionRun")
-        .update(updateData)
-        .eq("run_id", activeRunId)
+      const { error } = await supabase.from("EvolutionRun").update(updateData).eq("run_id", activeRunId)
 
       if (error) {
         lgg.error("[RunService] Error completing evolution run:", error)
         throw error
       }
 
-      lgg.log(
-        `[RunService] Completed evolution run: ${activeRunId} with status: ${status}`
-      )
+      lgg.log(`[RunService] Completed evolution run: ${activeRunId} with status: ${status}`)
     } catch (error) {
       lgg.error("[RunService] Failed to complete evolution run:", error)
       throw error
@@ -482,13 +416,9 @@ export class RunService {
    * Get the last completed generation number for a given run
    * Returns null if no completed generations exist
    */
-  async getLastCompletedGeneration(
-    runId: string
-  ): Promise<EvolutionContext | null> {
+  async getLastCompletedGeneration(runId: string): Promise<EvolutionContext | null> {
     if (!runId) {
-      lgg.warn(
-        "[RunService] No active run ID available for last completed generation lookup"
-      )
+      lgg.warn("[RunService] No active run ID available for last completed generation lookup")
       return null
     }
 
@@ -507,18 +437,12 @@ export class RunService {
         if (error.code === "PGRST116") {
           return null
         }
-        lgg.error(
-          "[RunService] Error getting last completed generation:",
-          JSONN.show(error)
-        )
+        lgg.error("[RunService] Error getting last completed generation:", JSONN.show(error))
         throw error
       }
 
       if (!data?.number || !data?.generation_id) {
-        lgg.warn(
-          "[RunService] No last completed generation found for run:",
-          runId
-        )
+        lgg.warn("[RunService] No last completed generation found for run:", runId)
         return null
       }
 
@@ -528,10 +452,7 @@ export class RunService {
         generationId: data.generation_id,
       }
     } catch (error) {
-      lgg.error(
-        "[RunService] Failed to get last completed generation:",
-        JSONN.show(error)
-      )
+      lgg.error("[RunService] Failed to get last completed generation:", JSONN.show(error))
       throw error
     }
   }

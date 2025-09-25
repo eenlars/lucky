@@ -42,11 +42,7 @@ describe("describeWorkflow", () => {
     const result = workflowToString(mockWorkflow, { easyModelNames: false })
 
     expect(result).toBe("Tool explanations\nAdjacency list\n")
-    expect(mockExplainSubsetOfTools).toHaveBeenCalledWith([
-      "tool1",
-      "tool2",
-      "tool3",
-    ])
+    expect(mockExplainSubsetOfTools).toHaveBeenCalledWith(["tool1", "tool2", "tool3"])
     expect(mockWorkflowToAdjacencyList).toHaveBeenCalled()
     expect(mockExplainAgents).not.toHaveBeenCalled()
   })

@@ -19,8 +19,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       messages: [
         {
           role: "user",
-          content:
-            "What is 25 + 17? Provide the answer as a number and a brief explanation.",
+          content: "What is 25 + 17? Provide the answer as a number and a brief explanation.",
         },
       ],
       model: getDefaultModels().default,
@@ -140,8 +139,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Create a task for reviewing code with high priority, todo status, and no assignee yet.",
+          content: "Create a task for reviewing code with high priority, todo status, and no assignee yet.",
         },
       ],
       model: getDefaultModels().default,
@@ -159,9 +157,7 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       expect(data.priority).toBe("high")
       expect(data.status).toBe("todo")
       // Accept both null and undefined for optional fields
-      expect(
-        data.assignee === null || typeof data.assignee === "undefined"
-      ).toBe(true)
+      expect(data.assignee === null || typeof data.assignee === "undefined").toBe(true)
     }
   }, 30000)
 })

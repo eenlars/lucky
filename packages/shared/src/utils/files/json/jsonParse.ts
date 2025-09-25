@@ -7,10 +7,7 @@ import JSON5 from "json5"
  * @returns      The first successfully parsed JSON object.
  * @throws       If no valid JSON or JSON5 could be extracted or if the result is an array.
  */
-function extractJSON(
-  input: unknown,
-  throwIfError: boolean = false
-): Record<string, unknown> | string {
+function extractJSON(input: unknown, throwIfError: boolean = false): Record<string, unknown> | string {
   // if it's already an object or array, return it directly
   if (typeof input === "object" && input !== null) {
     if (Array.isArray(input)) {
@@ -21,9 +18,7 @@ function extractJSON(
 
   if (typeof input !== "string") {
     if (throwIfError) {
-      throw new TypeError(
-        `extractJSON: expected a string or object but got ${typeof input}`
-      )
+      throw new TypeError(`extractJSON: expected a string or object but got ${typeof input}`)
     }
     return JSON.parse(JSON.stringify(input))
   }
@@ -34,10 +29,7 @@ function extractJSON(
   for (const chunk of candidates) {
     const candidate = chunk.trim()
     // Try JSON5 first, then strict JSON
-    const tries = [
-      () => JSON5.parse(candidate),
-      () => JSON.parse(candidate),
-    ] as const
+    const tries = [() => JSON5.parse(candidate), () => JSON.parse(candidate)] as const
 
     for (const tryParse of tries) {
       try {
@@ -79,10 +71,7 @@ function extractJSON(
 
 /** Strip out ```…``` or ~~~…~~~ fences, but preserve their inner text. */
 function removeCodeFences(text: string): string {
-  return text.replace(
-    /(```|~~~)[ \w]*\n?([\s\S]*?)\1/g,
-    (_match, _fence, inner) => inner
-  )
+  return text.replace(/(```|~~~)[ \w]*\n?([\s\S]*?)\1/g, (_match, _fence, inner) => inner)
 }
 
 /**
@@ -136,11 +125,7 @@ export const isJSON = (str: unknown): boolean => {
     return false
   }
 }
-export const show = (
-  obj: unknown,
-  indent: number = 2,
-  depth: number = 0
-): string => {
+export const show = (obj: unknown, indent: number = 2, depth: number = 0): string => {
   // prevent infinite recursion
   if (depth > 10) {
     return JSON.stringify(obj, null, indent)

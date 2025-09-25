@@ -4,10 +4,7 @@
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import {
-  loadSingleWorkflow,
-  saveWorkflowConfig,
-} from "@core/workflow/setup/WorkflowLoader"
+import { loadSingleWorkflow, saveWorkflowConfig } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
 import { nanoid } from "nanoid"
@@ -32,9 +29,7 @@ async function runIterativeTest() {
   } as any
 
   lgg.log(`🎲 Testing SWE-bench ID: ${randomId}`)
-  lgg.log(
-    `🧬 Running ${CONFIG.evolution.iterativeIterations} iterative iterations`
-  )
+  lgg.log(`🧬 Running ${CONFIG.evolution.iterativeIterations} iterative iterations`)
 
   const evaluator = new AggregatedEvaluator()
   let workflowPath = PATHS.setupFile
@@ -73,9 +68,7 @@ async function runIterativeTest() {
 
   lgg.log(`\n🏆 Best fitness: ${bestFitness}`)
   lgg.log(`💰 Total cost: $${totalCost.toFixed(4)}`)
-  lgg.log(
-    `📈 Progression: ${results.map((r) => r.fitness.toFixed(1)).join(" → ")}`
-  )
+  lgg.log(`📈 Progression: ${results.map((r) => r.fitness.toFixed(1)).join(" → ")}`)
 
   return { randomId, results, totalCost, bestFitness }
 }

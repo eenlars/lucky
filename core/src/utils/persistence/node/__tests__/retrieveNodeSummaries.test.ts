@@ -48,10 +48,7 @@ describe("retrieveNodeSummaries", () => {
 
     expect(result).toEqual(mockData)
     expect((supabase as any).from).toHaveBeenCalledWith("NodeInvocation")
-    expect((supabase as any).eq).toHaveBeenCalledWith(
-      "wf_invocation_id",
-      "wf123"
-    )
+    expect((supabase as any).eq).toHaveBeenCalledWith("wf_invocation_id", "wf123")
     expect((supabase as any).eq).toHaveBeenCalledWith("node_id", "node1")
   })
 
@@ -74,8 +71,6 @@ describe("retrieveNodeSummaries", () => {
       error: new Error("Database error"),
     })
 
-    await expect(
-      retrieveNodeInvocationSummaries("wf123", "node1")
-    ).rejects.toThrow("Database error")
+    await expect(retrieveNodeInvocationSummaries("wf123", "node1")).rejects.toThrow("Database error")
   })
 })

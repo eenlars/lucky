@@ -17,11 +17,7 @@ const edgeTypes = {
   workflow: WorkflowEdge,
 }
 
-export default function Workflow({
-  workflowVersionId,
-}: {
-  workflowVersionId: string | undefined
-}) {
+export default function Workflow({ workflowVersionId }: { workflowVersionId: string | undefined }) {
   const {
     nodes,
     edges,
@@ -67,20 +63,11 @@ export default function Workflow({
         console.log("Loading specific workflow version:", workflowVersionId)
         loadWorkflowVersion(workflowVersionId)
       } else {
-        console.log(
-          "Loading default workflow config (includes layout organization)"
-        )
+        console.log("Loading default workflow config (includes layout organization)")
         loadWorkflowConfig()
       }
     }
-  }, [
-    nodes.length,
-    workflowLoading,
-    workflowError,
-    workflowVersionId,
-    loadWorkflowConfig,
-    loadWorkflowVersion,
-  ])
+  }, [nodes.length, workflowLoading, workflowError, workflowVersionId, loadWorkflowConfig, loadWorkflowVersion])
 
   const { onDragOver, onDrop } = useDragAndDrop()
   const runLayout = useLayout(true)
@@ -116,11 +103,7 @@ export default function Workflow({
           <p className="mb-2">Failed to load workflow configuration</p>
           <p className="text-sm">{workflowError}</p>
           <button
-            onClick={() =>
-              workflowVersionId
-                ? loadWorkflowVersion(workflowVersionId)
-                : loadWorkflowConfig()
-            }
+            onClick={() => (workflowVersionId ? loadWorkflowVersion(workflowVersionId) : loadWorkflowConfig())}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             Retry
@@ -130,9 +113,7 @@ export default function Workflow({
     )
   }
 
-  const selectedNode = selectedNodeId
-    ? nodes.find((node) => node.id === selectedNodeId)
-    : null
+  const selectedNode = selectedNodeId ? nodes.find((node) => node.id === selectedNodeId) : null
 
   return (
     <>

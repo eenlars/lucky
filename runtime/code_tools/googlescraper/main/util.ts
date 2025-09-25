@@ -20,10 +20,7 @@ export async function autoScroll(page: Page) {
         wrapper?.scrollBy(0, distance)
         totalHeight += distance
 
-        if (
-          totalHeight >= scrollHeightBefore &&
-          scrollHeightBefore !== undefined
-        ) {
+        if (totalHeight >= scrollHeightBefore && scrollHeightBefore !== undefined) {
           totalHeight = 0
           await new Promise((resolve) => setTimeout(resolve, scrollDelay))
 

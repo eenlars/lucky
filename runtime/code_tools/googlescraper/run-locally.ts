@@ -1,11 +1,7 @@
 // run with: npx tsx src/runtime/code_tools/googlescraper/run-locally.ts
 import { lgg } from "@core/utils/logging/Logger"
 import { JSONN } from "@lucky/shared"
-import {
-  type InputMultiple,
-  type InputUrl,
-  searchGoogleMaps,
-} from "@runtime/code_tools/googlescraper/main/main"
+import { type InputMultiple, type InputUrl, searchGoogleMaps } from "@runtime/code_tools/googlescraper/main/main"
 import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import * as fs from "fs"
 import * as path from "path"
@@ -25,29 +21,17 @@ const locationLinks = [
 
 const multiple = "De bonte koe chocolade"
 
-const outputDir = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "output"
-)
+const outputDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "output")
 fs.mkdirSync(outputDir, { recursive: true })
 
-function saveResults(
-  name: string,
-  businesses: GoogleMapsBusiness[],
-  html?: string
-) {
+function saveResults(name: string, businesses: GoogleMapsBusiness[], html?: string) {
   const dir = path.join(outputDir, name.toLowerCase().replace(/\s+/g, ""))
   fs.mkdirSync(dir, { recursive: true })
 
-  fs.writeFileSync(
-    path.join(dir, "business.json"),
-    JSON.stringify(businesses, null, 2)
-  )
+  fs.writeFileSync(path.join(dir, "business.json"), JSON.stringify(businesses, null, 2))
   if (html) fs.writeFileSync(path.join(dir, "raw.html"), html)
 
-  lgg.log(
-    `Saved ${businesses.length} businesses to ${path.join(dir, "business.json")}`
-  )
+  lgg.log(`Saved ${businesses.length} businesses to ${path.join(dir, "business.json")}`)
 }
 
 async function runSearch(input: InputUrl | InputMultiple, options = {}) {
@@ -61,9 +45,7 @@ async function main() {
     "Starting search... for",
     TYPE_OF_SEARCH,
     "with",
-    onlyIncludeWithWebsite
-      ? `onlyIncludeWithWebsite: ${onlyIncludeWithWebsite}`
-      : ""
+    onlyIncludeWithWebsite ? `onlyIncludeWithWebsite: ${onlyIncludeWithWebsite}` : ""
   )
   try {
     if (TYPE_OF_SEARCH === "locationMapLinks") {
@@ -79,15 +61,10 @@ async function main() {
         )
 
         allBusinesses.push(...businesses)
-        lgg.log(
-          `Processed link #${i + 1}, found ${businesses.length} businesses`
-        )
+        lgg.log(`Processed link #${i + 1}, found ${businesses.length} businesses`)
       }
 
-      fs.writeFileSync(
-        path.join(outputDir, "all_location_businesses.json"),
-        JSON.stringify(allBusinesses, null, 2)
-      )
+      fs.writeFileSync(path.join(outputDir, "all_location_businesses.json"), JSON.stringify(allBusinesses, null, 2))
       lgg.log(`Saved ${allBusinesses.length} total businesses`)
     } else if (TYPE_OF_SEARCH === "multiple") {
       const { businesses, html } = await runSearch({

@@ -21,10 +21,7 @@ async function testRunService() {
   try {
     // Test 1: Create evolution run
     lgg.log("1. Creating evolution run...")
-    await runService.createRun(
-      "Test goal: optimize workflow for data extraction",
-      config
-    )
+    await runService.createRun("Test goal: optimize workflow for data extraction", config)
     lgg.log(`✓ Created run: ${runService.getRunId()}`)
 
     // Test 2: Create generation

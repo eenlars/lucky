@@ -1,7 +1,4 @@
-import {
-  isVercelAIStructure,
-  isZodSchema,
-} from "@core/tools/utils/schemaDetection"
+import { isVercelAIStructure, isZodSchema } from "@core/tools/utils/schemaDetection"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { zodToJson } from "@core/utils/zod/zodToJson"

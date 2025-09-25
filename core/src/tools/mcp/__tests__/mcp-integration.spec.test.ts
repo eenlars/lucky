@@ -9,12 +9,7 @@ import { setupMCPForNode } from "../mcp"
 describe("MCP Integration Tests", () => {
   // TODO: Another integration test that makes real API calls. Should be in a separate
   // integration test suite, not mixed with unit tests.
-  it.skipIf(
-    !process.env.TAVILY_API_KEY ||
-      !existsSync(
-        resolve(__dirname, "../../../../node_modules/.bin/tavily-mcp")
-      )
-  )(
+  it.skipIf(!process.env.TAVILY_API_KEY || !existsSync(resolve(__dirname, "../../../../node_modules/.bin/tavily-mcp")))(
     "should make a real AI call using tavily MCP tools",
     async () => {
       // TODO: This test depends on external API availability and API keys.
@@ -36,8 +31,7 @@ describe("MCP Integration Tests", () => {
         messages: [
           {
             role: "user",
-            content:
-              "Search for recent news about artificial intelligence breakthroughs in 2024. Use tavily search.",
+            content: "Search for recent news about artificial intelligence breakthroughs in 2024. Use tavily search.",
           },
         ],
         model: getDefaultModels().nano,
@@ -55,10 +49,7 @@ describe("MCP Integration Tests", () => {
         expect(response.data.text).toBeDefined()
         expect(response.data.text.length).toBeGreaterThan(0)
 
-        lgg.log(
-          "AI response received:",
-          response.data.text.substring(0, 200) + "..."
-        )
+        lgg.log("AI response received:", response.data.text.substring(0, 200) + "...")
         // TODO: More logging for debugging
 
         // Check if tools were actually used
@@ -71,19 +62,13 @@ describe("MCP Integration Tests", () => {
               }
             }
           }
-          expect(
-            response.data.steps.some(
-              (step: any) => step.toolCalls && step.toolCalls.length > 0
-            )
-          ).toBe(true)
+          expect(response.data.steps.some((step: any) => step.toolCalls && step.toolCalls.length > 0)).toBe(true)
         } else {
           lgg.log("No tools were used in this response")
         }
 
         // Verify the response contains relevant content
-        expect(response.data.text.toLowerCase()).toMatch(
-          /artificial|intelligence|ai|2024|search|news|breakthrough/i
-        )
+        expect(response.data.text.toLowerCase()).toMatch(/artificial|intelligence|ai|2024|search|news|breakthrough/i)
         // TODO: This assertion is brittle - it assumes the AI will use specific words.
         // The AI might describe the same content using different terms.
         // Also, this will fail in 2025 when "2024" is no longer recent.

@@ -13,16 +13,9 @@ vi.mock("@runtime/constants", () => ({
 
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import {
-  everyNodeIsConnectedToStartNode,
-  startNodeIsConnectedToEndNode,
-} from "../connectionVerification"
+import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
 import { verifyNoCycles } from "../verifyDirectedGraph"
-import {
-  getNodeRole,
-  isOrchestrator,
-  verifyHierarchicalStructure,
-} from "../verifyHierarchical"
+import { getNodeRole, isOrchestrator, verifyHierarchicalStructure } from "../verifyHierarchical"
 
 describe("verifyHierarchicalStructure", () => {
   // TODO: additional test coverage needed:
@@ -352,8 +345,7 @@ describe("verifyHierarchicalStructure", () => {
     expect(result).toEqual([]) // Should be valid
 
     // Verify all nodes are reachable
-    const connectionResult =
-      await everyNodeIsConnectedToStartNode(complexWorkflow)
+    const connectionResult = await everyNodeIsConnectedToStartNode(complexWorkflow)
     expect(connectionResult).toEqual([])
 
     // Verify path to end exists
@@ -406,8 +398,7 @@ describe("verifyHierarchicalStructure", () => {
     }
 
     // Should handle diamond pattern correctly
-    const hierarchicalResult =
-      await verifyHierarchicalStructure(diamondWorkflow)
+    const hierarchicalResult = await verifyHierarchicalStructure(diamondWorkflow)
     expect(hierarchicalResult).toEqual([])
 
     // No cycles in diamond pattern

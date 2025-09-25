@@ -37,14 +37,7 @@ const firecrawlTool = defineTool({
           store_type: { type: "string" },
           phone: { type: "string" },
         },
-        required: [
-          "store_name",
-          "address",
-          "postal_code",
-          "city",
-          "store_type",
-          "phone",
-        ],
+        required: ["store_name", "address", "postal_code", "city", "store_type", "phone"],
       },
       agent: { model: "fire-1" },
     }

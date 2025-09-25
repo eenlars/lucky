@@ -18,10 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!dslConfig || !Array.isArray(cases) || cases.length === 0) {
-      return NextResponse.json(
-        { error: "Missing dslConfig or cases" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing dslConfig or cases" }, { status: 400 })
     }
 
     // We’ll run one by one and return results array (with fitness)
@@ -31,14 +28,8 @@ export async function POST(req: NextRequest) {
       const evalInput: EvaluationInput = {
         type: "text",
         question: c.workflowInput,
-        answer:
-          typeof c.workflowOutput === "string"
-            ? c.workflowOutput
-            : JSON.stringify(c.workflowOutput),
-        goal:
-          goal && typeof goal === "string" && goal.trim().length > 0
-            ? goal
-            : "UI batch run",
+        answer: typeof c.workflowOutput === "string" ? c.workflowOutput : JSON.stringify(c.workflowOutput),
+        goal: goal && typeof goal === "string" && goal.trim().length > 0 ? goal : "UI batch run",
         workflowId: "adhoc-ui",
       }
 
@@ -52,9 +43,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, results })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

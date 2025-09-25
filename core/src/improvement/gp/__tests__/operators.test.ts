@@ -7,24 +7,12 @@ describe("GP Operators", () => {
       const registry = new Map()
 
       // simulate operator registration
-      const registerOperator = (
-        name: string,
-        fn: (input: any) => any,
-        description: string
-      ) => {
+      const registerOperator = (name: string, fn: (input: any) => any, description: string) => {
         registry.set(name, { fn, description })
       }
 
-      registerOperator(
-        "test_crossover",
-        () => "crossover",
-        "Test crossover operator"
-      )
-      registerOperator(
-        "test_mutation",
-        () => "mutation",
-        "Test mutation operator"
-      )
+      registerOperator("test_crossover", () => "crossover", "Test crossover operator")
+      registerOperator("test_mutation", () => "mutation", "Test mutation operator")
 
       expect(registry.size).toBe(2)
       expect(registry.has("test_crossover")).toBe(true)
@@ -70,8 +58,7 @@ describe("GP Operators", () => {
       const selections = []
 
       for (let i = 0; i < 100; i++) {
-        const selected =
-          mutationTypes[Math.floor(Math.random() * mutationTypes.length)]
+        const selected = mutationTypes[Math.floor(Math.random() * mutationTypes.length)]
         selections.push(selected)
       }
 
@@ -87,8 +74,7 @@ describe("GP Operators", () => {
 
     it("should generate appropriate mutation instructions", () => {
       const instructionMap = {
-        prompt:
-          "Modify the system prompts to improve clarity and effectiveness",
+        prompt: "Modify the system prompts to improve clarity and effectiveness",
         parameter: "Adjust the configuration parameters and settings",
         structure: "Reorganize the workflow structure and node connections",
         tool: "Update the tools and capabilities available to nodes",
@@ -109,9 +95,7 @@ describe("GP Operators", () => {
         targetNodes: ["node1", "node2"],
       }
 
-      expect(["prompt", "parameter", "structure", "tool"]).toContain(
-        mutationParams.type
-      )
+      expect(["prompt", "parameter", "structure", "tool"]).toContain(mutationParams.type)
       expect(mutationParams.intensity).toBeGreaterThanOrEqual(0)
       expect(mutationParams.intensity).toBeLessThanOrEqual(1)
       expect(typeof mutationParams.preserveStructure).toBe("boolean")
@@ -140,12 +124,7 @@ Create a new workflow that inherits strengths from both parents.`
     })
 
     it("should handle different crossover strategies", () => {
-      const strategies = [
-        "uniform_crossover",
-        "single_point_crossover",
-        "multi_point_crossover",
-        "blend_crossover",
-      ]
+      const strategies = ["uniform_crossover", "single_point_crossover", "multi_point_crossover", "blend_crossover"]
 
       strategies.forEach((strategy) => {
         const prompt = `Apply ${strategy} to combine parent genomes`
@@ -166,9 +145,7 @@ Create a new workflow that inherits strengths from both parents.`
       expect(crossoverInput.parents.length).toBeGreaterThanOrEqual(2)
       expect(typeof crossoverInput.strategy).toBe("string")
       expect(typeof crossoverInput.preserveValid).toBe("boolean")
-      expect(["low", "medium", "high"]).toContain(
-        crossoverInput.targetComplexity
-      )
+      expect(["low", "medium", "high"]).toContain(crossoverInput.targetComplexity)
     })
   })
 

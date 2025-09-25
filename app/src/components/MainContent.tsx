@@ -3,13 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/contexts/SidebarContext"
 
-export default function MainContent({
-  children,
-  hasAuth,
-}: {
-  children: React.ReactNode
-  hasAuth: boolean
-}) {
+export default function MainContent({ children, hasAuth }: { children: React.ReactNode; hasAuth: boolean }) {
   const { isCollapsed, isMobile } = useSidebar()
 
   return (

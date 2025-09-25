@@ -5,10 +5,7 @@ Comprehensive persistence system with workflow versioning, evolutionary genealog
 ## Quick Start
 
 ```typescript
-import {
-  registerWorkflowInDatabase,
-  createWorkflowInvocation,
-} from "@core/persistence/workflow"
+import { registerWorkflowInDatabase, createWorkflowInvocation } from "@core/persistence/workflow"
 import { saveNodeInvocationToDB } from "@core/persistence/node"
 import { createContextStore } from "@core/persistence/memory"
 
@@ -196,9 +193,7 @@ class NodePersistenceManager {
   }> = []
 
   // Register node configuration
-  async registerNode(
-    workflowVersionId: string
-  ): Promise<{ nodeVersionId: string }> {
+  async registerNode(workflowVersionId: string): Promise<{ nodeVersionId: string }> {
     const nodeVersion = await saveNodeToDB({
       workflowVersionId,
       nodeId: this.nodeId,
@@ -304,10 +299,7 @@ interface ContextStore {
   delete(scope: "workflow" | "node", key: string): Promise<void>
 
   // Advanced operations
-  getSummary(
-    scope: "workflow" | "node",
-    key: string
-  ): Promise<string | undefined>
+  getSummary(scope: "workflow" | "node", key: string): Promise<string | undefined>
   listWithInfo(scope: "workflow" | "node"): Promise<ContextFileInfo[]>
 }
 ```
@@ -322,11 +314,7 @@ class MemoryStore implements ContextStore {
   private summaries = new Map<string, string>()
   private metadata = new Map<string, ContextFileInfo>()
 
-  async set<T>(
-    scope: "workflow" | "node",
-    key: string,
-    value: T
-  ): Promise<void> {
+  async set<T>(scope: "workflow" | "node", key: string, value: T): Promise<void> {
     const scopedKey = `${scope}:${key}`
 
     // Store data with metadata
@@ -354,11 +342,7 @@ Cloud persistence with chunking and atomic operations:
 
 ```typescript
 class SupabaseStore implements ContextStore {
-  async set<T>(
-    scope: "workflow" | "node",
-    key: string,
-    value: T
-  ): Promise<void> {
+  async set<T>(scope: "workflow" | "node", key: string, value: T): Promise<void> {
     const content = JSON.stringify(value)
     const filePath = `${this.workflowInvocationId}/${scope}/${key}`
 
@@ -383,12 +367,10 @@ class SupabaseStore implements ContextStore {
   }
 
   private async storeAtomic(filePath: string, content: string): Promise<void> {
-    const { error } = await this.client.storage
-      .from(this.bucketName)
-      .upload(filePath + "/data", content, {
-        cacheControl: "3600",
-        upsert: true,
-      })
+    const { error } = await this.client.storage.from(this.bucketName).upload(filePath + "/data", content, {
+      cacheControl: "3600",
+      upsert: true,
+    })
 
     if (error) {
       await this.retryWithBackoff(() => this.storeAtomic(filePath, content))
@@ -447,10 +429,7 @@ class CachedContextStore implements ContextStore {
   private cache = new Map<string, { data: any; timestamp: number }>()
   private readonly TTL = 5 * 60 * 1000 // 5 minutes
 
-  async get<T>(
-    scope: "workflow" | "node",
-    key: string
-  ): Promise<T | undefined> {
+  async get<T>(scope: "workflow" | "node", key: string): Promise<T | undefined> {
     const cacheKey = `${scope}:${key}`
     const cached = this.cache.get(cacheKey)
 
@@ -471,11 +450,7 @@ class CachedContextStore implements ContextStore {
 
 ```typescript
 class RetryManager {
-  static async withRetry<T>(
-    operation: () => Promise<T>,
-    maxRetries: number = 3,
-    baseDelay: number = 1000
-  ): Promise<T> {
+  static async withRetry<T>(operation: () => Promise<T>, maxRetries: number = 3, baseDelay: number = 1000): Promise<T> {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         return await operation()
@@ -514,10 +489,7 @@ async function saveWithConstraintHandling(data: any) {
 
 ```typescript
 // Atomic JSON file writing
-export const persistWorkflow = async (
-  workflowConfig: WorkflowConfig,
-  filename: string
-): Promise<void> => {
+export const persistWorkflow = async (workflowConfig: WorkflowConfig, filename: string): Promise<void> => {
   const outputPath = path.join(process.cwd(), "workflows", filename)
 
   // Ensure directory exists
@@ -576,10 +548,7 @@ class Workflow {
     })
 
     // Create context store for this invocation
-    const contextStore = createContextStore(
-      "supabase",
-      this.workflowInvocationId
-    )
+    const contextStore = createContextStore("supabase", this.workflowInvocationId)
     this.contextStores.set("main", contextStore)
 
     // Store initial workflow context
@@ -596,10 +565,7 @@ class Workflow {
 class WorkFlowNode {
   private persistence: NodePersistenceManager
 
-  async invoke(
-    message: WorkflowMessage,
-    context: WorkflowContext
-  ): Promise<NodeResult> {
+  async invoke(message: WorkflowMessage, context: WorkflowContext): Promise<NodeResult> {
     // Save invocation start
     const invocationId = await this.persistence.startInvocation({
       workflowInvocationId: context.workflowInvocationId,

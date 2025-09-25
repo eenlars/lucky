@@ -78,9 +78,7 @@ describe("runMultiStepLoopV3Helper termination", () => {
       normalizeModelName: vi.fn().mockReturnValue("openai/gpt-4.1-mini"),
     }))
 
-    const { runMultiStepLoopV3Helper } = await import(
-      "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
-    )
+    const { runMultiStepLoopV3Helper } = await import("@core/messages/pipeline/agentStepLoop/MultiStepLoopV3")
     const context: MultiStepLoopContext = {
       ctx,
       tools: {},

@@ -7,17 +7,10 @@ import type { LocationMapLink } from "@runtime/code_tools/googlescraper/main/dat
 import { searchSingleBusiness } from "@runtime/code_tools/googlescraper/main/page-detail/extractDetailPage"
 import { handleMultipleFeed } from "@runtime/code_tools/googlescraper/main/page-multiple/handleMultipleFeed"
 import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
-import {
-  cleanupBrowser,
-  navigateToGoogleMaps,
-  sanitizeJSON,
-} from "@runtime/code_tools/googlescraper/main/util"
+import { cleanupBrowser, navigateToGoogleMaps, sanitizeJSON } from "@runtime/code_tools/googlescraper/main/util"
 import { normalizeHostname } from "@runtime/code_tools/googlescraper/utils/hostname"
 import type { ProxyResponse } from "@runtime/code_tools/googlescraper/utils/proxies"
-import {
-  detectFeed,
-  setupPage,
-} from "@runtime/code_tools/googlescraper/utils/scrapeUtils"
+import { detectFeed, setupPage } from "@runtime/code_tools/googlescraper/utils/scrapeUtils"
 
 export type GoogleMapsResult = {
   businesses: GoogleMapsBusiness[]
@@ -60,12 +53,7 @@ export async function searchGoogleMaps(
   input: SearchInput,
   options: GoogleMapsOptions = {}
 ): Promise<CodeToolResult<GoogleMapsResult>> {
-  const {
-    proxy,
-    enableLogging = false,
-    onlyIncludeWithWebsite,
-    concurrency = 3,
-  } = options
+  const { proxy, enableLogging = false, onlyIncludeWithWebsite, concurrency = 3 } = options
 
   const { browser, page } = await setupPage(proxy)
 
@@ -73,10 +61,7 @@ export async function searchGoogleMaps(
     if (input.mode === "url") {
       await page.goto(input.url, { waitUntil: "networkidle2" })
     } else {
-      const navArgs =
-        typeof input.query === "string"
-          ? { query: input.query }
-          : { locationMapLink: input.query }
+      const navArgs = typeof input.query === "string" ? { query: input.query } : { locationMapLink: input.query }
       await navigateToGoogleMaps(page, navArgs)
     }
   } catch (err) {
@@ -110,15 +95,10 @@ export async function searchGoogleMaps(
   if (!singleRes.success) return singleRes
 
   let bizArr: GoogleMapsBusiness[] =
-    singleRes.output.businesses.length > 0
-      ? [sanitizeJSON<GoogleMapsBusiness>(singleRes.output.businesses[0])]
-      : []
+    singleRes.output.businesses.length > 0 ? [sanitizeJSON<GoogleMapsBusiness>(singleRes.output.businesses[0])] : []
   if (onlyIncludeWithWebsite) {
     bizArr = bizArr.filter(
-      (b) =>
-        b.bizWebsite &&
-        normalizeHostname(b.bizWebsite) ===
-          normalizeHostname(onlyIncludeWithWebsite)
+      (b) => b.bizWebsite && normalizeHostname(b.bizWebsite) === normalizeHostname(onlyIncludeWithWebsite)
     )
   }
 

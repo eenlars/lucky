@@ -29,12 +29,7 @@ export default function SaveModal({
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -44,24 +39,9 @@ export default function SaveModal({
               </svg>
               Save Workflow Version
             </h3>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="h-auto p-1"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <Button onClick={onClose} variant="ghost" size="sm" className="h-auto p-1">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </Button>
           </div>
@@ -70,12 +50,7 @@ export default function SaveModal({
         <div className="px-6 py-4">
           {saveError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-              <svg
-                className="w-4 h-4 text-red-600 mt-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -88,10 +63,7 @@ export default function SaveModal({
           )}
 
           <div>
-            <label
-              htmlFor="commitMessage"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="commitMessage" className="block text-sm font-medium text-gray-700 mb-2">
               What changes did you make?
             </label>
             <textarea
@@ -99,12 +71,7 @@ export default function SaveModal({
               value={commitMessage}
               onChange={(e) => setCommitMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  (e.metaKey || e.ctrlKey) &&
-                  commitMessage.trim() &&
-                  !isLoading
-                ) {
+                if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && commitMessage.trim() && !isLoading) {
                   e.preventDefault()
                   onSave()
                 }
@@ -150,32 +117,17 @@ export default function SaveModal({
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-500">
-              {navigator.platform.indexOf("Mac") > -1 ? "⌘" : "Ctrl"}+Enter to
-              save
+              {navigator.platform.indexOf("Mac") > -1 ? "⌘" : "Ctrl"}+Enter to save
             </p>
             <div className="flex gap-3">
               <Button onClick={onClose} variant="ghost">
                 Cancel
               </Button>
-              <Button
-                onClick={onSave}
-                disabled={!commitMessage.trim() || isLoading}
-              >
+              <Button onClick={onSave} disabled={!commitMessage.trim() || isLoading}>
                 {isLoading ? (
                   <>
-                    <svg
-                      className="w-4 h-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path
                         className="opacity-75"
                         fill="currentColor"
@@ -186,18 +138,8 @@ export default function SaveModal({
                   </>
                 ) : (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Save Version
                   </>

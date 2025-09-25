@@ -15,8 +15,7 @@ describe("Memory Schema", () => {
   describe("MemorySchema", () => {
     it("should validate valid memory objects", () => {
       const valid = {
-        physical_stores:
-          "common_sense:some companies have physical store locations:1",
+        physical_stores: "common_sense:some companies have physical store locations:1",
         user_preference: "tool_usage:user prefers concise answers:3",
       }
 

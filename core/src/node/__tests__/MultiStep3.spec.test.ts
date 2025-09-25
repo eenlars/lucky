@@ -12,19 +12,11 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
   // being toolStrategyOverride: "v3". should refactor to avoid duplication or at least
   // document what specific v3 behavior is being tested. also same issues as MultiStep2:
   // integration test making real calls, only testing order not correctness.
-  const setupTestWorkflow = async (
-    workflowInvocationId: string,
-    workflowVersionId: string,
-    nodeId: string
-  ) => {
-    const {
-      createWorkflowInvocation,
-      createWorkflowVersion,
-      ensureWorkflowExists,
-    } = await import("@core/utils/persistence/workflow/registerWorkflow")
-    const { saveNodeVersionToDB } = await import(
-      "@core/utils/persistence/node/saveNode"
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+    const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
+      "@core/utils/persistence/workflow/registerWorkflow"
     )
+    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "multistep3-test-workflow"
 
@@ -44,8 +36,7 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
       config: {
         nodeId,
         modelName: model,
-        systemPrompt:
-          "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
+        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
         mcpTools: [],
         codeTools: ["todoRead", "todoWrite"],
         description: "MultiStep3 test node with todo tools",
@@ -70,8 +61,7 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
         mcpTools: [],
         codeTools: ["todoRead", "todoWrite"],
         description: "MultiStep3 test node with todo tools",
-        systemPrompt:
-          "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
+        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
         modelName: model,
         handOffs: ["end"],
         waitingFor: [],
@@ -105,12 +95,7 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
       toolStrategyOverride: "v3" as const,
     }
 
-    const toolManager = new ToolManager(
-      "multistep3-test",
-      [],
-      ["todoRead", "todoWrite"],
-      workflowVersionId
-    )
+    const toolManager = new ToolManager("multistep3-test", [], ["todoRead", "todoWrite"], workflowVersionId)
 
     const pipeline = new InvocationPipeline(context, toolManager)
 

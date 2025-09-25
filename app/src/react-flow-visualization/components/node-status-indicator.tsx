@@ -36,13 +36,7 @@ export const LoadingIndicator = ({ children }: { children: ReactNode }) => {
   )
 }
 
-const StatusBorder = ({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) => {
+const StatusBorder = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
     <>
       <div
@@ -56,25 +50,14 @@ const StatusBorder = ({
   )
 }
 
-export const NodeStatusIndicator = ({
-  status,
-  children,
-}: NodeStatusIndicatorProps) => {
+export const NodeStatusIndicator = ({ status, children }: NodeStatusIndicatorProps) => {
   switch (status) {
     case "loading":
       return <LoadingIndicator>{children}</LoadingIndicator>
     case "success":
-      return (
-        <StatusBorder className="border-emerald-500 shadow-green-200 shadow-lg">
-          {children}
-        </StatusBorder>
-      )
+      return <StatusBorder className="border-emerald-500 shadow-green-200 shadow-lg">{children}</StatusBorder>
     case "error":
-      return (
-        <StatusBorder className="border-red-500 shadow-red-200 shadow-lg">
-          {children}
-        </StatusBorder>
-      )
+      return <StatusBorder className="border-red-500 shadow-red-200 shadow-lg">{children}</StatusBorder>
     default:
       return <>{children}</>
   }

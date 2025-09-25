@@ -61,30 +61,18 @@ describe("parseCliArguments", () => {
   })
 
   it("throws error for invalid mode", () => {
-    expect(() => parseCliArguments(["--mode=invalid"])).toThrow(
-      ArgumentParsingError
-    )
-    expect(() => parseCliArguments(["--mode=invalid"])).toThrow(
-      "Invalid mode: invalid. Valid: iterative, GP, genetic"
-    )
+    expect(() => parseCliArguments(["--mode=invalid"])).toThrow(ArgumentParsingError)
+    expect(() => parseCliArguments(["--mode=invalid"])).toThrow("Invalid mode: invalid. Valid: iterative, GP, genetic")
   })
 
   it("throws error for invalid generations", () => {
-    expect(() => parseCliArguments(["--generations=abc"])).toThrow(
-      "generations must be a positive integer, got: abc"
-    )
-    expect(() => parseCliArguments(["--generations=0"])).toThrow(
-      "generations must be a positive integer, got: 0"
-    )
-    expect(() => parseCliArguments(["--generations=-5"])).toThrow(
-      "generations must be a positive integer, got: -5"
-    )
+    expect(() => parseCliArguments(["--generations=abc"])).toThrow("generations must be a positive integer, got: abc")
+    expect(() => parseCliArguments(["--generations=0"])).toThrow("generations must be a positive integer, got: 0")
+    expect(() => parseCliArguments(["--generations=-5"])).toThrow("generations must be a positive integer, got: -5")
   })
 
   it("throws error for invalid population", () => {
-    expect(() => parseCliArguments(["--population=abc"])).toThrow(
-      "population must be a positive integer, got: abc"
-    )
+    expect(() => parseCliArguments(["--population=abc"])).toThrow("population must be a positive integer, got: abc")
   })
 
   it("throws error for invalid boolean", () => {
@@ -100,30 +88,20 @@ describe("parseCliArguments", () => {
   })
 
   it("throws error for empty values", () => {
-    expect(() => parseCliArguments(["--mode="])).toThrow(
-      "Empty value for --mode"
-    )
+    expect(() => parseCliArguments(["--mode="])).toThrow("Empty value for --mode")
   })
 
   it("throws error for duplicate arguments", () => {
-    expect(() => parseCliArguments(["--mode=iterative", "--mode=GP"])).toThrow(
-      "Duplicate argument: --mode"
-    )
+    expect(() => parseCliArguments(["--mode=iterative", "--mode=GP"])).toThrow("Duplicate argument: --mode")
   })
 
   it("throws error for invalid format", () => {
-    expect(() => parseCliArguments(["--mode"])).toThrow(
-      "Invalid format: --mode. Use --key=value"
-    )
-    expect(() => parseCliArguments(["mode=iterative"])).toThrow(
-      "Invalid format: mode=iterative. Use --key=value"
-    )
+    expect(() => parseCliArguments(["--mode"])).toThrow("Invalid format: --mode. Use --key=value")
+    expect(() => parseCliArguments(["mode=iterative"])).toThrow("Invalid format: mode=iterative. Use --key=value")
   })
 
   it("throws error for unknown arguments", () => {
-    expect(() => parseCliArguments(["--unknown=value"])).toThrow(
-      "Unknown argument: --unknown"
-    )
+    expect(() => parseCliArguments(["--unknown=value"])).toThrow("Unknown argument: --unknown")
   })
 
   it("handles empty arguments array", () => {

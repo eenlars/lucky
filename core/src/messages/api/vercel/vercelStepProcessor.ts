@@ -6,8 +6,7 @@ import { asArray } from "@core/utils/common/utils"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { StepResult, ToolCallPart, ToolSet } from "ai"
 
-const normaliseCalls = <T extends ToolSet>(step: StepResult<T>) =>
-  asArray(step.toolCalls)
+const normaliseCalls = <T extends ToolSet>(step: StepResult<T>) => asArray(step.toolCalls)
 
 const normaliseResults = <T extends ToolSet>(step: StepResult<T>) => {
   // Handle multiple shapes:
@@ -38,35 +37,35 @@ const convertV5Step = (step: any) => {
   if (!step || !step.content || !Array.isArray(step.content)) {
     return step // Return as-is if not v5 format
   }
-  
+
   const toolCalls: any[] = []
   const toolResults: any[] = []
   let textContent = ""
-  
+
   // Extract tool calls, results, and text from content array
   for (const item of step.content) {
-    if (item.type === 'tool-call') {
+    if (item.type === "tool-call") {
       toolCalls.push({
         toolName: item.toolName,
         input: item.input,
-        args: item.input // Support both formats
+        args: item.input, // Support both formats
       })
-    } else if (item.type === 'tool-result') {
+    } else if (item.type === "tool-result") {
       toolResults.push({
         output: item.output,
-        result: item.output // Support both formats
+        result: item.output, // Support both formats
       })
-    } else if (item.type === 'text' && item.text) {
+    } else if (item.type === "text" && item.text) {
       textContent += item.text
     }
   }
-  
+
   // Convert to v4 format
   return {
     ...step,
     toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
     toolResults: toolResults.length > 0 ? toolResults : undefined,
-    text: textContent || step.text // Preserve existing text or use extracted text
+    text: textContent || step.text, // Preserve existing text or use extracted text
   }
 }
 
@@ -74,15 +73,13 @@ export const processStepsV2 = <T extends ToolSet>(
   steps: StepResult<T>[],
   modelUsed: ModelName
 ): { usdCost: number; agentSteps: AgentSteps } | undefined => {
-  if (isNir(steps) || !Array.isArray(steps))
-    return { usdCost: 0, agentSteps: [] }
+  if (isNir(steps) || !Array.isArray(steps)) return { usdCost: 0, agentSteps: [] }
 
   // Convert v5 format steps to v4 format
   const convertedSteps = steps.map(convertV5Step)
 
   /* ---------- 1. Map every step to the internal shape ---------- */
-  const unwrapToolResponse = (value: unknown): unknown =>
-    Tools.isCodeToolResult(value) ? value.output : value
+  const unwrapToolResponse = (value: unknown): unknown => (Tools.isCodeToolResult(value) ? value.output : value)
   const perStep = convertedSteps.map((rawStep: StepResult<T>) => {
     const step = rawStep ?? {}
 
@@ -93,11 +90,7 @@ export const processStepsV2 = <T extends ToolSet>(
     const toolCalls = calls.map((c: ToolCallPart, i: number) => {
       const toolResult = results[i]
       const finalResponse =
-        toolResult &&
-        typeof toolResult === "object" &&
-        Object.keys(toolResult).length === 0
-          ? text
-          : toolResult || text
+        toolResult && typeof toolResult === "object" && Object.keys(toolResult).length === 0 ? text : toolResult || text
 
       return {
         toolName: c?.toolName ?? "",
@@ -138,10 +131,7 @@ export const processStepsV2 = <T extends ToolSet>(
   // - If we have any non-null step present, emit text (even if empty) to reflect a processed step
   // - Else (truly empty input), return no steps
   if (aggregated.length === 0) {
-    if (
-      hasAnyNonNullStep ||
-      (typeof lastText === "string" && lastText.length > 0)
-    ) {
+    if (hasAnyNonNullStep || (typeof lastText === "string" && lastText.length > 0)) {
       aggregated.push({
         type: "text" as const,
         name: undefined,

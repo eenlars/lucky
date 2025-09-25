@@ -36,9 +36,7 @@ vi.mock("@runtime/settings/constants", () => ({
 // TODO: No tests for empty steps array or all non-text steps
 describe("getFinalOutputNodeInvocation (preset AgentSteps)", () => {
   it("returns only the final text, ignoring any preceding prepare step", async () => {
-    const { getFinalOutputNodeInvocation } = await import(
-      "@core/messages/api/processResponse"
-    )
+    const { getFinalOutputNodeInvocation } = await import("@core/messages/api/processResponse")
     const steps: AgentSteps = [
       { type: "prepare", return: "analysis: do X, then Y" },
       { type: "reasoning", return: "thinking..." },
@@ -51,9 +49,7 @@ describe("getFinalOutputNodeInvocation (preset AgentSteps)", () => {
   })
 
   it("skips empty text and falls back to the last tool output (ignores prepare)", async () => {
-    const { getFinalOutputNodeInvocation } = await import(
-      "@core/messages/api/processResponse"
-    )
+    const { getFinalOutputNodeInvocation } = await import("@core/messages/api/processResponse")
     const steps: AgentSteps = [
       { type: "prepare", return: "setup thoughts" },
       {

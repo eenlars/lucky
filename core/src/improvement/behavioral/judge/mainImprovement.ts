@@ -47,10 +47,8 @@ export async function improveNodesIterativelyImpl(
   const parsedArgs = parseCliArguments(args)
 
   // Use CLI args if provided, otherwise fall back to CONFIG
-  const selfImproveNodes =
-    parsedArgs.selfImproveNodes ?? CONFIG.improvement.flags.selfImproveNodes
-  const improvementType =
-    parsedArgs.improvementType ?? CONFIG.improvement.flags.improvementType
+  const selfImproveNodes = parsedArgs.selfImproveNodes ?? CONFIG.improvement.flags.selfImproveNodes
+  const improvementType = parsedArgs.improvementType ?? CONFIG.improvement.flags.improvementType
 
   lgg.log("🚀 Starting iterative improvement process...")
 
@@ -104,13 +102,11 @@ export async function improveNodesIterativelyImpl(
       if (!mechanicResult.success) {
         lgg.error("Judge function failed:", mechanicResult.error)
         // Fall back to unified approach
-        const { improvedConfig, cost: improvementCost } =
-          await improveWorkflowUnified({
-            config: workflowForImprovement.getConfig(),
-            fitness: workflowForImprovement.getFitness()!,
-            feedback:
-              workflowForImprovement.getFeedback() ?? "No feedback available",
-          })
+        const { improvedConfig, cost: improvementCost } = await improveWorkflowUnified({
+          config: workflowForImprovement.getConfig(),
+          fitness: workflowForImprovement.getFitness()!,
+          feedback: workflowForImprovement.getFeedback() ?? "No feedback available",
+        })
         totalCost += improvementCost
         finalConfig = improvedConfig ?? workflowForImprovement.getConfig()
       } else {
@@ -123,13 +119,11 @@ export async function improveNodesIterativelyImpl(
 
     case "unified": {
       // Use unified workflow improvement approach
-      const { improvedConfig, cost: improvementCost } =
-        await improveWorkflowUnified({
-          config: workflowForImprovement.getConfig(),
-          fitness: workflowForImprovement.getFitness()!,
-          feedback:
-            workflowForImprovement.getFeedback() ?? "No feedback available",
-        })
+      const { improvedConfig, cost: improvementCost } = await improveWorkflowUnified({
+        config: workflowForImprovement.getConfig(),
+        fitness: workflowForImprovement.getFitness()!,
+        feedback: workflowForImprovement.getFeedback() ?? "No feedback available",
+      })
       totalCost += improvementCost
       finalConfig = improvedConfig ?? workflowForImprovement.getConfig()
       break
@@ -144,14 +138,11 @@ export async function improveNodesIterativelyImpl(
 
   // step 3: workflow validation and repair (this goes beyond the zod schema validation)
   const configToValidate = finalConfig
-  const { finalConfig: validatedConfig, cost: validationCost } =
-    await validateAndRepairWorkflow(configToValidate)
+  const { finalConfig: validatedConfig, cost: validationCost } = await validateAndRepairWorkflow(configToValidate)
   guard(validatedConfig, "Workflow validation and repair failed unexpectedly")
   totalCost += validationCost
 
-  lgg.log(
-    `✅ Iterative improvement process completed with ${improvementType} improvement type`
-  )
+  lgg.log(`✅ Iterative improvement process completed with ${improvementType} improvement type`)
   return {
     newConfig: validatedConfig,
     cost: totalCost,

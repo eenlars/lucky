@@ -56,12 +56,7 @@ export function event(ctx: Ctx | undefined, name: string, attrs?: Attrs) {
   emit(ctx, name, attrs ?? {})
 }
 
-export async function withSpan<T>(
-  ctx: Ctx | undefined,
-  name: string,
-  attrs: Attrs,
-  fn: () => Promise<T>
-): Promise<T> {
+export async function withSpan<T>(ctx: Ctx | undefined, name: string, attrs: Attrs, fn: () => Promise<T>): Promise<T> {
   emit(ctx, `${name}:start`, attrs)
   const t0 = performance.now()
   try {
@@ -83,10 +78,7 @@ export async function withSpan<T>(
 
 // ALS-first API: no ctx threading
 export const obs = {
-  scope<T>(
-    values: Record<string, any>,
-    fn: () => Promise<T> | T
-  ): Promise<T> | T {
+  scope<T>(values: Record<string, any>, fn: () => Promise<T> | T): Promise<T> | T {
     const parent = currentCtx()
     const merged = { ...parent, ...values }
     return als.run(merged, fn)

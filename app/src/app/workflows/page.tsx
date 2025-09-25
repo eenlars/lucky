@@ -20,9 +20,7 @@ function WorkflowRow({
 }) {
   const hasActiveVersion = workflow.activeVersion !== null
   const versionCount = workflow.versionCount || 0
-  const timeAgo = workflow.updated_at
-    ? formatTimeAgo(new Date(workflow.updated_at))
-    : null
+  const timeAgo = workflow.updated_at ? formatTimeAgo(new Date(workflow.updated_at)) : null
 
   return (
     <div className="relative flex items-center gap-4 px-4 h-14 border-b border-border/30 hover:bg-black/[0.03] dark:hover:bg-white/[0.06] transition-all duration-[80ms] ease-out group">
@@ -48,7 +46,8 @@ function WorkflowRow({
           <span
             title={`${versionCount} version${versionCount === 1 ? "" : "s"}${timeAgo ? ` • Updated ${timeAgo}` : ""}`}
           >
-            {versionCount} version{versionCount === 1 ? "" : "s"}{timeAgo ? ` • ${timeAgo}` : ""}
+            {versionCount} version{versionCount === 1 ? "" : "s"}
+            {timeAgo ? ` • ${timeAgo}` : ""}
           </span>
         ) : (
           <span className="text-muted-foreground/60">No versions</span>
@@ -117,9 +116,7 @@ function WorkflowRow({
 
 function formatTimeAgo(date: Date): string {
   const now = new Date()
-  const diffInMinutes = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60)
-  )
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
 
   if (diffInMinutes < 1) return "just now"
   if (diffInMinutes < 60) return `${diffInMinutes}m ago`
@@ -134,11 +131,8 @@ function formatTimeAgo(date: Date): string {
 }
 
 export default function WorkflowsPage() {
-  const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(
-    new Set()
-  )
-  const { workflows, loading, saving, error, refresh, deleteWorkflow } =
-    useWorkflows()
+  const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(new Set())
+  const { workflows, loading, saving, error, refresh, deleteWorkflow } = useWorkflows()
 
   const handleRun = async (workflow: any) => {
     if (!workflow.activeVersion) return
@@ -167,12 +161,8 @@ export default function WorkflowsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] leading-[30px] font-semibold text-foreground">
-            Workflows
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Manage your workflow configurations and versions
-          </p>
+          <h1 className="text-[22px] leading-[30px] font-semibold text-foreground">Workflows</h1>
+          <p className="text-xs text-muted-foreground mt-1">Manage your workflow configurations and versions</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -207,12 +197,8 @@ export default function WorkflowsPage() {
         </div>
       ) : workflows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <h2 className="text-lg font-semibold text-foreground mb-2">
-            No workflows yet
-          </h2>
-          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-            Create your first workflow to get started
-          </p>
+          <h2 className="text-lg font-semibold text-foreground mb-2">No workflows yet</h2>
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm">Create your first workflow to get started</p>
           <Link
             href="/create"
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"

@@ -77,10 +77,7 @@ output:
 
   const extractedJson = JSONN.extract(result.data.text)
   if (!extractedJson) {
-    return R.error(
-      `No valid JSON found in response: ${JSONN.show(result.data.text)}`,
-      usdCost
-    )
+    return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, usdCost)
   }
 
   // Validate the extracted JSON against the schema
@@ -96,18 +93,11 @@ output:
           JSON.stringify(jsonSchema, null, 2)
         )
       }
-      const {
-        success,
-        data,
-        usdCost: repairedUsdCost,
-      } = await repairAIRequest(JSON.stringify(extractedJson), schema)
+      const { success, data, usdCost: repairedUsdCost } = await repairAIRequest(JSON.stringify(extractedJson), schema)
       usdCost += repairedUsdCost ?? 0
       return success
         ? R.success(data, usdCost)
-        : R.error(
-            `Failed to repair JSON: ${llmify(truncater(error.message, 400))}`,
-            usdCost
-          )
+        : R.error(`Failed to repair JSON: ${llmify(truncater(error.message, 400))}`, usdCost)
     }
     return R.error(`JSON validation failed: ${error.message}`, usdCost)
   }

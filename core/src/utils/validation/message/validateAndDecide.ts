@@ -2,10 +2,7 @@ import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateNodeOutput } from "./validateNodeOutput"
-import {
-  DEFAULT_VALIDATION_CONFIG,
-  type ValidationConfig,
-} from "./validationConfig"
+import { DEFAULT_VALIDATION_CONFIG, type ValidationConfig } from "./validationConfig"
 
 export interface ValidationDecision {
   shouldProceed: boolean
@@ -62,10 +59,7 @@ export async function validateAndDecide({
     })
 
     // Handle validation results based on recommendation
-    if (
-      validation.recommendation === "escalate" &&
-      validationConfig.actions.onEscalate === "block"
-    ) {
+    if (validation.recommendation === "escalate" && validationConfig.actions.onEscalate === "block") {
       return {
         shouldProceed: false,
         validationError: `Output validation failed: ${validation.taskFulfillment.reasoning}. Critical issues: ${validation.taskFulfillment.criticalIssues.join(", ")}`,
@@ -73,14 +67,8 @@ export async function validateAndDecide({
       }
     }
 
-    if (
-      validation.recommendation === "retry" &&
-      validationConfig.actions.onRetry === "warn"
-    ) {
-      lgg.warn(
-        "Output quality concerns detected:",
-        validation.outputQuality.improvements
-      )
+    if (validation.recommendation === "retry" && validationConfig.actions.onRetry === "warn") {
+      lgg.warn("Output quality concerns detected:", validation.outputQuality.improvements)
     }
   } else if (error) {
     lgg.error("Validation failed:", error)

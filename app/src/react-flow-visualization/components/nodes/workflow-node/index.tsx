@@ -6,10 +6,7 @@ import { useCallback, useState } from "react"
 import { BaseNode } from "@/react-flow-visualization/components/base-node"
 import { NodeHeaderDeleteAction } from "@/react-flow-visualization/components/node-header"
 import { NodeStatusIndicator } from "@/react-flow-visualization/components/node-status-indicator"
-import {
-  NODE_SIZE,
-  WorkflowNodeData,
-} from "@/react-flow-visualization/components/nodes/"
+import { NODE_SIZE, WorkflowNodeData } from "@/react-flow-visualization/components/nodes/"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
@@ -19,15 +16,7 @@ import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
 // you can also create new components for each of your nodes for greater flexibility.
-function WorkflowNode({
-  id,
-  data,
-  children,
-}: {
-  id: string
-  data: WorkflowNodeData
-  children?: React.ReactNode
-}) {
+function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeData; children?: React.ReactNode }) {
   const _setPromptDialogOpen = (_: boolean) => {}
   const openNodeDetails = useAppStore((state) => state.openNodeDetails)
   const _updateNode = useAppStore((state) => state.updateNode)
@@ -41,8 +30,7 @@ function WorkflowNode({
   }, [])
 
   // check if this is a start or end node by type
-  const isStartOrEndNode =
-    data?.nodeType === "initial-node" || data?.nodeType === "output-node"
+  const isStartOrEndNode = data?.nodeType === "initial-node" || data?.nodeType === "output-node"
 
   const onNodeClick = useCallback(() => {
     if (!isStartOrEndNode) {
@@ -69,8 +57,7 @@ function WorkflowNode({
     return `${full} + ${CURRENT_PROVIDER}`
   })()
 
-  const _totalTools =
-    (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
+  const _totalTools = (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
   const _connectionCount = data?.handOffs?.length || 0
 
   const allTools = [...(data?.mcpTools || []), ...(data?.codeTools || [])]
@@ -137,16 +124,14 @@ function WorkflowNode({
               {tool}
             </span>
           ))}
-          {data?.codeTools
-            ?.slice(0, 3 - (data?.mcpTools?.length || 0))
-            .map((tool, index) => (
-              <span
-                key={`code-${index}`}
-                className="inline-block bg-green-50 text-green-600 text-xs font-medium px-2 py-0.5 rounded-full truncate"
-              >
-                {tool}
-              </span>
-            ))}
+          {data?.codeTools?.slice(0, 3 - (data?.mcpTools?.length || 0)).map((tool, index) => (
+            <span
+              key={`code-${index}`}
+              className="inline-block bg-green-50 text-green-600 text-xs font-medium px-2 py-0.5 rounded-full truncate"
+            >
+              {tool}
+            </span>
+          ))}
 
           {/* Overflow pill with popover */}
           {hiddenTools.length > 0 && (
@@ -160,10 +145,7 @@ function WorkflowNode({
               <div className="hidden group-hover/popover:block absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                 <ul className="p-2 space-y-1">
                   {hiddenTools.map((tool, index) => (
-                    <li
-                      key={index}
-                      className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-50"
-                    >
+                    <li key={index} className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-50">
                       {tool}
                     </li>
                   ))}

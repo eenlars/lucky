@@ -1,8 +1,5 @@
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import {
-  loadLiveWorkflowConfig,
-  saveLiveWorkflowConfig,
-} from "@core/utils/persistence/liveConfig"
+import { loadLiveWorkflowConfig, saveLiveWorkflowConfig } from "@core/utils/persistence/liveConfig"
 import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
@@ -33,21 +30,14 @@ export async function GET(req: Request) {
     // Fallback: latest from DB (kept for resilience)
     if (process.env.NODE_ENV === "production") {
       try {
-        console.log(
-          "Attempting to load latest workflow version from database..."
-        )
+        console.log("Attempting to load latest workflow version from database...")
         const latestVersions = await retrieveLatestWorkflowVersions(1)
 
         if (latestVersions.length > 0) {
           const latestVersion = latestVersions[0]
-          const workflowConfig = await loadFromDatabaseForDisplay(
-            latestVersion.wf_version_id
-          )
+          const workflowConfig = await loadFromDatabaseForDisplay(latestVersion.wf_version_id)
 
-          console.log(
-            "Successfully loaded latest workflow version:",
-            latestVersion.wf_version_id
-          )
+          console.log("Successfully loaded latest workflow version:", latestVersion.wf_version_id)
 
           return NextResponse.json({
             ...workflowConfig,
@@ -56,17 +46,11 @@ export async function GET(req: Request) {
           })
         }
       } catch (fallbackError) {
-        console.error(
-          "Failed to load fallback workflow from database:",
-          fallbackError
-        )
+        console.error("Failed to load fallback workflow from database:", fallbackError)
       }
     }
 
-    return NextResponse.json(
-      { error: "Failed to load workflow configuration" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to load workflow configuration" }, { status: 500 })
   }
 }
 
@@ -79,10 +63,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const dsl = body?.dsl ?? body?.workflow ?? body
     if (!dsl || typeof dsl !== "object") {
-      return NextResponse.json(
-        { error: "Invalid DSL payload" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Invalid DSL payload" }, { status: 400 })
     }
 
     // Optional metadata for DB mode
@@ -99,9 +80,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, ...result })
   } catch (error) {
     console.error("Failed to save live workflow config:", error)
-    return NextResponse.json(
-      { error: "Failed to save live workflow configuration" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to save live workflow configuration" }, { status: 500 })
   }
 }

@@ -9,9 +9,7 @@ import { CONFIG } from "@runtime/settings/constants"
  * - Workers can hand off to other workers, orchestrator, or end
  * - No cycles allowed (handled by cycle verifier)
  */
-export const verifyHierarchicalStructure = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyHierarchicalStructure = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   // Only validate if coordination type is hierarchical
   if (CONFIG.coordinationType !== "hierarchical") return []
 
@@ -36,9 +34,7 @@ export const verifyHierarchicalStructure = async (
       }
 
       if (!allNodeIds.has(handoff)) {
-        errors.push(
-          `Node '${node.nodeId}' has invalid handoff to non-existent node: '${handoff}'.`
-        )
+        errors.push(`Node '${node.nodeId}' has invalid handoff to non-existent node: '${handoff}'.`)
       }
     }
   }
@@ -55,22 +51,14 @@ export const verifyHierarchicalStructure = async (
  * Helper function to determine if a node is the orchestrator
  * In hierarchical mode, the orchestrator is always the entry node
  */
-export const isOrchestrator = (
-  nodeId: string,
-  config: WorkflowConfig
-): boolean => {
-  return (
-    CONFIG.coordinationType === "hierarchical" && nodeId === config.entryNodeId
-  )
+export const isOrchestrator = (nodeId: string, config: WorkflowConfig): boolean => {
+  return CONFIG.coordinationType === "hierarchical" && nodeId === config.entryNodeId
 }
 
 /**
  * Helper function to get the implicit role of a node
  */
-export const getNodeRole = (
-  nodeId: string,
-  config: WorkflowConfig
-): "orchestrator" | "worker" | null => {
+export const getNodeRole = (nodeId: string, config: WorkflowConfig): "orchestrator" | "worker" | null => {
   if (CONFIG.coordinationType !== "hierarchical") return null
   return nodeId === config.entryNodeId ? "orchestrator" : "worker"
 }

@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { datasetId: string } }
-) {
+export async function PUT(req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -23,9 +20,6 @@ export async function PUT(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }

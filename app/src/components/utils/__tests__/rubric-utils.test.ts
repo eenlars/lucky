@@ -44,9 +44,7 @@ describe("rubric-utils", () => {
     })
 
     it("should handle criteria with empty names", () => {
-      const criteria: RubricCriteria[] = [
-        { id: "1", name: "", maxPoints: 10, achievedPoints: null },
-      ]
+      const criteria: RubricCriteria[] = [{ id: "1", name: "", maxPoints: 10, achievedPoints: null }]
 
       const rubricString = createRubricString(criteria)
       expect(rubricString).toContain("1. Criterion 1 (10 points)")

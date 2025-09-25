@@ -50,9 +50,7 @@ export async function execStructured<S extends ZodTypeAny>(
   // TODO: add request validation and preprocessing
   // TODO: implement schema complexity analysis for timeout adjustment
   const requestedModel = modelIn ?? getDefaultModels().default
-  const model = shouldUseModelFallback(requestedModel)
-    ? getFallbackModel(requestedModel)
-    : requestedModel
+  const model = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
   try {
     const { genObject } = await import("@core/messages/api/genObject")
@@ -71,9 +69,7 @@ export async function execStructured<S extends ZodTypeAny>(
         }),
         {
           milliseconds: 120_000,
-          message: new Error(
-            `Overall timeout (120 s) for ${model} – mode:structured`
-          ),
+          message: new Error(`Overall timeout (120 s) for ${model} – mode:structured`),
         }
       )
     } catch (err) {

@@ -17,10 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!dslConfig || !workflowId) {
-      return NextResponse.json(
-        { error: "Missing dslConfig or workflowId" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing dslConfig or workflowId" }, { status: 400 })
     }
 
     const evalInput: EvaluationText = {
@@ -48,9 +45,7 @@ export async function POST(req: NextRequest) {
 
     if (!invokeResponse.ok) {
       const errorText = await invokeResponse.text()
-      throw new Error(
-        `Workflow invoke failed: ${invokeResponse.status} - ${errorText}`
-      )
+      throw new Error(`Workflow invoke failed: ${invokeResponse.status} - ${errorText}`)
     }
 
     const result = await invokeResponse.json()
@@ -59,8 +54,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to run workflow",
+        error: error instanceof Error ? error.message : "Failed to run workflow",
         data: undefined,
         usdCost: 0,
       },

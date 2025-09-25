@@ -5,10 +5,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 
-export const createMockWorkflowGenome = (
-  generationNumber = 0,
-  parentIds: string[] = []
-): WorkflowGenome => ({
+export const createMockWorkflowGenome = (generationNumber = 0, parentIds: string[] = []): WorkflowGenome => ({
   nodes: [
     {
       nodeId: "node1",

@@ -2,16 +2,9 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type {
-  GenomeEvaluationResults,
-  WorkflowGenome,
-} from "@core/improvement/gp/resources/gp.types"
+import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import type {
-  FlowPathsConfig,
-  FlowRuntimeConfig,
-  FullFlowRuntimeConfig,
-} from "@core/types"
+import type { FlowPathsConfig, FlowRuntimeConfig, FullFlowRuntimeConfig } from "@core/types"
 import type { RS } from "@core/utils/types"
 import type {
   EvaluationCSV,
@@ -201,9 +194,7 @@ export const createMockCliArgs = (overrides = {}): string[] => [
   ),
 ]
 
-export const createMockEvolutionSettings = (
-  overrides = {}
-): EvolutionSettings => ({
+export const createMockEvolutionSettings = (overrides = {}): EvolutionSettings => ({
   mode: "GP",
   mutationRate: 0.1,
   populationSize: 5,
@@ -417,9 +408,7 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
   entryNodeId: "node1",
 })
 
-export const createMockWorkflow = (
-  options?: Parameters<typeof Workflow.create>[0]
-): Workflow => {
+export const createMockWorkflow = (options?: Parameters<typeof Workflow.create>[0]): Workflow => {
   if (!options) {
     options = {
       config: createMockWorkflowConfig(),
@@ -443,9 +432,7 @@ export const createMockWorkflowScore = (score = 0.8): FitnessOfWorkflow => ({
 
 // ====== EVALUATION INPUT FACTORIES ======
 
-export const createMockEvaluationInputText = (
-  evaluation?: string
-): EvaluationText => ({
+export const createMockEvaluationInputText = (evaluation?: string): EvaluationText => ({
   type: "text",
   question: "test question",
   answer: evaluation || "test answer",
@@ -453,9 +440,7 @@ export const createMockEvaluationInputText = (
   workflowId: "test-workflow-id",
 })
 
-export const createMockEvaluationInputCSV = (
-  evaluation?: string
-): EvaluationCSV => ({
+export const createMockEvaluationInputCSV = (evaluation?: string): EvaluationCSV => ({
   type: "csv",
   evaluation: `column:${evaluation || "test_column"}` as `column:${string}`,
   goal: "test goal for evolution",
@@ -467,20 +452,14 @@ export const createMockEvaluationInputGeneric = <T extends "text" | "csv">(
   evaluation?: string
 ): T extends "text" ? EvaluationText : EvaluationCSV => {
   if (type === "text") {
-    return createMockEvaluationInputText(evaluation) as T extends "text"
-      ? EvaluationText
-      : EvaluationCSV
+    return createMockEvaluationInputText(evaluation) as T extends "text" ? EvaluationText : EvaluationCSV
   }
-  return createMockEvaluationInputCSV(evaluation) as T extends "text"
-    ? EvaluationText
-    : EvaluationCSV
+  return createMockEvaluationInputCSV(evaluation) as T extends "text" ? EvaluationText : EvaluationCSV
 }
 
 // ====== GENOME AND EVOLUTION FACTORIES ======
 
-export const createMockGenomeEvaluationResults = (
-  score = 0.8
-): GenomeEvaluationResults => ({
+export const createMockGenomeEvaluationResults = (score = 0.8): GenomeEvaluationResults => ({
   workflowVersionId: "test-version-id",
   hasBeenEvaluated: true,
   evaluatedAt: new Date().toISOString(),
@@ -495,10 +474,7 @@ export const createMockGenomeEvaluationResults = (
   feedback: "test feedback",
 })
 
-export const createMockWorkflowGenome = (
-  generationNumber = 0,
-  parentIds: string[] = []
-): WorkflowGenome => {
+export const createMockWorkflowGenome = (generationNumber = 0, parentIds: string[] = []): WorkflowGenome => {
   return {
     ...createMockWorkflowConfig(),
     _evolutionContext: {
@@ -545,23 +521,13 @@ export const createMockGenome = async (
       currentFitness = newFitness
       isEvaluated = true
     }),
-    setFitnessAndFeedback: vi.fn(
-      ({
-        fitness,
-        feedback,
-      }: {
-        fitness: FitnessOfWorkflow
-        feedback: string | null
-      }) => {
-        currentFitness = fitness
-        isEvaluated = true
-      }
-    ),
+    setFitnessAndFeedback: vi.fn(({ fitness, feedback }: { fitness: FitnessOfWorkflow; feedback: string | null }) => {
+      currentFitness = fitness
+      isEvaluated = true
+    }),
 
     // Workflow interface methods
-    getFeedback: vi.fn(() =>
-      fitness ? "test feedback with good results" : "test feedback"
-    ),
+    getFeedback: vi.fn(() => (fitness ? "test feedback with good results" : "test feedback")),
     getGoal: vi.fn(() => "test goal"),
     getEvaluation: vi.fn(() => "test evaluation"),
     getConfig: vi.fn(() => createMockWorkflowConfig()),
@@ -822,9 +788,7 @@ export const mockRuntimeConstants = (
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstants called but runtime constants need to be mocked at top level"
-  )
+  console.warn("mockRuntimeConstants called but runtime constants need to be mocked at top level")
 }
 
 // Create a comprehensive mock config for tests
@@ -1022,9 +986,7 @@ export const mockRuntimeConstantsForIterative = (
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstantsForIterative called but runtime constants need to be mocked at top level"
-  )
+  console.warn("mockRuntimeConstantsForIterative called but runtime constants need to be mocked at top level")
 }
 
 export const mockRuntimeConstantsForDatabase = (
@@ -1036,9 +998,7 @@ export const mockRuntimeConstantsForDatabase = (
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
-  console.warn(
-    "mockRuntimeConstantsForDatabase called but runtime constants need to be mocked at top level"
-  )
+  console.warn("mockRuntimeConstantsForDatabase called but runtime constants need to be mocked at top level")
 }
 
 // ====== INDIVIDUAL MOCK HELPERS ======
@@ -1052,9 +1012,7 @@ export const mockRunService = () => {
 
 export const mockVerificationCache = () => {
   vi.mock("@core/improvement/GP/resources/wrappers", () => ({
-    VerificationCache: vi
-      .fn()
-      .mockImplementation(() => mockVerificationCacheInstance),
+    VerificationCache: vi.fn().mockImplementation(() => mockVerificationCacheInstance),
     workflowConfigToGenome: vi.fn(),
   }))
   return mockVerificationCacheInstance
@@ -1095,9 +1053,7 @@ export const mockLogger = () => {
 
 export const mockGenomeClass = () => {
   vi.mock("@core/improvement/gp/Genome", () => {
-    const GenomeMock = vi
-      .fn()
-      .mockImplementation(() => mockGenomeInstance) as any
+    const GenomeMock = vi.fn().mockImplementation(() => mockGenomeInstance) as any
     GenomeMock.createRandom = vi.fn().mockResolvedValue({
       success: true,
       data: mockGenomeInstance,
@@ -1163,46 +1119,34 @@ export const mockMutationsClass = () => {
 }
 
 export const mockWorkflowGeneration = () => {
-  vi.mock(
-    "@core/workflow/actions/generate/convert-simple-to-full/converter",
-    () => ({
-      convertSimpleToFull: vi.fn().mockResolvedValue({
-        config: { nodes: [], entryNodeId: "test-node" },
-        usdCost: 0.01,
-      }),
-    })
-  )
+  vi.mock("@core/workflow/actions/generate/convert-simple-to-full/converter", () => ({
+    convertSimpleToFull: vi.fn().mockResolvedValue({
+      config: { nodes: [], entryNodeId: "test-node" },
+      usdCost: 0.01,
+    }),
+  }))
 
-  vi.mock(
-    "@core/workflow/actions/generate/gen-single-variation/generateSingleVariation",
-    () => ({
-      generateSingleVariation: vi.fn().mockResolvedValue({
-        workflow: { nodes: [], entryNodeId: "test-node" },
-        usdCost: 0.01,
-      }),
-    })
-  )
+  vi.mock("@core/workflow/actions/generate/gen-single-variation/generateSingleVariation", () => ({
+    generateSingleVariation: vi.fn().mockResolvedValue({
+      workflow: { nodes: [], entryNodeId: "test-node" },
+      usdCost: 0.01,
+    }),
+  }))
 
-  vi.mock(
-    "@core/workflow/actions/generate/gen-simple-workflow-idea/generateIdea",
-    () => ({
-      generateWorkflowIdea: vi.fn().mockResolvedValue({
-        success: true,
-        data: { workflow: "test workflow idea" },
-        usdCost: 0.01,
-      }),
-    })
-  )
+  vi.mock("@core/workflow/actions/generate/gen-simple-workflow-idea/generateIdea", () => ({
+    generateWorkflowIdea: vi.fn().mockResolvedValue({
+      success: true,
+      data: { workflow: "test workflow idea" },
+      usdCost: 0.01,
+    }),
+  }))
 
-  vi.mock(
-    "@core/workflow/actions/generate/gen-full-workflow/generateWorkflow",
-    () => ({
-      generateWorkflow: vi.fn().mockResolvedValue({
-        workflows: [{ nodes: [], entryNodeId: "test-node" }],
-        usdCost: 0.01,
-      }),
-    })
-  )
+  vi.mock("@core/workflow/actions/generate/gen-full-workflow/generateWorkflow", () => ({
+    generateWorkflow: vi.fn().mockResolvedValue({
+      workflows: [{ nodes: [], entryNodeId: "test-node" }],
+      usdCost: 0.01,
+    }),
+  }))
 
   vi.mock("@core/validation/workflow/toolsVerification", () => ({
     verifyWorkflowConfigStrict: vi.fn().mockResolvedValue(undefined),
@@ -1295,18 +1239,14 @@ export const setupGPTestMocks = (
   return { runService, verificationCache, logger, genome, population }
 }
 
-export const setupDatabaseTestMocks = (
-  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForDatabase>[0]
-) => {
+export const setupDatabaseTestMocks = (runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForDatabase>[0]) => {
   const supabase = mockSupabaseClient()
   const logger = mockLogger()
   mockRuntimeConstantsForDatabase(runtimeOverrides)
   return { supabase, logger }
 }
 
-export const setupToolTestMocks = (
-  runtimeOverrides?: Parameters<typeof mockRuntimeConstants>[0]
-) => {
+export const setupToolTestMocks = (runtimeOverrides?: Parameters<typeof mockRuntimeConstants>[0]) => {
   const logger = mockLogger()
   mockRuntimeConstants(runtimeOverrides)
   return { logger }

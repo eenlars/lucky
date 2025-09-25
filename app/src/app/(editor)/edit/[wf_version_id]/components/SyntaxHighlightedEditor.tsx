@@ -6,11 +6,7 @@ import dynamic from "next/dynamic"
 // Dynamically import the JSON editor to avoid SSR issues
 const JSONInput = dynamic(() => import("react-json-editor-ajrm"), {
   ssr: false,
-  loading: () => (
-    <div className="h-full flex items-center justify-center">
-      Loading JSON Editor...
-    </div>
-  ),
+  loading: () => <div className="h-full flex items-center justify-center">Loading JSON Editor...</div>,
 })
 
 interface SyntaxHighlightedEditorProps {
@@ -19,11 +15,7 @@ interface SyntaxHighlightedEditorProps {
   isLoading: boolean
 }
 
-export default function SyntaxHighlightedEditor({
-  content,
-  onChange,
-  isLoading,
-}: SyntaxHighlightedEditorProps) {
+export default function SyntaxHighlightedEditor({ content, onChange, isLoading }: SyntaxHighlightedEditorProps) {
   const [error, setError] = useState<string | null>(null)
   const [displayContent, setDisplayContent] = useState<any>(null)
 
@@ -63,8 +55,7 @@ export default function SyntaxHighlightedEditor({
         setError(null)
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Invalid JSON format"
+      const errorMessage = err instanceof Error ? err.message : "Invalid JSON format"
       setError(`JSON Error: ${errorMessage}`)
     }
   }, [content])
@@ -90,9 +81,7 @@ export default function SyntaxHighlightedEditor({
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex justify-between items-center">
-        <span className="text-sm text-gray-600">
-          JSON Editor with Syntax Highlighting
-        </span>
+        <span className="text-sm text-gray-600">JSON Editor with Syntax Highlighting</span>
         <div className="flex items-center gap-2">
           <span
             className={`text-xs px-2 py-1 rounded ${error ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}

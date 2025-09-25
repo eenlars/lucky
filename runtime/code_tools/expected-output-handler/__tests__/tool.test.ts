@@ -18,8 +18,7 @@ describe("expectedOutputHandler", () => {
       data: {
         answer: "4",
         confidence: 100,
-        reasoning:
-          "Adding the two numbers 2 and 2 yields 4 by basic arithmetic.",
+        reasoning: "Adding the two numbers 2 and 2 yields 4 by basic arithmetic.",
       },
       error: null,
       usdCost: 0.001,

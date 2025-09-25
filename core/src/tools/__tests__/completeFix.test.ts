@@ -127,11 +127,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
       inputSchema: zodSchema(
         z.object({
           query: z.string().describe("Search query"),
-          maxResultCount: z
-            .number()
-            .max(20)
-            .default(10)
-            .describe("Number of results"),
+          maxResultCount: z.number().max(20).default(10).describe("Number of results"),
         })
       ),
       execute: async (params) => {
@@ -178,18 +174,12 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     })
 
     const invalidParams = { query: "coffee shops", maxResultCount: 50 }
-    const correction = validateAndCorrectWithSchema(
-      "searchGoogleMaps",
-      invalidParams,
-      schema
-    )
+    const correction = validateAndCorrectWithSchema("searchGoogleMaps", invalidParams, schema)
 
     expect(correction.corrected).toBe(true)
     expect(correction.params.maxResultCount).toBe(20)
 
-    console.log(
-      "✅ Complete fix workflow verified: Invalid params auto-corrected"
-    )
+    console.log("✅ Complete fix workflow verified: Invalid params auto-corrected")
     // TODO: Another console.log instead of proper assertions. Also, this test doesn't actually
     // verify the "complete workflow" - it only tests validateAndCorrectWithSchema in isolation.
   })

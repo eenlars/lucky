@@ -12,9 +12,7 @@ export class MockGPEvaluator implements EvolutionEvaluator {
     if (!CONFIG.evolution.GP.verbose) {
       throw new Error("The mock evaluator should only be used in verbose mode")
     }
-    lgg.log(
-      `[MockGPEvaluator] Returning mock evaluation for ${genome.getWorkflowVersionId()}`
-    )
+    lgg.log(`[MockGPEvaluator] Returning mock evaluation for ${genome.getWorkflowVersionId()}`)
 
     const mockScore = Math.random() * 100
     const mockTime = Math.random() * 30

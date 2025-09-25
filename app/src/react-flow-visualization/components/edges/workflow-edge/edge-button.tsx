@@ -2,10 +2,7 @@ import { EdgeLabelRenderer, EdgeProps } from "@xyflow/react"
 import { CSSProperties, useCallback, useEffect } from "react"
 
 import { AppDropdownMenu } from "@/react-flow-visualization/components/app-dropdown-menu"
-import {
-  AppNodeType,
-  NodeConfig,
-} from "@/react-flow-visualization/components/nodes"
+import { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import { useDropdown } from "@/react-flow-visualization/hooks/use-dropdown"
 import { useAppStore } from "@/react-flow-visualization/store"
@@ -23,11 +20,7 @@ const selector = (id: string) => {
 }
 
 const filterNodes = (node: NodeConfig) => {
-  return (
-    node.id === "transform-node" ||
-    node.id === "join-node" ||
-    node.id === "branch-node"
-  )
+  return node.id === "transform-node" || node.id === "join-node" || node.id === "branch-node"
 }
 
 export function EdgeButton({
@@ -39,16 +32,12 @@ export function EdgeButton({
   sourceHandleId,
   targetHandleId,
   style,
-}: Pick<
-  EdgeProps<AppEdge>,
-  "source" | "target" | "sourceHandleId" | "targetHandleId" | "id"
-> & {
+}: Pick<EdgeProps<AppEdge>, "source" | "target" | "sourceHandleId" | "targetHandleId" | "id"> & {
   x: number
   y: number
   style: CSSProperties
 }) {
-  const { addNodeInBetween, connectionSites, isPotentialConnection } =
-    useAppStore(useShallow(selector(id)))
+  const { addNodeInBetween, connectionSites, isPotentialConnection } = useAppStore(useShallow(selector(id)))
   const { isOpen, toggleDropdown, ref } = useDropdown()
 
   const onAddNode = useCallback(
@@ -74,16 +63,7 @@ export function EdgeButton({
       target: { node: target, handle: targetHandleId },
       id: connectionId,
     })
-  }, [
-    connectionSites,
-    x,
-    y,
-    connectionId,
-    source,
-    sourceHandleId,
-    target,
-    targetHandleId,
-  ])
+  }, [connectionSites, x, y, connectionId, source, sourceHandleId, target, targetHandleId])
 
   // we only want to remove the connection site when the component is unmounted
   useEffect(() => {

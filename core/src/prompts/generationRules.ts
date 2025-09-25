@@ -23,9 +23,7 @@ function buildWorkflowRules(): string {
   }
 
   if (CONFIG.tools.uniqueToolsPerAgent) {
-    rules.unshift(
-      "- each tool can only be assigned to exactly one workflow node (no tool sharing between nodes)"
-    )
+    rules.unshift("- each tool can only be assigned to exactly one workflow node (no tool sharing between nodes)")
   }
 
   if (CONFIG.tools.uniqueToolSetsPerAgent) {
@@ -34,19 +32,12 @@ function buildWorkflowRules(): string {
     )
   }
 
-  if (
-    !CONFIG.verification.allowCycles &&
-    CONFIG.coordinationType === "sequential"
-  ) {
-    rules.push(
-      "- the workflow must be a directed acyclic graph (no cycles allowed in the node connections)"
-    )
+  if (!CONFIG.verification.allowCycles && CONFIG.coordinationType === "sequential") {
+    rules.push("- the workflow must be a directed acyclic graph (no cycles allowed in the node connections)")
   }
 
   if (CONFIG.workflow.maxNodes > 0) {
-    rules.push(
-      `- the workflow must have at most ${CONFIG.workflow.maxNodes} nodes`
-    )
+    rules.push(`- the workflow must have at most ${CONFIG.workflow.maxNodes} nodes`)
   }
 
   return `<rules>\n${rules.join("\n")}\n</rules>`

@@ -18,9 +18,7 @@ export function GPEvolutionGraph({ nodes }: { nodes?: GPNode[] }) {
   if (!nodes || nodes.length === 0) {
     return (
       <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold mb-4">
-          Genetic Programming Graph
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">Genetic Programming Graph</h3>
         <div className="text-gray-500">No GP nodes available.</div>
       </div>
     )
@@ -47,9 +45,7 @@ export function GPEvolutionGraph({ nodes }: { nodes?: GPNode[] }) {
               <tr key={n.id} className="border-b last:border-0">
                 <td className="py-2 pr-4">
                   <Link href={`/trace/${n.id}`} className="hover:underline">
-                    <code
-                      className={`text-xs px-1 rounded ${n.isTarget ? "bg-green-100" : "bg-gray-100"}`}
-                    >
+                    <code className={`text-xs px-1 rounded ${n.isTarget ? "bg-green-100" : "bg-gray-100"}`}>
                       {n.id}
                     </code>
                   </Link>
@@ -58,12 +54,8 @@ export function GPEvolutionGraph({ nodes }: { nodes?: GPNode[] }) {
                 <td className="py-2 pr-4">{n.accuracy?.toFixed(1)}%</td>
                 <td className="py-2 pr-4">{n.fitness?.toFixed(3)}</td>
                 <td className="py-2 pr-4">{n.status}</td>
-                <td className="py-2 pr-4">
-                  {new Date(n.timestamp).toLocaleString()}
-                </td>
-                <td className="py-2 pr-4">
-                  {n.cost ? `$${n.cost.toFixed(4)}` : "-"}
-                </td>
+                <td className="py-2 pr-4">{new Date(n.timestamp).toLocaleString()}</td>
+                <td className="py-2 pr-4">{n.cost ? `$${n.cost.toFixed(4)}` : "-"}</td>
               </tr>
             ))}
           </tbody>

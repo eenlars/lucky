@@ -18,9 +18,7 @@ export default function ApprovePage() {
 
   useEffect(() => {
     if (!approvalId) {
-      setResponse(
-        "No approval ID provided. This page should be accessed from a workflow approval link."
-      )
+      setResponse("No approval ID provided. This page should be accessed from a workflow approval link.")
     }
   }, [approvalId])
 
@@ -49,14 +47,8 @@ export default function ApprovePage() {
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md mx-auto px-6">
         <div className="text-center mb-12">
-          <h1 className="text-2xl font-light text-slate-900 tracking-wide">
-            Workflow Approval Required
-          </h1>
-          {workflowId && (
-            <p className="text-sm text-slate-600 mt-2">
-              Workflow: {workflowId.slice(0, 8)}...
-            </p>
-          )}
+          <h1 className="text-2xl font-light text-slate-900 tracking-wide">Workflow Approval Required</h1>
+          {workflowId && <p className="text-sm text-slate-600 mt-2">Workflow: {workflowId.slice(0, 8)}...</p>}
         </div>
 
         <div className="space-y-6">

@@ -4,10 +4,7 @@ import type { CoreMessage } from "ai"
 import z from "zod"
 
 export const WorkflowRepairPrompts = {
-  repairWorkflowPrompt: (
-    config: WorkflowConfig,
-    verificationSummary: string
-  ): CoreMessage[] => {
+  repairWorkflowPrompt: (config: WorkflowConfig, verificationSummary: string): CoreMessage[] => {
     return [
       {
         role: "user",
@@ -40,11 +37,7 @@ export const WorkflowRepairPrompts = {
     ]
   },
   expectedOutput: z.object({
-    nodes: z
-      .array(AgentDescriptionsWithToolsSchema)
-      .describe("Repaired node configurations"),
-    summary: z
-      .string()
-      .describe("A summary of the changes made to the workflow"),
+    nodes: z.array(AgentDescriptionsWithToolsSchema).describe("Repaired node configurations"),
+    summary: z.string().describe("A summary of the changes made to the workflow"),
   }),
 }

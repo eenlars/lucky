@@ -82,13 +82,12 @@ const VALIDATION_THRESHOLDS = {
 }
 
 // Usage in response handler
-const { shouldProceed, validationError, validationCost } =
-  await validateAndDecide({
-    nodeOutput: nodeInvocationFullOutput,
-    workflowMessage: context.workflowMessageIncoming,
-    systemPrompt: context.nodeSystemPrompt,
-    nodeId: context.nodeId,
-  })
+const { shouldProceed, validationError, validationCost } = await validateAndDecide({
+  nodeOutput: nodeInvocationFullOutput,
+  workflowMessage: context.workflowMessageIncoming,
+  systemPrompt: context.nodeSystemPrompt,
+  nodeId: context.nodeId,
+})
 
 if (!shouldProceed && validationError) {
   return handleError({
@@ -178,9 +177,7 @@ const toolValidation = {
   // Validate tool availability
   verifyAllToolsAreActive: async (nodes: NodeConfig[]) => {
     const allTools = extractAllTools(nodes)
-    const inactiveTools = allTools.filter((tool) =>
-      CONFIG.tools.inactive.includes(tool)
-    )
+    const inactiveTools = allTools.filter((tool) => CONFIG.tools.inactive.includes(tool))
 
     if (inactiveTools.length > 0) {
       return {
@@ -199,9 +196,7 @@ DAG enforcement and cycle detection:
 
 ```typescript
 // Cycle detection using three-color DFS
-const verifyNoCycles = async (
-  nodes: NodeConfig[]
-): Promise<VerificationResult> => {
+const verifyNoCycles = async (nodes: NodeConfig[]): Promise<VerificationResult> => {
   const colors = new Map<string, "white" | "gray" | "black">()
   const graph = buildAdjacencyList(nodes)
 
@@ -267,9 +262,7 @@ const everyNodeIsConnectedToStartNode = async (nodes: NodeConfig[]) => {
   }
 
   // Check if all nodes are reachable
-  const unreachableNodes = nodes
-    .map((n) => n.nodeId)
-    .filter((id) => !visited.has(id))
+  const unreachableNodes = nodes.map((n) => n.nodeId).filter((id) => !visited.has(id))
 
   if (unreachableNodes.length > 0) {
     return {
@@ -349,16 +342,10 @@ const setupValidatedWorkflow = async (config: WorkflowConfig) => {
   const verificationResult = await verifyWorkflowConfig(finalConfig, true)
 
   if (!verificationResult.isValid) {
-    lgg.warn(
-      "Workflow validation failed, attempting repair...",
-      verificationResult.errors
-    )
+    lgg.warn("Workflow validation failed, attempting repair...", verificationResult.errors)
 
     try {
-      const { nodes, usdCost } = await repairWorkflow(
-        finalConfig,
-        verificationResult
-      )
+      const { nodes, usdCost } = await repairWorkflow(finalConfig, verificationResult)
       finalConfig = { ...finalConfig, nodes }
 
       lgg.info(`Workflow repaired successfully (cost: $${usdCost})`, {
@@ -416,9 +403,7 @@ const CONFIG = {
 
 ```typescript
 // Add custom validation
-const customValidation = async (
-  config: WorkflowConfig
-): Promise<VerificationResult> => {
+const customValidation = async (config: WorkflowConfig): Promise<VerificationResult> => {
   const errors: string[] = []
 
   // Custom business logic validation
@@ -428,9 +413,7 @@ const customValidation = async (
 
   // Domain-specific validation
   const requiredTools = ["csvReader", "contextHandler"]
-  const hasRequiredTools = config.nodes.some((node) =>
-    requiredTools.every((tool) => node.codeTools.includes(tool))
-  )
+  const hasRequiredTools = config.nodes.some((node) => requiredTools.every((tool) => node.codeTools.includes(tool)))
 
   if (!hasRequiredTools) {
     errors.push("Workflow must include data processing tools")
@@ -450,9 +433,7 @@ const extendedValidation = [...defaultValidationFunctions, customValidation]
 ```typescript
 // Validate multiple workflows efficiently
 const validateWorkflowBatch = async (configs: WorkflowConfig[]) => {
-  const validationPromises = configs.map((config) =>
-    verifyWorkflowConfig(config, false)
-  )
+  const validationPromises = configs.map((config) => verifyWorkflowConfig(config, false))
 
   const results = await Promise.all(validationPromises)
 
@@ -470,9 +451,7 @@ const validateWorkflowBatch = async (configs: WorkflowConfig[]) => {
 // Cache validation results
 const validationCache = new Map<string, VerificationResult>()
 
-const cachedValidation = async (
-  config: WorkflowConfig
-): Promise<VerificationResult> => {
+const cachedValidation = async (config: WorkflowConfig): Promise<VerificationResult> => {
   const configHash = generateConfigHash(config)
 
   if (validationCache.has(configHash)) {
@@ -499,9 +478,7 @@ class Workflow {
 
     if (!validationResult.isValid) {
       if (CONFIG.verification.strictMode) {
-        throw new Error(
-          `Invalid workflow: ${validationResult.errors.join(", ")}`
-        )
+        throw new Error(`Invalid workflow: ${validationResult.errors.join(", ")}`)
       }
 
       // Attempt automatic repair
@@ -546,9 +523,7 @@ const handleNodeResponse = async (context: ResponseContext) => {
 
 ```typescript
 // In genetic programming
-const evaluateWorkflowFitness = async (
-  genome: WorkflowGenome
-): Promise<number> => {
+const evaluateWorkflowFitness = async (genome: WorkflowGenome): Promise<number> => {
   const config = genome.toWorkflowConfig()
 
   // Validation affects fitness

@@ -8,10 +8,7 @@ import {
   // Import other icons as needed
 } from "lucide-react"
 
-export const iconMapping: Record<
-  string,
-  React.FC<React.SVGProps<SVGSVGElement>>
-> = {
+export const iconMapping: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
   Rocket: Rocket,
   Spline: Spline,
   Split: Split,

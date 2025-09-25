@@ -36,10 +36,7 @@ export interface SmartContentProps {
 
 const getReactJsonTheme = (preferred?: "auto" | "monokai" | "rjv-default") => {
   if (preferred && preferred !== "auto") return preferred
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
+  if (typeof window !== "undefined" && document.documentElement.classList.contains("dark")) {
     return "monokai"
   }
   return "rjv-default"
@@ -79,9 +76,7 @@ export function SmartContent({
       )
     }
     return (
-      <pre
-        className={`font-mono text-xs leading-relaxed whitespace-pre-wrap ${className ?? ""}`}
-      >
+      <pre className={`font-mono text-xs leading-relaxed whitespace-pre-wrap ${className ?? ""}`}>
         {JSON.stringify(value, null, stringifySpacing)}
       </pre>
     )
@@ -97,24 +92,16 @@ export function SmartContent({
           rehypePlugins={[rehypeHighlight]}
           components={{
             pre: ({ children }) => (
-              <pre className="bg-gray-100 rounded-md p-2 overflow-x-auto text-[11px]">
-                {children}
-              </pre>
+              <pre className="bg-gray-100 rounded-md p-2 overflow-x-auto text-[11px]">{children}</pre>
             ),
             code: ({ children, className: codeClassName }) => {
               const raw = String(children ?? "").trim()
               const isBlock = Boolean(codeClassName)
               if (!isBlock) {
-                return (
-                  <code className="bg-gray-100 px-1 py-0.5 rounded text-[11px]">
-                    {children}
-                  </code>
-                )
+                return <code className="bg-gray-100 px-1 py-0.5 rounded text-[11px]">{children}</code>
               }
 
-              const looksJson =
-                (codeClassName && /language-json/.test(codeClassName)) ||
-                isJSON(raw)
+              const looksJson = (codeClassName && /language-json/.test(codeClassName)) || isJSON(raw)
 
               if (looksJson) {
                 const parsed = tryParseJson(raw)
@@ -142,24 +129,12 @@ export function SmartContent({
 
               return <code className={codeClassName}>{children}</code>
             },
-            p: ({ children }) => (
-              <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>
-            ),
-            h1: ({ children }) => (
-              <h1 className="text-sm font-bold mb-2">{children}</h1>
-            ),
-            h2: ({ children }) => (
-              <h2 className="text-sm font-bold mb-2">{children}</h2>
-            ),
-            h3: ({ children }) => (
-              <h3 className="text-xs font-bold mb-1">{children}</h3>
-            ),
-            ul: ({ children }) => (
-              <ul className="list-disc pl-4 mb-2">{children}</ul>
-            ),
-            ol: ({ children }) => (
-              <ol className="list-decimal pl-4 mb-2">{children}</ol>
-            ),
+            p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+            h1: ({ children }) => <h1 className="text-sm font-bold mb-2">{children}</h1>,
+            h2: ({ children }) => <h2 className="text-sm font-bold mb-2">{children}</h2>,
+            h3: ({ children }) => <h3 className="text-xs font-bold mb-1">{children}</h3>,
+            ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
             li: ({ children }) => <li className="mb-1">{children}</li>,
           }}
         >
@@ -188,9 +163,7 @@ export function SmartContent({
         )
       }
       return (
-        <pre
-          className={`font-mono text-xs leading-relaxed whitespace-pre-wrap ${className ?? ""}`}
-        >
+        <pre className={`font-mono text-xs leading-relaxed whitespace-pre-wrap ${className ?? ""}`}>
           {JSON.stringify(parsed, null, stringifySpacing)}
         </pre>
       )

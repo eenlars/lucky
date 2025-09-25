@@ -1,7 +1,4 @@
-import {
-  extractTextFromPayload,
-  type AggregatedPayload,
-} from "@core/messages/MessagePayload"
+import { extractTextFromPayload, type AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
 import { Workflow } from "@core/workflow/Workflow"
@@ -25,78 +22,76 @@ describe("Parallel handoff integration", () => {
     const callArgsByNode: Record<string, InvokeArgs[]> = {}
 
     // Replace WorkFlowNode.create to avoid real tool initialization and LLM calls
-    const createSpy = vi
-      .spyOn(WorkFlowNode, "create")
-      .mockImplementation(async (config) => {
-        const nodeId = config.nodeId
-        const mkReply = (text: string) => ({
-          kind: "result" as const,
-          berichten: [{ type: "text", text }],
-        })
-        return {
-          nodeId,
-          toConfig: () => config,
-          invoke: async (args: InvokeArgs) => {
-            if (!callArgsByNode[nodeId]) callArgsByNode[nodeId] = []
-            callArgsByNode[nodeId].push(args)
-            const base = {
-              nodeInvocationId: `${nodeId}-inv-1`,
-              usdCost: 0,
-              agentSteps: [],
-              updatedMemory: undefined,
-              error: undefined,
-              summaryWithInfo: {
-                timestamp: Date.now(),
-                nodeId,
-                summary: `${nodeId} ok`,
-              },
-            }
-            if (nodeId === "start") {
-              return {
-                ...base,
-                nodeInvocationFinalOutput: "split",
-                replyMessage: mkReply("split"),
-                nextIds: ["workerA", "workerB"],
-                outgoingMessages: [],
-              }
-            }
-            if (nodeId === "workerA") {
-              return {
-                ...base,
-                nodeInvocationFinalOutput: "A: ALPHA",
-                replyMessage: mkReply("A: ALPHA"),
-                nextIds: ["join"],
-                outgoingMessages: [],
-              }
-            }
-            if (nodeId === "workerB") {
-              return {
-                ...base,
-                nodeInvocationFinalOutput: "B: BETA",
-                replyMessage: mkReply("B: BETA"),
-                nextIds: ["join"],
-                outgoingMessages: [],
-              }
-            }
-            if (nodeId === "join") {
-              return {
-                ...base,
-                nodeInvocationFinalOutput: "done",
-                replyMessage: mkReply("done"),
-                nextIds: ["end"],
-                outgoingMessages: [],
-              }
-            }
+    const createSpy = vi.spyOn(WorkFlowNode, "create").mockImplementation(async (config) => {
+      const nodeId = config.nodeId
+      const mkReply = (text: string) => ({
+        kind: "result" as const,
+        berichten: [{ type: "text", text }],
+      })
+      return {
+        nodeId,
+        toConfig: () => config,
+        invoke: async (args: InvokeArgs) => {
+          if (!callArgsByNode[nodeId]) callArgsByNode[nodeId] = []
+          callArgsByNode[nodeId].push(args)
+          const base = {
+            nodeInvocationId: `${nodeId}-inv-1`,
+            usdCost: 0,
+            agentSteps: [],
+            updatedMemory: undefined,
+            error: undefined,
+            summaryWithInfo: {
+              timestamp: Date.now(),
+              nodeId,
+              summary: `${nodeId} ok`,
+            },
+          }
+          if (nodeId === "start") {
             return {
               ...base,
-              nodeInvocationFinalOutput: "ok",
-              replyMessage: mkReply("ok"),
+              nodeInvocationFinalOutput: "split",
+              replyMessage: mkReply("split"),
+              nextIds: ["workerA", "workerB"],
+              outgoingMessages: [],
+            }
+          }
+          if (nodeId === "workerA") {
+            return {
+              ...base,
+              nodeInvocationFinalOutput: "A: ALPHA",
+              replyMessage: mkReply("A: ALPHA"),
+              nextIds: ["join"],
+              outgoingMessages: [],
+            }
+          }
+          if (nodeId === "workerB") {
+            return {
+              ...base,
+              nodeInvocationFinalOutput: "B: BETA",
+              replyMessage: mkReply("B: BETA"),
+              nextIds: ["join"],
+              outgoingMessages: [],
+            }
+          }
+          if (nodeId === "join") {
+            return {
+              ...base,
+              nodeInvocationFinalOutput: "done",
+              replyMessage: mkReply("done"),
               nextIds: ["end"],
               outgoingMessages: [],
             }
-          },
-        } as unknown as WorkFlowNode
-      })
+          }
+          return {
+            ...base,
+            nodeInvocationFinalOutput: "ok",
+            replyMessage: mkReply("ok"),
+            nextIds: ["end"],
+            outgoingMessages: [],
+          }
+        },
+      } as unknown as WorkFlowNode
+    })
 
     const cfg: WorkflowConfig = {
       nodes: [
@@ -179,9 +174,7 @@ describe("Parallel handoff integration", () => {
     expect(fromIds.sort()).toEqual(["workerA", "workerB"].sort())
 
     // Also verify the aggregated payload contains the secret info from both workers
-    const aggregatedTexts = payload.messages.map((m) =>
-      extractTextFromPayload(m.payload)
-    )
+    const aggregatedTexts = payload.messages.map((m) => extractTextFromPayload(m.payload))
     const combined = aggregatedTexts.join("\n")
     expect(combined).toMatch(/ALPHA/i)
     expect(combined).toMatch(/BETA/i)

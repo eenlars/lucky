@@ -23,11 +23,15 @@ const mockTools: ToolSet = {
     description: "Manage location data operations",
     inputSchema: z.object({
       operation: z.enum(["insertLocations", "updateLocations", "deleteLocations"]),
-      locationData: z.array(z.object({
-        name: z.string(),
-        lat: z.number(),
-        lng: z.number(),
-      })).optional(),
+      locationData: z
+        .array(
+          z.object({
+            name: z.string(),
+            lat: z.number(),
+            lng: z.number(),
+          })
+        )
+        .optional(),
     }),
     execute: async () => ({}),
   }),
@@ -39,8 +43,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
   const model = getDefaultModels().medium
 
   beforeEach(() => {
-    identityPrompt =
-      "Please create a simple todo list with items: buy groceries, walk the dog, finish project"
+    identityPrompt = "Please create a simple todo list with items: buy groceries, walk the dog, finish project"
     agentSteps = []
   })
 
@@ -117,9 +120,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
 
     expect(result.type).toBe("terminate")
     if (result.type === "terminate") {
-      expect(result.reasoning.toLowerCase()).toMatch(
-        /complete|finished|done|no further action|already/
-      )
+      expect(result.reasoning.toLowerCase()).toMatch(/complete|finished|done|no further action|already/)
       // TODO: This assumes the AI will use the word "complete" in its reasoning.
       // AI responses are non-deterministic - it might say "finished", "done", etc.
     }
@@ -176,11 +177,9 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     // TODO: This test doesn't verify that the AI generates valid parameters for
     // locationDataManager. Given the template string issues seen in other tests,
     // this is a critical gap. Should test parameter generation quality.
-    const identityPrompt =
-      "Please insert some sample locations into the database"
+    const identityPrompt = "Please insert some sample locations into the database"
 
-    const systemMessage =
-      "You manage location data. Insert, update or delete locations as requested."
+    const systemMessage = "You manage location data. Insert, update or delete locations as requested."
 
     const result = await selectToolStrategyV2({
       tools: mockTools,
@@ -227,8 +226,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
     // that relies on AI interpretation.
     const identityPrompt = "Write down these important tasks"
 
-    const actionSystemMessage =
-      "Write and create todo items as requested by the user."
+    const actionSystemMessage = "Write and create todo items as requested by the user."
 
     const result = await selectToolStrategyV2({
       tools: mockTools,

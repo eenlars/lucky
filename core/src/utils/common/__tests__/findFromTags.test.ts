@@ -16,12 +16,7 @@ describe("findFromTags – core & edge cases", () => {
     ["numeric-only tag", "<123>one two three</123>", "123", "one two three"],
     ["preserve whitespace", "<w>  padded  </w>", "w", "  padded  "],
     ["multiline content", "<c>\nline1\nline2\n</c>", "c", "\nline1\nline2\n"],
-    [
-      "nested different tags",
-      "<outer><inner>x</inner></outer>",
-      "outer",
-      "<inner>x</inner>",
-    ],
+    ["nested different tags", "<outer><inner>x</inner></outer>", "outer", "<inner>x</inner>"],
     [
       "nested same tags (should return whole inner block)",
       "<t>start <t>inner</t> end</t>",
@@ -86,19 +81,9 @@ describe("findFromTags – LLM-specific stress cases", () => {
   // ────────────────────────────────────────────────────────────
   // Whitespace & newline weirdness frequently emitted by streams
   test.each([
-    [
-      "newline right after < and before name",
-      "<\nstream>line</stream>",
-      "stream",
-      "line",
-    ],
+    ["newline right after < and before name", "<\nstream>line</stream>", "stream", "line"],
     ["newline right before </", "<block>foo\n</block>", "block", "foo\n"],
-    [
-      "carriage-return pair",
-      "<tag>\r\nhello\r\n</tag>",
-      "tag",
-      "\r\nhello\r\n",
-    ],
+    ["carriage-return pair", "<tag>\r\nhello\r\n</tag>", "tag", "\r\nhello\r\n"],
   ])("%s", (_d, txt, tag, expected) => {
     expect(findFromTags(txt, tag)).toBe(expected)
   })
@@ -128,18 +113,8 @@ describe("findFromTags – LLM-specific stress cases", () => {
   // ────────────────────────────────────────────────────────────
   // Tags embedded inside Markdown / JSON scaffolding
   test.each([
-    [
-      "inside fenced Markdown code",
-      '```json\n{"msg":"<x>hi</x>"}\n```',
-      "x",
-      "hi",
-    ],
-    [
-      "inside triple-quoted string (Python style)",
-      'text = """<note>hello</note>"""',
-      "note",
-      "hello",
-    ],
+    ["inside fenced Markdown code", '```json\n{"msg":"<x>hi</x>"}\n```', "x", "hi"],
+    ["inside triple-quoted string (Python style)", 'text = """<note>hello</note>"""', "note", "hello"],
   ])("%s", (_d, txt, tag, expected) => {
     expect(findFromTags(txt, tag)).toBe(expected)
   })

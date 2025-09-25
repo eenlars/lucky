@@ -1,9 +1,6 @@
 import type { PricingLevel } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
-import type {
-  ActiveModelName,
-  ModelName,
-} from "@core/utils/spending/models.types"
+import type { ActiveModelName, ModelName } from "@core/utils/spending/models.types"
 
 // model utilities - use new providersV2 system
 const getActiveModels = (): ReadonlyArray<ActiveModelName> => {
@@ -16,10 +13,7 @@ const getActiveModelsWithInfo = (): string => {
     .join(";")
 }
 
-export const ACTIVE_MODEL_NAMES = getActiveModels() as [
-  ActiveModelName,
-  ...ActiveModelName[],
-]
+export const ACTIVE_MODEL_NAMES = getActiveModels() as [ActiveModelName, ...ActiveModelName[]]
 export const ACTIVE_MODEL_NAMES_WITH_INFO = getActiveModelsWithInfo()
 
 export const openaiModelsByLevel: Record<PricingLevel, ModelName> = {
@@ -40,9 +34,7 @@ export function getPricingLevel(model: ModelName): PricingLevel {
   }
   const match = info.match(/pricing:(\w+);/)
   if (!match) {
-    console.log(
-      `getPricingLevel: No pricing match found in info for model ${model}: ${info}`
-    )
+    console.log(`getPricingLevel: No pricing match found in info for model ${model}: ${info}`)
     return "medium"
   }
   return match[1] as PricingLevel

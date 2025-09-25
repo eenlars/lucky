@@ -1,10 +1,7 @@
 import type { Page } from "puppeteer"
 import type { InputType } from "./main"
 
-export async function handleNavigate(
-  page: Page,
-  input: InputType
-): Promise<any> {
+export async function handleNavigate(page: Page, input: InputType): Promise<any> {
   if (!input.url) {
     throw new Error("URL is required for navigate operation")
   }
@@ -16,10 +13,7 @@ export async function handleNavigate(
   return { html, url, success: true }
 }
 
-export async function handleClick(
-  _page: Page,
-  _input: InputType
-): Promise<any> {
+export async function handleClick(_page: Page, _input: InputType): Promise<any> {
   // if (!input.selector) {
   //   throw new Error("Selector is required for click operation")
   // }
@@ -28,10 +22,7 @@ export async function handleClick(
   // return { success: true, data: { clicked: input.selector } }
 }
 
-export async function handleWaitFor(
-  _page: Page,
-  _input: InputType
-): Promise<any> {
+export async function handleWaitFor(_page: Page, _input: InputType): Promise<any> {
   // if (!input.waitTime) {
   //   throw new Error("waitTime is required for waitFor operation")
   // }
@@ -56,10 +47,7 @@ export async function handleWaitFor(
   // return { success: true, data: { waitedFor: input.waitCondition } }
 }
 
-export async function handleCheckElement(
-  _page: Page,
-  _input: InputType
-): Promise<any> {
+export async function handleCheckElement(_page: Page, _input: InputType): Promise<any> {
   // if (!input.selector) {
   //   throw new Error("Selector is required for checkElement operation")
   // }
@@ -138,10 +126,7 @@ export async function handleGetPageInfo(_page: Page): Promise<any> {
   // }
 }
 
-export async function handleExecuteScript(
-  _page: Page,
-  _input: InputType
-): Promise<any> {
+export async function handleExecuteScript(_page: Page, _input: InputType): Promise<any> {
   // if (!input.script) {
   //   throw new Error("Script is required for executeScript operation")
   // }

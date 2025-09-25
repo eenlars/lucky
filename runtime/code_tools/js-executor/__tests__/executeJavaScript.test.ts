@@ -18,9 +18,7 @@ describe("executeJavaScript", () => {
 
     // Test functions and closures
     expect(executeJavaScript("((x) => x * 2)(5)")).toBe(10)
-    expect(executeJavaScript("(() => { let x = 10; return x + 5; })()")).toBe(
-      15
-    )
+    expect(executeJavaScript("(() => { let x = 10; return x + 5; })()")).toBe(15)
 
     // Test complex expressions with return
     expect(

@@ -7,12 +7,7 @@ interface SubNavItemProps {
   isActive?: boolean
 }
 
-export function SubNavItem({ 
-  href, 
-  children, 
-  delay = 0,
-  isActive = false 
-}: SubNavItemProps) {
+export function SubNavItem({ href, children, delay = 0, isActive = false }: SubNavItemProps) {
   return (
     <a className="block group/child" href={href}>
       <div className="relative">
@@ -22,9 +17,7 @@ export function SubNavItem({
         >
           <span
             className={`text-xs font-medium transition-colors duration-200 group-hover/child:text-primary whitespace-nowrap overflow-hidden ${
-              isActive 
-                ? "text-primary" 
-                : "text-[#888]"
+              isActive ? "text-primary" : "text-[#888]"
             }`}
           >
             {children}

@@ -2,12 +2,7 @@
 
 import { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
 // Button no longer used for model chooser
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/react-flow-visualization/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 // Removed custom Popover-based chooser; using simple Select instead
 import {
@@ -29,10 +24,7 @@ import {
 } from "@core/tools/tool.types"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
 import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
-import type {
-  AllowedModelName,
-  ModelPricingV2,
-} from "@core/utils/spending/models.types"
+import type { AllowedModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
@@ -43,12 +35,7 @@ export interface NodeDetailsDialogProps {
   onSave?: (nodeId: string, updates: Partial<WorkflowNodeData>) => void
 }
 
-export function NodeDetailsDialog({
-  open,
-  onOpenChange,
-  nodeData,
-  onSave,
-}: NodeDetailsDialogProps) {
+export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: NodeDetailsDialogProps) {
   const [data, setData] = useState(nodeData)
   const [isEditingId, setIsEditingId] = useState(false)
   const [nodeIdDraft, setNodeIdDraft] = useState(nodeData.nodeId || "")
@@ -182,10 +169,7 @@ export function NodeDetailsDialog({
     setIsEditingId(false)
   }, [nodeData])
 
-  const outEdgeCount = useMemo(
-    () => edges.filter((e) => e.source === nodeData.nodeId).length,
-    [edges, nodeData.nodeId]
-  )
+  const outEdgeCount = useMemo(() => edges.filter((e) => e.source === nodeData.nodeId).length, [edges, nodeData.nodeId])
   const canSetHandOffType = (data.handOffs?.length || 0) > 1 || outEdgeCount > 1
 
   // const addHandoff = () => {
@@ -214,10 +198,7 @@ export function NodeDetailsDialog({
     }
   }, [data?.modelName])
 
-  const activeModels: string[] = useMemo(
-    () => getActiveModelNames().map((m) => String(m)),
-    []
-  )
+  const activeModels: string[] = useMemo(() => getActiveModelNames().map((m) => String(m)), [])
 
   // show raw model id (e.g., openai/gpt-4.1-mini)
   const formatModelDisplayName = (modelName?: string) => modelName || ""
@@ -227,8 +208,7 @@ export function NodeDetailsDialog({
 
   // Keep helpers in case we reintroduce richer display; unused for simple dropdown
   const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
-  const _pricingToCredits = (_pricing?: "low" | "medium" | "high" | null) =>
-    undefined
+  const _pricingToCredits = (_pricing?: "low" | "medium" | "high" | null) => undefined
 
   const formatDollars = (value?: number | null) => {
     if (value === null || value === undefined) return "-"
@@ -351,13 +331,9 @@ export function NodeDetailsDialog({
             </div>
             {selectedModelPricing && (
               <div className="pl-20 text-xs text-slate-600">
-                <span>
-                  Input {formatDollars(selectedModelPricing.input)}/1M
-                </span>
+                <span>Input {formatDollars(selectedModelPricing.input)}/1M</span>
                 <span className="mx-2">•</span>
-                <span>
-                  Output {formatDollars(selectedModelPricing.output)}/1M
-                </span>
+                <span>Output {formatDollars(selectedModelPricing.output)}/1M</span>
               </div>
             )}
 
@@ -370,10 +346,7 @@ export function NodeDetailsDialog({
                     onValueChange={(value) =>
                       setData((prev) => ({
                         ...prev,
-                        handOffType:
-                          value === "parallel"
-                            ? ("parallel" as const)
-                            : undefined,
+                        handOffType: value === "parallel" ? ("parallel" as const) : undefined,
                       }))
                     }
                   >
@@ -381,12 +354,8 @@ export function NodeDetailsDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="sequential">
-                        Sequential (default)
-                      </SelectItem>
-                      <SelectItem value="parallel">
-                        Parallel (fan-out)
-                      </SelectItem>
+                      <SelectItem value="sequential">Sequential (default)</SelectItem>
+                      <SelectItem value="parallel">Parallel (fan-out)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -406,9 +375,7 @@ export function NodeDetailsDialog({
                   </span>
                 ))}
                 {(!data.handOffs || data.handOffs.length === 0) && (
-                  <div className="text-xs text-gray-500">
-                    Connections are managed in the graph view
-                  </div>
+                  <div className="text-xs text-gray-500">Connections are managed in the graph view</div>
                 )}
               </div>
             </div>
@@ -427,8 +394,7 @@ export function NodeDetailsDialog({
                 <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
                   {ACTIVE_MCP_TOOL_NAMES.map((tool, index) => {
                     const selected = data.mcpTools?.includes(tool)
-                    const description =
-                      ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                    const description = ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
                     return (
                       <button
                         key={tool}
@@ -436,17 +402,13 @@ export function NodeDetailsDialog({
                         onClick={() => toggleMcpTool(tool)}
                         aria-pressed={selected}
                         className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
-                          selected
-                            ? "bg-slate-50"
-                            : "bg-white hover:bg-slate-50"
+                          selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
                         }`}
                       >
                         <div className="flex items-start gap-2">
                           <div
                             className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
-                              selected
-                                ? "bg-slate-600 border-slate-600"
-                                : "bg-white border-gray-300"
+                              selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
                             }`}
                           >
                             {selected && (
@@ -464,18 +426,14 @@ export function NodeDetailsDialog({
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-800">
-                                {tool}
-                              </span>
+                              <span className="text-sm font-medium text-slate-800">{tool}</span>
                               {index + 1 <= 9 && (
                                 <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
                                   ⌥{index + 1}
                                 </kbd>
                               )}
                             </div>
-                            <div className="text-xs text-slate-600 line-clamp-2">
-                              {description}
-                            </div>
+                            <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
                           </div>
                         </div>
                       </button>
@@ -490,8 +448,7 @@ export function NodeDetailsDialog({
                 <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
                   {ACTIVE_CODE_TOOL_NAMES.map((tool, index) => {
                     const selected = data.codeTools?.includes(tool)
-                    const description =
-                      ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                    const description = ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
                     return (
                       <button
                         key={tool}
@@ -499,17 +456,13 @@ export function NodeDetailsDialog({
                         onClick={() => toggleCodeTool(tool)}
                         aria-pressed={selected}
                         className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
-                          selected
-                            ? "bg-slate-50"
-                            : "bg-white hover:bg-slate-50"
+                          selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
                         }`}
                       >
                         <div className="flex items-start gap-2">
                           <div
                             className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
-                              selected
-                                ? "bg-slate-600 border-slate-600"
-                                : "bg-white border-gray-300"
+                              selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
                             }`}
                           >
                             {selected && (
@@ -527,19 +480,14 @@ export function NodeDetailsDialog({
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-800">
-                                {tool}
-                              </span>
-                              {ACTIVE_MCP_TOOL_NAMES.length + index + 1 <=
-                                9 && (
+                              <span className="text-sm font-medium text-slate-800">{tool}</span>
+                              {ACTIVE_MCP_TOOL_NAMES.length + index + 1 <= 9 && (
                                 <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
                                   ⌥{ACTIVE_MCP_TOOL_NAMES.length + index + 1}
                                 </kbd>
                               )}
                             </div>
-                            <div className="text-xs text-slate-600 line-clamp-2">
-                              {description}
-                            </div>
+                            <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
                           </div>
                         </div>
                       </button>
@@ -553,13 +501,9 @@ export function NodeDetailsDialog({
               <div className="space-y-2">
                 <h3 className="text-base font-normal">Status</h3>
                 <div className="p-2.5 border border-gray-200 rounded">
-                  <div className="text-sm capitalize">
-                    {data.status || "ready"}
-                  </div>
+                  <div className="text-sm capitalize">{data.status || "ready"}</div>
                   {data.messageCount !== undefined && data.messageCount > 0 && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      {data.messageCount} messages processed
-                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{data.messageCount} messages processed</div>
                   )}
                 </div>
               </div>
@@ -568,9 +512,7 @@ export function NodeDetailsDialog({
         </div>
 
         <div className="pt-3 border-t">
-          <p className="text-xs text-muted-foreground text-center">
-            Changes are saved automatically
-          </p>
+          <p className="text-xs text-muted-foreground text-center">Changes are saved automatically</p>
         </div>
       </DialogContent>
     </Dialog>

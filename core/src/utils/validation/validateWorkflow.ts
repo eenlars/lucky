@@ -41,10 +41,7 @@ export async function validateAndRepairWorkflow(
       )
 
       // Repair if validation failed
-      const { data, usdCost: enhancementCost } = await repairWorkflow(
-        finalConfig,
-        verificationResult
-      )
+      const { data, usdCost: enhancementCost } = await repairWorkflow(finalConfig, verificationResult)
 
       if (data) {
         finalConfig = { ...finalConfig, nodes: data.nodes }
@@ -54,11 +51,7 @@ export async function validateAndRepairWorkflow(
       retryCount++
     } catch (error) {
       if (CONFIG.logging.override.API) {
-        lgg.error(
-          "❌ Error in workflow validation and repair:",
-          error,
-          JSON.stringify(finalConfig, null, 2)
-        )
+        lgg.error("❌ Error in workflow validation and repair:", error, JSON.stringify(finalConfig, null, 2))
       }
 
       if (onFail === "returnNull") {

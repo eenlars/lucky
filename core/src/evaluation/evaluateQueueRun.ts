@@ -2,10 +2,7 @@ import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateF
 import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
 import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/workflow/registerWorkflow"
 import { R, type RS } from "@core/utils/types"
-import type {
-  EvaluationResult,
-  QueueRunResult,
-} from "@core/workflow/runner/types"
+import type { EvaluationResult, QueueRunResult } from "@core/workflow/runner/types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
 import { Json, JSONN } from "@lucky/shared"
@@ -46,8 +43,7 @@ export const evaluateQueueRun = async ({
     }
   }
 
-  if (!fitnessResult.success)
-    return R.error(fitnessResult.error, fitnessResult.usdCost)
+  if (!fitnessResult.success) return R.error(fitnessResult.error, fitnessResult.usdCost)
 
   const fitness = fitnessResult.data
 
@@ -63,8 +59,7 @@ export const evaluateQueueRun = async ({
       actualOutput: JSONN.show(queueRunResult.agentSteps),
     },
     workflow_output: evaluation as unknown as Json,
-    expected_output:
-      typeof evaluation === "string" ? evaluation : JSON.stringify(evaluation),
+    expected_output: typeof evaluation === "string" ? evaluation : JSON.stringify(evaluation),
     actual_output: queueRunResult.finalWorkflowOutput,
     feedback: feedbackResult?.data ?? "",
     fitness_score: Math.round(fitness.score),

@@ -14,10 +14,7 @@ export async function GET() {
     const key = process.env.OPENROUTER_API_KEY
 
     if (!key) {
-      return NextResponse.json(
-        { error: "OpenRouter API key not configured" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "OpenRouter API key not configured" }, { status: 500 })
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/auth/key", {
@@ -28,19 +25,13 @@ export async function GET() {
     })
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch OpenRouter status" },
-        { status: response.status }
-      )
+      return NextResponse.json({ error: "Failed to fetch OpenRouter status" }, { status: response.status })
     }
 
     const data: OpenRouterResponse = await response.json()
 
     return NextResponse.json(data)
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

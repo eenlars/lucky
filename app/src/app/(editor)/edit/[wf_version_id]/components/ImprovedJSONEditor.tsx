@@ -12,11 +12,7 @@ interface ImprovedJSONEditorProps {
   isLoading: boolean
 }
 
-export default function ImprovedJSONEditor({
-  content,
-  onChange,
-  isLoading,
-}: ImprovedJSONEditorProps) {
+export default function ImprovedJSONEditor({ content, onChange, isLoading }: ImprovedJSONEditorProps) {
   const [error, setError] = useState<string | null>(null)
   const [isCopied, setIsCopied] = useState(false)
 
@@ -167,29 +163,14 @@ export default function ImprovedJSONEditor({
           >
             {isCopied ? (
               <>
-                <svg
-                  className="w-3.5 h-3.5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 Copied!
               </>
             ) : (
               <>
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -223,11 +204,7 @@ export default function ImprovedJSONEditor({
               handleFormat()
             }
             // copy shortcut
-            if (
-              (e.metaKey || e.ctrlKey) &&
-              e.key === "c" &&
-              !window.getSelection()?.toString()
-            ) {
+            if ((e.metaKey || e.ctrlKey) && e.key === "c" && !window.getSelection()?.toString()) {
               e.preventDefault()
               handleCopy()
             }

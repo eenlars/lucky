@@ -3,10 +3,7 @@
 import { useMemo, useState, type MouseEvent } from "react"
 
 import { Button } from "@/ui/button"
-import {
-  toWorkflowConfig,
-  type WorkflowConfig,
-} from "@core/workflow/schema/workflow.types"
+import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { MODELS } from "@runtime/settings/constants.client"
 
 interface StructureMiniMapProps {
@@ -28,11 +25,7 @@ export function getNodeCountFromDsl(dsl: WorkflowConfig): number {
   }
 }
 
-export function StructureMiniMap({
-  dsl,
-  width,
-  height,
-}: StructureMiniMapProps) {
+export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) {
   const [showDslInspector, setShowDslInspector] = useState(false)
   const { nodePositions, scale, lines, parsedNodes } = useMemo(() => {
     // Parse DSL if it's a string, otherwise use it directly
@@ -82,10 +75,7 @@ export function StructureMiniMap({
 
     finalNodes.forEach((node) => {
       // for nodes without handoffs, connect them to the end node
-      const handoffs =
-        node.handOffs.length === 0 && node.nodeId !== "end"
-          ? ["end"]
-          : node.handOffs
+      const handoffs = node.handOffs.length === 0 && node.nodeId !== "end" ? ["end"] : node.handOffs
 
       handoffs.forEach((childId) => {
         if (!parents.has(childId)) parents.set(childId, [])
@@ -155,18 +145,11 @@ export function StructureMiniMap({
     // calculate scale if content exceeds container
     const maxLevel = Math.max(...Array.from(levels.values()))
     const totalHeight = (maxLevel + 1) * verticalSpacing + 40
-    const maxNodesAtLevel = Math.max(
-      ...Array.from(levelGroups.values()).map((nodes) => nodes.length)
-    )
-    const totalWidth = Math.max(
-      nodeWidth,
-      (maxNodesAtLevel - 1) * horizontalSpacing + nodeWidth
-    )
+    const maxNodesAtLevel = Math.max(...Array.from(levelGroups.values()).map((nodes) => nodes.length))
+    const totalWidth = Math.max(nodeWidth, (maxNodesAtLevel - 1) * horizontalSpacing + nodeWidth)
 
-    const verticalScale =
-      totalHeight > containerHeight ? containerHeight / totalHeight : 1
-    const horizontalScale =
-      maxNodesAtLevel > 3 ? containerWidth / totalWidth : 1
+    const verticalScale = totalHeight > containerHeight ? containerHeight / totalHeight : 1
+    const horizontalScale = maxNodesAtLevel > 3 ? containerWidth / totalWidth : 1
     const scaleFactor = Math.min(verticalScale, horizontalScale)
 
     // calculate actual bounds of positioned nodes
@@ -223,10 +206,7 @@ export function StructureMiniMap({
       if (!sourcePos) return
 
       // for nodes without handoffs, connect them to the end node
-      const handoffs =
-        node.handOffs.length === 0 && node.nodeId !== "end"
-          ? ["end"]
-          : node.handOffs
+      const handoffs = node.handOffs.length === 0 && node.nodeId !== "end" ? ["end"] : node.handOffs
 
       handoffs.forEach((targetId) => {
         const targetPos = positions.get(targetId)
@@ -251,10 +231,7 @@ export function StructureMiniMap({
   }, [dsl, width, height])
 
   return (
-    <div
-      className="w-full relative overflow-hidden bg-white dark:bg-gray-900"
-      style={{ height: height ?? 200 }}
-    >
+    <div className="w-full relative overflow-hidden bg-white dark:bg-gray-900" style={{ height: height ?? 200 }}>
       {/* DSL Inspector Button */}
       <Button
         onClick={(e: MouseEvent<HTMLButtonElement>) => {

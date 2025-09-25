@@ -141,15 +141,10 @@ const runInspector = defineTool({
                 total_messages: messages?.length || 0,
                 total_cost: workflowData.usd_cost,
                 execution_time: workflowData.end_time
-                  ? new Date(workflowData.end_time).getTime() -
-                    new Date(workflowData.start_time).getTime()
+                  ? new Date(workflowData.end_time).getTime() - new Date(workflowData.start_time).getTime()
                   : Date.now() - new Date(workflowData.start_time).getTime(),
-                failed_nodes:
-                  nodeInvocations?.filter((n) => n.status === "failed")
-                    .length || 0,
-                completed_nodes:
-                  nodeInvocations?.filter((n) => n.status === "completed")
-                    .length || 0,
+                failed_nodes: nodeInvocations?.filter((n) => n.status === "failed").length || 0,
+                completed_nodes: nodeInvocations?.filter((n) => n.status === "completed").length || 0,
               },
             },
             error: null,
@@ -166,11 +161,8 @@ const runInspector = defineTool({
               total_cost: workflowData.usd_cost,
               nodes_executed: nodeInvocations?.length || 0,
               messages_sent: messages?.length || 0,
-              current_stage:
-                workflowData.status === "running" ? "In Progress" : "Completed",
-              latest_node: nodeInvocations?.length
-                ? nodeInvocations[nodeInvocations.length - 1]?.node_id
-                : null,
+              current_stage: workflowData.status === "running" ? "In Progress" : "Completed",
+              latest_node: nodeInvocations?.length ? nodeInvocations[nodeInvocations.length - 1]?.node_id : null,
               fitness_score: workflowData.fitness_score,
               run_id: workflowData.run_id,
               generation_id: workflowData.generation_id,
@@ -196,16 +188,11 @@ const runInspector = defineTool({
                   tools: node.NodeVersion?.tools,
                   output_preview:
                     typeof node.output === "string"
-                      ? node.output.substring(0, 200) +
-                        (node.output.length > 200 ? "..." : "")
+                      ? node.output.substring(0, 200) + (node.output.length > 200 ? "..." : "")
                       : JSON.stringify(node.output).substring(0, 200) + "...",
                 })) || [],
               total_nodes: nodeInvocations?.length || 0,
-              total_cost:
-                nodeInvocations?.reduce(
-                  (sum, node) => sum + (node.usd_cost || 0),
-                  0
-                ) || 0,
+              total_cost: nodeInvocations?.reduce((sum, node) => sum + (node.usd_cost || 0), 0) || 0,
             },
             error: null,
           }
@@ -223,18 +210,12 @@ const runInspector = defineTool({
                   sequence: msg.seq,
                   created_at: msg.created_at,
                   payload_type: (msg.payload as any)?.kind || "unknown",
-                  payload_preview:
-                    JSON.stringify(msg.payload).substring(0, 200) + "...",
+                  payload_preview: JSON.stringify(msg.payload).substring(0, 200) + "...",
                   origin_invocation_id: msg.origin_invocation_id,
                   target_invocation_id: msg.target_invocation_id,
                 })) || [],
               message_flow:
-                messages
-                  ?.map(
-                    (msg) =>
-                      `${msg.from_node_id} -> ${msg.to_node_id} (${msg.role})`
-                  )
-                  .join(" | ") || "",
+                messages?.map((msg) => `${msg.from_node_id} -> ${msg.to_node_id} (${msg.role})`).join(" | ") || "",
               total_messages: messages?.length || 0,
             },
             error: null,
@@ -264,23 +245,15 @@ const runInspector = defineTool({
                 {} as Record<string, number>
               ),
               most_expensive_node:
-                nodeCosts.length > 0
-                  ? nodeCosts.reduce((max, node) =>
-                      node.cost > max.cost ? node : max
-                    )
-                  : null,
+                nodeCosts.length > 0 ? nodeCosts.reduce((max, node) => (node.cost > max.cost ? node : max)) : null,
               average_cost_per_node:
-                nodeCosts.length > 0
-                  ? nodeCosts.reduce((sum, node) => sum + node.cost, 0) /
-                    nodeCosts.length
-                  : 0,
+                nodeCosts.length > 0 ? nodeCosts.reduce((sum, node) => sum + node.cost, 0) / nodeCosts.length : 0,
             },
             error: null,
           }
 
         case "errors":
-          const failedNodes =
-            nodeInvocations?.filter((node) => node.status === "failed") || []
+          const failedNodes = nodeInvocations?.filter((node) => node.status === "failed") || []
           const errorMessages =
             messages?.filter((msg) => {
               const payload = msg.payload as any

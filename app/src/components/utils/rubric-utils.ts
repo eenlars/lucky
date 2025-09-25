@@ -17,9 +17,7 @@ export function calculateTotalMaxPoints(criteria: RubricCriteria[]): number {
   return criteria.reduce((sum, c) => sum + c.maxPoints, 0)
 }
 
-export function calculateTotalAchievedPoints(
-  criteria: RubricCriteria[]
-): number {
+export function calculateTotalAchievedPoints(criteria: RubricCriteria[]): number {
   return criteria.reduce((sum, c) => sum + (c.achievedPoints || 0), 0)
 }
 
@@ -27,9 +25,7 @@ export function hasResults(criteria: RubricCriteria[]): boolean {
   return criteria.some((c) => c.achievedPoints !== null)
 }
 
-export function generateFakeScores(
-  criteria: RubricCriteria[]
-): RubricCriteria[] {
+export function generateFakeScores(criteria: RubricCriteria[]): RubricCriteria[] {
   return criteria.map((c) => ({
     ...c,
     achievedPoints: Math.round(Math.random() * c.maxPoints),

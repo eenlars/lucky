@@ -65,11 +65,7 @@ describe("GPEvaluatorAdapter", () => {
     const { GPEvaluatorAdapter: GPEvaluatorAdapterFail } = await import(
       "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
-    const evaluator = new GPEvaluatorAdapterFail(
-      [createMockWorkflowIO()],
-      "test goal",
-      "test analysis"
-    )
+    const evaluator = new GPEvaluatorAdapterFail([createMockWorkflowIO()], "test goal", "test analysis")
     const genome = await createMockGenome()
 
     const result = await evaluator.evaluate(genome, {
@@ -95,15 +91,9 @@ describe("GPEvaluatorAdapter", () => {
       },
     }))
 
-    const { GPEvaluatorAdapter } = await import(
-      "@core/evaluation/evaluators/GPEvaluatorAdapter"
-    )
+    const { GPEvaluatorAdapter } = await import("@core/evaluation/evaluators/GPEvaluatorAdapter")
 
-    const evaluator = new GPEvaluatorAdapter(
-      [createMockWorkflowIO()],
-      "test goal",
-      "test analysis"
-    )
+    const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
     const genome = await createMockGenome()
 
     const result = await evaluator.evaluate(genome, {
@@ -120,11 +110,7 @@ describe("GPEvaluatorAdapter", () => {
     const { GPEvaluatorAdapter: GPEvaluatorAdapterCalls } = await import(
       "@core/evaluation/evaluators/GPEvaluatorAdapter"
     )
-    const evaluator = new GPEvaluatorAdapterCalls(
-      [createMockWorkflowIO()],
-      "test goal",
-      "test analysis"
-    )
+    const evaluator = new GPEvaluatorAdapterCalls([createMockWorkflowIO()], "test goal", "test analysis")
     const genome = await createMockGenome()
 
     genome.getEvaluationInput.mockReturnValue({ type: "prompt-only" })
@@ -137,20 +123,12 @@ describe("GPEvaluatorAdapter", () => {
 
     expect(result.success).toBe(true)
     expect(result.data?.fitness?.score).toBe(1.0)
-    expect(result.data?.feedback).toBe(
-      "Prompt-only workflow - evaluation skipped"
-    )
+    expect(result.data?.feedback).toBe("Prompt-only workflow - evaluation skipped")
   })
 
   it("calls genome methods correctly", async () => {
-    const { GPEvaluatorAdapter } = await import(
-      "@core/evaluation/evaluators/GPEvaluatorAdapter"
-    )
-    const evaluator = new GPEvaluatorAdapter(
-      [createMockWorkflowIO()],
-      "test goal",
-      "test analysis"
-    )
+    const { GPEvaluatorAdapter } = await import("@core/evaluation/evaluators/GPEvaluatorAdapter")
+    const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
     const genome = await createMockGenome()
 
     await evaluator.evaluate(genome, {

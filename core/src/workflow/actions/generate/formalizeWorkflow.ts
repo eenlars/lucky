@@ -8,15 +8,9 @@ import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
-import type {
-  AfterGenerationOptions,
-  GenerationOptions,
-} from "@core/workflow/actions/generate/generateWF.types"
+import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import {
-  handleWorkflowCompletion,
-  WorkflowConfigSchemaEasy,
-} from "@core/workflow/schema/workflowSchema"
+import { handleWorkflowCompletion, WorkflowConfigSchemaEasy } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
 import { getDefaultModels } from "@runtime/settings/models"
 
@@ -27,9 +21,7 @@ export async function formalizeWorkflow(
 ): Promise<RS<WorkflowConfig>> {
   console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))
   // Sanitize base workflow for the prompt to avoid advertising inactive tools
-  const baseSanitized = options.workflowConfig
-    ? sanitizeConfigTools(options.workflowConfig)
-    : undefined
+  const baseSanitized = options.workflowConfig ? sanitizeConfigTools(options.workflowConfig) : undefined
 
   const normalizedConfigNodes = baseSanitized?.nodes.map((node) => {
     return {
@@ -71,9 +63,7 @@ ${createWorkflowPrompt}
 }
 
 Available code tools: ${toolsExplanations("code")}
-Available MCP tools: ${Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).join(
-    ", "
-  )}
+Available MCP tools: ${Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).join(", ")}
 ${WORKFLOW_GENERATION_RULES}
 `
   const userPrompt = `
@@ -94,17 +84,11 @@ Create 1 workflow configuration for: ${prompt}
   })
 
   if (!response.success) {
-    return R.error(
-      `Failed to generate workflow in formalizeWorkflow. error: ${response.error}`,
-      response.usdCost || 0
-    )
+    return R.error(`Failed to generate workflow in formalizeWorkflow. error: ${response.error}`, response.usdCost || 0)
   }
 
   const workflowConfig = response.data
-  const handledWorkflow = handleWorkflowCompletion(
-    options.workflowConfig ?? null,
-    workflowConfig
-  )
+  const handledWorkflow = handleWorkflowCompletion(options.workflowConfig ?? null, workflowConfig)
 
   // defensively sanitize any inactive/unknown tools that may have crept in
   const sanitizedHandledWorkflow = sanitizeConfigTools(handledWorkflow)
@@ -126,16 +110,10 @@ Create 1 workflow configuration for: ${prompt}
     repairOptions = { maxRetries: 1, onFail: "returnNull" }
   }
 
-  const { finalConfig, cost } = await validateAndRepairWorkflow(
-    sanitizedHandledWorkflow,
-    repairOptions
-  )
+  const { finalConfig, cost } = await validateAndRepairWorkflow(sanitizedHandledWorkflow, repairOptions)
 
   if (finalConfig === null) {
-    return R.error(
-      "Failed to enhance workflow, no final config",
-      response.usdCost + cost
-    )
+    return R.error("Failed to enhance workflow, no final config", response.usdCost + cost)
   }
 
   return R.success(finalConfig, response.usdCost + cost)

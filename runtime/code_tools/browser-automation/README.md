@@ -477,12 +477,7 @@ it("should complete full interaction flow", async () => {
 
 ```typescript
 await browserAutomation(operation, {
-  browserArgs: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--memory-pressure-off",
-  ],
+  browserArgs: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--memory-pressure-off"],
   timeout: 30000,
   cleanup: { closePages: true },
 })

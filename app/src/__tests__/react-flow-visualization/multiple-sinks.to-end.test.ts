@@ -63,9 +63,7 @@ describe("multiple sinks attach to a single end node", () => {
     const endNodes = nodes.filter((n) => n.id === "end")
     expect(endNodes).toHaveLength(1)
     const pairs = edges.map((e) => `${e.source}->${e.target}`)
-    expect(pairs).toEqual(
-      expect.arrayContaining(["start->a", "a->b", "b->end", "c->end"])
-    )
+    expect(pairs).toEqual(expect.arrayContaining(["start->a", "a->b", "b->end", "c->end"]))
   })
 
   it("does not duplicate end edge when handOffs already include end", () => {
@@ -88,13 +86,9 @@ describe("multiple sinks attach to a single end node", () => {
     const { nodes, edges } = initialSetupConfig(cfg)
     const endNodes = nodes.filter((n) => n.id === "end")
     expect(endNodes).toHaveLength(1)
-    const endPairs = edges
-      .map((e) => `${e.source}->${e.target}`)
-      .filter((p) => p === "x->end")
+    const endPairs = edges.map((e) => `${e.source}->${e.target}`).filter((p) => p === "x->end")
     expect(endPairs).toHaveLength(1)
   })
 
-  it.todo(
-    "reserve id 'end' so a user-defined nodeId 'end' does not create duplicate nodes"
-  )
+  it.todo("reserve id 'end' so a user-defined nodeId 'end' does not create duplicate nodes")
 })

@@ -20,9 +20,7 @@ export class VerificationCache {
   /**
    * Verify workflow config with cache
    */
-  async verifyWithCache(
-    genome: Genome
-  ): Promise<{ valid: boolean; error?: string }> {
+  async verifyWithCache(genome: Genome): Promise<{ valid: boolean; error?: string }> {
     const hash = genome.hash()
 
     // Check cache first
@@ -92,12 +90,7 @@ export async function workflowConfigToGenome({
     lgg.warn("WARNING! ONLY TEST ENVIRONMENT")
     return {
       success: true,
-      data: new Genome(
-        workflowGenome,
-        evaluationInput,
-        _evolutionContext,
-        verboseId
-      ),
+      data: new Genome(workflowGenome, evaluationInput, _evolutionContext, verboseId),
       usdCost: 0,
       error: undefined,
     }
@@ -112,12 +105,7 @@ export async function workflowConfigToGenome({
     })
     return {
       success: true,
-      data: new Genome(
-        workflowGenome,
-        evaluationInput,
-        _evolutionContext,
-        workflowVersionId
-      ),
+      data: new Genome(workflowGenome, evaluationInput, _evolutionContext, workflowVersionId),
       usdCost: 0,
       error: undefined,
     }

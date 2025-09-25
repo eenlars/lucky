@@ -14,12 +14,8 @@ const longDescription =
 const todoItemSchema = z.object({
   id: z.string().describe("Unique identifier for the todo item"),
   content: z.string().min(1).describe("The task description or content"),
-  status: z
-    .enum(["pending", "in_progress", "completed"])
-    .describe("Current status of the task"),
-  priority: z
-    .enum(["high", "medium", "low"])
-    .describe("Priority level of the task"),
+  status: z.enum(["pending", "in_progress", "completed"]).describe("Current status of the task"),
+  priority: z.enum(["high", "medium", "low"]).describe("Priority level of the task"),
 })
 
 /**
@@ -33,10 +29,7 @@ const todoWrite = defineTool({
     todos: z.array(todoItemSchema).min(0, "Todos array is required"),
   }),
 
-  async execute(
-    params,
-    externalContext
-  ): Promise<CodeToolResult<TodoWriteResult>> {
+  async execute(params, externalContext): Promise<CodeToolResult<TodoWriteResult>> {
     try {
       const workflowInvocationId = externalContext.workflowInvocationId
       const { todos } = params
@@ -51,9 +44,7 @@ const todoWrite = defineTool({
       })
 
       // validation: only one task can be in_progress at a time
-      const inProgressTodos = todos.filter(
-        (todo) => todo.status === "in_progress"
-      )
+      const inProgressTodos = todos.filter((todo) => todo.status === "in_progress")
       if (inProgressTodos.length > 1) {
         return Tools.createFailure("todoWrite", {
           location: "todoWrite:validation:multipleInProgress",
@@ -83,12 +74,8 @@ const todoWrite = defineTool({
         message = "Todo list has been cleared."
       } else {
         const pendingCount = todos?.filter((t) => t.status === "pending").length
-        const inProgressCount = todos?.filter(
-          (t) => t.status === "in_progress"
-        ).length
-        const completedCount = todos?.filter(
-          (t) => t.status === "completed"
-        ).length
+        const inProgressCount = todos?.filter((t) => t.status === "in_progress").length
+        const completedCount = todos?.filter((t) => t.status === "completed").length
 
         message += ` ${
           todos?.length ?? 0

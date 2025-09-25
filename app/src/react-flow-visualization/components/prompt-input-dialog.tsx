@@ -45,14 +45,9 @@ export function PromptInputDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="sm:max-w-[600px]"
-        data-testid="prompt-input-dialog"
-      >
+      <DialogContent className="sm:max-w-[600px]" data-testid="prompt-input-dialog">
         <DialogHeader>
-          <DialogTitle>
-            {isExecuting ? "Workflow Execution" : "Run Workflow"}
-          </DialogTitle>
+          <DialogTitle>{isExecuting ? "Workflow Execution" : "Run Workflow"}</DialogTitle>
           <DialogDescription>
             {loading
               ? "Workflow is running. Please wait for completion."
@@ -74,9 +69,7 @@ export function PromptInputDialog({
                 autoFocus
                 data-testid="prompt-input-textarea"
               />
-              <p className="text-xs text-muted-foreground">
-                Press Cmd/Ctrl + Enter to execute
-              </p>
+              <p className="text-xs text-muted-foreground">Press Cmd/Ctrl + Enter to execute</p>
             </>
           )}
           {logs.length > 0 && (
@@ -99,11 +92,7 @@ export function PromptInputDialog({
             {logs.length > 0 && !loading ? "Close" : "Cancel"}
           </Button>
           {!isExecuting && (
-            <Button
-              onClick={handleExecute}
-              disabled={!prompt.trim() || loading}
-              data-testid="execute-workflow-button"
-            >
+            <Button onClick={handleExecute} disabled={!prompt.trim() || loading} data-testid="execute-workflow-button">
               Execute Workflow
             </Button>
           )}

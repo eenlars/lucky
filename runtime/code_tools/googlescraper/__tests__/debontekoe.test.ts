@@ -25,14 +25,11 @@ describe("De Bonte Koe Integration Test", () => {
     expect(result.output?.businesses.length).toBeGreaterThan(0)
 
     // transform to standardized format to test city extraction
-    const standardizedData = transformLocationData(
-      result.output?.businesses || []
-    )
+    const standardizedData = transformLocationData(result.output?.businesses || [])
 
     // find the De Bonte Koe entry
     const bonteKoeEntry = standardizedData.find(
-      (business) =>
-        business.name && business.name.toLowerCase().includes("bonte koe")
+      (business) => business.name && business.name.toLowerCase().includes("bonte koe")
     )
 
     expect(bonteKoeEntry).toBeDefined()

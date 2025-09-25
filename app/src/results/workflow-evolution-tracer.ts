@@ -5,9 +5,7 @@ import type { Tables } from "@lucky/shared"
 
 import type { EvolutionGraph, EvolutionNode } from "@/lib/evolution-utils"
 
-export async function traceWorkflowEvolution(
-  invocationId: string
-): Promise<EvolutionGraph | null> {
+export async function traceWorkflowEvolution(invocationId: string): Promise<EvolutionGraph | null> {
   console.log(`Tracing evolution for invocation: ${invocationId}`)
 
   // 1. get the target invocation
@@ -121,14 +119,10 @@ export async function traceWorkflowEvolution(
 
   // 6. create evolution nodes
   const allNodes: EvolutionNode[] = allInvocations.map((inv) => {
-    const version = allVersions.find(
-      (v) => v.wf_version_id === inv.wf_version_id
-    )
+    const version = allVersions.find((v) => v.wf_version_id === inv.wf_version_id)
 
     // Find the generation for this invocation
-    const invGeneration = allGenerations.find(
-      (g) => g.generation_id === inv.generation_id
-    )
+    const invGeneration = allGenerations.find((g) => g.generation_id === inv.generation_id)
 
     const startTime = new Date(inv.start_time)
     const endTime = inv.end_time ? new Date(inv.end_time) : null
@@ -158,9 +152,7 @@ export async function traceWorkflowEvolution(
 
   // 7. create accuracy progression
   const accuracyProgression = allNodes
-    .filter(
-      (node) => node.accuracy !== undefined && node.status === "completed"
-    )
+    .filter((node) => node.accuracy !== undefined && node.status === "completed")
     .map((node, index) => ({
       invocationId: node.invocationId,
       accuracy: node.accuracy!,
@@ -168,35 +160,24 @@ export async function traceWorkflowEvolution(
       order: index + 1,
       generationNumber: node.generationNumber,
     }))
-    .sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    )
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
 
   // 8. calculate statistics
   const successfulNodes = allNodes.filter((n) => n.status === "completed")
   const failedNodes = allNodes.filter((n) => n.status === "failed")
-  const accuracies = successfulNodes
-    .filter((n) => n.accuracy !== undefined)
-    .map((n) => n.accuracy!)
-  const fitnessScores = successfulNodes
-    .filter((n) => n.fitnessScore !== undefined)
-    .map((n) => n.fitnessScore!)
+  const accuracies = successfulNodes.filter((n) => n.accuracy !== undefined).map((n) => n.accuracy!)
+  const fitnessScores = successfulNodes.filter((n) => n.fitnessScore !== undefined).map((n) => n.fitnessScore!)
 
   const stats = {
     totalInvocations: allNodes.length,
     successfulInvocations: successfulNodes.length,
     failedInvocations: failedNodes.length,
-    averageAccuracy:
-      accuracies.length > 0
-        ? accuracies.reduce((a, b) => a + b, 0) / accuracies.length
-        : 0,
+    averageAccuracy: accuracies.length > 0 ? accuracies.reduce((a, b) => a + b, 0) / accuracies.length : 0,
     maxAccuracy: accuracies.length > 0 ? Math.max(...accuracies) : 0,
     peakFitnessScore: fitnessScores.length > 0 ? Math.max(...fitnessScores) : 0,
     totalCost: allNodes.reduce((sum, n) => sum + (n.usdCost || 0), 0),
     totalDuration: evolutionRun
-      ? new Date(evolutionRun.endTime || new Date()).getTime() -
-        new Date(evolutionRun.startTime).getTime()
+      ? new Date(evolutionRun.endTime || new Date()).getTime() - new Date(evolutionRun.startTime).getTime()
       : 0,
   }
 

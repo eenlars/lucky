@@ -53,11 +53,7 @@ export class ToolMutation implements MutationOperator {
    * - Uses Poisson distribution for randomness in tool selection
    * - Validates tool existence before applying mutations
    */
-  async execute(
-    mutatedConfig: WorkflowConfig,
-    parent: Genome,
-    _intensity: number
-  ): Promise<number> {
+  async execute(mutatedConfig: WorkflowConfig, parent: Genome, _intensity: number): Promise<number> {
     try {
       // get human-readable workflow description for AI context
       const workflowDescription = parent.toString({
@@ -68,10 +64,7 @@ export class ToolMutation implements MutationOperator {
       const feedback = OPERATORS_WITH_FEEDBACK ? parent.getFeedback() : null
 
       // compile all available tools from both MCP and code tool sets
-      const allAvailableTools = [
-        ...ACTIVE_MCP_TOOL_NAMES,
-        ...ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
-      ] as string[]
+      const allAvailableTools = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT] as string[]
 
       // define schema for structured AI output to ensure valid mutations
       const mutationSchema = z.object({
@@ -91,11 +84,7 @@ export class ToolMutation implements MutationOperator {
             role: "user",
             content: `You are going to change a tool for the following workflow: ${workflowDescription}
 
-            ${
-              OPERATORS_WITH_FEEDBACK
-                ? ` Based on the feedback: ${feedback || "No specific feedback"}`
-                : ""
-            }
+            ${OPERATORS_WITH_FEEDBACK ? ` Based on the feedback: ${feedback || "No specific feedback"}` : ""}
 
             You can do one of the following:
             - remove a tool from one node
@@ -121,15 +110,11 @@ export class ToolMutation implements MutationOperator {
 
       // handle error if exists
       if (!instructions.success) {
-        lgg.error(
-          "Failed to get tool mutation instructions:",
-          instructions.error
-        )
+        lgg.error("Failed to get tool mutation instructions:", instructions.error)
         return instructions.usdCost ?? 0
       }
 
-      const { action, tool, nodeIds, fromNodeId, toNodeId, allNodes } =
-        instructions.data
+      const { action, tool, nodeIds, fromNodeId, toNodeId, allNodes } = instructions.data
 
       // validate tool exists in available tools
       if (!allAvailableTools.includes(tool)) {
@@ -139,9 +124,7 @@ export class ToolMutation implements MutationOperator {
 
       // categorize tool type for proper handling
       const isMCPTool = ACTIVE_MCP_TOOL_NAMES.includes(tool as MCPToolName)
-      const isCodeTool = ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT.includes(
-        tool as CodeToolName
-      )
+      const isCodeTool = ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT.includes(tool as CodeToolName)
 
       // execute the mutation on the workflow configuration
       this.applyToolMutation(
@@ -198,10 +181,7 @@ export class ToolMutation implements MutationOperator {
           mutatedConfig.nodes.forEach((node) => {
             if (isMCPTool && !node.mcpTools.includes(tool as MCPToolName)) {
               node.mcpTools.push(tool as MCPToolName)
-            } else if (
-              isCodeTool &&
-              !node.codeTools.includes(tool as CodeToolName)
-            ) {
+            } else if (isCodeTool && !node.codeTools.includes(tool as CodeToolName)) {
               node.codeTools.push(tool as CodeToolName)
             }
           })
@@ -211,10 +191,7 @@ export class ToolMutation implements MutationOperator {
             if (node) {
               if (isMCPTool && !node.mcpTools.includes(tool as MCPToolName)) {
                 node.mcpTools.push(tool as MCPToolName)
-              } else if (
-                isCodeTool &&
-                !node.codeTools.includes(tool as CodeToolName)
-              ) {
+              } else if (isCodeTool && !node.codeTools.includes(tool as CodeToolName)) {
                 node.codeTools.push(tool as CodeToolName)
               }
             }
@@ -247,9 +224,7 @@ export class ToolMutation implements MutationOperator {
 
       case "move":
         if (fromNodeId && toNodeId) {
-          const fromNode = mutatedConfig.nodes.find(
-            (n) => n.nodeId === fromNodeId
-          )
+          const fromNode = mutatedConfig.nodes.find((n) => n.nodeId === fromNodeId)
           const toNode = mutatedConfig.nodes.find((n) => n.nodeId === toNodeId)
 
           if (fromNode && toNode) {

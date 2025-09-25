@@ -60,9 +60,7 @@ describe("bunk", () => {
 
   it("should handle complex undefined scenarios", () => {
     expect(bunk([undefined, null, ""], "complex")).toBe("complex")
-    expect(bunk([undefined, undefined], "nested-undefined")).toBe(
-      "nested-undefined"
-    )
+    expect(bunk([undefined, undefined], "nested-undefined")).toBe("nested-undefined")
     expect(bunk({}, "empty-obj")).toBe("empty-obj")
   })
 })

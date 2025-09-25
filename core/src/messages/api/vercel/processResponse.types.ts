@@ -77,15 +77,7 @@ export const isTextProcessed = (data: unknown): data is TextProcessed =>
   typeof (data as { cost: number }).cost === "number"
 
 export const isToolProcessed = (data: unknown): data is ToolProcessed =>
-  !!data &&
-  typeof data === "object" &&
-  !isNir(data) &&
-  "type" in data &&
-  (data as { type: string }).type === "tool"
+  !!data && typeof data === "object" && !isNir(data) && "type" in data && (data as { type: string }).type === "tool"
 
 export const isErrorProcessed = (data: unknown): data is ErrorProcessed =>
-  !!data &&
-  typeof data === "object" &&
-  !isNir(data) &&
-  "type" in data &&
-  (data as { type: string }).type === "error"
+  !!data && typeof data === "object" && !isNir(data) && "type" in data && (data as { type: string }).type === "error"

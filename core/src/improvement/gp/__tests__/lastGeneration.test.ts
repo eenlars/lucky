@@ -59,9 +59,7 @@ describe("getLastCompletedGeneration", () => {
       generationId: "test-generation-id",
     })
     expect(mockSupabaseClient.from).toHaveBeenCalledWith("Generation")
-    expect(mockSupabaseChain.select).toHaveBeenCalledWith(
-      "number, generation_id"
-    )
+    expect(mockSupabaseChain.select).toHaveBeenCalledWith("number, generation_id")
     expect(mockSupabaseChain.eq).toHaveBeenCalledWith("run_id", "test-run-id")
     expect(mockSupabaseChain.not).toHaveBeenCalledWith("end_time", "is", null)
     expect(mockSupabaseChain.order).toHaveBeenCalledWith("number", {
@@ -98,9 +96,7 @@ describe("getLastCompletedGeneration", () => {
     const service = new RunService()
     // service.setRunId("test-run-id") -> old way
 
-    await expect(
-      service.getLastCompletedGeneration("test-run-id")
-    ).rejects.toEqual(dbError)
+    await expect(service.getLastCompletedGeneration("test-run-id")).rejects.toEqual(dbError)
     expect(mockLggError).toHaveBeenCalled()
   })
 

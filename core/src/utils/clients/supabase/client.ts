@@ -4,8 +4,7 @@ import { createClient } from "@supabase/supabase-js"
 
 // Create Supabase client with flexible env resolution
 // Prefer server-side secrets if available; fall back to NEXT_PUBLIC only when needed
-const projectId =
-  envi.SUPABASE_PROJECT_ID ?? envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID
+const projectId = envi.SUPABASE_PROJECT_ID ?? envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID
 
 const supabaseUrl = `https://${projectId}.supabase.co`
 

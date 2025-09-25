@@ -22,11 +22,7 @@ interface JSONEditorProps {
   onContentChange?: (content: string) => void
 }
 
-export default function JSONEditor({
-  workflowVersion,
-  initialContent,
-  onContentChange,
-}: JSONEditorProps) {
+export default function JSONEditor({ workflowVersion, initialContent, onContentChange }: JSONEditorProps) {
   const router = useRouter()
 
   const { workflowJSON, updateWorkflowJSON } = useAppStore(
@@ -95,10 +91,7 @@ export default function JSONEditor({
     const autoSaveTimeout = setTimeout(() => {
       // Only auto-save if JSON is valid
       if (!jsonParseError) {
-        localStorage.setItem(
-          `workflow_draft_${workflowVersion.wf_version_id}`,
-          workflowJSON
-        )
+        localStorage.setItem(`workflow_draft_${workflowVersion.wf_version_id}`, workflowJSON)
         setLastSaved(new Date())
       }
     }, 10000)
@@ -111,9 +104,7 @@ export default function JSONEditor({
   useEffect(() => {
     if (!workflowVersion?.wf_version_id || hasRestoredDraftRef.current) return
 
-    const draft = localStorage.getItem(
-      `workflow_draft_${workflowVersion.wf_version_id}`
-    )
+    const draft = localStorage.getItem(`workflow_draft_${workflowVersion.wf_version_id}`)
     if (draft) {
       updateWorkflowJSON(draft)
       setIsDirty(true)
@@ -130,9 +121,7 @@ export default function JSONEditor({
       const verificationResult = await verifyWorkflowWithAPI(workflow)
       setVerificationResult(verificationResult)
       if (!verificationResult.isValid) {
-        showToast.error.validation(
-          `Validation failed: ${verificationResult.errors[0]}`
-        )
+        showToast.error.validation(`Validation failed: ${verificationResult.errors[0]}`)
       }
     } catch (error) {
       const errorResult = createErrorResult(error)
@@ -159,11 +148,7 @@ export default function JSONEditor({
 
   const createErrorResult = (error: unknown) => ({
     isValid: false,
-    errors: [
-      error instanceof Error
-        ? `Verification Error: ${error.message}`
-        : "Unknown verification error",
-    ],
+    errors: [error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"],
   })
 
   const applyOptimizedWorkflow = useCallback(
@@ -188,10 +173,7 @@ export default function JSONEditor({
 
     try {
       const currentWorkflow = parseWorkflowSafely(workflowJSON)
-      const optimizedWorkflow = await generateOptimizedWorkflow(
-        currentWorkflow,
-        feedback
-      )
+      const optimizedWorkflow = await generateOptimizedWorkflow(currentWorkflow, feedback)
 
       applyOptimizedWorkflow(optimizedWorkflow)
     } catch (error) {
@@ -210,10 +192,7 @@ export default function JSONEditor({
     }
   }
 
-  const generateOptimizedWorkflow = async (
-    currentWorkflow: any,
-    userFeedback: string
-  ) => {
+  const generateOptimizedWorkflow = async (currentWorkflow: any, userFeedback: string) => {
     const response = await fetch("/api/workflow/formalize", {
       method: "POST",
       headers: {
@@ -244,8 +223,7 @@ export default function JSONEditor({
   }
 
   const handleOptimizationError = (error: unknown) => {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown optimization error"
+    const errorMessage = error instanceof Error ? error.message : "Unknown optimization error"
     setOptimizeError(`Optimization Error: ${errorMessage}`)
     showToast.error.generic(errorMessage)
   }
@@ -278,9 +256,7 @@ export default function JSONEditor({
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        )
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
       const result = await response.json()
@@ -293,8 +269,7 @@ export default function JSONEditor({
       showToast.success.save("Workflow saved successfully")
       router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to save workflow"
+      const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
       setSaveError(errorMessage)
       showToast.error.save(errorMessage)
     } finally {
@@ -306,9 +281,7 @@ export default function JSONEditor({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if not in an input/textarea (except for save/verify)
-      const isInInput = ["INPUT", "TEXTAREA"].includes(
-        (e.target as Element)?.tagName
-      )
+      const isInInput = ["INPUT", "TEXTAREA"].includes((e.target as Element)?.tagName)
 
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
@@ -321,20 +294,14 @@ export default function JSONEditor({
           case "k":
             if (!isInInput) {
               e.preventDefault()
-              document
-                .querySelector<HTMLTextAreaElement>(
-                  '[placeholder*="Tell me what you want"]'
-                )
-                ?.focus()
+              document.querySelector<HTMLTextAreaElement>('[placeholder*="Tell me what you want"]')?.focus()
             }
             break
           case "d":
             if (!isInInput && workflowVersion) {
               e.preventDefault()
               // Clear local draft
-              localStorage.removeItem(
-                `workflow_draft_${workflowVersion.wf_version_id}`
-              )
+              localStorage.removeItem(`workflow_draft_${workflowVersion.wf_version_id}`)
               setLastSaved(null)
             }
             break
@@ -394,17 +361,10 @@ export default function JSONEditor({
           onOpenSaveModal={() => setShowSaveModal(true)}
         />
 
-        <VerificationBanner
-          verificationResult={verificationResult}
-          onClose={() => setVerificationResult(null)}
-        />
+        <VerificationBanner verificationResult={verificationResult} onClose={() => setVerificationResult(null)} />
 
         <div className="flex-1 overflow-hidden">
-          <ImprovedJSONEditor
-            content={workflowJSON}
-            onChange={handleDslChange}
-            isLoading={isLoading}
-          />
+          <ImprovedJSONEditor content={workflowJSON} onChange={handleDslChange} isLoading={isLoading} />
         </div>
       </div>
 

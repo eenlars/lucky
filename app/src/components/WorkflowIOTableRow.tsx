@@ -20,24 +20,19 @@ type PropsWithConfig = Props & {
   onRun?: (io: WorkflowIO) => Promise<void>
 }
 
-export default function WorkflowIOTableRow({
-  io,
-  workflowConfig,
-  onRun,
-}: PropsWithConfig) {
+export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsWithConfig) {
   const [task, setTask] = useState(io.input)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
-  const { busyIds, resultsById, updateCase, removeCase, runOne } =
-    useRunConfigStore(
-      useShallow((s) => ({
-        busyIds: s.busyIds,
-        resultsById: s.resultsById,
-        updateCase: s.updateCase,
-        removeCase: s.removeCase,
-        runOne: s.runOne,
-      }))
-    )
+  const { busyIds, resultsById, updateCase, removeCase, runOne } = useRunConfigStore(
+    useShallow((s) => ({
+      busyIds: s.busyIds,
+      resultsById: s.resultsById,
+      updateCase: s.updateCase,
+      removeCase: s.removeCase,
+      runOne: s.runOne,
+    }))
+  )
 
   // Use custom hooks
   const metricsHook = useMetrics()
@@ -116,14 +111,10 @@ export default function WorkflowIOTableRow({
           >
             {/* Task */}
             <div className="col-span-3 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">
-                Task
-              </label>
+              <label className="text-xs font-medium text-gray-600 mb-1">Task</label>
               <textarea
                 className={`flex-1 w-full border rounded text-sm p-2 resize-none transition-colors focus:border-blue-500 focus:outline-none ${
-                  task && task.trim().length < 10
-                    ? "border-red-400 bg-red-50"
-                    : "border-gray-300"
+                  task && task.trim().length < 10 ? "border-red-400 bg-red-50" : "border-gray-300"
                 }`}
                 value={task}
                 onChange={(e) => setTask(e.target.value)}
@@ -132,22 +123,16 @@ export default function WorkflowIOTableRow({
                 placeholder="Min 10 characters..."
                 data-testid={`test-case-input-${io.id}`}
               />
-              {task && task.trim().length < 10 && (
-                <p className="text-xs text-red-600 mt-1">Too short</p>
-              )}
+              {task && task.trim().length < 10 && <p className="text-xs text-red-600 mt-1">Too short</p>}
             </div>
 
             {/* Expected Output */}
             <div className="col-span-4 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">
-                Expected Output
-              </label>
+              <label className="text-xs font-medium text-gray-600 mb-1">Expected Output</label>
               <textarea
                 className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
                 value={io.expected}
-                onChange={(e) =>
-                  updateCase(io.id, { expected: e.target.value })
-                }
+                onChange={(e) => updateCase(io.id, { expected: e.target.value })}
                 placeholder="Enter expected output..."
                 disabled={busy}
                 data-testid={`test-case-expected-${io.id}`}
@@ -156,9 +141,7 @@ export default function WorkflowIOTableRow({
 
             {/* Output */}
             <div className="col-span-3 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">
-                Output
-              </label>
+              <label className="text-xs font-medium text-gray-600 mb-1">Output</label>
               {metricsHook.metrics.output ? (
                 <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
                   <SmartContent
@@ -178,14 +161,10 @@ export default function WorkflowIOTableRow({
 
             {/* Metrics */}
             <div className="col-span-1 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">
-                Metrics
-              </label>
+              <label className="text-xs font-medium text-gray-600 mb-1">Metrics</label>
               <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">
-                    Score
-                  </span>
+                  <span className="text-[11px] text-gray-500 font-medium">Score</span>
                   <span
                     className={`text-xs font-bold tabular-nums ${
                       metricsHook.metrics.score !== null
@@ -195,23 +174,17 @@ export default function WorkflowIOTableRow({
                         : "text-gray-400"
                     }`}
                   >
-                    {metricsHook.metrics.score !== null
-                      ? `${metricsHook.metrics.score}%`
-                      : "—"}
+                    {metricsHook.metrics.score !== null ? `${metricsHook.metrics.score}%` : "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">
-                    Time
-                  </span>
+                  <span className="text-[11px] text-gray-500 font-medium">Time</span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.time || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-500 font-medium">
-                    Cost
-                  </span>
+                  <span className="text-[11px] text-gray-500 font-medium">Cost</span>
                   <span className="text-xs font-medium text-gray-700 tabular-nums">
                     {metricsHook.metrics.cost || "—"}
                   </span>
@@ -237,11 +210,7 @@ export default function WorkflowIOTableRow({
                 {busy ? (
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M8 5v10l8-5-8-5z" />
                   </svg>
                 )}
@@ -262,12 +231,7 @@ export default function WorkflowIOTableRow({
                 disabled={!res || !isInvokeWorkflowResult(res)}
                 data-testid={`view-trace-${io.id}`}
               >
-                <svg
-                  className="w-3 h-3 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -283,12 +247,7 @@ export default function WorkflowIOTableRow({
                 title="Feedback"
                 data-testid={`feedback-${io.id}`}
               >
-                <svg
-                  className="w-3 h-3 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -305,18 +264,8 @@ export default function WorkflowIOTableRow({
                 title="Delete"
                 data-testid={`delete-test-case-${io.id}`}
               >
-                <svg
-                  className="w-3 h-3 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>

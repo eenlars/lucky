@@ -30,9 +30,7 @@ export default function EditorHeader({
           <div className="flex items-center gap-4">
             <div>
               <h2 className="text-base font-medium text-gray-900">
-                {workflowVersion
-                  ? workflowVersion.commit_message || "Untitled Workflow"
-                  : "New Workflow"}
+                {workflowVersion ? workflowVersion.commit_message || "Untitled Workflow" : "New Workflow"}
               </h2>
               <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
                 <span>{workflowVersion?.wf_version_id || "Not saved yet"}</span>
@@ -44,12 +42,7 @@ export default function EditorHeader({
                 )}
                 {jsonParseError && (
                   <span className="text-red-600 font-medium flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -62,18 +55,8 @@ export default function EditorHeader({
                 )}
                 {lastSaved && autoSaveEnabled && (
                   <span className="text-green-600 font-medium flex items-center gap-1">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Draft saved {formatTime(lastSaved)}
                   </span>
@@ -89,12 +72,7 @@ export default function EditorHeader({
               href={`/`}
               className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-sm cursor-pointer"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -113,17 +91,8 @@ export default function EditorHeader({
           )}
 
           <div className="relative group">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2 text-gray-400 hover:text-gray-600"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+            <Button variant="ghost" size="sm" className="p-2 text-gray-400 hover:text-gray-600">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -134,33 +103,23 @@ export default function EditorHeader({
             </Button>
             <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
               <div className="p-4">
-                <h4 className="text-sm font-medium text-gray-900 mb-3">
-                  Keyboard Shortcuts
-                </h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-3">Keyboard Shortcuts</h4>
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Save workflow</span>
-                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
-                      ⌘S
-                    </kbd>
+                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘S</kbd>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Focus AI assistant</span>
-                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
-                      ⌘K
-                    </kbd>
+                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘K</kbd>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Clear draft</span>
-                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
-                      ⌘D
-                    </kbd>
+                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">⌘D</kbd>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Close modals</span>
-                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">
-                      Esc
-                    </kbd>
+                    <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-700">Esc</kbd>
                   </div>
                 </div>
               </div>
@@ -172,28 +131,13 @@ export default function EditorHeader({
             disabled={!isDirty || isLoading || !!jsonParseError}
             variant={isDirty && !jsonParseError ? "default" : "secondary"}
             title={
-              jsonParseError
-                ? "Fix JSON errors before saving"
-                : isDirty
-                  ? "Save changes (⌘S)"
-                  : "No changes to save"
+              jsonParseError ? "Fix JSON errors before saving" : isDirty ? "Save changes (⌘S)" : "No changes to save"
             }
           >
             {isLoading ? (
               <>
-                <svg
-                  className="w-4 h-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path
                     className="opacity-75"
                     fill="currentColor"
@@ -204,12 +148,7 @@ export default function EditorHeader({
               </>
             ) : (
               <>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

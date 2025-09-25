@@ -27,10 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!dslConfig || !workflowId || !prompt) {
-      return NextResponse.json(
-        { error: "Missing dslConfig, workflowId, or prompt" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing dslConfig, workflowId, or prompt" }, { status: 400 })
     }
 
     const invocationId = genShortId()
@@ -58,10 +55,7 @@ export async function POST(req: NextRequest) {
       {
         invocationId: "",
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to start workflow execution",
+        error: error instanceof Error ? error.message : "Failed to start workflow execution",
       },
       { status: 500 }
     )
@@ -129,10 +123,7 @@ export async function GET(req: NextRequest) {
     const invocationId = searchParams.get("invocationId")
 
     if (!invocationId) {
-      return NextResponse.json(
-        { error: "Missing invocationId parameter" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing invocationId parameter" }, { status: 400 })
     }
 
     const execution = asyncExecutions.get(invocationId)
@@ -155,10 +146,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to get execution status",
+        error: error instanceof Error ? error.message : "Failed to get execution status",
       },
       { status: 500 }
     )

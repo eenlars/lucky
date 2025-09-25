@@ -13,10 +13,7 @@ export async function POST(req: NextRequest) {
     const input = body as InvocationInput
 
     if (!input) {
-      return NextResponse.json(
-        { error: "Invalid invocation input" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Invalid invocation input" }, { status: 400 })
     }
 
     const result = await invokeWorkflow(input)
@@ -28,9 +25,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result, { status: 200 })
   } catch (error) {
     console.error("Workflow Invocation API Error:", error)
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }

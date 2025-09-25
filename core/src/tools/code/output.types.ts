@@ -26,12 +26,8 @@ export type CodeToolSuccess<T> = {
 export type CodeToolResult<T> = CodeToolFailure | CodeToolSuccess<T>
 
 // Creates a failure result for a code tool execution
-const createFailure = (
-  toolName: CodeToolName,
-  error: ToolError
-): CodeToolFailure => {
-  const errorMessage =
-    error.error instanceof Error ? error.error.message : error.error
+const createFailure = (toolName: CodeToolName, error: ToolError): CodeToolFailure => {
+  const errorMessage = error.error instanceof Error ? error.error.message : error.error
   return {
     tool: toolName,
     error: JSONN.show({
@@ -44,10 +40,7 @@ const createFailure = (
 }
 
 // Creates a success result for a code tool execution
-const createSuccess = <T>(
-  toolName: CodeToolName,
-  output: T
-): CodeToolSuccess<T> => {
+const createSuccess = <T>(toolName: CodeToolName, output: T): CodeToolSuccess<T> => {
   return {
     tool: toolName,
     error: null,
@@ -57,9 +50,7 @@ const createSuccess = <T>(
 }
 
 // Type guard to check if a value is a valid CodeToolResult
-const isCodeToolResult = <T = unknown>(
-  value: unknown
-): value is CodeToolResult<T> => {
+const isCodeToolResult = <T = unknown>(value: unknown): value is CodeToolResult<T> => {
   if (typeof value !== "object" || value === null) {
     return false
   }
@@ -83,9 +74,8 @@ const isCodeToolResult = <T = unknown>(
 }
 
 // Type guard to check if a result represents success
-const isSuccess = <T = unknown>(
-  result: unknown
-): result is CodeToolSuccess<T> => isCodeToolResult<T>(result) && result.success
+const isSuccess = <T = unknown>(result: unknown): result is CodeToolSuccess<T> =>
+  isCodeToolResult<T>(result) && result.success
 
 const Tools = {
   createFailure,

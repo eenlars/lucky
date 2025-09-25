@@ -7,9 +7,7 @@ import { createContext, useContext, useState, type ReactNode } from "react"
 
 type WorkflowRunnerContextValue = ReturnType<typeof useWorkflowRunner>
 
-const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(
-  null
-)
+const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(null)
 
 export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
@@ -27,19 +25,13 @@ export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
     executeWorkflowWithPrompt: async () => {},
   }
 
-  return (
-    <WorkflowRunnerContext.Provider value={value}>
-      {children}
-    </WorkflowRunnerContext.Provider>
-  )
+  return <WorkflowRunnerContext.Provider value={value}>{children}</WorkflowRunnerContext.Provider>
 }
 
 export function useWorkflowRunnerContext() {
   const ctx = useContext(WorkflowRunnerContext)
   if (!ctx) {
-    throw new Error(
-      "useWorkflowRunnerContext must be used within a WorkflowRunnerProvider"
-    )
+    throw new Error("useWorkflowRunnerContext must be used within a WorkflowRunnerProvider")
   }
   return ctx
 }

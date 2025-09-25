@@ -9,16 +9,10 @@ import type { CoreMessage } from "ai"
 import { z } from "zod"
 
 // the response is already malformed, but we want to try to repair it
-export const repairAIRequest = async <T extends z.ZodTypeAny>(
-  response: string,
-  schema: T
-): Promise<RS<z.infer<T>>> => {
+export const repairAIRequest = async <T extends z.ZodTypeAny>(response: string, schema: T): Promise<RS<z.infer<T>>> => {
   if (CONFIG.logging.override.API) {
     lgg.log(
-      `⚠️  [repairAIRequest] we need to repair this response: ${truncater(
-        JSON.stringify(response, null, 2),
-        500
-      )}`
+      `⚠️  [repairAIRequest] we need to repair this response: ${truncater(JSON.stringify(response, null, 2), 500)}`
     )
   }
   const messages: CoreMessage[] = [
@@ -41,31 +35,20 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(
   })
 
   if (!result.success) {
-    lgg.error(
-      `[repairAIRequest] failed to repair the response: ${result.error}`
-    )
-    return R.error(
-      `failed to repair the response: ${result.error}`,
-      result.usdCost ?? 0
-    )
+    lgg.error(`[repairAIRequest] failed to repair the response: ${result.error}`)
+    return R.error(`failed to repair the response: ${result.error}`, result.usdCost ?? 0)
   }
 
   // Extract and parse JSON from text response
   const extractedJson = JSONN.extract(result.data.text)
   if (!extractedJson) {
-    return R.error(
-      `No valid JSON found in response: ${JSONN.show(result.data.text)}`,
-      result.usdCost ?? 0
-    )
+    return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, result.usdCost ?? 0)
   }
 
   // Validate against schema
   const validationResult = schema.safeParse(extractedJson)
   if (!validationResult.success) {
-    return R.error(
-      `JSON validation failed: ${validationResult.error.message}`,
-      result.usdCost ?? 0
-    )
+    return R.error(`JSON validation failed: ${validationResult.error.message}`, result.usdCost ?? 0)
   }
 
   return R.success(validationResult.data, result.usdCost ?? 0)

@@ -54,17 +54,13 @@ describe("IngestionLayer - Dataset Records", () => {
     const result = await IngestionLayer.convert(evaluation)
 
     expect(result).toHaveLength(1)
-    expect(result[0].workflowInput).toBe(
-      "find the patagonia stores in amsterdam"
-    )
+    expect(result[0].workflowInput).toBe("find the patagonia stores in amsterdam")
     expect(result[0].workflowOutput.output).toBe("singel 486 amsterdam")
     expect(result[0].workflowOutput.outputSchema).toBeUndefined()
 
     expect(supabase.from).toHaveBeenCalledWith("DatasetRecord")
     expect(mockFrom().select).toHaveBeenCalledWith("*")
-    expect(mockFrom().select().in).toHaveBeenCalledWith("dataset_record_id", [
-      "test-id-123",
-    ])
+    expect(mockFrom().select().in).toHaveBeenCalledWith("dataset_record_id", ["test-id-123"])
   })
 
   it("should handle multiple dataset records", async () => {

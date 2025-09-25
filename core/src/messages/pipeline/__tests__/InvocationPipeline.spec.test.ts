@@ -19,10 +19,7 @@ interface TestResult {
 }
 
 describe("InvocationPipeline Real Integration", () => {
-  const extractTestResult = (
-    pipeline: InvocationPipeline,
-    pipelineResult: NodeInvocationResult
-  ): TestResult => {
+  const extractTestResult = (pipeline: InvocationPipeline, pipelineResult: NodeInvocationResult): TestResult => {
     const agentSteps = pipeline.getAgentSteps()
     const toolCalls = agentSteps.filter((output) => output.type === "tool")
     const toolsUsed = toolCalls.map((call) => call.name)
@@ -35,12 +32,8 @@ describe("InvocationPipeline Real Integration", () => {
     const replyPayload = pipelineResult?.replyMessage
     const finalResponse = extractTextFromPayload(replyPayload)
 
-    const reasoningSteps = agentSteps.filter(
-      (o: any) => o.type === "reasoning"
-    ).length
-    const terminationOccurred = agentSteps.some(
-      (o: any) => o.type === "terminate"
-    )
+    const reasoningSteps = agentSteps.filter((o: any) => o.type === "reasoning").length
+    const terminationOccurred = agentSteps.some((o: any) => o.type === "terminate")
 
     return {
       toolsUsed,
@@ -55,19 +48,11 @@ describe("InvocationPipeline Real Integration", () => {
   // TODO: This helper creates real database records but doesn't clean them up
   // Should use transactions or cleanup in afterEach
   // Helper function to set up required database records
-  const setupTestWorkflow = async (
-    workflowInvocationId: string,
-    workflowVersionId: string,
-    nodeId: string
-  ) => {
-    const {
-      createWorkflowInvocation,
-      createWorkflowVersion,
-      ensureWorkflowExists,
-    } = await import("@core/utils/persistence/workflow/registerWorkflow")
-    const { saveNodeVersionToDB } = await import(
-      "@core/utils/persistence/node/saveNode"
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+    const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
+      "@core/utils/persistence/workflow/registerWorkflow"
     )
+    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "real-pipeline-workflow"
 
@@ -89,8 +74,7 @@ describe("InvocationPipeline Real Integration", () => {
       config: {
         nodeId,
         modelName: getDefaultModels().default,
-        systemPrompt:
-          "use todo write first, and then return the output of todo read",
+        systemPrompt: "use todo write first, and then return the output of todo read",
         mcpTools: [],
         codeTools: ["todoWrite", "todoRead"],
         description: "Real pipeline test node with todo tools",
@@ -199,9 +183,7 @@ describe("InvocationPipeline Real Integration", () => {
 
     // System prompt implies: write first, read second, then stop
     // No tools should be called after the final todoRead
-    const toolsAfterLastTodoRead = testResult.toolsUsed.slice(
-      lastTodoReadIndex + 1
-    )
+    const toolsAfterLastTodoRead = testResult.toolsUsed.slice(lastTodoReadIndex + 1)
     expect(toolsAfterLastTodoRead).toEqual([])
 
     // TODO: Using another LLM call to verify test results is unreliable and expensive
@@ -234,8 +216,7 @@ describe("InvocationPipeline Real Integration", () => {
 
     // Clean summary output
     console.log("✅ Test Results:", {
-      systemPromptFollowed:
-        "use todo write first, and then return the output of todo read",
+      systemPromptFollowed: "use todo write first, and then return the output of todo read",
       toolExecutionOrder: testResult.toolExecutionOrder.map((t) => t.tool),
       correctOrder: todoWriteIndex < todoReadIndex,
       cost: testResult.cost,
@@ -264,8 +245,7 @@ describe("InvocationPipeline Real Integration", () => {
       // Set up required database records
       await setupTestWorkflow(workflowInvocationId, workflowVersionId, nodeId)
 
-      const systemPrompt =
-        "use todo write first, and then return the output of todo read"
+      const systemPrompt = "use todo write first, and then return the output of todo read"
 
       const context: NodeInvocationCallContext = {
         workflowMessageIncoming: new WorkflowMessage({
@@ -306,12 +286,7 @@ describe("InvocationPipeline Real Integration", () => {
         skipDatabasePersistence: true,
       }
 
-      const toolManager = new ToolManager(
-        "real-multi-pipeline-test",
-        [],
-        ["todoWrite", "todoRead"],
-        workflowVersionId
-      )
+      const toolManager = new ToolManager("real-multi-pipeline-test", [], ["todoWrite", "todoRead"], workflowVersionId)
 
       const pipeline = new InvocationPipeline(context, toolManager)
 
@@ -321,9 +296,7 @@ describe("InvocationPipeline Real Integration", () => {
 
       expect(result).toBeDefined()
       if (result.error) {
-        throw new Error(
-          `Multi-step pipeline execution failed: ${result.error.message}`
-        )
+        throw new Error(`Multi-step pipeline execution failed: ${result.error.message}`)
       }
 
       // Extract clean test results
@@ -341,9 +314,7 @@ describe("InvocationPipeline Real Integration", () => {
       expect(todoWriteIndex).toBeLessThan(todoReadIndex)
 
       // Multi-step should still follow system prompt: write first, read second, then stop
-      const toolsAfterLastTodoRead = testResult.toolsUsed.slice(
-        lastTodoReadIndex + 1
-      )
+      const toolsAfterLastTodoRead = testResult.toolsUsed.slice(lastTodoReadIndex + 1)
       expect(toolsAfterLastTodoRead).toEqual([])
 
       // Verify multi-step specific behaviors
@@ -385,8 +356,7 @@ describe("InvocationPipeline Real Integration", () => {
       // Set up required database records
       await setupTestWorkflow(workflowInvocationId, workflowVersionId, nodeId)
 
-      const systemPrompt =
-        "use todo write first, and then return the output of todo read"
+      const systemPrompt = "use todo write first, and then return the output of todo read"
 
       const context: NodeInvocationCallContext = {
         workflowMessageIncoming: new WorkflowMessage({
@@ -459,9 +429,7 @@ describe("InvocationPipeline Real Integration", () => {
       expect(todoWriteIndex).toBeLessThan(todoReadIndex)
 
       // No tools after final todoRead
-      const toolsAfterLastTodoRead = testResult.toolsUsed.slice(
-        lastTodoReadIndex + 1
-      )
+      const toolsAfterLastTodoRead = testResult.toolsUsed.slice(lastTodoReadIndex + 1)
       expect(toolsAfterLastTodoRead).toEqual([])
 
       // Verify response quality

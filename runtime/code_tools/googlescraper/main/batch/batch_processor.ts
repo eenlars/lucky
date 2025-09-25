@@ -58,8 +58,7 @@ export class BatchProcessor {
           location_id: location.location_id,
           url: location.link,
           timestamp: new Date().toISOString(),
-          error_message:
-            typeof output === "string" ? output : JSON.stringify(output),
+          error_message: typeof output === "string" ? output : JSON.stringify(output),
         },
       }
     }
@@ -158,13 +157,10 @@ export class BatchProcessor {
     for (let i = 0; i < locations.length; i += this.proxyCount) {
       const batch = locations.slice(i, i + this.proxyCount)
 
-      const {
-        newBusinesses,
-        newFailures,
-        skippedCount,
-        processedCount,
-        errorCount,
-      } = await this.processBatch(batch, proxies)
+      const { newBusinesses, newFailures, skippedCount, processedCount, errorCount } = await this.processBatch(
+        batch,
+        proxies
+      )
 
       allBusinesses.push(...newBusinesses)
       allFailures.push(...newFailures)
@@ -174,17 +170,12 @@ export class BatchProcessor {
 
       // call progress callback if provided
       if (onBatchComplete) {
-        onBatchComplete(
-          Math.floor(i / this.proxyCount) + 1,
-          batch.length,
-          allBusinesses.length,
-          {
-            processedCount: totalProcessedCount,
-            skippedCount: totalSkippedCount,
-            errorCount: totalErrorCount,
-            totalFailures: allFailures.length,
-          }
-        )
+        onBatchComplete(Math.floor(i / this.proxyCount) + 1, batch.length, allBusinesses.length, {
+          processedCount: totalProcessedCount,
+          skippedCount: totalSkippedCount,
+          errorCount: totalErrorCount,
+          totalFailures: allFailures.length,
+        })
       }
     }
 

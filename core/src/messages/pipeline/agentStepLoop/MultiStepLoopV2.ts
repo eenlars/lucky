@@ -1,8 +1,5 @@
 import { quickSummaryNull } from "@core/messages/api/genObject"
-import {
-  getFinalOutputNodeInvocation,
-  processResponseVercel,
-} from "@core/messages/api/processResponse"
+import { getFinalOutputNodeInvocation, processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
   isErrorProcessed,
@@ -17,23 +14,10 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { toolUsageToString, type MultiStepLoopContext } from "./utils"
 
-export async function runMultiStepLoopV2Helper(
-  context: MultiStepLoopContext
-): Promise<ProcessedResponse> {
-  const {
-    ctx,
-    tools,
-    agentSteps,
-    maxRounds,
-    verbose,
-    addCost,
-    setUpdatedMemory,
-    getTotalCost,
-  } = context
+export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): Promise<ProcessedResponse> {
+  const { ctx, tools, agentSteps, maxRounds, verbose, addCost, setUpdatedMemory, getTotalCost } = context
 
-  const userMessage = extractTextFromPayload(
-    ctx.workflowMessageIncoming.payload
-  )
+  const userMessage = extractTextFromPayload(ctx.workflowMessageIncoming.payload)
 
   const identityPrompt = `
         How you should act: ${ctx.nodeConfig.systemPrompt}
@@ -67,8 +51,7 @@ export async function runMultiStepLoopV2Helper(
 
       // Check if we have any actionable outputs before termination
       const hasActionableOutputs = agentSteps.some(
-        (log) =>
-          log.type === "tool" || log.type === "text" || log.type === "terminate"
+        (log) => log.type === "tool" || log.type === "text" || log.type === "terminate"
       )
 
       if (!hasActionableOutputs) {
@@ -131,10 +114,7 @@ export async function runMultiStepLoopV2Helper(
         agentSteps,
         cost,
         summary: summary ?? "an error occurred. no summary found.",
-        learnings:
-          learningResult.agentStep.type === "learning"
-            ? (learningResult.agentStep.return as string)
-            : "",
+        learnings: learningResult.agentStep.type === "learning" ? (learningResult.agentStep.return as string) : "",
       }
     }
 
@@ -191,13 +171,9 @@ export async function runMultiStepLoopV2Helper(
 
     // Log multi-step tool call results
     if (verbose) {
-      lgg.log(
-        `[InvocationPipeline] Multi-step round ${round + 1}: Tool call success: ${success}`
-      )
+      lgg.log(`[InvocationPipeline] Multi-step round ${round + 1}: Tool call success: ${success}`)
       if (!success) {
-        lgg.error(
-          `[InvocationPipeline] Multi-step round ${round + 1}: Tool call failed: ${error}`
-        )
+        lgg.error(`[InvocationPipeline] Multi-step round ${round + 1}: Tool call failed: ${error}`)
       }
     }
 
@@ -226,9 +202,7 @@ export async function runMultiStepLoopV2Helper(
         return: processed.content,
       })
     } else if (isErrorProcessed(processed)) {
-      const details = processed.details
-        ? " details:" + truncater(JSON.stringify(processed.details), 100)
-        : ""
+      const details = processed.details ? " details:" + truncater(JSON.stringify(processed.details), 100) : ""
       agentSteps.push({
         type: "error",
         return: processed.message + details,

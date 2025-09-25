@@ -103,9 +103,7 @@ describe("WebArenaLoader", () => {
     expect(result).toHaveLength(2)
 
     // check first workflow
-    expect(result[0].workflowInput).toContain(
-      "Find the best restaurant near CMU"
-    )
+    expect(result[0].workflowInput).toContain("Find the best restaurant near CMU")
     expect(result[0].workflowInput).toContain("Sites involved: shopping, map")
     expect(result[0].workflowInput).toContain("Requires login: Yes")
     expect(result[0].workflowOutput.output).toContain("string_match")
@@ -246,9 +244,7 @@ describe("WebArenaLoader", () => {
     const result = await WebArenaLoader.fetchAsWorkflowIO(1)
 
     expect(result).toHaveLength(1)
-    expect(result[0].workflowOutput.output).toContain(
-      "string_match, fuzzy_match"
-    )
+    expect(result[0].workflowOutput.output).toContain("string_match, fuzzy_match")
     expect(result[0].workflowOutput.output).toContain("test-repo")
     expect(result[0].workflowOutput.output).toContain("repository")
     expect(result[0].workflowOutput.output).toContain("success")
@@ -285,9 +281,7 @@ describe("WebArenaLoader", () => {
       text: async () => JSON.stringify(mockTasks),
     } as Response)
 
-    await expect(WebArenaLoader.fetchById(999)).rejects.toThrow(
-      "WebArena task 999 not found"
-    )
+    await expect(WebArenaLoader.fetchById(999)).rejects.toThrow("WebArena task 999 not found")
   })
 
   it("should handle HTTP errors", async () => {
@@ -309,9 +303,7 @@ describe("WebArenaLoader", () => {
     expect(result.task_id).toBe(123)
     expect(result.intent).toContain("Mock task intent for task 123")
     expect(result.sites).toEqual(["shopping", "mock_site"])
-    expect(result.eval.reference_answers.exact_match).toBe(
-      "Mock answer for task 123"
-    )
+    expect(result.eval.reference_answers.exact_match).toBe("Mock answer for task 123")
   })
 
   it("should handle malformed JSON gracefully", async () => {
@@ -320,9 +312,7 @@ describe("WebArenaLoader", () => {
       text: async () => "invalid json",
     } as Response)
 
-    await expect(WebArenaLoader.fetchAsWorkflowIO(10)).rejects.toThrow(
-      "Failed to convert WebArena to WorkflowIO"
-    )
+    await expect(WebArenaLoader.fetchAsWorkflowIO(10)).rejects.toThrow("Failed to convert WebArena to WorkflowIO")
   })
 
   it("should respect limit parameter", async () => {
@@ -360,8 +350,6 @@ describe("WebArenaLoader", () => {
       text: async () => "",
     } as Response)
 
-    await expect(WebArenaLoader.fetchAsWorkflowIO(10)).rejects.toThrow(
-      "No WebArena tasks found"
-    )
+    await expect(WebArenaLoader.fetchAsWorkflowIO(10)).rejects.toThrow("No WebArena tasks found")
   })
 })

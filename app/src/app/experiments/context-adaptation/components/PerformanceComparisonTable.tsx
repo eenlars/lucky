@@ -36,12 +36,9 @@ interface APIResponse {
 
 async function loadPerformanceData(): Promise<ComparisonRow[]> {
   try {
-    const response = await fetch(
-      "/api/experiments/context-adaptation/performance-comparison",
-      {
-        cache: "no-store",
-      }
-    )
+    const response = await fetch("/api/experiments/context-adaptation/performance-comparison", {
+      cache: "no-store",
+    })
 
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`)
@@ -84,11 +81,7 @@ export default function PerformanceComparisonTable() {
         ]
 
         const filteredData = result.filter(
-          (row) =>
-            !excludedModels.some(
-              (excluded) =>
-                row.model === excluded || row.model.includes(excluded)
-            )
+          (row) => !excludedModels.some((excluded) => row.model === excluded || row.model.includes(excluded))
         )
 
         setData(filteredData)
@@ -126,9 +119,7 @@ export default function PerformanceComparisonTable() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="text-gray-600">
-              Loading performance comparison data...
-            </p>
+            <p className="text-gray-600">Loading performance comparison data...</p>
           </div>
         </div>
       </div>
@@ -139,9 +130,7 @@ export default function PerformanceComparisonTable() {
     return (
       <div className="w-full bg-white rounded-lg shadow-md p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-red-800 mb-2">
-            Error Loading Data
-          </h3>
+          <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Data</h3>
           <p className="text-red-600 text-sm">{error}</p>
         </div>
       </div>
@@ -151,30 +140,26 @@ export default function PerformanceComparisonTable() {
   return (
     <div className="w-full bg-white rounded-lg shadow-md p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Adaptive Behavior Performance Comparison
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Adaptive Behavior Performance Comparison</h2>
         <p className="text-gray-600 text-sm mb-4">
-          Statistical comparison of baseline methods vs our iterative learning
-          approach across multiple models and scenarios.
+          Statistical comparison of baseline methods vs our iterative learning approach across multiple models and
+          scenarios.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
             <p className="text-blue-700">
-              <strong>Primary Metric:</strong> Adaptation rate measures
-              successful constraint learning and behavioral adjustment
+              <strong>Primary Metric:</strong> Adaptation rate measures successful constraint learning and behavioral
+              adjustment
             </p>
           </div>
           <div className="bg-green-50 border-l-4 border-green-400 p-3">
             <p className="text-green-700">
-              <strong>Statistical Method:</strong> Bootstrap 95% CI,
-              Welch&apos;s t-test, Cohen&apos;s d effect size
+              <strong>Statistical Method:</strong> Bootstrap 95% CI, Welch&apos;s t-test, Cohen&apos;s d effect size
             </p>
           </div>
           <div className="bg-purple-50 border-l-4 border-purple-400 p-3">
             <p className="text-purple-700">
-              <strong>Significance:</strong> p &lt; 0.05 (green=clear prompts,
-              blue=our method vs vague baseline)
+              <strong>Significance:</strong> p &lt; 0.05 (green=clear prompts, blue=our method vs vague baseline)
             </p>
           </div>
         </div>
@@ -229,15 +214,9 @@ export default function PerformanceComparisonTable() {
                           : ""
                 }
               >
-                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {row.method}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  {row.model}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">
-                  {row.n}
-                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{row.method}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{row.model}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">{row.n}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center font-medium">
                   {formatPercentage(row.adaptationRate.mean)}
                 </td>
@@ -260,15 +239,11 @@ export default function PerformanceComparisonTable() {
                           : "text-gray-500"
                     }
                   >
-                    {row.method === "Vague Prompt"
-                      ? "—"
-                      : formatPValue(row.pValue)}
+                    {row.method === "Vague Prompt" ? "—" : formatPValue(row.pValue)}
                   </span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">
-                  {row.method === "Vague Prompt"
-                    ? "—"
-                    : formatEffectSize(row.effectSize)}
+                  {row.method === "Vague Prompt" ? "—" : formatEffectSize(row.effectSize)}
                 </td>
               </tr>
             ))}
@@ -279,44 +254,30 @@ export default function PerformanceComparisonTable() {
       <div className="mt-6 text-sm text-gray-600">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">
-              Statistical Notes
-            </h4>
+            <h4 className="font-medium text-gray-900 mb-2">Statistical Notes</h4>
             <ul className="space-y-1 text-xs">
-              <li>
-                • Confidence intervals calculated via bootstrap resampling (1000
-                iterations)
-              </li>
+              <li>• Confidence intervals calculated via bootstrap resampling (1000 iterations)</li>
               <li>• P-values from Welch&apos;s t-test for unequal variances</li>
-              <li>
-                • Effect sizes using Cohen&apos;s d (0.2=small, 0.5=medium,
-                0.8=large)
-              </li>
-              <li>
-                • Green/blue highlighting indicates statistically significant
-                improvements
-              </li>
+              <li>• Effect sizes using Cohen&apos;s d (0.2=small, 0.5=medium, 0.8=large)</li>
+              <li>• Green/blue highlighting indicates statistically significant improvements</li>
             </ul>
           </div>
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Interpretation</h4>
             <ul className="space-y-1 text-xs">
               <li>
-                • <strong>Adaptation Rate:</strong> % of runs that successfully
-                learned constraints and adapted behavior
+                • <strong>Adaptation Rate:</strong> % of runs that successfully learned constraints and adapted behavior
               </li>
               <li>
                 • <strong>Cost:</strong> Average USD spent per experimental run
               </li>
               <li>
-                • <strong>Duration:</strong> Average time to complete task
-                (seconds)
+                • <strong>Duration:</strong> Average time to complete task (seconds)
               </li>
               <li>
                 •{" "}
                 <strong>
-                  Our method shows superior adaptive performance vs both
-                  baselines (1 run vs 3 runs comparison)
+                  Our method shows superior adaptive performance vs both baselines (1 run vs 3 runs comparison)
                 </strong>
               </li>
             </ul>

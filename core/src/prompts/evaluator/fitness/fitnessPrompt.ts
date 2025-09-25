@@ -32,9 +32,7 @@ export const fitnessSystemPrompt = ({
   if (hasRubric) {
     rubricStr = `
     # rubric
-    ${rubric
-      .map((item) => `- ${item.evaluationCriterion}: ${item.maxPoints} points`)
-      .join("\n")}
+    ${rubric.map((item) => `- ${item.evaluationCriterion}: ${item.maxPoints} points`).join("\n")}
     for each criterion you will be given a score between 0 and the max points based on the criterion.
     `
   }

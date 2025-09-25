@@ -30,10 +30,7 @@
 
 import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
-import {
-  createDummyGenome,
-  createDummySurvivors,
-} from "@core/improvement/gp/resources/debug/dummyGenome"
+import { createDummyGenome, createDummySurvivors } from "@core/improvement/gp/resources/debug/dummyGenome"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
@@ -55,12 +52,9 @@ export class Select {
    * Select random parents for breeding from valid genomes
    */
   static selectRandomParents(population: Population, amount: number): Genome[] {
-    const validGenomes = population
-      .getGenomes()
-      .filter((genome) => genome.getFitnessScore() > 0)
+    const validGenomes = population.getGenomes().filter((genome) => genome.getFitnessScore() > 0)
 
-    if (isNir(validGenomes))
-      throw new Error("No valid genomes in population to select from")
+    if (isNir(validGenomes)) throw new Error("No valid genomes in population to select from")
 
     if (amount > validGenomes.length) {
       // TODO: implement smart parent reuse strategies for small populations
@@ -70,9 +64,7 @@ export class Select {
       )
     }
 
-    const list = [...validGenomes]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, amount)
+    const list = [...validGenomes].sort(() => Math.random() - 0.5).slice(0, amount)
     return list
   }
 
@@ -87,9 +79,7 @@ export class Select {
     config: EvolutionSettings
   }): Promise<Genome[]> {
     if (CONFIG.evolution.GP.verbose) {
-      lgg.log(
-        "[Select] Verbose mode: skipping parent selection for selectParents"
-      )
+      lgg.log("[Select] Verbose mode: skipping parent selection for selectParents")
       return [
         createDummyGenome([], {
           runId: "test-run-id",
@@ -103,34 +93,22 @@ export class Select {
     const numParents = Math.floor(config.populationSize / 2)
 
     // Filter out invalid genomes
-    const validPopulation = population
-      .getGenomes()
-      .filter((genome) => genome.isEvaluated)
+    const validPopulation = population.getGenomes().filter((genome) => genome.isEvaluated)
 
     if (validPopulation.length === 0) {
-      lgg.error(
-        "[Select] No valid genomes with fitness scores found in population"
-      )
+      lgg.error("[Select] No valid genomes with fitness scores found in population")
       // TODO: implement population recovery strategies for total evaluation failure
-      throw new Error(
-        "No valid genomes with fitness scores found in population"
-      )
+      throw new Error("No valid genomes with fitness scores found in population")
     }
 
     // Elite selection - always keep the best
-    const sortedByFitness = [...validPopulation].sort(
-      (a, b) => b.getFitnessScore() - a.getFitnessScore()
-    )
+    const sortedByFitness = [...validPopulation].sort((a, b) => b.getFitnessScore() - a.getFitnessScore())
     const elite = sortedByFitness.slice(0, config.eliteSize)
     parents.push(...elite)
 
     // Tournament selection for the rest
     while (parents.length < numParents) {
-      const parent = this.tournamentSelect(
-        validPopulation,
-        config.tournamentSize,
-        parents
-      )
+      const parent = this.tournamentSelect(validPopulation, config.tournamentSize, parents)
       parents.push(parent)
     }
 
@@ -194,8 +172,7 @@ export class Select {
     offspring: Genome[]
     config: EvolutionSettings
   }): Promise<Genome[]> {
-    if (CONFIG.evolution.GP.verbose)
-      return createDummySurvivors(parents, offspring)
+    if (CONFIG.evolution.GP.verbose) return createDummySurvivors(parents, offspring)
 
     if (parents.length === 0 && offspring.length === 0) return []
 
@@ -249,110 +226,88 @@ export class Select {
       const remaining = config.offspringCount - offspring.length
       const currentBatchSize = Math.min(remaining, maxAttempts - attempts)
 
-      const offspringTasks: (() => Promise<Genome[]>)[] = Array.from(
-        { length: currentBatchSize },
-        () => async () => {
-          const random = Math.random()
-          const useCrossover = random < config.crossoverRate
-          const requiredParents = useCrossover
-            ? config.numberOfParentsCreatingOffspring
-            : 1
-          const parents: Genome[] = Select.selectRandomParents(
-            population,
-            requiredParents
-          )
-          let children: Genome[] = []
+      const offspringTasks: (() => Promise<Genome[]>)[] = Array.from({ length: currentBatchSize }, () => async () => {
+        const random = Math.random()
+        const useCrossover = random < config.crossoverRate
+        const requiredParents = useCrossover ? config.numberOfParentsCreatingOffspring : 1
+        const parents: Genome[] = Select.selectRandomParents(population, requiredParents)
+        let children: Genome[] = []
 
-          try {
-            // Genetic operator selection based on probability ranges:
-            // [0, crossoverRate) -> Crossover
-            // [crossoverRate, crossoverRate + mutationRate) -> Mutation
-            // [crossoverRate + mutationRate, 1.0) -> Immigration
+        try {
+          // Genetic operator selection based on probability ranges:
+          // [0, crossoverRate) -> Crossover
+          // [crossoverRate, crossoverRate + mutationRate) -> Mutation
+          // [crossoverRate + mutationRate, 1.0) -> Immigration
 
-            if (useCrossover) {
-              lgg.log(
-                `Crossover selected (random=${random.toFixed(3)} < crossoverRate=${config.crossoverRate})`
-              )
-              failureTracker.trackCrossoverAttempt()
-              const {
-                success,
-                error,
-                data: kid,
-              } = await Crossover.crossover({
-                parents,
-                verbose,
+          if (useCrossover) {
+            lgg.log(`Crossover selected (random=${random.toFixed(3)} < crossoverRate=${config.crossoverRate})`)
+            failureTracker.trackCrossoverAttempt()
+            const {
+              success,
+              error,
+              data: kid,
+            } = await Crossover.crossover({
+              parents,
+              verbose,
+              evaluationInput,
+              _evolutionContext,
+            })
+            if (!success) {
+              lgg.error("Crossover failed", error)
+              failureTracker.trackCrossoverFailure()
+              return []
+            }
+            lgg.log("Crossover complete")
+            children.push(kid)
+          } else if (random < config.crossoverRate + config.mutationRate) {
+            lgg.log(
+              `Mutation selected (random=${random.toFixed(3)} in [${config.crossoverRate}, ${config.crossoverRate + config.mutationRate}))`
+            )
+            failureTracker.trackMutationAttempt()
+            const [parent] = parents
+            const mutationOptions: MutationOptions = {
+              parent,
+              generationNumber: _evolutionContext.generationNumber,
+              evolutionMode: population.getRunService().getEvolutionMode(),
+            }
+            const mutated = await Mutations.mutateWorkflowGenome(mutationOptions)
+            lgg.log("Mutation complete")
+            if (mutated.success) {
+              children = [mutated.data]
+            } else {
+              lgg.warn(`mutation failed for workflow version ${parent.getWorkflowVersionId()}`)
+              failureTracker.trackMutationFailure()
+            }
+          } else {
+            lgg.log(
+              `Immigration selected (random=${random.toFixed(3)} >= ${config.crossoverRate + config.mutationRate})`
+            )
+            failureTracker.trackImmigrationAttempt()
+            try {
+              const { error, data: baby } = await Genome.createRandom({
                 evaluationInput,
+                parentWorkflowVersionIds: parents.map((p) => p.getWorkflowVersionId()),
                 _evolutionContext,
+                problemAnalysis,
+                baseWorkflow: undefined,
+                evolutionMode: population.getRunService().getEvolutionMode(),
               })
-              if (!success) {
-                lgg.error("Crossover failed", error)
-                failureTracker.trackCrossoverFailure()
+              if (error) {
+                console.error("Immigration failed 2", error)
+                failureTracker.trackImmigrationFailure()
                 return []
               }
-              lgg.log("Crossover complete")
-              children.push(kid)
-            } else if (random < config.crossoverRate + config.mutationRate) {
-              lgg.log(
-                `Mutation selected (random=${random.toFixed(3)} in [${config.crossoverRate}, ${config.crossoverRate + config.mutationRate}))`
-              )
-              failureTracker.trackMutationAttempt()
-              const [parent] = parents
-              const mutationOptions: MutationOptions = {
-                parent,
-                generationNumber: _evolutionContext.generationNumber,
-                evolutionMode: population.getRunService().getEvolutionMode(),
-              }
-              const mutated =
-                await Mutations.mutateWorkflowGenome(mutationOptions)
-              lgg.log("Mutation complete")
-              if (mutated.success) {
-                children = [mutated.data]
-              } else {
-                lgg.warn(
-                  `mutation failed for workflow version ${parent.getWorkflowVersionId()}`
-                )
-                failureTracker.trackMutationFailure()
-              }
-            } else {
-              lgg.log(
-                `Immigration selected (random=${random.toFixed(3)} >= ${config.crossoverRate + config.mutationRate})`
-              )
-              failureTracker.trackImmigrationAttempt()
-              try {
-                const { error, data: baby } = await Genome.createRandom({
-                  evaluationInput,
-                  parentWorkflowVersionIds: parents.map((p) =>
-                    p.getWorkflowVersionId()
-                  ),
-                  _evolutionContext,
-                  problemAnalysis,
-                  baseWorkflow: undefined,
-                  evolutionMode: population.getRunService().getEvolutionMode(),
-                })
-                if (error) {
-                  console.error("Immigration failed 2", error)
-                  failureTracker.trackImmigrationFailure()
-                  return []
-                }
-                if (baby) children.push(baby)
-              } catch (e) {
-                lgg.error(
-                  "Immigration failed",
-                  e,
-                  truncater(JSON.stringify(e), 1000)
-                )
-                failureTracker.trackImmigrationFailure()
-              }
+              if (baby) children.push(baby)
+            } catch (e) {
+              lgg.error("Immigration failed", e, truncater(JSON.stringify(e), 1000))
+              failureTracker.trackImmigrationFailure()
             }
-          } catch (e) {
-            lgg.error(
-              `Operation failed for parents ${parents.map((p) => p.getWorkflowVersionId()).join(", ")}`,
-              e
-            )
           }
-          return children
+        } catch (e) {
+          lgg.error(`Operation failed for parents ${parents.map((p) => p.getWorkflowVersionId()).join(", ")}`, e)
         }
-      )
+        return children
+      })
 
       const batchResults = await parallelLimit(offspringTasks, (task) => task())
       offspring.push(...batchResults.flat())
@@ -446,9 +401,7 @@ export class Select {
     const invalidCount = population.size() - validGenomesArr.length
 
     if (invalidCount > 0) {
-      lgg.warn(
-        `[Select] Discarding ${invalidCount} invalid genomes before next generation`
-      )
+      lgg.warn(`[Select] Discarding ${invalidCount} invalid genomes before next generation`)
       // Keep generation number unchanged while pruning
       population.setPopulation(validGenomesArr)
     }
@@ -496,9 +449,7 @@ export class Select {
     // --- Bulletproof population size property ---
     const popSize = config.populationSize
     if (!popSize) {
-      throw new Error(
-        "Population size not specified in config (population_size or populationSize required)"
-      )
+      throw new Error("Population size not specified in config (population_size or populationSize required)")
     }
     // truncate to μ survivors (population size)
     const nextGenIndividuals = combined.slice(0, popSize)

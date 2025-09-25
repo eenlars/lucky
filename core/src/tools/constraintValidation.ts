@@ -32,11 +32,7 @@ export function validateAndCorrectWithSchema<T>(
     const paramName = issue.path[0] as string
     const originalValue = params[paramName]
 
-    if (
-      issue.code === "too_big" &&
-      issue.type === "number" &&
-      typeof issue.maximum === "number"
-    ) {
+    if (issue.code === "too_big" && issue.type === "number" && typeof issue.maximum === "number") {
       // Auto-correct values that exceed maximum
       correctedParams[paramName] = issue.maximum
       corrected = true
@@ -51,11 +47,7 @@ export function validateAndCorrectWithSchema<T>(
         reason: issue.message,
         issueCode: issue.code,
       })
-    } else if (
-      issue.code === "too_small" &&
-      issue.type === "number" &&
-      typeof issue.minimum === "number"
-    ) {
+    } else if (issue.code === "too_small" && issue.type === "number" && typeof issue.minimum === "number") {
       // Auto-correct values below minimum
       correctedParams[paramName] = issue.minimum
       corrected = true
@@ -80,9 +72,7 @@ export function validateAndCorrectWithSchema<T>(
         issueCode: issue.code,
       })
 
-      warnings.push(
-        `Tool ${toolName}: Uncorrectable validation issue for '${paramPath}': ${issue.message}`
-      )
+      warnings.push(`Tool ${toolName}: Uncorrectable validation issue for '${paramPath}': ${issue.message}`)
     }
   }
 
@@ -98,9 +88,7 @@ export function validateAndCorrectWithSchema<T>(
       })
 
       // Return original params with warning about failed correction
-      warnings.push(
-        `Tool ${toolName}: Auto-correction failed, remaining validation issues exist`
-      )
+      warnings.push(`Tool ${toolName}: Auto-correction failed, remaining validation issues exist`)
       return { params, corrected: false, warnings }
     }
   }

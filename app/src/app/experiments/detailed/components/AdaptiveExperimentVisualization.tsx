@@ -32,30 +32,21 @@ export default function AdaptiveExperimentVisualization() {
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="px-6 py-4 border-2 border-black bg-white">
-          <h2 className="text-2xl font-bold mb-2 text-black">
-            Adaptive AI Behavior Experiment
-          </h2>
+          <h2 className="text-2xl font-bold mb-2 text-black">Adaptive AI Behavior Experiment</h2>
           <p className="text-gray-700">
-            Analysis of how different AI models handle tool failures and adapt
-            their strategies
+            Analysis of how different AI models handle tool failures and adapt their strategies
           </p>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
             <div className="border border-black rounded p-2 text-center bg-white">
-              <div className="font-semibold text-lg text-black">
-                {data.models.length}
-              </div>
+              <div className="font-semibold text-lg text-black">{data.models.length}</div>
               <div className="text-gray-700">Models Tested</div>
             </div>
             <div className="border border-black rounded p-2 text-center bg-white">
-              <div className="font-semibold text-lg text-black">
-                {data.results.length}
-              </div>
+              <div className="font-semibold text-lg text-black">{data.results.length}</div>
               <div className="text-gray-700">Total Runs</div>
             </div>
             <div className="border border-black rounded p-2 text-center bg-white">
-              <div className="font-semibold text-lg text-black">
-                {data.scenarios.length}
-              </div>
+              <div className="font-semibold text-lg text-black">{data.scenarios.length}</div>
               <div className="text-gray-700">Scenarios</div>
             </div>
             <div className="border border-black rounded p-2 text-center bg-white">
@@ -80,9 +71,7 @@ export default function AdaptiveExperimentVisualization() {
               >
                 <div className="text-center">
                   <div className="font-medium">{tab.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {tab.description}
-                  </div>
+                  <div className="text-xs text-gray-500 mt-1">{tab.description}</div>
                 </div>
               </button>
             ))}
@@ -99,35 +88,21 @@ export default function AdaptiveExperimentVisualization() {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  Best Adaptive Model
-                </h4>
-                <div className="text-3xl font-bold text-black mb-1">
-                  GPT-3.5-turbo
-                </div>
-                <div className="text-sm text-gray-600">
-                  Only model showing OLD method adaptation (50% success)
-                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Best Adaptive Model</h4>
+                <div className="text-3xl font-bold text-black mb-1">GPT-3.5-turbo</div>
+                <div className="text-sm text-gray-600">Only model showing OLD method adaptation (50% success)</div>
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  Our Solution Success
-                </h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Our Solution Success</h4>
                 <div className="text-3xl font-bold text-black mb-1">100%</div>
-                <div className="text-sm text-gray-600">
-                  All models achieved perfect success with our solution
-                </div>
+                <div className="text-sm text-gray-600">All models achieved perfect success with our solution</div>
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  Average Improvement
-                </h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Average Improvement</h4>
                 <div className="text-3xl font-bold text-black mb-1">+80%</div>
-                <div className="text-sm text-gray-600">
-                  Success rate improvement with our solution
-                </div>
+                <div className="text-sm text-gray-600">Success rate improvement with our solution</div>
               </div>
             </div>
           </div>
@@ -145,16 +120,15 @@ export default function AdaptiveExperimentVisualization() {
           <div>
             <h4 className="font-medium mb-2">Tool Constraint</h4>
             <p>
-              The fetch_objects tool fails for requests &gt;3 items, requiring
-              models to adapt by chunking large requests into smaller ones.
+              The fetch_objects tool fails for requests &gt;3 items, requiring models to adapt by chunking large
+              requests into smaller ones.
             </p>
           </div>
           <div>
             <h4 className="font-medium mb-2">Success Criteria</h4>
             <p>
-              Successful adaptation involves breaking requests into &le;3 item
-              chunks, making multiple calls, and combining results to reach
-              target counts.
+              Successful adaptation involves breaking requests into &le;3 item chunks, making multiple calls, and
+              combining results to reach target counts.
             </p>
           </div>
         </div>

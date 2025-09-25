@@ -42,9 +42,7 @@ describe("Albert Heijn Den Bosch Netherlands - Multiple Results Test", () => {
       expect(businesses.length).toBeGreaterThan(1) // expecting multiple results
 
       // check that all results are Albert Heijn stores
-      const albertHeijnStores = businesses.filter((b) =>
-        b.storeName?.toLowerCase().includes("albert heijn")
-      )
+      const albertHeijnStores = businesses.filter((b) => b.storeName?.toLowerCase().includes("albert heijn"))
       expect(albertHeijnStores.length).toBe(businesses.length)
 
       // verify each store has essential properties
@@ -64,9 +62,7 @@ describe("Albert Heijn Den Bosch Netherlands - Multiple Results Test", () => {
       expect(uniqueAddresses.size).toBeGreaterThan(1)
 
       // verify specific known locations
-      const gruttostraatStore = albertHeijnStores.find((s) =>
-        s.address?.includes("Gruttostraat")
-      )
+      const gruttostraatStore = albertHeijnStores.find((s) => s.address?.includes("Gruttostraat"))
       expect(gruttostraatStore).toBeDefined()
       expect(gruttostraatStore?.storeName).toContain("Albert Heijn")
 
@@ -84,12 +80,8 @@ describe("Albert Heijn Den Bosch Netherlands - Multiple Results Test", () => {
         }
       })
 
-      console.log(
-        `Found ${albertHeijnStores.length} Albert Heijn stores in Den Bosch`
-      )
-      console.log(
-        `Gruttostraat location: ${gruttostraatStore ? "Found" : "Not found"}`
-      )
+      console.log(`Found ${albertHeijnStores.length} Albert Heijn stores in Den Bosch`)
+      console.log(`Gruttostraat location: ${gruttostraatStore ? "Found" : "Not found"}`)
     }
   }, 30000) // 30 second timeout for scraping
 })

@@ -1,9 +1,6 @@
 import type { Page } from "puppeteer"
 
-export async function waitForPageLoad(
-  page: Page,
-  timeout = 30000
-): Promise<void> {
+export async function waitForPageLoad(page: Page, timeout = 30000): Promise<void> {
   await page
     .waitForNavigation({
       waitUntil: "networkidle2",
@@ -14,10 +11,7 @@ export async function waitForPageLoad(
     })
 }
 
-export async function scrollToElement(
-  page: Page,
-  selector: string
-): Promise<void> {
+export async function scrollToElement(page: Page, selector: string): Promise<void> {
   await page.evaluate((sel) => {
     const element = document.querySelector(sel)
     if (element) {
@@ -69,10 +63,7 @@ export async function takeScreenshot(
   })
 }
 
-export async function fillForm(
-  page: Page,
-  formData: Record<string, string>
-): Promise<void> {
+export async function fillForm(page: Page, formData: Record<string, string>): Promise<void> {
   for (const [selector, value] of Object.entries(formData)) {
     await page.waitForSelector(selector, { timeout: 5000 })
     await page.focus(selector)
@@ -84,27 +75,16 @@ export async function fillForm(
   }
 }
 
-export async function selectOption(
-  page: Page,
-  selector: string,
-  value: string
-): Promise<void> {
+export async function selectOption(page: Page, selector: string, value: string): Promise<void> {
   await page.select(selector, value)
 }
 
-export async function isElementVisible(
-  page: Page,
-  selector: string
-): Promise<boolean> {
+export async function isElementVisible(page: Page, selector: string): Promise<boolean> {
   return await page.evaluate((sel) => {
     const element = document.querySelector(sel)
     if (!element) return false
 
     const style = window.getComputedStyle(element)
-    return (
-      style.display !== "none" &&
-      style.visibility !== "hidden" &&
-      style.opacity !== "0"
-    )
+    return style.display !== "none" && style.visibility !== "hidden" && style.opacity !== "0"
   }, selector)
 }

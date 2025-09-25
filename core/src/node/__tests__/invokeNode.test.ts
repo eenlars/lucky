@@ -39,9 +39,7 @@ vi.mock("@core/messages/api/processResponse", () => ({
     return "Test response: I received your input."
   }),
   // Some parts of the pipeline import this helper; provide a stubbed export
-  getFinalOutputNodeInvocation: vi
-    .fn()
-    .mockReturnValue("Test response: I received your input."),
+  getFinalOutputNodeInvocation: vi.fn().mockReturnValue("Test response: I received your input."),
 }))
 
 // Mock runtime constants - comprehensive CONFIG
@@ -182,26 +180,18 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
-          single: vi
-            .fn()
-            .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+          single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
         }),
       }),
-      upsert: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-      update: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       delete: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       not: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      single: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+      single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
     }),
   },
 }))
@@ -209,12 +199,7 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import type {
-  StructuredRequest,
-  TextRequest,
-  ToolRequest,
-  TResponse,
-} from "@core/messages/api/sendAI/types"
+import type { StructuredRequest, TextRequest, ToolRequest, TResponse } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { invokeAgent } from "../invokeNode"
@@ -224,9 +209,7 @@ describe("invokeAgent", () => {
     vi.clearAllMocks()
 
     // Configure default mock behavior
-    const sendAIMockImpl = (
-      req: TextRequest | ToolRequest | StructuredRequest<any>
-    ): Promise<TResponse<any>> => {
+    const sendAIMockImpl = (req: TextRequest | ToolRequest | StructuredRequest<any>): Promise<TResponse<any>> => {
       // For structured handoff calls
       if (req.mode === "structured") {
         return Promise.resolve({
@@ -270,8 +253,7 @@ describe("invokeAgent", () => {
     const nodeConfig: WorkflowNodeConfig = {
       nodeId: "test-node",
       description: "A test node for unit testing",
-      systemPrompt:
-        "You are a helpful assistant. Just respond with the input you received.",
+      systemPrompt: "You are a helpful assistant. Just respond with the input you received.",
       modelName: getDefaultModels().nano,
       mcpTools: [],
       codeTools: [],
@@ -292,9 +274,7 @@ describe("invokeAgent", () => {
     expect(result.nodeInvocationId).toBeDefined()
     expect(result.nodeInvocationFinalOutput).toBeDefined()
     expect(typeof result.nodeInvocationFinalOutput).toBe("string")
-    expect(result.nodeInvocationFinalOutput).toBe(
-      "Test response: I received your input."
-    )
+    expect(result.nodeInvocationFinalOutput).toBe("Test response: I received your input.")
 
     // Verify node followed the handoffs
     expect(result.nextIds).toEqual(["end"])
@@ -310,9 +290,7 @@ describe("invokeAgent", () => {
 
   it("should handle node with tools", async () => {
     // Override mock for this specific test to return next-node handoff
-    const sendAIMockImpl2 = (
-      req: TextRequest | ToolRequest | StructuredRequest<any>
-    ): Promise<TResponse<any>> => {
+    const sendAIMockImpl2 = (req: TextRequest | ToolRequest | StructuredRequest<any>): Promise<TResponse<any>> => {
       if (req.mode === "structured") {
         return Promise.resolve({
           success: true,

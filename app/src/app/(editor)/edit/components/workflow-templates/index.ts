@@ -40,8 +40,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
         {
           nodeId: "ingredient_parser",
           description: "Parse ingredients",
-          systemPrompt:
-            "You are an expert chef who analyzes ingredients and suggests recipes.",
+          systemPrompt: "You are an expert chef who analyzes ingredients and suggests recipes.",
           mcpTools: [],
           codeTools: [],
           handOffs: ["recipe_generator"],
@@ -50,8 +49,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
         {
           nodeId: "recipe_generator",
           description: "Generate a recipe",
-          systemPrompt:
-            "Generate a complete recipe based on parsed ingredients.",
+          systemPrompt: "Generate a complete recipe based on parsed ingredients.",
           mcpTools: [],
           codeTools: [],
           handOffs: ["nutrition_analyzer"],

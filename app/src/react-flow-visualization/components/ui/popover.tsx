@@ -23,9 +23,7 @@ const PopoverContent = React.forwardRef<
 
   React.useEffect(() => {
     if (typeof document === "undefined") return
-    const dialogContent = document.querySelector(
-      "[data-radix-dialog-content]"
-    ) as HTMLElement | null
+    const dialogContent = document.querySelector("[data-radix-dialog-content]") as HTMLElement | null
     setContainer(dialogContent)
   }, [])
 

@@ -1,7 +1,4 @@
-import {
-  publicExperimentDir,
-  readJsonLocal,
-} from "@/lib/experiments/file-utils"
+import { publicExperimentDir, readJsonLocal } from "@/lib/experiments/file-utils"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { z } from "zod"
@@ -24,10 +21,7 @@ export async function GET() {
 
   try {
     // Single canonical local path under public
-    const latestResultsPath = publicExperimentDir(
-      "02-sequential-chains",
-      "sequential-results.json"
-    )
+    const latestResultsPath = publicExperimentDir("02-sequential-chains", "sequential-results.json")
 
     let results: RawResult[] = []
     try {

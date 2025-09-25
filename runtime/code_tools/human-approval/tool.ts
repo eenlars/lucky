@@ -22,18 +22,9 @@ export interface ApprovalRequest {
 const humanApproval = defineTool({
   name: "humanApproval",
   params: z.object({
-    message: z
-      .string()
-      .describe("The message to display to the human for approval"),
-    options: z
-      .array(z.string())
-      .optional()
-      .describe("Optional list of choices for the human to select from"),
-    timeoutSeconds: z
-      .number()
-      .optional()
-      .default(300)
-      .describe("Timeout in seconds (default: 5 minutes)"),
+    message: z.string().describe("The message to display to the human for approval"),
+    options: z.array(z.string()).optional().describe("Optional list of choices for the human to select from"),
+    timeoutSeconds: z.number().optional().default(300).describe("Timeout in seconds (default: 5 minutes)"),
   }),
   async execute(params, context) {
     const approvalId = nanoid()
@@ -53,35 +44,23 @@ const humanApproval = defineTool({
     }
 
     // save approval request to file
-    const requestFilePath = path.join(
-      APPROVAL_STORAGE_PATH,
-      `${approvalId}.json`
-    )
-    await fs.writeFile(
-      requestFilePath,
-      JSON.stringify(approvalRequest, null, 2)
-    )
+    const requestFilePath = path.join(APPROVAL_STORAGE_PATH, `${approvalId}.json`)
+    await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
 
     // construct approval URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
     const approvalUrl = `${baseUrl}/approve?id=${approvalId}&workflow=${workflowInvocationId}`
 
     // log the approval link
-    lgg.info(
-      "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    )
+    lgg.info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     lgg.info("🔔 HUMAN APPROVAL REQUIRED")
-    lgg.info(
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    )
+    lgg.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     lgg.info(`Message: ${params.message}`)
     if (params.options) {
       lgg.info(`Options: ${params.options.join(", ")}`)
     }
     lgg.info(`\n👉 Click here to approve: ${approvalUrl}\n`)
-    lgg.info(
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-    )
+    lgg.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
     // poll for approval
     const startTime = Date.now()
@@ -111,9 +90,7 @@ const humanApproval = defineTool({
           await fs.unlink(requestFilePath).catch(() => {})
 
           if (currentRequest.status === "approved") {
-            lgg.info(
-              `✅ Approval received: ${currentRequest.response || "Approved"}`
-            )
+            lgg.info(`✅ Approval received: ${currentRequest.response || "Approved"}`)
             return {
               success: true,
               data: {
@@ -124,9 +101,7 @@ const humanApproval = defineTool({
               error: null,
             }
           } else {
-            lgg.info(
-              `❌ Approval rejected: ${currentRequest.response || "Rejected"}`
-            )
+            lgg.info(`❌ Approval rejected: ${currentRequest.response || "Rejected"}`)
             return {
               success: true,
               data: {

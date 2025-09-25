@@ -55,10 +55,7 @@ export type InvocationContext = ToolExecutionContext
 export interface DefineToolConfig<TParams = any, TResult = any> {
   name: CodeToolName
   params: ZodSchema<TParams>
-  execute: (
-    params: TParams,
-    externalContext: ToolExecutionContext
-  ) => Promise<TResult> | TResult
+  execute: (params: TParams, externalContext: ToolExecutionContext) => Promise<TResult> | TResult
 }
 
 /**
@@ -101,14 +98,10 @@ export function defineTool<
 
   return {
     name: config.name,
-    description:
-      config.description ?? TOOLS.code[config.name] ?? "No description",
+    description: config.description ?? TOOLS.code[config.name] ?? "No description",
     parameters: config.params,
 
-    async execute(
-      params: InputParams,
-      externalContext: ToolExecutionContext
-    ): Promise<RS<FinalResult>> {
+    async execute(params: InputParams, externalContext: ToolExecutionContext): Promise<RS<FinalResult>> {
       try {
         /* 1) runtime validation + 2) guarantees OutputParams type afterwards */
         const parsed: OutputParams = config.params.parse(params)
@@ -176,19 +169,14 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
         })
       }
 
-      const result = await toolDef.execute(
-        correctedParams,
-        toolExecutionContext
-      )
+      const result = await toolDef.execute(correctedParams, toolExecutionContext)
 
       if (!result.success) {
         return result.error || "Tool execution failed"
       }
 
       // Unwrap CodeToolResult for AI runtime: return only the tool output
-      return Tools.isCodeToolResult(result.data)
-        ? (result.data as { output: unknown }).output
-        : result.data
+      return Tools.isCodeToolResult(result.data) ? (result.data as { output: unknown }).output : result.data
     },
   })
 }
@@ -201,10 +189,5 @@ export const commonSchemas = {
   query: z.string().describe("Search query or input text"),
   filePath: z.string().describe("File path for saving or loading"),
   data: z.string().describe("Data content to process"),
-  resultCount: z
-    .number()
-    .describe("Number of results to return")
-    .max(20)
-    .default(10)
-    .nullish(),
+  resultCount: z.number().describe("Number of results to return").max(20).default(10).nullish(),
 } as const

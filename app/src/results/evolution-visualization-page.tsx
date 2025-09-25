@@ -64,9 +64,7 @@ export default function EvolutionVisualizationPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
           <div className="text-red-500 text-xl">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Failed to Load Data
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">Failed to Load Data</h2>
           <p className="text-gray-600">{error}</p>
           <button
             onClick={() => window.location.reload()}
@@ -91,10 +89,7 @@ export default function EvolutionVisualizationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <WorkflowEvolutionVisualization
-        graph={evolutionData.graph}
-        visualization={evolutionData.visualization}
-      />
+      <WorkflowEvolutionVisualization graph={evolutionData.graph} visualization={evolutionData.visualization} />
     </div>
   )
 }

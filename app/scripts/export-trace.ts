@@ -48,8 +48,7 @@ function formatTimestampForFilename(date: Date): string {
 async function main() {
   const argId = getCliArg("id")
   const argUrl = getCliArg("url")
-  const wfInvocationId =
-    argId || (argUrl ? parseTraceIdFromUrl(argUrl) || undefined : undefined)
+  const wfInvocationId = argId || (argUrl ? parseTraceIdFromUrl(argUrl) || undefined : undefined)
 
   if (!wfInvocationId) {
     console.log(
@@ -101,24 +100,18 @@ async function main() {
     ...workflowInvocation
   } = workflow as WorkflowInvocationRow
 
-  const { Workflow: workflowRaw, ...workflowVersion } = (workflowVersionRaw ||
-    {}) as WorkflowVersionRow
+  const { Workflow: workflowRaw, ...workflowVersion } = (workflowVersionRaw || {}) as WorkflowVersionRow
 
-  const nodeInvocations = (nodeInvocationRaw || []).map(
-    (raw: NodeInvocationRow) => {
-      const { NodeVersion: node, inputs = [], outputs = [], ...rest } = raw
-      return { ...rest, node, inputs, outputs }
-    }
-  )
+  const nodeInvocations = (nodeInvocationRaw || []).map((raw: NodeInvocationRow) => {
+    const { NodeVersion: node, inputs = [], outputs = [], ...rest } = raw
+    return { ...rest, node, inputs, outputs }
+  })
 
   const truncateString = (value: string): string => {
     if (typeof value !== "string") return value as unknown as string
     if (value.length <= MAX_TOOL_OUTPUT_STRING_LENGTH) return value
     const omitted = value.length - MAX_TOOL_OUTPUT_STRING_LENGTH
-    return (
-      value.slice(0, MAX_TOOL_OUTPUT_STRING_LENGTH) +
-      `… [${omitted} chars truncated]`
-    )
+    return value.slice(0, MAX_TOOL_OUTPUT_STRING_LENGTH) + `… [${omitted} chars truncated]`
   }
 
   const truncateArray = (arr: unknown[]): unknown[] => {
@@ -145,8 +138,7 @@ async function main() {
           cloned.output = truncateArray(out)
         } else if (out && typeof out === "object") {
           // Heuristic: if object has a large text field, truncate it
-          const maybeText =
-            (out as any).text || (out as any).content || (out as any).html
+          const maybeText = (out as any).text || (out as any).content || (out as any).html
           if (typeof maybeText === "string") {
             cloned.output = { ...out, text: truncateString(maybeText) }
           } else {
@@ -168,11 +160,7 @@ async function main() {
         return { ...m, return: truncateToolReturn(m.return) }
       }
       // Case B: payload carries the agent step
-      if (
-        m.payload &&
-        typeof m.payload === "object" &&
-        (m.payload.type === "tool" || m.payload.type === "terminate")
-      ) {
+      if (m.payload && typeof m.payload === "object" && (m.payload.type === "tool" || m.payload.type === "terminate")) {
         return {
           ...m,
           payload: {
@@ -236,15 +224,9 @@ async function main() {
     if (typeof value === "object") {
       const obj: any = { ...value }
       // If this object itself is a tool step, stringify and hard-truncate its return
-      if (
-        (obj.type === "tool" || obj.type === "terminate") &&
-        Object.prototype.hasOwnProperty.call(obj, "return")
-      ) {
+      if ((obj.type === "tool" || obj.type === "terminate") && Object.prototype.hasOwnProperty.call(obj, "return")) {
         const stringified = safeJSONStringify(obj.return)
-        obj.return = truncateToLen(
-          stringified,
-          MAX_TOOL_RETURN_STRINGIFIED_LENGTH
-        )
+        obj.return = truncateToLen(stringified, MAX_TOOL_RETURN_STRINGIFIED_LENGTH)
       }
       // Recurse into all properties
       for (const [k, v] of Object.entries(obj)) {

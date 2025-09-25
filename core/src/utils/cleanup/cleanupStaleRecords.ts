@@ -40,9 +40,7 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
       lgg.error("failed to cleanup stale workflow invocations:", workflowError)
     } else {
       stats.workflowInvocations = staleWorkflows?.length || 0
-      lgg.info(
-        `marked ${stats.workflowInvocations} stale workflow invocations as failed`
-      )
+      lgg.info(`marked ${stats.workflowInvocations} stale workflow invocations as failed`)
     }
 
     // cleanup stale node invocations (running > 10 minutes)
@@ -57,9 +55,7 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
       lgg.error("failed to cleanup stale node invocations:", nodeError)
     } else {
       stats.nodeInvocations = staleNodes?.length || 0
-      lgg.info(
-        `marked ${stats.nodeInvocations} stale node invocations as failed`
-      )
+      lgg.info(`marked ${stats.nodeInvocations} stale node invocations as failed`)
     }
 
     // cleanup stale evolution runs (running > 10 minutes)
@@ -74,28 +70,19 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
       lgg.error("failed to cleanup stale evolution runs:", runError)
     } else {
       stats.evolutionRuns = staleRuns?.length || 0
-      lgg.info(
-        `marked ${stats.evolutionRuns} stale evolution runs as interrupted`
-      )
+      lgg.info(`marked ${stats.evolutionRuns} stale evolution runs as interrupted`)
     }
 
     // set end_time for any evolution runs missing it (default: start_time + 1 hour)
     try {
-      type EvoRunMin = Pick<
-        Tables<"EvolutionRun">,
-        "run_id" | "start_time" | "end_time"
-      >
-      const { data: runsMissingEnd, error: runsMissingEndError } =
-        await supabase
-          .from("EvolutionRun")
-          .select("run_id,start_time,end_time")
-          .is("end_time", null)
+      type EvoRunMin = Pick<Tables<"EvolutionRun">, "run_id" | "start_time" | "end_time">
+      const { data: runsMissingEnd, error: runsMissingEndError } = await supabase
+        .from("EvolutionRun")
+        .select("run_id,start_time,end_time")
+        .is("end_time", null)
 
       if (runsMissingEndError) {
-        lgg.error(
-          "failed to fetch evolution runs missing end_time:",
-          runsMissingEndError
-        )
+        lgg.error("failed to fetch evolution runs missing end_time:", runsMissingEndError)
       } else if (runsMissingEnd && runsMissingEnd.length > 0) {
         let updatedCount = 0
         // Update each run with computed end_time
@@ -104,9 +91,7 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
           if (Number.isNaN(startMs)) {
             // skip invalid dates but log for visibility
             // use info to be compatible with minimal logger mocks in tests
-            lgg.info(
-              `skipping EvolutionRun ${run.run_id} due to invalid start_time: ${run.start_time}`
-            )
+            lgg.info(`skipping EvolutionRun ${run.run_id} due to invalid start_time: ${run.start_time}`)
             continue
           }
           const computedEnd = new Date(startMs + 60 * 60 * 1000).toISOString()
@@ -116,18 +101,13 @@ export async function cleanupStaleRecords(): Promise<CleanupStats> {
             .eq("run_id", run.run_id)
 
           if (updateEndError) {
-            lgg.error(
-              `failed to set end_time for EvolutionRun ${run.run_id}:`,
-              updateEndError
-            )
+            lgg.error(`failed to set end_time for EvolutionRun ${run.run_id}:`, updateEndError)
           } else {
             updatedCount++
           }
         }
         stats.evolutionRunsEndTimes = updatedCount
-        lgg.info(
-          `set end_time for ${stats.evolutionRunsEndTimes} evolution runs missing end_time (start_time + 1h)`
-        )
+        lgg.info(`set end_time for ${stats.evolutionRunsEndTimes} evolution runs missing end_time (start_time + 1h)`)
       }
     } catch (err) {
       // if the supabase client or mocks don't support this chain, continue without blocking cleanup

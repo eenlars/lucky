@@ -20,25 +20,15 @@ type OutputType = {
 const contextHandler = defineTool({
   name: "contextHandler",
   params: z.object({
-    operation: z
-      .enum(["get", "set", "list", "delete"])
-      .describe("Operation to perform: get, set, list, or delete"),
+    operation: z.enum(["get", "set", "list", "delete"]).describe("Operation to perform: get, set, list, or delete"),
 
     scope: z
       .enum(["workflow", "node"])
-      .describe(
-        "Scope for the data: 'workflow' for shared data, 'node' for node-specific data"
-      ),
+      .describe("Scope for the data: 'workflow' for shared data, 'node' for node-specific data"),
 
-    key: z
-      .string()
-      .nullish()
-      .describe("Key name for the data (required for get, set, delete)"),
+    key: z.string().nullish().describe("Key name for the data (required for get, set, delete)"),
 
-    value: z
-      .any()
-      .nullish()
-      .describe("Value to store (required for set operation)"),
+    value: z.any().nullish().describe("Value to store (required for set operation)"),
   }),
 
   async execute(params, externalContext): Promise<CodeToolResult<OutputType>> {

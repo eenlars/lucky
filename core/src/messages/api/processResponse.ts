@@ -1,9 +1,6 @@
 import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
-import {
-  isVercelTextResponse,
-  type ProcessedResponse,
-} from "@core/messages/api/vercel/processResponse.types"
+import { isVercelTextResponse, type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
@@ -56,18 +53,13 @@ export function processResponseVercel({
   // process steps if they exist (now returns AgentSteps) and derive cost deterministically
   const processedSteps = processStepsV2(response.steps, modelUsed)
   // Prefer top-level usage cost when available; fall back to per-step aggregation
-  const topLevelCost = calculateUsageCost(
-    (response.usage ?? {}) as Partial<VercelUsage>,
-    modelUsed
-  )
+  const topLevelCost = calculateUsageCost((response.usage ?? {}) as Partial<VercelUsage>, modelUsed)
   const perStepCost = processedSteps?.usdCost ?? 0
   const cost = Math.max(topLevelCost, perStepCost)
 
   // If steps exist, decide whether it's a tool or pure text response
   if (processedSteps && processedSteps.agentSteps.length > 0) {
-    const hasAnyToolStep = processedSteps.agentSteps.some(
-      (s) => s.type === "tool"
-    )
+    const hasAnyToolStep = processedSteps.agentSteps.some((s) => s.type === "tool")
 
     if (hasAnyToolStep) {
       // At least one tool call occurred → treat as tool response
@@ -81,9 +73,7 @@ export function processResponseVercel({
     }
 
     // No tool calls at all → treat as text response, keep agentSteps for downstream consumers
-    const aggregatedText = processedSteps.agentSteps.find(
-      (s) => s.type === "text"
-    )
+    const aggregatedText = processedSteps.agentSteps.find((s) => s.type === "text")
     const content = isVercelTextResponse(response)
       ? response.text
       : typeof aggregatedText?.return === "string"
@@ -112,10 +102,7 @@ export function processResponseVercel({
     }
   }
 
-  lgg.error(
-    "Unrecognized response format",
-    truncater(JSON.stringify(response), 1000)
-  )
+  lgg.error("Unrecognized response format", truncater(JSON.stringify(response), 1000))
 
   // No known pattern matched
   return {
@@ -132,16 +119,9 @@ export function processResponseVercel({
 /**
  * Helper to get response content regardless of type
  */
-export const getResponseContent = (
-  response: ProcessedResponse
-): string | null => {
+export const getResponseContent = (response: ProcessedResponse): string | null => {
   if (isNir(response) || response.type === "error")
-    return (
-      "i experienced an error: " +
-      response.message +
-      " details:" +
-      truncater(JSON.stringify(response), 100)
-    )
+    return "i experienced an error: " + response.message + " details:" + truncater(JSON.stringify(response), 100)
 
   if (CONFIG.logging.override.Tools && response.type === "tool") {
     lgg.log("🔍 Tool response:", JSON.stringify(response))
@@ -166,44 +146,30 @@ export const getResponseContent = (
 // so it has a summary and a response. based on the settings in constants,
 // it returns the summary, or the full output.
 // if the last node is not a terminal node, it looks for the last summary, if not found, it returns null.
-export const getFinalOutputNodeInvocation = (
-  response: AgentStep[]
-): string | null => {
+export const getFinalOutputNodeInvocation = (response: AgentStep[]): string | null => {
   if (isNir(response)) return null
 
   let lastContent: string | null = null
 
   const filterActionableSteps = response.filter(
-    (step) =>
-      step.type === "tool" || step.type === "text" || step.type === "terminate"
+    (step) => step.type === "tool" || step.type === "text" || step.type === "terminate"
   )
 
   if (isNir(filterActionableSteps)) {
-    lgg.error(
-      "getFinalOutputNodeInvocation: filterActionableSteps is null/undefined",
-      filterActionableSteps
-    )
+    lgg.error("getFinalOutputNodeInvocation: filterActionableSteps is null/undefined", filterActionableSteps)
     return null
   }
 
   const lastOutput = filterActionableSteps[filterActionableSteps.length - 1]
 
   //  terminate its summary is always about all the work that was done. (different from tool calls.)
-  if (
-    lastOutput.type === "terminate" &&
-    lastOutput.summary &&
-    CONFIG.workflow.handoffContent === "summary"
-  ) {
+  if (lastOutput.type === "terminate" && lastOutput.summary && CONFIG.workflow.handoffContent === "summary") {
     return lastOutput.summary
   }
 
   // based on settings in constants, return summary or full output
   // text have no summary, so we don't return it.
-  if (
-    CONFIG.workflow.handoffContent === "summary" &&
-    lastOutput.type !== "text" &&
-    lastOutput.summary
-  ) {
+  if (CONFIG.workflow.handoffContent === "summary" && lastOutput.type !== "text" && lastOutput.summary) {
     lastContent = lastOutput.summary
   }
 
@@ -218,9 +184,7 @@ export const getFinalOutputNodeInvocation = (
       continue
     }
     if (output.type === "tool") {
-      return typeof output.return === "string"
-        ? output.return
-        : JSON.stringify(output.return)
+      return typeof output.return === "string" ? output.return : JSON.stringify(output.return)
     }
   }
 
@@ -233,15 +197,9 @@ export const getFinalOutputNodeInvocation = (
   // 1) Return last non-empty reasoning/plan/learning content
   for (let i = response.length - 1; i >= 0; i--) {
     const output = response[i]
-    if (
-      output.type === "reasoning" ||
-      output.type === "plan" ||
-      output.type === "learning"
-    ) {
+    if (output.type === "reasoning" || output.type === "plan" || output.type === "learning") {
       const text =
-        typeof (output as { return: unknown }).return === "string"
-          ? (output as { return: string }).return
-          : ""
+        typeof (output as { return: unknown }).return === "string" ? (output as { return: string }).return : ""
       if (text.trim().length > 0) return text
     }
   }
@@ -251,17 +209,12 @@ export const getFinalOutputNodeInvocation = (
     const output = response[i]
     if (output.type === "error") {
       const text =
-        typeof (output as { return: unknown }).return === "string"
-          ? (output as { return: string }).return
-          : ""
+        typeof (output as { return: unknown }).return === "string" ? (output as { return: string }).return : ""
       if (text.trim().length > 0) return text
     }
   }
 
-  lgg.warn(
-    "getResponseContentagentSteps did not find a terminal node, text, or reasoning",
-    JSON.stringify(response)
-  )
+  lgg.warn("getResponseContentagentSteps did not find a terminal node, text, or reasoning", JSON.stringify(response))
 
   return null
 }
@@ -297,10 +250,7 @@ export const getResponseInformation = (
     }
 
   if (CONFIG.logging.override.Tools && response.type === "tool") {
-    lgg.log(
-      "🔍 Tool response in getResponseInformation:",
-      JSON.stringify(response)
-    )
+    lgg.log("🔍 Tool response in getResponseInformation:", JSON.stringify(response))
   }
 
   const nodeInvocationFullOutput = getResponseContent(response)
