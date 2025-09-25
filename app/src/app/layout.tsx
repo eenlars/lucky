@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
-import Sidebar from "@/components/Sidebar"
+import { IntegratedAside } from "@/app/components/aside"
 import MainContent from "@/components/MainContent"
 import { AppStoreProvider } from "@/react-flow-visualization/store"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
@@ -58,7 +58,7 @@ export default async function RootLayout({
                 Skip to content
               </a>
               <NextTopLoader />
-              {userId && <Sidebar />}
+              {userId && <IntegratedAside />}
               <MainContent hasAuth={!!userId}>{children}</MainContent>
               <Toaster
                 position="bottom-right"

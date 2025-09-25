@@ -16,7 +16,7 @@ export default function MainContent({
     <main
       className={cn(
         "h-screen overflow-auto transition-all duration-300 ease-out",
-        hasAuth && !isMobile && (isCollapsed ? "md:ml-16" : "md:ml-64")
+        hasAuth && !isMobile && "md:ml-[70px]"
       )}
       id="main-content"
     >
