@@ -93,9 +93,7 @@ function extractFitnessValues(fitnessData: unknown): {
     }
   } else if (isOlderFormat(fitnessData)) {
     return {
-      accuracy: fitnessData.extendedFitness?.dataAccuracy
-        ? Math.round(fitnessData.extendedFitness.dataAccuracy)
-        : null,
+      accuracy: fitnessData.extendedFitness?.dataAccuracy ? Math.round(fitnessData.extendedFitness.dataAccuracy) : null,
       fitness_score: Math.round(fitnessData.score),
     }
   } else {
@@ -159,21 +157,14 @@ export async function migrateFitnessToColumns() {
             .eq("wf_invocation_id", row.wf_invocation_id)
 
           if (updateError) {
-            console.error(
-              `Failed to update row ${row.wf_invocation_id}:`,
-              updateError.message
-            )
+            console.error(`Failed to update row ${row.wf_invocation_id}:`, updateError.message)
             errors++
           } else {
             migrated++
-            console.log(
-              ` Migrated row ${row.wf_invocation_id}: ${JSON.stringify(updates)}`
-            )
+            console.log(` Migrated row ${row.wf_invocation_id}: ${JSON.stringify(updates)}`)
           }
         } else {
-          console.log(
-            `- Skipped row ${row.wf_invocation_id}: no values to migrate or already populated`
-          )
+          console.log(`- Skipped row ${row.wf_invocation_id}: no values to migrate or already populated`)
         }
       } catch (error) {
         console.error(`Error processing row ${row.wf_invocation_id}:`, error)
@@ -181,9 +172,7 @@ export async function migrateFitnessToColumns() {
       }
     }
 
-    console.log(
-      `Migration completed: ${migrated} rows migrated, ${errors} errors`
-    )
+    console.log(`Migration completed: ${migrated} rows migrated, ${errors} errors`)
   } catch (error) {
     console.error("Migration failed:", error)
     throw error

@@ -9,9 +9,7 @@ import path from "path"
 // Environment variable substitution utility
 function substituteEnvVars(str: string): string {
   return str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
-    return (
-      (envi as Record<string, any>)[varName] ?? process.env[varName] ?? match
-    )
+    return (envi as Record<string, any>)[varName] ?? process.env[varName] ?? match
   })
 }
 
@@ -31,11 +29,8 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
   try {
     // Prefer process.env for tests that set MCP_SECRET_PATH dynamically,
     // fallback to envi (mocked in tests), then to runtime default
-    const configuredPath =
-      process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
-    const configPath = configuredPath
-      ? path.resolve(configuredPath)
-      : path.join(PATHS.runtime, "mcp-secret.json")
+    const configuredPath = process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
+    const configPath = configuredPath ? path.resolve(configuredPath) : path.join(PATHS.runtime, "mcp-secret.json")
     if (!fs.existsSync(configPath)) {
       // Don't throw during build - just return empty config
       console.warn(
@@ -48,9 +43,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     const config: MCPConfig = JSON.parse(configContent)
 
     if (!config.mcpServers || typeof config.mcpServers !== "object") {
-      console.warn(
-        "Invalid mcp-secret.json: missing or invalid 'mcpServers' field"
-      )
+      console.warn("Invalid mcp-secret.json: missing or invalid 'mcpServers' field")
       return {}
     }
 
@@ -60,9 +53,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     const validatedServers: MCPConfig["mcpServers"] = {}
     for (const [name, serverConfig] of Object.entries(config.mcpServers)) {
       if (!serverConfig.command || !Array.isArray(serverConfig.args)) {
-        console.warn(
-          `Invalid MCP server config for '${name}': missing command or args`
-        )
+        console.warn(`Invalid MCP server config for '${name}': missing command or args`)
         continue
       }
       // Substitute environment variables in config
@@ -71,12 +62,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
         command: substituteEnvVars(serverConfig.command),
         args: serverConfig.args.map(substituteEnvVars),
         env: serverConfig.env
-          ? Object.fromEntries(
-              Object.entries(serverConfig.env).map(([key, value]) => [
-                key,
-                substituteEnvVars(value),
-              ])
-            )
+          ? Object.fromEntries(Object.entries(serverConfig.env).map(([key, value]) => [key, substituteEnvVars(value)]))
           : undefined,
       }
 
@@ -84,9 +70,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     }
 
     if (Object.keys(validatedServers).length > 0) {
-      console.log(
-        `Loaded external MCP servers: ${Object.keys(validatedServers).join(", ")}`
-      )
+      console.log(`Loaded external MCP servers: ${Object.keys(validatedServers).join(", ")}`)
     }
 
     return validatedServers
@@ -100,10 +84,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 let externalMCPConfig: MCPConfig["mcpServers"] | null = null
 
 // Lazy getter for MCP config - only loads when actually needed
-function getCreateTools(): Record<
-  string,
-  { command: string; args: string[]; env?: Record<string, string> }
-> {
+function getCreateTools(): Record<string, { command: string; args: string[]; env?: Record<string, string> }> {
   if (externalMCPConfig === null) {
     externalMCPConfig = loadExternalMCPConfig()
   }
@@ -161,9 +142,7 @@ export async function setupMCPForNode(
   )
 
   // Filter out null clients
-  const clients = clientPromises.filter(
-    (client): client is any => client !== null
-  )
+  const clients = clientPromises.filter((client): client is any => client !== null)
 
   // 2. Fetch each client's tool set
   const toolSets = await Promise.all(clients.map((client) => client.tools()))
@@ -185,8 +164,6 @@ export function clearMCPClientCache() {
  * Clear cached MCP clients for a specific workflow
  */
 export function clearWorkflowMCPClientCache(workflowId: string) {
-  const keysToDelete = Array.from(clientCache.keys()).filter((key) =>
-    key.startsWith(`${workflowId}:`)
-  )
+  const keysToDelete = Array.from(clientCache.keys()).filter((key) => key.startsWith(`${workflowId}:`))
   keysToDelete.forEach((key) => clientCache.delete(key))
 }

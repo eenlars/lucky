@@ -11,8 +11,7 @@ type GaiaRow = {
   file_name?: string
 }
 
-const BASE_FILES_URL =
-  "https://huggingface.co/datasets/gaia-benchmark/GAIA/resolve/main/2023"
+const BASE_FILES_URL = "https://huggingface.co/datasets/gaia-benchmark/GAIA/resolve/main/2023"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -28,9 +27,7 @@ async function fetchText(url: string, authToken?: string): Promise<string> {
   const res = await fetch(url, { headers })
   if (!res.ok) {
     const body = await res.text().catch(() => "")
-    throw new Error(
-      `HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`
-    )
+    throw new Error(`HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`)
   }
   return res.text()
 }
@@ -47,8 +44,7 @@ function parseJsonlToArray(text: string): GaiaRow[] {
         Question: item.Question,
         Level: Number(item.Level ?? 0),
       }
-      if (item["Final answer"])
-        mapped["Final answer"] = String(item["Final answer"]) // keep key
+      if (item["Final answer"]) mapped["Final answer"] = String(item["Final answer"]) // keep key
       if (item.file_name) mapped.file_name = String(item.file_name)
       // Skip instances with files to align with loader default
       if (!mapped.file_name && mapped.task_id !== "0-0-0-0-0") rows.push(mapped)

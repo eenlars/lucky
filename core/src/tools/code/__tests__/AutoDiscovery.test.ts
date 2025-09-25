@@ -12,9 +12,7 @@ describe("CodeToolAutoDiscovery", () => {
 
     // Override PATHS only for this test to point to the real runtime code tools
     vi.doMock("@runtime/settings/constants", async () => {
-      const real = await vi.importActual<
-        typeof import("@runtime/settings/constants")
-      >("@runtime/settings/constants")
+      const real = await vi.importActual<typeof import("@runtime/settings/constants")>("@runtime/settings/constants")
 
       const __filename = fileURLToPath(import.meta.url)
       const __dirname = path.dirname(__filename)
@@ -50,9 +48,7 @@ describe("CodeToolAutoDiscovery", () => {
       }
     })
 
-    const { CodeToolAutoDiscovery } = await import(
-      "@core/tools/code/AutoDiscovery"
-    )
+    const { CodeToolAutoDiscovery } = await import("@core/tools/code/AutoDiscovery")
     autoDiscovery = new CodeToolAutoDiscovery()
     autoDiscovery.reset()
   })

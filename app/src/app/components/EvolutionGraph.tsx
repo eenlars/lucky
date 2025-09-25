@@ -53,9 +53,7 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
             const runInfoResponse = await fetch("/api/evolution-runs")
             if (runInfoResponse.ok) {
               const allRuns = await runInfoResponse.json()
-              const currentRun = allRuns.find(
-                (run: any) => run.run_id === runId
-              )
+              const currentRun = allRuns.find((run: any) => run.run_id === runId)
               if (currentRun) {
                 setEvolutionData({
                   graph: null,
@@ -67,8 +65,7 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
                     start_time: currentRun.start_time,
                     end_time: currentRun.end_time,
                     total_invocations: currentRun.total_invocations || 0,
-                    successful_invocations:
-                      currentRun.successful_invocations || 0,
+                    successful_invocations: currentRun.successful_invocations || 0,
                   },
                 })
                 setLoading(false)
@@ -80,10 +77,7 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
           }
         }
 
-        throw new Error(
-          errorData.error ||
-            `Failed to load evolution run: ${response.statusText}`
-        )
+        throw new Error(errorData.error || `Failed to load evolution run: ${response.statusText}`)
       }
 
       const data = await response.json()
@@ -113,17 +107,13 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
 
   if (error) {
     return (
-      <div
-        className={`p-4 bg-red-50 border border-red-200 rounded-lg ${className}`}
-      >
+      <div className={`p-4 bg-red-50 border border-red-200 rounded-lg ${className}`}>
         <div className="flex">
           <div className="flex-shrink-0">
             <span className="text-red-400">⚠️</span>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">
-              Error Loading Evolution Graph
-            </h3>
+            <h3 className="text-sm font-medium text-red-800">Error Loading Evolution Graph</h3>
             <div className="mt-2 text-sm text-red-700">
               <p>{error}</p>
             </div>
@@ -146,17 +136,12 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
   return (
     <div className={className}>
       {evolutionData.graph && evolutionData.visualization ? (
-        <WorkflowEvolutionVisualization
-          graph={evolutionData.graph}
-          visualization={evolutionData.visualization}
-        />
+        <WorkflowEvolutionVisualization graph={evolutionData.graph} visualization={evolutionData.visualization} />
       ) : evolutionData.runInfo ? (
         <FailedRunVisualization
           runId={evolutionData.runId}
           totalInvocations={evolutionData.runInfo.total_invocations || 0}
-          successfulInvocations={
-            evolutionData.runInfo.successful_invocations || 0
-          }
+          successfulInvocations={evolutionData.runInfo.successful_invocations || 0}
           evolutionGoal={evolutionData.runInfo.goal_text}
           runStatus={evolutionData.runInfo.status}
           startTime={evolutionData.runInfo.start_time}

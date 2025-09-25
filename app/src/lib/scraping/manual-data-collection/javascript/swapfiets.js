@@ -41,10 +41,7 @@ function transformSwapfietsData(input) {
 
     return {
       name: item.name || null,
-      address:
-        item.street && item.street_number
-          ? `${item.street} ${item.street_number}`
-          : item.street || null,
+      address: item.street && item.street_number ? `${item.street} ${item.street_number}` : item.street || null,
       city: item.city || null,
       country: item.country || null,
       postcode: item.postal_code || null,
@@ -65,7 +62,4 @@ function transformSwapfietsData(input) {
 // load → Transform → Save
 const transformed = transformSwapfietsData(json)
 
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/swapfiets.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/swapfiets.json", JSON.stringify(transformed, null, 2))

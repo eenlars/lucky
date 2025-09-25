@@ -35,11 +35,7 @@ export interface MutationResult {
  * Contract for a workflow-level mutation operator.
  */
 export interface MutationOperator {
-  execute(
-    config: WorkflowConfig,
-    parent: Genome,
-    intensity: number
-  ): Promise<number>
+  execute(config: WorkflowConfig, parent: Genome, intensity: number): Promise<number>
 }
 
 /**
@@ -52,14 +48,7 @@ export interface NodeMutationOperator {
 /**
  * Discrete categories of mutations available to the engine.
  */
-export type MutationType =
-  | "model"
-  | "prompt"
-  | "tool"
-  | "structure"
-  | "addNode"
-  | "deleteNode"
-  | "iterative"
+export type MutationType = "model" | "prompt" | "tool" | "structure" | "addNode" | "deleteNode" | "iterative"
 
 /**
  * Weight configuration for probabilistic selection of mutation types.
@@ -118,9 +107,7 @@ export const MUTATION_WEIGHTS: MutationWeight[] = [
  * - Iterative mode only uses iterative mutations
  * - GP mode uses all structural and behavioral mutations
  */
-export function getEvolutionMutations(
-  evolutionMode: FlowEvolutionMode
-): MutationType[] {
+export function getEvolutionMutations(evolutionMode: FlowEvolutionMode): MutationType[] {
   switch (evolutionMode) {
     case "iterative":
       return ["iterative"]

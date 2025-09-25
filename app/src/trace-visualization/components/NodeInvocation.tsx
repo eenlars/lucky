@@ -25,10 +25,7 @@ import { STATUS_TO_COLOR, formatCost } from "./constants"
 const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
 
 const getReactJsonTheme = () => {
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
+  if (typeof window !== "undefined" && document.documentElement.classList.contains("dark")) {
     return "monokai"
   }
   return "rjv-default"
@@ -42,35 +39,25 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
   const { invocation, nodeDefinition, inputs, output } = entry
   const [isPromptExpanded, setIsPromptExpanded] = useState(true)
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
-  const [rightPanelMode, setRightPanelMode] = useState<"tools" | "json">(
-    "tools"
-  )
-  const [expandedReasoningSteps, setExpandedReasoningSteps] = useState<
-    Set<number>
-  >(new Set())
+  const [rightPanelMode, setRightPanelMode] = useState<"tools" | "json">("tools")
+  const [expandedReasoningSteps, setExpandedReasoningSteps] = useState<Set<number>>(new Set())
 
   const extras = invocation.extras as NodeInvocationExtras | null
   const agentSteps: AgentSteps | undefined = getAgentSteps(extras)
   const updatedMemory = extras?.updatedMemory
 
   const durationMs: number | null = invocation.end_time
-    ? new Date(invocation.end_time).getTime() -
-      new Date(invocation.start_time).getTime()
+    ? new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()
     : null
 
-  const statusColor =
-    STATUS_TO_COLOR[
-      (invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ??
-        "default"
-    ]
+  const statusColor = STATUS_TO_COLOR[(invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ?? "default"]
 
   const inputSummaryResult =
     inputs.length > 0
       ? extractInputSummary(inputs[0]?.payload)
       : { summary: "No input", original: null, isTruncated: false }
 
-  const allToolOutputs =
-    agentSteps?.filter((output) => output.type === "tool") || []
+  const allToolOutputs = agentSteps?.filter((output) => output.type === "tool") || []
   const availableTools = nodeDefinition?.tools || []
   const usedTools = allToolOutputs.map((output) => output.name) || []
   const allTools = Array.from(new Set([...availableTools, ...usedTools]))
@@ -100,12 +87,8 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Node Invocation
-            </h1>
-            <div
-              className={`w-3 h-3 rounded-full ${statusColor.replace("border", "bg")}`}
-            />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Node Invocation</h1>
+            <div className={`w-3 h-3 rounded-full ${statusColor.replace("border", "bg")}`} />
           </div>
           <div className="text-xl font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
             {nodeDefinition?.node_id ?? invocation.node_id}
@@ -116,9 +99,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
         <div className="p-6 space-y-6">
           {/* Model */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Model
-            </h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Model</h3>
             <div className="text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
               {invocation?.model ?? "N/A"}
             </div>
@@ -128,9 +109,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
           {nodeDefinition?.system_prompt && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  System Prompt
-                </h3>
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">System Prompt</h3>
                 <button
                   className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => setIsPromptExpanded(!isPromptExpanded)}
@@ -157,9 +136,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
           {/* Tools */}
           {allTools.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Available Tools
-              </h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Tools</h3>
               <div className="flex flex-wrap gap-1">
                 {allTools.map((tool, index) => {
                   const wasUsed = usedTools.includes(tool)
@@ -176,20 +153,14 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                             }
                           `}
                         >
-                          {wasUsed && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400" />
-                          )}
+                          {wasUsed && <div className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400" />}
                           {tool}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-1">
-                          <div className="text-xs font-medium">
-                            {wasUsed ? "✓ Used" : "Available"}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">
-                            {getToolDescription(tool)}
-                          </div>
+                          <div className="text-xs font-medium">{wasUsed ? "✓ Used" : "Available"}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">{getToolDescription(tool)}</div>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -201,60 +172,38 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
 
           {/* Memory */}
           {((!isNir(nodeDefinition?.memory) &&
-            Object.keys(nodeDefinition.memory as Record<string, string>)
-              .length > 0) ||
-            (!isNir(updatedMemory) &&
-              Object.keys(updatedMemory).length > 0)) && (
+            Object.keys(nodeDefinition.memory as Record<string, string>).length > 0) ||
+            (!isNir(updatedMemory) && Object.keys(updatedMemory).length > 0)) && (
             <div>
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Memory
-              </h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Memory</h3>
               <div className="space-y-2">
                 {!isNir(nodeDefinition?.memory) &&
-                  Object.keys(nodeDefinition.memory as Record<string, string>)
-                    .length > 0 && (
+                  Object.keys(nodeDefinition.memory as Record<string, string>).length > 0 && (
                     <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-                      <div className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-2">
-                        Initial
-                      </div>
+                      <div className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-2">Initial</div>
                       <ul className="space-y-1">
-                        {Object.entries(
-                          nodeDefinition.memory as Record<string, string>
-                        ).map(([key, value], idx) => (
+                        {Object.entries(nodeDefinition.memory as Record<string, string>).map(([key, value], idx) => (
                           <li key={idx} className="text-xs">
-                            <span className="font-medium text-amber-900 dark:text-amber-200">
-                              {key}:
-                            </span>{" "}
-                            <span className="text-amber-800 dark:text-amber-300">
-                              {value}
-                            </span>
+                            <span className="font-medium text-amber-900 dark:text-amber-200">{key}:</span>{" "}
+                            <span className="text-amber-800 dark:text-amber-300">{value}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
-                {!isNir(updatedMemory) &&
-                  Object.keys(updatedMemory).length > 0 && (
-                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                      <div className="text-xs font-medium text-green-700 dark:text-green-300 mb-2">
-                        Updated
-                      </div>
-                      <ul className="space-y-1">
-                        {Object.entries(updatedMemory).map(
-                          ([key, value], idx) => (
-                            <li key={idx} className="text-xs">
-                              <span className="font-medium text-green-900 dark:text-green-200">
-                                {key}:
-                              </span>{" "}
-                              <span className="text-green-800 dark:text-green-300">
-                                {value}
-                              </span>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-                  )}
+                {!isNir(updatedMemory) && Object.keys(updatedMemory).length > 0 && (
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                    <div className="text-xs font-medium text-green-700 dark:text-green-300 mb-2">Updated</div>
+                    <ul className="space-y-1">
+                      {Object.entries(updatedMemory).map(([key, value], idx) => (
+                        <li key={idx} className="text-xs">
+                          <span className="font-medium text-green-900 dark:text-green-200">{key}:</span>{" "}
+                          <span className="text-green-800 dark:text-green-300">{value}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -277,83 +226,70 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
 
         {/* Bottom Left - Messages */}
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Messages
-          </h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Messages</h3>
 
           {/* Incoming Message */}
-          {inputs.length > 0 &&
-            inputSummaryResult.summary &&
-            inputSummaryResult.summary !== "No input" && (
-              <div>
-                <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Incoming {inputs.length > 1 && `(${inputs.length} messages)`}
-                </h4>
-                {inputSummaryResult.isTruncated ? (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
-                        <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
-                          From: {inputs[0]?.from_node_id || "Initial"}
-                        </div>
-                        <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
-                          <span>{inputSummaryResult.summary}</span>
-                          <Eye
-                            size={14}
-                            className="text-blue-700 dark:text-blue-400 ml-2"
-                          />
-                        </div>
+          {inputs.length > 0 && inputSummaryResult.summary && inputSummaryResult.summary !== "No input" && (
+            <div>
+              <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                Incoming {inputs.length > 1 && `(${inputs.length} messages)`}
+              </h4>
+              {inputSummaryResult.isTruncated ? (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
+                      <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
+                        From: {inputs[0]?.from_node_id || "Initial"}
                       </div>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Full Incoming Message</DialogTitle>
-                      </DialogHeader>
-                      <div className="mt-4">
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          From Node: {inputs[0]?.from_node_id || "Initial"}
-                        </div>
-                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                          <PayloadRender
-                            payload={inputs[0]?.payload}
-                            msgId={`incoming-${inputs[0]?.msg_id}`}
-                            inspectable
-                          />
-                        </div>
+                      <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
+                        <span>{inputSummaryResult.summary}</span>
+                        <Eye size={14} className="text-blue-700 dark:text-blue-400 ml-2" />
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                ) : (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 shadow-sm">
-                    <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
-                      From: {inputs[0]?.from_node_id || "Initial"}
                     </div>
-                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed whitespace-pre-wrap">
-                      {(() => {
-                        try {
-                          const text = extractTextFromPayload(
-                            inputs[0]?.payload as any
-                          )
-                          if (text) {
-                            return text.length > 300
-                              ? text.substring(0, 300) + "..."
-                              : text
-                          }
-                        } catch {}
-                        return inputSummaryResult.summary
-                      })()}
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Full Incoming Message</DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-4">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        From Node: {inputs[0]?.from_node_id || "Initial"}
+                      </div>
+                      <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                        <PayloadRender
+                          payload={inputs[0]?.payload}
+                          msgId={`incoming-${inputs[0]?.msg_id}`}
+                          inspectable
+                        />
+                      </div>
                     </div>
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3 shadow-sm">
+                  <div className="text-xs text-blue-700 dark:text-blue-300 mb-1">
+                    From: {inputs[0]?.from_node_id || "Initial"}
                   </div>
-                )}
-              </div>
-            )}
+                  <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed whitespace-pre-wrap">
+                    {(() => {
+                      try {
+                        const text = extractTextFromPayload(inputs[0]?.payload as any)
+                        if (text) {
+                          return text.length > 300 ? text.substring(0, 300) + "..." : text
+                        }
+                      } catch {}
+                      return inputSummaryResult.summary
+                    })()}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Outgoing Message */}
           {output && (
             <div>
-              <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                Outgoing
-              </h4>
+              <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Outgoing</h4>
               {(() => {
                 const outputSummaryResult = extractInputSummary(output.payload)
                 return outputSummaryResult.isTruncated ? (
@@ -362,10 +298,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
                         <div className="text-sm text-green-900 dark:text-green-200 leading-relaxed flex items-center justify-between">
                           <span>{outputSummaryResult.summary}</span>
-                          <Eye
-                            size={14}
-                            className="text-green-700 dark:text-green-400 ml-2"
-                          />
+                          <Eye size={14} className="text-green-700 dark:text-green-400 ml-2" />
                         </div>
                       </div>
                     </DialogTrigger>
@@ -375,11 +308,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       </DialogHeader>
                       <div className="mt-4">
                         <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                          <PayloadRender
-                            payload={output.payload}
-                            msgId={`outgoing-${output.msg_id}`}
-                            inspectable
-                          />
+                          <PayloadRender payload={output.payload} msgId={`outgoing-${output.msg_id}`} inspectable />
                         </div>
                       </div>
                     </DialogContent>
@@ -411,8 +340,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 mb-6 bg-blue-50 dark:bg-blue-900/20">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                  Incoming Message{inputs.length > 1 ? "s" : ""} (
-                  {inputs.length})
+                  Incoming Message{inputs.length > 1 ? "s" : ""} ({inputs.length})
                 </span>
                 <span className="text-xs text-blue-700 dark:text-blue-300">
                   from {inputs[0]?.from_node_id || "Initial"}
@@ -420,21 +348,15 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
               </div>
 
               {/* Show primary message */}
-              {inputSummaryResult.summary &&
-              inputSummaryResult.summary !== "No input" ? (
+              {inputSummaryResult.summary && inputSummaryResult.summary !== "No input" ? (
                 <div className="text-sm text-blue-800 dark:text-blue-200">
                   {inputSummaryResult.isTruncated ? (
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 p-2 -m-2 rounded transition-colors">
                           <div className="flex items-start justify-between gap-2">
-                            <span className="flex-1">
-                              {inputSummaryResult.summary}
-                            </span>
-                            <Eye
-                              size={14}
-                              className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
-                            />
+                            <span className="flex-1">{inputSummaryResult.summary}</span>
+                            <Eye size={14} className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                           </div>
                         </div>
                       </DialogTrigger>
@@ -447,22 +369,17 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                             From Node: {inputs[0]?.from_node_id || "Initial"}
                           </div>
                           <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap overflow-x-auto">
-                            {inputSummaryResult.original ||
-                              inputSummaryResult.summary}
+                            {inputSummaryResult.original || inputSummaryResult.summary}
                           </pre>
                         </div>
                       </DialogContent>
                     </Dialog>
                   ) : (
-                    <div className="whitespace-pre-wrap">
-                      {inputSummaryResult.summary}
-                    </div>
+                    <div className="whitespace-pre-wrap">{inputSummaryResult.summary}</div>
                   )}
                 </div>
               ) : (
-                <div className="text-sm text-blue-600 dark:text-blue-400 italic">
-                  No message content
-                </div>
+                <div className="text-sm text-blue-600 dark:text-blue-400 italic">No message content</div>
               )}
 
               {/* Show if there are additional messages */}
@@ -482,13 +399,9 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                         {inputs.map((input, idx) => {
                           const _summary = extractInputSummary(input.payload)
                           return (
-                            <div
-                              key={idx}
-                              className="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
-                            >
+                            <div key={idx} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                               <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Message {idx + 1} from{" "}
-                                {input.from_node_id || "Initial"}
+                                Message {idx + 1} from {input.from_node_id || "Initial"}
                               </div>
                               <pre className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto">
                                 {typeof input.payload === "string"
@@ -540,9 +453,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    {getStepIcon(step.type) && (
-                      <span className="text-lg">{getStepIcon(step.type)}</span>
-                    )}
+                    {getStepIcon(step.type) && <span className="text-lg">{getStepIcon(step.type)}</span>}
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                       Step {index + 1} - {step.type}
                     </span>
@@ -557,11 +468,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       <button
                         onClick={() => toggleReasoningStep(index)}
                         className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        title={
-                          expandedReasoningSteps.has(index)
-                            ? "Collapse reasoning"
-                            : "Expand reasoning"
-                        }
+                        title={expandedReasoningSteps.has(index) ? "Collapse reasoning" : "Expand reasoning"}
                       >
                         <ChevronDown
                           size={14}
@@ -575,10 +482,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                         className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         title="Inspect tool call"
                       >
-                        <Eye
-                          size={14}
-                          className="text-gray-500 dark:text-gray-400"
-                        />
+                        <Eye size={14} className="text-gray-500 dark:text-gray-400" />
                       </button>
                     )}
                   </div>
@@ -595,16 +499,9 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       {(() => {
                         const content = step.return
                         if (isNir(content)) {
-                          return (
-                            <span className="text-gray-500 dark:text-gray-400 italic">
-                              No content
-                            </span>
-                          )
+                          return <span className="text-gray-500 dark:text-gray-400 italic">No content</span>
                         }
-                        const stringContent =
-                          typeof content === "string"
-                            ? content
-                            : JSON.stringify(content)
+                        const stringContent = typeof content === "string" ? content : JSON.stringify(content)
 
                         // Special handling for reasoning steps
                         if (step.type === "reasoning") {
@@ -618,9 +515,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                         }
 
                         // Other step types - keep original logic
-                        return stringContent.length > 200
-                          ? stringContent.substring(0, 200) + "..."
-                          : stringContent
+                        return stringContent.length > 200 ? stringContent.substring(0, 200) + "..." : stringContent
                       })()}
                     </div>
                   )}
@@ -640,17 +535,13 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                   )}
                   {step.type === "error" && (
                     <div className="text-red-700 dark:text-red-300 font-medium">
-                      {typeof step.return === "string"
-                        ? step.return
-                        : JSON.stringify(step.return)}
+                      {typeof step.return === "string" ? step.return : JSON.stringify(step.return)}
                     </div>
                   )}
                   {step.type === "tool" && (
                     <div>
                       {"summary" in step && step.summary && (
-                        <div className="text-blue-700 dark:text-blue-300 mb-2">
-                          {step.summary}
-                        </div>
+                        <div className="text-blue-700 dark:text-blue-300 mb-2">{step.summary}</div>
                       )}
                       <div className="text-xs text-gray-500 dark:text-gray-500">
                         Click inspect button to view full tool output
@@ -663,9 +554,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
           })}
 
           {(!agentSteps || agentSteps.length === 0) && (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-              No execution steps recorded
-            </div>
+            <div className="text-center text-gray-500 dark:text-gray-400 py-8">No execution steps recorded</div>
           )}
         </div>
       </div>
@@ -700,9 +589,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             <div className="space-y-4">
               {allTools.map((tool, index) => {
                 const wasUsed = usedTools.includes(tool)
-                const toolUsageCount = allToolOutputs.filter(
-                  (output) => output.name === tool
-                ).length
+                const toolUsageCount = allToolOutputs.filter((output) => output.name === tool).length
 
                 return (
                   <div
@@ -711,9 +598,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                          {tool}
-                        </h4>
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100">{tool}</h4>
                         {wasUsed && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400" />
@@ -732,17 +617,12 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                           className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                           title="View usage details"
                         >
-                          <Database
-                            size={14}
-                            className="text-gray-500 dark:text-gray-400"
-                          />
+                          <Database size={14} className="text-gray-500 dark:text-gray-400" />
                         </button>
                       )}
                     </div>
 
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      {getToolDescription(tool)}
-                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{getToolDescription(tool)}</div>
 
                     {wasUsed && (
                       <div className="text-xs text-gray-500 dark:text-gray-500">
@@ -764,24 +644,17 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
               {selectedTool ? (
                 <div>
                   <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                    {selectedTool.startsWith("terminate-")
-                      ? "Terminal Output"
-                      : selectedTool}
+                    {selectedTool.startsWith("terminate-") ? "Terminal Output" : selectedTool}
                   </h4>
                   <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                     <ReactJson
                       src={(() => {
                         if (selectedTool.startsWith("terminate-")) {
-                          const stepIndex = parseInt(
-                            selectedTool.replace("terminate-", "")
-                          )
+                          const stepIndex = parseInt(selectedTool.replace("terminate-", ""))
                           const terminateStep = agentSteps?.[stepIndex]
                           return terminateStep || {}
                         }
-                        return (
-                          allToolOutputs.find((t) => t.name === selectedTool) ||
-                          {}
-                        )
+                        return allToolOutputs.find((t) => t.name === selectedTool) || {}
                       })()}
                       theme={getReactJsonTheme()}
                       collapsed={1}
@@ -813,24 +686,17 @@ function extractInputSummary(payload: any): {
   if (!payload) return { summary: "", original: null, isTruncated: false }
 
   if (typeof payload === "string") {
-    if (payload.trim().length === 0)
-      return { summary: "", original: null, isTruncated: false }
+    if (payload.trim().length === 0) return { summary: "", original: null, isTruncated: false }
     const firstSentence = payload.split(/[.!?]/)
     if (firstSentence[0] && firstSentence[0].trim()) {
-      const summary =
-        firstSentence[0].length > 60
-          ? firstSentence[0].substring(0, 60) + "..."
-          : firstSentence[0].trim()
+      const summary = firstSentence[0].length > 60 ? firstSentence[0].substring(0, 60) + "..." : firstSentence[0].trim()
       return {
         summary,
         original: payload,
-        isTruncated:
-          firstSentence[0].length > 60 ||
-          payload.length > firstSentence[0].length,
+        isTruncated: firstSentence[0].length > 60 || payload.length > firstSentence[0].length,
       }
     }
-    const summary =
-      payload.length > 60 ? payload.substring(0, 60) + "..." : payload
+    const summary = payload.length > 60 ? payload.substring(0, 60) + "..." : payload
     return {
       summary,
       original: payload,
@@ -846,15 +712,10 @@ function extractInputSummary(payload: any): {
       if (Array.isArray(msgs) && count > 0) {
         const first = msgs[0]
         const text: string | undefined =
-          typeof first?.text === "string"
-            ? first.text
-            : typeof first?.message === "string"
-              ? first.message
-              : undefined
+          typeof first?.text === "string" ? first.text : typeof first?.message === "string" ? first.message : undefined
         if (text && text.trim().length > 0) {
           const original = text
-          const _summary =
-            text.length > 80 ? text.substring(0, 80) + "..." : text
+          const _summary = text.length > 80 ? text.substring(0, 80) + "..." : text
           return { summary: _summary, original, isTruncated: text.length > 80 }
         }
         return {
@@ -865,9 +726,7 @@ function extractInputSummary(payload: any): {
       }
     }
     if (payload.kind === "aggregated" && payload.messages) {
-      const messageCount = Array.isArray(payload.messages)
-        ? payload.messages.length
-        : 0
+      const messageCount = Array.isArray(payload.messages) ? payload.messages.length : 0
       return {
         summary: `Aggregated input from ${messageCount} node${messageCount !== 1 ? "s" : ""}`,
         original: JSON.stringify(payload, null, 2),
@@ -876,14 +735,9 @@ function extractInputSummary(payload: any): {
     }
 
     const extractField = (field: string) => {
-      if (
-        payload[field] &&
-        typeof payload[field] === "string" &&
-        payload[field].trim()
-      ) {
+      if (payload[field] && typeof payload[field] === "string" && payload[field].trim()) {
         const original = payload[field]
-        const summary =
-          original.length > 80 ? original.substring(0, 80) + "..." : original
+        const summary = original.length > 80 ? original.substring(0, 80) + "..." : original
         return {
           summary,
           original,

@@ -24,9 +24,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 
 // verify that each node has a modelname that exists
-export const verifyModelNameExists = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
     if (!node.modelName) {
@@ -34,14 +32,10 @@ export const verifyModelNameExists = async (
     } else {
       try {
         if (!getModelV2(node.modelName)) {
-          errors.push(
-            `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
-          )
+          errors.push(`Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`)
         }
       } catch {
-        errors.push(
-          `Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`
-        )
+        errors.push(`Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`)
       }
     }
   }
@@ -49,9 +43,7 @@ export const verifyModelNameExists = async (
 }
 
 // verify that each node does not have duplicate handoffs
-export const verifyNoDuplicateHandoffs = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyNoDuplicateHandoffs = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
     const handOffSet = new Set(node.handOffs)
@@ -63,15 +55,11 @@ export const verifyNoDuplicateHandoffs = async (
 }
 
 // verify that each node does not use inactive models
-export const verifyModelsAreActive = async (
-  config: WorkflowConfig
-): Promise<VerificationErrors> => {
+export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
     if (node.modelName && CONFIG.models.inactive.has(node.modelName)) {
-      errors.push(
-        `Node '${node.nodeId}' uses inactive model: ${node.modelName}`
-      )
+      errors.push(`Node '${node.nodeId}' uses inactive model: ${node.modelName}`)
     }
   }
   return errors
@@ -124,9 +112,7 @@ export const verifyWorkflowConfig = async (
 
   if (config.nodes.length === 1) {
     // do not change the console.warn to lgg.warn
-    console.warn(
-      "only one node found—check node config. consider adding more nodes."
-    )
+    console.warn("only one node found—check node config. consider adding more nodes.")
   }
 
   const isValid = errors.length === 0
@@ -142,8 +128,6 @@ export const verifyWorkflowConfig = async (
 }
 
 // throws errors immediately if workflow config is invalid
-export const verifyWorkflowConfigStrict = async (
-  config: WorkflowConfig
-): Promise<void> => {
+export const verifyWorkflowConfigStrict = async (config: WorkflowConfig): Promise<void> => {
   await verifyWorkflowConfig(config, { throwOnError: true })
 }

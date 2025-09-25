@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/react-flow-visualization/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { CodeInput } from "@/ui/code"
 import { Maximize2 } from "lucide-react"
 import { useState } from "react"
@@ -29,11 +24,7 @@ export const InspectableCode = ({ content, title }: InspectableCodeProps) => {
         <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
           <Maximize2 className="h-3 w-3" />
         </div>
-        <CodeInput
-          block
-          wrap
-          className="text-xs leading-[18px] whitespace-pre-wrap break-words"
-        >
+        <CodeInput block wrap className="text-xs leading-[18px] whitespace-pre-wrap break-words">
           {content}
         </CodeInput>
       </div>
@@ -48,9 +39,7 @@ export const InspectableCode = ({ content, title }: InspectableCodeProps) => {
               block
               wrap={title.includes("Prompt")}
               className={`text-sm leading-[20px] ${
-                title.includes("Prompt")
-                  ? "whitespace-pre-wrap break-words"
-                  : "whitespace-pre font-mono bg-blue-50"
+                title.includes("Prompt") ? "whitespace-pre-wrap break-words" : "whitespace-pre font-mono bg-blue-50"
               } w-full`}
             >
               {content}

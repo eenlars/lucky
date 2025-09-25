@@ -45,14 +45,8 @@ const execute = async (
 
   try {
     // create context store for this workflow
-    const contextStore = createContextStore(
-      "supabase",
-      toolExecutionContext.workflowInvocationId
-    )
-    const csvHandler = new CsvHandler(
-      toolExecutionContext.workflowFiles[0],
-      contextStore
-    )
+    const contextStore = createContextStore("supabase", toolExecutionContext.workflowInvocationId)
+    const csvHandler = new CsvHandler(toolExecutionContext.workflowFiles[0], contextStore)
 
     // check if column exists
     const column = await csvHandler.getColumn(columnName)
@@ -71,10 +65,7 @@ const execute = async (
 
     // extract data with pagination
     const allData = await csvHandler.extractData({ columns: [columnName] })
-    const paginatedData = allData.slice(
-      startIndex,
-      startIndex + (limit ?? totalRows)
-    )
+    const paginatedData = allData.slice(startIndex, startIndex + (limit ?? totalRows))
 
     const values = paginatedData
       .map((row) => row[columnName])

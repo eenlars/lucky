@@ -65,9 +65,7 @@ await manager.set("workflow", filename, updatedContextFile)
 const allFiles = await manager.list("workflow")
 
 // Extract special ID from filename for query test
-const specialId = filename
-  .replace("file_", "")
-  .replace("_amsterdam_poi.json", "")
+const specialId = filename.replace("file_", "").replace("_amsterdam_poi.json", "")
 const searchResults = await manager.get("workflow", specialId)
 
 lgg.log("All files:", allFiles)

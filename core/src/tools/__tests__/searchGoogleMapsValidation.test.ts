@@ -8,18 +8,12 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
   it("should validate maxResultCount parameter correctly and reject values > 20", () => {
     const paramsSchema = z.object({
       query: z.string().describe("Search query"),
-      maxResultCount: z
-        .number()
-        .max(20)
-        .default(10)
-        .describe("Number of results to return"),
+      maxResultCount: z.number().max(20).default(10).describe("Number of results to return"),
       domainFilter: z.string().optional().describe("Filter by domain"),
     })
 
     // Valid cases
-    expect(
-      paramsSchema.safeParse({ query: "coffee", maxResultCount: 10 }).success
-    ).toBe(true)
+    expect(paramsSchema.safeParse({ query: "coffee", maxResultCount: 10 }).success).toBe(true)
     // Default applied
     const withDefault = paramsSchema.safeParse({ query: "coffee" })
     expect(withDefault.success).toBe(true)

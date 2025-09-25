@@ -9,10 +9,7 @@ To prevent the "memory Required" error that occurred in `makeLearning.ts`, follo
 **DO:** Import memory schemas from the centralized location
 
 ```typescript
-import {
-  MemoryResponseSchema,
-  MemorySchemaOptional,
-} from "@core/node/schemas/memorySchema"
+import { MemoryResponseSchema, MemorySchemaOptional } from "@core/node/schemas/memorySchema"
 ```
 
 **DON'T:** Create new memory schemas inline
@@ -68,11 +65,7 @@ Always use the centralized validation functions:
 Use the exported types:
 
 ```typescript
-import type {
-  Memory,
-  MemoryOptional,
-  MemoryResponse,
-} from "@core/node/schemas/memorySchema"
+import type { Memory, MemoryOptional, MemoryResponse } from "@core/node/schemas/memorySchema"
 ```
 
 ## Error Prevention Checklist

@@ -2,11 +2,7 @@ import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
 import { lgg } from "@core/utils/logging/Logger"
 
 import type { ProxyResponse } from "@runtime/code_tools/googlescraper/main"
-import {
-  inputSchemaNetworkMonitor,
-  networkMonitor,
-  type NetworkMonitorInput,
-} from "./network"
+import { inputSchemaNetworkMonitor, networkMonitor, type NetworkMonitorInput } from "./network"
 
 type OutputType = {
   url: string
@@ -34,18 +30,12 @@ export const inputSchemaBrowserAutomation = inputSchemaNetworkMonitor
 
 export type InputType = NetworkMonitorInput
 
-export async function browserAutomation(
-  input: InputType,
-  proxy?: ProxyResponse
-): Promise<CodeToolResult<OutputType>> {
+export async function browserAutomation(input: InputType, proxy?: ProxyResponse): Promise<CodeToolResult<OutputType>> {
   try {
     const result = await networkMonitor(input, proxy)
     return Tools.createSuccess(toolName, result)
   } catch (error) {
-    lgg.error(
-      "error in browserAutomation (networkMonitor)",
-      error instanceof Error ? error.message : String(error)
-    )
+    lgg.error("error in browserAutomation (networkMonitor)", error instanceof Error ? error.message : String(error))
     return Tools.createFailure(toolName, {
       location: "browserAutomation",
       error: error instanceof Error ? error.message : String(error),

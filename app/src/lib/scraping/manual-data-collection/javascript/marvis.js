@@ -7,15 +7,7 @@ function transformLocationData(input) {
 
   // Helper to build opening_times from store.defaultOpeningTimes
   const buildOpeningTimes = (defaultTimes = {}) => {
-    const days = [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-      "sunday",
-    ]
+    const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     return days.reduce((acc, day) => {
       const info = defaultTimes[day]
       if (info) {
@@ -53,10 +45,7 @@ function transformLocationData(input) {
 const transformed = transformLocationData(json)
 
 // save to file
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/marvis.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/marvis.json", JSON.stringify(transformed, null, 2))
 
 // also log to console for immediate inspection
 lgg.info(JSON.stringify(transformed, null, 2))

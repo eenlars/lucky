@@ -9,10 +9,7 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get("url")
 
     if (!url) {
-      return NextResponse.json(
-        { error: "URL parameter is required" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "URL parameter is required" }, { status: 400 })
     }
 
     const response = await fetch(url, {
@@ -23,10 +20,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: `Failed to fetch URL: ${response.statusText}` },
-        { status: response.status }
-      )
+      return NextResponse.json({ error: `Failed to fetch URL: ${response.statusText}` }, { status: response.status })
     }
 
     const html = await response.text()
@@ -55,9 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Extract h1 text
     let title = null
-    const titleElement = $(
-      "html > body > div:nth-child(1) > main > div > div:nth-child(3) > div:nth-child(3) > h1"
-    )
+    const titleElement = $("html > body > div:nth-child(1) > main > div > div:nth-child(3) > div:nth-child(3) > h1")
     if (titleElement.length > 0) {
       title = titleElement.text().trim()
     }
@@ -65,9 +57,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ logo, banner, title })
   } catch (error) {
     lgg.error("Error processing request:", error)
-    return NextResponse.json(
-      { error: "Failed to process the request" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to process the request" }, { status: 500 })
   }
 }

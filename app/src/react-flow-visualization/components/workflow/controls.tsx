@@ -11,10 +11,7 @@ export function WorkflowControls() {
   return (
     <>
       <ZoomSlider position="bottom-left" className="bg-card" />
-      <Panel
-        position="bottom-right"
-        className="bg-card text-foreground rounded-md"
-      >
+      <Panel position="bottom-right" className="bg-card text-foreground rounded-md">
         <Button onClick={runLayout} variant="ghost">
           <Route />
         </Button>

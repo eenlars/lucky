@@ -28,10 +28,7 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
     return null
   }
 
-  const totalCost = agentSteps.reduce(
-    (sum, usage) => sum + (usage.toolCost || 0),
-    0
-  )
+  const totalCost = agentSteps.reduce((sum, usage) => sum + (usage.toolCost || 0), 0)
 
   const toggleItemExpanded = (index: number) => {
     const newExpanded = new Set(expandedItems)
@@ -48,9 +45,7 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Wrench size={16} className="text-muted-foreground" />
-          <h4 className="text-sm font-medium">
-            tool usage ({agentSteps.length})
-          </h4>
+          <h4 className="text-sm font-medium">tool usage ({agentSteps.length})</h4>
           {totalCost > 0 && (
             <div className="flex items-center space-x-1 text-xs text-muted-foreground">
               <DollarSign size={12} />
@@ -58,12 +53,7 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
             </div>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs h-6"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        <Button variant="ghost" size="sm" className="text-xs h-6" onClick={() => setIsExpanded(!isExpanded)}>
           {isExpanded ? (
             <>
               hide <ChevronUp size={12} className="ml-1" />
@@ -85,21 +75,14 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                    <span className="font-mono text-sm font-medium">
-                      {usage.toolName || "unknown"}
-                    </span>
+                    <span className="font-mono text-sm font-medium">{usage.toolName || "unknown"}</span>
                     {usage.toolCost > 0 && (
                       <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
                         ${usage.toolCost.toFixed(6)}
                       </span>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-6"
-                    onClick={() => toggleItemExpanded(index)}
-                  >
+                  <Button variant="ghost" size="sm" className="text-xs h-6" onClick={() => toggleItemExpanded(index)}>
                     <Code size={12} />
                   </Button>
                 </div>
@@ -121,9 +104,7 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
                     {/* arguments */}
                     {usage.args && usage.args.length > 0 && (
                       <div className="space-y-1">
-                        <h5 className="text-xs uppercase text-muted-foreground font-medium">
-                          arguments
-                        </h5>
+                        <h5 className="text-xs uppercase text-muted-foreground font-medium">arguments</h5>
                         <InspectableCode
                           content={JSON.stringify(usage.args, null, 2)}
                           title={`${usage.toolName} arguments`}
@@ -134,9 +115,7 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
                     {/* results */}
                     {usage.result && usage.result.length > 0 && (
                       <div className="space-y-1">
-                        <h5 className="text-xs uppercase text-muted-foreground font-medium">
-                          results
-                        </h5>
+                        <h5 className="text-xs uppercase text-muted-foreground font-medium">results</h5>
                         <InspectableCode
                           content={JSON.stringify(usage.result, null, 2)}
                           title={`${usage.toolName} results`}
@@ -146,13 +125,8 @@ export const ToolUsage = ({ agentSteps }: ToolUsageProps) => {
 
                     {/* raw data */}
                     <div className="space-y-1">
-                      <h5 className="text-xs uppercase text-muted-foreground font-medium">
-                        raw data
-                      </h5>
-                      <InspectableCode
-                        content={JSON.stringify(usage, null, 2)}
-                        title={`${usage.toolName} full data`}
-                      />
+                      <h5 className="text-xs uppercase text-muted-foreground font-medium">raw data</h5>
+                      <InspectableCode content={JSON.stringify(usage, null, 2)} title={`${usage.toolName} full data`} />
                     </div>
                   </div>
                 )}

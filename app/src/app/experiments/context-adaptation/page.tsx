@@ -8,8 +8,7 @@ type DataRow = { model: string; vague: number; clear: number }
 
 async function fetchChartData() {
   try {
-    const baseUrl =
-      process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""
+    const baseUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""
     const res = await fetch(`${baseUrl}/api/experiments/context-adaptation`, {
       cache: "no-store",
     })
@@ -56,12 +55,7 @@ async function fetchChartData() {
 }
 
 export default async function ContextAdaptationPage() {
-  const {
-    chartData: _chartData,
-    datasets,
-    errors,
-    info,
-  } = await fetchChartData()
+  const { chartData: _chartData, datasets, errors, info } = await fetchChartData()
   const baselineData = datasets?.baseline ?? []
   const finalData = datasets?.final ?? []
   const metricsData = (datasets as any)?.metrics ?? []
@@ -71,12 +65,9 @@ export default async function ContextAdaptationPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Context Adaptation — Results
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Context Adaptation — Results</h1>
         <p className="text-gray-600 mb-6">
-          Success rate by model for vague vs clear prompts (excluding control
-          scenario).
+          Success rate by model for vague vs clear prompts (excluding control scenario).
         </p>
 
         {errors?.length || info?.length ? (
@@ -101,12 +92,9 @@ export default async function ContextAdaptationPage() {
 
         {/* SUPPORTING VISUALIZATIONS */}
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Supporting Visualizations
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Supporting Visualizations</h2>
           <p className="text-gray-600 mb-6">
-            Additional charts and detailed analysis supporting the main findings
-            above.
+            Additional charts and detailed analysis supporting the main findings above.
           </p>
         </div>
 
@@ -132,9 +120,7 @@ export default async function ContextAdaptationPage() {
         {/* Row 2: 3 charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">
-              Calls per trace (avg)
-            </h2>
+            <h2 className="text-xl font-semibold mb-1">Calls per trace (avg)</h2>
             <p className="text-xs text-gray-500 mb-2">Y-axis: calls</p>
             <AdaptationMetricsChart data={metricsData} metric="calls" />
           </div>

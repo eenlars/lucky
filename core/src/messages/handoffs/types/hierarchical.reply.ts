@@ -1,9 +1,6 @@
 import type { Payload } from "@core/messages/MessagePayload"
 
-export function buildReplyMessage(params: {
-  isOrchestrator: boolean
-  content: string
-}): Payload {
+export function buildReplyMessage(params: { isOrchestrator: boolean; content: string }): Payload {
   const { isOrchestrator, content } = params
 
   return isOrchestrator

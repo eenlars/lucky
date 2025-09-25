@@ -194,9 +194,7 @@ export async function processHtmlToMarkdown(
     markdown: cleanMarkdown,
     originalLength: html.length,
     markdownLength: cleanMarkdown.length,
-    compressionRatio: Math.round(
-      (1 - cleanMarkdown.length / html.length) * 100
-    ),
+    compressionRatio: Math.round((1 - cleanMarkdown.length / html.length) * 100),
     url: sourceUrl || null,
     extractedFrom: mainContent.prop("tagName")?.toLowerCase() || "unknown",
   }

@@ -1,7 +1,4 @@
-import {
-  toWorkflowConfig,
-  type WorkflowConfig,
-} from "@core/workflow/schema/workflow.types"
+import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { MODELS } from "@runtime/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"

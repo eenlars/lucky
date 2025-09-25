@@ -22,10 +22,7 @@ export const processAndValidateSteps = (
 ): ReturnType<typeof processStepsV2> => {
   const { skipConsoleLog = false, minSteps = 1 } = options || {}
 
-  const resultV2 = processStepsV2(
-    result.steps,
-    model || getDefaultModels().default
-  )
+  const resultV2 = processStepsV2(result.steps, model || getDefaultModels().default)
 
   // Optional debug output (controlled to reduce console noise)
   if (!skipConsoleLog) {
@@ -51,9 +48,7 @@ export const validateSequentialExecution = (
   const defaultNames = ["tool1", "tool2", "tool3"]
   const names = toolNames || defaultNames
 
-  const toolResults = names.map((name) =>
-    resultV2?.agentSteps.find((r: any) => r.name === name)
-  )
+  const toolResults = names.map((name) => resultV2?.agentSteps.find((r: any) => r.name === name))
 
   // Validate all tools executed
   toolResults.forEach((result, index) => {
@@ -81,11 +76,7 @@ export const TEST_TIMEOUTS = {
  * Standard test messages with context variations
  * Reduces duplication of large context blocks in tests
  */
-export const createTestMessages = (
-  systemPrompt: string,
-  userMessage: string,
-  includeContext: boolean = false
-) => {
+export const createTestMessages = (systemPrompt: string, userMessage: string, includeContext: boolean = false) => {
   const messages = [
     {
       role: "system" as const,
@@ -141,11 +132,7 @@ export const createTestConfig = (
     prepareStep?: any
   }
 ) => {
-  const {
-    stepCount = 5,
-    timeout = TEST_TIMEOUTS.integration,
-    prepareStep,
-  } = options || {}
+  const { stepCount = 5, timeout = TEST_TIMEOUTS.integration, prepareStep } = options || {}
 
   return {
     tools,

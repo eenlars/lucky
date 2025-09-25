@@ -14,19 +14,10 @@ import { z } from "zod"
 const expectedOutputHandler = defineTool({
   name: "expectedOutputHandler",
   params: z.object({
-    dataToTransform: z
-      .string()
-      .describe(
-        "All the data that needs to be transformed to the right format."
-      ),
+    dataToTransform: z.string().describe("All the data that needs to be transformed to the right format."),
     strictness: z.enum(["strict", "lenient"]).default("lenient"),
   }),
-  async execute(
-    params,
-    context
-  ): Promise<
-    CodeToolResult<typeof expectedOutput | { success: false; reason: string }>
-  > {
+  async execute(params, context): Promise<CodeToolResult<typeof expectedOutput | { success: false; reason: string }>> {
     const expectedOutput = context.expectedOutputType
     const { dataToTransform, strictness } = params
 
@@ -90,10 +81,7 @@ const expectedOutputHandler = defineTool({
         })
       }
 
-      return Tools.createSuccess(
-        "expectedOutputHandler",
-        JSONN.extract(response.data.text) as any
-      )
+      return Tools.createSuccess("expectedOutputHandler", JSONN.extract(response.data.text) as any)
     } catch (error) {
       lgg.error("error in expectedOutputHandler", error)
       return Tools.createFailure("expectedOutputHandler", {

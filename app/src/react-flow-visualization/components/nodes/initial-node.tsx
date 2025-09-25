@@ -17,9 +17,7 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
       {/* Minimal, non-interactive visual */}
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <div className="w-9 h-9 rounded-full bg-emerald-500/80 shadow-sm ring-4 ring-emerald-200/40" />
-        <div className="mt-2 text-[11px] font-medium tracking-wide text-slate-500 uppercase">
-          Start
-        </div>
+        <div className="mt-2 text-[11px] font-medium tracking-wide text-slate-500 uppercase">Start</div>
       </div>
 
       {/* Connection handle(s) remain functional */}

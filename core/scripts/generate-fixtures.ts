@@ -62,9 +62,7 @@ const generateFixtures = async () => {
     console.log("Generating text-only response...")
     const textResult = await generateText({
       model,
-      messages: [
-        { role: "user", content: "Say 'I understand. not possible.'" },
-      ],
+      messages: [{ role: "user", content: "Say 'I understand. not possible.'" }],
     })
     saveFixture("text-response.json", textResult)
 
@@ -72,9 +70,7 @@ const generateFixtures = async () => {
     console.log("Generating single tool response...")
     const singleToolResult = await generateText({
       model,
-      messages: [
-        { role: "user", content: "Use the first tool to get a result" },
-      ],
+      messages: [{ role: "user", content: "Use the first tool to get a result" }],
       tools: { tool1 },
     })
     saveFixture("single-tool.json", singleToolResult)
@@ -86,8 +82,7 @@ const generateFixtures = async () => {
       messages: [
         {
           role: "system",
-          content:
-            "Use tool1 first, then tool2 with tool1's result, then tool3 with tool2's result",
+          content: "Use tool1 first, then tool2 with tool1's result, then tool3 with tool2's result",
         },
         { role: "user", content: "Execute the tools in sequence" },
       ],
@@ -100,9 +95,7 @@ const generateFixtures = async () => {
     console.log("Generating multiple tools response...")
     const multiToolResult = await generateText({
       model,
-      messages: [
-        { role: "user", content: "Use both tool1 and tool3 to get results" },
-      ],
+      messages: [{ role: "user", content: "Use both tool1 and tool3 to get results" }],
       tools: { tool1, tool3 },
       stopWhen: stepCountIs(3),
     })

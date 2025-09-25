@@ -18,9 +18,7 @@ function expandRange(start, end) {
   const i1 = codes.indexOf(start)
   const i2 = codes.indexOf(end)
   if (i1 > -1 && i2 > -1) {
-    return i1 <= i2
-      ? codes.slice(i1, i2 + 1)
-      : codes.slice(i1).concat(codes.slice(0, i2 + 1))
+    return i1 <= i2 ? codes.slice(i1, i2 + 1) : codes.slice(i1).concat(codes.slice(0, i2 + 1))
   }
   return []
 }
@@ -30,10 +28,7 @@ function transformWakuliData(input) {
 
   return items.map((item) => {
     // Build coordinates array
-    const coords =
-      item.longitude && item.latitude
-        ? [parseFloat(item.longitude), parseFloat(item.latitude)]
-        : null
+    const coords = item.longitude && item.latitude ? [parseFloat(item.longitude), parseFloat(item.latitude)] : null
 
     // Combine address lines
     const addressParts = []
@@ -53,9 +48,7 @@ function transformWakuliData(input) {
     }
 
     // Find "Opening times" custom field and parse it
-    const cf = (item.custom_fields || []).find((f) =>
-      f.name.toLowerCase().includes("opening")
-    )
+    const cf = (item.custom_fields || []).find((f) => f.name.toLowerCase().includes("opening"))
     if (cf && cf.value) {
       cf.value.split("\n").forEach((line) => {
         // e.g. "mo - fr 07:00-18:00" or "sa - su 08:00-18:00"
@@ -116,10 +109,7 @@ function transformWakuliData(input) {
 // load → Transform → Save
 const transformed = transformWakuliData(json)
 
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/wakuli.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/wakuli.json", JSON.stringify(transformed, null, 2))
 
 // log for quick inspection
 lgg.info(JSON.stringify(transformed, null, 2))

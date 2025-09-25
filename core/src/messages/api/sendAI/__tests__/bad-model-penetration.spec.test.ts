@@ -16,9 +16,7 @@ describe("sendAI – bad model penetration", () => {
       " ",
     ]
 
-    const model = weirdModels[
-      Math.floor(Math.random() * weirdModels.length)
-    ] as any // intentional any for negative test
+    const model = weirdModels[Math.floor(Math.random() * weirdModels.length)] as any // intentional any for negative test
 
     const result = await sendAI({
       mode: "text",

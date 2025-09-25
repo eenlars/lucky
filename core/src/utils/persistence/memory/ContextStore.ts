@@ -9,24 +9,12 @@ export interface ContextStore {
   list(scope: "workflow" | "node"): Promise<string[]>
   listWithInfo(scope: "workflow" | "node"): Promise<ContextFileInfo[]>
   delete(scope: "workflow" | "node", key: string): Promise<void>
-  getSummary(
-    scope: "workflow" | "node",
-    key: string
-  ): Promise<string | undefined>
+  getSummary(scope: "workflow" | "node", key: string): Promise<string | undefined>
 }
 
-export function createContextStore(
-  backend: "memory",
-  workflowInvocationId: string
-): InMemoryContextStore
-export function createContextStore(
-  backend: "supabase",
-  workflowInvocationId: string
-): SupabaseContextStore
-export function createContextStore(
-  backend: "memory" | "supabase",
-  workflowInvocationId: string
-): ContextStore {
+export function createContextStore(backend: "memory", workflowInvocationId: string): InMemoryContextStore
+export function createContextStore(backend: "supabase", workflowInvocationId: string): SupabaseContextStore
+export function createContextStore(backend: "memory" | "supabase", workflowInvocationId: string): ContextStore {
   if (backend === "memory") {
     return new InMemoryContextStore(workflowInvocationId)
   }

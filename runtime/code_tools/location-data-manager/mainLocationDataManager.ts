@@ -1,10 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger" // core location data manager operations
 
-import type {
-  LocationData,
-  PartialLocationData,
-  WorkflowLocationData,
-} from "@runtime/schemas/location.types"
+import type { LocationData, PartialLocationData, WorkflowLocationData } from "@runtime/schemas/location.types"
 import { DataQuality } from "@runtime/schemas/location.types"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
 import { promises as fs } from "fs"
@@ -113,17 +109,13 @@ export class LocationDataManager {
           const normalized = normalizeLocation(locationData)
 
           // find existing location by ID first, then by address similarity as fallback
-          let existingIndex = workflowData.locations.findIndex(
-            (loc) => loc.id === normalized.id
-          )
+          let existingIndex = workflowData.locations.findIndex((loc) => loc.id === normalized.id)
 
           // if no exact ID match and this looks like an auto-generated ID, check for address duplicates
           if (existingIndex === -1 && !locationData.id) {
             existingIndex = workflowData.locations.findIndex(
               (loc) =>
-                loc.name === normalized.name &&
-                loc.address === normalized.address &&
-                loc.city === normalized.city
+                loc.name === normalized.name && loc.address === normalized.address && loc.city === normalized.city
             )
           }
 
@@ -137,10 +129,7 @@ export class LocationDataManager {
               ...normalized,
             }
           } else {
-            lgg.onlyIf(
-              LocationDataManagerError.verbose,
-              `[locationDataManager] adding new location ${normalized.id}`
-            )
+            lgg.onlyIf(LocationDataManagerError.verbose, `[locationDataManager] adding new location ${normalized.id}`)
             workflowData.locations.push(normalized)
           }
 
@@ -150,9 +139,7 @@ export class LocationDataManager {
           processed++
         } catch (error) {
           const errorMsg = `location ${i + 1}: ${error instanceof Error ? error.message : String(error)}`
-          lgg.error(
-            `[locationDataManager] validation/processing error: ${errorMsg}`
-          )
+          lgg.error(`[locationDataManager] validation/processing error: ${errorMsg}`)
           errors.push(errorMsg)
           failed++
         }
@@ -167,10 +154,7 @@ export class LocationDataManager {
       await this.saveWorkflowData(workflowData)
 
       if (failed > 0) {
-        lgg.error(
-          `[locationDataManager] locationData insert failed with ${failed} failures:`,
-          errors
-        )
+        lgg.error(`[locationDataManager] locationData insert failed with ${failed} failures:`, errors)
       } else {
         lgg.onlyIf(
           LocationDataManagerError.verbose,
@@ -187,10 +171,7 @@ export class LocationDataManager {
         errors: errors.length ? errors : undefined,
       }
     } catch (error) {
-      lgg.error(
-        `[locationDataManager] critical error in insertLocations:`,
-        error
-      )
+      lgg.error(`[locationDataManager] critical error in insertLocations:`, error)
       throw error
     }
   }
@@ -204,9 +185,7 @@ export class LocationDataManager {
     }
   }
 
-  async getLocations(
-    fileName: string
-  ): Promise<{ success: boolean; locations: LocationData[] }> {
+  async getLocations(fileName: string): Promise<{ success: boolean; locations: LocationData[] }> {
     if (!fileName?.trim()) return { success: false, locations: [] }
 
     try {
@@ -216,10 +195,7 @@ export class LocationDataManager {
         locations: workflowData.locations,
       }
     } catch (error) {
-      if (
-        error instanceof LocationDataManagerError &&
-        error.message.includes("not found")
-      ) {
+      if (error instanceof LocationDataManagerError && error.message.includes("not found")) {
         return { success: false, locations: [] }
       }
       throw error
@@ -237,9 +213,7 @@ export class LocationDataManager {
     try {
       const workflowData = await this.loadWorkflowData(fileName)
       if (locationIds.length) {
-        workflowData.locations = workflowData.locations.filter(
-          (loc) => !locationIds.includes(loc.id || "")
-        )
+        workflowData.locations = workflowData.locations.filter((loc) => !locationIds.includes(loc.id || ""))
       } else {
         workflowData.locations = []
       }
@@ -266,9 +240,7 @@ export class LocationDataManager {
     warnings?: string[]
     errors?: string[]
   }> {
-    lgg.log(
-      `[locationDataManager] starting updateLocations for file ${fileName} with ${updates.length} updates`
-    )
+    lgg.log(`[locationDataManager] starting updateLocations for file ${fileName} with ${updates.length} updates`)
 
     validate(fileName)
 
@@ -297,20 +269,14 @@ export class LocationDataManager {
           )
 
           if (!update.locationId?.trim()) {
-            throw new LocationDataManagerError(
-              "locationId is required for update"
-            )
+            throw new LocationDataManagerError("locationId is required for update")
           }
 
           if (!update.updateData || typeof update.updateData !== "object") {
-            throw new LocationDataManagerError(
-              "updateData is required for update"
-            )
+            throw new LocationDataManagerError("updateData is required for update")
           }
 
-          const existingIndex = workflowData.locations.findIndex(
-            (loc) => loc.id === update.locationId
-          )
+          const existingIndex = workflowData.locations.findIndex((loc) => loc.id === update.locationId)
 
           if (existingIndex === -1) {
             const errorMsg = `location not found: ${update.locationId}`
@@ -349,16 +315,11 @@ export class LocationDataManager {
             default: {
               const _exhaustiveCheck: never = updateStrategy
               void _exhaustiveCheck
-              throw new LocationDataManagerError(
-                `unknown update strategy: ${updateStrategy}`
-              )
+              throw new LocationDataManagerError(`unknown update strategy: ${updateStrategy}`)
             }
           }
 
-          if (
-            updatedLocation.name !== undefined &&
-            !updatedLocation.name?.trim()
-          ) {
+          if (updatedLocation.name !== undefined && !updatedLocation.name?.trim()) {
             throw new LocationDataManagerError("location name cannot be empty")
           }
 
@@ -372,9 +333,7 @@ export class LocationDataManager {
           updated++
 
           if (updatedLocation.quality !== DataQuality.COMPLETE) {
-            warnings.push(
-              `location ${update.locationId} incomplete after update`
-            )
+            warnings.push(`location ${update.locationId} incomplete after update`)
           }
         } catch (error) {
           const errorMsg = `update ${i + 1} (${update.locationId}): ${error instanceof Error ? error.message : String(error)}`
@@ -393,10 +352,7 @@ export class LocationDataManager {
       await this.saveWorkflowData(workflowData)
 
       if (failed > 0) {
-        lgg.error(
-          `[locationDataManager] location updates failed with ${failed} failures:`,
-          errors
-        )
+        lgg.error(`[locationDataManager] location updates failed with ${failed} failures:`, errors)
       } else {
         lgg.onlyIf(
           LocationDataManagerError.verbose,
@@ -413,10 +369,7 @@ export class LocationDataManager {
         errors: errors.length ? errors : undefined,
       }
     } catch (error) {
-      lgg.error(
-        `[locationDataManager] critical error in updateLocations:`,
-        error
-      )
+      lgg.error(`[locationDataManager] critical error in updateLocations:`, error)
       throw error
     }
   }
@@ -432,9 +385,7 @@ export class LocationDataManager {
     warnings?: string[]
     errors?: string[]
   }> {
-    const result = await this.updateLocations(fileName, [
-      { locationId, updateData, updateStrategy },
-    ])
+    const result = await this.updateLocations(fileName, [{ locationId, updateData, updateStrategy }])
     return {
       success: result.success,
       locationCount: result.locationCount,
@@ -443,44 +394,31 @@ export class LocationDataManager {
     }
   }
 
-  async getMinimalSummary(
-    fileName: string
-  ): Promise<{ success: boolean; summary: string }> {
+  async getMinimalSummary(fileName: string): Promise<{ success: boolean; summary: string }> {
     try {
       const { locations } = await this.getLocations(fileName)
 
-      if (!locations.length)
-        return { success: false, summary: "no locations found" }
+      if (!locations.length) return { success: false, summary: "no locations found" }
 
-      const addresses = locations
-        .map((loc) => `${loc.address}, ${loc.city}`)
-        .join("; ")
+      const addresses = locations.map((loc) => `${loc.address}, ${loc.city}`).join("; ")
 
       return {
         success: true,
         summary: `${locations.length} locations: ${addresses}`,
       }
     } catch (error) {
-      if (
-        error instanceof LocationDataManagerError &&
-        error.message.includes("not found")
-      ) {
+      if (error instanceof LocationDataManagerError && error.message.includes("not found")) {
         return { success: false, summary: "no workflow data found" }
       }
       throw error
     }
   }
 
-  private async loadOrCreateWorkflow(
-    fileName: string
-  ): Promise<WorkflowLocationData> {
+  private async loadOrCreateWorkflow(fileName: string): Promise<WorkflowLocationData> {
     try {
       return await this.loadWorkflowData(fileName)
     } catch (error) {
-      if (
-        error instanceof LocationDataManagerError &&
-        error.message.includes("not found")
-      ) {
+      if (error instanceof LocationDataManagerError && error.message.includes("not found")) {
         return {
           fileName,
           locations: [],
@@ -492,9 +430,7 @@ export class LocationDataManager {
     }
   }
 
-  private async loadWorkflowData(
-    fileName: string
-  ): Promise<WorkflowLocationData> {
+  private async loadWorkflowData(fileName: string): Promise<WorkflowLocationData> {
     const filePath = join(this.dataDir, `${fileName}`)
 
     try {
@@ -511,21 +447,13 @@ export class LocationDataManager {
         throw new LocationDataManagerError(`corrupted json: ${filePath}`, error)
       }
       if ((error as any)?.code === "ENOENT") {
-        throw new LocationDataManagerError(
-          `workflow file not found: ${filePath}`,
-          error as Error
-        )
+        throw new LocationDataManagerError(`workflow file not found: ${filePath}`, error as Error)
       }
-      throw new LocationDataManagerError(
-        `failed to load: ${filePath}`,
-        error as Error
-      )
+      throw new LocationDataManagerError(`failed to load: ${filePath}`, error as Error)
     }
   }
 
-  private async saveWorkflowData(
-    workflowData: WorkflowLocationData
-  ): Promise<void> {
+  private async saveWorkflowData(workflowData: WorkflowLocationData): Promise<void> {
     const filePath = join(this.dataDir, `${workflowData.fileName}`)
 
     lgg.onlyIf(
@@ -546,10 +474,7 @@ export class LocationDataManager {
         `[locationDataManager] successfully saved workflow data with ${workflowData.locations.length} locations`
       )
     } catch (error) {
-      lgg.error(
-        `[locationDataManager] failed to save workflow data to ${filePath}:`,
-        error
-      )
+      lgg.error(`[locationDataManager] failed to save workflow data to ${filePath}:`, error)
       throw new LocationDataManagerError(
         `failed to save workflow data to ${filePath}`,
         error instanceof Error ? error : new Error(String(error))
@@ -558,12 +483,7 @@ export class LocationDataManager {
   }
 
   private isValidWorkflowData(data: any): data is WorkflowLocationData {
-    return (
-      data &&
-      typeof data === "object" &&
-      typeof data.fileName === "string" &&
-      Array.isArray(data.locations)
-    )
+    return data && typeof data === "object" && typeof data.fileName === "string" && Array.isArray(data.locations)
   }
 }
 

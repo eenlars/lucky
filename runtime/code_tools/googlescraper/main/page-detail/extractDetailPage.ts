@@ -3,11 +3,7 @@ import type { CodeToolName } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { GoogleMapsResult } from "@runtime/code_tools/googlescraper/main/main"
 import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
-import {
-  cleanupBrowser,
-  parseNumber,
-  sanitizeJSON,
-} from "@runtime/code_tools/googlescraper/main/util"
+import { cleanupBrowser, parseNumber, sanitizeJSON } from "@runtime/code_tools/googlescraper/main/util"
 import { parseHours } from "@runtime/code_tools/googlescraper/utils/extractHours"
 import type { ProxyResponse } from "@runtime/code_tools/googlescraper/utils/proxies"
 import { setupPage } from "@runtime/code_tools/googlescraper/utils/scrapeUtils"
@@ -33,48 +29,35 @@ export async function searchSingleBusiness(
     // 1. name
     const main = $('div[role="main"][aria-label]')
     const storeName = main.attr("aria-label") || null
-    const mainImage =
-      main.find("img[decoding='async']").first().attr("src") || null
+    const mainImage = main.find("img[decoding='async']").first().attr("src") || null
 
     // 2. rating & reviews via aria-labels on their icons
     const stars = $(".fontDisplayLarge").text() || null
 
-    const reviewsLabel =
-      $('span[aria-label$="reviews"]').attr("aria-label") || null
+    const reviewsLabel = $('span[aria-label$="reviews"]').attr("aria-label") || null
     const numberOfReviews = parseNumber(reviewsLabel ?? undefined)
 
     // 3. website, phone, address, category, status
     const bizWebsite = $('a[data-item-id="authority"]').attr("href") || null
 
-    const phoneLabel =
-      $('button[data-item-id^="phone:"]').attr("aria-label") || ""
+    const phoneLabel = $('button[data-item-id^="phone:"]').attr("aria-label") || ""
     const phone = phoneLabel.replace(/^Phone:\s*/, "").trim() || null
 
-    const addressLabel =
-      $('button[data-item-id="address"]').attr("aria-label") || ""
+    const addressLabel = $('button[data-item-id="address"]').attr("aria-label") || ""
     const address = addressLabel.replace(/^Address:\s*/, "").trim() || null
 
     const category = $('button[jsaction*="category"]').text().trim() || null
 
     // hours/status button: "Closed ⋅ Opens 9 am Mon"
-    const hoursText = $('div[aria-expanded][jsaction*="openhours"] span.ZDu9vd')
-      .text()
-      .trim()
-    const status = hoursText
-      ? hoursText.split("⋅").map((s) => s.trim())[0]
-      : null
+    const hoursText = $('div[aria-expanded][jsaction*="openhours"] span.ZDu9vd').text().trim()
+    const status = hoursText ? hoursText.split("⋅").map((s) => s.trim())[0] : null
 
-    const hoursTable =
-      $("div.fontBodyMedium table.fontBodyMedium").first().parent().html() ||
-      null
+    const hoursTable = $("div.fontBodyMedium table.fontBodyMedium").first().parent().html() || null
 
     const placeIdMatch = pageUrl.match(/ChI[^?&]+/)
     const placeId = placeIdMatch?.[0] ?? null
 
-    const googleUrl =
-      $('a[href^="https://www.google.com/maps/place"]').attr("href") ||
-      pageUrl ||
-      null
+    const googleUrl = $('a[href^="https://www.google.com/maps/place"]').attr("href") || pageUrl || null
 
     business = {
       placeId: placeId || undefined,
@@ -98,10 +81,7 @@ export async function searchSingleBusiness(
     })
   } catch (error) {
     if (enableLogging) {
-      lgg.error(
-        "error at single business search",
-        error instanceof Error ? error.message : String(error)
-      )
+      lgg.error("error at single business search", error instanceof Error ? error.message : String(error))
     }
     return Tools.createFailure(toolName, {
       location: "searchSingleBusiness",
@@ -125,9 +105,7 @@ export async function scrapeDetailPage(
     return singleRes.success && singleRes.output.businesses.length > 0
       ? {
           originalUrl: googleUrl,
-          business: sanitizeJSON<GoogleMapsBusiness>(
-            singleRes.output.businesses[0]
-          ),
+          business: sanitizeJSON<GoogleMapsBusiness>(singleRes.output.businesses[0]),
         }
       : { originalUrl: googleUrl, business: null }
   } catch (e) {

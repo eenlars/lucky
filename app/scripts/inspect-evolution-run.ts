@@ -88,9 +88,7 @@ function inferRunMode(run: EvolutionRun): "cultural" | "gp" | "unknown" {
     if (m === "gp") return "gp"
   }
   if (cfg && typeof cfg === "object") {
-    const hasGPKeys =
-      typeof (cfg as any).generations === "number" &&
-      typeof (cfg as any).populationSize === "number"
+    const hasGPKeys = typeof (cfg as any).generations === "number" && typeof (cfg as any).populationSize === "number"
     const hasIterKeys = typeof (cfg as any).iterations === "number"
     if (hasGPKeys) return "gp"
     if (hasIterKeys) return "cultural"
@@ -114,9 +112,7 @@ function sum(numbers: Array<number | null | undefined>): number {
 }
 
 function average(numbers: Array<number | null | undefined>): number | null {
-  const vals = numbers.filter(
-    (n): n is number => typeof n === "number" && !Number.isNaN(n)
-  )
+  const vals = numbers.filter((n): n is number => typeof n === "number" && !Number.isNaN(n))
   if (vals.length === 0) return null
   return vals.reduce((a, b) => a + b, 0) / vals.length
 }
@@ -125,9 +121,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url, { headers: { accept: "application/json" } })
   if (!res.ok) {
     const text = await res.text().catch(() => "")
-    throw new Error(
-      `Request failed ${res.status} ${res.statusText} for ${url}\n${text}`
-    )
+    throw new Error(`Request failed ${res.status} ${res.statusText} for ${url}\n${text}`)
   }
   return (await res.json()) as T
 }
@@ -149,8 +143,7 @@ async function main() {
 
   const runStart = toDate(run.start_time)
   const runEnd = toDate(run.end_time)
-  const runDuration =
-    runStart && runEnd ? runEnd.getTime() - runStart.getTime() : null
+  const runDuration = runStart && runEnd ? runEnd.getTime() - runStart.getTime() : null
 
   console.log("Run")
   console.log("- run_id:", run.run_id)
@@ -197,12 +190,8 @@ async function main() {
     console.log(`  versions: ${bundle.versions?.length ?? 0}`)
     console.log(`  invocations: ${invocations.length} [${statusSummary}]`)
     console.log(`  cost: $${genCost.toFixed(4)}`)
-    console.log(
-      `  accuracy(avg): ${genAccAvg == null ? "-" : genAccAvg.toFixed(4)}`
-    )
-    console.log(
-      `  fitness(avg): ${genFitAvg == null ? "-" : genFitAvg.toFixed(4)}`
-    )
+    console.log(`  accuracy(avg): ${genAccAvg == null ? "-" : genAccAvg.toFixed(4)}`)
+    console.log(`  fitness(avg): ${genFitAvg == null ? "-" : genFitAvg.toFixed(4)}`)
   }
 
   console.log("")
@@ -212,14 +201,8 @@ async function main() {
   console.log("- total cost:", `$${totalCost.toFixed(4)}`)
   const overallAcc = average(allAccuracies)
   const overallFit = average(allFitness)
-  console.log(
-    "- accuracy(avg):",
-    overallAcc == null ? "-" : overallAcc.toFixed(4)
-  )
-  console.log(
-    "- fitness(avg):",
-    overallFit == null ? "-" : overallFit.toFixed(4)
-  )
+  console.log("- accuracy(avg):", overallAcc == null ? "-" : overallAcc.toFixed(4))
+  console.log("- fitness(avg):", overallFit == null ? "-" : overallFit.toFixed(4))
 
   // WorkflowVersion uniqueness (from versions metadata per generation)
   const metaVersionIds: string[] = []
@@ -243,36 +226,26 @@ async function main() {
   for (const v of metaVersionIds) {
     countsByMetaVersion.set(v, (countsByMetaVersion.get(v) || 0) + 1)
   }
-  const topMetaEntry = Array.from(countsByMetaVersion.entries()).sort(
-    (a, b) => b[1] - a[1]
-  )[0]
+  const topMetaEntry = Array.from(countsByMetaVersion.entries()).sort((a, b) => b[1] - a[1])[0]
   const topMetaVersion = topMetaEntry?.[0]
   const topMetaCount = topMetaEntry?.[1] ?? 0
-  const topMetaGenSpan = topMetaVersion
-    ? (metaVersionIdToGenIds.get(topMetaVersion)?.size ?? 0)
-    : 0
+  const topMetaGenSpan = topMetaVersion ? (metaVersionIdToGenIds.get(topMetaVersion)?.size ?? 0) : 0
 
   console.log("")
   console.log("WorkflowVersion uniqueness (from versions)")
   if (metaVersionIds.length === 0) {
     console.log("- no versions present in metadata")
   } else {
-    console.log(
-      `- unique versions: ${uniqueMetaVersions.size} / ${metaVersionIds.length}`
-    )
+    console.log(`- unique versions: ${uniqueMetaVersions.size} / ${metaVersionIds.length}`)
     if (uniqueMetaVersions.size === metaVersionIds.length) {
       console.log("- verdict: all versions are unique across generations")
     } else if (uniqueMetaVersions.size === 1) {
-      console.log(
-        "- verdict: a single WorkflowVersion was reused across generations"
-      )
+      console.log("- verdict: a single WorkflowVersion was reused across generations")
     } else {
       console.log("- verdict: mixed (some versions were reused)")
     }
     if (topMetaVersion) {
-      console.log(
-        `- top reused: ${topMetaVersion} appears ${topMetaCount} times across ${topMetaGenSpan} generations`
-      )
+      console.log(`- top reused: ${topMetaVersion} appears ${topMetaCount} times across ${topMetaGenSpan} generations`)
     }
   }
 
@@ -299,41 +272,29 @@ async function main() {
   for (const v of allInvocationVersionIds) {
     countsByVersion.set(v, (countsByVersion.get(v) || 0) + 1)
   }
-  const topVersionEntry = Array.from(countsByVersion.entries()).sort(
-    (a, b) => b[1] - a[1]
-  )[0]
+  const topVersionEntry = Array.from(countsByVersion.entries()).sort((a, b) => b[1] - a[1])[0]
   const topVersion = topVersionEntry?.[0]
   const topVersionCount = topVersionEntry?.[1] ?? 0
-  const topVersionGenSpan = topVersion
-    ? (versionIdToGenIds.get(topVersion)?.size ?? 0)
-    : 0
+  const topVersionGenSpan = topVersion ? (versionIdToGenIds.get(topVersion)?.size ?? 0) : 0
 
   console.log("")
   console.log("WorkflowVersion uniqueness (by invocations)")
-  console.log(
-    `- unique versions: ${uniqueInvocationVersions.size} / ${allInvocationVersionIds.length}`
-  )
+  console.log(`- unique versions: ${uniqueInvocationVersions.size} / ${allInvocationVersionIds.length}`)
   if (allInvocationVersionIds.length > 0) {
     if (uniqueInvocationVersions.size === allInvocationVersionIds.length) {
       console.log("- verdict: all invocations used unique WorkflowVersion IDs")
     } else if (uniqueInvocationVersions.size === 1) {
-      console.log(
-        `- verdict: single WorkflowVersion reused across all invocations (${topVersion})`
-      )
+      console.log(`- verdict: single WorkflowVersion reused across all invocations (${topVersion})`)
     } else {
       console.log("- verdict: mixed (some WorkflowVersion IDs were reused)")
     }
     if (topVersion) {
-      console.log(
-        `- top reused: ${topVersion} used ${topVersionCount} times across ${topVersionGenSpan} generations`
-      )
+      console.log(`- top reused: ${topVersion} used ${topVersionCount} times across ${topVersionGenSpan} generations`)
     }
   }
 
   console.log("")
-  console.log(
-    "Tip: pass a different run id with --run=... or set APP_BASE_URL to point elsewhere."
-  )
+  console.log("Tip: pass a different run id with --run=... or set APP_BASE_URL to point elsewhere.")
 }
 
 main().catch((err) => {

@@ -85,10 +85,7 @@ function findFromTagsLenient(text: string, tag: string): string | null {
         // Check if there are any more closing tags for this tag after this point
         // If so, it means we have overlapping tags which should be rejected
         const remainingText = text.slice(endPos)
-        const remainingClosers = new RegExp(
-          `<\\s*/\\s*${esc}(?:\\s[^>]*)?>`,
-          "gsi"
-        )
+        const remainingClosers = new RegExp(`<\\s*/\\s*${esc}(?:\\s[^>]*)?>`, "gsi")
         if (remainingClosers.test(remainingText)) {
           return null // overlapping tags detected
         }

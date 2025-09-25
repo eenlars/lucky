@@ -42,9 +42,7 @@ export const saveNodeVersionToDB = async ({
     system_prompt: config.systemPrompt,
     tools: [
       ...((Array.isArray(config.mcpTools) ? config.mcpTools : []) as string[]),
-      ...((Array.isArray(config.codeTools)
-        ? config.codeTools
-        : []) as string[]),
+      ...((Array.isArray(config.codeTools) ? config.codeTools : []) as string[]),
     ],
     extras: {},
     description: config.description,
@@ -53,19 +51,11 @@ export const saveNodeVersionToDB = async ({
     waiting_for: config.waitingFor,
   }
 
-  const { error: error2, data } = await supabase
-    .from("NodeVersion")
-    .insert(insertable)
-    .select()
-    .single()
+  const { error: error2, data } = await supabase.from("NodeVersion").insert(insertable).select().single()
 
   if (error2) {
     // Check if this is a constraint violation (node already exists)
-    if (
-      error2.code === "23505" ||
-      error2.message.includes("duplicate") ||
-      error2.message.includes("unique")
-    ) {
+    if (error2.code === "23505" || error2.message.includes("duplicate") || error2.message.includes("unique")) {
       // Query for the existing node again
       const { data: retryData, error: retryError } = await supabase
         .from("NodeVersion")
@@ -85,11 +75,7 @@ export const saveNodeVersionToDB = async ({
       return { nodeVersionId: retryData.node_id }
     }
 
-    lgg.error(
-      "registerNodeInDatabase error inserting node",
-      JSONN.show(insertable),
-      JSONN.show(error2)
-    )
+    lgg.error("registerNodeInDatabase error inserting node", JSONN.show(insertable), JSONN.show(error2))
     throw new Error(`Error saving node: ${error2.message}`)
   }
 

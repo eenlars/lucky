@@ -11,7 +11,7 @@ vi.mock("ai", () => ({
   generateText: vi.fn(),
   tool: vi.fn((config: any) => config),
   genObject: vi.fn(),
-  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  stepCountIs: vi.fn((count: number) => ({ type: "stepCount", count })),
   zodSchema: vi.fn((schema: any) => schema),
 }))
 
@@ -194,9 +194,7 @@ describe("sendAIRequest with expectedOutput", () => {
     expect(result.success).toBe(false)
     expect(result.data).toBeNull()
     // Allow either direct validation failure or post-repair failure
-    expect(result.error).toMatch(
-      /(JSON validation failed|Failed to repair JSON)/
-    )
+    expect(result.error).toMatch(/(JSON validation failed|Failed to repair JSON)/)
   })
 
   it("should handle non-JSON response", async () => {
@@ -231,8 +229,6 @@ describe("sendAIRequest with expectedOutput", () => {
     // Verify failure
     expect(result.success).toBe(false)
     expect(result.data).toBeNull()
-    expect(result.error).toMatch(
-      /^(No valid JSON found in response:|Failed to repair JSON)/
-    )
+    expect(result.error).toMatch(/^(No valid JSON found in response:|Failed to repair JSON)/)
   })
 })

@@ -9,18 +9,14 @@ export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {
 
   const cycleExists = hasCycle(config.nodes)
 
-  return cycleExists
-    ? ["Workflow contains cycles - directed acyclic graph (DAG) required"]
-    : []
+  return cycleExists ? ["Workflow contains cycles - directed acyclic graph (DAG) required"] : []
 }
 
 /**
  * detects cycles in a directed graph using dfs with three-color approach
  * white (0): unvisited, gray (1): currently visiting, black (2): visited
  */
-function hasCycle(
-  nodes: Array<{ nodeId: string; handOffs: string[] }>
-): boolean {
+function hasCycle(nodes: Array<{ nodeId: string; handOffs: string[] }>): boolean {
   const nodeMap = new Map(nodes.map((node) => [node.nodeId, node]))
   const colors = new Map<string, number>()
 

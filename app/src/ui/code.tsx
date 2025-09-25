@@ -49,22 +49,13 @@ export interface CodeInputProps {
   wrap?: boolean
 }
 
-export function CodeInput({
-  children,
-  block = false,
-  className,
-  wrap = false,
-}: CodeInputProps) {
+export function CodeInput({ children, block = false, className, wrap = false }: CodeInputProps) {
   const [copied, setCopied] = useState(false)
   const Component = block ? "pre" : "code"
 
   // Turn whatever children you got into a single string
   const rawText =
-    typeof children === "string"
-      ? children
-      : Array.isArray(children)
-        ? children.join("")
-        : String(children)
+    typeof children === "string" ? children : Array.isArray(children) ? children.join("") : String(children)
 
   // If it's JSON/JSON5, extract & re-stringify with 2-space indent
   const displayText = isJSON(rawText) ? showJSON(extractJSON(rawText)) : rawText
@@ -95,11 +86,7 @@ export function CodeInput({
           onClick={handleCopy}
           aria-label="Copy code"
         >
-          {copied ? (
-            <CheckIcon className="w-4 h-4 text-green-500" />
-          ) : (
-            <ClipboardIcon className="w-4 h-4" />
-          )}
+          {copied ? <CheckIcon className="w-4 h-4 text-green-500" /> : <ClipboardIcon className="w-4 h-4" />}
         </button>
       )}
     </div>

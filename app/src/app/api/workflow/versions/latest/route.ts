@@ -26,9 +26,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data || [])
   } catch (error) {
     console.error("Error fetching latest workflow versions:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch workflow versions" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to fetch workflow versions" }, { status: 500 })
   }
 }

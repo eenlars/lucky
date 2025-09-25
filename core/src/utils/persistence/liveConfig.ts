@@ -2,10 +2,7 @@ import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
-import {
-  createWorkflowVersion,
-  ensureWorkflowExists,
-} from "@core/utils/persistence/workflow/registerWorkflow"
+import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { workflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
 import { getDefaultModels, PATHS } from "@runtime/settings/constants"
@@ -28,8 +25,7 @@ function makeDefaultConfig(): WorkflowConfig {
       {
         nodeId: "main",
         description: "Main workflow node",
-        systemPrompt:
-          "You are a helpful assistant. Complete the task as requested.",
+        systemPrompt: "You are a helpful assistant. Complete the task as requested.",
         modelName: getDefaultModels().default,
         mcpTools: [],
         codeTools: [],
@@ -86,8 +82,7 @@ export async function loadLiveWorkflowConfig(
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle()
-  if (latestErr)
-    throw new Error(`Failed to load latest workflow: ${latestErr.message}`)
+  if (latestErr) throw new Error(`Failed to load latest workflow: ${latestErr.message}`)
   if (latest?.dsl) return latest.dsl as unknown as WorkflowConfig
   return makeDefaultConfig()
 }

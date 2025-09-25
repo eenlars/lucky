@@ -17,9 +17,7 @@ const mapboxTool = defineTool({
   async execute(params) {
     const { queries } = params
 
-    const results = await Promise.all(
-      queries.map((query) => geocodeLocation({ query }))
-    )
+    const results = await Promise.all(queries.map((query) => geocodeLocation({ query })))
 
     return {
       success: true,

@@ -5,8 +5,7 @@ import type { Database } from "@lucky/shared"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 
 export interface EvolutionRunWithStats extends Tables<"EvolutionRun"> {
   total_invocations?: number
@@ -50,10 +49,7 @@ type EvolutionRunsState = {
   setSortDirection: (dir: SortDirection) => void
 
   clearFilters: () => void
-  fetchRuns: (opts?: {
-    showLoading?: boolean
-    reset?: boolean
-  }) => Promise<void>
+  fetchRuns: (opts?: { showLoading?: boolean; reset?: boolean }) => Promise<void>
 }
 
 export const useEvolutionRunsStore = create<EvolutionRunsState>()(
@@ -105,41 +101,30 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
         try {
           // Prefill from cache on reset for instant UI
           if (reset) {
-            const {
-              cachedRunsById,
-              statusFilter,
-              modeFilter,
-              searchTerm,
-              dateFilter,
-              hideEmptyRuns,
-            } = get()
+            const { cachedRunsById, statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns } = get()
 
             const cachedList = Object.values(cachedRunsById).filter((run) => {
               // Always exclude runs with no generations (mirrors API)
               if (!run || (run.generation_count ?? 0) === 0) return false
 
               if (hideEmptyRuns) {
-                const hasInvocations =
-                  !!run.total_invocations && run.total_invocations > 0
+                const hasInvocations = !!run.total_invocations && run.total_invocations > 0
                 const hasGenerations = (run.generation_count ?? 0) > 0
                 if (!hasInvocations && !hasGenerations) return false
               }
 
-              if (statusFilter !== "all" && run.status !== statusFilter)
-                return false
+              if (statusFilter !== "all" && run.status !== statusFilter) return false
               // evolution_type filter
               if (modeFilter !== "all") {
                 const normalized = modeFilter.toLowerCase()
-                if (run.evolution_type?.toLowerCase() !== normalized)
-                  return false
+                if (run.evolution_type?.toLowerCase() !== normalized) return false
               }
 
               // date filter
               if (dateFilter !== "all") {
                 const runDate = new Date(run.start_time)
                 const now = new Date()
-                const daysDiff =
-                  (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
+                const daysDiff = (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
                 if (
                   (dateFilter === "today" && daysDiff > 1) ||
                   (dateFilter === "week" && daysDiff > 7) ||
@@ -168,21 +153,11 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
           if (cleanupResponse.ok) {
             const cleanupData = await cleanupResponse.json()
             if (cleanupData.cleaned > 0) {
-              showToast.info.processing(
-                `Cleaned up ${cleanupData.cleaned} stale evolution runs`
-              )
+              showToast.info.processing(`Cleaned up ${cleanupData.cleaned} stale evolution runs`)
             }
           }
 
-          const {
-            loadedRuns,
-            limit,
-            statusFilter,
-            modeFilter,
-            searchTerm,
-            dateFilter,
-            hideEmptyRuns,
-          } = get()
+          const { loadedRuns, limit, statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns } = get()
 
           const currentLoadedRuns = reset ? [] : loadedRuns
           const offset = currentLoadedRuns.length
@@ -199,9 +174,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
           const response = await fetch(`/api/evolution-runs?${params}`)
           if (!response.ok) {
-            throw new Error(
-              `Failed to fetch evolution runs: ${response.statusText}`
-            )
+            throw new Error(`Failed to fetch evolution runs: ${response.statusText}`)
           }
 
           const data: EvolutionRunWithStats[] = await response.json()
@@ -235,10 +208,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
           set({ hasMore: data.length === get().limit })
         } catch (err) {
-          const errorMessage =
-            err instanceof Error
-              ? err.message
-              : "Failed to fetch evolution runs"
+          const errorMessage = err instanceof Error ? err.message : "Failed to fetch evolution runs"
           set({ error: errorMessage })
           showToast.error.generic(errorMessage)
           console.error("Error fetching evolution runs:", err)

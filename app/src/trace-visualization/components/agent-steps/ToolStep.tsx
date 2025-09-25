@@ -3,12 +3,7 @@
 import { Card } from "@/ui/card"
 import { isNir } from "@core/utils/common/isNir"
 import { CheckCircle2, Copy, Maximize2, Minimize2 } from "lucide-react"
-import {
-  formatArgsSummary,
-  getResultSummary,
-  getStepIcon,
-  getStepTheme,
-} from "./utils"
+import { formatArgsSummary, getResultSummary, getStepIcon, getStepTheme } from "./utils"
 
 interface ToolStepProps {
   index: number
@@ -60,10 +55,7 @@ export const ToolStep = ({
             {name}: {preview}
           </div>
           <div className="flex items-center gap-1">
-            <Maximize2
-              size={12}
-              className="text-slate-400 dark:text-slate-500"
-            />
+            <Maximize2 size={12} className="text-slate-400 dark:text-slate-500" />
           </div>
         </div>
       </Card>
@@ -78,10 +70,7 @@ export const ToolStep = ({
         isExpanded
           ? undefined
           : (e) => {
-              if (
-                e.target === e.currentTarget ||
-                !(e.target as Element).closest("button")
-              ) {
+              if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                 onToggleCollapsed()
               }
             }
@@ -92,9 +81,7 @@ export const ToolStep = ({
           <div className="flex items-center gap-2">
             <div className={`${theme.iconClass}`}>{getStepIcon("tool")}</div>
             <span className={`${theme.labelClass} text-xs`}>{name}</span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2">
-              (click to view details)
-            </span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2">(click to view details)</span>
             {hasResult && <CheckCircle2 className="w-4 h-4 text-green-500" />}
           </div>
           <div className="flex items-center gap-2">
@@ -117,24 +104,16 @@ export const ToolStep = ({
               title="Toggle details"
             >
               {isExpanded ? (
-                <Minimize2
-                  size={14}
-                  className="text-slate-500 dark:text-slate-400"
-                />
+                <Minimize2 size={14} className="text-slate-500 dark:text-slate-400" />
               ) : (
-                <Maximize2
-                  size={14}
-                  className="text-slate-500 dark:text-slate-400"
-                />
+                <Maximize2 size={14} className="text-slate-500 dark:text-slate-400" />
               )}
             </button>
           </div>
         </div>
 
         {hasSummary && (
-          <div
-            className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}
-          >
+          <div className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}>
             <span className="font-medium">Summary: </span>
             <span>{summary}</span>
           </div>
@@ -144,23 +123,15 @@ export const ToolStep = ({
           <div className="space-y-2">
             {hasResult && (
               <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                <div
-                  className={`text-xs font-medium mb-1 ${theme.contentClass}`}
-                >
-                  Result Preview:
-                </div>
+                <div className={`text-xs font-medium mb-1 ${theme.contentClass}`}>Result Preview:</div>
                 <code className="text-xs text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
                   {JSON.stringify(getResultSummary(result)).substring(0, 100)}
-                  {JSON.stringify(getResultSummary(result)).length > 100
-                    ? "..."
-                    : ""}
+                  {JSON.stringify(getResultSummary(result)).length > 100 ? "..." : ""}
                 </code>
               </div>
             )}
             <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-              <div className={`text-xs font-medium mb-1 ${theme.contentClass}`}>
-                Arguments:
-              </div>
+              <div className={`text-xs font-medium mb-1 ${theme.contentClass}`}>Arguments:</div>
               <code className="text-xs text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
                 {formatArgsSummary(args)}
               </code>
@@ -173,9 +144,7 @@ export const ToolStep = ({
             <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent"></div>
 
             <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-              <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>
-                Arguments:
-              </div>
+              <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Arguments:</div>
               <pre className="text-xs text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 p-2 rounded overflow-x-auto leading-relaxed">
                 {JSON.stringify(args, null, 2)}
               </pre>
@@ -183,15 +152,8 @@ export const ToolStep = ({
 
             {hasResult && (
               <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                <div
-                  className={`text-sm font-medium mb-2 ${theme.contentClass}`}
-                >
-                  Result:
-                </div>
-                <div
-                  ref={setResultRef ?? undefined}
-                  className="overflow-hidden"
-                >
+                <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Result:</div>
+                <div ref={setResultRef ?? undefined} className="overflow-hidden">
                   <pre className="text-xs text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 p-2 rounded overflow-x-auto leading-relaxed">
                     {JSON.stringify(getResultSummary(result), null, 2)}
                   </pre>

@@ -1,8 +1,7 @@
 import { CONFIG } from "@runtime/settings/constants"
 
 export const normalizeTime = (timeMs: number): number => {
-  const { timeThresholdSeconds, baselineTimeSeconds } =
-    CONFIG.improvement.fitness
+  const { timeThresholdSeconds, baselineTimeSeconds } = CONFIG.improvement.fitness
   const timeThresholdMs = timeThresholdSeconds * 1000
   const baselineTimeMs = baselineTimeSeconds * 1000
 

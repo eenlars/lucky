@@ -42,10 +42,7 @@ describe("Workflow DB integration - single node persistence", () => {
     }
 
     // Create Workflow and WorkflowVersion
-    await ensureWorkflowExists(
-      "Integration test: single-node workflow",
-      workflowId
-    )
+    await ensureWorkflowExists("Integration test: single-node workflow", workflowId)
     await createWorkflowVersion({
       workflowVersionId,
       workflowConfig: config,
@@ -83,15 +80,8 @@ describe("Workflow DB integration - single node persistence", () => {
 
     // Optional cleanup (best-effort; ignore errors)
     // Order matters due to FKs: NodeVersion -> WorkflowVersion -> Workflow
-    await supabase
-      .from("NodeVersion")
-      .delete()
-      .eq("wf_version_id", workflowVersionId)
-      .eq("node_id", nodeId)
-    await supabase
-      .from("WorkflowVersion")
-      .delete()
-      .eq("wf_version_id", workflowVersionId)
+    await supabase.from("NodeVersion").delete().eq("wf_version_id", workflowVersionId).eq("node_id", nodeId)
+    await supabase.from("WorkflowVersion").delete().eq("wf_version_id", workflowVersionId)
     await supabase.from("Workflow").delete().eq("wf_id", workflowId)
   }, 60_000)
 })

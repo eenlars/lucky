@@ -11,8 +11,7 @@ export const createMockToolExecutionContext = (
     workflowId: string
   }> = {}
 ) => ({
-  workflowInvocationId:
-    overrides.workflowInvocationId || `test-invocation-${Date.now()}`,
+  workflowInvocationId: overrides.workflowInvocationId || `test-invocation-${Date.now()}`,
   workflowFiles: overrides.workflowFiles || [],
   expectedOutputType: overrides.expectedOutputType || undefined,
   mainWorkflowGoal: overrides.mainWorkflowGoal || "test goal",
@@ -31,35 +30,26 @@ export const setupVitest = () => {
 }
 
 // helper to create timeout promises for async tests
-export const createTimeoutPromise = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms))
+export const createTimeoutPromise = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // helper to expect async functions to complete within timeout
-export const expectWithinTimeout = async (
-  asyncFn: () => Promise<any>,
-  timeoutMs: number = 5000
-) => {
+export const expectWithinTimeout = async (asyncFn: () => Promise<any>, timeoutMs: number = 5000) => {
   const startTime = Date.now()
   const result = await asyncFn()
   const endTime = Date.now()
 
   if (endTime - startTime > timeoutMs)
-    throw new Error(
-      `Operation took ${endTime - startTime}ms, expected < ${timeoutMs}ms`
-    )
+    throw new Error(`Operation took ${endTime - startTime}ms, expected < ${timeoutMs}ms`)
 
   return result
 }
 
 // helper to mock resolved values consistently
-export const mockResolvedValue = <T>(value: T) =>
-  vi.fn().mockResolvedValue(value)
+export const mockResolvedValue = <T>(value: T) => vi.fn().mockResolvedValue(value)
 
 // helper to mock rejected values consistently
 export const mockRejectedValue = (error: string | Error) =>
-  vi
-    .fn()
-    .mockRejectedValue(typeof error === "string" ? new Error(error) : error)
+  vi.fn().mockRejectedValue(typeof error === "string" ? new Error(error) : error)
 
 // helper to create consistent mock responses for AI requests
 export const createMockAIResponse = (data: any, cost = 0.01) => ({
@@ -156,9 +146,7 @@ export const createMockEvolutionConfig = (overrides = {}) => ({
 
 // helper to check if test is running in verbose mode
 export const isVerboseTestMode = () => {
-  return (
-    process.env.VITEST_VERBOSE === "true" || process.env.NODE_ENV === "test"
-  )
+  return process.env.VITEST_VERBOSE === "true" || process.env.NODE_ENV === "test"
 }
 
 // helper to skip slow tests in CI
@@ -170,8 +158,7 @@ export const skipIfCI = () => {
 }
 
 // helper to create predictable test IDs
-export const createTestId = (prefix = "test") =>
-  `${prefix}-${Math.random().toString(36).substring(2, 9)}`
+export const createTestId = (prefix = "test") => `${prefix}-${Math.random().toString(36).substring(2, 9)}`
 
 // helper to create mock database responses
 export const createMockDatabaseResponse = (data: any = []) => ({

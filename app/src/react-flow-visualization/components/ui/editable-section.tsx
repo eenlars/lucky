@@ -43,12 +43,7 @@ export function EditableSection({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium">{title}</h4>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleToggleEdit}
-            className="cursor-pointer hover:bg-muted"
-          >
+          <Button variant="ghost" size="sm" onClick={handleToggleEdit} className="cursor-pointer hover:bg-muted">
             <IconComponent className="h-3 w-3" />
           </Button>
         </div>
@@ -57,21 +52,11 @@ export function EditableSection({
           <div className="space-y-3">
             {editContent}
             <div className="flex gap-2 pt-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={onSave}
-                className="cursor-pointer"
-              >
+              <Button variant="default" size="sm" onClick={onSave} className="cursor-pointer">
                 <Save className="h-4 w-4 mr-2" />
                 Save
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onCancel}
-                className="cursor-pointer"
-              >
+              <Button variant="outline" size="sm" onClick={onCancel} className="cursor-pointer">
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>

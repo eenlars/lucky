@@ -1,18 +1,12 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { createEdge, type AppEdge } from "../components/edges"
-import {
-  createNodeByType,
-  type AppNode,
-  type WorkflowNodeData,
-} from "../components/nodes"
+import { createNodeByType, type AppNode, type WorkflowNodeData } from "../components/nodes"
 
 /**
  * transform the nodes from the setup config to the nodes for the visualizer.
  * IMPORTANT: the start node and the end node are created here, and they are not part of the workflowConfig.nodes array.
  */
-export const initialSetupConfig = (
-  workflowConfig: WorkflowConfig
-): { edges: AppEdge[]; nodes: AppNode[] } => {
+export const initialSetupConfig = (workflowConfig: WorkflowConfig): { edges: AppEdge[]; nodes: AppNode[] } => {
   const edges: AppEdge[] = []
   const nodes: AppNode[] = []
 
@@ -88,8 +82,6 @@ export const initialSetupConfig = (
  * Convert a Core WorkflowConfig into frontend React Flow graph primitives.
  * Frontend naming: use this as the canonical transformer.
  */
-export const toFrontendWorkflowConfig = (
-  workflowConfig: WorkflowConfig
-): { edges: AppEdge[]; nodes: AppNode[] } => {
+export const toFrontendWorkflowConfig = (workflowConfig: WorkflowConfig): { edges: AppEdge[]; nodes: AppNode[] } => {
   return initialSetupConfig(workflowConfig)
 }

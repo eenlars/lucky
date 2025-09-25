@@ -62,15 +62,11 @@ export interface AggregatedPayload extends BasePayload {
   }>
 }
 
-export const isDelegationPayload = (
-  payload: unknown
-): payload is DelegationPayload => {
+export const isDelegationPayload = (payload: unknown): payload is DelegationPayload => {
   return (payload as DelegationPayload).kind === "delegation"
 }
 
-export const isSequentialPayload = (
-  payload: unknown
-): payload is SequentialPayload => {
+export const isSequentialPayload = (payload: unknown): payload is SequentialPayload => {
   if (!payload) return false
   return (payload as SequentialPayload).kind === "sequential"
 }
@@ -78,11 +74,7 @@ export const isSequentialPayload = (
 /**
  * Discriminated union of all supported payload shapes.
  */
-export type Payload =
-  | DelegationPayload
-  | SequentialPayload
-  | AggregatedPayload
-  | ReplyPayload
+export type Payload = DelegationPayload | SequentialPayload | AggregatedPayload | ReplyPayload
 
 const joinBerichtenTexts = (items: TextContent[] | undefined): string =>
   Array.isArray(items)
@@ -105,10 +97,7 @@ export const extractTextFromPayload = (payload: Payload): string => {
     case "sequential":
     case "result": {
       // Base payloads read directly from berichten
-      const base = payload as
-        | DelegationPayload
-        | SequentialPayload
-        | ReplyPayload
+      const base = payload as DelegationPayload | SequentialPayload | ReplyPayload
       return joinBerichtenTexts(base.berichten)
     }
     default: {

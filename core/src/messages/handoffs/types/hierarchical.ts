@@ -1,8 +1,4 @@
-import {
-  buildResultHandoff,
-  callModelHandoff,
-  type HandoffResult,
-} from "@core/messages/handoffs/handOffUtils"
+import { buildResultHandoff, callModelHandoff, type HandoffResult } from "@core/messages/handoffs/handOffUtils"
 import type { ChooseHandoffOpts } from "@core/messages/handoffs/main"
 import { buildOrchestratorPrompt } from "@core/messages/handoffs/types/hierarchical.orchestrator"
 import { buildReplyMessage } from "@core/messages/handoffs/types/hierarchical.reply"
@@ -20,14 +16,11 @@ export async function chooseHandoffHierarchical({
 }: ChooseHandoffOpts): Promise<HandoffResult> {
   // Get the current node's role based on workflow structure
   const currentNodeId = workflowMessage.toNodeId
-  const currentNodeRole = workflowConfig
-    ? getNodeRole(currentNodeId, workflowConfig)
-    : null
+  const currentNodeRole = workflowConfig ? getNodeRole(currentNodeId, workflowConfig) : null
 
   // If no workflow config available, fall back to message-based inference
   const isOrchestrator =
-    currentNodeRole === "orchestrator" ||
-    (currentNodeRole === null && workflowMessage.fromNodeId === "start")
+    currentNodeRole === "orchestrator" || (currentNodeRole === null && workflowMessage.fromNodeId === "start")
 
   const isFromStart = workflowMessage.fromNodeId === "start"
 

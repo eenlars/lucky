@@ -8,10 +8,7 @@ import { fileURLToPath } from "url"
  * This avoids the need for API calls and Python dependencies at runtime
  */
 export class GAIALocalLoader {
-  private static dataDir = join(
-    dirname(fileURLToPath(import.meta.url)),
-    "output"
-  )
+  private static dataDir = join(dirname(fileURLToPath(import.meta.url)), "output")
   private static cache: Map<string, GAIAInstance[]> = new Map()
 
   // Configuration switches (should match GAIALoader)
@@ -46,10 +43,7 @@ export class GAIALocalLoader {
   /**
    * Fetch a specific GAIA instance by task ID
    */
-  static fetchById(
-    taskId: string,
-    split: "validation" | "test" = "validation"
-  ): GAIAInstance {
+  static fetchById(taskId: string, split: "validation" | "test" = "validation"): GAIAInstance {
     const data = this.loadSplit(split)
 
     const instance = data.find((item) => item.task_id === taskId)
@@ -99,10 +93,7 @@ export class GAIALocalLoader {
   /**
    * Get random instances from a split
    */
-  static fetchRandom(
-    count: number,
-    split: "validation" | "test" = "validation"
-  ): GAIAInstance[] {
+  static fetchRandom(count: number, split: "validation" | "test" = "validation"): GAIAInstance[] {
     const data = this.loadSplit(split)
 
     // Filter out special task and instances with files if configured

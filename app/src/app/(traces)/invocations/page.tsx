@@ -10,8 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button } from "@/ui/button"
 
 // Temporary type extension for new scoring fields
-type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 
 type WorkflowInvocationWithScores = Tables<"WorkflowInvocation"> & {
   accuracy?: number | null
@@ -64,13 +63,7 @@ const getTimeDifference = (timestamp: string) => {
   return `${seconds}s ago`
 }
 
-type SortField =
-  | "start_time"
-  | "usd_cost"
-  | "status"
-  | "fitness"
-  | "accuracy"
-  | "duration"
+type SortField = "start_time" | "usd_cost" | "status" | "fitness" | "accuracy" | "duration"
 type SortOrder = "asc" | "desc"
 
 interface FilterState {
@@ -86,9 +79,7 @@ interface FilterState {
 }
 
 export default function InvocationsPage() {
-  const [invocations, setInvocations] = useState<
-    WorkflowInvocationWithScores[]
-  >([])
+  const [invocations, setInvocations] = useState<WorkflowInvocationWithScores[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -128,11 +119,7 @@ export default function InvocationsPage() {
 
       // Status filter
       if (filters.status) {
-        filterParams.status = filters.status as
-          | "running"
-          | "completed"
-          | "failed"
-          | "rolled_back"
+        filterParams.status = filters.status as "running" | "completed" | "failed" | "rolled_back"
       }
 
       // Cost filters
@@ -194,23 +181,12 @@ export default function InvocationsPage() {
       setInvocations(result.data)
       setTotalCount(result.totalCount)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to fetch workflow invocations"
-      )
+      setError(err instanceof Error ? err.message : "Failed to fetch workflow invocations")
       console.error("Error fetching workflow invocations:", err)
     } finally {
       setLoading(false)
     }
-  }, [
-    filters,
-    sortField,
-    sortOrder,
-    showCompletedOnly,
-    currentPage,
-    itemsPerPage,
-  ])
+  }, [filters, sortField, sortOrder, showCompletedOnly, currentPage, itemsPerPage])
 
   useEffect(() => {
     fetchWorkflowInvocations()
@@ -307,21 +283,14 @@ export default function InvocationsPage() {
       }
 
       // Remove deleted items from the invocations list
-      setInvocations(
-        invocations.filter((inv) => !selectedRows.has(inv.wf_invocation_id))
-      )
+      setInvocations(invocations.filter((inv) => !selectedRows.has(inv.wf_invocation_id)))
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
 
       const count = idsToDelete.length
-      showToast.success.delete(
-        `Deleted ${count} invocation${count === 1 ? "" : "s"}`
-      )
+      showToast.success.delete(`Deleted ${count} invocation${count === 1 ? "" : "s"}`)
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Failed to delete selected invocations"
+      const errorMessage = err instanceof Error ? err.message : "Failed to delete selected invocations"
       setError(errorMessage)
       showToast.error.generic(errorMessage)
       console.error("Error deleting invocations:", err)
@@ -338,8 +307,7 @@ export default function InvocationsPage() {
 
   const formatDuration = (startTime: string, endTime: string | null) => {
     if (!endTime) return "Running..."
-    const duration =
-      (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000
+    const duration = (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000
     if (duration < 60) return `${duration.toFixed(1)}s`
     const minutes = Math.floor(duration / 60)
     const seconds = duration % 60
@@ -692,11 +660,7 @@ export default function InvocationsPage() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null
-    return sortOrder === "asc" ? (
-      <ChevronUp className="w-4 h-4" />
-    ) : (
-      <ChevronDown className="w-4 h-4" />
-    )
+    return sortOrder === "asc" ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
   }
 
   return (
@@ -706,9 +670,8 @@ export default function InvocationsPage() {
           Workflow Invocations
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Each row represents a single workflow execution. The emoji in the
-          Version column helps you quickly identify invocations from the same
-          workflow version.
+          Each row represents a single workflow execution. The emoji in the Version column helps you quickly identify
+          invocations from the same workflow version.
         </p>
       </div>
 
@@ -721,10 +684,7 @@ export default function InvocationsPage() {
             {loading ? "Loading..." : "Refresh Invocations"}
           </Button>
 
-          <Button
-            onClick={() => setShowFilters(!showFilters)}
-            variant="outline"
-          >
+          <Button onClick={() => setShowFilters(!showFilters)} variant="outline">
             <Filter className="w-4 h-4 mr-2" />
             {showFilters ? "Hide Filters" : "Show Filters"}
           </Button>
@@ -764,18 +724,10 @@ export default function InvocationsPage() {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 bg-blue-50 px-3 py-1 rounded-full">
                 {selectedRows.size} selected
               </span>
-              <Button
-                onClick={() => setSelectedRows(new Set())}
-                variant="link"
-                size="sm"
-              >
+              <Button onClick={() => setSelectedRows(new Set())} variant="link" size="sm">
                 Clear selection
               </Button>
-              <Button
-                onClick={() => setDeleteConfirmOpen(true)}
-                variant="destructive"
-                size="sm"
-              >
+              <Button onClick={() => setDeleteConfirmOpen(true)} variant="destructive" size="sm">
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Selected
               </Button>
@@ -796,9 +748,7 @@ export default function InvocationsPage() {
                 <select
                   id="status-filter"
                   value={filters.status}
-                  onChange={(e) =>
-                    setFilters({ ...filters, status: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 >
                   <option value="">All statuses</option>
@@ -817,9 +767,7 @@ export default function InvocationsPage() {
                   type="number"
                   step="0.000001"
                   value={filters.minCost}
-                  onChange={(e) =>
-                    setFilters({ ...filters, minCost: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, minCost: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000001"
                 />
@@ -833,9 +781,7 @@ export default function InvocationsPage() {
                   type="number"
                   step="0.000001"
                   value={filters.maxCost}
-                  onChange={(e) =>
-                    setFilters({ ...filters, maxCost: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, maxCost: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000000"
                 />
@@ -851,9 +797,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.minAccuracy}
-                  onChange={(e) =>
-                    setFilters({ ...filters, minAccuracy: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, minAccuracy: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000"
                 />
@@ -869,9 +813,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.maxAccuracy}
-                  onChange={(e) =>
-                    setFilters({ ...filters, maxAccuracy: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, maxAccuracy: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000"
                 />
@@ -887,9 +829,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.minFitnessScore}
-                  onChange={(e) =>
-                    setFilters({ ...filters, minFitnessScore: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, minFitnessScore: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000"
                 />
@@ -905,9 +845,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.maxFitnessScore}
-                  onChange={(e) =>
-                    setFilters({ ...filters, maxFitnessScore: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, maxFitnessScore: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000"
                 />
@@ -920,9 +858,7 @@ export default function InvocationsPage() {
                 <input
                   type="datetime-local"
                   value={filters.dateFrom}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dateFrom: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 />
               </div>
@@ -934,9 +870,7 @@ export default function InvocationsPage() {
                 <input
                   type="datetime-local"
                   value={filters.dateTo}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dateTo: e.target.value })
-                  }
+                  onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 />
               </div>
@@ -951,9 +885,7 @@ export default function InvocationsPage() {
           </div>
         )}
 
-        {error && (
-          <div className="mt-2 text-red-500">{(error as any).message}</div>
-        )}
+        {error && <div className="mt-2 text-red-500">{(error as any).message}</div>}
 
         {/* Active Filters Indicator */}
         {(filters.status ||
@@ -968,9 +900,7 @@ export default function InvocationsPage() {
           showCompletedOnly) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-blue-900">
-                Active Filters
-              </h3>
+              <h3 className="text-sm font-medium text-blue-900">Active Filters</h3>
               <Button
                 onClick={() => {
                   clearFilters()
@@ -1044,13 +974,9 @@ export default function InvocationsPage() {
           <div className="bg-white dark:bg-gray-900 px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-between">
             <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
               <span>Showing</span>
-              <span className="font-medium mx-1">
-                {(currentPage - 1) * itemsPerPage + 1}
-              </span>
+              <span className="font-medium mx-1">{(currentPage - 1) * itemsPerPage + 1}</span>
               <span>to</span>
-              <span className="font-medium mx-1">
-                {Math.min(currentPage * itemsPerPage, totalItems)}
-              </span>
+              <span className="font-medium mx-1">{Math.min(currentPage * itemsPerPage, totalItems)}</span>
               <span>of</span>
               <span className="font-medium mx-1">{totalItems}</span>
               <span>results</span>
@@ -1065,19 +991,13 @@ export default function InvocationsPage() {
                 Previous
               </Button>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Page
-                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Page</span>
                 <span className="font-medium text-sm">{currentPage}</span>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  of
-                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">of</span>
                 <span className="font-medium text-sm">{totalPages}</span>
               </div>
               <Button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
                 variant="outline"
                 size="sm"
@@ -1095,10 +1015,7 @@ export default function InvocationsPage() {
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
-                        checked={
-                          selectedRows.size === invocations.length &&
-                          invocations.length > 0
-                        }
+                        checked={selectedRows.size === invocations.length && invocations.length > 0}
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                       />
@@ -1172,28 +1089,19 @@ export default function InvocationsPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                   {invocations.map((invocation, _index) => {
-                    const isSelected = selectedRows.has(
-                      invocation.wf_invocation_id
-                    )
+                    const isSelected = selectedRows.has(invocation.wf_invocation_id)
                     return (
                       <tr
                         key={invocation.wf_invocation_id}
                         className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                          isSelected
-                            ? "bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700"
-                            : ""
+                          isSelected ? "bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700" : ""
                         }`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <input
                             type="checkbox"
                             checked={isSelected}
-                            onChange={(e) =>
-                              handleSelectRow(
-                                invocation.wf_invocation_id,
-                                e.target.checked
-                              )
-                            }
+                            onChange={(e) => handleSelectRow(invocation.wf_invocation_id, e.target.checked)}
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           />
                         </td>
@@ -1212,9 +1120,7 @@ export default function InvocationsPage() {
                               <span className="font-mono text-xs text-gray-900 dark:text-gray-100">
                                 {invocation.wf_version_id.substring(0, 12)}...
                               </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                Version ID
-                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">Version ID</span>
                             </div>
                           </Link>
                         </td>
@@ -1228,13 +1134,9 @@ export default function InvocationsPage() {
                                 {invocation.wf_invocation_id.substring(0, 8)}...
                               </span>
                               <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {new Date(
-                                  invocation.start_time
-                                ).toLocaleDateString()}
+                                {new Date(invocation.start_time).toLocaleDateString()}
                               </span>
-                              <span className="text-xs text-gray-400">
-                                {getTimeDifference(invocation.start_time)}
-                              </span>
+                              <span className="text-xs text-gray-400">{getTimeDifference(invocation.start_time)}</span>
                             </div>
                           </Link>
                         </td>
@@ -1254,8 +1156,7 @@ export default function InvocationsPage() {
                                       : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {invocation.status.charAt(0).toUpperCase() +
-                                invocation.status.slice(1)}
+                              {invocation.status.charAt(0).toUpperCase() + invocation.status.slice(1)}
                             </span>
                           </Link>
                         </td>
@@ -1265,12 +1166,8 @@ export default function InvocationsPage() {
                             className="block hover:text-blue-600 transition-colors"
                           >
                             <div className="text-right">
-                              <span
-                                className={`${invocation.accuracy != null ? "text-green-600" : "text-gray-400"}`}
-                              >
-                                {invocation.accuracy != null
-                                  ? invocation.accuracy.toFixed(3)
-                                  : "n/a"}
+                              <span className={`${invocation.accuracy != null ? "text-green-600" : "text-gray-400"}`}>
+                                {invocation.accuracy != null ? invocation.accuracy.toFixed(3) : "n/a"}
                               </span>
                             </div>
                           </Link>
@@ -1284,9 +1181,7 @@ export default function InvocationsPage() {
                               <span
                                 className={`${invocation.fitness_score != null ? "text-purple-600 font-semibold" : "text-gray-400"}`}
                               >
-                                {invocation.fitness_score != null
-                                  ? invocation.fitness_score.toFixed(3)
-                                  : "n/a"}
+                                {invocation.fitness_score != null ? invocation.fitness_score.toFixed(3) : "n/a"}
                               </span>
                             </div>
                           </Link>
@@ -1300,9 +1195,7 @@ export default function InvocationsPage() {
                               <span className="font-mono text-sm text-gray-900 dark:text-gray-100">
                                 {formatCost(invocation.usd_cost)}
                               </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                USD
-                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">USD</span>
                             </div>
                           </Link>
                         </td>
@@ -1313,10 +1206,7 @@ export default function InvocationsPage() {
                           >
                             <div className="flex flex-col">
                               <span className="text-sm text-gray-900 dark:text-gray-100">
-                                {formatDuration(
-                                  invocation.start_time,
-                                  invocation.end_time
-                                )}
+                                {formatDuration(invocation.start_time, invocation.end_time)}
                               </span>
                               <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {invocation.end_time ? "Completed" : "Running"}
@@ -1335,13 +1225,9 @@ export default function InvocationsPage() {
           <div className="bg-white dark:bg-gray-900 px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-between">
             <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
               <span>Showing</span>
-              <span className="font-medium mx-1">
-                {(currentPage - 1) * itemsPerPage + 1}
-              </span>
+              <span className="font-medium mx-1">{(currentPage - 1) * itemsPerPage + 1}</span>
               <span>to</span>
-              <span className="font-medium mx-1">
-                {Math.min(currentPage * itemsPerPage, totalItems)}
-              </span>
+              <span className="font-medium mx-1">{Math.min(currentPage * itemsPerPage, totalItems)}</span>
               <span>of</span>
               <span className="font-medium mx-1">{totalItems}</span>
               <span>results</span>
@@ -1356,19 +1242,13 @@ export default function InvocationsPage() {
                 Previous
               </Button>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Page
-                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Page</span>
                 <span className="font-medium text-sm">{currentPage}</span>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  of
-                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">of</span>
                 <span className="font-medium text-sm">{totalPages}</span>
               </div>
               <Button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
                 variant="outline"
                 size="sm"
@@ -1384,9 +1264,7 @@ export default function InvocationsPage() {
             {loading ? (
               <div className="flex flex-col items-center space-y-4">
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Loading invocations...
-                </p>
+                <p className="text-gray-500 dark:text-gray-400">Loading invocations...</p>
               </div>
             ) : invocations.length === 0 ? (
               <div className="flex flex-col items-center space-y-4">
@@ -1394,12 +1272,8 @@ export default function InvocationsPage() {
                   <span className="text-2xl">📋</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
-                    No invocations found
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Start by creating your first workflow invocation.
-                  </p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No invocations found</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Start by creating your first workflow invocation.</p>
                 </div>
               </div>
             ) : (
@@ -1408,12 +1282,8 @@ export default function InvocationsPage() {
                   <span className="text-2xl">🔍</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
-                    No matches found
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Try adjusting your filters to see more results.
-                  </p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No matches found</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Try adjusting your filters to see more results.</p>
                 </div>
               </div>
             )}
@@ -1425,27 +1295,16 @@ export default function InvocationsPage() {
       {deleteConfirmOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Confirm Deletion
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Confirm Deletion</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Are you sure you want to delete {selectedRows.size} selected
-              invocation{selectedRows.size > 1 ? "s" : ""}? This action cannot
-              be undone.
+              Are you sure you want to delete {selectedRows.size} selected invocation{selectedRows.size > 1 ? "s" : ""}?
+              This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <Button
-                onClick={() => setDeleteConfirmOpen(false)}
-                disabled={deleteLoading}
-                variant="outline"
-              >
+              <Button onClick={() => setDeleteConfirmOpen(false)} disabled={deleteLoading} variant="outline">
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeleteSelected}
-                disabled={deleteLoading}
-                variant="destructive"
-              >
+              <Button onClick={handleDeleteSelected} disabled={deleteLoading} variant="destructive">
                 {deleteLoading && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 )}

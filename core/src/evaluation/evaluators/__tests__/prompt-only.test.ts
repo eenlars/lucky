@@ -1,9 +1,5 @@
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import {
-  createMockGenome,
-  mockRuntimeConstantsForGP,
-  setupCoreTest,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockGenome, mockRuntimeConstantsForGP, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -49,9 +45,7 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
     expect(result.data?.fitness?.score).toBe(1.0)
     expect(result.data?.fitness?.accuracy).toBe(1.0)
     expect(result.data?.costOfEvaluation).toBe(0)
-    expect(result.data?.feedback).toBe(
-      "Prompt-only workflow - evaluation skipped"
-    )
+    expect(result.data?.feedback).toBe("Prompt-only workflow - evaluation skipped")
 
     // Verify precomputed data setter was NOT called (since we skipped evaluation)
     expect(mockGenome.setPrecomputedWorkflowData).not.toHaveBeenCalled()

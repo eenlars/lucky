@@ -14,13 +14,9 @@ interface WorkflowEditorProps {
   workflowVersion: Tables<"WorkflowVersion">
 }
 
-export default function WorkflowEditor({
-  workflowVersion,
-}: WorkflowEditorProps) {
+export default function WorkflowEditor({ workflowVersion }: WorkflowEditorProps) {
   const router = useRouter()
-  const [dslContent, setDslContent] = useState(
-    JSON.stringify(workflowVersion.dsl, null, 2)
-  )
+  const [dslContent, setDslContent] = useState(JSON.stringify(workflowVersion.dsl, null, 2))
   const [isDirty, setIsDirty] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [executionResults, setExecutionResults] = useState<any>(null)
@@ -71,8 +67,7 @@ export default function WorkflowEditor({
       router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
       console.error("Failed to save workflow:", error)
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to save workflow"
+      const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
       showToast.error.save(errorMessage)
     } finally {
       setIsLoading(false)
@@ -121,8 +116,7 @@ export default function WorkflowEditor({
       }
     } catch (error) {
       console.error("Failed to run workflow:", error)
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to run workflow"
+      const errorMessage = error instanceof Error ? error.message : "Failed to run workflow"
       setRunError(errorMessage)
       showToast.error.run(errorMessage)
     } finally {
@@ -133,17 +127,13 @@ export default function WorkflowEditor({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isInInput = ["INPUT", "TEXTAREA"].includes(
-        (e.target as Element)?.tagName
-      )
+      const isInInput = ["INPUT", "TEXTAREA"].includes((e.target as Element)?.tagName)
       if (e.ctrlKey || e.metaKey) {
         if (e.key === "s") {
           e.preventDefault()
           if (isDirty && !isLoading) {
             // Trigger save modal
-            const saveButton = document.querySelector(
-              "[data-save-button]"
-            ) as HTMLButtonElement
+            const saveButton = document.querySelector("[data-save-button]") as HTMLButtonElement
             if (saveButton) {
               saveButton.click()
             }
@@ -189,28 +179,15 @@ export default function WorkflowEditor({
             <div>
               <p className="text-sm text-gray-600">
                 Version: {workflowVersion.wf_version_id}
-                {isDirty && (
-                  <span className="text-orange-600 ml-2">
-                    • Unsaved changes
-                  </span>
-                )}
+                {isDirty && <span className="text-orange-600 ml-2">• Unsaved changes</span>}
               </p>
             </div>
-            <ActionBar
-              onSave={handleSave}
-              onRun={handleRun}
-              isDirty={isDirty}
-              isLoading={isLoading}
-            />
+            <ActionBar onSave={handleSave} onRun={handleRun} isDirty={isDirty} isLoading={isLoading} />
           </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
-          <DSLEditor
-            content={dslContent}
-            onChange={handleDslChange}
-            isLoading={isLoading}
-          />
+          <DSLEditor content={dslContent} onChange={handleDslChange} isLoading={isLoading} />
         </div>
       </div>
 

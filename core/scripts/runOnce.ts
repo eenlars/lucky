@@ -11,11 +11,7 @@ import { resolve } from "path"
 async function runOnce(setupFilePath?: string) {
   try {
     const setupPath = setupFilePath ? resolve(setupFilePath) : PATHS.setupFile
-    lgg.log(
-      chalk.green(
-        `🚀 Running workflow once${setupPath ? ` with ${setupPath}` : ""}`
-      )
-    )
+    lgg.log(chalk.green(`🚀 Running workflow once${setupPath ? ` with ${setupPath}` : ""}`))
 
     const {
       success,
@@ -39,14 +35,10 @@ async function runOnce(setupFilePath?: string) {
 
     lgg.log(`\n📊 Results (${results.length} cases):`)
     if (firstResult.fitness) {
-      lgg.log(
-        `${isPromptOnly ? "Fitness Score" : "Average Fitness Score"}: ${firstResult.fitness.score.toFixed(3)}`
-      )
+      lgg.log(`${isPromptOnly ? "Fitness Score" : "Average Fitness Score"}: ${firstResult.fitness.score.toFixed(3)}`)
     }
     lgg.log(`Total Cost: $${(usdCost || 0).toFixed(4)}`)
-    lgg.log(
-      `Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`
-    )
+    lgg.log(`Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`)
 
     // save minimal results
     const resultsPath = `${PATHS.node.logging}/runOnce/runOnce_results.json`

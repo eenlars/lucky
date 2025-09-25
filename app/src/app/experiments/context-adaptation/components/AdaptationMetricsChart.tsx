@@ -1,16 +1,7 @@
 "use client"
 
 import { semantic } from "@/app/experiments/chartColors"
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type MetricsRow = {
   model: string
@@ -61,30 +52,19 @@ export default function AdaptationMetricsChart({ data, metric }: Props) {
               ? ("clearMsPerItem" as const)
               : ("clearCostPerItem" as const)
   const unit =
-    metric === "time" || metric === "msPerItem"
-      ? "ms"
-      : metric === "cost" || metric === "costPerItem"
-        ? "$"
-        : ""
+    metric === "time" || metric === "msPerItem" ? "ms" : metric === "cost" || metric === "costPerItem" ? "$" : ""
 
   return (
     <div className="relative w-full h-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          margin={{ top: 8, right: 16, left: 8, bottom: 8 }}
-        >
+        <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="model" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}${unit}`} />
           <Tooltip
             formatter={(v: any) => {
               const decimals =
-                metric === "time" || metric === "msPerItem"
-                  ? 1
-                  : metric === "cost" || metric === "costPerItem"
-                    ? 6
-                    : 2
+                metric === "time" || metric === "msPerItem" ? 1 : metric === "cost" || metric === "costPerItem" ? 6 : 2
               return `${Number(v).toFixed(decimals)}${unit}`
             }}
           />
@@ -127,9 +107,7 @@ export default function AdaptationMetricsChart({ data, metric }: Props) {
       </ResponsiveContainer>
 
       {!hasAnyRows && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
-          No data yet.
-        </div>
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">No data yet.</div>
       )}
     </div>
   )

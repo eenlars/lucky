@@ -3,10 +3,7 @@ import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ wf_inv_id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ wf_inv_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -22,14 +19,8 @@ export async function GET(
       .limit(1)
 
     if (existsError) {
-      console.error(
-        "Error verifying workflow invocation existence:",
-        existsError
-      )
-      return NextResponse.json(
-        { error: "Failed to verify trace" },
-        { status: 500 }
-      )
+      console.error("Error verifying workflow invocation existence:", existsError)
+      return NextResponse.json({ error: "Failed to verify trace" }, { status: 500 })
     }
 
     if (!exists || exists.length === 0) {

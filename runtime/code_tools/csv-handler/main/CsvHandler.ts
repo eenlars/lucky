@@ -35,10 +35,7 @@ export class CsvHandler {
     if (this.data) return
 
     // first check if we have cached data
-    const cachedData = await this.contextStore.get<CsvData>(
-      "workflow",
-      this.cacheKey
-    )
+    const cachedData = await this.contextStore.get<CsvData>("workflow", this.cacheKey)
     if (cachedData) {
       this.data = cachedData
       return
@@ -46,18 +43,14 @@ export class CsvHandler {
 
     // since we only accept supabase files, everything should be https://
     if (!this.workflowFile.filePath.startsWith("https://")) {
-      throw new Error(
-        `only https urls are supported. got: ${this.workflowFile.filePath}`
-      )
+      throw new Error(`only https urls are supported. got: ${this.workflowFile.filePath}`)
     }
 
     let fileContent: string
     try {
       const response = await fetch(this.workflowFile.filePath)
       if (!response.ok) {
-        throw new Error(
-          `failed to fetch file: ${response.status} ${response.statusText}`
-        )
+        throw new Error(`failed to fetch file: ${response.status} ${response.statusText}`)
       }
       fileContent = await response.text()
     } catch (error) {
@@ -74,9 +67,7 @@ export class CsvHandler {
     })
 
     if (parseResult.errors.length > 0) {
-      throw new Error(
-        `csv parsing errors: ${parseResult.errors.map((e) => e.message).join(", ")}`
-      )
+      throw new Error(`csv parsing errors: ${parseResult.errors.map((e) => e.message).join(", ")}`)
     }
 
     const columns: CsvColumn[] =
@@ -142,9 +133,7 @@ export class CsvHandler {
 
     // skip empty rows if requested
     if (options.skipEmptyRows) {
-      rows = rows.filter((row) =>
-        Object.values(row).some((value) => value && value.trim() !== "")
-      )
+      rows = rows.filter((row) => Object.values(row).some((value) => value && value.trim() !== ""))
     }
 
     // limit results if specified
@@ -193,16 +182,8 @@ export class CsvHandler {
   /**
    * write data to context store as csv
    */
-  async writeData(
-    key: string,
-    data: CsvRow[],
-    options: CsvCreationOptions = {}
-  ): Promise<void> {
-    const {
-      delimiter = ",",
-      includeHeaders = true,
-      overwrite = false,
-    } = options
+  async writeData(key: string, data: CsvRow[], options: CsvCreationOptions = {}): Promise<void> {
+    const { delimiter = ",", includeHeaders = true, overwrite = false } = options
 
     if (data.length === 0) {
       throw new Error("no data provided to write")
@@ -211,9 +192,7 @@ export class CsvHandler {
     // check if key exists and overwrite is false
     const existing = await this.contextStore.get("workflow", key)
     if (existing && !overwrite) {
-      throw new Error(
-        `data already exists with key: ${key}. set overwrite: true to replace it`
-      )
+      throw new Error(`data already exists with key: ${key}. set overwrite: true to replace it`)
     }
 
     // get headers from first row
@@ -241,11 +220,7 @@ export class CsvHandler {
   /**
    * append data to existing csv in context store
    */
-  async appendData(
-    key: string,
-    data: CsvRow[],
-    options: { delimiter?: string } = {}
-  ): Promise<void> {
+  async appendData(key: string, data: CsvRow[], options: { delimiter?: string } = {}): Promise<void> {
     const { delimiter = "," } = options
 
     if (data.length === 0) {
@@ -270,10 +245,7 @@ export class CsvHandler {
 
     // update parsed data if it exists
     const parsedKey = `${key}_parsed`
-    const existingParsed = await this.contextStore.get<CsvData>(
-      "workflow",
-      parsedKey
-    )
+    const existingParsed = await this.contextStore.get<CsvData>("workflow", parsedKey)
     if (existingParsed) {
       existingParsed.rows.push(...data)
       existingParsed.totalRows = existingParsed.rows.length
@@ -292,23 +264,17 @@ export class CsvHandler {
 
     // skip empty rows if requested
     if (filterOptions.skipEmptyRows) {
-      allData = allData.filter((row) =>
-        Object.values(row).some((value) => value && value.trim() !== "")
-      )
+      allData = allData.filter((row) => Object.values(row).some((value) => value && value.trim() !== ""))
     }
 
     if (filterOptions.conditions.length === 0) {
       // no conditions, return all data (with limit if specified)
-      return filterOptions.limit
-        ? allData.slice(0, filterOptions.limit)
-        : allData
+      return filterOptions.limit ? allData.slice(0, filterOptions.limit) : allData
     }
 
     // apply filtering
     const filteredData = allData.filter((row) => {
-      const conditionResults = filterOptions.conditions.map((condition) =>
-        this.evaluateCondition(row, condition)
-      )
+      const conditionResults = filterOptions.conditions.map((condition) => this.evaluateCondition(row, condition))
 
       // combine results based on logic
       if (filterOptions.logic === "OR") {
@@ -320,9 +286,7 @@ export class CsvHandler {
     })
 
     // apply limit if specified
-    return filterOptions.limit
-      ? filteredData.slice(0, filterOptions.limit)
-      : filteredData
+    return filterOptions.limit ? filteredData.slice(0, filterOptions.limit) : filteredData
   }
 
   /**
@@ -347,91 +311,57 @@ export class CsvHandler {
 
       case "equals":
         if (condition.caseSensitive === false) {
-          return (
-            stringValue.toLowerCase() === String(condition.value).toLowerCase()
-          )
+          return stringValue.toLowerCase() === String(condition.value).toLowerCase()
         }
         return stringValue === String(condition.value)
 
       case "notEquals":
         if (condition.caseSensitive === false) {
-          return (
-            stringValue.toLowerCase() !== String(condition.value).toLowerCase()
-          )
+          return stringValue.toLowerCase() !== String(condition.value).toLowerCase()
         }
         return stringValue !== String(condition.value)
 
       case "contains":
         if (condition.caseSensitive === false) {
-          return stringValue
-            .toLowerCase()
-            .includes(String(condition.value).toLowerCase())
+          return stringValue.toLowerCase().includes(String(condition.value).toLowerCase())
         }
         return stringValue.includes(String(condition.value))
 
       case "startsWith":
         if (condition.caseSensitive === false) {
-          return stringValue
-            .toLowerCase()
-            .startsWith(String(condition.value).toLowerCase())
+          return stringValue.toLowerCase().startsWith(String(condition.value).toLowerCase())
         }
         return stringValue.startsWith(String(condition.value))
 
       case "endsWith":
         if (condition.caseSensitive === false) {
-          return stringValue
-            .toLowerCase()
-            .endsWith(String(condition.value).toLowerCase())
+          return stringValue.toLowerCase().endsWith(String(condition.value).toLowerCase())
         }
         return stringValue.endsWith(String(condition.value))
 
       case "greaterThan":
         const numValue1 = parseFloat(stringValue)
         const compareValue1 =
-          typeof condition.value === "number"
-            ? condition.value
-            : parseFloat(String(condition.value))
-        return (
-          !isNaN(numValue1) &&
-          !isNaN(compareValue1) &&
-          numValue1 > compareValue1
-        )
+          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
+        return !isNaN(numValue1) && !isNaN(compareValue1) && numValue1 > compareValue1
 
       case "lessThan":
         const numValue2 = parseFloat(stringValue)
         const compareValue2 =
-          typeof condition.value === "number"
-            ? condition.value
-            : parseFloat(String(condition.value))
-        return (
-          !isNaN(numValue2) &&
-          !isNaN(compareValue2) &&
-          numValue2 < compareValue2
-        )
+          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
+        return !isNaN(numValue2) && !isNaN(compareValue2) && numValue2 < compareValue2
 
       case "greaterThanOrEqual":
         const numValue3 = parseFloat(stringValue)
         const compareValue3 =
-          typeof condition.value === "number"
-            ? condition.value
-            : parseFloat(String(condition.value))
-        return (
-          !isNaN(numValue3) &&
-          !isNaN(compareValue3) &&
-          numValue3 >= compareValue3
-        )
+          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
+        return !isNaN(numValue3) && !isNaN(compareValue3) && numValue3 >= compareValue3
 
       case "lessThanOrEqual":
         const numValue4 = parseFloat(stringValue)
         const compareValue4 =
-          typeof condition.value === "number"
-            ? condition.value
-            : parseFloat(String(condition.value))
-        return (
-          !isNaN(numValue4) &&
-          !isNaN(compareValue4) &&
-          numValue4 <= compareValue4
-        )
+          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
+        return !isNaN(numValue4) && !isNaN(compareValue4) && numValue4 <= compareValue4
 
       default: {
         const _exhaustiveCheck: never = condition.operator

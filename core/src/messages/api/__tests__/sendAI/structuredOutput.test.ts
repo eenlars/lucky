@@ -33,7 +33,7 @@ vi.mock("ai", () => ({
   generateText: vi.fn(),
   tool: vi.fn((config: any) => config),
   genObject: vi.fn(),
-  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  stepCountIs: vi.fn((count: number) => ({ type: "stepCount", count })),
   zodSchema: vi.fn((schema: any) => schema),
   APICallError: class APICallError extends Error {
     constructor(message: string) {
@@ -53,10 +53,7 @@ vi.mock("@core/utils/spending/SpendingTracker", () => ({
       ({
         canMakeRequest: () => true,
         addCost: vi.fn(),
-      }) satisfies Pick<
-        import("@core/utils/spending/SpendingTracker").SpendingTracker,
-        "canMakeRequest" | "addCost"
-      >,
+      }) satisfies Pick<import("@core/utils/spending/SpendingTracker").SpendingTracker, "canMakeRequest" | "addCost">,
   },
 }))
 
@@ -160,9 +157,7 @@ describe("sendAIRequest with structuredOutput", () => {
   })
 
   it("should support enum output via z.enum schema", async () => {
-    vi.mocked(genObject).mockResolvedValueOnce(
-      R.success({ value: "action", summary: "Enum summary" }, 0.01)
-    )
+    vi.mocked(genObject).mockResolvedValueOnce(R.success({ value: "action", summary: "Enum summary" }, 0.01))
 
     const result = await sendAI({
       messages: [

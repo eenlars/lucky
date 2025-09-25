@@ -112,9 +112,7 @@ export async function runWithStallGuard<R>(
     // 2. stall timeout
     return await pTimeout(Promise.race([generation, stallPromise]), {
       milliseconds: overallTimeoutMs,
-      message: new Error(
-        `Overall timeout (${overallTimeoutMs} ms) for ${modelName}`
-      ),
+      message: new Error(`Overall timeout (${overallTimeoutMs} ms) for ${modelName}`),
     })
   } finally {
     if (stallTimer) clearTimeout(stallTimer)

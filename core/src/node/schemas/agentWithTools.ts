@@ -1,11 +1,5 @@
-import {
-  AGENT_KEY_EXPLANATIONS,
-  baseWorkflowNodeConfigShape,
-} from "@core/node/schemas/improvementSchema"
-import {
-  ACTIVE_CODE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES,
-} from "@core/tools/tool.types"
+import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
+import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import { CONFIG } from "@runtime/settings/constants.client"
 import type { z } from "zod"
@@ -32,6 +26,4 @@ export const AgentDescriptionsWithToolsSchema = withDescriptions(
   baseWorkflowNodeConfigShape,
   agentDescriptionsWithTools
 )
-export type AgentDescriptionsWithToolsZod = z.infer<
-  typeof AgentDescriptionsWithToolsSchema
->
+export type AgentDescriptionsWithToolsZod = z.infer<typeof AgentDescriptionsWithToolsSchema>

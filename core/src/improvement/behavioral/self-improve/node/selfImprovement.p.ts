@@ -23,8 +23,7 @@ export const getSelfImprovePrompt = ({
     ${JSON.stringify(_memory)}`
     : ""
 
-  const usesSummaries =
-    transcript.includes("execution") && transcript.includes("summary:")
+  const usesSummaries = transcript.includes("execution") && transcript.includes("summary:")
 
   const prompt = llmify(`
   <role>

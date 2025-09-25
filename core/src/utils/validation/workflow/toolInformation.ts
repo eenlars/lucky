@@ -1,16 +1,11 @@
 // verify the toolsInformation is valid
 
-import {
-  ACTIVE_CODE_TOOL_NAMES,
-  type CodeToolName,
-} from "@core/tools/tool.types"
+import { ACTIVE_CODE_TOOL_NAMES, type CodeToolName } from "@core/tools/tool.types"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 
 export type ToolsInformation = Record<CodeToolName, any>
 
-export const verifyToolsInformation = (
-  toolsInformation: ToolsInformation | undefined
-): VerificationErrors => {
+export const verifyToolsInformation = (toolsInformation: ToolsInformation | undefined): VerificationErrors => {
   if (typeof toolsInformation !== "object" || toolsInformation === null) {
     return ["toolsInformation is not an object or null"]
   }
@@ -23,8 +18,6 @@ export const verifyToolsInformation = (
   return []
 }
 
-export const isValidToolInformation = (
-  data: unknown
-): data is Record<CodeToolName, any> => {
+export const isValidToolInformation = (data: unknown): data is Record<CodeToolName, any> => {
   return verifyToolsInformation(data as Record<CodeToolName, any>).length === 0
 }

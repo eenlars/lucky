@@ -3,11 +3,7 @@ import { defineTool } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { z } from "zod"
-import {
-  appendToCsv,
-  createCsvFile,
-  createCsvFromColumns,
-} from "./main/function"
+import { appendToCsv, createCsvFile, createCsvFromColumns } from "./main/function"
 import type { CsvCreationOptions } from "./main/types"
 
 // Helper function to clean options by removing null values
@@ -32,33 +28,19 @@ const csvWriterParams = z.object({
   action: z
     .enum(["createFromRows", "createFromColumns", "appendToFile"])
     .describe("action to perform for csv creation"),
-  key: z
-    .string()
-    .nullish()
-    .describe("key name for storing the csv data in context store"),
+  key: z.string().nullish().describe("key name for storing the csv data in context store"),
   data: z
     .union([
       z.array(z.record(z.string(), z.string())), // for rows
       z.record(z.string(), z.array(z.string())), // for columns
     ])
     .nullish()
-    .describe(
-      "data to write - array of objects for rows, or object with column arrays"
-    ),
+    .describe("data to write - array of objects for rows, or object with column arrays"),
   options: z
     .object({
-      delimiter: z
-        .string()
-        .nullish()
-        .describe("csv delimiter (default: comma)"),
-      includeHeaders: z
-        .boolean()
-        .nullish()
-        .describe("include headers in csv file (default: true)"),
-      overwrite: z
-        .boolean()
-        .nullish()
-        .describe("overwrite existing file (default: false)"),
+      delimiter: z.string().nullish().describe("csv delimiter (default: comma)"),
+      includeHeaders: z.boolean().nullish().describe("include headers in csv file (default: true)"),
+      overwrite: z.boolean().nullish().describe("overwrite existing file (default: false)"),
     })
     .nullish()
     .describe("options for csv creation"),
@@ -86,10 +68,7 @@ const csvWriterTool = defineTool({
       })
     }
 
-    const contextStore = createContextStore(
-      "supabase",
-      context.workflowInvocationId
-    )
+    const contextStore = createContextStore("supabase", context.workflowInvocationId)
 
     switch (action) {
       case "createFromRows": {
@@ -100,12 +79,7 @@ const csvWriterTool = defineTool({
           })
         }
 
-        const result = await createCsvFile(
-          key!,
-          data,
-          contextStore,
-          cleanOptions(options)
-        )
+        const result = await createCsvFile(key!, data, contextStore, cleanOptions(options))
 
         if (!result.success) {
           return Tools.createFailure("csvWriter", {
@@ -121,17 +95,11 @@ const csvWriterTool = defineTool({
         if (Array.isArray(data)) {
           return Tools.createFailure("csvWriter", {
             location: "csvWriter:createFromColumns:noData",
-            error:
-              "data must be an object with column arrays for createFromColumns action",
+            error: "data must be an object with column arrays for createFromColumns action",
           })
         }
 
-        const result = await createCsvFromColumns(
-          key!,
-          data,
-          contextStore,
-          cleanOptions(options)
-        )
+        const result = await createCsvFromColumns(key!, data, contextStore, cleanOptions(options))
 
         if (!result.success) {
           return Tools.createFailure("csvWriter", {
@@ -151,12 +119,7 @@ const csvWriterTool = defineTool({
           })
         }
 
-        const result = await appendToCsv(
-          key!,
-          data,
-          contextStore,
-          cleanOptions(options)
-        )
+        const result = await appendToCsv(key!, data, contextStore, cleanOptions(options))
 
         if (!result.success) {
           return Tools.createFailure("csvWriter", {

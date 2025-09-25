@@ -40,10 +40,7 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error("Error fetching evolution runs:", error)
-      return NextResponse.json(
-        { error: "Failed to fetch evolution runs" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "Failed to fetch evolution runs" }, { status: 500 })
     }
 
     if (!evolutionRuns || evolutionRuns.length === 0) {
@@ -113,10 +110,7 @@ export async function GET(request: Request) {
           maxGenByRun.set(gen.run_id, gen.number)
         }
         // track unique generation numbers per run to compute count accurately
-        genCountsByRun.set(
-          gen.run_id,
-          (genCountsByRun.get(gen.run_id) || 0) + 1
-        )
+        genCountsByRun.set(gen.run_id, (genCountsByRun.get(gen.run_id) || 0) + 1)
       })
 
       // Ensure we represent generation_count as a count, not the max index
@@ -124,8 +118,7 @@ export async function GET(request: Request) {
         if (runCounts.has(runId)) {
           // Prefer explicit counts if available; otherwise fallback to maxGen + 1
           const explicitCount = genCountsByRun.get(runId)
-          runCounts.get(runId).generations =
-            explicitCount != null ? explicitCount : maxGen + 1
+          runCounts.get(runId).generations = explicitCount != null ? explicitCount : maxGen + 1
         }
       })
     }
@@ -177,14 +170,8 @@ export async function GET(request: Request) {
 
         return {
           ...run,
-          config:
-            typeof run.config === "string"
-              ? JSON.parse(run.config)
-              : run.config,
-          duration: run.end_time
-            ? new Date(run.end_time).getTime() -
-              new Date(run.start_time).getTime()
-            : null,
+          config: typeof run.config === "string" ? JSON.parse(run.config) : run.config,
+          duration: run.end_time ? new Date(run.end_time).getTime() - new Date(run.start_time).getTime() : null,
           total_invocations: total,
           successful_invocations: successful,
           generation_count: generations,
@@ -196,8 +183,7 @@ export async function GET(request: Request) {
 
         // hide empty runs filter
         if (hideEmpty) {
-          const hasInvocations =
-            !!run.total_invocations && run.total_invocations > 0
+          const hasInvocations = !!run.total_invocations && run.total_invocations > 0
           const hasGenerations = (run.generation_count ?? 0) > 0
           if (!hasInvocations && !hasGenerations) return false
         }
@@ -205,10 +191,7 @@ export async function GET(request: Request) {
         // search filter
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase()
-          if (
-            !run.goal_text.toLowerCase().includes(searchLower) &&
-            !run.run_id.toLowerCase().includes(searchLower)
-          ) {
+          if (!run.goal_text.toLowerCase().includes(searchLower) && !run.run_id.toLowerCase().includes(searchLower)) {
             return false
           }
         }
@@ -228,8 +211,7 @@ export async function GET(request: Request) {
         if (dateFilter !== "all") {
           const runDate = new Date(run.start_time)
           const now = new Date()
-          const daysDiff =
-            (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
+          const daysDiff = (now.getTime() - runDate.getTime()) / (1000 * 60 * 60 * 24)
 
           switch (dateFilter) {
             case "today":
@@ -246,10 +228,7 @@ export async function GET(request: Request) {
 
         return true
       })
-      .sort(
-        (a, b) =>
-          new Date(b.start_time).getTime() - new Date(a.start_time).getTime()
-      )
+      .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime())
 
     // Apply pagination
     const paginatedRuns = processedRuns.slice(offset, offset + limit)
@@ -261,9 +240,6 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error("Error in evolution-runs API:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

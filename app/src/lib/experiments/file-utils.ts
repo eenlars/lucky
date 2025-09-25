@@ -4,16 +4,11 @@ import path from "path"
 export const ADAPTIVE_RESULTS_URL =
   "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/experiments/adaptive-results.json"
 
-export async function getLatestFileByPrefix(
-  baseDirAbsolutePath: string,
-  prefix: string
-): Promise<string | null> {
+export async function getLatestFileByPrefix(baseDirAbsolutePath: string, prefix: string): Promise<string | null> {
   try {
     const entries = await fs.readdir(baseDirAbsolutePath)
     const candidates = entries
-      .filter(
-        (fileName) => fileName.startsWith(prefix) && fileName.endsWith(".json")
-      )
+      .filter((fileName) => fileName.startsWith(prefix) && fileName.endsWith(".json"))
       .map((fileName) => path.join(baseDirAbsolutePath, fileName))
 
     if (candidates.length === 0) return null
@@ -35,10 +30,7 @@ export async function getLatestFileByPrefix(
   }
 }
 
-export async function getLatestFileByPrefixes(
-  baseDirAbsolutePath: string,
-  prefixes: string[]
-): Promise<string | null> {
+export async function getLatestFileByPrefixes(baseDirAbsolutePath: string, prefixes: string[]): Promise<string | null> {
   try {
     const entries = await fs.readdir(baseDirAbsolutePath)
     const candidates = entries
@@ -121,8 +113,5 @@ export async function loadJsonProdOrLocal<T>(
 }
 
 export function publicExperimentDir(...segments: string[]): string {
-  return path.resolve(
-    process.cwd(),
-    path.join("public/research-experiments/tool-real/experiments", ...segments)
-  )
+  return path.resolve(process.cwd(), path.join("public/research-experiments/tool-real/experiments", ...segments))
 }

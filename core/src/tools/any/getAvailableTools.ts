@@ -66,49 +66,35 @@ export function getAvailableMCPTools(workflow: Workflow): MCPToolName[] {
 /**
  * Check if a specific code tool is currently used in the workflow
  */
-export function isCodeToolInUse(
-  workflow: Workflow,
-  toolName: CodeToolName
-): boolean {
+export function isCodeToolInUse(workflow: Workflow, toolName: CodeToolName): boolean {
   return getUsedCodeTools(workflow).includes(toolName)
 }
 
 /**
  * Check if a specific MCP tool is currently used in the workflow
  */
-export function isMCPToolInUse(
-  workflow: Workflow,
-  toolName: MCPToolName
-): boolean {
+export function isMCPToolInUse(workflow: Workflow, toolName: MCPToolName): boolean {
   return getUsedMCPTools(workflow).includes(toolName)
 }
 
 /**
  * Check if a specific code tool is available (not currently used) in the workflow
  */
-export function isCodeToolAvailable(
-  workflow: Workflow,
-  toolName: CodeToolName
-): boolean {
+export function isCodeToolAvailable(workflow: Workflow, toolName: CodeToolName): boolean {
   return !isCodeToolInUse(workflow, toolName)
 }
 
 /**
  * Check if a specific MCP tool is available (not currently used) in the workflow
  */
-export function isMCPToolAvailable(
-  workflow: Workflow,
-  toolName: MCPToolName
-): boolean {
+export function isMCPToolAvailable(workflow: Workflow, toolName: MCPToolName): boolean {
   return !isMCPToolInUse(workflow, toolName)
 }
 
 /**
  * Helper to build tool description records
  */
-function buildCodeToolDescriptions(
-  tools: CodeToolName[]
-): Record<CodeToolName, string> {
+function buildCodeToolDescriptions(tools: CodeToolName[]): Record<CodeToolName, string> {
   const result: Record<string, string> = {}
   for (const tool of tools) {
     result[tool] = ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool]
@@ -119,9 +105,7 @@ function buildCodeToolDescriptions(
 /**
  * Helper to build MCP tool description records
  */
-function buildMCPToolDescriptions(
-  tools: MCPToolName[]
-): Record<MCPToolName, string> {
+function buildMCPToolDescriptions(tools: MCPToolName[]): Record<MCPToolName, string> {
   const result: Record<string, string> = {}
   for (const tool of tools) {
     result[tool] = ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool]
@@ -132,35 +116,27 @@ function buildMCPToolDescriptions(
 /**
  * Get a summary of used code tools with their descriptions
  */
-export function getUsedCodeToolsWithDescriptions(
-  workflow: Workflow
-): Record<CodeToolName, string> {
+export function getUsedCodeToolsWithDescriptions(workflow: Workflow): Record<CodeToolName, string> {
   return buildCodeToolDescriptions(getUsedCodeTools(workflow))
 }
 
 /**
  * Get a summary of used MCP tools with their descriptions
  */
-export function getUsedMCPToolsWithDescriptions(
-  workflow: Workflow
-): Record<MCPToolName, string> {
+export function getUsedMCPToolsWithDescriptions(workflow: Workflow): Record<MCPToolName, string> {
   return buildMCPToolDescriptions(getUsedMCPTools(workflow))
 }
 
 /**
  * Get a summary of available code tools with their descriptions
  */
-export function getAvailableCodeToolsWithDescriptions(
-  workflow: Workflow
-): Record<CodeToolName, string> {
+export function getAvailableCodeToolsWithDescriptions(workflow: Workflow): Record<CodeToolName, string> {
   return buildCodeToolDescriptions(getAvailableCodeTools(workflow))
 }
 
 /**
  * Get a summary of available MCP tools with their descriptions
  */
-export function getAvailableMCPToolsWithDescriptions(
-  workflow: Workflow
-): Record<MCPToolName, string> {
+export function getAvailableMCPToolsWithDescriptions(workflow: Workflow): Record<MCPToolName, string> {
   return buildMCPToolDescriptions(getAvailableMCPTools(workflow))
 }

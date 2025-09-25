@@ -59,13 +59,10 @@ function runDepcheck(dir: string): DepcheckResult {
       "dotenv",
     ].join(",")
 
-    const result = execSync(
-      `bunx depcheck "${dir}" --json --ignore-patterns="${ignorePatterns}"`,
-      {
-        encoding: "utf-8",
-        stdio: ["pipe", "pipe", "pipe"],
-      }
-    )
+    const result = execSync(`bunx depcheck "${dir}" --json --ignore-patterns="${ignorePatterns}"`, {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    })
     return JSON.parse(result)
   } catch (error: any) {
     // depcheck exits with non-zero when issues found, but still outputs JSON
@@ -195,9 +192,7 @@ async function main() {
         coreDepcheck.devDependencies.length +
         appDepcheck.dependencies.length +
         appDepcheck.devDependencies.length,
-      totalMissingDeps:
-        Object.keys(coreDepcheck.missing).length +
-        Object.keys(appDepcheck.missing).length,
+      totalMissingDeps: Object.keys(coreDepcheck.missing).length + Object.keys(appDepcheck.missing).length,
       totalDeadExports: coreTsPrune.length + appTsPrune.length,
     },
   }
@@ -235,25 +230,15 @@ async function main() {
 
   if (unusedDepsCount > 0) {
     console.log(`\n⚠️  Unused dependencies: ${unusedDepsCount}`)
-    if (
-      coreDepcheck.dependencies.length > 0 ||
-      coreDepcheck.devDependencies.length > 0
-    ) {
+    if (coreDepcheck.dependencies.length > 0 || coreDepcheck.devDependencies.length > 0) {
       console.log("  Core:")
       coreDepcheck.dependencies.forEach((dep) => console.log(`    - ${dep}`))
-      coreDepcheck.devDependencies.forEach((dep) =>
-        console.log(`    - ${dep} (dev)`)
-      )
+      coreDepcheck.devDependencies.forEach((dep) => console.log(`    - ${dep} (dev)`))
     }
-    if (
-      appDepcheck.dependencies.length > 0 ||
-      appDepcheck.devDependencies.length > 0
-    ) {
+    if (appDepcheck.dependencies.length > 0 || appDepcheck.devDependencies.length > 0) {
       console.log("  App:")
       appDepcheck.dependencies.forEach((dep) => console.log(`    - ${dep}`))
-      appDepcheck.devDependencies.forEach((dep) =>
-        console.log(`    - ${dep} (dev)`)
-      )
+      appDepcheck.devDependencies.forEach((dep) => console.log(`    - ${dep} (dev)`))
     }
   } else {
     console.log("✅ No unused dependencies")
@@ -275,27 +260,19 @@ async function main() {
 
   // Exit with error if there are critical issues
   const criticalErrors = missingDepsCount > THRESHOLDS.missingDeps
-  const warningLevel =
-    unusedDepsCount > THRESHOLDS.unusedDeps ||
-    deadExportsCount > THRESHOLDS.deadExports
+  const warningLevel = unusedDepsCount > THRESHOLDS.unusedDeps || deadExportsCount > THRESHOLDS.deadExports
 
   if (criticalErrors) {
     console.log("\n❌ Dependency check failed! Critical errors found.")
-    console.log(
-      `Missing dependencies exceed threshold (${THRESHOLDS.missingDeps})`
-    )
+    console.log(`Missing dependencies exceed threshold (${THRESHOLDS.missingDeps})`)
     process.exit(1)
   } else if (warningLevel) {
     console.log("\n⚠️  Dependency check passed with warnings.")
     if (unusedDepsCount > THRESHOLDS.unusedDeps) {
-      console.log(
-        `Unused dependencies (${unusedDepsCount}) exceed threshold (${THRESHOLDS.unusedDeps})`
-      )
+      console.log(`Unused dependencies (${unusedDepsCount}) exceed threshold (${THRESHOLDS.unusedDeps})`)
     }
     if (deadExportsCount > THRESHOLDS.deadExports) {
-      console.log(
-        `Dead exports (${deadExportsCount}) exceed threshold (${THRESHOLDS.deadExports})`
-      )
+      console.log(`Dead exports (${deadExportsCount}) exceed threshold (${THRESHOLDS.deadExports})`)
     }
     // Exit 0 for warnings in local dev, but could be changed for CI
     process.exit(0)

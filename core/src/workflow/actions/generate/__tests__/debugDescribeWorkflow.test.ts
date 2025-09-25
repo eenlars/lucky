@@ -5,16 +5,10 @@ import { workflowToString } from "../workflowToString"
 
 // Mock the tool types to include the test tools
 vi.mock("@core/tools/tool.types", () => ({
-  ALL_ACTIVE_TOOL_NAMES: [
-    "browserUse",
-    "csvInfo",
-    "searchGoogleMaps",
-    "verifyLocation",
-  ],
+  ALL_ACTIVE_TOOL_NAMES: ["browserUse", "csvInfo", "searchGoogleMaps", "verifyLocation"],
   ACTIVE_TOOLS_WITH_DESCRIPTION: {
     browserUse: "Use a browser to navigate to a URL and return the HTML",
-    csvInfo:
-      "Get CSV file metadata: headers, column count, row count, data types, sample values",
+    csvInfo: "Get CSV file metadata: headers, column count, row count, data types, sample values",
     searchGoogleMaps: "Search Google Maps for business information",
     verifyLocation: "Geocode a list of addresses to get coordinates",
   },
@@ -51,10 +45,7 @@ describe("Debug describeWorkflow", () => {
 
     // Test extracting tools from workflow
     const config = mockWorkflow.getConfig()
-    const allTools = config.nodes.flatMap((node) => [
-      ...node.mcpTools,
-      ...node.codeTools,
-    ])
+    const allTools = config.nodes.flatMap((node) => [...node.mcpTools, ...node.codeTools])
     console.log("All tools from workflow:", allTools)
 
     // Test with only tool explanations

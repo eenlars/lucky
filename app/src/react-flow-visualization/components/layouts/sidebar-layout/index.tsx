@@ -6,11 +6,7 @@ import {
   BreadcrumbPage,
 } from "@/react-flow-visualization/components/ui/breadcrumb"
 import { Separator } from "@/react-flow-visualization/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/react-flow-visualization/components/ui/sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/react-flow-visualization/components/ui/sidebar"
 
 export default function SidebarLayout({
   children,
@@ -30,16 +26,12 @@ export default function SidebarLayout({
         <header className="flex h-14 shrink-0 items-center gap-2 justify-between">
           <div className="flex flex-1 items-center gap-2 px-3">
             {showToggle ? <SidebarTrigger /> : null}
-            {showToggle ? (
-              <Separator orientation="vertical" className="mr-2 h-4" />
-            ) : null}
+            {showToggle ? <Separator orientation="vertical" className="mr-2 h-4" /> : null}
             {title && (
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="line-clamp-1">
-                      {title}
-                    </BreadcrumbPage>
+                    <BreadcrumbPage className="line-clamp-1">{title}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>

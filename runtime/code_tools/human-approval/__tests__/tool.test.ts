@@ -76,10 +76,7 @@ describe("humanApproval tool", () => {
     expect(approvalFiles.length).toBe(1)
 
     // read the approval request
-    const requestData = await fs.readFile(
-      path.join(APPROVAL_STORAGE_PATH, approvalFiles[0]),
-      "utf-8"
-    )
+    const requestData = await fs.readFile(path.join(APPROVAL_STORAGE_PATH, approvalFiles[0]), "utf-8")
     const request = JSON.parse(requestData)
 
     expect(request.workflowInvocationId).toBe("test-workflow-123")

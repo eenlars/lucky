@@ -37,10 +37,7 @@ export function save<T = any>(filename: string, data: T): void {
   fs.mkdirSync(dir, { recursive: true })
 
   const fullPath = path.join(dir, filename)
-  const toWrite =
-    Buffer.isBuffer(data) || typeof data === "string"
-      ? data
-      : JSON.stringify(data, null, 2)
+  const toWrite = Buffer.isBuffer(data) || typeof data === "string" ? data : JSON.stringify(data, null, 2)
 
   fs.writeFileSync(fullPath, toWrite)
 }
@@ -54,9 +51,7 @@ export function save<T = any>(filename: string, data: T): void {
  */
 export function saveInLoc<T = any>(filePath: string, data: T): void {
   // 1) Resolve against your project root (where you ran `node …`)
-  const fullPath = path.isAbsolute(filePath)
-    ? filePath
-    : path.resolve(process.cwd(), filePath.replace(/^[/\\]+/, ""))
+  const fullPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath.replace(/^[/\\]+/, ""))
 
   // 2) Make any missing directories
   fs.mkdirSync(path.dirname(fullPath), { recursive: true })
@@ -107,11 +102,7 @@ export async function saveFileInLoc(
   }
 }
 
-export async function saveInLogging(
-  data: any,
-  filename?: string,
-  fileExtension?: string
-): Promise<string> {
+export async function saveInLogging(data: any, filename?: string, fileExtension?: string): Promise<string> {
   if (!filename) {
     filename = nanoid()
   } else {

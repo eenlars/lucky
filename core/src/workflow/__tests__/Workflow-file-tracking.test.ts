@@ -1,7 +1,4 @@
-import {
-  createMockEvaluationInput,
-  createMockWorkflow,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockEvaluationInput, createMockWorkflow } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"

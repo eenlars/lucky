@@ -7,10 +7,7 @@ import type { Json, TablesInsert, TablesUpdate } from "@lucky/shared"
 /**
  * Auxiliary function to ensure the main workflow exists in the database
  */
-export const ensureWorkflowExists = async (
-  description: string,
-  workflowId: string
-): Promise<void> => {
+export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
   const workflowInsertable: TablesInsert<"Workflow"> = {
     wf_id: workflowId,
     description,
@@ -59,11 +56,9 @@ export const createWorkflowVersion = async ({
     parent2_id: parent2Id || null,
   }
 
-  const { error } = await supabase
-    .from("WorkflowVersion")
-    .upsert(workflowVersionInsertable, {
-      onConflict: "wf_version_id",
-    })
+  const { error } = await supabase.from("WorkflowVersion").upsert(workflowVersionInsertable, {
+    onConflict: "wf_version_id",
+  })
 
   if (error) {
     throw new Error(`Failed to upsert workflow version: ${error.message}`)
@@ -120,15 +115,10 @@ export const createWorkflowInvocation = async ({
     evaluation_inputs: null,
     expected_output_type: expectedOutputType || null,
     workflow_input: workflowInput || null,
-    expected_output:
-      typeof workflowOutput === "string"
-        ? workflowOutput
-        : JSON.stringify(workflowOutput) || null,
+    expected_output: typeof workflowOutput === "string" ? workflowOutput : JSON.stringify(workflowOutput) || null,
   }
 
-  const { error } = await supabase
-    .from("WorkflowInvocation")
-    .insert(workflowInvocationInsertable)
+  const { error } = await supabase.from("WorkflowInvocation").insert(workflowInvocationInsertable)
 
   if (error) {
     throw new Error(`Failed to insert workflow invocation: ${error.message}`)
@@ -140,12 +130,7 @@ export const createWorkflowInvocation = async ({
 }
 
 interface UpdateWorkflowInvocationParams
-  extends Partial<
-    Omit<
-      TablesUpdate<"WorkflowInvocation">,
-      "wf_invocation_id" | "wf_version_id"
-    >
-  > {
+  extends Partial<Omit<TablesUpdate<"WorkflowInvocation">, "wf_invocation_id" | "wf_version_id">> {
   /** the PK of the row we're updating */
   workflowInvocationId: string
 }
@@ -226,14 +211,9 @@ export const updateWorkflowVersionWithIO = async ({
     updated_at: new Date().toISOString(),
   }
 
-  const { error } = await supabase
-    .from("WorkflowVersion")
-    .update(insertable)
-    .eq("wf_version_id", workflowVersionId)
+  const { error } = await supabase.from("WorkflowVersion").update(insertable).eq("wf_version_id", workflowVersionId)
 
   if (error) {
-    throw new Error(
-      `Failed to update workflow version with IO: ${error.message}`
-    )
+    throw new Error(`Failed to update workflow version with IO: ${error.message}`)
   }
 }

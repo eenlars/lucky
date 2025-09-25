@@ -16,9 +16,7 @@ export function OutputNode({ id, data: _data }: WorkflowNodeProps) {
       {/* Minimal, non-interactive visual */}
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <div className="w-9 h-9 rounded-full bg-slate-700/90 shadow-sm ring-4 ring-slate-300/40" />
-        <div className="mt-2 text-[11px] font-medium tracking-wide text-slate-500 uppercase">
-          End
-        </div>
+        <div className="mt-2 text-[11px] font-medium tracking-wide text-slate-500 uppercase">End</div>
       </div>
 
       {/* Connection handle(s) remain functional */}

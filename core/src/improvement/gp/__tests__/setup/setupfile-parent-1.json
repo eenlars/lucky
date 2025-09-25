@@ -45,11 +45,7 @@
       "description": "Verifies and formats location data",
       "modelName": "openai/gpt-4.1-mini",
       "mcpTools": [],
-      "codeTools": [
-        "verifyLocation",
-        "locationDataInfo",
-        "locationDataManager"
-      ],
+      "codeTools": ["verifyLocation", "locationDataInfo", "locationDataManager"],
       "systemPrompt": "Process the location data:\n1. Retrieve current data using locationDataInfo\n2. Verify coordinates for each location using verifyLocation\n3. Clean up any incomplete or duplicate entries\n4. Update the data using locationDataManager\n\nEnsure all addresses are complete and properly formatted.",
       "handOffs": ["orchestrator"],
       "memory": {}

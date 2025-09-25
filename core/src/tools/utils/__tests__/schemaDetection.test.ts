@@ -126,11 +126,7 @@ describe("Schema Detection", () => {
       // Simulate the tool parameter processing flow
       const toolParameters = z.object({
         query: z.string().describe("Search query"),
-        maxResultCount: z
-          .number()
-          .max(20)
-          .default(10)
-          .describe("Number of results"),
+        maxResultCount: z.number().max(20).default(10).describe("Number of results"),
       })
 
       // This simulates what happens in selectToolStrategy

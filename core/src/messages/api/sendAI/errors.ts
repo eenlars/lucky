@@ -27,27 +27,15 @@ export function normalizeError(error: unknown): NormalizedError {
 
   if (isAPICallErrorLike(error)) {
     const rec = error as Record<string, unknown>
-    const name =
-      typeof rec["name"] === "string" ? (rec["name"] as string) : undefined
-    const messageIn =
-      typeof rec["message"] === "string"
-        ? (rec["message"] as string)
-        : undefined
-    const statusCode =
-      typeof rec["statusCode"] === "number"
-        ? (rec["statusCode"] as number)
-        : undefined
-    const responseBody =
-      typeof rec["responseBody"] === "string"
-        ? (rec["responseBody"] as string)
-        : undefined
+    const name = typeof rec["name"] === "string" ? (rec["name"] as string) : undefined
+    const messageIn = typeof rec["message"] === "string" ? (rec["message"] as string) : undefined
+    const statusCode = typeof rec["statusCode"] === "number" ? (rec["statusCode"] as number) : undefined
+    const responseBody = typeof rec["responseBody"] === "string" ? (rec["responseBody"] as string) : undefined
     const responseHeaders =
-      typeof rec["responseHeaders"] === "object" &&
-      rec["responseHeaders"] !== null
+      typeof rec["responseHeaders"] === "object" && rec["responseHeaders"] !== null
         ? (rec["responseHeaders"] as Record<string, string>)
         : undefined
-    const url =
-      typeof rec["url"] === "string" ? (rec["url"] as string) : undefined
+    const url = typeof rec["url"] === "string" ? (rec["url"] as string) : undefined
 
     const body = typeof responseBody === "string" ? responseBody : ""
     const isEmptyBody200 = statusCode === 200 && body.length === 0
@@ -82,11 +70,7 @@ export function normalizeError(error: unknown): NormalizedError {
         if (host.includes("openrouter.ai")) provider = "OpenRouter"
         else if (host.includes("api.openai.com")) provider = "OpenAI"
         else if (host.includes("api.groq.com")) provider = "Groq"
-        else if (
-          host.includes("googleapis.com") ||
-          host.includes("generativelanguage")
-        )
-          provider = "Google"
+        else if (host.includes("googleapis.com") || host.includes("generativelanguage")) provider = "Google"
         else if (host.includes("anthropic.com")) provider = "Anthropic"
       }
     } catch {}
@@ -141,10 +125,7 @@ export function normalizeError(error: unknown): NormalizedError {
   }
 
   // Other AI SDK errors (e.g., AI_JSONParseError, AI_TypeValidationError, ...)
-  if (
-    typeof (error as any)?.name === "string" &&
-    (error as any).name.startsWith("AI_")
-  ) {
+  if (typeof (error as any)?.name === "string" && (error as any).name.startsWith("AI_")) {
     const e = error as any
     return {
       message: e.message || e.name || "AI SDK error",

@@ -24,11 +24,8 @@ export class EvolutionUtils {
     }
 
     const fitnesses = genomes.map((g) => g.getFitnessScore())
-    const avgFitness =
-      fitnesses.reduce((sum, f) => sum + f, 0) / fitnesses.length
-    const variance =
-      fitnesses.reduce((sum, f) => sum + Math.pow(f - avgFitness, 2), 0) /
-      fitnesses.length
+    const avgFitness = fitnesses.reduce((sum, f) => sum + f, 0) / fitnesses.length
+    const variance = fitnesses.reduce((sum, f) => sum + Math.pow(f - avgFitness, 2), 0) / fitnesses.length
     const stdDev = Math.sqrt(variance)
     const bestFitness = Math.max(...fitnesses)
     const worstFitness = Math.min(...fitnesses)
@@ -46,22 +43,12 @@ export class EvolutionUtils {
   /**
    * Find genomes similar to target based on structural fingerprint distance
    */
-  static findSimilarGenomes(
-    population: Genome[],
-    target: Genome,
-    threshold: number = 0.1
-  ): Genome[] {
-    const targetFingerprint =
-      EvolutionUtils.structuralFingerprintFromRaw(target)
+  static findSimilarGenomes(population: Genome[], target: Genome, threshold: number = 0.1): Genome[] {
+    const targetFingerprint = EvolutionUtils.structuralFingerprintFromRaw(target)
     return population.filter((genome) => {
-      if (genome.getWorkflowVersionId() === target.getWorkflowVersionId())
-        return false
-      const genomeFingerprint =
-        EvolutionUtils.structuralFingerprintFromRaw(genome)
-      const distance = EvolutionUtils.fingerprintDistance(
-        targetFingerprint,
-        genomeFingerprint
-      )
+      if (genome.getWorkflowVersionId() === target.getWorkflowVersionId()) return false
+      const genomeFingerprint = EvolutionUtils.structuralFingerprintFromRaw(genome)
+      const distance = EvolutionUtils.fingerprintDistance(targetFingerprint, genomeFingerprint)
       return distance <= threshold
     })
   }

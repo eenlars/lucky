@@ -6,10 +6,7 @@ import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
 import { getActiveModelNames } from "@core/utils/spending/functions"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { NodeMutationOperator } from "./mutation.types"
 
 export class ModelMutation implements NodeMutationOperator {
@@ -19,10 +16,7 @@ export class ModelMutation implements NodeMutationOperator {
     try {
       const node = this.randomNonFrozenNode(workflow)
       if (!node) {
-        lgg.warn(
-          "Model mutation skipped - no valid nodes found",
-          JSON.stringify(workflow)
-        )
+        lgg.warn("Model mutation skipped - no valid nodes found", JSON.stringify(workflow))
         return
       }
 
@@ -37,29 +31,21 @@ export class ModelMutation implements NodeMutationOperator {
       }
 
       // simple random model selection
-      node.modelName = modelsNotInPool[
-        Math.floor(Math.random() * modelsNotInPool.length)
-      ] as AllowedModelName
+      node.modelName = modelsNotInPool[Math.floor(Math.random() * modelsNotInPool.length)] as AllowedModelName
     } catch (error) {
       lgg.error("Model mutation failed:", error)
       failureTracker.trackMutationFailure()
     }
   }
 
-  private randomNonFrozenNode(
-    workflow: WorkflowConfig
-  ): WorkflowNodeConfig | null {
-    const nonFrozenNodes = workflow.nodes.filter(
-      (node: WorkflowNodeConfig) => node.nodeId !== workflow.entryNodeId
-    )
+  private randomNonFrozenNode(workflow: WorkflowConfig): WorkflowNodeConfig | null {
+    const nonFrozenNodes = workflow.nodes.filter((node: WorkflowNodeConfig) => node.nodeId !== workflow.entryNodeId)
 
     // If no non-entry nodes exist, allow mutation of entry node (for single-node workflows)
     if (nonFrozenNodes.length === 0 && workflow.nodes.length === 1) {
       return workflow.nodes[0]
     }
 
-    return nonFrozenNodes.length > 0
-      ? nonFrozenNodes[Math.floor(Math.random() * nonFrozenNodes.length)]
-      : null
+    return nonFrozenNodes.length > 0 ? nonFrozenNodes[Math.floor(Math.random() * nonFrozenNodes.length)] : null
   }
 }

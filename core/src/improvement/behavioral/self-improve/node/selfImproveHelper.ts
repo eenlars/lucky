@@ -5,10 +5,7 @@ import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedA
 import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { saveInLoc } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
 
@@ -35,10 +32,7 @@ export async function selfImproveHelper({
 
   if (CONFIG.improvement.flags.useSummariesForImprovement) {
     try {
-      const summaries = await retrieveNodeInvocationSummaries(
-        workflowInvocationId,
-        n.nodeId
-      )
+      const summaries = await retrieveNodeInvocationSummaries(workflowInvocationId, n.nodeId)
 
       if (summaries.length > 0) {
         // format summaries for the prompt
@@ -49,13 +43,9 @@ export async function selfImproveHelper({
           })
           .join("\n\n")
 
-        lgg.log(
-          `using ${summaries.length} summaries for node ${n.nodeId} improvement`
-        )
+        lgg.log(`using ${summaries.length} summaries for node ${n.nodeId} improvement`)
       } else {
-        lgg.warn(
-          `no summaries found for node ${n.nodeId}, falling back to runtime store`
-        )
+        lgg.warn(`no summaries found for node ${n.nodeId}, falling back to runtime store`)
         executionData = "no execution data"
       }
     } catch (error) {
@@ -87,9 +77,7 @@ export async function selfImproveHelper({
   if (!success) {
     lgg.error("🔴 error improving workflow node", n.nodeId, error)
     if (error.includes("invalid_type")) {
-      lgg.error(
-        "🔴 Memory format error: Received array instead of object. Check AI response format."
-      )
+      lgg.error("🔴 Memory format error: Received array instead of object. Check AI response format.")
     }
     throw new Error(error)
   }
@@ -98,19 +86,13 @@ export async function selfImproveHelper({
 
   // sanity‐check memory shape
   if (updated_node_config.memory && Array.isArray(updated_node_config.memory)) {
-    lgg.error(
-      "🔴 Memory validation error: Memory is an array but should be an object"
-    )
+    lgg.error("🔴 Memory validation error: Memory is an array but should be an object")
     updated_node_config.memory = {}
   }
 
   saveInLoc(
     `${PATHS.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
-    JSON.stringify(
-      { updated_node_config, learn_points, improve_points, usdCost },
-      null,
-      2
-    )
+    JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2)
   )
 
   // update the node config

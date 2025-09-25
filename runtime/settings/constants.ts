@@ -9,11 +9,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 
 // Import client-safe constants
-import {
-  CONFIG as CLIENT_CONFIG,
-  MODELS,
-  getDefaultModels,
-} from "./constants.client"
+import { CONFIG as CLIENT_CONFIG, MODELS, getDefaultModels } from "./constants.client"
 
 // Re-export MODELS for server usage
 export { MODELS, getDefaultModels }
@@ -52,13 +48,7 @@ export const CONFIG = {
     ...CLIENT_CONFIG.evolution,
     GP: {
       ...CLIENT_CONFIG.evolution.GP,
-      initialPopulationFile: path.join(
-        ROOT,
-        "src",
-        "runtime",
-        "setup",
-        "setupfile.json"
-      ),
+      initialPopulationFile: path.join(ROOT, "src", "runtime", "setup", "setupfile.json"),
     },
   },
 } as const satisfies FlowRuntimeConfig

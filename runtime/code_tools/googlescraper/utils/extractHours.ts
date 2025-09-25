@@ -116,9 +116,7 @@ export function parseHours(hoursTableHtml: string | null) {
       const hoursCell = $(row).find("td").eq(1)
 
       const dayText = dayCell.find("div").first().text().toLowerCase().trim()
-      const hoursText = normalizeDashesAndSpaces(
-        hoursCell.find("li.G8aQO").text().trim()
-      )
+      const hoursText = normalizeDashesAndSpaces(hoursCell.find("li.G8aQO").text().trim())
 
       return { dayText, hoursText, row }
     })
@@ -148,9 +146,7 @@ export function parseHours(hoursTableHtml: string | null) {
   })
 
   // if we didn't get all days, try positional mapping as fallback
-  const assignedDays = Object.values(hours).filter(
-    (h) => h !== undefined
-  ).length
+  const assignedDays = Object.values(hours).filter((h) => h !== undefined).length
   if (assignedDays < rowData.length && rowData.length === 7) {
     // check if the first row might be sunday (common google maps pattern)
     if (rowData.length >= 7) {
@@ -177,9 +173,7 @@ export function parseHours(hoursTableHtml: string | null) {
   }
 
   // check if parsing was successful
-  const finalAssignedDays = Object.values(hours).filter(
-    (h) => h !== undefined
-  ).length
+  const finalAssignedDays = Object.values(hours).filter((h) => h !== undefined).length
 
   if (finalAssignedDays === 0 && rowData.length > 0) {
     // parsing failed but we have data in the table

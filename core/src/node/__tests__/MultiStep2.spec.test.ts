@@ -26,19 +26,11 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
   // and potentially real AI calls. it should be marked as integration test and not
   // run with unit tests. also, it's testing multi-step execution but doesn't verify
   // the quality of execution, just that tools were called in order.
-  const setupTestWorkflow = async (
-    workflowInvocationId: string,
-    workflowVersionId: string,
-    nodeId: string
-  ) => {
-    const {
-      createWorkflowInvocation,
-      createWorkflowVersion,
-      ensureWorkflowExists,
-    } = await import("@core/utils/persistence/workflow/registerWorkflow")
-    const { saveNodeVersionToDB } = await import(
-      "@core/utils/persistence/node/saveNode"
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+    const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
+      "@core/utils/persistence/workflow/registerWorkflow"
     )
+    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "multistep2-test-workflow"
 
@@ -58,8 +50,7 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
       config: {
         nodeId,
         modelName: model,
-        systemPrompt:
-          "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
+        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
         mcpTools: [],
         codeTools: ["todoRead", "todoWrite"],
         description: "MultiStep2 test node with todo tools",
@@ -101,8 +92,7 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
         nodeId,
         handOffs: ["end"],
         description: "MultiStep2 test node with todo tools",
-        systemPrompt:
-          "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
+        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
         modelName: model,
         codeTools: [],
         mcpTools: [],
@@ -117,12 +107,7 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
       skipDatabasePersistence: true,
     }
 
-    const toolManager = new ToolManager(
-      "multistep2-test",
-      [],
-      ["todoRead", "todoWrite"],
-      workflowVersionId
-    )
+    const toolManager = new ToolManager("multistep2-test", [], ["todoRead", "todoWrite"], workflowVersionId)
 
     const pipeline = new InvocationPipeline(context, toolManager)
 

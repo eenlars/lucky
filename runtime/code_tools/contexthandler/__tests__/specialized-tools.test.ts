@@ -82,8 +82,7 @@ describe("Specialized Context Tools", () => {
       const errorMessage =
         typeof result.data?.error === "string"
           ? result.data.error
-          : (result.data?.error as any)?.error ||
-            JSON.stringify(result.data?.error)
+          : (result.data?.error as any)?.error || JSON.stringify(result.data?.error)
       expect(errorMessage).toContain("already exists")
     })
   })
@@ -163,8 +162,7 @@ describe("Specialized Context Tools", () => {
       const errorMessage =
         typeof result.data?.error === "string"
           ? result.data.error
-          : (result.data?.error as any)?.error ||
-            JSON.stringify(result.data?.error)
+          : (result.data?.error as any)?.error || JSON.stringify(result.data?.error)
       expect(errorMessage).toContain("delete operation requires a key")
     })
 

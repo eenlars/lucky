@@ -82,26 +82,20 @@ function formatTimestampForFilename(date: Date): string {
 }
 
 async function main() {
-  const baseUrl = (process.env.APP_BASE_URL || "http://localhost:3000").replace(
-    /\/$/,
-    ""
-  )
+  const baseUrl = (process.env.APP_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
 
   const projectRoot = join(__dirname, "..")
   const reportsDir = join(projectRoot, "reports")
   if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true })
 
-  console.log(
-    "Listing all EvolutionRun rows, counting invocations, and extracting inputFile from config\n"
-  )
+  console.log("Listing all EvolutionRun rows, counting invocations, and extracting inputFile from config\n")
 
   const { data: runs, error: runsError } = await supabase
     .from("EvolutionRun")
     .select("run_id, config, start_time")
     .order("start_time", { ascending: false })
 
-  if (runsError)
-    throw new Error(`Failed to fetch EvolutionRun rows: ${runsError.message}`)
+  if (runsError) throw new Error(`Failed to fetch EvolutionRun rows: ${runsError.message}`)
 
   const allRuns: EvolutionRunRow[] = runs || []
   if (allRuns.length === 0) {
@@ -116,10 +110,7 @@ async function main() {
     .select("run_id")
     .in("run_id", runIds)
 
-  if (invError)
-    throw new Error(
-      `Failed to fetch WorkflowInvocation rows: ${invError.message}`
-    )
+  if (invError) throw new Error(`Failed to fetch WorkflowInvocation rows: ${invError.message}`)
 
   const counts = new Map<string, number>()
   for (const id of runIds) counts.set(id, 0)
@@ -160,9 +151,7 @@ async function main() {
   ranked.forEach((r, idx) => {
     const link = `${baseUrl}/evolution/${encodeURIComponent(r.run_id)}`
     const input = r.inputFile.replace(/\|/g, "\\|") // escape pipes for table
-    lines.push(
-      `| ${idx + 1} | ${r.run_id} | [${link}](${link}) | ${r.count} | ${input} | ${r.date} |`
-    )
+    lines.push(`| ${idx + 1} | ${r.run_id} | [${link}](${link}) | ${r.count} | ${input} | ${r.date} |`)
   })
 
   writeFileSync(outPath, lines.join("\n"))

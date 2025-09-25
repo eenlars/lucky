@@ -2,18 +2,12 @@ import { z } from "zod"
 
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
-import {
-  ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
-  ACTIVE_MCP_TOOL_NAMES,
-} from "@core/tools/tool.types"
+import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 
 export const WorkflowNodeConfigSchema = z.object({
@@ -82,12 +76,7 @@ const agentDescriptionsWithToolsEasy = {
 } as const
 
 export const WorkflowConfigSchemaEasy = z.object({
-  nodes: z.array(
-    withDescriptions(
-      WorkflowNodeConfigSchemaEasy.shape,
-      agentDescriptionsWithToolsEasy
-    )
-  ),
+  nodes: z.array(withDescriptions(WorkflowNodeConfigSchemaEasy.shape, agentDescriptionsWithToolsEasy)),
   entryNodeId: z.string(),
 })
 
@@ -96,43 +85,31 @@ export const handleWorkflowCompletion = (
   oldWorkflow: WorkflowConfig | null,
   newWorkflow: z.infer<typeof WorkflowConfigSchemaEasy>
 ): WorkflowConfig => {
-  const handledNodes: WorkflowNodeConfig[] = (newWorkflow.nodes ?? []).map(
-    (partialNode) => {
-      const oldNode = oldWorkflow?.nodes?.find(
-        (n) => n.nodeId === partialNode.nodeId
-      )
-      // Normalize model: if an active provider model is specified, keep it.
-      // If the easy levels 'low' | 'medium' | 'high' are used, map to configured defaults.
-      // Otherwise, map the provider string to an easy level and then to defaults.
-      let modelName: ModelName
-      if (
-        (ACTIVE_MODEL_NAMES as readonly string[]).includes(
-          partialNode.modelName as unknown as string
-        )
-      ) {
-        modelName = partialNode.modelName as unknown as ModelName
-      } else {
-        const easyLevel: (typeof modelNames)[number] =
-          partialNode.modelName === "low" ||
-          partialNode.modelName === "medium" ||
-          partialNode.modelName === "high"
-            ? (partialNode.modelName as (typeof modelNames)[number])
-            : mapModelNameToEasyName(
-                partialNode.modelName as unknown as AnyModelName
-              )
+  const handledNodes: WorkflowNodeConfig[] = (newWorkflow.nodes ?? []).map((partialNode) => {
+    const oldNode = oldWorkflow?.nodes?.find((n) => n.nodeId === partialNode.nodeId)
+    // Normalize model: if an active provider model is specified, keep it.
+    // If the easy levels 'low' | 'medium' | 'high' are used, map to configured defaults.
+    // Otherwise, map the provider string to an easy level and then to defaults.
+    let modelName: ModelName
+    if ((ACTIVE_MODEL_NAMES as readonly string[]).includes(partialNode.modelName as unknown as string)) {
+      modelName = partialNode.modelName as unknown as ModelName
+    } else {
+      const easyLevel: (typeof modelNames)[number] =
+        partialNode.modelName === "low" || partialNode.modelName === "medium" || partialNode.modelName === "high"
+          ? (partialNode.modelName as (typeof modelNames)[number])
+          : mapModelNameToEasyName(partialNode.modelName as unknown as AnyModelName)
 
-        modelName =
-          easyLevel === "medium"
-            ? getDefaultModels().medium
-            : easyLevel === "high"
-              ? getDefaultModels().high
-              : getDefaultModels().default
-      }
-
-      const fullNode = { ...partialNode, modelName }
-      return oldNode ? { ...oldNode, ...fullNode } : fullNode
+      modelName =
+        easyLevel === "medium"
+          ? getDefaultModels().medium
+          : easyLevel === "high"
+            ? getDefaultModels().high
+            : getDefaultModels().default
     }
-  )
+
+    const fullNode = { ...partialNode, modelName }
+    return oldNode ? { ...oldNode, ...fullNode } : fullNode
+  })
 
   return {
     ...newWorkflow,

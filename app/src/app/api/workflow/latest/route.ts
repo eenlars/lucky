@@ -16,9 +16,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(workflows)
   } catch (error) {
     console.error("Failed to retrieve latest workflows:", error)
-    return NextResponse.json(
-      { error: "Failed to retrieve workflows" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to retrieve workflows" }, { status: 500 })
   }
 }

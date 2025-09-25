@@ -13,11 +13,7 @@ export function AppPopover() {
   }
 
   return (
-    <Button
-      onClick={onClickRun}
-      className="cursor-pointer"
-      disabled={isRunning}
-    >
+    <Button onClick={onClickRun} className="cursor-pointer" disabled={isRunning}>
       <Play /> Run
     </Button>
   )

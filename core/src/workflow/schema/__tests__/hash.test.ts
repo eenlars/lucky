@@ -1,15 +1,10 @@
 import { describe, expect, it } from "vitest"
 
 import { hashWorkflow, hashWorkflowNode } from "@core/workflow/schema/hash"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 
-function makeNode(
-  overrides: Partial<WorkflowNodeConfig> = {}
-): WorkflowNodeConfig {
+function makeNode(overrides: Partial<WorkflowNodeConfig> = {}): WorkflowNodeConfig {
   const base: WorkflowNodeConfig = {
     nodeId: "node-1",
     description: "Test Node",
@@ -198,16 +193,10 @@ describe("hashing utilities", () => {
 
   it("workflow hash: nodes order does not matter (sorted by nodeId)", () => {
     const w1 = makeWorkflow({
-      nodes: [
-        makeNode({ nodeId: "a", handOffs: ["b"] }),
-        makeNode({ nodeId: "b", handOffs: [] }),
-      ],
+      nodes: [makeNode({ nodeId: "a", handOffs: ["b"] }), makeNode({ nodeId: "b", handOffs: [] })],
     })
     const w2 = makeWorkflow({
-      nodes: [
-        makeNode({ nodeId: "b", handOffs: [] }),
-        makeNode({ nodeId: "a", handOffs: ["b"] }),
-      ],
+      nodes: [makeNode({ nodeId: "b", handOffs: [] }), makeNode({ nodeId: "a", handOffs: ["b"] })],
     })
     expect(hashWorkflow(w1)).toBe(hashWorkflow(w2))
   })

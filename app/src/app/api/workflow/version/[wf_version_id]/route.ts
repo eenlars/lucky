@@ -4,10 +4,7 @@ import { requireAuth } from "@/lib/api-auth"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ wf_version_id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ wf_version_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -26,18 +23,12 @@ export async function GET(
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: `Workflow version ${wf_version_id} not found` },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: `Workflow version ${wf_version_id} not found` }, { status: 404 })
     }
 
     return NextResponse.json(data)
   } catch (error) {
     console.error("Error fetching workflow version:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch workflow version" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to fetch workflow version" }, { status: 500 })
   }
 }

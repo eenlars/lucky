@@ -29,8 +29,7 @@ const nextConfig: NextConfig = {
     config.externals.push({
       "clone-deep": "commonjs clone-deep",
       "merge-deep": "commonjs merge-deep",
-      "puppeteer-extra-plugin-stealth":
-        "commonjs puppeteer-extra-plugin-stealth",
+      "puppeteer-extra-plugin-stealth": "commonjs puppeteer-extra-plugin-stealth",
       "puppeteer-extra-plugin": "commonjs puppeteer-extra-plugin",
       "import-fresh": "commonjs import-fresh",
       cosmiconfig: "commonjs cosmiconfig",

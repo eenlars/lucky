@@ -35,26 +35,12 @@ export async function generateWorkflowIdea(
   request: GenerateWorkflowIdeaRequest
 ): Promise<RS<GenerateWorkflowIdeaData>> {
   // Input validation for request object and its properties
-  if (
-    !request ||
-    typeof request.prompt !== "string" ||
-    request.prompt.trim() === ""
-  ) {
-    return R.error(
-      "Invalid request: prompt is required and must be a non-empty string",
-      0
-    )
+  if (!request || typeof request.prompt !== "string" || request.prompt.trim() === "") {
+    return R.error("Invalid request: prompt is required and must be a non-empty string", 0)
   }
 
-  if (
-    typeof request.randomness !== "number" ||
-    request.randomness < 1 ||
-    request.randomness > 10
-  ) {
-    return R.error(
-      "Invalid request: randomness must be a number between 1 and 10",
-      0
-    )
+  if (typeof request.randomness !== "number" || request.randomness < 1 || request.randomness > 10) {
+    return R.error("Invalid request: randomness must be a number between 1 and 10", 0)
   }
   let variationString = ""
   if (request.randomness > 0) {
@@ -67,9 +53,7 @@ export async function generateWorkflowIdea(
     }
 
     const creativityInstruction =
-      creativityLevels[
-        Math.min(request.randomness, 5) as keyof typeof creativityLevels
-      ] || creativityLevels[5]
+      creativityLevels[Math.min(request.randomness, 5) as keyof typeof creativityLevels] || creativityLevels[5]
 
     variationString = `
     <variation>
@@ -122,8 +106,7 @@ export async function generateWorkflowIdea(
         7: Catch logging (tools: fishLogger, photoCapture); connects to 8
         8: Fish preparation (tools: fishCleaner, coolerManager); connects to end
         `),
-      tools: z.array(z.enum(ALL_ACTIVE_TOOL_NAMES as [string, ...string[]]))
-        .describe(`The tools used in the workflow
+      tools: z.array(z.enum(ALL_ACTIVE_TOOL_NAMES as [string, ...string[]])).describe(`The tools used in the workflow
         weatherChecker, 
         waterConditionAnalyzer, 
         rodAssembler, 
@@ -167,11 +150,7 @@ export async function generateMultipleWorkflowIdeas(
     return []
   }
   const responses = await Promise.all(
-    Array.from({ length: count }, () =>
-      generateWorkflowIdea({ prompt, randomness: 100 })
-    )
+    Array.from({ length: count }, () => generateWorkflowIdea({ prompt, randomness: 100 }))
   )
-  return responses
-    .filter((response) => response.success && response.data)
-    .map((response) => response.data!)
+  return responses.filter((response) => response.success && response.data).map((response) => response.data!)
 }

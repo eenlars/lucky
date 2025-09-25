@@ -23,8 +23,7 @@ import type { MutationOptions as CanonicalMutationOptions } from "./mutations/mu
 // Legacy interface with old terminology for backward compatibility.
 // Keep shape aligned with canonical MutationOptions, but allow `aggression` alias.
 // TODO: remove this once all code is migrated to MutationCoordinator
-export interface MutationOptions
-  extends Omit<CanonicalMutationOptions, "intensity"> {
+export interface MutationOptions extends Omit<CanonicalMutationOptions, "intensity"> {
   /** @deprecated Use `intensity` instead */
   aggression?: number
 }
@@ -37,9 +36,7 @@ export class Mutations {
    * TODO: add deprecation warning when this method is called
    * TODO: track usage metrics to determine when safe to remove
    */
-  static async mutateWorkflowGenome(
-    options: MutationOptions
-  ): Promise<RS<Genome>> {
+  static async mutateWorkflowGenome(options: MutationOptions): Promise<RS<Genome>> {
     // Convert legacy aggression parameter to new intensity parameter
     const { parent, generationNumber, aggression, evolutionMode } = options
 

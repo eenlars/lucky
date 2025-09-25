@@ -18,9 +18,7 @@ export default function HelpPage() {
 
   useEffect(() => {
     if (!helpId) {
-      setError(
-        "No help ID provided. This page should be accessed from a workflow help link."
-      )
+      setError("No help ID provided. This page should be accessed from a workflow help link.")
       setLoading(false)
       return
     }
@@ -45,8 +43,7 @@ export default function HelpPage() {
   }, [helpId])
 
   const handleSubmit = async () => {
-    if (!helpId || !answer.trim() || !helpData || helpData.status !== "pending")
-      return
+    if (!helpId || !answer.trim() || !helpData || helpData.status !== "pending") return
 
     setLoading(true)
     setError("")
@@ -96,9 +93,7 @@ export default function HelpPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="p-4 bg-red-50 rounded-lg border border-red-200 text-red-800">
-          {error}
-        </div>
+        <div className="p-4 bg-red-50 rounded-lg border border-red-200 text-red-800">{error}</div>
       </div>
     )
   }
@@ -118,15 +113,9 @@ export default function HelpPage() {
       <div className="w-full max-w-md mx-auto px-6">
         <div className="text-center mb-12">
           <h1 className="text-2xl font-light text-slate-900 tracking-wide">
-            {helpData.status === "answered"
-              ? "Help Request Answered"
-              : "Human Help Requested"}
+            {helpData.status === "answered" ? "Help Request Answered" : "Human Help Requested"}
           </h1>
-          {workflowId && (
-            <p className="text-sm text-slate-600 mt-2">
-              Workflow: {workflowId.slice(0, 8)}...
-            </p>
-          )}
+          {workflowId && <p className="text-sm text-slate-600 mt-2">Workflow: {workflowId.slice(0, 8)}...</p>}
         </div>
 
         {helpData.status === "pending" && (

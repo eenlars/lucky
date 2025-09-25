@@ -52,23 +52,12 @@ import { toolUsageToString, type MultiStepLoopContext } from "./utils"
  * - Ensures terminal steps for downstream processing
  * - Logs detailed error information for debugging
  */
-export async function runMultiStepLoopV3Helper(
-  context: MultiStepLoopContext
-): Promise<{
+export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): Promise<{
   processedResponse: ProcessedResponse
   debugPrompts: string[]
   updatedMemory: Record<string, string>
 }> {
-  const {
-    ctx,
-    tools,
-    agentSteps,
-    maxRounds,
-    verbose,
-    addCost,
-    setUpdatedMemory,
-    getTotalCost,
-  } = context
+  const { ctx, tools, agentSteps, maxRounds, verbose, addCost, setUpdatedMemory, getTotalCost } = context
 
   const identityPrompt = `
         How you should act: ${ctx.nodeConfig.systemPrompt}
@@ -81,15 +70,14 @@ export async function runMultiStepLoopV3Helper(
   // potential fix: implement circular buffer or periodic cleanup of old steps
   const debugPrompts: string[] = []
   for (let round = 0; round < maxRounds; round++) {
-    const { strategyResult: strategy, debugPrompt } =
-      await selectToolStrategyV3({
-        tools,
-        identityPrompt,
-        agentSteps: agentSteps,
-        roundsLeft: maxRounds - round,
-        systemMessage: ctx.nodeConfig.systemPrompt,
-        model: ctx.nodeConfig.modelName,
-      })
+    const { strategyResult: strategy, debugPrompt } = await selectToolStrategyV3({
+      tools,
+      identityPrompt,
+      agentSteps: agentSteps,
+      roundsLeft: maxRounds - round,
+      systemMessage: ctx.nodeConfig.systemPrompt,
+      model: ctx.nodeConfig.modelName,
+    })
 
     debugPrompts.push(llmify(debugPrompt))
 
@@ -109,8 +97,7 @@ export async function runMultiStepLoopV3Helper(
       // check if we have any actionable outputs before termination
       // prevents empty responses when agent only performs reasoning
       const hasActionableOutputs = agentSteps.some(
-        (log) =>
-          log.type === "tool" || log.type === "text" || log.type === "terminate"
+        (log) => log.type === "tool" || log.type === "text" || log.type === "terminate"
       )
 
       if (!hasActionableOutputs) {
@@ -179,10 +166,7 @@ export async function runMultiStepLoopV3Helper(
           agentSteps,
           cost,
           summary: summary ?? "an error occurred. no summary found.",
-          learnings:
-            learningResult.agentStep.type === "learning"
-              ? learningResult.agentStep.return
-              : "",
+          learnings: learningResult.agentStep.type === "learning" ? learningResult.agentStep.return : "",
         },
         debugPrompts,
         updatedMemory: learningResult.updatedMemory,
@@ -202,13 +186,7 @@ export async function runMultiStepLoopV3Helper(
     const mutationMarker = strategy.expectsMutation ? " [EXPECTS_MUTATION]" : ""
     agentSteps.push({
       type: "reasoning",
-      return:
-        strategy.reasoning +
-        " " +
-        strategy.plan +
-        " " +
-        strategy.check +
-        mutationMarker,
+      return: strategy.reasoning + " " + strategy.plan + " " + strategy.check + mutationMarker,
     })
 
     const selected = strategy.toolName
@@ -251,13 +229,9 @@ export async function runMultiStepLoopV3Helper(
 
     // Log multi-step tool call results
     if (verbose) {
-      lgg.log(
-        `[InvocationPipeline] Multi-step round ${round + 1}: Tool call success: ${success}`
-      )
+      lgg.log(`[InvocationPipeline] Multi-step round ${round + 1}: Tool call success: ${success}`)
       if (!success) {
-        lgg.error(
-          `[InvocationPipeline] Multi-step round ${round + 1}: Tool call failed: ${error}`
-        )
+        lgg.error(`[InvocationPipeline] Multi-step round ${round + 1}: Tool call failed: ${error}`)
       }
     }
 
@@ -271,22 +245,18 @@ export async function runMultiStepLoopV3Helper(
       continue
     }
 
-    const { agentSteps: processedAgentSteps, usdCost: processedUsdCost } =
-      responseToAgentSteps({
-        response: toolUseResponse,
-        modelUsed: ctx.nodeConfig.modelName,
-        nodeId: ctx.nodeConfig.nodeId,
-        originatedFrom: `tool_used:${selected}:with_plan:${strategy.plan}`,
-      })
+    const { agentSteps: processedAgentSteps, usdCost: processedUsdCost } = responseToAgentSteps({
+      response: toolUseResponse,
+      modelUsed: ctx.nodeConfig.modelName,
+      nodeId: ctx.nodeConfig.nodeId,
+      originatedFrom: `tool_used:${selected}:with_plan:${strategy.plan}`,
+    })
 
     // Immediately summarize each tool step as we append it
     for (const step of processedAgentSteps) {
       if (step.type === "tool") {
         try {
-          const { summary, usdCost } = await generateSummaryFromUnknownData(
-            step.return,
-            "1-2 sentences"
-          )
+          const { summary, usdCost } = await generateSummaryFromUnknownData(step.return, "1-2 sentences")
           if (summary) step.summary = summary
           addCost(usdCost ?? 0)
         } catch {
@@ -307,9 +277,7 @@ export async function runMultiStepLoopV3Helper(
       // robust validation - check for key indicators from the check string
       // extracts keywords/numbers and verifies their presence in output
       const checkKeywords = strategy.check.toLowerCase().match(/\d+|\w+/g) || []
-      const hasExpectedContent = checkKeywords.some((keyword: string) =>
-        outputContent.toLowerCase().includes(keyword)
-      )
+      const hasExpectedContent = checkKeywords.some((keyword: string) => outputContent.toLowerCase().includes(keyword))
 
       if (!hasExpectedContent) {
         agentSteps.push({
@@ -375,10 +343,7 @@ export async function runMultiStepLoopV3Helper(
       agentSteps,
       cost: getTotalCost(),
       summary: fallbackSummary ?? "an error occurred. no summary found.",
-      learnings:
-        fallbackLearning.agentStep.type === "learning"
-          ? fallbackLearning.agentStep.return
-          : "",
+      learnings: fallbackLearning.agentStep.type === "learning" ? fallbackLearning.agentStep.return : "",
     },
     debugPrompts,
     updatedMemory: fallbackLearning.updatedMemory,

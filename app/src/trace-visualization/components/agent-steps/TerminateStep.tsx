@@ -43,8 +43,7 @@ export const TerminateStep = ({
   }
 
   if (isCollapsed) {
-    const text =
-      typeof returnData === "string" ? returnData : JSON.stringify(returnData)
+    const text = typeof returnData === "string" ? returnData : JSON.stringify(returnData)
     const truncated = text.length > 80 ? text.substring(0, 80) + "..." : text
     return (
       <Card
@@ -54,15 +53,10 @@ export const TerminateStep = ({
       >
         <div className="flex items-center gap-2">
           <div className={`${theme.iconClass}`}>{getStepIcon("terminate")}</div>
-          <div className={`text-xs truncate flex-1 ${theme.contentClass}`}>
-            Final Result: {truncated}
-          </div>
+          <div className={`text-xs truncate flex-1 ${theme.contentClass}`}>Final Result: {truncated}</div>
           <div className="flex items-center gap-1">
             <span className="text-[9px] text-blue-600 font-medium">RESULT</span>
-            <ChevronDown
-              size={12}
-              className="text-slate-400 dark:text-slate-500"
-            />
+            <ChevronDown size={12} className="text-slate-400 dark:text-slate-500" />
           </div>
         </div>
       </Card>
@@ -77,10 +71,7 @@ export const TerminateStep = ({
         isExpanded
           ? undefined
           : (e) => {
-              if (
-                e.target === e.currentTarget ||
-                !(e.target as Element).closest("button")
-              ) {
+              if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                 onToggleCollapsed()
               }
             }
@@ -89,15 +80,9 @@ export const TerminateStep = ({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={`${theme.iconClass}`}>
-              {getStepIcon("terminate")}
-            </div>
-            <span className={`${theme.labelClass} text-xs`}>
-              {isError ? "Final Result (Error)" : "Final Result"}
-            </span>
-            <span className="text-[10px] text-slate-500 ml-2">
-              (click to view result)
-            </span>
+            <div className={`${theme.iconClass}`}>{getStepIcon("terminate")}</div>
+            <span className={`${theme.labelClass} text-xs`}>{isError ? "Final Result (Error)" : "Final Result"}</span>
+            <span className="text-[10px] text-slate-500 ml-2">(click to view result)</span>
             {!isError && <CheckCircle2 className="w-4 h-4 text-green-500" />}
           </div>
           <div className="flex items-center gap-2">
@@ -105,11 +90,7 @@ export const TerminateStep = ({
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation()
-                copyToClipboard(
-                  typeof returnData === "string"
-                    ? returnData
-                    : JSON.stringify(returnData, null, 2)
-                )
+                copyToClipboard(typeof returnData === "string" ? returnData : JSON.stringify(returnData, null, 2))
               }}
               title="Copy result"
             >
@@ -124,15 +105,9 @@ export const TerminateStep = ({
               title="Toggle details"
             >
               {isExpanded ? (
-                <ChevronUp
-                  size={14}
-                  className="text-slate-500 dark:text-slate-400"
-                />
+                <ChevronUp size={14} className="text-slate-500 dark:text-slate-400" />
               ) : (
-                <ChevronDown
-                  size={14}
-                  className="text-slate-500 dark:text-slate-400"
-                />
+                <ChevronDown size={14} className="text-slate-500 dark:text-slate-400" />
               )}
             </button>
           </div>
@@ -140,9 +115,7 @@ export const TerminateStep = ({
 
         <div>
           {hasSummary && (
-            <div
-              className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}
-            >
+            <div className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}>
               <span className="font-medium">Summary: </span>
               <span>{summary}</span>
             </div>
@@ -152,21 +125,10 @@ export const TerminateStep = ({
             <div className="space-y-2">
               <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent"></div>
               <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                <div
-                  className={`text-sm font-medium mb-2 ${theme.contentClass}`}
-                >
-                  Complete Result:
-                </div>
-                <div
-                  ref={setResultRef ?? undefined}
-                  className="overflow-hidden"
-                >
+                <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Complete Result:</div>
+                <div ref={setResultRef ?? undefined} className="overflow-hidden">
                   <ReactJson
-                    src={
-                      typeof returnData === "string"
-                        ? { result: returnData }
-                        : (returnData as any)
-                    }
+                    src={typeof returnData === "string" ? { result: returnData } : (returnData as any)}
                     theme={getReactJsonTheme()}
                     collapsed={1}
                     displayObjectSize={false}

@@ -18,12 +18,7 @@ dotenv.config({ path: path.join(PATHS.root, ".env") })
 dotenv.config({ path: path.join(PATHS.root, ".env.local") })
 
 // Ensure required environment variables are set - error if missing
-const requiredEnvVars = [
-  "GOOGLE_API_KEY",
-  "OPENAI_API_KEY",
-  "SUPABASE_ANON_KEY",
-  "SUPABASE_PROJECT_ID",
-]
+const requiredEnvVars = ["GOOGLE_API_KEY", "OPENAI_API_KEY", "SUPABASE_ANON_KEY", "SUPABASE_PROJECT_ID"]
 
 const missingVars = requiredEnvVars.filter((varName) => !process.env[varName])
 if (missingVars.length > 0) {

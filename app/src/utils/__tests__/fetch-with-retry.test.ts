@@ -67,13 +67,9 @@ describe("fetchWithRetry", () => {
   })
 
   it("should throw after max attempts", async () => {
-    const mockFetch = vi
-      .spyOn(globalThis as any, "fetch")
-      .mockRejectedValue(new Error("Network error"))
+    const mockFetch = vi.spyOn(globalThis as any, "fetch").mockRejectedValue(new Error("Network error"))
 
-    await expect(fetchWithRetry("http://test.com", {}, 3)).rejects.toThrow(
-      "Network error"
-    )
+    await expect(fetchWithRetry("http://test.com", {}, 3)).rejects.toThrow("Network error")
     expect(mockFetch).toHaveBeenCalledTimes(3)
   })
 
@@ -81,13 +77,9 @@ describe("fetchWithRetry", () => {
     const abortErr = new Error("The operation was aborted")
     ;(abortErr as any).name = "AbortError"
 
-    const mockFetch = vi
-      .spyOn(globalThis as any, "fetch")
-      .mockRejectedValueOnce(abortErr)
+    const mockFetch = vi.spyOn(globalThis as any, "fetch").mockRejectedValueOnce(abortErr)
 
-    await expect(fetchWithRetry("http://test.com", {}, 3)).rejects.toThrow(
-      /aborted/i
-    )
+    await expect(fetchWithRetry("http://test.com", {}, 3)).rejects.toThrow(/aborted/i)
     expect(mockFetch).toHaveBeenCalledTimes(1)
   })
 })

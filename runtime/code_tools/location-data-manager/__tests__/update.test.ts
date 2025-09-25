@@ -52,12 +52,7 @@ describe("LocationDataManager - Update Operations", () => {
       metadata: { category: "restaurant", status: "open" },
     }
 
-    const result = await manager.updateLocationById(
-      testFileName,
-      "loc-001",
-      updateData,
-      "merge"
-    )
+    const result = await manager.updateLocationById(testFileName, "loc-001", updateData, "merge")
 
     expect(result.success).toBe(true)
     expect(result.locationCount).toBe(1)
@@ -190,12 +185,7 @@ describe("LocationDataManager - Update Operations", () => {
       domain: null,
     }
 
-    const result = await manager.updateLocationById(
-      testFileName,
-      "loc-001",
-      newData,
-      "replace"
-    )
+    const result = await manager.updateLocationById(testFileName, "loc-001", newData, "replace")
 
     expect(result.success).toBe(true)
 
@@ -241,12 +231,7 @@ describe("LocationDataManager - Update Operations", () => {
       domain: null, // should be ignored
     }
 
-    const result = await manager.updateLocationById(
-      testFileName,
-      "loc-001",
-      updateData,
-      "selective"
-    )
+    const result = await manager.updateLocationById(testFileName, "loc-001", updateData, "selective")
 
     expect(result.success).toBe(true)
 
@@ -265,12 +250,7 @@ describe("LocationDataManager - Update Operations", () => {
   })
 
   it("should handle non-existent location gracefully", async () => {
-    const result = await manager.updateLocationById(
-      testFileName,
-      "non-existent-id",
-      { name: "Test" },
-      "merge"
-    )
+    const result = await manager.updateLocationById(testFileName, "non-existent-id", { name: "Test" }, "merge")
 
     expect(result.success).toBe(false)
     expect(result.errors).toHaveLength(1)
@@ -345,12 +325,7 @@ describe("LocationDataManager - Update Operations", () => {
       owner_imgs: ["image1.jpg"],
     }
 
-    const result = await manager.updateLocationById(
-      testFileName,
-      "loc-001",
-      completeData,
-      "merge"
-    )
+    const result = await manager.updateLocationById(testFileName, "loc-001", completeData, "merge")
 
     expect(result.success).toBe(true)
 

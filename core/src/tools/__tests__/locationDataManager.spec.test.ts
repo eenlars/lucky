@@ -9,9 +9,7 @@ describe("LocationDataManager Tool Integration", () => {
   it("should reproduce the exact error we're seeing", async () => {
     // Discover tools via registry instead of deep-importing
     await codeToolAutoDiscovery.setupCodeTools()
-    const locationDataManager = codeToolRegistry
-      .getAllTools()
-      .find((t) => t.name === "locationDataManager")!
+    const locationDataManager = codeToolRegistry.getAllTools().find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation",
@@ -29,10 +27,7 @@ describe("LocationDataManager Tool Integration", () => {
     } as any
 
     try {
-      const result = await locationDataManager.execute(
-        invalidParams,
-        mockContext
-      )
+      const result = await locationDataManager.execute(invalidParams, mockContext)
 
       // Log the actual result to understand what's happening
       console.log("Tool result:", result)
@@ -58,17 +53,13 @@ describe("LocationDataManager Tool Integration", () => {
       // TODO: This test doesn't know what behavior to expect - it accepts both success AND failure.
       // A good test should have a clear expectation. Either the tool should validate and reject,
       // or it should auto-correct. Testing both outcomes makes this test non-deterministic.
-      expect((error as Error).message || (error as Error).toString()).toContain(
-        "Expected array, received string"
-      )
+      expect((error as Error).message || (error as Error).toString()).toContain("Expected array, received string")
     }
   })
 
   it("should work correctly with proper array data", async () => {
     await codeToolAutoDiscovery.setupCodeTools()
-    const locationDataManager = codeToolRegistry
-      .getAllTools()
-      .find((t) => t.name === "locationDataManager")!
+    const locationDataManager = codeToolRegistry.getAllTools().find((t) => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation-2",

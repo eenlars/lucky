@@ -42,10 +42,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
 import { Genome } from "./Genome"
-import type {
-  GenomeEvaluationResults,
-  PopulationStats,
-} from "./resources/gp.types"
+import type { GenomeEvaluationResults, PopulationStats } from "./resources/gp.types"
 import { StatsTracker } from "./resources/stats"
 import { VerificationCache } from "./resources/wrappers"
 import { RunService } from "./RunService"
@@ -67,17 +64,9 @@ export class EvolutionEngine {
     validateEvolutionSettings(evolutionSettings)
 
     this.verificationCache = new VerificationCache()
-    this.runService = new RunService(
-      EvolutionEngine.verbose,
-      this.evolutionMode,
-      restartRunId
-    )
+    this.runService = new RunService(EvolutionEngine.verbose, this.evolutionMode, restartRunId)
     this.population = new Population(this.evolutionSettings, this.runService)
-    this.statsTracker = new StatsTracker(
-      this.evolutionSettings,
-      this.runService,
-      this.population
-    )
+    this.statsTracker = new StatsTracker(this.evolutionSettings, this.runService, this.population)
 
     lgg.info(evolutionSettingsToString(this.evolutionSettings))
   }
@@ -108,21 +97,13 @@ export class EvolutionEngine {
     totalCost: number
   }> {
     // Create evolution run in database
-    await this.runService.createRun(
-      evaluationInput.goal,
-      this.evolutionSettings,
-      continueRunId
-    )
+    await this.runService.createRun(evaluationInput.goal, this.evolutionSettings, continueRunId)
 
     this.statsTracker.logEvolutionStart()
 
     try {
       // Initialize population with diverse genomes to establish genetic foundation
-      await this.population.initialize(
-        evaluationInput,
-        _baseWorkflow,
-        problemAnalysis
-      )
+      await this.population.initialize(evaluationInput, _baseWorkflow, problemAnalysis)
 
       // Evaluate initial population to establish baseline fitness measurements
       await this.evaluatePopulation(evaluator)
@@ -138,11 +119,7 @@ export class EvolutionEngine {
         operator: "mutation",
       })
 
-      for (
-        let gen = this.population.getGenerationNumber();
-        gen < this.evolutionSettings.generations - 1;
-        gen++
-      ) {
+      for (let gen = this.population.getGenerationNumber(); gen < this.evolutionSettings.generations - 1; gen++) {
         if (this.statsTracker.shouldStop()) break
 
         // Advance to next generation and update database tracking
@@ -190,11 +167,7 @@ export class EvolutionEngine {
 
       // Finish the run, and save it in the database.
       const status = this.statsTracker.getFinalStatus()
-      await this.runService.completeRun(
-        status,
-        this.statsTracker.getTotalCost(),
-        best
-      )
+      await this.runService.completeRun(status, this.statsTracker.getTotalCost(), best)
 
       return {
         bestGenome: best,
@@ -211,23 +184,15 @@ export class EvolutionEngine {
         lgg.error(`[EvolutionEngine] Stack trace:`, errorStack)
       }
 
-      lgg.error(
-        `[EvolutionEngine] Population state: ${this.population.size()} genomes`
-      )
-      lgg.error(
-        `[EvolutionEngine] Current generation: ${this.population.getGenerationNumber()}`
-      )
+      lgg.error(`[EvolutionEngine] Population state: ${this.population.size()} genomes`)
+      lgg.error(`[EvolutionEngine] Current generation: ${this.population.getGenerationNumber()}`)
       lgg.error(`[EvolutionEngine] Run ID: ${this.runService.getRunId()}`)
 
       if (error instanceof Error && error.cause) {
         lgg.error(`[EvolutionEngine] Error cause:`, error.cause)
       }
 
-      await this.runService.completeRun(
-        "failed",
-        this.statsTracker.getTotalCost(),
-        undefined
-      )
+      await this.runService.completeRun("failed", this.statsTracker.getTotalCost(), undefined)
 
       throw error
     }
@@ -259,24 +224,19 @@ export class EvolutionEngine {
   ): Promise<{ failedEvaluations: number; successfulEvaluations: number }> {
     const unevaluated = this.population.getUnevaluated()
 
-    if (isNir(unevaluated))
-      return { failedEvaluations: 0, successfulEvaluations: 0 }
+    if (isNir(unevaluated)) return { failedEvaluations: 0, successfulEvaluations: 0 }
 
     let _successfulEvaluations = 0
     let _failedEvaluations = 0
 
-    const results = await parallelLimit(unevaluated, (genome) =>
-      this.evaluateGenome(genome, evaluator)
-    )
+    const results = await parallelLimit(unevaluated, (genome) => this.evaluateGenome(genome, evaluator))
 
     await Promise.all(
       results.map(async (result, idx) => {
         if (result) {
           const genome = unevaluated[idx]
           if (!result.fitness) {
-            lgg.error(
-              `[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()}: fitness is null`
-            )
+            lgg.error(`[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()}: fitness is null`)
             return
           }
 
@@ -289,12 +249,8 @@ export class EvolutionEngine {
           _successfulEvaluations++
         } else {
           const genome = unevaluated[idx]
-          lgg.error(
-            `[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()}`
-          )
-          lgg.error(
-            `[EvolutionEngine] Genome details: Evaluated: ${genome.isEvaluated}`
-          )
+          lgg.error(`[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()}`)
+          lgg.error(`[EvolutionEngine] Genome details: Evaluated: ${genome.isEvaluated}`)
           _failedEvaluations++
         }
       })
@@ -335,10 +291,7 @@ export class EvolutionEngine {
    * @param evaluator External fitness evaluator
    * @returns Evaluation results or null on failure
    */
-  private async evaluateGenome(
-    genome: Genome,
-    evaluator: EvolutionEvaluator
-  ): Promise<GenomeEvaluationResults | null> {
+  private async evaluateGenome(genome: Genome, evaluator: EvolutionEvaluator): Promise<GenomeEvaluationResults | null> {
     const errors: string[] = []
     const maxRetries = 2
     let lastError: string | null = null
@@ -355,10 +308,7 @@ export class EvolutionEngine {
           `[EvolutionEngine] Starting evaluation of genome ${genome.getWorkflowVersionId()} (attempt ${attempt + 1}/${maxRetries + 1})`
         )
 
-        const { data, error, usdCost } = await evaluator.evaluate(
-          genome,
-          evolutionContext
-        )
+        const { data, error, usdCost } = await evaluator.evaluate(genome, evolutionContext)
 
         if (error || isNir(data)) {
           lastError = error ?? "data is null/undefined"
@@ -368,9 +318,7 @@ export class EvolutionEngine {
 
           if (attempt < maxRetries) {
             // Reset genome state before retry
-            lgg.info(
-              `[EvolutionEngine] Resetting genome state for retry attempt ${attempt + 2}`
-            )
+            lgg.info(`[EvolutionEngine] Resetting genome state for retry attempt ${attempt + 2}`)
             genome.reset(this.runService.getEvolutionContext())
 
             // Wait before retry (exponential backoff)
@@ -417,25 +365,19 @@ export class EvolutionEngine {
 
         if (attempt < maxRetries) {
           // Reset genome state before retry
-          lgg.info(
-            `[EvolutionEngine] Resetting genome state for retry after exception (attempt ${attempt + 2})`
-          )
+          lgg.info(`[EvolutionEngine] Resetting genome state for retry after exception (attempt ${attempt + 2})`)
           genome.reset(this.runService.getEvolutionContext())
 
           // Wait before retry (exponential backoff)
           const delay = Math.pow(2, attempt) * 1000
-          lgg.info(
-            `[EvolutionEngine] Retrying after exception in ${delay}ms...`
-          )
+          lgg.info(`[EvolutionEngine] Retrying after exception in ${delay}ms...`)
           await new Promise((resolve) => setTimeout(resolve, delay))
           continue
         }
 
         // Final failure after all retries
         failureTracker.trackEvaluationFailure()
-        errors.push(
-          `Failed to evaluate genome ${genome.getWorkflowVersionId()}: ${lastError}`
-        )
+        errors.push(`Failed to evaluate genome ${genome.getWorkflowVersionId()}: ${lastError}`)
         return null
       }
     }
@@ -468,9 +410,7 @@ export class EvolutionEngine {
    * @param overrides - Partial settings to override defaults
    * @returns Complete evolution settings
    */
-  static createDefaultConfig(
-    overrides?: Partial<EvolutionSettings>
-  ): EvolutionSettings {
+  static createDefaultConfig(overrides?: Partial<EvolutionSettings>): EvolutionSettings {
     return createEvolutionSettingsWithConfig(overrides)
   }
 }

@@ -4,10 +4,7 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { explainSubsetOfTools } from "@core/prompts/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
-import {
-  getMemoryExplanation,
-  type NodeMemory,
-} from "@core/utils/memory/memorySchema"
+import { getMemoryExplanation, type NodeMemory } from "@core/utils/memory/memorySchema"
 import type { ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../input.types"
 
@@ -25,9 +22,7 @@ export async function prepareIncomingMessage(
   agentSteps: AgentSteps
 ) {
   const toolsAvailable = Object.keys(tools)
-  const incomingText = extractTextFromPayload(
-    ctx.workflowMessageIncoming.payload
-  )
+  const incomingText = extractTextFromPayload(ctx.workflowMessageIncoming.payload)
 
   const { data: prepareThinking } = await sendAI({
     model: ctx.nodeConfig.modelName,

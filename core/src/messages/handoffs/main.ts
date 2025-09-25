@@ -20,9 +20,7 @@ export interface ChooseHandoffOpts {
   workflowConfig?: WorkflowConfig // Added for hierarchical role inference
 }
 
-export async function chooseHandoff(
-  opts: ChooseHandoffOpts
-): Promise<HandoffResult> {
+export async function chooseHandoff(opts: ChooseHandoffOpts): Promise<HandoffResult> {
   switch (CONFIG.coordinationType) {
     case "sequential":
       return chooseHandoffSequential(opts)
@@ -31,9 +29,7 @@ export async function chooseHandoff(
     default: {
       const _exhaustiveCheck: never = CONFIG.coordinationType
       void _exhaustiveCheck
-      throw new Error(
-        `Unsupported coordination type: ${CONFIG.coordinationType}`
-      )
+      throw new Error(`Unsupported coordination type: ${CONFIG.coordinationType}`)
     }
   }
 }

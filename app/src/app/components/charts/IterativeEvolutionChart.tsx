@@ -54,9 +54,7 @@ function buildSeriesData(
   if (!invocationsByGeneration || invocationsByGeneration.length === 0)
     return { points: [], averages: [], isSingleGen: false }
 
-  const uniqueGenerations = new Set(
-    invocationsByGeneration.map((g) => g.generation)
-  )
+  const uniqueGenerations = new Set(invocationsByGeneration.map((g) => g.generation))
   const isSingleGeneration = uniqueGenerations.size === 1
 
   // Collect raw points first
@@ -71,9 +69,7 @@ function buildSeriesData(
 
   if (isSingleGeneration && invocationsByGeneration[0]) {
     const singleGenData = invocationsByGeneration[0]
-    const invocationsWithAccuracy = singleGenData.invocations.filter(
-      (inv) => inv.accuracy !== undefined
-    )
+    const invocationsWithAccuracy = singleGenData.invocations.filter((inv) => inv.accuracy !== undefined)
     invocationsWithAccuracy.forEach((inv, index) => {
       rawPoints.push({
         generation: index,
@@ -122,17 +118,13 @@ function buildSeriesData(
     }
   }
 
-  const points = Array.from(clusterMap.values()).sort(
-    (a, b) => a.generation - b.generation || a.accuracy - b.accuracy
-  )
+  const points = Array.from(clusterMap.values()).sort((a, b) => a.generation - b.generation || a.accuracy - b.accuracy)
 
   // Build averages series
   const averages: AveragePoint[] = []
   if (isSingleGeneration && invocationsByGeneration[0]) {
     const singleGenData = invocationsByGeneration[0]
-    const invocationsWithAccuracy = singleGenData.invocations.filter(
-      (inv) => inv.accuracy !== undefined
-    )
+    const invocationsWithAccuracy = singleGenData.invocations.filter((inv) => inv.accuracy !== undefined)
     if (invocationsWithAccuracy.length > 0) {
       averages.push({
         generation: 0,
@@ -169,25 +161,8 @@ function renderScatterPoint(props: any) {
 
   return (
     <g>
-      <circle
-        cx={cx}
-        cy={cy}
-        r={scaledRadius}
-        fill="#2563eb"
-        stroke="#1d4ed8"
-        strokeWidth={1}
-        opacity={0.9}
-      />
-      {hasTarget && (
-        <circle
-          cx={cx}
-          cy={cy}
-          r={scaledRadius + 2}
-          fill="none"
-          stroke="#10b981"
-          strokeWidth={2}
-        />
-      )}
+      <circle cx={cx} cy={cy} r={scaledRadius} fill="#2563eb" stroke="#1d4ed8" strokeWidth={1} opacity={0.9} />
+      {hasTarget && <circle cx={cx} cy={cy} r={scaledRadius + 2} fill="none" stroke="#10b981" strokeWidth={2} />}
     </g>
   )
 }
@@ -205,16 +180,11 @@ export function IterativeEvolutionChart({
     points: scatterData,
     averages: averageData,
     isSingleGen,
-  } = useMemo(
-    () => buildSeriesData(invocationsByGeneration, targetNodeId),
-    [invocationsByGeneration, targetNodeId]
-  )
+  } = useMemo(() => buildSeriesData(invocationsByGeneration, targetNodeId), [invocationsByGeneration, targetNodeId])
 
   return (
     <div className="bg-white p-6 rounded-lg border">
-      <h3 className="text-lg font-semibold mb-4">
-        Accuracy Progression Over Time
-      </h3>
+      <h3 className="text-lg font-semibold mb-4">Accuracy Progression Over Time</h3>
       {!invocationsByGeneration || invocationsByGeneration.length === 0 ? (
         <div className="h-[400px] flex items-center justify-center text-gray-500">
           <p>No generation data available. Using timeline view.</p>
@@ -246,39 +216,23 @@ export function IterativeEvolutionChart({
                 if (active && payload && payload.length) {
                   const d: any = payload[0].payload
                   if (d?.type === "cluster") {
-                    const header = isSingleGen
-                      ? `Invocation ${d.generation + 1}`
-                      : `Generation ${d.generation}`
-                    const timePreview = d.timestamps?.[0]
-                      ? new Date(d.timestamps[0]).toLocaleString()
-                      : ""
+                    const header = isSingleGen ? `Invocation ${d.generation + 1}` : `Generation ${d.generation}`
+                    const timePreview = d.timestamps?.[0] ? new Date(d.timestamps[0]).toLocaleString() : ""
                     return (
                       <div className="bg-white p-3 border rounded shadow-lg">
                         <p className="font-medium">{header}</p>
                         <p className="text-blue-600">Accuracy: {d.accuracy}%</p>
                         <p className="text-gray-600">Count: {d.count}</p>
-                        {d.hasTarget && (
-                          <p className="text-green-600 font-medium">
-                            🎯 Target in cluster
-                          </p>
-                        )}
-                        {timePreview && (
-                          <p className="text-gray-500 text-xs">{timePreview}</p>
-                        )}
+                        {d.hasTarget && <p className="text-green-600 font-medium">🎯 Target in cluster</p>}
+                        {timePreview && <p className="text-gray-500 text-xs">{timePreview}</p>}
                       </div>
                     )
                   }
                   if (d?.type === "average") {
                     return (
                       <div className="bg-white p-3 border rounded shadow-lg">
-                        <p className="font-medium">
-                          {isSingleGen
-                            ? "Overall Average"
-                            : `Generation ${d.generation}`}
-                        </p>
-                        <p className="text-purple-600">
-                          Average: {Number(d.averageAccuracy).toFixed(1)}%
-                        </p>
+                        <p className="font-medium">{isSingleGen ? "Overall Average" : `Generation ${d.generation}`}</p>
+                        <p className="text-purple-600">Average: {Number(d.averageAccuracy).toFixed(1)}%</p>
                       </div>
                     )
                   }
@@ -306,9 +260,7 @@ export function IterativeEvolutionChart({
               <LabelList
                 dataKey="count"
                 position="top"
-                formatter={(label) =>
-                  typeof label === "number" && label > 1 ? String(label) : ""
-                }
+                formatter={(label) => (typeof label === "number" && label > 1 ? String(label) : "")}
                 fill="#374151"
                 fontSize={10}
               />

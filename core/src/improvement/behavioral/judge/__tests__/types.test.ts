@@ -53,10 +53,7 @@ describe("Iterative Evolution Types", () => {
           node2: { accuracy: 0.7, cost: 0.02, time: 8 },
         },
         bottlenecks: ["node2"],
-        improvementSuggestions: [
-          "Optimize node2 prompt for better accuracy",
-          "Consider adding validation step",
-        ],
+        improvementSuggestions: ["Optimize node2 prompt for better accuracy", "Consider adding validation step"],
       }
 
       expect(typeof analysisData.nodePerformance).toBe("object")
@@ -177,9 +174,7 @@ describe("Iterative Evolution Types", () => {
       expect(result.timestamp).toBeTruthy()
 
       // validate metrics
-      expect(result.metrics.fitnessAfter).toBeGreaterThan(
-        result.metrics.fitnessBefore
-      )
+      expect(result.metrics.fitnessAfter).toBeGreaterThan(result.metrics.fitnessBefore)
       expect(result.metrics.costAfter).toBeLessThan(result.metrics.costBefore)
       expect(result.metrics.timeAfter).toBeLessThan(result.metrics.timeBefore)
     })
@@ -222,9 +217,7 @@ describe("Iterative Evolution Types", () => {
         .flatMap((n) => Object.values(n.handoffRules))
         .filter((id) => typeof id === "string")
 
-      const unreachableNodes = referencedNodes.filter(
-        (id) => !nodeIds.includes(id)
-      )
+      const unreachableNodes = referencedNodes.filter((id) => !nodeIds.includes(id))
 
       expect(unreachableNodes).toHaveLength(0)
       expect(nodeIds.includes(workflow.entryNodeId)).toBe(true)
@@ -283,9 +276,7 @@ describe("Iterative Evolution Types", () => {
 
       const trends = {
         fitnessImprovement: iterations[2].fitness - iterations[0].fitness,
-        averageChanges:
-          iterations.reduce((sum, it) => sum + it.changes, 0) /
-          iterations.length,
+        averageChanges: iterations.reduce((sum, it) => sum + it.changes, 0) / iterations.length,
         totalTime: iterations.reduce((sum, it) => sum + it.time, 0),
       }
 

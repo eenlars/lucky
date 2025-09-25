@@ -29,9 +29,7 @@ async function fetchCapacityData(): Promise<ToolCapacityExperimentResponse | nul
   }
 }
 
-function isToolCapacityExperimentResponse(
-  response: unknown
-): response is ToolCapacityExperimentResponse {
+function isToolCapacityExperimentResponse(response: unknown): response is ToolCapacityExperimentResponse {
   return (
     response !== null &&
     typeof response === "object" &&
@@ -52,33 +50,24 @@ function toLineData(data: Awaited<ReturnType<typeof fetchCapacityData>>): {
   points: Point[]
   usageRows: LineRow[]
 } {
-  if (!data || !data.results)
-    return { rows: [], series: [], points: [], usageRows: [] }
+  if (!data || !data.results) return { rows: [], series: [], points: [], usageRows: [] }
 
   const results: Array<ToolCapacityResult> = (data.results as any).results || []
 
-  if (!Array.isArray(results) || results.length === 0)
-    return { rows: [], series: [], points: [], usageRows: [] }
+  if (!Array.isArray(results) || results.length === 0) return { rows: [], series: [], points: [], usageRows: [] }
 
   const uniqueModels = Array.from(new Set(results.map((r) => String(r.model))))
   const series: SeriesDef[] = uniqueModels.map((m) => ({
     key: sanitizeKey(m),
     label: m,
   }))
-  const uniqueToolCounts = Array.from(
-    new Set(results.map((r) => Number(r.toolCount)))
-  ).sort((a, b) => a - b)
+  const uniqueToolCounts = Array.from(new Set(results.map((r) => Number(r.toolCount)))).sort((a, b) => a - b)
 
   const rows: LineRow[] = uniqueToolCounts.map((tc) => {
     const row: LineRow = { tools: tc }
     for (const model of uniqueModels) {
-      const subset = results.filter(
-        (r) => r.toolCount === tc && String(r.model) === model
-      )
-      const accuracy =
-        subset.length > 0
-          ? (subset.filter((r) => r.success).length / subset.length) * 100
-          : 0
+      const subset = results.filter((r) => r.toolCount === tc && String(r.model) === model)
+      const accuracy = subset.length > 0 ? (subset.filter((r) => r.success).length / subset.length) * 100 : 0
       row[sanitizeKey(model)] = Math.round(accuracy * 10) / 10
     }
     return row
@@ -143,27 +132,19 @@ function toLineData(data: Awaited<ReturnType<typeof fetchCapacityData>>): {
   const usageRows: LineRow[] = uniqueToolCounts.map((tc) => {
     const row: LineRow = { tools: tc }
     for (const model of uniqueModels) {
-      const subset = results.filter(
-        (r) => r.toolCount === tc && String(r.model) === model
-      )
+      const subset = results.filter((r) => r.toolCount === tc && String(r.model) === model)
       if (subset.length === 0) {
         row[sanitizeKey(model)] = 0
         continue
       }
-      const avgLatency =
-        subset.reduce((s, r) => s + (r.latencyMs || 0), 0) / subset.length
-      const avgCost =
-        subset.reduce((s, r) => s + (r.usdCost || 0), 0) / subset.length
-      const avgCalls =
-        subset.reduce((s, r) => s + (r.toolCallCount || 0), 0) / subset.length
+      const avgLatency = subset.reduce((s, r) => s + (r.latencyMs || 0), 0) / subset.length
+      const avgCost = subset.reduce((s, r) => s + (r.usdCost || 0), 0) / subset.length
+      const avgCalls = subset.reduce((s, r) => s + (r.toolCallCount || 0), 0) / subset.length
 
       const callsPenalty = avgCalls > 3 ? 20 : 0
       const latencyScore = Math.min(100, (avgLatency / 5000) * 100)
       const costScore = Math.min(100, avgCost * 100)
-      const usage = Math.min(
-        100,
-        latencyScore * 0.7 + costScore * 0.3 + callsPenalty
-      )
+      const usage = Math.min(100, latencyScore * 0.7 + costScore * 0.3 + callsPenalty)
       row[sanitizeKey(model)] = Math.round(usage * 10) / 10
     }
     return row
@@ -183,23 +164,13 @@ export default async function CapacityPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Tool Selection Capacity — Results
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Accuracy vs number of available tools, and average accuracy by model.
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Tool Selection Capacity — Results</h1>
+        <p className="text-gray-600 mb-6">Accuracy vs number of available tools, and average accuracy by model.</p>
 
         <div className="grid grid-cols-1 gap-8">
           <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-2">
-              Accuracy vs Tool Count
-            </h2>
-            <AccuracyByToolCountChart
-              data={lineData}
-              series={series}
-              points={points}
-            />
+            <h2 className="text-xl font-semibold mb-2">Accuracy vs Tool Count</h2>
+            <AccuracyByToolCountChart data={lineData} series={series} points={points} />
           </div>
 
           <div className="w-full h-[380px] bg-white rounded-lg shadow p-4">

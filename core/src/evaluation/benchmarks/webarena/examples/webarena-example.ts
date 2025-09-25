@@ -40,10 +40,7 @@ async function main() {
 
     // fetch tasks filtered by specific sites
     lgg.info("\n🌍 Fetching reddit and gitlab tasks...")
-    const filteredTasks = await WebArenaLoader.fetchAsWorkflowIO(5, [
-      "reddit",
-      "gitlab",
-    ])
+    const filteredTasks = await WebArenaLoader.fetchAsWorkflowIO(5, ["reddit", "gitlab"])
     lgg.info(`Found ${filteredTasks.length} tasks for reddit and gitlab`)
 
     filteredTasks.forEach((workflow, index) => {

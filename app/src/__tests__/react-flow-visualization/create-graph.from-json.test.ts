@@ -1,7 +1,4 @@
-import {
-  toWorkflowConfig,
-  type WorkflowConfig,
-} from "@core/workflow/schema/workflow.types"
+import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { MODELS } from "@runtime/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"
@@ -56,8 +53,6 @@ describe("create graph from JSON (typed)", () => {
 
     // Assert entry edge and handoff edge, and leaf attaches to end
     const pairs = edges.map((e) => `${e.source}->${e.target}`)
-    expect(pairs).toEqual(
-      expect.arrayContaining(["start->a", "a->b", "b->end"])
-    )
+    expect(pairs).toEqual(expect.arrayContaining(["start->a", "a->b", "b->end"]))
   })
 })

@@ -1,50 +1,50 @@
 {
-    "name": "@lucky/shared",
-    "type": "module",
-    "version": "1.0.0",
-    "private": true,
-    "description": "Shared utilities and types",
-    "types": "./dist/index.d.ts",
-    "sideEffects": false,
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsup --silent",
-        "dev": "tsup --watch",
-        "clean": "rimraf dist",
-        "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
-        "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
-        "format": "prettier --write .",
-        "format:check": "prettier --check ."
+  "name": "@lucky/shared",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared utilities and types",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup --silent",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
+    "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js"
-        },
-        "./fs": {
-            "types": "./dist/fs/index.d.ts",
-            "import": "./dist/fs/index.js"
-        },
-        "./csv": {
-            "types": "./dist/csv/index.d.ts",
-            "import": "./dist/csv/index.js"
-        }
+    "./fs": {
+      "types": "./dist/fs/index.d.ts",
+      "import": "./dist/fs/index.js"
     },
-    "dependencies": {
-        "json5": "^2.2.3",
-        "papaparse": "^5.5.3"
-    },
-    "devDependencies": {
-        "@supabase/supabase-js": "^2.49.4",
-        "@types/bun": "latest",
-        "@types/node": "^18.19.0",
-        "@types/papaparse": "^5.3.16",
-        "prettier": "^3.4.2",
-        "rimraf": "^5.0.10",
-        "tsup": "8.5.0",
-        "typescript": "^5.0.0",
-        "vitest": "^3.2.4"
+    "./csv": {
+      "types": "./dist/csv/index.d.ts",
+      "import": "./dist/csv/index.js"
     }
+  },
+  "dependencies": {
+    "json5": "^2.2.3",
+    "papaparse": "^5.5.3"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "@types/bun": "latest",
+    "@types/node": "^18.19.0",
+    "@types/papaparse": "^5.3.16",
+    "prettier": "^3.4.2",
+    "rimraf": "^5.0.10",
+    "tsup": "8.5.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  }
 }

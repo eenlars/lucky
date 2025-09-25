@@ -58,8 +58,7 @@ const getTimeDifference = (timestamp: string) => {
   return `${seconds}s ago`
 }
 
-type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 
 const isStaleRun = (run: Tables<"EvolutionRun">) => {
   if (run.status !== "running") return false
@@ -74,9 +73,7 @@ const isStaleRun = (run: Tables<"EvolutionRun">) => {
 
 const getFitnessRange = (invocations: WorkflowInvocationSubset[]) => {
   const fitnessScores = invocations
-    .filter(
-      (inv) => inv.fitness_score !== null && inv.fitness_score !== undefined
-    )
+    .filter((inv) => inv.fitness_score !== null && inv.fitness_score !== undefined)
     .map((inv) => inv.fitness_score!)
 
   if (fitnessScores.length === 0) return null
@@ -93,11 +90,7 @@ const formatNumberTrim = (value: number) => {
   return str.replace(/\.00$/, "").replace(/(\.[1-9])0$/, "$1")
 }
 
-const formatFitnessDisplay = (range: {
-  min: number
-  max: number
-  count: number
-}) => {
+const formatFitnessDisplay = (range: { min: number; max: number; count: number }) => {
   if (range.count === 1 || range.min === range.max) {
     return formatNumberTrim(range.min)
   }
@@ -132,55 +125,32 @@ const groupByWorkflowStructure = (
       const group = structureGroups.get(dslHash)!
 
       // Add version if not already present
-      if (
-        !group.versions.find((v) => v.wf_version_id === version.wf_version_id)
-      ) {
+      if (!group.versions.find((v) => v.wf_version_id === version.wf_version_id)) {
         group.versions.push(version)
       }
 
       // Add related invocations
-      const versionInvocations = invocations.filter(
-        (inv) => inv.wf_version_id === version.wf_version_id
-      )
+      const versionInvocations = invocations.filter((inv) => inv.wf_version_id === version.wf_version_id)
       group.invocations.push(...versionInvocations)
 
       // Update generation range
-      group.firstSeenGeneration = Math.min(
-        group.firstSeenGeneration,
-        generation.number
-      )
-      group.lastSeenGeneration = Math.max(
-        group.lastSeenGeneration,
-        generation.number
-      )
+      group.firstSeenGeneration = Math.min(group.firstSeenGeneration, generation.number)
+      group.lastSeenGeneration = Math.max(group.lastSeenGeneration, generation.number)
     })
   })
 
   // Sort by first appearance
-  return Array.from(structureGroups.values()).sort(
-    (a, b) => a.firstSeenGeneration - b.firstSeenGeneration
-  )
+  return Array.from(structureGroups.values()).sort((a, b) => a.firstSeenGeneration - b.firstSeenGeneration)
 }
 
-export default function EvolutionRunPage({
-  params,
-}: {
-  params: Promise<{ run_id: string }>
-}) {
-  const [evolutionRun, setEvolutionRun] =
-    useState<Tables<"EvolutionRun"> | null>(null)
-  const [generationsData, setGenerationsData] = useState<GenerationWithData[]>(
-    []
-  )
+export default function EvolutionRunPage({ params }: { params: Promise<{ run_id: string }> }) {
+  const [evolutionRun, setEvolutionRun] = useState<Tables<"EvolutionRun"> | null>(null)
+  const [generationsData, setGenerationsData] = useState<GenerationWithData[]>([])
   const [loading, setLoading] = useState(false)
   const [generationsLoading, setGenerationsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(
-    new Set()
-  )
-  const [expandedStructures, setExpandedStructures] = useState<Set<string>>(
-    new Set()
-  )
+  const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(new Set())
+  const [expandedStructures, setExpandedStructures] = useState<Set<string>>(new Set())
   const [_lastFetchTime, setLastFetchTime] = useState<number>(0)
   const [showGraph, setShowGraph] = useState<boolean>(true)
 
@@ -190,16 +160,12 @@ export default function EvolutionRunPage({
   const [dslLoading, setDslLoading] = useState(false)
 
   // Workflow versions cache
-  const [workflowVersions, setWorkflowVersions] = useState<
-    Map<string, Tables<"WorkflowVersion">>
-  >(new Map())
+  const [workflowVersions, setWorkflowVersions] = useState<Map<string, Tables<"WorkflowVersion">>>(new Map())
   const workflowVersionsRef = useRef(workflowVersions)
   useEffect(() => {
     workflowVersionsRef.current = workflowVersions
   }, [workflowVersions])
-  const inFlightRequests = useRef(
-    new Map<string, Promise<Tables<"WorkflowVersion">>>()
-  )
+  const inFlightRequests = useRef(new Map<string, Promise<Tables<"WorkflowVersion">>>())
 
   const { run_id } = use(params)
 
@@ -220,9 +186,7 @@ export default function EvolutionRunPage({
       const data = await response.json()
       setEvolutionRun(data)
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch evolution run"
-      )
+      setError(err instanceof Error ? err.message : "Failed to fetch evolution run")
       console.error("Error fetching evolution run:", err)
     } finally {
       setLoading(false)
@@ -277,9 +241,7 @@ export default function EvolutionRunPage({
     const promise = (async () => {
       const response = await fetch(`/api/workflow/version/${versionId}`)
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch workflow version: ${response.statusText}`
-        )
+        throw new Error(`Failed to fetch workflow version: ${response.statusText}`)
       }
       const version = await response.json()
       setWorkflowVersions((prev) => {
@@ -337,9 +299,7 @@ export default function EvolutionRunPage({
   if (loading) {
     return (
       <div className="p-6">
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          Loading evolution run...
-        </div>
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading evolution run...</div>
       </div>
     )
   }
@@ -364,9 +324,7 @@ export default function EvolutionRunPage({
   if (!evolutionRun) {
     return (
       <div className="p-6">
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          Evolution run not found
-        </div>
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">Evolution run not found</div>
       </div>
     )
   }
@@ -390,29 +348,19 @@ export default function EvolutionRunPage({
             📊 Raw Data
           </Link>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {evolutionRun.run_id}
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{evolutionRun.run_id}</h1>
       </div>
 
       {/* Run Details */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          Run Details
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Run Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Goal:
-            </div>
-            <div className="font-medium text-gray-900 dark:text-gray-100">
-              {evolutionRun.goal_text}
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Goal:</div>
+            <div className="font-medium text-gray-900 dark:text-gray-100">{evolutionRun.goal_text}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Status:
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Status:</div>
             <span
               className={`px-2 py-1 rounded text-xs font-medium ${
                 evolutionRun.status === "completed"
@@ -428,38 +376,24 @@ export default function EvolutionRunPage({
                         : "bg-gray-100 text-gray-800"
               }`}
             >
-              {evolutionRun.status === "running" && isStaleRun(evolutionRun)
-                ? "stale"
-                : evolutionRun.status}
+              {evolutionRun.status === "running" && isStaleRun(evolutionRun) ? "stale" : evolutionRun.status}
             </span>
           </div>
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Started:
-            </div>
-            <div className="text-gray-900 dark:text-gray-100">
-              {new Date(evolutionRun.start_time).toLocaleString()}
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Started:</div>
+            <div className="text-gray-900 dark:text-gray-100">{new Date(evolutionRun.start_time).toLocaleString()}</div>
           </div>
           {evolutionRun.end_time && (
             <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Ended:
-              </div>
-              <div className="text-gray-900 dark:text-gray-100">
-                {new Date(evolutionRun.end_time).toLocaleString()}
-              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Ended:</div>
+              <div className="text-gray-900 dark:text-gray-100">{new Date(evolutionRun.end_time).toLocaleString()}</div>
             </div>
           )}
         </div>
         {evolutionRun.notes && (
           <div className="mt-4">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Notes:
-            </div>
-            <div className="text-sm text-gray-900 dark:text-gray-100">
-              {evolutionRun.notes}
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Notes:</div>
+            <div className="text-sm text-gray-900 dark:text-gray-100">{evolutionRun.notes}</div>
           </div>
         )}
       </div>
@@ -482,12 +416,8 @@ export default function EvolutionRunPage({
               }
             }}
           >
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Evolution Graph
-            </h2>
-            <span className="text-gray-400 dark:text-gray-500">
-              {showGraph ? "▼" : "▶"}
-            </span>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Evolution Graph</h2>
+            <span className="text-gray-400 dark:text-gray-500">{showGraph ? "▼" : "▶"}</span>
           </div>
         </Button>
         {showGraph && (
@@ -500,15 +430,12 @@ export default function EvolutionRunPage({
       {/* Generations */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Generations (
-          {generationsLoading ? "Loading..." : generationsData.length})
+          Generations ({generationsLoading ? "Loading..." : generationsData.length})
         </h2>
 
         {generationsData.length === 0 ? (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            {generationsLoading
-              ? "Loading generations..."
-              : "No generations found for this run"}
+            {generationsLoading ? "Loading generations..." : "No generations found for this run"}
           </div>
         ) : (
           generationsData.map(({ generation, invocations }) => {
@@ -549,9 +476,7 @@ export default function EvolutionRunPage({
                       >
                         {generation.generation_id}
                       </Link>
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {invocations.length} invocations
-                      </span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{invocations.length} invocations</span>
                       {fitnessRange && (
                         <span className="text-sm text-green-600 font-medium">
                           Fitness: {formatFitnessDisplay(fitnessRange)}
@@ -562,9 +487,7 @@ export default function EvolutionRunPage({
                       </span>
                     </div>
                     <span className="text-gray-400 dark:text-gray-500">
-                      {expandedGenerations.has(generation.generation_id)
-                        ? "▼"
-                        : "▶"}
+                      {expandedGenerations.has(generation.generation_id) ? "▼" : "▶"}
                     </span>
                   </div>
                 </Button>
@@ -573,12 +496,8 @@ export default function EvolutionRunPage({
                   <div className="px-4 pb-4">
                     {generation.comment && (
                       <div className="mb-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm">
-                        <strong className="text-gray-900 dark:text-gray-100">
-                          Comment:
-                        </strong>{" "}
-                        <span className="text-gray-900 dark:text-gray-100">
-                          {generation.comment}
-                        </span>
+                        <strong className="text-gray-900 dark:text-gray-100">Comment:</strong>{" "}
+                        <span className="text-gray-900 dark:text-gray-100">{generation.comment}</span>
                       </div>
                     )}
 
@@ -588,11 +507,8 @@ export default function EvolutionRunPage({
                         {
                           generation,
                           versions:
-                            generationsData.find(
-                              (g) =>
-                                g.generation.generation_id ===
-                                generation.generation_id
-                            )?.versions || [],
+                            generationsData.find((g) => g.generation.generation_id === generation.generation_id)
+                              ?.versions || [],
                           invocations,
                         },
                       ]}
@@ -648,11 +564,7 @@ interface InvocationRowProps {
   dslLoading: boolean
 }
 
-function InvocationRow({
-  invocation,
-  showDslModal,
-  dslLoading,
-}: InvocationRowProps) {
+function InvocationRow({ invocation, showDslModal, dslLoading }: InvocationRowProps) {
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-900">
       <div className="flex items-start">
@@ -693,34 +605,26 @@ function InvocationRow({
             </div>
 
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              {invocation.fitness_score !== null &&
-              invocation.fitness_score !== undefined ? (
+              {invocation.fitness_score !== null && invocation.fitness_score !== undefined ? (
                 <div className="flex items-center gap-3">
                   <span>Fitness: {invocation.fitness_score.toFixed(2)}</span>
-                  {invocation.accuracy !== null &&
-                    invocation.accuracy !== undefined && (
-                      <span>Accuracy: {invocation.accuracy.toFixed(2)}</span>
-                    )}
+                  {invocation.accuracy !== null && invocation.accuracy !== undefined && (
+                    <span>Accuracy: {invocation.accuracy.toFixed(2)}</span>
+                  )}
                 </div>
               ) : (
                 <span>Fitness: N/A</span>
               )}
-              <span className="text-gray-900 dark:text-gray-100">
-                ${invocation.usd_cost.toFixed(4)}
-              </span>
+              <span className="text-gray-900 dark:text-gray-100">${invocation.usd_cost.toFixed(4)}</span>
               {invocation.end_time && (
                 <span>
                   {Math.round(
-                    (new Date(invocation.end_time).getTime() -
-                      new Date(invocation.start_time).getTime()) /
-                      1000
+                    (new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()) / 1000
                   )}
                   s
                 </span>
               )}
-              <span className="text-gray-500 dark:text-gray-400">
-                {getTimeDifference(invocation.start_time)}
-              </span>
+              <span className="text-gray-500 dark:text-gray-400">{getTimeDifference(invocation.start_time)}</span>
             </div>
           </div>
         </div>
@@ -748,17 +652,10 @@ function WorkflowStructuresView({
   dslLoading,
   idPrefix = "",
 }: WorkflowStructuresViewProps) {
-  const structureGroups = groupByWorkflowStructure(
-    generationsData,
-    workflowVersions
-  )
+  const structureGroups = groupByWorkflowStructure(generationsData, workflowVersions)
 
   if (structureGroups.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-        No workflow structures found
-      </div>
-    )
+    return <div className="text-center py-8 text-gray-500 dark:text-gray-400">No workflow structures found</div>
   }
 
   return (
@@ -797,23 +694,16 @@ function WorkflowStructuresView({
                   <div className="flex-shrink-0">
                     {isWorkflowConfig(group.dsl) && (
                       <div className="w-32 h-32 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 overflow-hidden">
-                        <StructureMiniMap
-                          dsl={group.dsl}
-                          width={128}
-                          height={128}
-                        />
+                        <StructureMiniMap dsl={group.dsl} width={128} height={128} />
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                      Structure #{index + 1}
-                    </span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Structure #{index + 1}</span>
                     <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                       <span>
-                        Generations {group.firstSeenGeneration}-
-                        {group.lastSeenGeneration}
+                        Generations {group.firstSeenGeneration}-{group.lastSeenGeneration}
                       </span>
                       <span>{group.versions.length} versions</span>
                       <span>{group.invocations.length} invocations</span>
@@ -864,9 +754,7 @@ function WorkflowStructuresView({
                                 </span>
                               )}
                               <Button
-                                onClick={() =>
-                                  showDslModal(version.wf_version_id)
-                                }
+                                onClick={() => showDslModal(version.wf_version_id)}
                                 disabled={dslLoading}
                                 variant="outline"
                                 size="sm"

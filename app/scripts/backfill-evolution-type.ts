@@ -49,29 +49,18 @@ function inferEvolutionType(run: EvolutionRunRow): EvolutionType {
     if (m === "gp") return "gp"
   }
   if (cfg && typeof cfg === "object") {
-    const hasGPKeys =
-      typeof (cfg as any).generations === "number" &&
-      typeof (cfg as any).populationSize === "number"
+    const hasGPKeys = typeof (cfg as any).generations === "number" && typeof (cfg as any).populationSize === "number"
     const hasIterKeys = typeof (cfg as any).iterations === "number"
     if (hasGPKeys) return "gp"
     if (hasIterKeys) return "iterative"
   }
   const notes = run.notes?.toLowerCase() || ""
-  if (notes.includes("iterative") || notes.includes("cultural"))
-    return "iterative"
-  if (
-    notes.includes(" gp") ||
-    notes.includes("gp ") ||
-    notes.includes("gp evolution")
-  )
-    return "gp"
+  if (notes.includes("iterative") || notes.includes("cultural")) return "iterative"
+  if (notes.includes(" gp") || notes.includes("gp ") || notes.includes("gp evolution")) return "gp"
   return "unknown"
 }
 
-async function updateEvolutionType(
-  runId: string,
-  evolutionType: Exclude<EvolutionType, "unknown">
-) {
+async function updateEvolutionType(runId: string, evolutionType: Exclude<EvolutionType, "unknown">) {
   // Cast to any to avoid type issues if local Database types haven't been updated with the new column yet
   const { error } = await supabase
     .from("EvolutionRun")
@@ -106,9 +95,7 @@ async function main() {
     throw new Error(`Failed to list EvolutionRun: ${error.message}`)
   }
 
-  const runs = (data ?? []).filter((r) =>
-    onlyRun ? r.run_id === onlyRun : true
-  )
+  const runs = (data ?? []).filter((r) => (onlyRun ? r.run_id === onlyRun : true))
   if (runs.length === 0) {
     console.log("No runs found")
     return

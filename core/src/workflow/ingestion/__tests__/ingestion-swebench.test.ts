@@ -1,10 +1,6 @@
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
-import type {
-  SWEBenchInput,
-  SWEBenchInstance,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
+import type { SWEBenchInput, SWEBenchInstance, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock the SWEBenchLoader
@@ -127,9 +123,7 @@ ${mockInstance.patch}`,
         },
       },
     ]
-    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockResolvedValue(
-      mockWorkflowIO
-    )
+    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockResolvedValue(mockWorkflowIO)
 
     const evaluation: SWEBenchInput = {
       type: "swebench",
@@ -147,18 +141,10 @@ ${mockInstance.patch}`,
     const workflowCase = result[0]
 
     // verify workflow input contains all expected information from the instance
-    expect(workflowCase.workflowInput).toContain(
-      `Repository: ${mockInstance.repo}`
-    )
-    expect(workflowCase.workflowInput).toContain(
-      `Base commit: ${mockInstance.base_commit}`
-    )
-    expect(workflowCase.workflowInput).toContain(
-      `Problem statement:\n${mockInstance.problem_statement}`
-    )
-    expect(workflowCase.workflowInput).toContain(
-      `Full issue text:\n${mockInstance.text}`
-    )
+    expect(workflowCase.workflowInput).toContain(`Repository: ${mockInstance.repo}`)
+    expect(workflowCase.workflowInput).toContain(`Base commit: ${mockInstance.base_commit}`)
+    expect(workflowCase.workflowInput).toContain(`Problem statement:\n${mockInstance.problem_statement}`)
+    expect(workflowCase.workflowInput).toContain(`Full issue text:\n${mockInstance.text}`)
 
     // verify workflow output is the patch
     // output contains the expected patch string
@@ -185,9 +171,7 @@ ${mockInstance.patch}`,
 
   it("should handle network errors gracefully", async () => {
     // mock fetchAsWorkflowIO to throw a network error
-    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockRejectedValue(
-      new Error("Network error: Failed to fetch")
-    )
+    vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockRejectedValue(new Error("Network error: Failed to fetch"))
 
     const evaluation: SWEBenchInput = {
       type: "swebench",

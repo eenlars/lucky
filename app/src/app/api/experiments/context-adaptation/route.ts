@@ -1,8 +1,4 @@
-import {
-  ADAPTIVE_RESULTS_URL,
-  getLatestFileByPrefixes,
-  loadJsonProdOrLocal,
-} from "@/lib/experiments/file-utils"
+import { ADAPTIVE_RESULTS_URL, getLatestFileByPrefixes, loadJsonProdOrLocal } from "@/lib/experiments/file-utils"
 import type { Condition } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
@@ -37,11 +33,7 @@ async function _getLatestBaselinePath(baseDir: string) {
   try {
     const entries = await fs.readdir(baseDir)
     const candidates = entries
-      .filter(
-        (f) =>
-          f.startsWith("adaptive-results") &&
-          !f.startsWith("adaptive-results.our-algorithm")
-      )
+      .filter((f) => f.startsWith("adaptive-results") && !f.startsWith("adaptive-results.our-algorithm"))
       .filter((f) => f.endsWith(".json"))
       .map((f) => path.join(baseDir, f))
     if (candidates.length === 0) {
@@ -72,22 +64,16 @@ async function _getLatestBaselinePath(baseDir: string) {
 }
 
 function aggregateBaselineResults(results: BaselineResult[]) {
-  const byModel: Record<
-    string,
-    { vSucc: number; vTot: number; cSucc: number; cTot: number }
-  > = {}
+  const byModel: Record<string, { vSucc: number; vTot: number; cSucc: number; cTot: number }> = {}
   for (const r of results) {
     if (r.scenario === "within-limit") continue
-    if (!byModel[r.model])
-      byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
+    if (!byModel[r.model]) byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
     if (r.condition === "vague") {
       byModel[r.model].vTot += 1
-      if (r.success || r.adaptiveBehavior?.successfulStrategy)
-        byModel[r.model].vSucc += 1
+      if (r.success || r.adaptiveBehavior?.successfulStrategy) byModel[r.model].vSucc += 1
     } else {
       byModel[r.model].cTot += 1
-      if (r.success || r.adaptiveBehavior?.successfulStrategy)
-        byModel[r.model].cSucc += 1
+      if (r.success || r.adaptiveBehavior?.successfulStrategy) byModel[r.model].cSucc += 1
     }
   }
   const chartData = Object.entries(byModel).map(([model, v]) => ({
@@ -99,14 +85,10 @@ function aggregateBaselineResults(results: BaselineResult[]) {
 }
 
 function aggregateOurAlgorithmRuns(runs: OurAlgorithmRun[]) {
-  const byModel: Record<
-    string,
-    { vSucc: number; vTot: number; cSucc: number; cTot: number }
-  > = {}
+  const byModel: Record<string, { vSucc: number; vTot: number; cSucc: number; cTot: number }> = {}
   for (const r of runs) {
     if (r.scenario === "within-limit") continue
-    if (!byModel[r.model])
-      byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
+    if (!byModel[r.model]) byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
     if (r.condition === "vague") {
       byModel[r.model].vTot += 1
       if (r.adapted || r.success) byModel[r.model].vSucc += 1
@@ -130,13 +112,9 @@ function _aggregateFinalFromRuns(
     adapted?: boolean
   }>
 ) {
-  const byModel: Record<
-    string,
-    { vSucc: number; vTot: number; cSucc: number; cTot: number }
-  > = {}
+  const byModel: Record<string, { vSucc: number; vTot: number; cSucc: number; cTot: number }> = {}
   for (const r of runs) {
-    if (!byModel[r.model])
-      byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
+    if (!byModel[r.model]) byModel[r.model] = { vSucc: 0, vTot: 0, cSucc: 0, cTot: 0 }
     if (r.condition === "vague") {
       byModel[r.model].vTot += 1
       if (r.adapted) byModel[r.model].vSucc += 1
@@ -208,8 +186,7 @@ function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
           count: 0,
         },
       })
-    const target =
-      r.condition === "vague" ? modelBucket.vague : modelBucket.clear
+    const target = r.condition === "vague" ? modelBucket.vague : modelBucket.clear
     if (typeof r.durationMs === "number" && isFinite(r.durationMs)) {
       target.msTotal += r.durationMs
     }
@@ -227,46 +204,18 @@ function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
 
   return Object.entries(byModel).map(([model, v]) => ({
     model,
-    vagueMs: v.vague.count
-      ? Number((v.vague.msTotal / v.vague.count).toFixed(1))
-      : undefined,
-    clearMs: v.clear.count
-      ? Number((v.clear.msTotal / v.clear.count).toFixed(1))
-      : undefined,
-    vagueCost: v.vague.count
-      ? Number((v.vague.costTotal / v.vague.count).toFixed(6))
-      : undefined,
-    clearCost: v.clear.count
-      ? Number((v.clear.costTotal / v.clear.count).toFixed(6))
-      : undefined,
-    vagueCalls: v.vague.count
-      ? Number((v.vague.callsTotal / v.vague.count).toFixed(2))
-      : undefined,
-    clearCalls: v.clear.count
-      ? Number((v.clear.callsTotal / v.clear.count).toFixed(2))
-      : undefined,
-    vagueItems: v.vague.count
-      ? Number((v.vague.itemsTotal / v.vague.count).toFixed(2))
-      : undefined,
-    clearItems: v.clear.count
-      ? Number((v.clear.itemsTotal / v.clear.count).toFixed(2))
-      : undefined,
-    vagueMsPerItem:
-      v.vague.itemsTotal > 0
-        ? Number((v.vague.msTotal / v.vague.itemsTotal).toFixed(1))
-        : undefined,
-    clearMsPerItem:
-      v.clear.itemsTotal > 0
-        ? Number((v.clear.msTotal / v.clear.itemsTotal).toFixed(1))
-        : undefined,
-    vagueCostPerItem:
-      v.vague.itemsTotal > 0
-        ? Number((v.vague.costTotal / v.vague.itemsTotal).toFixed(6))
-        : undefined,
-    clearCostPerItem:
-      v.clear.itemsTotal > 0
-        ? Number((v.clear.costTotal / v.clear.itemsTotal).toFixed(6))
-        : undefined,
+    vagueMs: v.vague.count ? Number((v.vague.msTotal / v.vague.count).toFixed(1)) : undefined,
+    clearMs: v.clear.count ? Number((v.clear.msTotal / v.clear.count).toFixed(1)) : undefined,
+    vagueCost: v.vague.count ? Number((v.vague.costTotal / v.vague.count).toFixed(6)) : undefined,
+    clearCost: v.clear.count ? Number((v.clear.costTotal / v.clear.count).toFixed(6)) : undefined,
+    vagueCalls: v.vague.count ? Number((v.vague.callsTotal / v.vague.count).toFixed(2)) : undefined,
+    clearCalls: v.clear.count ? Number((v.clear.callsTotal / v.clear.count).toFixed(2)) : undefined,
+    vagueItems: v.vague.count ? Number((v.vague.itemsTotal / v.vague.count).toFixed(2)) : undefined,
+    clearItems: v.clear.count ? Number((v.clear.itemsTotal / v.clear.count).toFixed(2)) : undefined,
+    vagueMsPerItem: v.vague.itemsTotal > 0 ? Number((v.vague.msTotal / v.vague.itemsTotal).toFixed(1)) : undefined,
+    clearMsPerItem: v.clear.itemsTotal > 0 ? Number((v.clear.msTotal / v.clear.itemsTotal).toFixed(1)) : undefined,
+    vagueCostPerItem: v.vague.itemsTotal > 0 ? Number((v.vague.costTotal / v.vague.itemsTotal).toFixed(6)) : undefined,
+    clearCostPerItem: v.clear.itemsTotal > 0 ? Number((v.clear.costTotal / v.clear.itemsTotal).toFixed(6)) : undefined,
   }))
 }
 
@@ -283,14 +232,11 @@ export async function GET() {
     const PROD_BASELINE_URL = ADAPTIVE_RESULTS_URL
 
     // Collect all datasets: final, baseline, our-algorithm
-    const files: { final?: string; baseline?: string; ourAlgorithm?: string } =
-      {}
+    const files: { final?: string; baseline?: string; ourAlgorithm?: string } = {}
     const errors: string[] = []
     const info: string[] = []
-    const finalChart: Array<{ model: string; vague: number; clear: number }> =
-      []
-    let baselineChart: Array<{ model: string; vague: number; clear: number }> =
-      []
+    const finalChart: Array<{ model: string; vague: number; clear: number }> = []
+    let baselineChart: Array<{ model: string; vague: number; clear: number }> = []
     let ourAlgorithmChart: Array<{
       model: string
       vague: number
@@ -339,10 +285,7 @@ export async function GET() {
       "public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.json"
     )
 
-    const baselineLoad = await loadJsonProdOrLocal<any>(
-      PROD_BASELINE_URL,
-      baselinePath
-    )
+    const baselineLoad = await loadJsonProdOrLocal<any>(PROD_BASELINE_URL, baselinePath)
     if (baselineLoad.source !== "none") {
       files.baseline = baselineLoad.file ?? undefined
     }
@@ -354,25 +297,19 @@ export async function GET() {
       if (Array.isArray(baselineJson?.results)) {
         const results = baselineJson.results as BaselineResult[]
         baselineChart = aggregateBaselineResults(results)
-        info.push(
-          `baseline: results=${results.length}, models=${baselineChart.length}`
-        )
+        info.push(`baseline: results=${results.length}, models=${baselineChart.length}`)
       } else if (Array.isArray(baselineJson?.runs)) {
         const runs = baselineJson.runs as OurAlgorithmRun[]
         baselineChart = aggregateOurAlgorithmRuns(runs)
         metricsChart = aggregateTimeAndCostFromRuns(runs)
-        info.push(
-          `baseline (runs): runs=${runs.length}, models=${baselineChart.length}`
-        )
+        info.push(`baseline (runs): runs=${runs.length}, models=${baselineChart.length}`)
       } else {
         info.push("Baseline parsed but found neither results nor runs")
       }
     }
 
     // Our Algorithm runs
-    const ourAlgorithmPath = await getLatestByPrefix(resultsDir, [
-      "adaptive-results.our-algorithm",
-    ])
+    const ourAlgorithmPath = await getLatestByPrefix(resultsDir, ["adaptive-results.our-algorithm"])
     if (ourAlgorithmPath) {
       try {
         const raw = await fs.readFile(ourAlgorithmPath, "utf-8")
@@ -381,9 +318,7 @@ export async function GET() {
         if (runs.length) {
           ourAlgorithmChart = aggregateOurAlgorithmRuns(runs)
           files.ourAlgorithm = ourAlgorithmPath
-          info.push(
-            `our-algorithm: runs=${runs.length}, models=${ourAlgorithmChart.length}`
-          )
+          info.push(`our-algorithm: runs=${runs.length}, models=${ourAlgorithmChart.length}`)
         } else {
           info.push("Our Algorithm file parsed but contains no runs")
         }
@@ -406,10 +341,7 @@ export async function GET() {
     }
 
     if (source === "none") {
-      return NextResponse.json(
-        { ok: false, error: "No results found", files, errors, info },
-        { status: 404 }
-      )
+      return NextResponse.json({ ok: false, error: "No results found", files, errors, info }, { status: 404 })
     }
 
     return NextResponse.json({

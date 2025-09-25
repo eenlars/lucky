@@ -10,9 +10,7 @@ export default function ResultsPanel({ results, error }: ResultsPanelProps) {
   return (
     <div className="h-full flex flex-col">
       <div className="bg-gray-50 border-b border-gray-200 p-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Execution Results
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900">Execution Results</h3>
       </div>
 
       <div className="flex-1 p-4 overflow-auto">
@@ -25,26 +23,16 @@ export default function ResultsPanel({ results, error }: ResultsPanelProps) {
           <div className="space-y-4">
             {results.success && (
               <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="text-green-700 font-medium">
-                  {results.message}
-                </div>
+                <div className="text-green-700 font-medium">{results.message}</div>
                 {results.usdCost && (
-                  <div className="text-green-600 text-sm mt-1">
-                    Cost: ${results.usdCost.toFixed(4)}
-                  </div>
+                  <div className="text-green-600 text-sm mt-1">Cost: ${results.usdCost.toFixed(4)}</div>
                 )}
               </div>
             )}
 
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm font-medium text-gray-700 mb-2">
-                Raw Results
-              </div>
-              <SmartContent
-                value={results}
-                className="text-xs text-gray-700"
-                collapsed={2}
-              />
+              <div className="text-sm font-medium text-gray-700 mb-2">Raw Results</div>
+              <SmartContent value={results} className="text-xs text-gray-700" collapsed={2} />
             </div>
           </div>
         ) : (

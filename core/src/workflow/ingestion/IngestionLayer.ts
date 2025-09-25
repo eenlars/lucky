@@ -54,17 +54,13 @@ export class IngestionLayer {
 
     // needs work: error message should include the actual type for debugging
     //likely bug: should use evaluation.type instead of entire evaluation object
-    throw new Error(
-      `unsupported evaluation type: ${JSON.stringify(evaluation)}`
-    )
+    throw new Error(`unsupported evaluation type: ${JSON.stringify(evaluation)}`)
   }
 
   /**
    * converts text evaluation to single WorkflowIO
    */
-  private static convertTextEvaluation(
-    evaluation: EvaluationInput & { type: "text" }
-  ): WorkflowIO[] {
+  private static convertTextEvaluation(evaluation: EvaluationInput & { type: "text" }): WorkflowIO[] {
     const workflowCase: WorkflowIO = {
       workflowInput: evaluation.question,
       workflowOutput: {
@@ -72,16 +68,11 @@ export class IngestionLayer {
       },
     }
 
-    lgg.onlyIf(
-      this.verbose,
-      "[IngestionLayer] created single workflow case from text"
-    )
+    lgg.onlyIf(this.verbose, "[IngestionLayer] created single workflow case from text")
     return [workflowCase]
   }
 
-  private static convertPromptOnlyEvaluation(
-    evaluation: EvaluationInput & { type: "prompt-only" }
-  ): WorkflowIO[] {
+  private static convertPromptOnlyEvaluation(evaluation: EvaluationInput & { type: "prompt-only" }): WorkflowIO[] {
     return [
       {
         workflowInput: evaluation.goal,
@@ -95,9 +86,7 @@ export class IngestionLayer {
   /**
    * converts CSV evaluation to multiple WorkflowIO cases
    */
-  private static async convertCSVEvaluation(
-    evaluation: EvaluationInput & { type: "csv" }
-  ): Promise<WorkflowIO[]> {
+  private static async convertCSVEvaluation(evaluation: EvaluationInput & { type: "csv" }): Promise<WorkflowIO[]> {
     guard(evaluation.inputFile, "CSV evaluation type requires inputFile")
 
     try {
@@ -110,42 +99,30 @@ export class IngestionLayer {
       })
 
       // parse evaluation to extract column name for expected output
-      const expectedOutputColumnName = this.parseEvaluation(
-        evaluation.evaluation
-      )
+      const expectedOutputColumnName = this.parseEvaluation(evaluation.evaluation)
 
       // create workflow cases from CSV rows
-      const workflowCases: WorkflowIO[] = csvData.map(
-        (row: Record<string, any>, index: number) => {
-          // filter row data to only include specified columns if onlyIncludeInputColumns is provided
-          const filteredRow = evaluation.onlyIncludeInputColumns
-            ? Object.fromEntries(
-                Object.entries(row).filter(([key]) =>
-                  evaluation.onlyIncludeInputColumns!.includes(key)
-                )
-              )
-            : row
+      const workflowCases: WorkflowIO[] = csvData.map((row: Record<string, any>, index: number) => {
+        // filter row data to only include specified columns if onlyIncludeInputColumns is provided
+        const filteredRow = evaluation.onlyIncludeInputColumns
+          ? Object.fromEntries(Object.entries(row).filter(([key]) => evaluation.onlyIncludeInputColumns!.includes(key)))
+          : row
 
-          // create input by combining goal with row data
-          const rowContext = Object.entries(filteredRow)
-            .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-            .join("\n")
+        // create input by combining goal with row data
+        const rowContext = Object.entries(filteredRow)
+          .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+          .join("\n")
 
-          const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
+        const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
 
-          // determine expected output for this row
-          const workflowOutput = this.determineExpectedOutput(
-            row,
-            expectedOutputColumnName,
-            index
-          )
+        // determine expected output for this row
+        const workflowOutput = this.determineExpectedOutput(row, expectedOutputColumnName, index)
 
-          return {
-            workflowInput,
-            workflowOutput: workflowOutput,
-          }
+        return {
+          workflowInput,
+          workflowOutput: workflowOutput,
         }
-      )
+      })
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases", {
         count: workflowCases.length,
@@ -153,39 +130,28 @@ export class IngestionLayer {
       })
 
       // calculate number of cases to select based on configured percentage
-      const numCasesToSelect = Math.max(
-        1,
-        Math.min(workflowCases.length, CONFIG.ingestion.taskLimit)
-      )
+      const numCasesToSelect = Math.max(1, Math.min(workflowCases.length, CONFIG.ingestion.taskLimit))
 
       // use proper random sampling instead of array sort for performance
-      const selectedCases = workflowCases
-        .sort(() => Math.random() - 0.5)
-        .slice(0, numCasesToSelect)
+      const selectedCases = workflowCases.sort(() => Math.random() - 0.5).slice(0, numCasesToSelect)
 
       return selectedCases
     } catch (error) {
       lgg.error("[IngestionLayer] failed to process CSV", error)
-      throw new Error(
-        `failed to convert CSV evaluation: ${error instanceof Error ? error.message : String(error)}`
-      )
+      throw new Error(`failed to convert CSV evaluation: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
   /**
    * parse evaluation string to extract column reference
    */
-  private static parseEvaluation(
-    evaluation: string | undefined
-  ): string | null {
+  private static parseEvaluation(evaluation: string | undefined): string | null {
     if (!evaluation) {
       return null
     }
 
     if (!evaluation.startsWith("column:")) {
-      throw new Error(
-        `evaluation must be a column reference in format 'column:columnName', got: ${evaluation}`
-      )
+      throw new Error(`evaluation must be a column reference in format 'column:columnName', got: ${evaluation}`)
     }
 
     const columnName = evaluation.slice(7) // remove 'column:' prefix
@@ -197,11 +163,7 @@ export class IngestionLayer {
   /**
    * determine expected output for a specific CSV row
    */
-  private static determineExpectedOutput(
-    row: Record<string, any>,
-    columnName: string | null,
-    rowIndex: number
-  ): any {
+  private static determineExpectedOutput(row: Record<string, any>, columnName: string | null, rowIndex: number): any {
     // if no column name is specified, return a default message
     if (!columnName) {
       return "no expected output specified"
@@ -264,9 +226,7 @@ export class IngestionLayer {
   /**
    * converts GAIA evaluation to multiple WorkflowIO cases (configurable limit)
    */
-  private static async convertGAIAEvaluation(
-    evaluation: EvaluationInput & { type: "gaia" }
-  ): Promise<WorkflowIO[]> {
+  private static async convertGAIAEvaluation(evaluation: EvaluationInput & { type: "gaia" }): Promise<WorkflowIO[]> {
     try {
       lgg.onlyIf(this.verbose, "[IngestionLayer] fetching GAIA instances", {
         level: evaluation.level,
@@ -282,9 +242,7 @@ export class IngestionLayer {
         envi.HF_TOKEN,
         envi.HUGGING_FACE_API_KEY,
       ]
-      const authToken = authTokenCandidates.find(
-        (v): v is string => typeof v === "string" && v.length > 0
-      )
+      const authToken = authTokenCandidates.find((v): v is string => typeof v === "string" && v.length > 0)
 
       if (!authToken) {
         lgg.warn(
@@ -319,9 +277,7 @@ ${instance.Question}`
 Note: This task includes an attached file: ${instance.file_name}
 The file content should be processed as part of solving this task.`
 
-          lgg.info(
-            `[IngestionLayer] GAIA task ${instance.task_id} has associated file: ${instance.file_name}`
-          )
+          lgg.info(`[IngestionLayer] GAIA task ${instance.task_id} has associated file: ${instance.file_name}`)
         }
 
         // the expected output is the final answer
@@ -335,26 +291,17 @@ The file content should be processed as part of solving this task.`
         }
       })
 
-      lgg.onlyIf(
-        this.verbose,
-        "[IngestionLayer] created workflow cases from GAIA",
-        {
-          level: evaluation.level,
-          totalInstances: instances.length,
-          casesGenerated: workflowCases.length,
-        }
-      )
+      lgg.onlyIf(this.verbose, "[IngestionLayer] created workflow cases from GAIA", {
+        level: evaluation.level,
+        totalInstances: instances.length,
+        casesGenerated: workflowCases.length,
+      })
 
       return workflowCases
     } catch (error) {
       // If authentication fails, create a fallback case explaining the issue
-      if (
-        error instanceof Error &&
-        error.message.includes("Authentication required")
-      ) {
-        lgg.warn(
-          "[IngestionLayer] GAIA authentication failed, creating fallback case"
-        )
+      if (error instanceof Error && error.message.includes("Authentication required")) {
+        lgg.warn("[IngestionLayer] GAIA authentication failed, creating fallback case")
         const fallbackCase: WorkflowIO = {
           workflowInput: `${evaluation.goal}
 
@@ -369,9 +316,7 @@ Fallback Question: What is 2 + 2?`,
       }
 
       lgg.error("[IngestionLayer] failed to process GAIA", error)
-      throw new Error(
-        `failed to convert GAIA evaluation: ${error instanceof Error ? error.message : String(error)}`
-      )
+      throw new Error(`failed to convert GAIA evaluation: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
@@ -383,10 +328,7 @@ Fallback Question: What is 2 + 2?`,
   ): Promise<WorkflowIO[]> {
     const { recordIds } = evaluation
 
-    guard(
-      recordIds,
-      "dataset-records evaluation requires at least one record ID"
-    )
+    guard(recordIds, "dataset-records evaluation requires at least one record ID")
 
     try {
       lgg.onlyIf(this.verbose, "[IngestionLayer] fetching dataset records", {
@@ -405,9 +347,7 @@ Fallback Question: What is 2 + 2?`,
       }
 
       if (!records || records.length === 0) {
-        throw new Error(
-          `no dataset records found for IDs: ${recordIds.join(", ")}`
-        )
+        throw new Error(`no dataset records found for IDs: ${recordIds.join(", ")}`)
       }
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] loaded dataset records", {
@@ -425,20 +365,13 @@ Fallback Question: What is 2 + 2?`,
       }))
 
       const randomIndex = Math.floor(Math.random() * workflowCases.length)
-      lgg.onlyIf(
-        this.verbose,
-        "[IngestionLayer] generated workflow cases from dataset records. this is one example:",
-        {
-          count: workflowCases.length,
-          firstInput: workflowCases[randomIndex]?.workflowInput,
-          firstInputLength:
-            workflowCases[randomIndex]?.workflowInput?.length || 0,
-          firstOutput: workflowCases[randomIndex]?.workflowOutput?.output,
-          firstOutputLength:
-            workflowCases[randomIndex]?.workflowOutput?.output?.toString()
-              ?.length || 0,
-        }
-      )
+      lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases from dataset records. this is one example:", {
+        count: workflowCases.length,
+        firstInput: workflowCases[randomIndex]?.workflowInput,
+        firstInputLength: workflowCases[randomIndex]?.workflowInput?.length || 0,
+        firstOutput: workflowCases[randomIndex]?.workflowOutput?.output,
+        firstOutputLength: workflowCases[randomIndex]?.workflowOutput?.output?.toString()?.length || 0,
+      })
 
       return workflowCases
     } catch (error) {

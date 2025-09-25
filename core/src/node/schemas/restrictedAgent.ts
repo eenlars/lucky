@@ -25,20 +25,12 @@ export const RestrictedAgentDescriptionsConfigSchema = withDescriptions(
   restrictedAgentDescriptions
 )
 
-export type RestrictedAgentDescriptionsZod = z.infer<
-  typeof RestrictedAgentDescriptionsConfigSchema
->
+export type RestrictedAgentDescriptionsZod = z.infer<typeof RestrictedAgentDescriptionsConfigSchema>
 
 export const AgentSelfImprovementOutputSchema = z.object({
-  improve_points: z
-    .string()
-    .describe("Points to improve the workflow node (short, 1-2 sentences)"),
-  learn_points: z
-    .string()
-    .describe("Points to learn from the workflow node (short, 1-2 sentences)"),
+  improve_points: z.string().describe("Points to improve the workflow node (short, 1-2 sentences)"),
+  learn_points: z.string().describe("Points to learn from the workflow node (short, 1-2 sentences)"),
   updated_node_config: RestrictedAgentDescriptionsConfigSchema,
 })
 
-export type AgentSelfImprovementOutputZod = z.infer<
-  typeof AgentSelfImprovementOutputSchema
->
+export type AgentSelfImprovementOutputZod = z.infer<typeof AgentSelfImprovementOutputSchema>

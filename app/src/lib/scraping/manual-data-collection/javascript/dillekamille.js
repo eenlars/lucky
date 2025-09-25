@@ -32,8 +32,7 @@ function transformLocationData(input) {
           if (!entry.is_open) {
             opening_times[dayKey] = "closed"
           } else if (entry.opening_time && entry.closing_time) {
-            opening_times[dayKey] =
-              `${entry.opening_time}-${entry.closing_time}`
+            opening_times[dayKey] = `${entry.opening_time}-${entry.closing_time}`
           }
         }
       })
@@ -41,15 +40,8 @@ function transformLocationData(input) {
 
     // pull coords if available
     let coords = null
-    if (
-      location.marker &&
-      location.marker.latitude &&
-      location.marker.longitude
-    ) {
-      coords = [
-        parseFloat(location.marker.longitude),
-        parseFloat(location.marker.latitude),
-      ]
+    if (location.marker && location.marker.latitude && location.marker.longitude) {
+      coords = [parseFloat(location.marker.longitude), parseFloat(location.marker.latitude)]
     }
 
     return {
@@ -64,8 +56,7 @@ function transformLocationData(input) {
       opening_times,
       owner_imgs: Array.isArray(location.owner_imgs) ? location.owner_imgs : [],
       metadata: {
-        ai_generated_description:
-          location.metadata?.ai_generated_description || null,
+        ai_generated_description: location.metadata?.ai_generated_description || null,
         calculated_rating: location.metadata?.calculated_rating || null,
         extracted_features: Array.isArray(location.metadata?.extracted_features)
           ? location.metadata.extracted_features
@@ -77,9 +68,6 @@ function transformLocationData(input) {
 
 // run transform and save
 const transformed = transformLocationData(json)
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/dillekamille.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/dillekamille.json", JSON.stringify(transformed, null, 2))
 
 lgg.log(transformed)

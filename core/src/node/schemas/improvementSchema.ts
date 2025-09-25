@@ -1,14 +1,8 @@
 import { memoryInstructions } from "@core/node/schemas/memoryInstructions.p"
-import {
-  ACTIVE_CODE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES,
-} from "@core/tools/tool.types"
+import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
 import { llmify } from "@core/utils/common/llmify"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
-import {
-  ACTIVE_MODEL_NAMES,
-  ACTIVE_MODEL_NAMES_WITH_INFO,
-} from "@core/utils/spending/pricing"
+import { ACTIVE_MODEL_NAMES, ACTIVE_MODEL_NAMES_WITH_INFO } from "@core/utils/spending/pricing"
 import { z, ZodRawShape } from "zod"
 
 // define the raw shape
@@ -16,12 +10,8 @@ export const baseWorkflowNodeConfigShape = {
   nodeId: z.string(),
   description: z.string(),
   modelName: z.enum(ACTIVE_MODEL_NAMES as unknown as [string, ...string[]]),
-  mcpTools: z.array(
-    z.enum(ACTIVE_MCP_TOOL_NAMES as unknown as [string, ...string[]])
-  ),
-  codeTools: z.array(
-    z.enum(ACTIVE_CODE_TOOL_NAMES as unknown as [string, ...string[]])
-  ),
+  mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES as unknown as [string, ...string[]])),
+  codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES as unknown as [string, ...string[]])),
   systemPrompt: z.string(),
   handOffs: z.array(z.string()),
   handOffType: z.enum(["conditional", "sequential", "parallel"]).optional(),

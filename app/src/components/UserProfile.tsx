@@ -9,10 +9,7 @@ interface UserProfileProps {
   isMobile?: boolean
 }
 
-export default function UserProfile({
-  isCollapsed,
-  isMobile,
-}: UserProfileProps) {
+export default function UserProfile({ isCollapsed, isMobile }: UserProfileProps) {
   const { user } = useUser()
 
   if (!user) {
@@ -51,12 +48,8 @@ export default function UserProfile({
         <AvatarFallback className="text-xs">{initials}</AvatarFallback>
       </Avatar>
       <div className="flex-1 overflow-hidden">
-        <div className="text-[11px] font-medium text-sidebar-foreground truncate">
-          {user.fullName || "User"}
-        </div>
-        <div className="text-[10px] text-sidebar-foreground/50 truncate">
-          {user.emailAddresses[0]?.emailAddress}
-        </div>
+        <div className="text-[11px] font-medium text-sidebar-foreground truncate">{user.fullName || "User"}</div>
+        <div className="text-[10px] text-sidebar-foreground/50 truncate">{user.emailAddresses[0]?.emailAddress}</div>
       </div>
     </div>
   )

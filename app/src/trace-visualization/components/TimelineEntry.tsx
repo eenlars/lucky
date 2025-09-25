@@ -12,14 +12,8 @@ import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/ful
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
-import type {
-  AgentSteps,
-  AgentStepsLegacy,
-} from "@core/messages/pipeline/AgentStep.types"
-import {
-  isLegacyToolUsage,
-  normalizeLegacyToolUsage,
-} from "@core/messages/pipeline/LegacyToolUsage.types"
+import type { AgentSteps, AgentStepsLegacy } from "@core/messages/pipeline/AgentStep.types"
+import { isLegacyToolUsage, normalizeLegacyToolUsage } from "@core/messages/pipeline/LegacyToolUsage.types"
 import { isNir } from "@core/utils/common/isNir"
 import { TOOLS } from "@runtime/settings/tools"
 import { format } from "date-fns"
@@ -38,11 +32,8 @@ interface TimelineEntryProps {
   isLastNode?: boolean
 }
 
-export const getAgentSteps = (
-  extras: NodeInvocationExtras | null
-): AgentSteps | undefined => {
-  const agentSteps: AgentSteps | AgentStepsLegacy | undefined =
-    extras?.agentSteps
+export const getAgentSteps = (extras: NodeInvocationExtras | null): AgentSteps | undefined => {
+  const agentSteps: AgentSteps | AgentStepsLegacy | undefined = extras?.agentSteps
   if (agentSteps && "totalCost" in agentSteps) {
     //legacy
     return agentSteps.outputs as unknown as AgentSteps
@@ -50,9 +41,7 @@ export const getAgentSteps = (
   return agentSteps
 }
 
-function getLegacyAgentSteps(
-  extras: unknown
-): { steps: AgentSteps; totalCost?: number } | null {
+function getLegacyAgentSteps(extras: unknown): { steps: AgentSteps; totalCost?: number } | null {
   if (!extras || typeof extras !== "object") return null
   const anyExtras = extras as Record<string, unknown>
   const toolUsage = anyExtras.toolUsage
@@ -60,11 +49,7 @@ function getLegacyAgentSteps(
   return normalizeLegacyToolUsage(toolUsage)
 }
 
-export const TimelineEntry = ({
-  entry,
-  index,
-  isLastNode: _isLastNode = false,
-}: TimelineEntryProps) => {
+export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }: TimelineEntryProps) => {
   const { invocation, nodeDefinition, inputs, output } = entry
   const router = useRouter()
   const [isPromptExpanded, setIsPromptExpanded] = useState(false)
@@ -86,11 +71,7 @@ export const TimelineEntry = ({
     if (!agentSteps || expandAllLogs !== null) return
     const initial = new Set<number>()
     agentSteps.forEach((output, index) => {
-      if (
-        output.type === "reasoning" ||
-        output.type === "plan" ||
-        output.type === "tool"
-      ) {
+      if (output.type === "reasoning" || output.type === "plan" || output.type === "tool") {
         initial.add(index)
       }
     })
@@ -109,15 +90,10 @@ export const TimelineEntry = ({
   }, [expandAllLogs, agentSteps])
 
   const durationMs: number | null = invocation.end_time
-    ? new Date(invocation.end_time).getTime() -
-      new Date(invocation.start_time).getTime()
+    ? new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()
     : null
 
-  const statusColor =
-    STATUS_TO_COLOR[
-      (invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ??
-        "default"
-    ]
+  const statusColor = STATUS_TO_COLOR[(invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ?? "default"]
 
   // extract a concise input summary if available
   const inputSummaryResult =
@@ -145,9 +121,7 @@ export const TimelineEntry = ({
     >
       {/* Clean status indicator */}
       <div className="absolute top-4 right-4">
-        <div
-          className={`w-2 h-2 rounded-full ${statusColor.replace("border", "bg")}`}
-        />
+        <div className={`w-2 h-2 rounded-full ${statusColor.replace("border", "bg")}`} />
       </div>
 
       {/* Node invocation header */}
@@ -157,9 +131,7 @@ export const TimelineEntry = ({
           <div className="flex items-center gap-3">
             <button
               className="text-xl font-bold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded border dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
-              onClick={() =>
-                router.push(`/node-invocation/${invocation.node_invocation_id}`)
-              }
+              onClick={() => router.push(`/node-invocation/${invocation.node_invocation_id}`)}
               title="View detailed node invocation"
             >
               {nodeDefinition?.node_id ?? invocation.node_id}
@@ -193,28 +165,17 @@ export const TimelineEntry = ({
                 <DialogHeader>
                   <DialogTitle>Raw Database Content</DialogTitle>
                   <DialogDescription>
-                    Database records for node invocation:{" "}
-                    {nodeDefinition?.node_id ?? invocation.node_id}
+                    Database records for node invocation: {nodeDefinition?.node_id ?? invocation.node_id}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4 space-y-4">
                   <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Node Invocation
-                    </div>
-                    <SmartContent
-                      value={invocation}
-                      collapsed={2}
-                      enableClipboard
-                      showExpanders
-                      jsonTheme="auto"
-                    />
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Invocation</div>
+                    <SmartContent value={invocation} collapsed={2} enableClipboard showExpanders jsonTheme="auto" />
                   </div>
                   {nodeDefinition && (
                     <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Node Definition
-                      </div>
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Definition</div>
                       <SmartContent
                         value={nodeDefinition}
                         collapsed={2}
@@ -226,30 +187,14 @@ export const TimelineEntry = ({
                   )}
                   {inputs.length > 0 && (
                     <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Inputs
-                      </div>
-                      <SmartContent
-                        value={inputs}
-                        collapsed={2}
-                        enableClipboard
-                        showExpanders
-                        jsonTheme="auto"
-                      />
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Inputs</div>
+                      <SmartContent value={inputs} collapsed={2} enableClipboard showExpanders jsonTheme="auto" />
                     </div>
                   )}
                   {output && (
                     <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Output
-                      </div>
-                      <SmartContent
-                        value={output}
-                        collapsed={2}
-                        enableClipboard
-                        showExpanders
-                        jsonTheme="auto"
-                      />
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Output</div>
+                      <SmartContent value={output} collapsed={2} enableClipboard showExpanders jsonTheme="auto" />
                     </div>
                   )}
                 </div>
@@ -262,145 +207,114 @@ export const TimelineEntry = ({
                     {(durationMs / 1000).toFixed(2)}s
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Invocation completed in {(durationMs / 1000).toFixed(2)}{" "}
-                  seconds
-                </TooltipContent>
+                <TooltipContent>Invocation completed in {(durationMs / 1000).toFixed(2)} seconds</TooltipContent>
               </Tooltip>
             )}
           </div>
         </div>
 
         {/* Incoming message box */}
-        {inputs.length > 0 &&
-          inputSummary &&
-          inputSummary !== "Input data object" &&
-          inputSummary !== "No input" && (
-            <>
-              {inputSummary.startsWith("Aggregated input from") ? (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                      <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                        Incoming message from previous node
-                      </div>
-                      <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
-                        <span>{inputSummary}</span>
-                        <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">
-                          (Click to view)
-                        </span>
-                      </div>
+        {inputs.length > 0 && inputSummary && inputSummary !== "Input data object" && inputSummary !== "No input" && (
+          <>
+            {inputSummary.startsWith("Aggregated input from") ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                    <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                      Incoming message from previous node
                     </div>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Aggregated Inputs</DialogTitle>
-                      <DialogDescription>{inputSummary}</DialogDescription>
-                    </DialogHeader>
-                    <div className="mt-4 space-y-4">
-                      {(() => {
-                        const payload = inputs[0]?.payload
-                        if (typeof payload === "object" && payload) {
-                          const anyPayload: any = payload
-                          const msgs =
-                            anyPayload.messages ?? anyPayload.berichten
-                          if (Array.isArray(msgs)) {
-                            return msgs.map((msg: any, idx: number) => (
-                              <div
-                                key={idx}
-                                className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
-                              >
-                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                  Input {idx + 1}{" "}
-                                  {msg.from_node_id
-                                    ? `from ${msg.from_node_id}`
-                                    : ""}
-                                </div>
-                                <SmartContent
-                                  value={msg}
-                                  collapsed={2}
-                                  enableClipboard
-                                  showExpanders
-                                />
-                              </div>
-                            ))
-                          }
-                        }
-                        return (
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            No messages found
-                          </div>
-                        )
-                      })()}
+                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
+                      <span>{inputSummary}</span>
+                      <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to view)</span>
                     </div>
-                  </DialogContent>
-                </Dialog>
-              ) : inputSummaryResult.isTruncated ? (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                      <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                        Incoming message from previous node
-                      </div>
-                      <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
-                        <span>{inputSummary}</span>
-                        <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">
-                          (Click to expand)
-                        </span>
-                      </div>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Full Incoming Message</DialogTitle>
-                      <DialogDescription>
-                        Complete message from previous node
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="mt-4">
-                      <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                        <SmartContent
-                          value={inputs[0]?.payload}
-                          collapsed={false}
-                          enableClipboard
-                          showExpanders
-                          stringifySpacing={2}
-                        />
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              ) : (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                  <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                    Incoming message from previous node
                   </div>
-                  <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Aggregated Inputs</DialogTitle>
+                    <DialogDescription>{inputSummary}</DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-4 space-y-4">
                     {(() => {
-                      // Prefer canonical text extraction for preview; fall back to summary
-                      try {
-                        const text = extractTextFromPayload(
-                          inputs[0]?.payload as any
-                        )
-                        if (text && typeof text === "string") {
-                          return text.length > 300
-                            ? text.substring(0, 300) + "..."
-                            : text
+                      const payload = inputs[0]?.payload
+                      if (typeof payload === "object" && payload) {
+                        const anyPayload: any = payload
+                        const msgs = anyPayload.messages ?? anyPayload.berichten
+                        if (Array.isArray(msgs)) {
+                          return msgs.map((msg: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
+                            >
+                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Input {idx + 1} {msg.from_node_id ? `from ${msg.from_node_id}` : ""}
+                              </div>
+                              <SmartContent value={msg} collapsed={2} enableClipboard showExpanders />
+                            </div>
+                          ))
                         }
-                      } catch {}
-                      return inputSummary
+                      }
+                      return <div className="text-sm text-gray-500 dark:text-gray-400">No messages found</div>
                     })()}
                   </div>
+                </DialogContent>
+              </Dialog>
+            ) : inputSummaryResult.isTruncated ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                    <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                      Incoming message from previous node
+                    </div>
+                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
+                      <span>{inputSummary}</span>
+                      <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to expand)</span>
+                    </div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Full Incoming Message</DialogTitle>
+                    <DialogDescription>Complete message from previous node</DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                      <SmartContent
+                        value={inputs[0]?.payload}
+                        collapsed={false}
+                        enableClipboard
+                        showExpanders
+                        stringifySpacing={2}
+                      />
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                  Incoming message from previous node
                 </div>
-              )}
-            </>
-          )}
+                <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
+                  {(() => {
+                    // Prefer canonical text extraction for preview; fall back to summary
+                    try {
+                      const text = extractTextFromPayload(inputs[0]?.payload as any)
+                      if (text && typeof text === "string") {
+                        return text.length > 300 ? text.substring(0, 300) + "..." : text
+                      }
+                    } catch {}
+                    return inputSummary
+                  })()}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Metadata footer bar */}
         <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
-          <span className="font-medium">
-            Model: {invocation?.model ?? "N/A"}
-          </span>
+          <span className="font-medium">Model: {invocation?.model ?? "N/A"}</span>
         </div>
       </div>
 
@@ -414,39 +328,24 @@ export const TimelineEntry = ({
       )}
 
       {/* Node memory display */}
-      {((!isNir(nodeDefinition?.memory) &&
-        Object.keys(nodeDefinition.memory as Record<string, string>).length >
-          0) ||
+      {((!isNir(nodeDefinition?.memory) && Object.keys(nodeDefinition.memory as Record<string, string>).length > 0) ||
         (!isNir(updatedMemory) && Object.keys(updatedMemory).length > 0)) && (
         <div className="px-4 pb-3">
           <div className="space-y-2">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Memory
-            </div>
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Memory</div>
 
             {/* Original/Initial Memory */}
             {!isNir(nodeDefinition?.memory) &&
-              Object.keys(nodeDefinition.memory as Record<string, string>)
-                .length > 0 && (
+              Object.keys(nodeDefinition.memory as Record<string, string>).length > 0 && (
                 <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-                  <div className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-2">
-                    Initial Memory
-                  </div>
+                  <div className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-2">Initial Memory</div>
                   <ul className="space-y-1">
-                    {Object.entries(
-                      nodeDefinition.memory as Record<string, string>
-                    ).map(([key, value], idx) => (
+                    {Object.entries(nodeDefinition.memory as Record<string, string>).map(([key, value], idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs">
-                        <span className="text-amber-600 dark:text-amber-400 mt-0.5">
-                          •
-                        </span>
+                        <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
                         <div className="flex-1">
-                          <span className="font-medium text-amber-900 dark:text-amber-200">
-                            {key}:
-                          </span>{" "}
-                          <span className="text-amber-800 dark:text-amber-300">
-                            {value}
-                          </span>
+                          <span className="font-medium text-amber-900 dark:text-amber-200">{key}:</span>{" "}
+                          <span className="text-amber-800 dark:text-amber-300">{value}</span>
                         </div>
                       </li>
                     ))}
@@ -469,10 +368,7 @@ export const TimelineEntry = ({
                           onClick={() => setIsUpdatedMemoryExpanded(true)}
                           title="Expand updated memory"
                         >
-                          <Maximize2
-                            size={14}
-                            className="text-gray-600 dark:text-gray-400"
-                          />
+                          <Maximize2 size={14} className="text-gray-600 dark:text-gray-400" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>Expand updated memory</TooltipContent>
@@ -484,10 +380,7 @@ export const TimelineEntry = ({
                           onClick={() => setIsUpdatedMemoryExpanded(false)}
                           title="Collapse updated memory"
                         >
-                          <Minimize2
-                            size={14}
-                            className="text-gray-600 dark:text-gray-400"
-                          />
+                          <Minimize2 size={14} className="text-gray-600 dark:text-gray-400" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>Collapse updated memory</TooltipContent>
@@ -498,16 +391,10 @@ export const TimelineEntry = ({
                   <ul className="space-y-1">
                     {Object.entries(updatedMemory).map(([key, value], idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs">
-                        <span className="text-green-600 dark:text-green-400 mt-0.5">
-                          •
-                        </span>
+                        <span className="text-green-600 dark:text-green-400 mt-0.5">•</span>
                         <div className="flex-1">
-                          <span className="font-medium text-green-900 dark:text-green-200">
-                            {key}:
-                          </span>{" "}
-                          <span className="text-green-800 dark:text-green-300">
-                            {value}
-                          </span>
+                          <span className="font-medium text-green-900 dark:text-green-200">{key}:</span>{" "}
+                          <span className="text-green-800 dark:text-green-300">{value}</span>
                         </div>
                       </li>
                     ))}
@@ -531,12 +418,8 @@ export const TimelineEntry = ({
                 // Get all unique tools (available + used)
                 const availableTools = nodeDefinition?.tools || []
                 const usedTools =
-                  agentSteps
-                    ?.filter((output) => output.type === "tool")
-                    .map((output) => output.name) || []
-                const allTools = Array.from(
-                  new Set([...availableTools, ...usedTools])
-                )
+                  agentSteps?.filter((output) => output.type === "tool").map((output) => output.name) || []
+                const allTools = Array.from(new Set([...availableTools, ...usedTools]))
 
                 return allTools.map((tool, index) => {
                   const wasUsed = usedTools.includes(tool)
@@ -554,20 +437,14 @@ export const TimelineEntry = ({
                             }
                           `}
                         >
-                          {wasUsed && (
-                            <div className="w-1 h-1 rounded-full bg-green-500 dark:bg-green-400" />
-                          )}
+                          {wasUsed && <div className="w-1 h-1 rounded-full bg-green-500 dark:bg-green-400" />}
                           {tool}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-1">
-                          <div className="text-xs font-medium">
-                            {wasUsed ? "✓ Used" : "Available"}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">
-                            {getToolDescription(tool)}
-                          </div>
+                          <div className="text-xs font-medium">{wasUsed ? "✓ Used" : "Available"}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">{getToolDescription(tool)}</div>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -579,10 +456,7 @@ export const TimelineEntry = ({
             {/* Tool summaries - show quick overview of what tools accomplished */}
             {agentSteps
               ?.filter((output) => output.type === "tool")
-              .filter(
-                (toolOutput) =>
-                  "summary" in toolOutput && !isNir(toolOutput.summary)
-              )
+              .filter((toolOutput) => "summary" in toolOutput && !isNir(toolOutput.summary))
               .map((toolOutput, index) => (
                 <div
                   key={`tool-summary-${index}`}
@@ -591,9 +465,7 @@ export const TimelineEntry = ({
                   <div className="flex items-start gap-2">
                     <div className="w-1 h-1 rounded-full bg-blue-500 dark:bg-blue-400 mt-2" />
                     <div className="flex-1">
-                      <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                        {toolOutput.name}
-                      </div>
+                      <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">{toolOutput.name}</div>
                       <div className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
                         {"summary" in toolOutput ? toolOutput.summary : ""}
                       </div>
@@ -619,10 +491,7 @@ export const TimelineEntry = ({
                       onClick={() => setExpandAllLogs(true)}
                       title="Expand all logs"
                     >
-                      <Maximize2
-                        size={14}
-                        className="text-gray-600 dark:text-gray-400"
-                      />
+                      <Maximize2 size={14} className="text-gray-600 dark:text-gray-400" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>Expand all logs</TooltipContent>
@@ -634,10 +503,7 @@ export const TimelineEntry = ({
                       onClick={() => setExpandAllLogs(false)}
                       title="Collapse all logs"
                     >
-                      <Minimize2
-                        size={14}
-                        className="text-gray-600 dark:text-gray-400"
-                      />
+                      <Minimize2 size={14} className="text-gray-600 dark:text-gray-400" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>Collapse all logs</TooltipContent>
@@ -768,25 +634,18 @@ function extractInputSummary(payload: any): {
 
   // handle text payload
   if (typeof payload === "string") {
-    if (payload.trim().length === 0)
-      return { summary: "", original: null, isTruncated: false }
+    if (payload.trim().length === 0) return { summary: "", original: null, isTruncated: false }
     // extract first sentence or first 60 chars
     const firstSentence = payload.split(/[.!?]/)
     if (firstSentence[0] && firstSentence[0].trim()) {
-      const summary =
-        firstSentence[0].length > 60
-          ? firstSentence[0].substring(0, 60) + "..."
-          : firstSentence[0].trim()
+      const summary = firstSentence[0].length > 60 ? firstSentence[0].substring(0, 60) + "..." : firstSentence[0].trim()
       return {
         summary,
         original: payload,
-        isTruncated:
-          firstSentence[0].length > 60 ||
-          payload.length > firstSentence[0].length,
+        isTruncated: firstSentence[0].length > 60 || payload.length > firstSentence[0].length,
       }
     }
-    const summary =
-      payload.length > 60 ? payload.substring(0, 60) + "..." : payload
+    const summary = payload.length > 60 ? payload.substring(0, 60) + "..." : payload
     return {
       summary,
       original: payload,
@@ -804,15 +663,10 @@ function extractInputSummary(payload: any): {
       if (messageCount > 0) {
         const first = msgs[0]
         const text: string | undefined =
-          typeof first?.text === "string"
-            ? first.text
-            : typeof first?.message === "string"
-              ? first.message
-              : undefined
+          typeof first?.text === "string" ? first.text : typeof first?.message === "string" ? first.message : undefined
         if (text && text.trim()) {
           const original = text
-          const summary =
-            text.length > 80 ? text.substring(0, 80) + "..." : text
+          const summary = text.length > 80 ? text.substring(0, 80) + "..." : text
           return { summary, original, isTruncated: text.length > 80 }
         }
         return {
@@ -825,9 +679,7 @@ function extractInputSummary(payload: any): {
 
     // handle specific payload kinds first (most specific)
     if (payload.kind === "aggregated" && payload.messages) {
-      const messageCount = Array.isArray(payload.messages)
-        ? payload.messages.length
-        : 0
+      const messageCount = Array.isArray(payload.messages) ? payload.messages.length : 0
       return {
         summary: `Aggregated input from ${messageCount} node${messageCount !== 1 ? "s" : ""}`,
         original: JSON.stringify(payload, null, 2),
@@ -837,14 +689,9 @@ function extractInputSummary(payload: any): {
 
     // try to find a task or query field (only if not a specific kind)
     const extractField = (field: string) => {
-      if (
-        payload[field] &&
-        typeof payload[field] === "string" &&
-        payload[field].trim()
-      ) {
+      if (payload[field] && typeof payload[field] === "string" && payload[field].trim()) {
         const original = payload[field]
-        const summary =
-          original.length > 80 ? original.substring(0, 80) + "..." : original
+        const summary = original.length > 80 ? original.substring(0, 80) + "..." : original
         return {
           summary,
           original,

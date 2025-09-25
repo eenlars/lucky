@@ -21,22 +21,11 @@ export const Messages = {
     const { error } = await supabase.from("Message").insert(insertable)
     if (error) lgg.error("save msg failed", JSONN.show(error))
   },
-  update: async ({
-    message,
-    updates,
-  }: {
-    message: WorkflowMessage
-    updates: Partial<TablesUpdate<"Message">>
-  }) => {
-    const { error } = await supabase
-      .from("Message")
-      .update(updates)
-      .eq("msg_id", message.messageId)
+  update: async ({ message, updates }: { message: WorkflowMessage; updates: Partial<TablesUpdate<"Message">> }) => {
+    const { error } = await supabase.from("Message").update(updates).eq("msg_id", message.messageId)
 
     if (error) {
-      throw new Error(
-        `Failed to update message "msg_id": ${message.messageId}: ${error.message}`
-      )
+      throw new Error(`Failed to update message "msg_id": ${message.messageId}: ${error.message}`)
     }
   },
 }

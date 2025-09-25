@@ -25,9 +25,7 @@ export const isLegacyToolUsage = (value: unknown): value is LegacyToolUsage => {
     return outputs.every((s) => typeof s === "object" && s !== null)
   }
   if (typeof outputs === "object" && outputs !== null) {
-    return Object.values(outputs).every(
-      (s) => typeof s === "object" && s !== null
-    )
+    return Object.values(outputs).every((s) => typeof s === "object" && s !== null)
   }
   return false
 }

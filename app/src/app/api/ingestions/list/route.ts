@@ -31,26 +31,19 @@ export async function GET(_req: NextRequest) {
 
     // Fallback to storage-based approach for backward compatibility
     const bucket = "input"
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .list("ingestions", {
-        limit: 1000,
-        search: ".json",
-      })
+    const { data, error } = await supabase.storage.from(bucket).list("ingestions", {
+      limit: 1000,
+      search: ".json",
+    })
     if (error) {
-      return NextResponse.json(
-        { error: `Listing failed: ${error.message}` },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: `Listing failed: ${error.message}` }, { status: 500 })
     }
 
     const manifests = data?.filter((f) => f.name.endsWith(".json")) || []
     const results = await Promise.all(
       manifests.map(async (file) => {
         const path = `ingestions/${file.name}`
-        const { data: blob, error: dlErr } = await supabase.storage
-          .from(bucket)
-          .download(path)
+        const { data: blob, error: dlErr } = await supabase.storage.from(bucket).download(path)
         if (dlErr || !blob) return null
         try {
           const text = await blob.text()
@@ -67,9 +60,6 @@ export async function GET(_req: NextRequest) {
       datasets: results.filter(Boolean),
     })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

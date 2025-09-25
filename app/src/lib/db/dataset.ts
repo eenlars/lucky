@@ -44,17 +44,12 @@ export async function createDatasetRecord(data: {
     .select()
     .single()
 
-  if (error)
-    throw new Error(`Failed to create dataset record: ${error.message}`)
+  if (error) throw new Error(`Failed to create dataset record: ${error.message}`)
   return result
 }
 
 export async function getDataSet(dataset_id: string): Promise<DataSet | null> {
-  const { data, error } = await supabase
-    .from("DataSet")
-    .select("*")
-    .eq("dataset_id", dataset_id)
-    .single()
+  const { data, error } = await supabase.from("DataSet").select("*").eq("dataset_id", dataset_id).single()
 
   if (error) {
     if (error.code === "PGRST116") return null // Not found
@@ -64,18 +59,13 @@ export async function getDataSet(dataset_id: string): Promise<DataSet | null> {
 }
 
 export async function listDataSets(): Promise<DataSet[]> {
-  const { data, error } = await supabase
-    .from("DataSet")
-    .select("*")
-    .order("created_at", { ascending: false })
+  const { data, error } = await supabase.from("DataSet").select("*").order("created_at", { ascending: false })
 
   if (error) throw new Error(`Failed to list datasets: ${error.message}`)
   return data || []
 }
 
-export async function getDatasetRecords(
-  dataset_id: string
-): Promise<DatasetRecord[]> {
+export async function getDatasetRecords(dataset_id: string): Promise<DatasetRecord[]> {
   const { data, error } = await supabase
     .from("DatasetRecord")
     .select("*")

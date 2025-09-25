@@ -5,14 +5,11 @@ const exampleFeature = {
   relevance: 1,
   properties: {
     accuracy: "rooftop",
-    mapbox_id:
-      "dXJuOm1ieGFkcjo5MThkOTFiNC04MGY3LTQxMGEtODZhNS04NjczZDAzNjBiODU",
+    mapbox_id: "dXJuOm1ieGFkcjo5MThkOTFiNC04MGY3LTQxMGEtODZhNS04NjczZDAzNjBiODU",
   },
   text: "Monseigneur Van Roosmalenplein",
-  place_name:
-    "Monseigneur Van Roosmalenplein 19, 5213 GC 's-Hertogenbosch, Netherlands",
-  matching_place_name:
-    "Monseigneur Van Roosmalenplein 19, 5213 GC Den Bosch, Netherlands",
+  place_name: "Monseigneur Van Roosmalenplein 19, 5213 GC 's-Hertogenbosch, Netherlands",
+  matching_place_name: "Monseigneur Van Roosmalenplein 19, 5213 GC Den Bosch, Netherlands",
   center: [5.329461, 51.696192],
   geometry: {
     type: "Point",

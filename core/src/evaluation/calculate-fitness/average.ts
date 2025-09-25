@@ -5,9 +5,7 @@ import { guard } from "@core/workflow/schema/errorMessages"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { FitnessOfWorkflow } from "./fitness.types"
 
-export const calculateAverageFitness = (
-  fitnesses: FitnessOfWorkflow[]
-): FitnessOfWorkflow => {
+export const calculateAverageFitness = (fitnesses: FitnessOfWorkflow[]): FitnessOfWorkflow => {
   if (!fitnesses || fitnesses.length === 0) {
     throw new Error("No fitnesses to average")
   }
@@ -34,9 +32,7 @@ export const calculateAverageFitness = (
   }
 }
 
-export const calculateFeedbackGrouped = async (
-  feedbacks: string[]
-): Promise<RS<string>> => {
+export const calculateFeedbackGrouped = async (feedbacks: string[]): Promise<RS<string>> => {
   guard(feedbacks, "No feedbacks to average")
 
   // If only one feedback, return it directly
@@ -48,9 +44,7 @@ export const calculateFeedbackGrouped = async (
     }
   }
 
-  const feedbacksString = feedbacks
-    .map((feedback, index) => `Feedback ${index + 1}:\n${feedback}`)
-    .join("\n\n")
+  const feedbacksString = feedbacks.map((feedback, index) => `Feedback ${index + 1}:\n${feedback}`).join("\n\n")
 
   // Use AI to synthesize the feedback.
   const prompt = groupedFeedback(feedbacksString)
@@ -62,10 +56,7 @@ export const calculateFeedbackGrouped = async (
   })
 
   if (!result.success || !result.data) {
-    return R.error(
-      `Failed to synthesize feedback: ${JSON.stringify(result)}`,
-      result.usdCost
-    )
+    return R.error(`Failed to synthesize feedback: ${JSON.stringify(result)}`, result.usdCost)
   }
 
   return {

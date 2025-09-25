@@ -39,9 +39,7 @@ describe.skip("Albert Heijn Nieuw-Vennep Integration Test Detail page immediatel
       expect(businesses.length).toBeGreaterThan(0)
 
       // check that we found at least one Albert Heijn
-      const albertHeijnStores = businesses.filter((b) =>
-        b.storeName?.toLowerCase().includes("albert heijn")
-      )
+      const albertHeijnStores = businesses.filter((b) => b.storeName?.toLowerCase().includes("albert heijn"))
       expect(albertHeijnStores.length).toBeGreaterThan(0)
 
       // verify first store matches expected structure

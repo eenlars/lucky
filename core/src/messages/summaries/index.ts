@@ -65,9 +65,7 @@ const createAISummary = async (
   return null
 }
 
-const getDataInfo = (
-  data: unknown
-): { str: string; size: number; readable: boolean } => {
+const getDataInfo = (data: unknown): { str: string; size: number; readable: boolean } => {
   if (data instanceof Blob || data instanceof ArrayBuffer) {
     const size = data instanceof Blob ? data.size : data.byteLength
     return { str: `binary (${size} bytes)`, size, readable: false }
@@ -97,8 +95,7 @@ const createFallbackSummary = (data: unknown, size: number): SummaryResult => {
 
   if (typeof data === "object" && data !== null) {
     const keys = Object.keys(data)
-    const sampleKeys =
-      keys.slice(0, 3).join(", ") + (keys.length > 3 ? "..." : "")
+    const sampleKeys = keys.slice(0, 3).join(", ") + (keys.length > 3 ? "..." : "")
     return {
       summary: `object (${size} bytes): ${keys.length} keys (${sampleKeys})`,
       usdCost: 0,
@@ -112,25 +109,18 @@ const createFallbackSummary = (data: unknown, size: number): SummaryResult => {
   }
 }
 
-export const createSummary = async (
-  response: ProcessedResponse
-): Promise<SummaryResult> => {
+export const createSummary = async (response: ProcessedResponse): Promise<SummaryResult> => {
   if (isNir(response)) {
     if (verbose) lgg.error(`[createSummary] response is nir`)
     return { summary: "no response received", usdCost: 0 }
   }
 
-  if (verbose)
-    lgg.log(
-      `[createSummary] processing response type: ${response?.type ?? "unknown"}`
-    )
+  if (verbose) lgg.log(`[createSummary] processing response type: ${response?.type ?? "unknown"}`)
 
   if (isErrorProcessed(response)) {
     return {
       summary: `error: ${response.message?.slice(0, 100)}${
-        response.details
-          ? ` (${JSON.stringify(response.details).slice(0, 100)}...)`
-          : ""
+        response.details ? ` (${JSON.stringify(response.details).slice(0, 100)}...)` : ""
       }`,
       usdCost: 0,
     }
@@ -143,13 +133,9 @@ export const createSummary = async (
   return { summary: "unknown response type", usdCost: 0 }
 }
 
-export const createTextSummary = async (
-  response: TextProcessed
-): Promise<SummaryResult> => {
-  if (isNir(response.content))
-    return { summary: "could not get any data", usdCost: 0 }
-  if (response.content.length <= 200)
-    return { summary: response.content, usdCost: 0 }
+export const createTextSummary = async (response: TextProcessed): Promise<SummaryResult> => {
+  if (isNir(response.content)) return { summary: "could not get any data", usdCost: 0 }
+  if (response.content.length <= 200) return { summary: response.content, usdCost: 0 }
 
   const aiResult = await createAISummary(
     CreateSummaryPrompt.summaryPromptText(response.content),
@@ -164,13 +150,9 @@ export const createTextSummary = async (
   )
 }
 
-export const createToolSummary = async (
-  response: ToolProcessed
-): Promise<SummaryResult> => {
+export const createToolSummary = async (response: ToolProcessed): Promise<SummaryResult> => {
   const agentSteps = response.agentSteps ?? []
-  const toolNames = [
-    ...new Set(agentSteps.map((step) => step.name).filter(Boolean)),
-  ]
+  const toolNames = [...new Set(agentSteps.map((step) => step.name).filter(Boolean))]
   let usdCost = response.cost ?? 0
 
   if (agentSteps.length === 0) {
@@ -193,11 +175,7 @@ export const createToolSummary = async (
     "data analyzer that summarizes tool execution results",
     getDefaultModels().summary,
     z.object({
-      summary: z
-        .string()
-        .describe(
-          "detailed summary of tool execution results, including success/failure status"
-        ),
+      summary: z.string().describe("detailed summary of tool execution results, including success/failure status"),
     })
   )
 
@@ -213,10 +191,7 @@ export const createToolSummary = async (
   }
 }
 
-export const generateSummaryFromUnknownData = async (
-  data: unknown,
-  outputLength?: string
-): Promise<SummaryResult> => {
+export const generateSummaryFromUnknownData = async (data: unknown, outputLength?: string): Promise<SummaryResult> => {
   try {
     const { str, size, readable } = getDataInfo(data)
 
@@ -236,10 +211,7 @@ export const generateSummaryFromUnknownData = async (
   }
 }
 
-export const formatSummary = (
-  summary: string,
-  nodeId: string
-): InvocationSummary => ({
+export const formatSummary = (summary: string, nodeId: string): InvocationSummary => ({
   summary,
   timestamp: Date.now(),
   nodeId,

@@ -4,10 +4,7 @@ import { supabase } from "@core/utils/clients/supabase/client"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ run_id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -26,10 +23,7 @@ export async function GET(
 
     if (successError) {
       console.error("Error fetching successful invocations:", successError)
-      return NextResponse.json(
-        { error: "Failed to fetch workflow invocations" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "Failed to fetch workflow invocations" }, { status: 500 })
     }
 
     let bestInvocation
@@ -47,17 +41,11 @@ export async function GET(
 
       if (anyError) {
         console.error("Error fetching any invocations:", anyError)
-        return NextResponse.json(
-          { error: "Failed to fetch workflow invocations" },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: "Failed to fetch workflow invocations" }, { status: 500 })
       }
 
       if (!anyInvocations || anyInvocations.length === 0) {
-        return NextResponse.json(
-          { error: "No invocations found for this evolution run" },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: "No invocations found for this evolution run" }, { status: 404 })
       }
 
       bestInvocation = anyInvocations[0]
@@ -67,10 +55,7 @@ export async function GET(
     const graph = await traceWorkflowEvolution(bestInvocation.wf_invocation_id)
 
     if (!graph) {
-      return NextResponse.json(
-        { error: "Failed to trace workflow evolution" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "Failed to trace workflow evolution" }, { status: 500 })
     }
 
     const visualization = createEvolutionVisualizationData(graph)
@@ -82,9 +67,6 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error in evolution trace API:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

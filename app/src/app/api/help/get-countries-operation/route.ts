@@ -5,10 +5,7 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url")
 
   if (!url) {
-    return NextResponse.json(
-      { error: "URL parameter is required" },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: "URL parameter is required" }, { status: 400 })
   }
 
   const result = await extractCountriesOperation(url)

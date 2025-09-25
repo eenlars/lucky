@@ -13,34 +13,23 @@ const contextSet = defineTool({
   params: z.object({
     scope: z
       .enum(["workflow", "node"])
-      .describe(
-        "Data scope: 'workflow' for shared data across all nodes, 'node' for node-specific data"
-      ),
+      .describe("Data scope: 'workflow' for shared data across all nodes, 'node' for node-specific data"),
 
     key: z.string().describe("The key name to store data under"),
 
-    value: z
-      .any()
-      .describe("The data to store (can be any JSON-serializable type)"),
+    value: z.any().describe("The data to store (can be any JSON-serializable type)"),
 
     metadata: z
       .object({
         description: z.string().nullish(),
         tags: z.array(z.string()).nullish(),
-        expires: z
-          .string()
-          .nullish()
-          .describe("ISO date string for expiration"),
+        expires: z.string().nullish().describe("ISO date string for expiration"),
         version: z.string().nullish(),
       })
       .nullish()
       .describe("Optional metadata to store alongside the value"),
 
-    overwrite: z
-      .boolean()
-      .nullish()
-      .default(true)
-      .describe("Whether to overwrite existing data (default: true)"),
+    overwrite: z.boolean().nullish().default(true).describe("Whether to overwrite existing data (default: true)"),
   }),
   async execute(
     params,
@@ -124,8 +113,7 @@ const contextSet = defineTool({
       lgg.error("contextSet error:", error)
 
       // Check if this is a file limit error and provide helpful message
-      const errorMessage =
-        error instanceof Error ? error.message : String(error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
       if (errorMessage.includes("maximum file limit")) {
         return Tools.createFailure("contextSet", {
           location: "contextSet",

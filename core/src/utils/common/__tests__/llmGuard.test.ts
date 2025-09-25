@@ -89,8 +89,7 @@ describe("llmGuard", () => {
       debug_output: null,
     } as any)
 
-    const technicalContent =
-      "function calculateSum(a, b) { return a + b; } console.log('Hello World');"
+    const technicalContent = "function calculateSum(a, b) { return a + b; } console.log('Hello World');"
 
     const result = await llmGuard(
       technicalContent,
@@ -106,8 +105,7 @@ describe("llmGuard", () => {
       success: true,
       data: {
         status: "ERROR",
-        reason:
-          "Content contains advertisements and sales pitches, not educational material",
+        reason: "Content contains advertisements and sales pitches, not educational material",
       } as any,
       usdCost: 0.001,
       error: null,
@@ -188,8 +186,7 @@ describe("llmGuard", () => {
       debug_output: null,
     } as any)
 
-    const englishContent =
-      "Breaking news: New policies announced by government officials today."
+    const englishContent = "Breaking news: New policies announced by government officials today."
 
     const result = await llmGuard(
       englishContent,

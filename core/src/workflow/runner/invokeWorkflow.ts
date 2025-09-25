@@ -21,11 +21,7 @@ import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import {
-  loadFromDatabase,
-  loadFromDSL,
-  loadFromFile,
-} from "@core/workflow/setup/WorkflowLoader"
+import { loadFromDatabase, loadFromDSL, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
 import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
@@ -68,9 +64,7 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
  * - Tracks spending limits when enabled in configuration
  * - Evaluates results when answer/expectedOutput is provided
  */
-export async function invokeWorkflow(
-  input: InvocationInput
-): Promise<RS<InvokeWorkflowResult[]>> {
+export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeWorkflowResult[]>> {
   try {
     const { evalInput } = input
 
@@ -87,11 +81,7 @@ export async function invokeWorkflow(
 
     // Validate prompt-only inputs at core level to prevent bypass
     if (evalInput.type === "prompt-only") {
-      if (
-        !evalInput.goal ||
-        typeof evalInput.goal !== "string" ||
-        evalInput.goal.trim().length === 0
-      ) {
+      if (!evalInput.goal || typeof evalInput.goal !== "string" || evalInput.goal.trim().length === 0) {
         return R.error("Invalid or missing goal for prompt-only invocation", 0)
       }
       if (evalInput.goal.length > 50000) {
@@ -110,9 +100,7 @@ export async function invokeWorkflow(
     } else if ("dslConfig" in input && input.dslConfig) {
       config = await loadFromDSL(input.dslConfig)
     } else {
-      throw new Error(
-        "Either workflowVersionId, filename, or dslConfig must be provided"
-      )
+      throw new Error("Either workflowVersionId, filename, or dslConfig must be provided")
     }
 
     // Initialize spending tracker if enabled
@@ -132,10 +120,7 @@ export async function invokeWorkflow(
     })
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
-    await workflow.prepareWorkflow(
-      evalInput,
-      CONFIG.workflow.prepareProblemMethod
-    )
+    await workflow.prepareWorkflow(evalInput, CONFIG.workflow.prepareProblemMethod)
 
     const { success, error, data: runResults, usdCost } = await workflow.run()
 
@@ -144,53 +129,36 @@ export async function invokeWorkflow(
     }
 
     if (runResults) {
-      lgg.log(
-        "Run results",
-        JSONN.show(runResults.map((r) => r.queueRunResult.finalWorkflowOutput))
-      )
+      lgg.log("Run results", JSONN.show(runResults.map((r) => r.queueRunResult.finalWorkflowOutput)))
     }
 
     // Check if we need to evaluate (when there's something to compare against)
     if (needsEvaluation(evalInput)) {
       // Evaluate the results to calculate fitness and save to database
-      const {
-        success,
-        error,
-        data: evaluationResult,
-      } = await workflow.evaluate()
+      const { success, error, data: evaluationResult } = await workflow.evaluate()
       if (!success) {
-        lgg.error(
-          `[InvokeWorkflow] Evaluation failed for workflow ${workflow.getWorkflowVersionId()}: ${error}`
-        )
+        lgg.error(`[InvokeWorkflow] Evaluation failed for workflow ${workflow.getWorkflowVersionId()}: ${error}`)
         return R.error(error, 0)
       }
 
       // Return all evaluation results with fitness and feedback
-      const resultsWithEvaluation = runResults.map(
-        (runResult: RunResult, index) => ({
-          ...runResult,
-          fitness: evaluationResult.results[index]?.fitness,
-          feedback: evaluationResult.results[index]?.feedback,
-          finalWorkflowOutputs: runResult.queueRunResult.finalWorkflowOutput,
-        })
-      )
+      const resultsWithEvaluation = runResults.map((runResult: RunResult, index) => ({
+        ...runResult,
+        fitness: evaluationResult.results[index]?.fitness,
+        feedback: evaluationResult.results[index]?.feedback,
+        finalWorkflowOutputs: runResult.queueRunResult.finalWorkflowOutput,
+      }))
 
       // Save workflow to file if it was loaded from file and has memory updates
       if ("filename" in input && input.filename) {
-        const hasMemoryUpdates = workflow
-          .getConfig()
-          .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+        const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
 
         if (hasMemoryUpdates) {
           try {
             await workflow.saveToFile(input.filename)
-            lgg.log(
-              `[invokeWorkflow] Saved memory updates to ${input.filename}`
-            )
+            lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
           } catch (saveError) {
-            lgg.error(
-              `[invokeWorkflow] Failed to save memory updates: ${saveError}`
-            )
+            lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
           }
         }
       }
@@ -208,18 +176,14 @@ export async function invokeWorkflow(
 
     // Save workflow to file if it was loaded from file and has memory updates
     if ("filename" in input && input.filename) {
-      const hasMemoryUpdates = workflow
-        .getConfig()
-        .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+      const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
 
       if (hasMemoryUpdates) {
         try {
           await workflow.saveToFile(input.filename)
           lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
         } catch (saveError) {
-          lgg.error(
-            `[invokeWorkflow] Failed to save memory updates: ${saveError}`
-          )
+          lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
         }
       }
     }
@@ -227,10 +191,7 @@ export async function invokeWorkflow(
     // If no evaluation needed, return raw run results
     return R.success(
       runResults,
-      runResults.reduce(
-        (total, result) => total + result.queueRunResult.totalCost,
-        0
-      )
+      runResults.reduce((total, result) => total + result.queueRunResult.totalCost, 0)
     )
   } catch (err) {
     lgg.error("Invocation failed", err)

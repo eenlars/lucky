@@ -22,29 +22,18 @@ export function FailedRunVisualization({
   endTime,
 }: FailedRunProps) {
   const failureRate =
-    totalInvocations > 0
-      ? (
-          ((totalInvocations - successfulInvocations) / totalInvocations) *
-          100
-        ).toFixed(1)
-      : "100"
+    totalInvocations > 0 ? (((totalInvocations - successfulInvocations) / totalInvocations) * 100).toFixed(1) : "100"
   const duration = endTime
-    ? Math.round(
-        (new Date(endTime).getTime() - new Date(startTime).getTime()) /
-          (1000 * 60)
-      )
+    ? Math.round((new Date(endTime).getTime() - new Date(startTime).getTime()) / (1000 * 60))
     : null
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
-          ⚠️ Failed Evolution Run
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">⚠️ Failed Evolution Run</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          This evolution run encountered issues and has limited visualization
-          data
+          This evolution run encountered issues and has limited visualization data
         </p>
       </div>
 
@@ -55,15 +44,11 @@ export function FailedRunVisualization({
           <div className="text-sm text-gray-600">Failure Rate</div>
         </div>
         <div className="bg-orange-50 p-4 rounded-lg text-center">
-          <div className="text-2xl font-bold text-orange-600">
-            {totalInvocations}
-          </div>
+          <div className="text-2xl font-bold text-orange-600">{totalInvocations}</div>
           <div className="text-sm text-gray-600">Total Attempts</div>
         </div>
         <div className="bg-green-50 p-4 rounded-lg text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {successfulInvocations}
-          </div>
+          <div className="text-2xl font-bold text-green-600">{successfulInvocations}</div>
           <div className="text-sm text-gray-600">Successful</div>
         </div>
         <div className="bg-gray-50 p-4 rounded-lg text-center">
@@ -82,8 +67,7 @@ export function FailedRunVisualization({
             <code className="text-xs bg-gray-200 px-1 rounded">{runId}</code>
           </div>
           <div>
-            <span className="font-medium">Started:</span>{" "}
-            {new Date(startTime).toLocaleString()}
+            <span className="font-medium">Started:</span> {new Date(startTime).toLocaleString()}
           </div>
           {duration && (
             <div>
@@ -102,8 +86,7 @@ export function FailedRunVisualization({
             <div>
               <div className="font-medium">High Failure Rate</div>
               <div className="text-sm text-gray-600">
-                {failureRate}% of invocations failed, indicating potential
-                issues with:
+                {failureRate}% of invocations failed, indicating potential issues with:
               </div>
               <ul className="text-sm text-gray-600 ml-4 mt-1 list-disc">
                 <li>Workflow configuration</li>
@@ -120,8 +103,7 @@ export function FailedRunVisualization({
               <div>
                 <div className="font-medium">Zero Successful Completions</div>
                 <div className="text-sm text-gray-600">
-                  No workflows completed successfully, preventing detailed
-                  evolution analysis.
+                  No workflows completed successfully, preventing detailed evolution analysis.
                 </div>
               </div>
             </div>
@@ -132,8 +114,8 @@ export function FailedRunVisualization({
             <div>
               <div className="font-medium">Limited Visualization</div>
               <div className="text-sm text-gray-600">
-                Without successful completions, we cannot show accuracy
-                progression, fitness evolution, or detailed performance metrics.
+                Without successful completions, we cannot show accuracy progression, fitness evolution, or detailed
+                performance metrics.
               </div>
             </div>
           </div>
@@ -142,24 +124,14 @@ export function FailedRunVisualization({
 
       {/* Recommendations */}
       <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-        <h3 className="text-lg font-semibold mb-4 text-blue-700">
-          💡 Recommendations
-        </h3>
+        <h3 className="text-lg font-semibold mb-4 text-blue-700">💡 Recommendations</h3>
         <div className="space-y-2 text-sm">
-          <div>
-            • Look for evolution runs with ✅ icons in the dropdown for
-            successful completions
-          </div>
+          <div>• Look for evolution runs with ✅ icons in the dropdown for successful completions</div>
           <div>
             • Check system logs around{" "}
-            <code className="bg-white px-1 rounded">
-              {new Date(startTime).toLocaleString()}
-            </code>{" "}
-            for error details
+            <code className="bg-white px-1 rounded">{new Date(startTime).toLocaleString()}</code> for error details
           </div>
-          <div>
-            • Consider reviewing workflow configuration for potential issues
-          </div>
+          <div>• Consider reviewing workflow configuration for potential issues</div>
           <div>• Verify tool availability and permissions</div>
         </div>
       </div>

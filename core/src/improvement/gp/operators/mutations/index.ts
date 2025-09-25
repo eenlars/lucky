@@ -26,12 +26,7 @@ import { CONFIG } from "@runtime/settings/constants"
 import type { Genome } from "../../Genome"
 import { workflowConfigToGenome } from "../../resources/wrappers"
 import { ModelMutation } from "./modelMutation"
-import {
-  MUTATION_WEIGHTS,
-  type MutationOptions,
-  type MutationType,
-  getEvolutionMutations,
-} from "./mutation.types"
+import { MUTATION_WEIGHTS, type MutationOptions, type MutationType, getEvolutionMutations } from "./mutation.types"
 import { NodeOperations } from "./nodeOperations"
 import { PromptMutation } from "./promptMutation"
 import { StructureMutation } from "./structureMutation"
@@ -59,18 +54,13 @@ export class MutationCoordinator {
    * - Validates and repairs mutated workflow
    * - Tracks mutation failures for evolution statistics
    */
-  static async mutateWorkflowGenome(
-    options: MutationOptions
-  ): Promise<RS<Genome>> {
+  static async mutateWorkflowGenome(options: MutationOptions): Promise<RS<Genome>> {
     const { parent, intensity = 0.5, evolutionMode } = options
 
     if (CONFIG.evolution.GP.verbose) {
       return {
         success: true,
-        data: createDummyGenome(
-          [parent.getWorkflowVersionId()],
-          parent.getEvolutionContext()
-        ),
+        data: createDummyGenome([parent.getWorkflowVersionId()], parent.getEvolutionContext()),
         usdCost: 0,
       }
     }
@@ -83,12 +73,7 @@ export class MutationCoordinator {
       const selectedMutation = this.selectMutationType(evolutionMode)
 
       // execute the selected mutation
-      totalMutationCost += await this.executeMutation(
-        selectedMutation,
-        mutatedConfig,
-        parent,
-        intensity
-      )
+      totalMutationCost += await this.executeMutation(selectedMutation, mutatedConfig, parent, intensity)
 
       // preserve memory from parent - ensures knowledge transfer across generations
       const { MemoryPreservation } = await import("../memoryPreservation")
@@ -96,11 +81,7 @@ export class MutationCoordinator {
 
       // enforce memory preservation - throw error if any parent memories were lost
       // this is critical for maintaining learned knowledge across evolution
-      MemoryPreservation.enforceMemoryPreservation(
-        mutatedConfig,
-        [parent],
-        "mutation"
-      )
+      MemoryPreservation.enforceMemoryPreservation(mutatedConfig, [parent], "mutation")
 
       // apply additional tweaks based on intensity level
       // high intensity mutations (>0.6) have a chance to also mutate models
@@ -142,11 +123,7 @@ export class MutationCoordinator {
     } catch (error) {
       lgg.error("Mutation failed generating genome:", error)
       failureTracker.trackMutationFailure()
-      return R.error(
-        "Mutation failed generating genome" +
-          truncater(JSON.stringify(error), 1000),
-        0
-      )
+      return R.error("Mutation failed generating genome" + truncater(JSON.stringify(error), 1000), 0)
     }
   }
 
@@ -160,20 +137,14 @@ export class MutationCoordinator {
    * Filters mutation weights to only include mutations valid for the evolution mode,
    * then uses weighted random selection to choose a mutation type.
    */
-  private static selectMutationType(
-    evolutionMode: FlowEvolutionMode
-  ): MutationType {
+  private static selectMutationType(evolutionMode: FlowEvolutionMode): MutationType {
     const availableMutations = getEvolutionMutations(evolutionMode)
 
     // filter mutation weights to only include available mutations
-    const validWeights = MUTATION_WEIGHTS.filter((w) =>
-      availableMutations.includes(w.type)
-    )
+    const validWeights = MUTATION_WEIGHTS.filter((w) => availableMutations.includes(w.type))
 
     if (validWeights.length === 0) {
-      lgg.warn(
-        `No valid mutations for ${evolutionMode} mode, falling back to model`
-      )
+      lgg.warn(`No valid mutations for ${evolutionMode} mode, falling back to model`)
       return "model"
     }
 

@@ -44,14 +44,11 @@ const CONFIG: HunterConfig = {
 
 const month_day = dayjs().format("YYYY-MM-DD")
 
-const COUNTRIES_DATA_FILE =
-  PATHS.node.logging + `/exports/${month_day}/input/bcorp-countries-data.json`
+const COUNTRIES_DATA_FILE = PATHS.node.logging + `/exports/${month_day}/input/bcorp-countries-data.json`
 
-const PER_COUNTRY_DIR =
-  PATHS.node.logging + `/exports/${month_day}/output/per-country`
+const PER_COUNTRY_DIR = PATHS.node.logging + `/exports/${month_day}/output/per-country`
 
-const ALL_DATA_FILE =
-  PATHS.node.logging + `/exports/${month_day}/output/all-data.json`
+const ALL_DATA_FILE = PATHS.node.logging + `/exports/${month_day}/output/all-data.json`
 
 const BACKUP_DIR = PATHS.node.logging + `/exports/${month_day}/backup`
 
@@ -71,9 +68,7 @@ function saveSafe(filePath: string, data: unknown): void {
 function mem(label: string) {
   const mb = (b: number) => Math.round(b / 1024 / 1024)
   const u = process.memoryUsage()
-  lgg.log(
-    `💾 ${label.padEnd(15)} rss=${mb(u.rss)} MB  heap=${mb(u.heapUsed)}/${mb(u.heapTotal)} MB`
-  )
+  lgg.log(`💾 ${label.padEnd(15)} rss=${mb(u.rss)} MB  heap=${mb(u.heapUsed)}/${mb(u.heapTotal)} MB`)
 }
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -82,11 +77,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out
 }
 
-async function parallelLimit<T, R>(
-  items: T[],
-  limit: number,
-  fn: (i: T) => Promise<R>
-): Promise<R[]> {
+async function parallelLimit<T, R>(items: T[], limit: number, fn: (i: T) => Promise<R>): Promise<R[]> {
   const ret: R[] = []
   let idx = 0
   const pool: Promise<void>[] = []
@@ -191,9 +182,7 @@ function saveProgress(p: ProcessingProgress) {
   const backup = `${BACKUP_DIR}/progress_${p.country.code}_${nowISO().replace(/[:.]/g, "-")}.json`
   saveSafe(backup, p)
   saveSafe(progressFile(p.country), p)
-  lgg.log(
-    `💾 saved progress for ${p.country.code}: ${p.processedCompanies.length}/${p.totalCompanies}`
-  )
+  lgg.log(`💾 saved progress for ${p.country.code}: ${p.processedCompanies.length}/${p.totalCompanies}`)
 }
 
 function saveResults(results: BusinessResult[], country: CountryInEurope) {
@@ -203,10 +192,7 @@ function saveResults(results: BusinessResult[], country: CountryInEurope) {
   lgg.log(`✅ results saved: ${country.code} – ${results.length} companies`)
 }
 
-function loadProgress(
-  total: number,
-  country: CountryInEurope
-): ProcessingProgress {
+function loadProgress(total: number, country: CountryInEurope): ProcessingProgress {
   try {
     if (fs.existsSync(progressFile(country))) {
       const p = JSON.parse(fs.readFileSync(progressFile(country), "utf8"))
@@ -252,12 +238,8 @@ function saveAllData(all: AllDataFile) {
 
   all.metadata.lastUpdated = nowISO()
   all.metadata.totalBusinesses = all.businesses.length
-  all.metadata.totalCountries = new Set(
-    all.businesses.map((b) => b.country.code)
-  ).size
-  all.metadata.totalBCorps = new Set(
-    all.businesses.map((b) => b.bcorp.company_name)
-  ).size
+  all.metadata.totalCountries = new Set(all.businesses.map((b) => b.country.code)).size
+  all.metadata.totalBCorps = new Set(all.businesses.map((b) => b.bcorp.company_name)).size
 
   saveSafe(ALL_DATA_FILE, all)
   lgg.log(`💾 all-data updated (${all.businesses?.length} stores)`)
@@ -265,17 +247,9 @@ function saveAllData(all: AllDataFile) {
 
 /* ──────────────────────────────  core helpers  ──────────────────────────── */
 
-function companyOperatesInCountry(
-  company: CompanyCountryData,
-  country: CountryInEurope
-) {
-  const variants = [
-    country.name.toLowerCase(),
-    ...(country.aliases ?? []).map((a) => a.toLowerCase()),
-  ]
-  return company.countries.some((c) =>
-    variants.some((v) => c.toLowerCase().includes(v))
-  )
+function companyOperatesInCountry(company: CompanyCountryData, country: CountryInEurope) {
+  const variants = [country.name.toLowerCase(), ...(country.aliases ?? []).map((a) => a.toLowerCase())]
+  return company.countries.some((c) => variants.some((v) => c.toLowerCase().includes(v)))
 }
 
 /* ───────────────────────── single-company processing  ───────────────────── */
@@ -291,13 +265,8 @@ async function handleCompany(
   const query = `${company.company_name} ${country.name}`
 
   const gm = await Promise.race([
-    searchGoogleMaps(
-      { mode: "multiple", query, resultCount: CONFIG.resultCount },
-      { enableLogging: false }
-    ),
-    new Promise<never>((_, r) =>
-      setTimeout(() => r(new Error("Maps timeout")), CONFIG.searchTimeoutMs)
-    ),
+    searchGoogleMaps({ mode: "multiple", query, resultCount: CONFIG.resultCount }, { enableLogging: false }),
+    new Promise<never>((_, r) => setTimeout(() => r(new Error("Maps timeout")), CONFIG.searchTimeoutMs)),
   ])
 
   if (!gm.success) {
@@ -354,11 +323,7 @@ async function handleCompany(
 
 /* ─────────────────────────────  batching engine  ────────────────────────── */
 
-async function processBatch(
-  companies: CompanyCountryData[],
-  progress: ProcessingProgress,
-  allData: AllDataFile
-) {
+async function processBatch(companies: CompanyCountryData[], progress: ProcessingProgress, allData: AllDataFile) {
   const batches = chunk(companies, CONFIG.batchSize)
 
   for (let b = 0; b < batches.length; b++) {
@@ -367,54 +332,50 @@ async function processBatch(
     lgg.log(`🌀  ${progress.country.code} batch ${b + 1}/${batches.length}`)
 
     // run with parallel limit
-    const results = await parallelLimit(
-      batch,
-      CONFIG.parallelLimit,
-      async (company) => {
-        // wrap each company in its own timeout
-        try {
-          return await Promise.race([
-            handleCompany(company, progress.country, progress.processId, b + 1),
-            new Promise<{
-              result: BusinessResult
-              stores?: BusinessWithMetadata[]
-            }>((_, r) =>
-              setTimeout(
-                () =>
-                  r({
-                    result: {
-                      storeName: company.company_name,
-                      stores: null,
-                      domain: company.domain,
-                      website: company.website,
-                      bcorp_url: company.bcorp_url,
-                      totalUniqueStores: 0,
-                      targetCountryStores: 0,
-                      extraction_error: "global timeout",
-                      timestamp: nowISO(),
-                    },
-                  }),
-                CONFIG.timeoutMs
-              )
-            ),
-          ])
-        } catch (e) {
-          return {
-            result: {
-              storeName: company.company_name,
-              stores: null,
-              domain: company.domain,
-              website: company.website,
-              bcorp_url: company.bcorp_url,
-              totalUniqueStores: 0,
-              targetCountryStores: 0,
-              extraction_error: (e as Error).message,
-              timestamp: nowISO(),
-            },
-          }
+    const results = await parallelLimit(batch, CONFIG.parallelLimit, async (company) => {
+      // wrap each company in its own timeout
+      try {
+        return await Promise.race([
+          handleCompany(company, progress.country, progress.processId, b + 1),
+          new Promise<{
+            result: BusinessResult
+            stores?: BusinessWithMetadata[]
+          }>((_, r) =>
+            setTimeout(
+              () =>
+                r({
+                  result: {
+                    storeName: company.company_name,
+                    stores: null,
+                    domain: company.domain,
+                    website: company.website,
+                    bcorp_url: company.bcorp_url,
+                    totalUniqueStores: 0,
+                    targetCountryStores: 0,
+                    extraction_error: "global timeout",
+                    timestamp: nowISO(),
+                  },
+                }),
+              CONFIG.timeoutMs
+            )
+          ),
+        ])
+      } catch (e) {
+        return {
+          result: {
+            storeName: company.company_name,
+            stores: null,
+            domain: company.domain,
+            website: company.website,
+            bcorp_url: company.bcorp_url,
+            totalUniqueStores: 0,
+            targetCountryStores: 0,
+            extraction_error: (e as Error).message,
+            timestamp: nowISO(),
+          },
         }
       }
-    )
+    })
 
     /* integrate results */
     for (let i = 0; i < batch.length; i++) {
@@ -449,16 +410,10 @@ async function processBatch(
 
 /* ───────────────────────────── country pipeline  ────────────────────────── */
 
-async function processCountry(
-  country: CountryInEurope,
-  allCompanies: CompanyCountryData[],
-  allData: AllDataFile
-) {
+async function processCountry(country: CountryInEurope, allCompanies: CompanyCountryData[], allData: AllDataFile) {
   lgg.log(`\n🌍  ${country.name} (${country.code})`)
 
-  const companies = allCompanies.filter((c) =>
-    companyOperatesInCountry(c, country)
-  )
+  const companies = allCompanies.filter((c) => companyOperatesInCountry(c, country))
 
   if (!companies.length) {
     lgg.log("   ∅  no relevant companies – writing empty file.")
@@ -469,9 +424,7 @@ async function processCountry(
   const progress = loadProgress(companies.length, country)
 
   /* prune already done */
-  const todo = companies.filter(
-    (c) => !progress.processedCompanies.includes(c.company_name)
-  )
+  const todo = companies.filter((c) => !progress.processedCompanies.includes(c.company_name))
   if (!todo.length && progress.results.length) {
     lgg.log("   ✔  already complete – emitting cached results.")
     saveResults(progress.results, country)
@@ -481,14 +434,11 @@ async function processCountry(
   await processBatch(todo, progress, allData)
 
   /* final dedupe & persist */
-  const final = [...progress.results].reduce<Map<string, BusinessResult>>(
-    (m, r) => {
-      const k = r.storeName.toLowerCase().trim()
-      if (!m.has(k)) m.set(k, r)
-      return m
-    },
-    new Map()
-  )
+  const final = [...progress.results].reduce<Map<string, BusinessResult>>((m, r) => {
+    const k = r.storeName.toLowerCase().trim()
+    if (!m.has(k)) m.set(k, r)
+    return m
+  }, new Map())
 
   saveResults([...final.values()], country)
   lgg.log(`🎯 done: ${final.size}/${companies.length} companies`)

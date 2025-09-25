@@ -11,8 +11,7 @@ describe("sendAI reasoning integration", () => {
       messages: [
         {
           role: "user",
-          content:
-            "what is 2+2? answer in the least amount of chars as possible",
+          content: "what is 2+2? answer in the least amount of chars as possible",
         },
       ],
       model: getDefaultModels().reasoning,

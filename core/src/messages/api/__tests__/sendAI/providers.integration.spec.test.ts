@@ -38,11 +38,7 @@ describe("sendAI provider smoke", () => {
       const { getDefaultModels } = await import("@runtime/settings/models")
 
       const models = getDefaultModels()
-      const modelIds: string[] = [
-        String(models.summary),
-        String(models.default),
-        String(models.reasoning),
-      ]
+      const modelIds: string[] = [String(models.summary), String(models.default), String(models.reasoning)]
 
       for (let i = 0; i < modelIds.length; i++) {
         const model = modelIds[i]
@@ -59,11 +55,7 @@ describe("sendAI provider smoke", () => {
         // Log minimal context when things go wrong for quick triage
         if (!res.success) {
           // eslint-disable-next-line no-console
-          console.error(
-            `sendAI failure provider=${provider} model=${model}:`,
-            res.error,
-            res.debug_output ?? ""
-          )
+          console.error(`sendAI failure provider=${provider} model=${model}:`, res.error, res.debug_output ?? "")
         }
 
         expect(res.success).toBe(true)

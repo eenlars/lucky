@@ -23,10 +23,7 @@ describe.skip("browser session persistence tests", () => {
 
     // Step 1: Navigate to a page in first call
     lgg.log("Step 1: First call - navigate to page...")
-    const tools1 = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-1"
-    )
+    const tools1 = await setupMCPForNode(["browserUse"], "test-browser-sessions-1")
 
     const navResult = await generateText({
       model: openrouter(getDefaultModels().default),
@@ -48,10 +45,7 @@ describe.skip("browser session persistence tests", () => {
 
     // Step 2: Get page state in second call (should reuse same browser)
     lgg.log("Step 2: Second call - get page state...")
-    const tools2 = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-2"
-    )
+    const tools2 = await setupMCPForNode(["browserUse"], "test-browser-sessions-2")
 
     const stateResult = await generateText({
       model: openrouter(getDefaultModels().default),
@@ -77,10 +71,7 @@ describe.skip("browser session persistence tests", () => {
       const content = toolResult?.result?.content
       if (Array.isArray(content)) {
         const stateText = content.map((c: any) => c.text || "").join("\n")
-        const isNosNL =
-          stateText.includes("nos.nl") ||
-          stateText.includes("nieuws") ||
-          stateText.includes("news")
+        const isNosNL = stateText.includes("nos.nl") || stateText.includes("nieuws") || stateText.includes("news")
         lgg.log("State contains nos.nl content?", isNosNL)
 
         if (isNosNL) {
@@ -95,10 +86,7 @@ describe.skip("browser session persistence tests", () => {
 
     // Step 3: Try to extract content in third call
     lgg.log("Step 3: Third call - extract content...")
-    const tools3 = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-3"
-    )
+    const tools3 = await setupMCPForNode(["browserUse"], "test-browser-sessions-3")
 
     const extractResult = await generateText({
       model: openrouter(getDefaultModels().medium),
@@ -127,16 +115,13 @@ describe.skip("browser session persistence tests", () => {
 
       if (foundContent) {
         const hasNewsContent =
-          extractedContent.toLowerCase().includes("news") ||
-          extractedContent.toLowerCase().includes("article")
+          extractedContent.toLowerCase().includes("news") || extractedContent.toLowerCase().includes("article")
         lgg.log("Found news content in extracted content?", hasNewsContent)
         // TODO: No assertions here either. Test logs information but doesn't verify behavior.
       }
     }
 
-    await cleanupBrowser(
-      await setupMCPForNode(["browserUse"], "test-browser-sessions-4")
-    )
+    await cleanupBrowser(await setupMCPForNode(["browserUse"], "test-browser-sessions-4"))
     lgg.log("Persistent session test completed ✓")
   }, 120000)
   // TODO: 2 minute timeout indicates very slow test
@@ -144,10 +129,7 @@ describe.skip("browser session persistence tests", () => {
   it("should test if browser session persists between tool calls", async () => {
     lgg.log("testing browser session persistence...")
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-5"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-sessions-5")
 
     // Make multiple tool calls in a single generateText call to use the same session
     lgg.log("Making multiple tool calls in single session...")
@@ -170,28 +152,21 @@ describe.skip("browser session persistence tests", () => {
     lgg.log("Tool results:", JSON.stringify(result.toolResults, null, 2))
 
     // Process steps using processStepsV2
-    const processedSteps = processStepsV2(
-      result.steps || [],
-      getDefaultModels().default
-    )
+    const processedSteps = processStepsV2(result.steps || [], getDefaultModels().default)
 
     // Check if we got content extraction
     const extractResults = processedSteps?.agentSteps.filter(
-      (output) =>
-        output.type === "tool" && output.name === "browser_extract_content"
+      (output) => output.type === "tool" && output.name === "browser_extract_content"
     )
     lgg.log("Extract content calls:", extractResults?.length)
 
     if (extractResults && extractResults.length > 0) {
       const extractResult = extractResults[0]
       const extractedText =
-        typeof extractResult.return === "string"
-          ? extractResult.return
-          : JSON.stringify(extractResult.return)
+        typeof extractResult.return === "string" ? extractResult.return : JSON.stringify(extractResult.return)
       lgg.log("Extracted content:", extractedText)
 
-      const hasContent =
-        extractedText !== "No content extracted" && extractedText.length > 0
+      const hasContent = extractedText !== "No content extracted" && extractedText.length > 0
       lgg.log("Successfully extracted content?", hasContent)
 
       if (hasContent) {
@@ -213,10 +188,7 @@ describe.skip("advanced browser tests", () => {
   it("should get latest headline from nos.nl", async () => {
     lgg.log("testing browser to get latest headline from nos.nl...")
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-6"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-sessions-6")
 
     // Navigate to nos.nl
     lgg.log("Step 1: Navigating to nos.nl...")
@@ -256,8 +228,7 @@ describe.skip("advanced browser tests", () => {
 
     // Verify we got a headline
     const hasHeadline =
-      headlineResult.text.length > 10 &&
-      !headlineResult.text.toLowerCase().includes("no content extracted")
+      headlineResult.text.length > 10 && !headlineResult.text.toLowerCase().includes("no content extracted")
 
     lgg.log("=== FINAL RESULT ===")
     lgg.log("Successfully extracted headline?", hasHeadline)
@@ -282,10 +253,7 @@ describe.skip("advanced browser tests", () => {
     // TODO: Logging API key length could be a security concern in logs.
     // Also, this is a debug test that doesn't assert anything - not a real test.
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-sessions-7"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-sessions-7")
 
     // Navigate to a simple page first
     lgg.log("Step 1: Navigate to simple page...")
@@ -294,8 +262,7 @@ describe.skip("advanced browser tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Navigate to https://httpbin.org/html - this is a simple test page with basic HTML content",
+          content: "Navigate to https://httpbin.org/html - this is a simple test page with basic HTML content",
         },
       ],
       tools,
@@ -332,8 +299,7 @@ describe.skip("advanced browser tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Use browser_extract_content with query 'all visible text' to extract content",
+          content: "Use browser_extract_content with query 'all visible text' to extract content",
         },
       ],
       tools,
@@ -348,10 +314,7 @@ describe.skip("advanced browser tests", () => {
 
     // Check what tools are actually available
     lgg.log("Available tools:", Object.keys(tools))
-    lgg.log(
-      "browser_extract_content tool details:",
-      JSON.stringify(tools.browser_extract_content, null, 2)
-    )
+    lgg.log("browser_extract_content tool details:", JSON.stringify(tools.browser_extract_content, null, 2))
 
     await cleanupBrowser(tools)
     lgg.log("debug test completed")

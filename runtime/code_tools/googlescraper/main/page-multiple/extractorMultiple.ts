@@ -43,9 +43,7 @@ export async function searchMultipleBusinesses(
       // find a div that includes the class fontHeadlineSmall
       const storeName = parent.find("div.fontHeadlineSmall").text()
       // find span that includes class fontBodyMedium
-      const ratingText = parent
-        .find("span.fontBodyMedium > span")
-        .attr("aria-label")
+      const ratingText = parent.find("span.fontBodyMedium > span").attr("aria-label")
 
       // get the first div that includes the class fontBodyMedium
       const bodyDiv = parent.find("div.fontBodyMedium").first()
@@ -58,9 +56,7 @@ export async function searchMultipleBusinesses(
       let address = firstOfLast?.text()?.split("·")?.[1]?.trim()
 
       if (isNir(address)) {
-        const addressDiv = parent
-          .find(".W4Efsd .W4Efsd span[aria-hidden='true']")
-          .next()
+        const addressDiv = parent.find(".W4Efsd .W4Efsd span[aria-hidden='true']").next()
         address = addressDiv.text().trim()
       }
 
@@ -82,21 +78,15 @@ export async function searchMultipleBusinesses(
         storeName: sanitize(storeName),
         ratingText,
         stars: ratingText?.split("stars")?.[0]?.trim() || null,
-        numberOfReviews: ratingText
-          ?.split("stars")?.[1]
-          ?.replace("Reviews", "")
-          ?.trim()
-          ? Number(
-              ratingText?.split("stars")?.[1]?.replace("Reviews", "")?.trim()
-            )
+        numberOfReviews: ratingText?.split("stars")?.[1]?.replace("Reviews", "")?.trim()
+          ? Number(ratingText?.split("stars")?.[1]?.replace("Reviews", "")?.trim())
           : null,
         mainImage: undefined,
         hours: null,
       })
     })
 
-    if (enableLogging)
-      lgg.info(`parsed businesses:`, JSON.stringify(businesses, null, 2))
+    if (enableLogging) lgg.info(`parsed businesses:`, JSON.stringify(businesses, null, 2))
 
     // limit results to the requested count
     const limitedBusinesses = businesses.slice(0, resultCount)
@@ -112,10 +102,7 @@ export async function searchMultipleBusinesses(
     })
   } catch (error) {
     if (enableLogging) {
-      lgg.error(
-        "error at multiple businesses search",
-        error instanceof Error ? error.message : String(error)
-      )
+      lgg.error("error at multiple businesses search", error instanceof Error ? error.message : String(error))
     }
     return Tools.createFailure(toolName, {
       location: "searchMultipleBusinesses",
@@ -125,9 +112,5 @@ export async function searchMultipleBusinesses(
 }
 
 const sanitize = (address: string) => {
-  return address
-    .replace(/·/g, " ")
-    .replace(/\n/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
+  return address.replace(/·/g, " ").replace(/\n/g, "").replace(/\s+/g, " ").trim()
 }

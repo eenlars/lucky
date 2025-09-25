@@ -1,12 +1,7 @@
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
-export async function verifyNodes(
-  config: WorkflowConfig
-): Promise<VerificationErrors> {
+export async function verifyNodes(config: WorkflowConfig): Promise<VerificationErrors> {
   const errors: string[] = []
 
   for (const node of config.nodes) {
@@ -21,9 +16,7 @@ export async function verifyNodes(
   return []
 }
 
-export async function verifyOneNode(
-  node: WorkflowNodeConfig
-): Promise<VerificationErrors> {
+export async function verifyOneNode(node: WorkflowNodeConfig): Promise<VerificationErrors> {
   const missingFields: string[] = []
 
   // check required fields are present
@@ -59,9 +52,7 @@ export async function verifyOneNode(
 
   if (missingFields.length > 0) {
     const nodeIdentifier = node.nodeId || "unknown node"
-    return [
-      `node '${nodeIdentifier}' is missing required fields: ${missingFields.join(", ")}`,
-    ]
+    return [`node '${nodeIdentifier}' is missing required fields: ${missingFields.join(", ")}`]
   }
 
   return []

@@ -11,10 +11,7 @@ import { z } from "zod"
 // so unit tests don't require real binaries or network access.
 let tempConfigPath: string
 let prevMcpSecretPath: string | undefined
-type SetupMCPForNodeFn = (
-  toolNames: MCPToolName[],
-  workflowId: string
-) => Promise<ToolSet>
+type SetupMCPForNodeFn = (toolNames: MCPToolName[], workflowId: string) => Promise<ToolSet>
 let setupMCPForNode: SetupMCPForNodeFn
 
 vi.mock("ai/mcp-stdio", () => {
@@ -40,11 +37,7 @@ vi.mock("ai", () => {
   }
   return {
     tool: vi.fn((config: any) => config),
-    experimental_createMCPClient: ({
-      transport,
-    }: {
-      transport: { opts: MockTransportOptions }
-    }) => {
+    experimental_createMCPClient: ({ transport }: { transport: { opts: MockTransportOptions } }) => {
       const mcpName = transport.opts.env?.MCP_NAME
       const client = {
         tools: async (): Promise<ToolSet> => {
@@ -153,9 +146,7 @@ afterAll(() => {
 
 describe("setupMCPForNode", () => {
   it("should set up the tavily MCP tool without errors", async () => {
-    await expect(
-      setupMCPForNode(["tavily"], "test-mcp-setup-tavily")
-    ).resolves.toBeTypeOf("object")
+    await expect(setupMCPForNode(["tavily"], "test-mcp-setup-tavily")).resolves.toBeTypeOf("object")
 
     const tools = await setupMCPForNode(["tavily"], "test-mcp-setup-tavily")
     expect(Object.keys(tools).length).toBeGreaterThan(0)
@@ -165,9 +156,7 @@ describe("setupMCPForNode", () => {
     // skip this test as it requires external MCP proxy server to be running
     // TODO: Skipped tests indicate incomplete test coverage. Should either:
     // 1) Mock the external dependency, or 2) Move to integration test suite
-    await expect(
-      setupMCPForNode(["proxy"], "test-mcp-setup-proxy")
-    ).resolves.toBeTypeOf("object")
+    await expect(setupMCPForNode(["proxy"], "test-mcp-setup-proxy")).resolves.toBeTypeOf("object")
 
     const tools = await setupMCPForNode(["proxy"], "test-mcp-setup-proxy")
     expect(Object.keys(tools).length).toBeGreaterThan(0)
@@ -179,10 +168,7 @@ describe("browserUse MCP", () => {
     lgg.log("testing browserUse mcp...")
 
     // setup mcp client for browserUse
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-mcp-setup-browserUse"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-mcp-setup-browserUse")
 
     // check if tools were loaded
     const toolNames = Object.keys(tools)
@@ -206,10 +192,7 @@ describe("External MCP Configuration", () => {
     // This test verifies that external MCP configs work
     // Since we have mcp-secret.json with googleScholar configured,
     // it should load the tools successfully
-    const tools = await setupMCPForNode(
-      ["googleScholar"],
-      "test-mcp-external-config"
-    )
+    const tools = await setupMCPForNode(["googleScholar"], "test-mcp-external-config")
 
     expect(tools).toBeTypeOf("object")
 

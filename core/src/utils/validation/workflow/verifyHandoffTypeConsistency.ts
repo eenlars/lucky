@@ -8,24 +8,16 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
  * - For parallel: requires >= 2 handOffs and must not include "end"
  * - For conditional: recommends >= 2 handOffs (error if < 2)
  */
-export async function verifyHandoffTypeConsistency(
-  config: WorkflowConfig
-): Promise<VerificationErrors> {
+export async function verifyHandoffTypeConsistency(config: WorkflowConfig): Promise<VerificationErrors> {
   const errors: string[] = []
 
   for (const node of config.nodes) {
     // Invalid casing detection – catch common mistake early in JSON mode
     if (Object.prototype.hasOwnProperty.call(node as any, "handoffType")) {
-      errors.push(
-        `Node '${node.nodeId}' uses 'handoffType' (invalid key). Use 'handOffType' instead.`
-      )
+      errors.push(`Node '${node.nodeId}' uses 'handoffType' (invalid key). Use 'handOffType' instead.`)
     }
 
-    const value = (node as any).handOffType as
-      | "parallel"
-      | "sequential"
-      | "conditional"
-      | undefined
+    const value = (node as any).handOffType as "parallel" | "sequential" | "conditional" | undefined
 
     if (value === undefined) {
       continue

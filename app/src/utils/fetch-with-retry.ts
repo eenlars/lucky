@@ -1,8 +1,4 @@
-export async function fetchWithRetry(
-  url: string,
-  options?: RequestInit,
-  maxAttempts = 3
-): Promise<Response> {
+export async function fetchWithRetry(url: string, options?: RequestInit, maxAttempts = 3): Promise<Response> {
   let lastError: Error | null = null
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -28,24 +24,17 @@ export async function fetchWithRetry(
     } catch (error) {
       // AbortError should not be retried; surface immediately
       const isAbortError =
-        (typeof error === "object" &&
-          error !== null &&
-          "name" in error &&
-          (error as any).name === "AbortError") ||
+        (typeof error === "object" && error !== null && "name" in error && (error as any).name === "AbortError") ||
         options?.signal?.aborted
       if (isAbortError) {
-        throw error instanceof Error
-          ? error
-          : new Error("The operation was aborted")
+        throw error instanceof Error ? error : new Error("The operation was aborted")
       }
       lastError = error instanceof Error ? error : new Error("Network error")
     }
 
     // Wait before retrying (except on last attempt)
     if (attempt < maxAttempts - 1) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, 100 * Math.pow(2, attempt))
-      )
+      await new Promise((resolve) => setTimeout(resolve, 100 * Math.pow(2, attempt)))
     }
   }
 

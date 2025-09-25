@@ -49,16 +49,9 @@ export function ToolManager({
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {tools.map((tool, index) => (
-          <Badge
-            key={index}
-            variant="outline"
-            className={`${badgeClassName} pr-1`}
-          >
+          <Badge key={index} variant="outline" className={`${badgeClassName} pr-1`}>
             {tool}
-            <button
-              onClick={() => removeTool(index)}
-              className="ml-2 hover:text-destructive cursor-pointer"
-            >
+            <button onClick={() => removeTool(index)} className="ml-2 hover:text-destructive cursor-pointer">
               <Trash2 className="h-3 w-3" />
             </button>
           </Badge>
@@ -71,18 +64,11 @@ export function ToolManager({
           placeholder={placeholder}
           onKeyPress={handleKeyPress}
         />
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={addTool}
-          className="cursor-pointer"
-        >
+        <Button size="sm" variant="outline" onClick={addTool} className="cursor-pointer">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-      {tools.length === 0 && (
-        <span className="text-sm text-muted-foreground">{emptyMessage}</span>
-      )}
+      {tools.length === 0 && <span className="text-sm text-muted-foreground">{emptyMessage}</span>}
     </div>
   )
 }

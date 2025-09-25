@@ -1,9 +1,7 @@
 import { type Edge } from "@xyflow/react"
 import ELK, { ElkNode, ElkPort } from "elkjs/lib/elk.bundled.js"
 
-import nodesConfig, {
-  type AppNode,
-} from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes"
 
 const elk = new ELK()
 
@@ -43,15 +41,11 @@ function getPorts(node: AppNode) {
 
   handles?.forEach((handle) => {
     if (handle.type === "target") {
-      targetPorts.push(
-        createTargetPort(`${node.id}-target-${handle.id ?? null}`)
-      )
+      targetPorts.push(createTargetPort(`${node.id}-target-${handle.id ?? null}`))
     }
 
     if (handle.type === "source") {
-      sourcePorts.push(
-        createSourcePort(`${node.id}-source-${handle.id ?? null}`)
-      )
+      sourcePorts.push(createSourcePort(`${node.id}-source-${handle.id ?? null}`))
     }
   })
 

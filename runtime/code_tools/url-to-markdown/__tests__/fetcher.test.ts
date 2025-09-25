@@ -39,9 +39,7 @@ describe("resilient fetcher", () => {
       text: async () => "Not Found",
     })
 
-    const result = await fetcher(
-      "https://jsonplaceholder.typicode.com/posts/999999"
-    )
+    const result = await fetcher("https://jsonplaceholder.typicode.com/posts/999999")
 
     expect(result.status).toBe(404)
     // should not throw, let caller decide what to do with status

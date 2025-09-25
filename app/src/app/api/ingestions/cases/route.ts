@@ -21,14 +21,9 @@ export async function POST(req: NextRequest) {
 
     const bucket = "input"
     const manifestPath = `ingestions/${datasetId}.json`
-    const { data: manifestBlob, error: manifestError } = await supabase.storage
-      .from(bucket)
-      .download(manifestPath)
+    const { data: manifestBlob, error: manifestError } = await supabase.storage.from(bucket).download(manifestPath)
     if (manifestError || !manifestBlob) {
-      return NextResponse.json(
-        { error: `Manifest not found for ${datasetId}` },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: `Manifest not found for ${datasetId}` }, { status: 404 })
     }
 
     const manifest = JSON.parse(await manifestBlob.text()) as {
@@ -37,14 +32,9 @@ export async function POST(req: NextRequest) {
     }
 
     const metaPath = `${manifest.folder}/meta.json`
-    const { data: metaBlob, error: metaError } = await supabase.storage
-      .from(bucket)
-      .download(metaPath)
+    const { data: metaBlob, error: metaError } = await supabase.storage.from(bucket).download(metaPath)
     if (metaError || !metaBlob) {
-      return NextResponse.json(
-        { error: `meta.json not found for ${datasetId}` },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: `meta.json not found for ${datasetId}` }, { status: 404 })
     }
     const meta = JSON.parse(await metaBlob.text()) as any
 
@@ -52,14 +42,9 @@ export async function POST(req: NextRequest) {
     let evaluation: EvaluationInput
     if (meta.type === "csv") {
       // Prefer downloading to a local temp file to avoid public access requirements
-      const { data: csvBlob, error: csvErr } = await supabase.storage
-        .from(bucket)
-        .download(meta.file.path)
+      const { data: csvBlob, error: csvErr } = await supabase.storage.from(bucket).download(meta.file.path)
       if (csvErr || !csvBlob) {
-        return NextResponse.json(
-          { error: "Failed to download CSV" },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: "Failed to download CSV" }, { status: 500 })
       }
       const arrayBuffer = await csvBlob.arrayBuffer()
       const dir = join(tmpdir(), "ingestions")
@@ -78,14 +63,9 @@ export async function POST(req: NextRequest) {
       }
     } else if (meta.type === "text") {
       // Download the text data file
-      const { data: textBlob, error: textErr } = await supabase.storage
-        .from(bucket)
-        .download(meta.file.path)
+      const { data: textBlob, error: textErr } = await supabase.storage.from(bucket).download(meta.file.path)
       if (textErr || !textBlob) {
-        return NextResponse.json(
-          { error: "Failed to download text data" },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: "Failed to download text data" }, { status: 500 })
       }
       const textData = JSON.parse(await textBlob.text())
       evaluation = {
@@ -96,28 +76,19 @@ export async function POST(req: NextRequest) {
         workflowId: "adhoc-ui",
       }
     } else {
-      return NextResponse.json(
-        { error: "Unsupported ingestion type" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Unsupported ingestion type" }, { status: 400 })
     }
 
     const cases = await IngestionLayer.convert(evaluation)
     return NextResponse.json({ success: true, cases })
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
 // Utility: best-effort public URL builder (anon client). If RLS blocks, user must configure bucket public.
 // Note: kept for reference (not used when we download to tmp file). Using ts-expect-error satisfies lints only when we actually need it.
-async function _getPublicTempUrl(
-  _bucket: string,
-  _path: string
-): Promise<string> {
+async function _getPublicTempUrl(_bucket: string, _path: string): Promise<string> {
   // Intentionally unused; return original path as a no-op.
   return _path
 }

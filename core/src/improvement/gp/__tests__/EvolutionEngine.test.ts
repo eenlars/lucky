@@ -289,9 +289,7 @@ vi.mock("@core/improvement/gp/Population", () => ({
     }),
     getTotalCost: vi.fn().mockReturnValue(0.1),
     size: vi.fn().mockReturnValue(5),
-    getRunService: vi
-      .fn()
-      .mockReturnValue({ getEvolutionMode: vi.fn(() => "GP") }),
+    getRunService: vi.fn().mockReturnValue({ getEvolutionMode: vi.fn(() => "GP") }),
   })),
 }))
 
@@ -388,11 +386,7 @@ describe("EvolutionEngine", () => {
           problemAnalysis: "dummy-problem-analysis",
         })
 
-        expect(mockRunService.createRun).toHaveBeenCalledWith(
-          evaluationInput.goal,
-          config,
-          undefined
-        )
+        expect(mockRunService.createRun).toHaveBeenCalledWith(evaluationInput.goal, config, undefined)
       })
 
       it("should emit run started event", async () => {
@@ -497,9 +491,7 @@ describe("EvolutionEngine", () => {
 
     describe("Error Handling", () => {
       it("should handle evolution errors and mark run as failed", async () => {
-        vi.mocked(evaluator.evaluate).mockRejectedValue(
-          new Error("evaluation failed")
-        )
+        vi.mocked(evaluator.evaluate).mockRejectedValue(new Error("evaluation failed"))
 
         vi.useFakeTimers()
         const p = engine.evolve({
@@ -547,9 +539,7 @@ describe("EvolutionEngine", () => {
 
         // TODO: magic number 0.05 for tolerance without explanation
         // tolerance should be documented or made configurable
-        expect(result.totalCost).toBeLessThanOrEqual(
-          costLimitConfig.maxCostUSD + 0.05
-        ) // increased tolerance for test environment
+        expect(result.totalCost).toBeLessThanOrEqual(costLimitConfig.maxCostUSD + 0.05) // increased tolerance for test environment
       })
 
       it("should stop on convergence", async () => {
@@ -585,9 +575,7 @@ describe("EvolutionEngine", () => {
         })
 
         // should converge before all generations complete
-        expect(result.stats.length).toBeLessThanOrEqual(
-          convergeConfig.generations
-        )
+        expect(result.stats.length).toBeLessThanOrEqual(convergeConfig.generations)
       })
 
       it("should handle early stopping gracefully", async () => {

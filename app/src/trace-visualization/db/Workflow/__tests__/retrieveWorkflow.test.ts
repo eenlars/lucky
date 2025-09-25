@@ -53,12 +53,10 @@ describe("retrieveWorkflowInvocations", () => {
       count: mockData.length,
     })
 
-    const result = await retrieveWorkflowInvocations(
-      undefined,
-      undefined,
-      undefined,
-      { field: "duration", order: "asc" }
-    )
+    const result = await retrieveWorkflowInvocations(undefined, undefined, undefined, {
+      field: "duration",
+      order: "asc",
+    })
 
     expect(result).toBeDefined()
     expect(result.data).toBeDefined()
@@ -104,12 +102,10 @@ describe("retrieveWorkflowInvocations", () => {
       count: mockData.length,
     })
 
-    const result = await retrieveWorkflowInvocations(
-      undefined,
-      undefined,
-      undefined,
-      { field: "duration", order: "desc" }
-    )
+    const result = await retrieveWorkflowInvocations(undefined, undefined, undefined, {
+      field: "duration",
+      order: "desc",
+    })
 
     expect(result).toBeDefined()
     expect(result.data).toBeDefined()

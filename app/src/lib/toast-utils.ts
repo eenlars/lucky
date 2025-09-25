@@ -6,10 +6,8 @@ export const showToast = {
   success: {
     save: (message = "Changes saved successfully") => toast.success(message),
     run: (message = "Workflow execution started") => toast.success(message),
-    import: (message = "Import completed successfully") =>
-      toast.success(message),
-    export: (message = "Export completed successfully") =>
-      toast.success(message),
+    import: (message = "Import completed successfully") => toast.success(message),
+    export: (message = "Export completed successfully") => toast.success(message),
     delete: (message = "Deleted successfully") => toast.success(message),
     generic: (message: string) => toast.success(message),
   },

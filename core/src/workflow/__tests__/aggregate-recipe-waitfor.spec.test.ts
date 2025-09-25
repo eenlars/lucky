@@ -4,10 +4,7 @@ import { Messages } from "@core/utils/persistence/message/main"
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import { saveNodeVersionToDB } from "@core/utils/persistence/node/saveNode"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
-import {
-  createWorkflowVersion,
-  ensureWorkflowExists,
-} from "@core/utils/persistence/workflow/registerWorkflow"
+import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -18,8 +15,7 @@ const recipeAggregationConfig: WorkflowConfig = {
   nodes: [
     {
       nodeId: "start-recipe-aggregation",
-      description:
-        "Entry node that receives a user request to aggregate three recipes into one combined recipe.",
+      description: "Entry node that receives a user request to aggregate three recipes into one combined recipe.",
       systemPrompt:
         "You are an assistant that understands the user's request to combine three different recipes into one aggregated recipe. Identify the recipes and prepare to fetch their details.",
       modelName: getDefaultModels().nano,
@@ -112,9 +108,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
           }
 
           // Follow handOffs from config
-          const nodeCfg = recipeAggregationConfig.nodes.find(
-            (n) => n.nodeId === nodeId
-          )!
+          const nodeCfg = recipeAggregationConfig.nodes.find((n) => n.nodeId === nodeId)!
           const nextIds = nodeCfg.handOffs
 
           // Persist a NodeInvocation record to DB to match real pipeline behavior
@@ -192,9 +186,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
     expect(payload.kind).toBe("aggregated")
     expect(payload.messages.length).toBe(3)
     const fromIds = payload.messages.map((m) => m.fromNodeId).sort()
-    expect(fromIds).toEqual(
-      ["fetch-recipe-1", "fetch-recipe-2", "fetch-recipe-3"].sort()
-    )
+    expect(fromIds).toEqual(["fetch-recipe-1", "fetch-recipe-2", "fetch-recipe-3"].sort())
 
     // Sanity: upstream nodes each invoked once; start invoked once
     expect((callArgsByNode["start-recipe-aggregation"] ?? []).length).toBe(1)

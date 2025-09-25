@@ -85,10 +85,7 @@ Answer PASS or FAIL with brief reason.`
       mode: "text",
     })
 
-    const result = evaluationResponse.data?.text
-      .trim()
-      .toUpperCase()
-      .startsWith("PASS")
+    const result = evaluationResponse.data?.text.trim().toUpperCase().startsWith("PASS")
 
     if (!result) {
       lgg.info("LLM Evaluation failed:", evaluationResponse)

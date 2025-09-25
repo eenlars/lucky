@@ -239,9 +239,7 @@ describe("Mutations", () => {
           node: { logging: "/test/logging" },
         },
       }))
-      const { Mutations: MutationsVerbose } = await import(
-        "@core/improvement/gp/operators/Mutations"
-      )
+      const { Mutations: MutationsVerbose } = await import("@core/improvement/gp/operators/Mutations")
 
       const result = await MutationsVerbose.mutateWorkflowGenome({
         ...options,
@@ -266,9 +264,7 @@ describe("Mutations", () => {
 
       // The mutation may return null in some cases, which is valid behavior
       if (result.success) {
-        expect(
-          result.data?.genome.parentWorkflowVersionIds.length
-        ).toBeGreaterThanOrEqual(0)
+        expect(result.data?.genome.parentWorkflowVersionIds.length).toBeGreaterThanOrEqual(0)
       } else {
         // If null, it means mutation failed, which is acceptable
         expect(result.error).toBeDefined()
@@ -293,9 +289,7 @@ describe("Mutations", () => {
 
     it("should handle mutation errors gracefully", async () => {
       const options = createMockOptions()
-      vi.mocked(formalizeWorkflow).mockRejectedValue(
-        new Error("mutation failed")
-      )
+      vi.mocked(formalizeWorkflow).mockRejectedValue(new Error("mutation failed"))
 
       const result = await Mutations.mutateWorkflowGenome({
         ...options,
@@ -342,9 +336,7 @@ describe("Mutations", () => {
 
       // Clear the default mock behavior from beforeEach
       vi.mocked(formalizeWorkflow).mockReset()
-      vi.mocked(formalizeWorkflow).mockRejectedValue(
-        new Error("Service unavailable")
-      )
+      vi.mocked(formalizeWorkflow).mockRejectedValue(new Error("Service unavailable"))
 
       // Since verbose mode is false (mocked), this should call formalizeWorkflow
       // which is mocked to reject, but the function may still return a genome

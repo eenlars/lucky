@@ -34,10 +34,7 @@ describe("Workflow ContextStore Integration", () => {
 
   const mockGoalEval: EvaluationInput = createMockEvaluationInput()
 
-  const createWorkflow = (
-    config: WorkflowConfig,
-    evaluationInput: EvaluationInput
-  ) => {
+  const createWorkflow = (config: WorkflowConfig, evaluationInput: EvaluationInput) => {
     return Workflow.create({
       config,
       evaluationInput,

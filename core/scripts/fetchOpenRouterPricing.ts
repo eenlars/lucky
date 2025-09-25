@@ -77,15 +77,7 @@ async function transformModels(roundDecimals = 6) {
       }
     })
 
-  const providers = [
-    "anthropic",
-    "openai",
-    "google",
-    "qwen",
-    "meta-llama",
-    "deepseek",
-    "mistral",
-  ]
+  const providers = ["anthropic", "openai", "google", "qwen", "meta-llama", "deepseek", "mistral"]
 
   // build a sorted array: lowest (input+output) → highest
   const sortedPricingSummary = Object.entries(pricingSummary)
@@ -137,15 +129,9 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true })
 }
 
-fs.writeFileSync(
-  dataDir + "pricingSummary.json",
-  JSON.stringify(sortedPricingSummary, null, 2)
-)
+fs.writeFileSync(dataDir + "pricingSummary.json", JSON.stringify(sortedPricingSummary, null, 2))
 
-fs.writeFileSync(
-  dataDir + "transformed.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync(dataDir + "transformed.json", JSON.stringify(transformed, null, 2))
 
 console.log(`✅ Updated pricing data in ${dataDir}`)
 console.log(`📊 Found ${sortedPricingSummary.length} models matching criteria`)

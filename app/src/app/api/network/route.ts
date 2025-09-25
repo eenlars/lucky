@@ -18,9 +18,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result, { status: 200 })
   } catch (error) {
     lgg.error(error)
-    return NextResponse.json(
-      { error: "Failed to monitor network" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to monitor network" }, { status: 500 })
   }
 }

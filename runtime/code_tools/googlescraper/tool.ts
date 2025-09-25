@@ -2,10 +2,7 @@ import Tools, { type CodeToolResult } from "@core/tools/code/output.types"
 import { commonSchemas, defineTool } from "@core/tools/toolFactory"
 import { DenBoschAlbertHeijn } from "@runtime/code_tools/googlescraper/cache/bosch"
 import { DenBoschAlbertHeijnNoDomain } from "@runtime/code_tools/googlescraper/cache/bosch-no-domain"
-import {
-  transformLocationData,
-  type StandardizedLocation,
-} from "@runtime/code_tools/googlescraper/convert"
+import { transformLocationData, type StandardizedLocation } from "@runtime/code_tools/googlescraper/convert"
 import { searchGoogleMaps } from "@runtime/code_tools/googlescraper/main/main"
 import { normalizeHostname } from "@runtime/code_tools/googlescraper/utils/hostname"
 import { createHash } from "crypto"
@@ -46,10 +43,7 @@ const getCacheKey = (params: Params) => {
 const googleMaps = defineTool({
   name: "searchGoogleMaps",
   params: paramsSchema,
-  async execute(
-    params,
-    externalContext
-  ): Promise<CodeToolResult<StandardizedLocation[]>> {
+  async execute(params, externalContext): Promise<CodeToolResult<StandardizedLocation[]>> {
     const { query, maxResultCount, domainFilter } = params
 
     // used cached responses.
@@ -59,16 +53,9 @@ const googleMaps = defineTool({
       mustHaveSearchTerms.every((term) => query.toLowerCase().includes(term)) &&
       normalizeHostname(domainFilter ?? "") === "ah.nl"
     ) {
-      console.log(
-        "🔍 Using cached response for Den Bosch Albert Heijn No Domain"
-      )
-      return Tools.createSuccess(
-        "searchGoogleMaps",
-        DenBoschAlbertHeijnNoDomain
-      )
-    } else if (
-      mustHaveSearchTerms.every((term) => query.toLowerCase().includes(term))
-    ) {
+      console.log("🔍 Using cached response for Den Bosch Albert Heijn No Domain")
+      return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijnNoDomain)
+    } else if (mustHaveSearchTerms.every((term) => query.toLowerCase().includes(term))) {
       console.log("🔍 Using cached response for Den Bosch Albert Heijn")
       return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijn)
     }

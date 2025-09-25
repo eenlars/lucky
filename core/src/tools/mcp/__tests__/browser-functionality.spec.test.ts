@@ -14,10 +14,7 @@ describe.skip("browser functionality tests", () => {
   it("should extract headlines from nos.nl", async () => {
     lgg.log("setting up browserUse mcp for nos.nl headline extraction test...")
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-functionality-headlines"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-functionality-headlines")
     expect(Object.keys(tools)).toContain("browser_extract_content")
     lgg.log("browser_extract_content tool available")
 
@@ -28,8 +25,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Navigate to https://nos.nl and wait for the page to fully load",
+          content: "Navigate to https://nos.nl and wait for the page to fully load",
         },
       ],
       tools,
@@ -69,8 +65,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Extract main article titles and headlines, focusing on news content",
+          content: "Extract main article titles and headlines, focusing on news content",
         },
       ],
       tools,
@@ -86,8 +81,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Find and extract breaking news headlines and article titles from this Dutch news site",
+          content: "Find and extract breaking news headlines and article titles from this Dutch news site",
         },
       ],
       tools,
@@ -104,10 +98,7 @@ describe.skip("browser functionality tests", () => {
       // for the result structure to ensure type safety.
       if (result?.toolResults?.length > 0) {
         const toolResult = result.toolResults[0]
-        lgg.log(
-          "Tool call successful:",
-          toolResult.toolName === "browser_extract_content"
-        )
+        lgg.log("Tool call successful:", toolResult.toolName === "browser_extract_content")
 
         const content = toolResult.result?.content
         if (Array.isArray(content)) {
@@ -131,8 +122,7 @@ describe.skip("browser functionality tests", () => {
     const content2 = analyzeExtraction(extractTest2)
     const content3 = analyzeExtraction(extractTest3)
 
-    const anyContentExtracted =
-      content1.length > 0 || content2.length > 0 || content3.length > 0
+    const anyContentExtracted = content1.length > 0 || content2.length > 0 || content3.length > 0
     lgg.log("Any content extracted?", anyContentExtracted)
 
     const allContent = `${extractTest1.text} ${extractTest2.text} ${extractTest3.text} ${content1} ${content2} ${content3}`
@@ -158,14 +148,10 @@ describe.skip("browser functionality tests", () => {
     // The test will fail if the website changes its content or language.
 
     expect(extractTest1.toolCalls?.length).toBeGreaterThan(0)
-    expect(extractTest1.toolCalls?.[0]?.toolName).toBe(
-      "browser_extract_content"
-    )
+    expect(extractTest1.toolCalls?.[0]?.toolName).toBe("browser_extract_content")
 
     if (!anyContentExtracted) {
-      lgg.log(
-        "WARNING: browser_extract_content is returning 'No content extracted' for all attempts"
-      )
+      lgg.log("WARNING: browser_extract_content is returning 'No content extracted' for all attempts")
       // TODO: This test can pass even when no content is extracted! The test should fail
       // if extraction doesn't work, not just log a warning.
     } else {
@@ -182,10 +168,7 @@ describe.skip("browser functionality tests", () => {
   it("should get page state from nos.nl", async () => {
     lgg.log("setting up browserUse mcp for nos.nl page state test...")
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-functionality-state"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-functionality-state")
     expect(Object.keys(tools)).toContain("browser_get_state")
     lgg.log("browser_get_state tool available")
 
@@ -195,8 +178,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Navigate to https://nos.nl and wait for the page to fully load",
+          content: "Navigate to https://nos.nl and wait for the page to fully load",
         },
       ],
       tools,
@@ -218,8 +200,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Get the current page state to see all elements and text on the page",
+          content: "Get the current page state to see all elements and text on the page",
         },
       ],
       tools,
@@ -233,10 +214,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("State result text:", stateResult.text)
 
     // Process steps using processStepsV2
-    const processedSteps = processStepsV2(
-      stateResult.steps || [],
-      getDefaultModels().default
-    )
+    const processedSteps = processStepsV2(stateResult.steps || [], getDefaultModels().default)
 
     const stateResults = processedSteps?.agentSteps.filter(
       (output) => output.type === "tool" && output.name === "browser_get_state"
@@ -246,12 +224,9 @@ describe.skip("browser functionality tests", () => {
       const result = stateResults[0]
       lgg.log("Tool result:", JSON.stringify(result, null, 2))
 
-      const content =
-        typeof result.return === "object" ? (result.return as any) : null
+      const content = typeof result.return === "object" ? (result.return as any) : null
       if (content && Array.isArray(content.content)) {
-        const stateText = content.content
-          .map((c: any) => c.text || "")
-          .join("\n")
+        const stateText = content.content.map((c: any) => c.text || "").join("\n")
         lgg.log("=== PAGE STATE ===")
         lgg.log(stateText)
         lgg.log("=== END PAGE STATE ===")
@@ -265,15 +240,11 @@ describe.skip("browser functionality tests", () => {
 
         lgg.log("Page state news validation result:", stateNewsGuard.isValid)
         if (!stateNewsGuard.isValid) {
-          lgg.log(
-            "Page state news validation failed. Reason:",
-            stateNewsGuard.reason
-          )
+          lgg.log("Page state news validation failed. Reason:", stateNewsGuard.reason)
         }
 
         const foundNewsContent =
-          stateText.toLowerCase().includes("nieuws") ||
-          stateText.toLowerCase().includes("breaking")
+          stateText.toLowerCase().includes("nieuws") || stateText.toLowerCase().includes("breaking")
         lgg.log("Found news content keywords in page state?", foundNewsContent)
 
         const hasTextContent = stateText.trim().length > 50
@@ -285,10 +256,7 @@ describe.skip("browser functionality tests", () => {
         // TODO: This conditional expectation means the test can pass without actually
         // validating anything if hasTextContent is false.
       } else {
-        const stateText =
-          typeof result.return === "string"
-            ? result.return
-            : JSON.stringify(result.return)
+        const stateText = typeof result.return === "string" ? result.return : JSON.stringify(result.return)
         lgg.log("=== PAGE STATE (as string) ===")
         lgg.log(stateText)
         lgg.log("=== END PAGE STATE ===")
@@ -302,8 +270,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Click on any news article headline to see if more content loads",
+          content: "Click on any news article headline to see if more content loads",
         },
       ],
       tools,
@@ -319,8 +286,7 @@ describe.skip("browser functionality tests", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Get the page state again to see if any new content appeared",
+          content: "Get the page state again to see if any new content appeared",
         },
       ],
       tools,
@@ -341,10 +307,7 @@ describe.skip("browser functionality tests", () => {
   it("should navigate and extract headlines in single session", async () => {
     lgg.log("Testing browser session functionality for headline extraction...")
 
-    const tools = await setupMCPForNode(
-      ["browserUse"],
-      "test-browser-functionality-session"
-    )
+    const tools = await setupMCPForNode(["browserUse"], "test-browser-functionality-session")
 
     const result = await generateText({
       model: openrouter(getDefaultModels().medium),
@@ -364,9 +327,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Tool calls made:", result.toolCalls?.length || 0)
 
     // Validate session result contains news content using llmGuard
-    lgg.log(
-      "Validating session result contains news headlines using llmGuard..."
-    )
+    lgg.log("Validating session result contains news headlines using llmGuard...")
     const sessionNewsGuard = await llmGuard(
       result.text,
       `The result must contain extracted news headlines or article titles from a Dutch news website. It should include actual news content, headlines, or breaking news information. The content should NOT be navigation errors, technical issues, or non-news content.`
@@ -374,10 +335,7 @@ describe.skip("browser functionality tests", () => {
 
     lgg.log("Session news validation result:", sessionNewsGuard.isValid)
     if (!sessionNewsGuard.isValid) {
-      lgg.log(
-        "Session news validation failed. Reason:",
-        sessionNewsGuard.reason
-      )
+      lgg.log("Session news validation failed. Reason:", sessionNewsGuard.reason)
     }
 
     const foundNewsContent =

@@ -81,10 +81,7 @@ export class ToolManager {
 
     try {
       // Initialize MCP tools eagerly; defer code tools until per-invocation context is available
-      const mcp = await setupMCPForNode(
-        this.mcpToolNames,
-        this.workflowVersionId
-      )
+      const mcp = await setupMCPForNode(this.mcpToolNames, this.workflowVersionId)
       this.mcpTools = mcp
       this.codeTools = {}
       this.toolsInitialized = true
@@ -94,18 +91,12 @@ export class ToolManager {
       const totalToolCount = mcpToolNames.length + codeToolNames.length
 
       if (CONFIG.logging.override.Tools) {
-        lgg.info(
-          `✅ Successfully initialized ${totalToolCount} tools for node "${this.nodeId}":`
-        )
+        lgg.info(`✅ Successfully initialized ${totalToolCount} tools for node "${this.nodeId}":`)
         if (mcpToolNames.length > 0) {
-          lgg.info(
-            `🔌 MCP Tools (${mcpToolNames.length}): ${mcpToolNames.join(", ")}`
-          )
+          lgg.info(`🔌 MCP Tools (${mcpToolNames.length}): ${mcpToolNames.join(", ")}`)
         }
         if (codeToolNames.length > 0) {
-          lgg.info(
-            `⚙️  Code Tools (${codeToolNames.length}): ${codeToolNames.join(", ")}`
-          )
+          lgg.info(`⚙️  Code Tools (${codeToolNames.length}): ${codeToolNames.join(", ")}`)
         }
       }
     } catch (err) {
@@ -131,19 +122,14 @@ export class ToolManager {
    * @param toolExecutionContext Optional context for code tool initialization
    * @returns Combined toolset ready for AI execution
    */
-  async getAllTools(
-    toolExecutionContext?: ToolExecutionContext
-  ): Promise<ToolSet> {
+  async getAllTools(toolExecutionContext?: ToolExecutionContext): Promise<ToolSet> {
     let codeTools = this.codeTools
 
     // if context provided, setup code tools with runtime information
     if (toolExecutionContext) {
       try {
         // setup code tools with context on-demand
-        const contextualCodeTools = await setupCodeToolsForNode(
-          this.codeToolNames,
-          toolExecutionContext
-        )
+        const contextualCodeTools = await setupCodeToolsForNode(this.codeToolNames, toolExecutionContext)
         codeTools = contextualCodeTools
       } catch (error) {
         lgg.error(`Failed to setup code tools with context:`, error)
@@ -160,11 +146,7 @@ export class ToolManager {
     ) as ToolSet
 
     if (Object.keys(filteredTools).length < Object.keys(allTools).length) {
-      lgg.error(
-        `Different number of tools found for node "${this.nodeId}". This is a bug.`,
-        filteredTools,
-        allTools
-      )
+      lgg.error(`Different number of tools found for node "${this.nodeId}". This is a bug.`, filteredTools, allTools)
     }
 
     return filteredTools

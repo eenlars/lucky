@@ -5,12 +5,9 @@ export default function HomePage() {
     <div className="min-h-screen bg-white pt-24">
       <div className="max-w-4xl mx-auto px-8">
         <div className="text-center mb-20">
-          <h1 className="text-5xl font-extralight text-black tracking-tight mb-6">
-            Automated Agentic Workflows
-          </h1>
+          <h1 className="text-5xl font-extralight text-black tracking-tight mb-6">Automated Agentic Workflows</h1>
           <p className="text-lg font-light text-black/60 tracking-wide">
-            Creating nodes that learn the optimal workflow to solve specific
-            tasks
+            Creating nodes that learn the optimal workflow to solve specific tasks
           </p>
         </div>
 
@@ -49,9 +46,7 @@ export default function HomePage() {
               <span className="text-2xl">◊</span>
             </div>
             <h3 className="text-xl font-light text-black mb-2">Evolution</h3>
-            <p className="text-sm font-light text-black/50 text-center tracking-wide">
-              View genetic programming runs
-            </p>
+            <p className="text-sm font-light text-black/50 text-center tracking-wide">View genetic programming runs</p>
           </Link>
 
           <Link

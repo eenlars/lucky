@@ -2,12 +2,7 @@ import { defineTool } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
 import { z } from "zod"
 import { locationDataSchema } from "../../schemas/location.types"
-import {
-  getLocationData,
-  insertLocationData,
-  removeLocationData,
-  updateLocationData,
-} from "./api"
+import { getLocationData, insertLocationData, removeLocationData, updateLocationData } from "./api"
 
 // Helper function to clean location data by removing null values
 const cleanLocationData = (data: any): any => {
@@ -18,11 +13,7 @@ const cleanLocationData = (data: any): any => {
   // Copy over non-null values
   for (const [key, value] of Object.entries(data)) {
     if (value !== null) {
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
+      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
         cleaned[key] = cleanLocationData(value)
       } else {
         cleaned[key] = value
@@ -45,12 +36,7 @@ const cleanLocationData = (data: any): any => {
 const locationDataManager = defineTool({
   name: "locationDataManager",
   params: z.object({
-    operation: z.enum([
-      "insertLocations",
-      "getLocations",
-      "removeLocations",
-      "updateLocations",
-    ]),
+    operation: z.enum(["insertLocations", "getLocations", "removeLocations", "updateLocations"]),
     locationData: locationDataSchema.array().nullish().default([]),
     locationIdsToRemove: z.array(z.string()).nullish().default([]),
     updateData: z
@@ -58,10 +44,7 @@ const locationDataManager = defineTool({
         z.object({
           locationId: z.string(),
           updateData: locationDataSchema.partial(),
-          updateStrategy: z
-            .enum(["merge", "replace", "selective"])
-            .nullish()
-            .default("merge"),
+          updateStrategy: z.enum(["merge", "replace", "selective"]).nullish().default("merge"),
         })
       )
       .nullish()
@@ -77,10 +60,7 @@ const locationDataManager = defineTool({
 
       // pass the data through our schema for validation/normalization
       const cleanedData = (params.locationData || []).map(cleanLocationData)
-      const response = await insertLocationData(
-        workflowInvocationId,
-        cleanedData
-      )
+      const response = await insertLocationData(workflowInvocationId, cleanedData)
       return response.output || { success: false }
     } else if (params.operation === "getLocations") {
       const response = await getLocationData(workflowInvocationId)
@@ -90,10 +70,7 @@ const locationDataManager = defineTool({
         return { success: false, locations: [] }
       }
 
-      const response = await removeLocationData(
-        workflowInvocationId,
-        params.locationIdsToRemove
-      )
+      const response = await removeLocationData(workflowInvocationId, params.locationIdsToRemove)
       return response.output || { success: false, locations: [] }
     } else if (params.operation === "updateLocations") {
       if (isNir(params.updateData) || params.updateData.length === 0) {
@@ -105,10 +82,7 @@ const locationDataManager = defineTool({
         updateData: cleanLocationData(item.updateData),
         updateStrategy: item.updateStrategy || undefined,
       }))
-      const response = await updateLocationData(
-        workflowInvocationId,
-        cleanedData
-      )
+      const response = await updateLocationData(workflowInvocationId, cleanedData)
       return response.output || { success: false }
     } else {
       throw new Error(`unknown operation: ${params.operation}`)

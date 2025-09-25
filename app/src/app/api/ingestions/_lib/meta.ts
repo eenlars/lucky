@@ -8,9 +8,7 @@ function metaPath(datasetId: string) {
 }
 
 export async function loadDatasetMeta(datasetId: string): Promise<DatasetMeta> {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .download(metaPath(datasetId))
+  const { data, error } = await supabase.storage.from(BUCKET).download(metaPath(datasetId))
 
   if (error || !data) {
     throw new Error("NOT_FOUND")
@@ -35,13 +33,9 @@ export async function saveDatasetMeta(meta: DatasetMeta): Promise<void> {
   const json = JSON.stringify(meta, null, 2)
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(
-      metaPath(meta.datasetId),
-      new Blob([json], { type: "application/json" }),
-      {
-        contentType: "application/json",
-        upsert: true,
-      }
-    )
+    .upload(metaPath(meta.datasetId), new Blob([json], { type: "application/json" }), {
+      contentType: "application/json",
+      upsert: true,
+    })
   if (error) throw new Error(error.message)
 }

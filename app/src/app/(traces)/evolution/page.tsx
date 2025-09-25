@@ -1,9 +1,6 @@
 "use client"
 
-import {
-  useEvolutionRunsStore,
-  type EvolutionRunWithStats,
-} from "@/stores/evolution-runs-store"
+import { useEvolutionRunsStore, type EvolutionRunWithStats } from "@/stores/evolution-runs-store"
 import { Button } from "@/ui/button"
 import type { Database } from "@lucky/shared"
 import dayjs from "dayjs"
@@ -45,8 +42,7 @@ const getDuration = (startTime: string, endTime: string | null) => {
   return `${seconds}s`
 }
 
-type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
+type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
 
 const isStaleRun = (run: Tables<"EvolutionRun">) => {
   if (run.status !== "running") return false
@@ -90,20 +86,9 @@ export default function EvolutionPage() {
 
   useEffect(() => {
     fetchRuns({ showLoading: true, reset: true })
-  }, [
-    statusFilter,
-    modeFilter,
-    searchTerm,
-    dateFilter,
-    hideEmptyRuns,
-    limit,
-    fetchRuns,
-  ])
+  }, [statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns, limit, fetchRuns])
 
-  const getSortValue = (
-    run: EvolutionRunWithStats,
-    field: keyof EvolutionRunWithStats
-  ) => {
+  const getSortValue = (run: EvolutionRunWithStats, field: keyof EvolutionRunWithStats) => {
     if (field === "config") return run.evolution_type || run.config?.mode || ""
     return run[field]
   }
@@ -156,9 +141,7 @@ export default function EvolutionPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
-            Evolution Runs
-          </h1>
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Evolution Runs</h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Monitor and analyze your workflow evolution experiments
           </p>
@@ -206,9 +189,7 @@ export default function EvolutionPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Status
-              </label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -223,9 +204,7 @@ export default function EvolutionPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Type
-              </label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
               <select
                 value={modeFilter}
                 onChange={(e) => setModeFilter(e.target.value)}
@@ -238,9 +217,7 @@ export default function EvolutionPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Time Range
-              </label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time Range</label>
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
@@ -296,11 +273,7 @@ export default function EvolutionPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                   </span>
-                  {
-                    evolutionRuns.filter((run) => run.status === "running")
-                      .length
-                  }{" "}
-                  running
+                  {evolutionRuns.filter((run) => run.status === "running").length} running
                 </span>
               )}
 
@@ -338,9 +311,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Run ID</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("run_id")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("run_id")}</span>
                       </div>
                     </th>
                     <th
@@ -349,9 +320,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Goal</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("goal_text")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("goal_text")}</span>
                       </div>
                     </th>
                     <th
@@ -360,9 +329,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Status</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("status")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("status")}</span>
                       </div>
                     </th>
                     <th
@@ -371,9 +338,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Type</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("config")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("config")}</span>
                       </div>
                     </th>
                     <th
@@ -382,9 +347,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Generations</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("generation_count")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("generation_count")}</span>
                       </div>
                     </th>
                     <th
@@ -393,9 +356,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Invocations</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("total_invocations")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("total_invocations")}</span>
                       </div>
                     </th>
                     <th
@@ -404,9 +365,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Started</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("start_time")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("start_time")}</span>
                       </div>
                     </th>
                     <th
@@ -415,9 +374,7 @@ export default function EvolutionPage() {
                     >
                       <div className="flex items-center gap-1">
                         <span>Δ Accuracy</span>
-                        <span className="text-gray-400">
-                          {getSortIcon("avg_accuracy_delta")}
-                        </span>
+                        <span className="text-gray-400">{getSortIcon("avg_accuracy_delta")}</span>
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -427,10 +384,7 @@ export default function EvolutionPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredAndSortedRuns.map((run, index) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group"
-                    >
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
                         <Link
                           href={`/evolution/${run.run_id}`}
@@ -447,23 +401,14 @@ export default function EvolutionPage() {
                         >
                           <div
                             className="max-w-md truncate"
-                            title={
-                              typeof run.goal_text === "string"
-                                ? run.goal_text
-                                : JSON.stringify(run.goal_text)
-                            }
+                            title={typeof run.goal_text === "string" ? run.goal_text : JSON.stringify(run.goal_text)}
                           >
-                            {typeof run.goal_text === "string"
-                              ? run.goal_text
-                              : JSON.stringify(run.goal_text)}
+                            {typeof run.goal_text === "string" ? run.goal_text : JSON.stringify(run.goal_text)}
                           </div>
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="block"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="block">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               run.status === "completed"
@@ -479,17 +424,12 @@ export default function EvolutionPage() {
                                       : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                             }`}
                           >
-                            {run.status === "running" && isStaleRun(run)
-                              ? "stale"
-                              : String(run.status)}
+                            {run.status === "running" && isStaleRun(run) ? "stale" : String(run.status)}
                           </span>
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="capitalize"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="capitalize">
                           {run.evolution_type
                             ? String(run.evolution_type)
                             : typeof run.config?.mode === "string"
@@ -500,26 +440,17 @@ export default function EvolutionPage() {
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="tabular-nums"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="tabular-nums">
                           {run.generation_count || 0}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="tabular-nums"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="tabular-nums">
                           {run.total_invocations ?? 0}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="block"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="block">
                           {dayjs(run.start_time).fromNow()}
                         </Link>
                       </td>
@@ -533,16 +464,11 @@ export default function EvolutionPage() {
                               : "N/A"
                           }
                         >
-                          {run.avg_accuracy_delta != null
-                            ? `${run.avg_accuracy_delta}%`
-                            : "—"}
+                          {run.avg_accuracy_delta != null ? `${run.avg_accuracy_delta}%` : "—"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        <Link
-                          href={`/evolution/${run.run_id}`}
-                          className="tabular-nums"
-                        >
+                        <Link href={`/evolution/${run.run_id}`} className="tabular-nums">
                           {getDuration(run.start_time, run.end_time)}
                         </Link>
                       </td>
@@ -555,12 +481,7 @@ export default function EvolutionPage() {
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12">
             <div className="text-center">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -576,8 +497,7 @@ export default function EvolutionPage() {
                     : "No evolution runs found"}
               </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {!loading &&
-                  "Try adjusting your filters or creating a new evolution run."}
+                {!loading && "Try adjusting your filters or creating a new evolution run."}
               </p>
             </div>
           </div>

@@ -75,11 +75,7 @@ export const retrieveEvolutionRuns = async (limit = 15, offset = 0) => {
 }
 
 export const retrieveEvolutionRun = async (runId: string) => {
-  const { data, error } = await supabase
-    .from("EvolutionRun")
-    .select("*")
-    .eq("run_id", runId)
-    .single()
+  const { data, error } = await supabase.from("EvolutionRun").select("*").eq("run_id", runId).single()
 
   if (error) throw error
 
@@ -98,9 +94,7 @@ export const retrieveGenerationsByRun = async (runId: string) => {
   return data
 }
 
-const performComplexQuery = async (
-  runId: string
-): Promise<GenerationWithData[]> => {
+const performComplexQuery = async (runId: string): Promise<GenerationWithData[]> => {
   // Use the same pattern as the working API route - deep join with foreign key constraints
   const { data: generations, error: generationsError } = await supabase
     .from("Generation")
@@ -153,10 +147,7 @@ const performComplexQuery = async (
   const generationsWithData =
     generations?.map((generation) => {
       // Find workflow versions for this generation
-      const generationVersions =
-        workflowVersions?.filter(
-          (wv) => wv.generation_id === generation.generation_id
-        ) || []
+      const generationVersions = workflowVersions?.filter((wv) => wv.generation_id === generation.generation_id) || []
 
       return {
         generation: {
@@ -177,9 +168,7 @@ const performComplexQuery = async (
   return generationsWithData
 }
 
-export const retrieveAllInvocationsForRunGroupedByGeneration = async (
-  runId: string
-) => {
+export const retrieveAllInvocationsForRunGroupedByGeneration = async (runId: string) => {
   // Run periodic cache cleanup
   cleanupCache()
 
@@ -192,9 +181,7 @@ export const retrieveAllInvocationsForRunGroupedByGeneration = async (
       console.log(`[Evolution Cache] Using cached data for run ${runId}`)
       return cached.data
     } else {
-      console.log(
-        `[Evolution Cache] Cache miss or status change for run ${runId}`
-      )
+      console.log(`[Evolution Cache] Cache miss or status change for run ${runId}`)
     }
   }
 

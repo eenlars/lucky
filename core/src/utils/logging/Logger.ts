@@ -10,10 +10,7 @@ class FileLogger {
 
   async FileLogger() {
     // check if we're in node.js environment and not in browser
-    this.isNodeEnv =
-      typeof process !== "undefined" &&
-      !!process.versions?.node &&
-      typeof window === "undefined"
+    this.isNodeEnv = typeof process !== "undefined" && !!process.versions?.node && typeof window === "undefined"
 
     if (this.isNodeEnv) {
       try {
@@ -77,9 +74,7 @@ class FileLogger {
 
     if (this.logFile && this.isNodeEnv) {
       const message = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
+        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
         .join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] ${message}\n`
@@ -103,9 +98,7 @@ class FileLogger {
 
     if (this.logFile && this.isNodeEnv) {
       const message = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
+        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
         .join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] INFO: ${message}\n`
@@ -118,9 +111,7 @@ class FileLogger {
 
     if (this.logFile && this.isNodeEnv) {
       const message = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
+        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
         .join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] WARN: ${message}\n`
@@ -150,9 +141,7 @@ class FileLogger {
 
     if (this.logFile && this.isNodeEnv) {
       const message = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
+        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
         .join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] DEBUG: ${message}\n`
@@ -165,9 +154,7 @@ class FileLogger {
 
     if (this.logFile && this.isNodeEnv) {
       const message = args
-        .map((arg) =>
-          typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-        )
+        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
         .join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] TRACE: ${message}\n`
@@ -178,9 +165,7 @@ class FileLogger {
   async finalizeWorkflowLog(): Promise<string | null> {
     if (!this.logFile || !this.isNodeEnv) return null
 
-    await this.writeToFile(
-      `=== Iterative Evolution Workflow Completed: ${new Date().toISOString()} ===\n`
-    )
+    await this.writeToFile(`=== Iterative Evolution Workflow Completed: ${new Date().toISOString()} ===\n`)
     const logPath = this.logFile
     this.logFile = null
     return logPath
@@ -191,14 +176,12 @@ const fileLogger = new FileLogger()
 
 export const lgg = {
   log: (...args: any[]) => fileLogger.log(...args),
-  onlyIf: (decider: boolean, ...args: any[]) =>
-    decider ? fileLogger.log(...args) : null,
+  onlyIf: (decider: boolean, ...args: any[]) => (decider ? fileLogger.log(...args) : null),
   info: (...args: any[]) => fileLogger.info(...args),
   warn: (...args: any[]) => fileLogger.warn(...args),
   error: (...args: any[]) => fileLogger.error(...args),
   debug: (...args: any[]) => fileLogger.debug(...args),
   trace: (...args: any[]) => fileLogger.trace(...args),
-  logAndSave: (fileName: string, ...args: any[]) =>
-    fileLogger.logAndSave(fileName, ...args),
+  logAndSave: (fileName: string, ...args: any[]) => fileLogger.logAndSave(fileName, ...args),
   finalizeWorkflowLog: () => fileLogger.finalizeWorkflowLog(),
 }

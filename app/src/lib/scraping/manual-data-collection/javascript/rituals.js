@@ -37,10 +37,7 @@ function transformRitualsData(input) {
 // load → Transform → Save
 const transformed = transformRitualsData(json)
 
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/rituals.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/rituals.json", JSON.stringify(transformed, null, 2))
 
 // optional: log result for inspection
 lgg.info(JSON.stringify(transformed, null, 2))

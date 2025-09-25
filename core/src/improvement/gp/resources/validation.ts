@@ -47,15 +47,11 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
   }
 
   if (config.tournamentSize > config.populationSize) {
-    errors.push(
-      `Tournament size (${config.tournamentSize}) cannot exceed population size (${config.populationSize}).`
-    )
+    errors.push(`Tournament size (${config.tournamentSize}) cannot exceed population size (${config.populationSize}).`)
   }
 
   if (config.eliteSize > config.populationSize) {
-    errors.push(
-      `Elite size (${config.eliteSize}) cannot exceed population size (${config.populationSize}).`
-    )
+    errors.push(`Elite size (${config.eliteSize}) cannot exceed population size (${config.populationSize}).`)
   }
 
   // Resource Limits
@@ -64,9 +60,7 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
   }
 
   if (config.maxEvaluationsPerHour <= 0) {
-    errors.push(
-      `Max evaluations per hour (${config.maxEvaluationsPerHour}) must be greater than 0.`
-    )
+    errors.push(`Max evaluations per hour (${config.maxEvaluationsPerHour}) must be greater than 0.`)
   }
 
   if (config.generations <= 0) {
@@ -120,9 +114,7 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
 /**
  * Create default evolution configuration using constants from runtime/constants.ts
  */
-export function _createDefaultEvolutionSettings(
-  overrides?: Partial<EvolutionSettings>
-): EvolutionSettings {
+export function _createDefaultEvolutionSettings(overrides?: Partial<EvolutionSettings>): EvolutionSettings {
   // Default values when no config is provided
   const defaultPopulationSize = 4
   const defaultGenerations = 3
@@ -133,10 +125,7 @@ export function _createDefaultEvolutionSettings(
     generations: defaultGenerations,
 
     // Selection parameters (dynamic based on population size)
-    tournamentSize: Math.max(
-      2,
-      Math.min(5, Math.floor(defaultPopulationSize * 0.3))
-    ),
+    tournamentSize: Math.max(2, Math.min(5, Math.floor(defaultPopulationSize * 0.3))),
     eliteSize: Math.max(1, Math.floor(defaultPopulationSize * 0.2)),
 
     // Practical limits

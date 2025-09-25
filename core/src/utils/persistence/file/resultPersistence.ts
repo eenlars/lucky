@@ -41,10 +41,7 @@ export async function persistWorkflow(
   if (!skipBackup) {
     const backupName = path.basename(fileName, path.extname(fileName))
 
-    await writeJsonAtomic(
-      path.join(BACKUP_DIR, `${backupName}_${stamp}.json`),
-      finalConfigJson
-    )
+    await writeJsonAtomic(path.join(BACKUP_DIR, `${backupName}_${stamp}.json`), finalConfigJson)
 
     lgg.log(`✅ persisted + backed up ${configPath}`)
   } else {

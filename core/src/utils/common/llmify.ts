@@ -19,7 +19,5 @@ export const truncater = (string: string, maxLength: number) => {
     lgg.warn("truncater called on null or undefined")
     return emptyContent
   }
-  return string.length > maxLength
-    ? string.slice(0, maxLength) + "truncated..."
-    : string
+  return string.length > maxLength ? string.slice(0, maxLength) + "truncated..." : string
 }

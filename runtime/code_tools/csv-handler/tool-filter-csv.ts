@@ -3,20 +3,13 @@ import { defineTool } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { z } from "zod"
-import {
-  filterByMultipleValues,
-  filterByNumericRange,
-  filterCsvData,
-  simpleFilterCsv,
-} from "./main/function"
+import { filterByMultipleValues, filterByNumericRange, filterCsvData, simpleFilterCsv } from "./main/function"
 import type { FilterOptions } from "./main/types"
 
 // Helper function to clean simple filter options by removing null values
 const cleanSimpleFilterOptions = (
   options: any
-):
-  | { caseSensitive?: boolean; limit?: number; skipEmptyRows?: boolean }
-  | undefined => {
+): { caseSensitive?: boolean; limit?: number; skipEmptyRows?: boolean } | undefined => {
   if (!options || typeof options !== "object") return undefined
 
   const cleaned: {
@@ -39,12 +32,7 @@ const cleanSimpleFilterOptions = (
 
 const csvFilterParams = z.object({
   action: z
-    .enum([
-      "filter",
-      "simpleFilter",
-      "filterMultipleValues",
-      "filterNumericRange",
-    ])
+    .enum(["filter", "simpleFilter", "filterMultipleValues", "filterNumericRange"])
     .describe("type of filtering action to perform"),
   // for advanced filter
   filterOptions: z
@@ -78,10 +66,7 @@ const csvFilterParams = z.object({
 
   // for simple filter
   column: z.string().nullish().describe("column name for simple filtering"),
-  value: z
-    .string()
-    .nullish()
-    .describe("value to filter by for simple filtering"),
+  value: z.string().nullish().describe("value to filter by for simple filtering"),
   operator: z
     .enum([
       "equals",
@@ -100,10 +85,7 @@ const csvFilterParams = z.object({
     .describe("operator for filtering (default: contains)"),
 
   // for multiple values filter
-  values: z
-    .array(z.string())
-    .nullish()
-    .describe("array of values to filter by"),
+  values: z.array(z.string()).nullish().describe("array of values to filter by"),
 
   // for numeric range filter
   min: z.number().nullish().describe("minimum value for numeric range filter"),
@@ -129,17 +111,7 @@ const csvFilterTool = defineTool({
   params: csvFilterParams,
 
   async execute(params, context) {
-    const {
-      action,
-      filterOptions,
-      column,
-      value,
-      operator = "contains",
-      values,
-      min,
-      max,
-      options = {},
-    } = params
+    const { action, filterOptions, column, value, operator = "contains", values, min, max, options = {} } = params
 
     if (!context?.workflowFiles[0]) {
       return Tools.createFailure("csvFilter", {
@@ -155,10 +127,7 @@ const csvFilterTool = defineTool({
       })
     }
 
-    const contextStore = createContextStore(
-      "supabase",
-      context.workflowInvocationId
-    )
+    const contextStore = createContextStore("supabase", context.workflowInvocationId)
 
     lgg.info("csv filter params", JSON.stringify(params, null, 2))
 
@@ -171,11 +140,7 @@ const csvFilterTool = defineTool({
           })
         }
 
-        const result = await filterCsvData(
-          context.workflowFiles[0],
-          contextStore,
-          filterOptions as FilterOptions
-        )
+        const result = await filterCsvData(context.workflowFiles[0], contextStore, filterOptions as FilterOptions)
 
         if (!result.success) {
           return Tools.createFailure("csvFilter", {
@@ -218,8 +183,7 @@ const csvFilterTool = defineTool({
         if (!column || !values) {
           return Tools.createFailure("csvFilter", {
             location: "filterMultipleValues",
-            error:
-              "column and values are required for filterMultipleValues action",
+            error: "column and values are required for filterMultipleValues action",
           })
         }
 

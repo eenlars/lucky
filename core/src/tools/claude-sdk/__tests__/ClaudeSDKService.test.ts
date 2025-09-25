@@ -13,7 +13,7 @@ vi.mock("@anthropic-ai/sdk", () => {
     constructor(message: string, status?: number) {
       super(message)
       this.status = status
-      this.headers = { 'request-id': 'test-request-id' }
+      this.headers = { "request-id": "test-request-id" }
     }
   }
   class BadRequestError extends APIError {}
@@ -24,7 +24,7 @@ vi.mock("@anthropic-ai/sdk", () => {
   class RateLimitError extends APIError {}
   class InternalServerError extends APIError {}
   class APIConnectionError extends APIError {}
-  
+
   return {
     default: vi.fn().mockImplementation(() => ({
       messages: {
@@ -51,7 +51,7 @@ describe("ClaudeSDKService", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     process.env.ANTHROPIC_API_KEY = "test-api-key"
-    
+
     // Reset default mock behavior
     mockCreate.mockResolvedValue({
       id: "msg_test123",
@@ -82,12 +82,7 @@ describe("ClaudeSDKService", () => {
   })
 
   it("should execute a basic request successfully", async () => {
-    const result = await ClaudeSDKService.execute(
-      "test-node",
-      "Test prompt",
-      { model: "sonnet" },
-      "test-invocation"
-    )
+    const result = await ClaudeSDKService.execute("test-node", "Test prompt", { model: "sonnet" }, "test-invocation")
 
     expect(result).toBeDefined()
     expect(result.response.type).toBe("text")
@@ -115,7 +110,7 @@ describe("ClaudeSDKService", () => {
 
   it("should handle SDK errors gracefully", async () => {
     process.env.ANTHROPIC_API_KEY = "test-api-key"
-    
+
     mockCreate.mockRejectedValue(new Error("SDK connection failed"))
 
     const result = await ClaudeSDKService.execute("test-node", "Test prompt")
@@ -155,7 +150,7 @@ describe("ClaudeSDKService", () => {
       timeout: 30000,
     })
 
-    // The SDK client.messages.create now takes two parameters: 
+    // The SDK client.messages.create now takes two parameters:
     // the message options and the request options (for timeout)
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({

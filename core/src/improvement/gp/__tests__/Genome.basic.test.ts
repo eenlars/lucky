@@ -1,10 +1,7 @@
 // basic tests for genome class without complex mocking
 // TODO: despite title "basic tests", still has extensive mock setup
 // consider using actual test utilities instead of inline mocks
-import {
-  createMockEvaluationInputGeneric,
-  setupCoreTest,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockEvaluationInputGeneric, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -243,9 +240,7 @@ describe("Genome Basic Tests", () => {
 
   describe("Constructor", () => {
     it("should create genome from data", async () => {
-      const { Genome } = await vi.importActual<any>(
-        "@core/improvement/gp/Genome"
-      )
+      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
       const genomeData = createTestGenomeData()
       const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -256,9 +251,7 @@ describe("Genome Basic Tests", () => {
     })
 
     it("should initialize fitness as invalid", async () => {
-      const { Genome } = await vi.importActual<any>(
-        "@core/improvement/gp/Genome"
-      )
+      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
       const genomeData = createTestGenomeData()
       const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -271,9 +264,7 @@ describe("Genome Basic Tests", () => {
 
   describe("Static Methods", () => {
     it("should create random genome", async () => {
-      const { Genome } = await vi.importActual<any>(
-        "@core/improvement/gp/Genome"
-      )
+      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
       const evaluationInput = createMockEvaluationInputGeneric()
 
       const genomeResult = await Genome.createRandom({
@@ -298,9 +289,7 @@ describe("Genome Basic Tests", () => {
     })
 
     it("should convert genome to workflow config", async () => {
-      const { Genome } = await vi.importActual<any>(
-        "@core/improvement/gp/Genome"
-      )
+      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
       const genomeData = createTestGenomeData()
 
       const config = Genome.toWorkflowConfig(genomeData as any)

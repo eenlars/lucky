@@ -73,10 +73,7 @@ async function testSWEBenchLoader() {
       }
 
       // Try to find a suitable dataset file
-      const datasetFiles = fileList.filter(
-        (f) =>
-          f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet")
-      )
+      const datasetFiles = fileList.filter((f) => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet"))
 
       if (datasetFiles.length > 0) {
         const filename = datasetFiles[0]
@@ -92,19 +89,14 @@ async function testSWEBenchLoader() {
 
         // Download using fetch API instead
         const cleanRepoId = repoId.replace("datasets/", "")
-        const response = await fetch(
-          `https://huggingface.co/datasets/${cleanRepoId}/resolve/main/${filename}`,
-          {
-            headers: {
-              Authorization: `Bearer ${HF_TOKEN}`,
-            },
-          }
-        )
+        const response = await fetch(`https://huggingface.co/datasets/${cleanRepoId}/resolve/main/${filename}`, {
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+          },
+        })
 
         if (!response.ok) {
-          throw new Error(
-            `Failed to download: ${response.status} ${response.statusText}`
-          )
+          throw new Error(`Failed to download: ${response.status} ${response.statusText}`)
         }
 
         const fileBuffer = await response.arrayBuffer()
@@ -129,17 +121,12 @@ async function testSWEBenchLoader() {
         return
       }
     } catch (error) {
-      console.log(
-        `Failed to access ${repoId}:`,
-        error instanceof Error ? error.message : String(error)
-      )
+      console.log(`Failed to access ${repoId}:`, error instanceof Error ? error.message : String(error))
       continue
     }
   }
 
-  console.log(
-    "Could not find SWE-bench dataset in any of the expected repositories"
-  )
+  console.log("Could not find SWE-bench dataset in any of the expected repositories")
 }
 
 async function processDataset(tempPath: string) {
@@ -154,10 +141,7 @@ async function processDataset(tempPath: string) {
       try {
         const parquetData = readParquet(fileBuffer)
         console.log("Parquet data type:", typeof parquetData)
-        console.log(
-          "Parquet data methods:",
-          Object.getOwnPropertyNames(parquetData)
-        )
+        console.log("Parquet data methods:", Object.getOwnPropertyNames(parquetData))
 
         // Try different methods to get data
         let dataArray: any[] = []
@@ -238,10 +222,7 @@ async function processDataset(tempPath: string) {
       console.log("Instance ID:", instance.instance_id)
       console.log("Repository:", instance.repo)
       console.log("Base commit:", instance.base_commit)
-      console.log(
-        "Problem statement:",
-        instance.problem_statement.substring(0, 200) + "..."
-      )
+      console.log("Problem statement:", instance.problem_statement.substring(0, 200) + "...")
       console.log("Has patch:", !!instance.patch)
       console.log("Patch length:", instance.patch?.length || 0)
       console.log("Has test patch:", !!instance.test_patch)
@@ -260,17 +241,12 @@ async function processDataset(tempPath: string) {
     console.log("Testing specific instance lookup...")
 
     const targetId = "django__django-11099"
-    const targetInstance = instances.find(
-      (inst) => inst.instance_id === targetId
-    )
+    const targetInstance = instances.find((inst) => inst.instance_id === targetId)
 
     if (targetInstance) {
       console.log("Found target instance:", targetInstance.instance_id)
       console.log("Repository:", targetInstance.repo)
-      console.log(
-        "Problem:",
-        targetInstance.problem_statement.substring(0, 100) + "..."
-      )
+      console.log("Problem:", targetInstance.problem_statement.substring(0, 100) + "...")
     } else {
       console.log("Target instance not found in dev set")
     }
@@ -278,9 +254,7 @@ async function processDataset(tempPath: string) {
     console.log("\n" + "=".repeat(50))
     console.log("🎉 SWE-bench loader test completed successfully!")
     console.log("✅ Successfully connected to Hugging Face dataset repository")
-    console.log(
-      "✅ Downloaded parquet file from datasets/princeton-nlp/SWE-bench to downloads directory"
-    )
+    console.log("✅ Downloaded parquet file from datasets/princeton-nlp/SWE-bench to downloads directory")
     console.log("✅ Parsed dataset structure and extracted sample instances")
     console.log("✅ Demonstrated instance lookup functionality")
     console.log("\nThis test_2_swe.ts file demonstrates:")

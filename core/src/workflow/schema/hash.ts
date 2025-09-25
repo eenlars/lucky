@@ -1,9 +1,6 @@
 import { createHash } from "crypto"
 
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
 /**
  * Stable JSON stringify that sorts object keys recursively.
@@ -23,9 +20,7 @@ function stableStringify(value: unknown): string {
   })
 }
 
-function sortUniqueStringArray(
-  arr: string[] | undefined
-): string[] | undefined {
+function sortUniqueStringArray(arr: string[] | undefined): string[] | undefined {
   if (!arr) return arr
   const unique = Array.from(new Set(arr))
   return unique.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
@@ -35,17 +30,12 @@ function sortUniqueStringArray(
  * Return a sanitized copy of a node with non-hashable fields removed.
  * Currently omits `memory` by design.
  */
-function sanitizeNodeForHash(
-  node: WorkflowNodeConfig
-): Omit<WorkflowNodeConfig, "memory"> & { memory?: never } {
+function sanitizeNodeForHash(node: WorkflowNodeConfig): Omit<WorkflowNodeConfig, "memory"> & { memory?: never } {
   // Omit node.memory and normalize string arrays for deterministic hashing
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { memory: _omit, ...rest } = node
   // Merge waitFor/waitingFor aliases into a single normalized waitFor array
-  const mergedWaitFor = [
-    ...(rest.waitFor ?? []),
-    ...((rest as any).waitingFor ?? []),
-  ] as string[]
+  const mergedWaitFor = [...(rest.waitFor ?? []), ...((rest as any).waitingFor ?? [])] as string[]
 
   const sanitized = {
     nodeId: rest.nodeId,

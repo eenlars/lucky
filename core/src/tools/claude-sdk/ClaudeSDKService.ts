@@ -33,11 +33,9 @@ export class ClaudeSDKService {
   private static initializeClient(): Anthropic {
     // Always check for API key, even if client exists
     const apiKey = process.env.ANTHROPIC_API_KEY
-    
+
     if (!apiKey) {
-      throw new Error(
-        "ANTHROPIC_API_KEY environment variable is required for SDK usage"
-      )
+      throw new Error("ANTHROPIC_API_KEY environment variable is required for SDK usage")
     }
 
     if (!this.client) {
@@ -92,165 +90,160 @@ export class ClaudeSDKService {
     let requestId: string | undefined
 
     try {
-        // Track execution start time for performance metrics
-        const startTime = Date.now()
+      // Track execution start time for performance metrics
+      const startTime = Date.now()
 
-        // Get client
-        const client = ClaudeSDKService.initializeClient()
+      // Get client
+      const client = ClaudeSDKService.initializeClient()
 
-        // Determine model from config (map our simple names to official model IDs)
-        const modelId = this.getModelId(request.config?.model)
+      // Determine model from config (map our simple names to official model IDs)
+      const modelId = this.getModelId(request.config?.model)
 
-        // Prepare messages for the API
-        const messages: Anthropic.MessageParam[] = [
-          {
-            role: "user",
-            content: request.prompt,
-          },
-        ]
+      // Prepare messages for the API
+      const messages: Anthropic.MessageParam[] = [
+        {
+          role: "user",
+          content: request.prompt,
+        },
+      ]
 
-        // Determine max tokens (default to a reasonable value)
-        const maxTokens = request.config?.maxTokens || 4096
+      // Determine max tokens (default to a reasonable value)
+      const maxTokens = request.config?.maxTokens || 4096
 
-        // Create message with optional timeout override
-        const timeoutMs = request.config?.timeout
+      // Create message with optional timeout override
+      const timeoutMs = request.config?.timeout
 
-        const messageOptions: Anthropic.MessageCreateParams = {
-          model: modelId,
-          messages,
-          max_tokens: maxTokens,
-          // Add any additional parameters from config
-          ...(request.config?.temperature && { temperature: request.config.temperature }),
-          ...(request.config?.topP && { top_p: request.config.topP }),
-          ...(request.config?.systemPrompt && { 
-            system: request.config.systemPrompt 
-          }),
-          ...(request.tools && request.tools.length > 0 && { tools: request.tools }),
-        }
-
-        // Create request with optional timeout
-        const message = await client.messages.create(
-          messageOptions,
-          timeoutMs ? { timeout: timeoutMs } : {}
-        )
-
-        // Capture request ID for debugging
-        requestId = (message as any)._request_id
-
-        // Extract response text from content blocks
-        const responseText = this.extractTextFromMessage(message)
-
-        // Calculate execution time
-        const executionTime = Date.now() - startTime
-
-        // Calculate cost from usage
-        const usage = message.usage
-        const cost = this.calculateCost(modelId, usage)
-
-        // Build response
-        const agentSteps: AgentStep[] = [{ type: "text", return: responseText }]
-
-        const summaryText = `SDK: ${modelId}, input: ${usage?.input_tokens || 0}, output: ${usage?.output_tokens || 0}, cost: $${cost.toFixed(4)}, time: ${executionTime}ms`
-
-        const processed: ProcessedResponse = {
-          nodeId: request.nodeId,
-          type: "text",
-          content: responseText,
-          cost,
-          agentSteps,
-          summary: summaryText,
-        }
-
-        // Log successful execution
-        lgg.info("[ClaudeSDK] Execution successful", {
-          nodeId: request.nodeId,
-          requestId,
-          model: modelId,
-          inputTokens: usage?.input_tokens || 0,
-          outputTokens: usage?.output_tokens || 0,
-          cost,
-          executionTime,
-        })
-
-        return { response: processed, cost, agentSteps }
-      } catch (error) {
-        // Handle specific SDK error types
-        let errorType = "APIError"
-        let errorMessage = "Unknown error occurred"
-        let statusCode: number | undefined
-        let isRetryable = false
-
-        if (error instanceof Error) {
-          errorMessage = error.message
-          
-          // Check for specific error patterns
-          const errorStr = error.message.toLowerCase()
-          
-          // Check for API key errors
-          if (errorStr.includes('api') && errorStr.includes('key')) {
-            errorType = "AuthenticationError"
-            statusCode = 401
-          }
-          // Check for timeout errors
-          else if (errorStr.includes('timeout')) {
-            errorType = "TimeoutError"
-            isRetryable = true
-          }
-          // Check for network/connection errors
-          else if (errorStr.includes('network') || errorStr.includes('connection')) {
-            errorType = "APIConnectionError"
-            isRetryable = true
-          }
-          // Check for rate limit errors
-          else if (errorStr.includes('rate') && errorStr.includes('limit')) {
-            errorType = "RateLimitError"
-            statusCode = 429
-            isRetryable = true
-          }
-          
-          // Try to get additional info from error object
-          const anyError = error as any
-          if (anyError.status) {
-            statusCode = anyError.status
-          }
-          if (anyError.headers?.['request-id']) {
-            requestId = anyError.headers['request-id']
-          }
-        } else {
-          errorMessage = String(error)
-        }
-
-        // Log error with details
-        lgg.error("[ClaudeSDK] Execution failed", {
-          errorType,
-          error: errorMessage,
-          statusCode,
-          nodeId: request.nodeId,
-          requestId,
-          retryable: isRetryable,
-        })
-
-        const agentSteps: AgentStep[] = [
-          { type: "error", return: `SDK ${errorType}: ${errorMessage}` },
-        ]
-
-        const processed: ProcessedResponse = {
-          nodeId: request.nodeId,
-          type: "error",
-          message: errorMessage,
-          cost: 0,
-          agentSteps,
-          details: {
-            errorType,
-            statusCode,
-            requestId,
-            lastError: errorMessage,
-          },
-        }
-
-        return { response: processed, cost: 0, agentSteps }
+      const messageOptions: Anthropic.MessageCreateParams = {
+        model: modelId,
+        messages,
+        max_tokens: maxTokens,
+        // Add any additional parameters from config
+        ...(request.config?.temperature && { temperature: request.config.temperature }),
+        ...(request.config?.topP && { top_p: request.config.topP }),
+        ...(request.config?.systemPrompt && {
+          system: request.config.systemPrompt,
+        }),
+        ...(request.tools && request.tools.length > 0 && { tools: request.tools }),
       }
+
+      // Create request with optional timeout
+      const message = await client.messages.create(messageOptions, timeoutMs ? { timeout: timeoutMs } : {})
+
+      // Capture request ID for debugging
+      requestId = (message as any)._request_id
+
+      // Extract response text from content blocks
+      const responseText = this.extractTextFromMessage(message)
+
+      // Calculate execution time
+      const executionTime = Date.now() - startTime
+
+      // Calculate cost from usage
+      const usage = message.usage
+      const cost = this.calculateCost(modelId, usage)
+
+      // Build response
+      const agentSteps: AgentStep[] = [{ type: "text", return: responseText }]
+
+      const summaryText = `SDK: ${modelId}, input: ${usage?.input_tokens || 0}, output: ${usage?.output_tokens || 0}, cost: $${cost.toFixed(4)}, time: ${executionTime}ms`
+
+      const processed: ProcessedResponse = {
+        nodeId: request.nodeId,
+        type: "text",
+        content: responseText,
+        cost,
+        agentSteps,
+        summary: summaryText,
+      }
+
+      // Log successful execution
+      lgg.info("[ClaudeSDK] Execution successful", {
+        nodeId: request.nodeId,
+        requestId,
+        model: modelId,
+        inputTokens: usage?.input_tokens || 0,
+        outputTokens: usage?.output_tokens || 0,
+        cost,
+        executionTime,
+      })
+
+      return { response: processed, cost, agentSteps }
+    } catch (error) {
+      // Handle specific SDK error types
+      let errorType = "APIError"
+      let errorMessage = "Unknown error occurred"
+      let statusCode: number | undefined
+      let isRetryable = false
+
+      if (error instanceof Error) {
+        errorMessage = error.message
+
+        // Check for specific error patterns
+        const errorStr = error.message.toLowerCase()
+
+        // Check for API key errors
+        if (errorStr.includes("api") && errorStr.includes("key")) {
+          errorType = "AuthenticationError"
+          statusCode = 401
+        }
+        // Check for timeout errors
+        else if (errorStr.includes("timeout")) {
+          errorType = "TimeoutError"
+          isRetryable = true
+        }
+        // Check for network/connection errors
+        else if (errorStr.includes("network") || errorStr.includes("connection")) {
+          errorType = "APIConnectionError"
+          isRetryable = true
+        }
+        // Check for rate limit errors
+        else if (errorStr.includes("rate") && errorStr.includes("limit")) {
+          errorType = "RateLimitError"
+          statusCode = 429
+          isRetryable = true
+        }
+
+        // Try to get additional info from error object
+        const anyError = error as any
+        if (anyError.status) {
+          statusCode = anyError.status
+        }
+        if (anyError.headers?.["request-id"]) {
+          requestId = anyError.headers["request-id"]
+        }
+      } else {
+        errorMessage = String(error)
+      }
+
+      // Log error with details
+      lgg.error("[ClaudeSDK] Execution failed", {
+        errorType,
+        error: errorMessage,
+        statusCode,
+        nodeId: request.nodeId,
+        requestId,
+        retryable: isRetryable,
+      })
+
+      const agentSteps: AgentStep[] = [{ type: "error", return: `SDK ${errorType}: ${errorMessage}` }]
+
+      const processed: ProcessedResponse = {
+        nodeId: request.nodeId,
+        type: "error",
+        message: errorMessage,
+        cost: 0,
+        agentSteps,
+        details: {
+          errorType,
+          statusCode,
+          requestId,
+          lastError: errorMessage,
+        },
+      }
+
+      return { response: processed, cost: 0, agentSteps }
     }
+  }
 
   /**
    * Maps our simplified model names to official Anthropic model IDs.
@@ -262,9 +255,9 @@ export class ClaudeSDKService {
       "sonnet-3": "claude-3-sonnet-20240229",
       "haiku-3": "claude-3-haiku-20240307",
       // Latest versions (default)
-      "opus": "claude-3-opus-latest",
-      "sonnet": "claude-3-5-sonnet-latest",
-      "haiku": "claude-3-haiku-latest",
+      opus: "claude-3-opus-latest",
+      sonnet: "claude-3-5-sonnet-latest",
+      haiku: "claude-3-haiku-latest",
     }
 
     return modelMap[model || "sonnet"] || "claude-3-5-sonnet-latest"
@@ -276,7 +269,7 @@ export class ClaudeSDKService {
    */
   private extractTextFromMessage(message: Message): string {
     const contentParts: string[] = []
-    
+
     for (const block of message.content) {
       if (block.type === "text") {
         contentParts.push(block.text)
@@ -285,7 +278,7 @@ export class ClaudeSDKService {
         contentParts.push(`[Tool Call: ${block.name}(${JSON.stringify(block.input)})]`)
       }
     }
-    
+
     return contentParts.join("\n")
   }
 
@@ -293,10 +286,7 @@ export class ClaudeSDKService {
    * Calculates approximate cost based on model and token usage.
    * Uses centralized pricing from types.ts.
    */
-  private calculateCost(
-    modelId: string,
-    usage?: { input_tokens: number; output_tokens: number }
-  ): number {
+  private calculateCost(modelId: string, usage?: { input_tokens: number; output_tokens: number }): number {
     if (!usage) return 0
 
     // Find matching price tier from centralized pricing
@@ -313,5 +303,4 @@ export class ClaudeSDKService {
 
     return inputCost + outputCost
   }
-
 }

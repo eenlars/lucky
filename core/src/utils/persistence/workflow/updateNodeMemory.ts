@@ -26,9 +26,7 @@ export async function updateNodeMemory({
       .single()
 
     if (fetchError || !version) {
-      throw new Error(
-        `Failed to fetch workflow version: ${fetchError?.message}`
-      )
+      throw new Error(`Failed to fetch workflow version: ${fetchError?.message}`)
     }
 
     // Update the node's memory in the DSL
@@ -52,14 +50,10 @@ export async function updateNodeMemory({
       .eq("wf_version_id", workflowVersionId)
 
     if (updateError) {
-      throw new Error(
-        `Failed to update workflow version: ${updateError.message}`
-      )
+      throw new Error(`Failed to update workflow version: ${updateError.message}`)
     }
 
-    lgg.log(
-      `[updateNodeMemory] Updated memory for node ${nodeId} in workflow ${workflowVersionId}`
-    )
+    lgg.log(`[updateNodeMemory] Updated memory for node ${nodeId} in workflow ${workflowVersionId}`)
   } catch (error) {
     lgg.error(`[updateNodeMemory] Error updating node memory: ${error}`)
     throw error
@@ -89,9 +83,7 @@ export async function updateWorkflowMemory({
       .eq("wf_version_id", workflowVersionId)
 
     if (updateError) {
-      throw new Error(
-        `Failed to update workflow version: ${updateError.message}`
-      )
+      throw new Error(`Failed to update workflow version: ${updateError.message}`)
     }
 
     // lgg.log(`[updateWorkflowMemory] Updated memory for workflow ${workflowVersionId}`)

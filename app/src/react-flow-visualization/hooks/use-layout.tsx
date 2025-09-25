@@ -15,9 +15,7 @@ const selector = (state: AppStore) => ({
 
 export function useLayout(shouldFitView: boolean = false) {
   const { fitView } = useReactFlow()
-  const { getNodes, getEdges, setNodes, setEdges } = useAppStore(
-    useShallow(selector)
-  )
+  const { getNodes, getEdges, setNodes, setEdges } = useAppStore(useShallow(selector))
 
   return useCallback(async () => {
     const nodes = getNodes()

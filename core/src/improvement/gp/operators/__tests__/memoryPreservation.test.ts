@@ -11,9 +11,7 @@ import { MemoryPreservation } from "../memoryPreservation"
 describe("MemoryPreservation", () => {
   const validModel = getDefaultModels().medium
 
-  const createTestGenome = (
-    nodeMemories: Record<string, Record<string, string>>
-  ) => {
+  const createTestGenome = (nodeMemories: Record<string, Record<string, string>>) => {
     const genome = createDummyGenome([], {
       runId: "test-run",
       generationId: "test-gen",
@@ -230,10 +228,7 @@ describe("MemoryPreservation", () => {
         memory: { workflowLevel: "value" }, // include workflow-level memory
       }
 
-      const validation = MemoryPreservation.validateMemoryPreservation(
-        validOffspring,
-        [parent1, parent2]
-      )
+      const validation = MemoryPreservation.validateMemoryPreservation(validOffspring, [parent1, parent2])
 
       expect(validation.isValid).toBe(true)
       expect(validation.missingMemories).toHaveLength(0)
@@ -271,18 +266,11 @@ describe("MemoryPreservation", () => {
         entryNodeId: "node1",
       }
 
-      const validation = MemoryPreservation.validateMemoryPreservation(
-        invalidOffspring,
-        [parent]
-      )
+      const validation = MemoryPreservation.validateMemoryPreservation(invalidOffspring, [parent])
 
       expect(validation.isValid).toBe(false)
-      expect(validation.missingMemories).toContain(
-        "node 'node1' memory key 'key2' lost"
-      )
-      expect(validation.missingMemories).toContain(
-        "node 'node2' memory completely lost"
-      )
+      expect(validation.missingMemories).toContain("node 'node1' memory key 'key2' lost")
+      expect(validation.missingMemories).toContain("node 'node2' memory completely lost")
     })
 
     it("should throw error when enforcing memory preservation fails", () => {
@@ -308,11 +296,7 @@ describe("MemoryPreservation", () => {
       }
 
       expect(() => {
-        MemoryPreservation.enforceMemoryPreservation(
-          invalidOffspring,
-          [parent],
-          "mutation"
-        )
+        MemoryPreservation.enforceMemoryPreservation(invalidOffspring, [parent], "mutation")
       }).toThrow("Memory preservation violation in mutation")
     })
 
@@ -339,11 +323,7 @@ describe("MemoryPreservation", () => {
       }
 
       expect(() => {
-        MemoryPreservation.enforceMemoryPreservation(
-          validOffspring,
-          [parent],
-          "mutation"
-        )
+        MemoryPreservation.enforceMemoryPreservation(validOffspring, [parent], "mutation")
       }).not.toThrow()
     })
   })

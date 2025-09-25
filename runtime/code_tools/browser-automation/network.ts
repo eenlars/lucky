@@ -47,15 +47,7 @@ type NetworkMonitorOutput = {
 }
 
 // default excluded resource types and url patterns
-const DEFAULT_EXCLUDED_TYPES = [
-  "image",
-  "stylesheet",
-  "font",
-  "script",
-  "media",
-  "websocket",
-  "eventsource",
-] as const
+const DEFAULT_EXCLUDED_TYPES = ["image", "stylesheet", "font", "script", "media", "websocket", "eventsource"] as const
 
 const DEFAULT_EXCLUDED_URL_PATTERNS = [
   // file extensions
@@ -102,10 +94,7 @@ async function setupSimpleBrowser(proxy?: ProxyResponse): Promise<{
   return { browser }
 }
 
-export async function networkMonitor(
-  input: NetworkMonitorInput,
-  proxy?: ProxyResponse
-): Promise<NetworkMonitorOutput> {
+export async function networkMonitor(input: NetworkMonitorInput, proxy?: ProxyResponse): Promise<NetworkMonitorOutput> {
   let browser: any = null
   const requests: Map<string, NetworkRequestSummary> = new Map()
   let requestCounter = 0
@@ -136,21 +125,13 @@ export async function networkMonitor(
       })
     }
 
-    await page.setUserAgent(
-      randomUserAgents[Math.floor(Math.random() * randomUserAgents.length)]
-    )
+    await page.setUserAgent(randomUserAgents[Math.floor(Math.random() * randomUserAgents.length)])
 
     // enable request interception
     await page.setRequestInterception(true)
 
     // set up network listeners
-    setupNetworkListeners(
-      page,
-      requests,
-      processedInput,
-      sessionId,
-      () => ++requestCounter
-    )
+    setupNetworkListeners(page, requests, processedInput, sessionId, () => ++requestCounter)
 
     // navigate to the target url
     await page.goto(processedInput.url, {
@@ -189,10 +170,7 @@ export async function networkMonitor(
       await cleanupSimpleBrowser(browser)
     }
 
-    lgg.error(
-      "error in networkMonitor",
-      error instanceof Error ? error.message : String(error)
-    )
+    lgg.error("error in networkMonitor", error instanceof Error ? error.message : String(error))
 
     const errorResult: NetworkMonitorOutput = {
       url: input.url,
@@ -237,10 +215,7 @@ function setupNetworkListeners(
     }
 
     // combine default excludes with user-provided excludes
-    const excludeTypes = [
-      ...DEFAULT_EXCLUDED_TYPES,
-      ...(input.excludeTypes || []),
-    ]
+    const excludeTypes = [...DEFAULT_EXCLUDED_TYPES, ...(input.excludeTypes || [])]
 
     // filter by resource type
     if (excludeTypes.includes(resourceType)) {
@@ -314,13 +289,7 @@ function setupNetworkListeners(
           }
 
           // save response body to file
-          const filePath = saveResponseBody(
-            input.url,
-            sessionId,
-            existingRequest.id,
-            existingRequest.url,
-            bodyContent
-          )
+          const filePath = saveResponseBody(input.url, sessionId, existingRequest.id, existingRequest.url, bodyContent)
           // store file path and preview in response body field
           const previewLength = 300
           const previewHeader = `[saved to: ${filePath}]\n\n`
@@ -354,8 +323,7 @@ function setupNetworkListeners(
     )
 
     if (existingRequest) {
-      existingRequest.errorText =
-        request.failure()?.errorText || "unknown error"
+      existingRequest.errorText = request.failure()?.errorText || "unknown error"
       existingRequest.duration = Date.now() - existingRequest.timestamp
     }
   })
@@ -379,8 +347,7 @@ function calculateStatistics(requests: NetworkRequestSummary[]) {
 
   for (const request of requests) {
     // count resource types
-    stats.resourceTypes[request.resourceType] =
-      (stats.resourceTypes[request.resourceType] || 0) + 1
+    stats.resourceTypes[request.resourceType] = (stats.resourceTypes[request.resourceType] || 0) + 1
 
     // count status codes
     if (request.status) {

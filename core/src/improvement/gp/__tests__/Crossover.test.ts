@@ -213,9 +213,7 @@ describe("Crossover", () => {
     setupCoreTest()
 
     // Get the mocked function from the module
-    const { formalizeWorkflow } = await import(
-      "@core/workflow/actions/generate/formalizeWorkflow"
-    )
+    const { formalizeWorkflow } = await import("@core/workflow/actions/generate/formalizeWorkflow")
     mockFormalizeWorkflow = vi.mocked(formalizeWorkflow)
 
     // Set up default mock implementations
@@ -240,18 +238,11 @@ describe("Crossover", () => {
     it("should perform crossover in verbose mode", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
-        parents: [
-          createDummyGenome([], evolutionContext),
-          createDummyGenome([], evolutionContext),
-        ],
+        parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
         verbose: true,
       })
 
@@ -271,9 +262,7 @@ describe("Crossover", () => {
     // - Creating dummy genome with no parents seems like error-prone behavior
     it("should handle empty parents array in verbose mode", async () => {
       // Import the module after mocks are set up
-      const CrossoverModule = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const CrossoverModule = await import("@core/improvement/gp/operators/crossover/Crossover")
       const { Crossover } = CrossoverModule
 
       const params = createMockCrossoverParams({
@@ -292,12 +281,8 @@ describe("Crossover", () => {
     it("should handle single parent in verbose mode", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext)],
@@ -316,18 +301,11 @@ describe("Crossover", () => {
     it("should handle multiple parents in verbose mode", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
-        parents: [
-          createDummyGenome([], evolutionContext),
-          createDummyGenome([], evolutionContext),
-        ],
+        parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
         verbose: true, // Force verbose mode
       })
 
@@ -344,18 +322,11 @@ describe("Crossover", () => {
     it("should create genome with correct generation", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
-        parents: [
-          createDummyGenome([], evolutionContext),
-          createDummyGenome([], evolutionContext),
-        ],
+        parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
         verbose: true, // Force verbose mode
       })
 
@@ -375,14 +346,10 @@ describe("Crossover", () => {
     it("should perform LLM-based crossover in non-verbose mode", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       const mockWorkflowConfig = createMockWorkflowConfig()
-      mockFormalizeWorkflow.mockResolvedValue(
-        mockSuccessfulAIResponse(mockWorkflowConfig)
-      )
+      mockFormalizeWorkflow.mockResolvedValue(mockSuccessfulAIResponse(mockWorkflowConfig))
       mockVerifyWorkflowConfigStrict.mockResolvedValue({
         isValid: true,
         errors: [],
@@ -392,9 +359,7 @@ describe("Crossover", () => {
 
       // Stub genome creation to avoid DB persistence in this unit test
       const wrappers = await import("@core/improvement/gp/resources/wrappers")
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
       vi.spyOn(wrappers, "workflowConfigToGenome").mockResolvedValue({
         success: true,
         data: createDummyGenome([], evolutionContext),
@@ -433,9 +398,7 @@ describe("Crossover", () => {
     it("should handle AI request failure", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       mockFormalizeWorkflow.mockResolvedValue({
         data: undefined,
@@ -446,17 +409,13 @@ describe("Crossover", () => {
       const response = await Crossover.crossover(params)
 
       expect(response.success).toBe(false)
-      expect(response.error).toContain(
-        "formalizeWorkflow returned no valid workflow"
-      )
+      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
     })
 
     it("should handle verification failure", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       const mockWorkflowConfig = { nodes: [], entryNodeId: "invalid" }
       mockFormalizeWorkflow.mockResolvedValue({
@@ -472,17 +431,13 @@ describe("Crossover", () => {
       const response = await Crossover.crossover(params)
 
       expect(response.success).toBe(false)
-      expect(response.error).toContain(
-        "Crossover failed: invalid workflow after verifying"
-      )
+      expect(response.error).toContain("Crossover failed: invalid workflow after verifying")
     })
 
     it("should use crossover strategy in prompt", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       const strategy = "structureCrossover"
       mockFormalizeWorkflow.mockResolvedValue({
@@ -504,16 +459,12 @@ describe("Crossover", () => {
     it("should handle empty parents array", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       const params = createMockCrossoverParams({
         parents: [],
       })
-      await expect(Crossover.crossover(params)).rejects.toThrow(
-        /insufficient parents/
-      )
+      await expect(Crossover.crossover(params)).rejects.toThrow(/insufficient parents/)
     })
   })
 
@@ -525,9 +476,7 @@ describe("Crossover", () => {
     it("should be compatible with operator registry", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       const params = createMockCrossoverParams({ verbose: true })
       const response = await Crossover.crossover(params)
@@ -544,9 +493,7 @@ describe("Crossover", () => {
     it("should handle malformed AI response", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       mockFormalizeWorkflow.mockResolvedValue({
         data: null,
@@ -557,17 +504,13 @@ describe("Crossover", () => {
       const response = await Crossover.crossover(params)
 
       expect(response.success).toBe(false)
-      expect(response.error).toContain(
-        "formalizeWorkflow returned no valid workflow"
-      )
+      expect(response.error).toContain("formalizeWorkflow returned no valid workflow")
     })
 
     it("should handle AI request timeout", async () => {
       // Non-verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
 
       mockFormalizeWorkflow.mockRejectedValue(new Error("Request timeout"))
 
@@ -588,19 +531,12 @@ describe("Crossover", () => {
     it("should complete crossover operation within reasonable time", async () => {
       // Verbose mode will be set by runtime constants mock
 
-      const { Crossover } = await import(
-        "@core/improvement/gp/operators/crossover/Crossover"
-      )
-      const { createDummyGenome } = await import(
-        "@core/improvement/gp/resources/debug/dummyGenome"
-      )
+      const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const startTime = Date.now()
       const params = createMockCrossoverParams({
-        parents: [
-          createDummyGenome([], evolutionContext),
-          createDummyGenome([], evolutionContext),
-        ],
+        parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
         verbose: true, // Force verbose mode
       })
       const response = await Crossover.crossover(params)

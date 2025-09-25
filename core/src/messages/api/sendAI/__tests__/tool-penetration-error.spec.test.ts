@@ -25,8 +25,7 @@ describe("sendAI tool mode – penetration error", () => {
       { badToolC: 42 },
     ]
 
-    const tools: any =
-      invalidShapes[Math.floor(Math.random() * invalidShapes.length)]
+    const tools: any = invalidShapes[Math.floor(Math.random() * invalidShapes.length)]
 
     const result = await sendAI({
       mode: "tool",
@@ -34,8 +33,7 @@ describe("sendAI tool mode – penetration error", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Call a tool that sums numbers. Purposely misconfigure so the call fails.",
+          content: "Call a tool that sums numbers. Purposely misconfigure so the call fails.",
         },
       ],
       opts: {

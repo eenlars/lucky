@@ -1,10 +1,7 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
-import type {
-  EvaluationInput,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
+import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
 import { JSONN } from "@lucky/shared"
@@ -54,13 +51,10 @@ export const prepareProblem = async (
 
   // New workflow invocation method
   if (method === "workflow") {
-    lgg.info(
-      "[prepareProblem] Using workflow version ID for problem analysis",
-      {
-        workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
-        method,
-      }
-    )
+    lgg.info("[prepareProblem] Using workflow version ID for problem analysis", {
+      workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+      method,
+    })
 
     // Get the basic conversion from IngestionLayer
     const basicWorkflowIO = await IngestionLayer.convert(task)
@@ -89,25 +83,18 @@ export const prepareProblem = async (
         return {
           newGoal: task.goal, // Return original goal as requested
           workflowIO: basicWorkflowIO, // Return basicWorkflowIO as requested
-          problemAnalysis:
-            workflowResult.outputMessage || "No analysis provided", // Return new problem analysis
+          problemAnalysis: workflowResult.outputMessage || "No analysis provided", // Return new problem analysis
         }
       } else {
-        lgg.warn(
-          "[prepareProblem] Workflow invocation failed, falling back to AI method",
-          {
-            error: result.error,
-          }
-        )
+        lgg.warn("[prepareProblem] Workflow invocation failed, falling back to AI method", {
+          error: result.error,
+        })
         // Fall through to AI method
       }
     } catch (error) {
-      lgg.error(
-        "[prepareProblem] Workflow invocation error, falling back to AI method",
-        {
-          error: error instanceof Error ? error.message : String(error),
-        }
-      )
+      lgg.error("[prepareProblem] Workflow invocation error, falling back to AI method", {
+        error: error instanceof Error ? error.message : String(error),
+      })
       // Fall through to AI method
     }
   } else if (method === "ai") {
@@ -182,10 +169,7 @@ Guidelines:
       }
     }
 
-    lgg.onlyIf(
-      CONFIG.logging.override.Setup,
-      `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`
-    )
+    lgg.onlyIf(CONFIG.logging.override.Setup, `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`)
 
     return {
       newGoal: data.instructionsToNodes,

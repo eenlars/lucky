@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  Panel,
-  PanelProps,
-  useReactFlow,
-  useStore,
-  useViewport,
-} from "@xyflow/react"
+import { Panel, PanelProps, useReactFlow, useStore, useViewport } from "@xyflow/react"
 import { Maximize, Minus, Plus } from "lucide-react"
 
 import { Button } from "@/react-flow-visualization/components/ui/button"
@@ -28,18 +22,8 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
   )
 
   return (
-    <Panel
-      className={cn(
-        "flex bg-primary-foreground text-foreground rounded-md gap-1 p-1",
-        className
-      )}
-      {...props}
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => zoomOut({ duration: 300 })}
-      >
+    <Panel className={cn("flex bg-primary-foreground text-foreground rounded-md gap-1 p-1", className)} {...props}>
+      <Button variant="ghost" size="icon" onClick={() => zoomOut({ duration: 300 })}>
         <Minus className="h-4 w-4" />
       </Button>
       <Slider
@@ -50,25 +34,13 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
         step={0.01}
         onValueChange={(values) => zoomTo(values[0])}
       />
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => zoomIn({ duration: 300 })}
-      >
+      <Button variant="ghost" size="icon" onClick={() => zoomIn({ duration: 300 })}>
         <Plus className="h-4 w-4" />
       </Button>
-      <Button
-        className="min-w-20 tabular-nums"
-        variant="ghost"
-        onClick={() => zoomTo(1, { duration: 300 })}
-      >
+      <Button className="min-w-20 tabular-nums" variant="ghost" onClick={() => zoomTo(1, { duration: 300 })}>
         {(100 * zoom).toFixed(0)}%
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => fitView({ duration: 300 })}
-      >
+      <Button variant="ghost" size="icon" onClick={() => fitView({ duration: 300 })}>
         <Maximize className="h-4 w-4" />
       </Button>
     </Panel>

@@ -5,10 +5,7 @@ import type { CodeToolName } from "@core/tools/tool.types"
 import type { PartialLocationData } from "../../schemas/location.types"
 import { locationDataManager } from "./mainLocationDataManager"
 
-export function wrapResult<T>(
-  fn: () => Promise<T>,
-  toolName: CodeToolName
-): Promise<CodeToolResult<T>> {
+export function wrapResult<T>(fn: () => Promise<T>, toolName: CodeToolName): Promise<CodeToolResult<T>> {
   return fn()
     .then((output) => ({
       success: true as const,
@@ -24,35 +21,17 @@ export function wrapResult<T>(
     }))
 }
 
-export const insertLocationData = (
-  fileName: string,
-  locations: PartialLocationData[]
-) =>
-  wrapResult(
-    () => locationDataManager.insertLocations(fileName, locations),
-    "locationDataManager"
-  )
+export const insertLocationData = (fileName: string, locations: PartialLocationData[]) =>
+  wrapResult(() => locationDataManager.insertLocations(fileName, locations), "locationDataManager")
 
 export const getLocationData = (fileName: string) =>
-  wrapResult(
-    () => locationDataManager.getLocations(fileName),
-    "locationDataManager"
-  )
+  wrapResult(() => locationDataManager.getLocations(fileName), "locationDataManager")
 
 export const getLocationDataMinimal = (fileName: string) =>
-  wrapResult(
-    () => locationDataManager.getMinimalSummary(fileName),
-    "locationDataManager"
-  )
+  wrapResult(() => locationDataManager.getMinimalSummary(fileName), "locationDataManager")
 
-export const removeLocationData = (
-  fileName: string,
-  locationIds: string[] = []
-) =>
-  wrapResult(
-    () => locationDataManager.removeLocations(fileName, locationIds),
-    "locationDataManager"
-  )
+export const removeLocationData = (fileName: string, locationIds: string[] = []) =>
+  wrapResult(() => locationDataManager.removeLocations(fileName, locationIds), "locationDataManager")
 
 export const updateLocationData = (
   fileName: string,
@@ -61,11 +40,7 @@ export const updateLocationData = (
     updateData: PartialLocationData
     updateStrategy?: "merge" | "replace" | "selective"
   }>
-) =>
-  wrapResult(
-    () => locationDataManager.updateLocations(fileName, updates),
-    "locationDataManager"
-  )
+) => wrapResult(() => locationDataManager.updateLocations(fileName, updates), "locationDataManager")
 
 export const updateLocationDataById = (
   fileName: string,
@@ -74,12 +49,6 @@ export const updateLocationDataById = (
   updateStrategy: "merge" | "replace" | "selective" = "merge"
 ) =>
   wrapResult(
-    () =>
-      locationDataManager.updateLocationById(
-        fileName,
-        locationId,
-        updateData,
-        updateStrategy
-      ),
+    () => locationDataManager.updateLocationById(fileName, locationId, updateData, updateStrategy),
     "locationDataManager"
   )

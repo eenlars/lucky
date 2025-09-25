@@ -30,10 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(helpRequest)
   } catch (error) {
     console.error("Error reading help request:", error)
-    return NextResponse.json(
-      { error: "Help request not found or expired" },
-      { status: 404 }
-    )
+    return NextResponse.json({ error: "Help request not found or expired" }, { status: 404 })
   }
 }
 
@@ -43,10 +40,7 @@ export async function POST(request: NextRequest) {
     const { id, response } = body
 
     if (!id || typeof response !== "string") {
-      return NextResponse.json(
-        { error: "Missing id or response" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing id or response" }, { status: 400 })
     }
     console.log(`[Help API] Received POST for helpId: ${id}`)
 
@@ -58,20 +52,12 @@ export async function POST(request: NextRequest) {
       helpRequest = JSON.parse(requestData)
     } catch (error) {
       console.error(`[Help API] Error reading help file for id ${id}:`, error)
-      return NextResponse.json(
-        { error: "Help request not found" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "Help request not found" }, { status: 404 })
     }
 
     if (helpRequest.status !== "pending") {
-      console.log(
-        `[Help API] Request ${id} already processed. Status: ${helpRequest.status}`
-      )
-      return NextResponse.json(
-        { error: "Request already processed" },
-        { status: 400 }
-      )
+      console.log(`[Help API] Request ${id} already processed. Status: ${helpRequest.status}`)
+      return NextResponse.json({ error: "Request already processed" }, { status: 400 })
     }
 
     helpRequest.status = "answered"
@@ -79,15 +65,10 @@ export async function POST(request: NextRequest) {
 
     try {
       await fs.writeFile(requestFilePath, JSON.stringify(helpRequest, null, 2))
-      console.log(
-        `[Help API] Successfully updated helpId ${id} to status 'answered'`
-      )
+      console.log(`[Help API] Successfully updated helpId ${id} to status 'answered'`)
     } catch (error) {
       console.error(`[Help API] Error writing help file for id ${id}:`, error)
-      return NextResponse.json(
-        { success: false, error: "Failed to save response" },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: "Failed to save response" }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -96,9 +77,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error in help route:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to process request" },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: "Failed to process request" }, { status: 500 })
   }
 }

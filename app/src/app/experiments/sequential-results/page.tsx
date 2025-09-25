@@ -12,16 +12,12 @@ type RawResult = {
 
 function aggregateByModelAndChain(results: RawResult[]) {
   const chainSet = new Set<string>()
-  const byModel: Record<
-    string,
-    Record<string, { sum: number; count: number; perfect: number }>
-  > = {}
+  const byModel: Record<string, Record<string, { sum: number; count: number; perfect: number }>> = {}
 
   for (const r of results) {
     chainSet.add(r.chain)
     if (!byModel[r.model]) byModel[r.model] = {}
-    if (!byModel[r.model][r.chain])
-      byModel[r.model][r.chain] = { sum: 0, count: 0, perfect: 0 }
+    if (!byModel[r.model][r.chain]) byModel[r.model][r.chain] = { sum: 0, count: 0, perfect: 0 }
     const score = r.validation?.score ?? 0
     byModel[r.model][r.chain].sum += score
     byModel[r.model][r.chain].count += 1
@@ -41,9 +37,7 @@ function aggregateByModelAndChain(results: RawResult[]) {
     const row: Record<string, number | string> = { model }
     for (const c of chains) {
       const agg = chainMap[c]
-      row[c] = agg
-        ? Math.round((agg.sum / Math.max(1, agg.count)) * 100) / 100
-        : 0
+      row[c] = agg ? Math.round((agg.sum / Math.max(1, agg.count)) * 100) / 100 : 0
     }
     return row
   })
@@ -53,9 +47,7 @@ function aggregateByModelAndChain(results: RawResult[]) {
     const row: Record<string, number | string> = { model }
     for (const c of chains) {
       const agg = chainMap[c]
-      row[c] = agg
-        ? Math.round((agg.perfect / Math.max(1, agg.count)) * 100) / 100
-        : 0
+      row[c] = agg ? Math.round((agg.perfect / Math.max(1, agg.count)) * 100) / 100 : 0
     }
     return row
   })
@@ -80,11 +72,7 @@ function aggregateByModelAndChain(results: RawResult[]) {
   })
   // Keep perfect data in the same model order as dataAvg
   const modelOrder = dataAvg.map((r) => r.model as string)
-  dataPerfect.sort(
-    (a, b) =>
-      modelOrder.indexOf(a.model as string) -
-      modelOrder.indexOf(b.model as string)
-  )
+  dataPerfect.sort((a, b) => modelOrder.indexOf(a.model as string) - modelOrder.indexOf(b.model as string))
 
   overall.sort((a, b) => b.avg - a.avg)
 
@@ -135,9 +123,7 @@ export default function SequentialResultsPage() {
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-8">
-            <div className="text-red-600 mb-4">
-              Error loading results: {error}
-            </div>
+            <div className="text-red-600 mb-4">Error loading results: {error}</div>
             <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -150,18 +136,14 @@ export default function SequentialResultsPage() {
     )
   }
 
-  const { dataAvg, dataPerfect, chains, overall } =
-    aggregateByModelAndChain(results)
+  const { dataAvg, dataPerfect, chains, overall } = aggregateByModelAndChain(results)
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Sequential Chains — Results Overview
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Sequential Chains — Results Overview</h1>
         <p className="text-gray-600 mb-6">
-          Average score per model, broken down by chain complexity. Higher is
-          better.
+          Average score per model, broken down by chain complexity. Higher is better.
         </p>
 
         {overall.length > 0 ? (
@@ -175,16 +157,12 @@ export default function SequentialResultsPage() {
         ) : null}
 
         <div className="w-full h-[520px] bg-white rounded-lg shadow p-4 mb-8">
-          <h2 className="text-xl font-semibold mb-2">
-            Average Score per model
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Average Score per model</h2>
           <SequentialResultsChart data={dataAvg} chains={chains} />
         </div>
 
         <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-          <h2 className="text-xl font-semibold mb-2">
-            Perfect Runs (% of 1.0 scores)
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Perfect Runs (% of 1.0 scores)</h2>
           <PerfectRateChart data={dataPerfect} chains={chains} />
         </div>
       </div>

@@ -29,31 +29,22 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
   ) {
     this.aggregatedEvaluator = new AggregatedEvaluator()
     this.mockEvaluator = new MockGPEvaluator()
-    lgg.log(
-      `[GPEvaluatorAdapter] Initialized with ${workflowCases.length} workflow cases`
-    )
+    lgg.log(`[GPEvaluatorAdapter] Initialized with ${workflowCases.length} workflow cases`)
 
     if (GPEvaluatorAdapter.verbose) {
-      lgg.log(
-        `[GPEvaluatorAdapter] First case input: ${workflowCases[0]?.workflowInput.substring(0, 100)}`
-      )
+      lgg.log(`[GPEvaluatorAdapter] First case input: ${workflowCases[0]?.workflowInput.substring(0, 100)}`)
       lgg.log(
         `[GPEvaluatorAdapter] First case output: ${JSON.stringify(workflowCases[0]?.workflowOutput).substring(0, 100)}`
       )
     }
   }
 
-  async evaluate(
-    genome: Genome,
-    evolutionContext: EvolutionContext
-  ): ReturnType<EvolutionEvaluator["evaluate"]> {
+  async evaluate(genome: Genome, evolutionContext: EvolutionContext): ReturnType<EvolutionEvaluator["evaluate"]> {
     guard(evolutionContext, "Evolution context is required for GPEvaluation")
     const startTime = Date.now()
     const errors: string[] = []
 
-    lgg.log(
-      `[GPEvaluatorAdapter] Starting evaluation of genome ${genome.getWorkflowVersionId()}`
-    )
+    lgg.log(`[GPEvaluatorAdapter] Starting evaluation of genome ${genome.getWorkflowVersionId()}`)
 
     // Track evaluation attempt
     failureTracker.trackEvaluationAttempt()
@@ -72,9 +63,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
     // Check if this is a prompt-only evaluation and skip if so
     const evaluationInput = genome.getEvaluationInput()
     if (evaluationInput.type === "prompt-only") {
-      lgg.log(
-        `[GPEvaluatorAdapter] Skipping prompt-only evaluation for genome ${genome.getWorkflowVersionId()}`
-      )
+      lgg.log(`[GPEvaluatorAdapter] Skipping prompt-only evaluation for genome ${genome.getWorkflowVersionId()}`)
 
       // Return mock result with 100% fitness
       return {
@@ -99,9 +88,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
     try {
       if (GPEvaluatorAdapter.verbose) {
-        lgg.log(
-          `[GPEvaluatorAdapter] Creating workflow instance for evaluation`
-        )
+        lgg.log(`[GPEvaluatorAdapter] Creating workflow instance for evaluation`)
       }
 
       lgg.log(
@@ -109,9 +96,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
       )
 
       // Set pre-computed workflow IO (avoids re-calling prepareProblem)
-      lgg.log(
-        `[GPEvaluatorAdapter] Setting pre-computed workflow IO for genome ${genome.getWorkflowVersionId()}`
-      )
+      lgg.log(`[GPEvaluatorAdapter] Setting pre-computed workflow IO for genome ${genome.getWorkflowVersionId()}`)
 
       genome.setPrecomputedWorkflowData({
         workflowIO: this.workflowCases,
@@ -120,11 +105,8 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
       })
 
       // Use aggregated evaluator to run workflow on all cases
-      lgg.log(
-        `[GPEvaluatorAdapter] Starting aggregated evaluation for genome ${genome.getWorkflowVersionId()}`
-      )
-      const { success, error, data, usdCost } =
-        await this.aggregatedEvaluator.evaluate(genome)
+      lgg.log(`[GPEvaluatorAdapter] Starting aggregated evaluation for genome ${genome.getWorkflowVersionId()}`)
+      const { success, error, data, usdCost } = await this.aggregatedEvaluator.evaluate(genome)
 
       if (!success) {
         lgg.error(
@@ -134,9 +116,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
         return R.error(`Aggregated evaluation failed: ${error}`, usdCost)
       }
 
-      lgg.log(
-        `[GPEvaluatorAdapter] Aggregated evaluation succeeded for genome ${genome.getWorkflowVersionId()}`
-      )
+      lgg.log(`[GPEvaluatorAdapter] Aggregated evaluation succeeded for genome ${genome.getWorkflowVersionId()}`)
 
       const { fitness, feedback } = data
 

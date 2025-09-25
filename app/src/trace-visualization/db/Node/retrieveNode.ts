@@ -17,11 +17,7 @@ export const retrieveNodeInvocations = async (workflowInvocationId: string) => {
 }
 
 export const retrieveNode = async (nodeId: string) => {
-  const { data, error: nodeError } = await supabase
-    .from("NodeVersion")
-    .select("*")
-    .eq("node_id", nodeId)
-    .single()
+  const { data, error: nodeError } = await supabase.from("NodeVersion").select("*").eq("node_id", nodeId).single()
 
   if (nodeError) {
     throw nodeError

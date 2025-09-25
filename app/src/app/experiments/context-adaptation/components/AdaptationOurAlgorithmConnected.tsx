@@ -19,10 +19,7 @@ import {
   accuracyScorePct,
   costTimeBalancedScorePct,
 } from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
-import {
-  MODELS,
-  TEST_SCENARIOS,
-} from "@experiments/tool-real/experiments/03-context-adaptation/constants"
+import { MODELS, TEST_SCENARIOS } from "@experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
   OurAlgorithmExperimentResults,
@@ -30,14 +27,7 @@ import type {
 } from "@experiments/tool-real/experiments/03-context-adaptation/types"
 import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 
-type ShapeName =
-  | "circle"
-  | "cross"
-  | "diamond"
-  | "square"
-  | "star"
-  | "triangle"
-  | "wye"
+type ShapeName = "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye"
 
 type PointDatum = {
   xEfficiencyPct: number
@@ -90,9 +80,7 @@ type Connection = {
 const MODEL_SHAPES: ShapeName[] = ["circle", "triangle", "diamond", "square"]
 
 function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
-  const fromResults = Array.from(
-    new Set(runs.map((r) => r.model))
-  ) as OpenRouterModelName[]
+  const fromResults = Array.from(new Set(runs.map((r) => r.model))) as OpenRouterModelName[]
   const preferred = MODELS
   const order: OpenRouterModelName[] = []
   for (const m of preferred) if (fromResults.includes(m)) order.push(m)
@@ -123,9 +111,7 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
   allPoints: PointDatum[]
 } {
   if (!results) return { modelOrder: [], allPoints: [] }
-  const expectedByScenario = Object.fromEntries(
-    TEST_SCENARIOS.map((s) => [s.id, s.expected])
-  ) as Record<string, number>
+  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map((s) => [s.id, s.expected])) as Record<string, number>
 
   const modelOrder = computeModelOrder(results.runs)
   const allPoints: PointDatum[] = []
@@ -137,17 +123,11 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
     const accuracyPct = accuracyScorePct(run.successItems, expected)
     const minimalCalls = Math.max(1, Math.ceil(expected / 3))
     const actualCalls = Math.max(0, run.totalFetchCalls || 0)
-    const efficiencyPct =
-      actualCalls > 0
-        ? Math.min(100, Math.max(0, (minimalCalls / actualCalls) * 100))
-        : 0
+    const efficiencyPct = actualCalls > 0 ? Math.min(100, Math.max(0, (minimalCalls / actualCalls) * 100)) : 0
 
     const loopAgg = aggregateLoopMetrics(run)
     // Compute cost-time efficiency and an optional final score (unused in axes but useful for debugging)
-    const costTimePct = costTimeBalancedScorePct(
-      run.cost ?? 0,
-      run.durationMs ?? 0
-    )
+    const costTimePct = costTimeBalancedScorePct(run.cost ?? 0, run.durationMs ?? 0)
     const finalPct = (accuracyPct / 100) * costTimePct
 
     allPoints.push({
@@ -200,30 +180,11 @@ function PointShape({ cx, cy, payload, size = 80, modelOrder }: any) {
   }
   switch (shape) {
     case "triangle":
-      return (
-        <polygon
-          points={`${cx},${cy - r} ${cx + r},${cy + r} ${cx - r},${cy + r}`}
-          {...common}
-        />
-      )
+      return <polygon points={`${cx},${cy - r} ${cx + r},${cy + r} ${cx - r},${cy + r}`} {...common} />
     case "diamond":
-      return (
-        <polygon
-          points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`}
-          {...common}
-        />
-      )
+      return <polygon points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`} {...common} />
     case "square":
-      return (
-        <rect
-          x={cx - r}
-          y={cy - r}
-          width={2 * r}
-          height={2 * r}
-          rx={2}
-          {...common}
-        />
-      )
+      return <rect x={cx - r} y={cy - r} width={2 * r} height={2 * r} rx={2} {...common} />
     default:
       return <circle cx={cx} cy={cy} r={r} {...common} />
   }
@@ -239,22 +200,14 @@ function CustomTooltip({ active, payload }: any) {
   return (
     <div className="rounded-md border border-gray-200 bg-white p-2 shadow-sm text-xs max-w-[320px]">
       <div className="font-semibold text-gray-900 mb-1">
-        <span
-          className="inline-block h-2 w-2 rounded-full mr-2"
-          style={{ background: color }}
-        />
-        {formatModelDisplayName(String(p.model ?? ""))} · {p.scenario} ·{" "}
-        {p.condition}
+        <span className="inline-block h-2 w-2 rounded-full mr-2" style={{ background: color }} />
+        {formatModelDisplayName(String(p.model ?? ""))} · {p.scenario} · {p.condition}
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         <div className="text-gray-600">Call efficiency</div>
-        <div className="text-gray-900">
-          {formatPct(Number(p.xEfficiencyPct ?? 0))}
-        </div>
+        <div className="text-gray-900">{formatPct(Number(p.xEfficiencyPct ?? 0))}</div>
         <div className="text-gray-600">Accuracy score</div>
-        <div className="text-gray-900">
-          {formatPct(Number(p.yAccuracyPct ?? 0))}
-        </div>
+        <div className="text-gray-900">{formatPct(Number(p.yAccuracyPct ?? 0))}</div>
         <div className="text-gray-600">Items vs expected</div>
         <div className="text-gray-900">
           {Number(p.successItems ?? 0)} / {Number(p.expectedItems ?? 0)}
@@ -266,29 +219,19 @@ function CustomTooltip({ active, payload }: any) {
         <div className="text-gray-600">Cost</div>
         <div className="text-gray-900">${Number(p.zCost ?? 0).toFixed(4)}</div>
         <div className="text-gray-600">Duration</div>
-        <div className="text-gray-900">
-          {formatMs(Number(p.durationMs ?? 0))}
-        </div>
+        <div className="text-gray-900">{formatMs(Number(p.durationMs ?? 0))}</div>
         <div className="text-gray-600">Adapted</div>
         <div className="text-gray-900">{p.adapted ? "Yes" : "No"}</div>
         <div className="text-gray-600">Avg adherence</div>
-        <div className="text-gray-900">
-          {formatPct(Number((p.avgAdherence ?? 0) * 100))}
-        </div>
+        <div className="text-gray-900">{formatPct(Number((p.avgAdherence ?? 0) * 100))}</div>
         <div className="text-gray-600">Avg error rate</div>
-        <div className="text-gray-900">
-          {formatPct(Number((p.avgErrorRate ?? 0) * 100))}
-        </div>
+        <div className="text-gray-900">{formatPct(Number((p.avgErrorRate ?? 0) * 100))}</div>
       </div>
     </div>
   )
 }
 
-export default function AdaptationOurAlgorithmConnected({
-  className = "",
-}: {
-  className?: string
-}) {
+export default function AdaptationOurAlgorithmConnected({ className = "" }: { className?: string }) {
   const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -381,8 +324,7 @@ export default function AdaptationOurAlgorithmConnected({
 
   // Build connection segments between vague and clear for each (model, scenario)
   const connections = useMemo<Connection[]>(() => {
-    const byModel: Record<string, { vague?: PointDatum; clear?: PointDatum }> =
-      {}
+    const byModel: Record<string, { vague?: PointDatum; clear?: PointDatum }> = {}
     for (const p of aggregatedPoints) {
       const bucket = (byModel[p.model] = byModel[p.model] ?? {})
       if (p.condition === "vague") bucket.vague = p
@@ -424,12 +366,9 @@ export default function AdaptationOurAlgorithmConnected({
     <div className={`w-full bg-white rounded-lg shadow p-4 ${className}`}>
       <div className="flex items-baseline justify-between gap-3 mb-1">
         <div>
-          <h2 className="text-lg font-semibold">
-            All models · Baseline connections
-          </h2>
+          <h2 className="text-lg font-semibold">All models · Baseline connections</h2>
           <p className="text-[11px] text-gray-500">
-            Aggregated across all scenarios; lines connect Vague → Clear per
-            model.
+            Aggregated across all scenarios; lines connect Vague → Clear per model.
           </p>
         </div>
       </div>
@@ -448,9 +387,7 @@ export default function AdaptationOurAlgorithmConnected({
       </div>
 
       {loading && <div className="text-xs text-gray-500">Loading…</div>}
-      {!loading && !hasAny && (
-        <div className="text-xs text-gray-500">No points available.</div>
-      )}
+      {!loading && !hasAny && <div className="text-xs text-gray-500">No points available.</div>}
       {errors.length > 0 && (
         <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1 mb-3">
           <strong>Errors:</strong> {errors.join("; ")}
@@ -495,12 +432,7 @@ export default function AdaptationOurAlgorithmConnected({
               domain={[0, 100]}
             />
             <ZAxis dataKey="zCost" name="Cost ($)" range={[60, 120]} />
-            <ReferenceLine
-              y={100}
-              stroke={axes.referenceLine}
-              strokeDasharray="4 4"
-              ifOverflow="extendDomain"
-            />
+            <ReferenceLine y={100} stroke={axes.referenceLine} strokeDasharray="4 4" ifOverflow="extendDomain" />
             <Tooltip content={<CustomTooltip />} />
 
             {/* Pair connections (one Line per model, aggregated across scenarios) */}
@@ -521,18 +453,11 @@ export default function AdaptationOurAlgorithmConnected({
             {/* Aggregated points */}
             <Scatter
               data={aggregatedPoints}
-              shape={(props: any) => (
-                <PointShape {...props} modelOrder={modelOrder} />
-              )}
+              shape={(props: any) => <PointShape {...props} modelOrder={modelOrder} />}
             />
 
             {/* Invisible scatter for tooltip positioning (accuracy on Y) */}
-            <Scatter
-              data={aggregatedPoints}
-              fillOpacity={0}
-              shape={() => <g />}
-              dataKey="yAccuracyPct"
-            />
+            <Scatter data={aggregatedPoints} fillOpacity={0} shape={() => <g />} dataKey="yAccuracyPct" />
 
             {/* Labels at clear endpoints with model names */}
             <Scatter
@@ -540,8 +465,7 @@ export default function AdaptationOurAlgorithmConnected({
               shape={() => <g />}
               label={(props: any) => {
                 const { x, y, payload } = props || {}
-                if (typeof x !== "number" || typeof y !== "number" || !payload)
-                  return <g />
+                if (typeof x !== "number" || typeof y !== "number" || !payload) return <g />
                 const text = formatModelDisplayName(String(payload.model))
                 return (
                   <text x={x + 5} y={y - 5} fontSize={9} fill={axes.label}>

@@ -12,11 +12,7 @@ describe("EvolutionUtils.poisson", () => {
     const averageOfNumbers = numbers.reduce((a, b) => a + b, 0) / numbers.length
 
     // calculate standard deviation
-    const variance =
-      numbers.reduce(
-        (sum, num) => sum + Math.pow(num - averageOfNumbers, 2),
-        0
-      ) / numbers.length
+    const variance = numbers.reduce((sum, num) => sum + Math.pow(num - averageOfNumbers, 2), 0) / numbers.length
     const standardDeviation = Math.sqrt(variance)
 
     // get min and max

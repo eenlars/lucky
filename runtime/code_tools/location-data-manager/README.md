@@ -237,10 +237,7 @@ console.log(result.data.summary) // "2 locations: 123 Main St, New York; 456 Oak
 import { locationDataManager } from "./core"
 
 // Batch insert with detailed response
-const insertResult = await locationDataManager.insertLocations(
-  "workflow-123",
-  locations
-)
+const insertResult = await locationDataManager.insertLocations("workflow-123", locations)
 console.log(insertResult)
 // {
 //   success: true,

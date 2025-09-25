@@ -4,9 +4,7 @@ import { Utils } from "@runtime/code_tools/googlescraper/utils/userAgent"
 import type { Page } from "puppeteer"
 import { Browser } from "puppeteer"
 
-export async function setupPage(
-  proxy?: ProxyResponse
-): Promise<{ browser: Browser; page: Page }> {
+export async function setupPage(proxy?: ProxyResponse): Promise<{ browser: Browser; page: Page }> {
   const { browser } = await setupBrowser(proxy)
   const page = await browser.newPage()
   if (proxy)
@@ -14,9 +12,7 @@ export async function setupPage(
       username: proxy.username,
       password: proxy.password,
     })
-  await page.setUserAgent(
-    Utils.UserAgents[Math.floor(Math.random() * Utils.UserAgents.length)]
-  )
+  await page.setUserAgent(Utils.UserAgents[Math.floor(Math.random() * Utils.UserAgents.length)])
   return { browser, page }
 }
 

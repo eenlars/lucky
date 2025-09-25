@@ -4,19 +4,13 @@ import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
 import type { WorkflowIO } from "../../_lib/types"
 
 function uuid(): string {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID()
   }
   return "io_" + Math.random().toString(36).slice(2)
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { datasetId: string } }
-) {
+export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -28,17 +22,11 @@ export async function GET(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { datasetId: string } }
-) {
+export async function POST(req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -49,10 +37,7 @@ export async function POST(
       expected?: unknown
     }
     if (typeof input !== "string" || typeof expected !== "string") {
-      return NextResponse.json(
-        { error: "Invalid input/expected" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Invalid input/expected" }, { status: 400 })
     }
     const meta = await loadDatasetMeta(params.datasetId)
     const io: WorkflowIO = { id: uuid(), input, expected }
@@ -64,9 +49,6 @@ export async function POST(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }

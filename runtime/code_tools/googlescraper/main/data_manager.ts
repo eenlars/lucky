@@ -26,14 +26,8 @@ export class DataManager {
 
   constructor(config: DataManagerConfig) {
     this.outputDir = config.outputDir
-    this.allBusinessesPath = path.join(
-      this.outputDir,
-      config.allBusinessesFileName || "all_businesses.json"
-    )
-    this.failuresPath = path.join(
-      this.outputDir,
-      config.failuresFileName || "failures.json"
-    )
+    this.allBusinessesPath = path.join(this.outputDir, config.allBusinessesFileName || "all_businesses.json")
+    this.failuresPath = path.join(this.outputDir, config.failuresFileName || "failures.json")
 
     // create output directory if it doesn't exist
     if (!fs.existsSync(this.outputDir)) {
@@ -47,9 +41,7 @@ export class DataManager {
     let failures: ProcessFailure[] = []
 
     if (fs.existsSync(this.allBusinessesPath)) {
-      allBusinesses = JSON.parse(
-        fs.readFileSync(this.allBusinessesPath, "utf8")
-      )
+      allBusinesses = JSON.parse(fs.readFileSync(this.allBusinessesPath, "utf8"))
     }
 
     if (fs.existsSync(this.failuresPath)) {
@@ -87,10 +79,7 @@ export class DataManager {
 
   // save data to files
   saveData(allBusinesses: any[], failures: ProcessFailure[]): void {
-    fs.writeFileSync(
-      this.allBusinessesPath,
-      JSON.stringify(allBusinesses, null, 2)
-    )
+    fs.writeFileSync(this.allBusinessesPath, JSON.stringify(allBusinesses, null, 2))
     fs.writeFileSync(this.failuresPath, JSON.stringify(failures, null, 2))
   }
 
@@ -101,9 +90,7 @@ export class DataManager {
     failedIds: Set<number>
   ): LocationMapLink[] {
     return locations.filter(
-      (location) =>
-        !processedIds.has(location.location_id) &&
-        !failedIds.has(location.location_id)
+      (location) => !processedIds.has(location.location_id) && !failedIds.has(location.location_id)
     )
   }
 

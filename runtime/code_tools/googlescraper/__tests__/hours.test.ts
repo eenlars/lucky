@@ -7,10 +7,7 @@ describe("parseHours", () => {
   let validHoursTableHtml: string
 
   beforeAll(() => {
-    validHoursTableHtml = readFileSync(
-      join(__dirname, "html/validHoursTable.html"),
-      "utf-8"
-    )
+    validHoursTableHtml = readFileSync(join(__dirname, "html/validHoursTable.html"), "utf-8")
   })
 
   it("should parse valid hours table with exact expected values", () => {

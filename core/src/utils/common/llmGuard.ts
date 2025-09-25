@@ -12,10 +12,7 @@ const GuardResponseSchema = z.object({
   reason: z.string().optional(),
 })
 
-export const llmGuard = async (
-  input: string,
-  guardText: string
-): Promise<GuardResult> => {
+export const llmGuard = async (input: string, guardText: string): Promise<GuardResult> => {
   const response = await sendAI({
     messages: [
       {

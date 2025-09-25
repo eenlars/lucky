@@ -4,9 +4,7 @@ import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
 
-export const retrieveWorkflowInvocation = async (
-  invocationId: string
-): Promise<Tables<"WorkflowInvocation">> => {
+export const retrieveWorkflowInvocation = async (invocationId: string): Promise<Tables<"WorkflowInvocation">> => {
   const { data, error: WFInvocationError } = await supabase
     .from("WorkflowInvocation")
     .select("*")
@@ -29,9 +27,7 @@ export const retrieveWorkflowInvocation = async (
   return data
 }
 
-export const retrieveWorkflowVersion = async (
-  workflowVersionId: string
-): Promise<Tables<"WorkflowVersion">> => {
+export const retrieveWorkflowVersion = async (workflowVersionId: string): Promise<Tables<"WorkflowVersion">> => {
   const { data, error: WFVersionError } = await supabase
     .from("WorkflowVersion")
     .select("*")
@@ -45,10 +41,7 @@ export const retrieveWorkflowVersion = async (
   return data
 }
 
-export const ensureWorkflowExists = async (
-  description: string,
-  workflowId: string
-): Promise<void> => {
+export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
   const workflowInsertable: TablesInsert<"Workflow"> = {
     wf_id: workflowId,
     description,
@@ -69,14 +62,7 @@ export const saveWorkflowVersion = async (data: {
   iterationBudget?: number
   timeBudgetSeconds?: number
 }): Promise<Tables<"WorkflowVersion">> => {
-  const {
-    dsl,
-    commitMessage,
-    workflowId,
-    parentId,
-    iterationBudget = 50,
-    timeBudgetSeconds = 3600,
-  } = data
+  const { dsl, commitMessage, workflowId, parentId, iterationBudget = 50, timeBudgetSeconds = 3600 } = data
 
   const insertData: TablesInsert<"WorkflowVersion"> = {
     wf_version_id: genShortId(),
@@ -91,11 +77,7 @@ export const saveWorkflowVersion = async (data: {
     updated_at: new Date().toISOString(),
   }
 
-  const { data: insertResult, error } = await supabase
-    .from("WorkflowVersion")
-    .insert(insertData)
-    .select()
-    .single()
+  const { data: insertResult, error } = await supabase.from("WorkflowVersion").insert(insertData).select().single()
 
   if (error) {
     throw error
@@ -117,13 +99,7 @@ export interface WorkflowInvocationFilters {
 }
 
 export interface WorkflowInvocationSortOptions {
-  field:
-    | "start_time"
-    | "usd_cost"
-    | "status"
-    | "fitness"
-    | "accuracy"
-    | "duration"
+  field: "start_time" | "usd_cost" | "status" | "fitness" | "accuracy" | "duration"
   order: "asc" | "desc"
 }
 
@@ -139,9 +115,7 @@ export const retrieveWorkflowInvocations = async (
   sort?: WorkflowInvocationSortOptions
 ): Promise<WorkflowInvocationsResponse> => {
   // First, build the base query with count
-  let query = supabase
-    .from("WorkflowInvocation")
-    .select("*", { count: "exact" })
+  let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
 
   // Apply filters
   if (filters) {
@@ -244,10 +218,7 @@ export const retrieveWorkflowInvocations = async (
   if (sort?.field === "duration" && data) {
     const processedData = data.map((item) => ({
       ...item,
-      duration: item.end_time
-        ? new Date(item.end_time).getTime() -
-          new Date(item.start_time).getTime()
-        : null,
+      duration: item.end_time ? new Date(item.end_time).getTime() - new Date(item.start_time).getTime() : null,
     }))
 
     // Sort by calculated duration, handling null values appropriately
@@ -256,9 +227,7 @@ export const retrieveWorkflowInvocations = async (
       if (a.duration === null) return sort.order === "asc" ? 1 : -1
       if (b.duration === null) return sort.order === "asc" ? -1 : 1
 
-      return sort.order === "asc"
-        ? a.duration - b.duration
-        : b.duration - a.duration
+      return sort.order === "asc" ? a.duration - b.duration : b.duration - a.duration
     })
 
     return {
@@ -273,13 +242,8 @@ export const retrieveWorkflowInvocations = async (
   }
 }
 
-export const retrieveLatestWorkflowVersions = async (
-  limit?: number
-): Promise<Tables<"WorkflowVersion">[]> => {
-  let query = supabase
-    .from("WorkflowVersion")
-    .select("*")
-    .order("created_at", { ascending: false })
+export const retrieveLatestWorkflowVersions = async (limit?: number): Promise<Tables<"WorkflowVersion">[]> => {
+  let query = supabase.from("WorkflowVersion").select("*").order("created_at", { ascending: false })
 
   if (limit) {
     query = query.limit(limit)
@@ -294,13 +258,8 @@ export const retrieveLatestWorkflowVersions = async (
   return data
 }
 
-export const deleteWorkflowInvocations = async (
-  invocationIds: string[]
-): Promise<number> => {
-  const { error } = await supabase
-    .from("WorkflowInvocation")
-    .delete()
-    .in("wf_invocation_id", invocationIds)
+export const deleteWorkflowInvocations = async (invocationIds: string[]): Promise<number> => {
+  const { error } = await supabase.from("WorkflowInvocation").delete().in("wf_invocation_id", invocationIds)
 
   if (error) throw error
 

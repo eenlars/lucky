@@ -95,15 +95,11 @@ const proxyToString = (proxy: ProxyResponse) => {
   return `http://${proxy.username}:${proxy.password}@${proxy.ip}:${proxy.port}`
 }
 
-const getMultipleWebshareProxiesFull = async (
-  count: number
-): Promise<ProxyResponse[]> => {
+const getMultipleWebshareProxiesFull = async (count: number): Promise<ProxyResponse[]> => {
   const proxyList = await fetchWebshareProxyList()
 
   if (proxyList.length < count) {
-    throw new Error(
-      `Not enough proxies available. Requested: ${count}, Available: ${proxyList.length}`
-    )
+    throw new Error(`Not enough proxies available. Requested: ${count}, Available: ${proxyList.length}`)
   }
 
   // shuffle array and take first 'count' proxies to ensure uniqueness

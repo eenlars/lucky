@@ -105,8 +105,7 @@ describe("RunService", () => {
     ;(supabase.from as any).mockImplementation((table: string) => {
       if (table === "EvolutionRun") return mockEvolutionRunChain
       if (table === "Generation") return mockGenerationChain
-      if (table === "WorkflowVersion" || table === "Workflow")
-        return mockWorkflowVersionChain
+      if (table === "WorkflowVersion" || table === "Workflow") return mockWorkflowVersionChain
       return mockEvolutionRunChain // default
     })
   })
@@ -354,9 +353,7 @@ describe("RunService", () => {
       const service = new RunService()
       const config = createMockEvolutionSettings()
 
-      await expect(service.createRun("test goal", config)).rejects.toThrow(
-        "network error"
-      )
+      await expect(service.createRun("test goal", config)).rejects.toThrow("network error")
     })
 
     it("should log errors in verbose mode", async () => {

@@ -17,8 +17,7 @@ const defaultOptions: Required<FetcherOptions> = {
   headers: {
     "User-Agent":
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    Accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     Connection: "keep-alive",
@@ -33,11 +32,7 @@ async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function fetchWithTimeout(
-  url: string,
-  options: RequestInit,
-  timeoutMs: number
-): Promise<Response> {
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
@@ -57,10 +52,7 @@ async function fetchWithTimeout(
   }
 }
 
-export async function fetcher(
-  url: string,
-  options: FetcherOptions = {}
-): Promise<FetcherResult> {
+export async function fetcher(url: string, options: FetcherOptions = {}): Promise<FetcherResult> {
   const config = { ...defaultOptions, ...options }
 
   // validate url
@@ -104,10 +96,7 @@ export async function fetcher(
       lastError = error instanceof Error ? error : new Error(String(error))
 
       // don't retry on certain errors
-      if (
-        lastError.message.includes("invalid url") ||
-        lastError.message.includes("TypeError: Failed to fetch")
-      ) {
+      if (lastError.message.includes("invalid url") || lastError.message.includes("TypeError: Failed to fetch")) {
         break
       }
 
@@ -120,7 +109,5 @@ export async function fetcher(
     }
   }
 
-  throw new Error(
-    `failed to fetch ${url} after ${config.retries + 1} attempts: ${lastError!.message}`
-  )
+  throw new Error(`failed to fetch ${url} after ${config.retries + 1} attempts: ${lastError!.message}`)
 }

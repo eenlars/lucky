@@ -1,7 +1,4 @@
-import {
-  contextFilePrompt,
-  type WorkflowFiles,
-} from "@core/tools/context/contextStore.types"
+import { contextFilePrompt, type WorkflowFiles } from "@core/tools/context/contextStore.types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
@@ -58,9 +55,7 @@ export function buildSimpleMessage({
   }
 
   // build the chat messages
-  const content = [message, context ? `Context: ${context}` : ""].filter(
-    Boolean
-  )
+  const content = [message, context ? `Context: ${context}` : ""].filter(Boolean)
 
   // Add workflow_invocation_id to user message if workflowFiles are provided
   if (!isNir(workflowFiles)) {
@@ -102,12 +97,7 @@ Use this memory to inform your decisions and responses.`
   }
 
   if (!isNir(workflowFiles)) {
-    const contextContent = contextFilePrompt(
-      workflowFiles,
-      inputFile,
-      evalExplanation,
-      outputType
-    )
+    const contextContent = contextFilePrompt(workflowFiles, inputFile, evalExplanation, outputType)
 
     sdkMessages.unshift({
       role: "system",
@@ -116,10 +106,7 @@ Use this memory to inform your decisions and responses.`
   }
 
   // validate messages before sending to AI
-  if (
-    !Array.isArray(sdkMessages) ||
-    sdkMessages.some((msg) => !msg.role || msg.content === undefined)
-  ) {
+  if (!Array.isArray(sdkMessages) || sdkMessages.some((msg) => !msg.role || msg.content === undefined)) {
     throw new Error("Invalid messages format for AI model")
   }
 

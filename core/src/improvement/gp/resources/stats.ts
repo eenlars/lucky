@@ -80,9 +80,7 @@ export class StatsTracker {
    */
   recordGenerationStats(): PopulationStats {
     const best = this.population.getBest()
-    const improvementRate = this.calculateImprovementRate(
-      best.getFitness()?.score ?? 0
-    )
+    const improvementRate = this.calculateImprovementRate(best.getFitness()?.score ?? 0)
 
     const stats = this.population.getStats({
       evaluationCost: this.totalCost,
@@ -111,9 +109,7 @@ export class StatsTracker {
   shouldStop(): boolean {
     // Cost limit check
     if (this.totalCost >= this.config.maxCostUSD) {
-      lgg.info(
-        `[StatsTracker] Reached cost limit of $${this.config.maxCostUSD}; stopping evolution.`
-      )
+      lgg.info(`[StatsTracker] Reached cost limit of $${this.config.maxCostUSD}; stopping evolution.`)
       return true
     }
 
@@ -127,10 +123,7 @@ export class StatsTracker {
     }
 
     // Evaluation rate limit check
-    if (
-      typeof this.config.maxEvaluationsPerHour === "number" &&
-      this.config.maxEvaluationsPerHour > 0
-    ) {
+    if (typeof this.config.maxEvaluationsPerHour === "number" && this.config.maxEvaluationsPerHour > 0) {
       if (this.evaluationCount >= this.config.maxEvaluationsPerHour) {
         lgg.info(
           `[StatsTracker] Reached max evaluations per hour (${this.config.maxEvaluationsPerHour}); stopping evolution.`
@@ -142,14 +135,10 @@ export class StatsTracker {
     // Convergence check - if we have enough generations to analyze
     if (this.stats.length >= 5) {
       const recent = this.stats.slice(-5)
-      const improvements = recent
-        .slice(1)
-        .map((s, i) => s.bestFitness - recent[i].bestFitness)
+      const improvements = recent.slice(1).map((s, i) => s.bestFitness - recent[i].bestFitness)
 
       if (improvements.every((imp: number) => imp < 0.001)) {
-        lgg.info(
-          `[StatsTracker] Converged; stopping evolution after ${elapsedMinutes.toFixed(1)} minutes.`
-        )
+        lgg.info(`[StatsTracker] Converged; stopping evolution after ${elapsedMinutes.toFixed(1)} minutes.`)
         return true
       }
     }
@@ -179,9 +168,7 @@ export class StatsTracker {
    * Log evolution start
    */
   logEvolutionStart(): void {
-    lgg.log(
-      `[EvolutionEngine] Starting evolution process with run ID: ${this.runService.getRunId()}`
-    )
+    lgg.log(`[EvolutionEngine] Starting evolution process with run ID: ${this.runService.getRunId()}`)
   }
 
   /**

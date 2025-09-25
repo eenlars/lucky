@@ -11,11 +11,7 @@ import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
  * @param newNode The freshly created node (handOffs will be set by this function)
  * @param nodes The existing workflow nodes array
  */
-export function spliceNode(
-  predecessors: string[],
-  newNode: WorkflowNodeConfig,
-  nodes: WorkflowNodeConfig[]
-): void {
+export function spliceNode(predecessors: string[], newNode: WorkflowNodeConfig, nodes: WorkflowNodeConfig[]): void {
   // Phase 1: Discover successors that will be displaced
   const successorSet = new Set<string>()
 
@@ -42,11 +38,7 @@ export function spliceNode(
     newNode.handOffs.push("end")
   }
 }
-export function spliceNode2(
-  predecessors: string[],
-  newNode: WorkflowNodeConfig,
-  nodes: WorkflowNodeConfig[]
-): void {
+export function spliceNode2(predecessors: string[], newNode: WorkflowNodeConfig, nodes: WorkflowNodeConfig[]): void {
   if (newNode) {
     lgg.log(`🔍 Processing new node: ${newNode.nodeId}`)
 

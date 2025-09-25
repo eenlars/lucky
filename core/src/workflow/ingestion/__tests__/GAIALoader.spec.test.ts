@@ -22,9 +22,7 @@ describe("GAIALoader Integration Tests", () => {
       console.log("Skipping integration tests (SKIP_INTEGRATION_TESTS=true)")
     }
     if (!hasToken) {
-      console.log(
-        "Warning: No HF_TOKEN found. Tests may fail if dataset is gated."
-      )
+      console.log("Warning: No HF_TOKEN found. Tests may fail if dataset is gated.")
     }
 
     // Mock successful API response (omit file_name so instance isn't filtered out)
@@ -57,12 +55,7 @@ describe("GAIALoader Integration Tests", () => {
     async () => {
       try {
         // Try to fetch the first few instances to find a valid task_id
-        const instances = await GAIALoader.fetchByLevel(
-          1,
-          "validation",
-          3,
-          process.env.HF_TOKEN
-        )
+        const instances = await GAIALoader.fetchByLevel(1, "validation", 3, process.env.HF_TOKEN)
 
         expect(instances).toBeDefined()
         expect(instances.length).toBeGreaterThan(0)
@@ -80,13 +73,8 @@ describe("GAIALoader Integration Tests", () => {
           questionPreview: firstInstance.Question.substring(0, 50) + "...",
         })
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes("Authentication required")
-        ) {
-          console.log(
-            "Test skipped: GAIA dataset requires authentication (HF_TOKEN)"
-          )
+        if (error instanceof Error && error.message.includes("Authentication required")) {
+          console.log("Test skipped: GAIA dataset requires authentication (HF_TOKEN)")
           return
         }
         throw error
@@ -101,29 +89,17 @@ describe("GAIALoader Integration Tests", () => {
       try {
         // Test each difficulty level
         for (const level of [1, 2, 3] as const) {
-          const instances = await GAIALoader.fetchByLevel(
-            level,
-            "validation",
-            2,
-            process.env.HF_TOKEN
-          )
+          const instances = await GAIALoader.fetchByLevel(level, "validation", 2, process.env.HF_TOKEN)
 
           if (instances.length > 0) {
             // Verify all instances have the correct level
             expect(instances.every((inst) => inst.Level === level)).toBe(true)
-            console.log(
-              `Found ${instances.length} instances for level ${level}`
-            )
+            console.log(`Found ${instances.length} instances for level ${level}`)
           }
         }
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes("Authentication required")
-        ) {
-          console.log(
-            "Test skipped: GAIA dataset requires authentication (HF_TOKEN)"
-          )
+        if (error instanceof Error && error.message.includes("Authentication required")) {
+          console.log("Test skipped: GAIA dataset requires authentication (HF_TOKEN)")
           return
         }
         throw error
@@ -166,10 +142,7 @@ describe("GAIALoader Integration Tests", () => {
 
         if (data.rows.length > 0) {
           const firstRow = data.rows[0].row
-          console.log(
-            "API structure verified. Sample fields:",
-            Object.keys(firstRow)
-          )
+          console.log("API structure verified. Sample fields:", Object.keys(firstRow))
 
           // Verify expected fields exist
           expect(firstRow).toHaveProperty("task_id")
@@ -188,12 +161,7 @@ describe("GAIALoader Integration Tests", () => {
     async () => {
       try {
         // First get a valid task_id
-        const instances = await GAIALoader.fetchByLevel(
-          1,
-          "validation",
-          1,
-          process.env.HF_TOKEN
-        )
+        const instances = await GAIALoader.fetchByLevel(1, "validation", 1, process.env.HF_TOKEN)
 
         if (instances.length === 0) {
           console.log("No instances found to test fetchById")
@@ -203,11 +171,7 @@ describe("GAIALoader Integration Tests", () => {
         const taskId = instances[0].task_id
 
         // Now fetch that specific task
-        const instance = await GAIALoader.fetchById(
-          taskId,
-          "validation",
-          process.env.HF_TOKEN
-        )
+        const instance = await GAIALoader.fetchById(taskId, "validation", process.env.HF_TOKEN)
 
         expect(instance.task_id).toBe(taskId)
         expect(instance.Question).toBeTruthy()

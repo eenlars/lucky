@@ -1,10 +1,7 @@
 import { useReactFlow } from "@xyflow/react"
 import { useCallback, useMemo } from "react"
 
-import {
-  AppNode,
-  createNodeByType,
-} from "@/react-flow-visualization/components/nodes"
+import { AppNode, createNodeByType } from "@/react-flow-visualization/components/nodes"
 import { useAppStore } from "@/react-flow-visualization/store"
 import { AppStore } from "@/react-flow-visualization/store/app-store"
 import { useShallow } from "zustand/react/shallow"
@@ -17,15 +14,11 @@ const selector = (state: AppStore) => ({
 
 export function useDragAndDrop() {
   const { screenToFlowPosition } = useReactFlow()
-  const { addNode, addNodeInBetween, potentialConnection } = useAppStore(
-    useShallow(selector)
-  )
+  const { addNode, addNodeInBetween, potentialConnection } = useAppStore(useShallow(selector))
 
   const onDrop: React.DragEventHandler = useCallback(
     (event) => {
-      const nodeProps = JSON.parse(
-        event.dataTransfer.getData("application/reactflow")
-      )
+      const nodeProps = JSON.parse(event.dataTransfer.getData("application/reactflow"))
 
       if (!nodeProps) return
 
@@ -54,10 +47,7 @@ export function useDragAndDrop() {
     [addNode, addNodeInBetween, screenToFlowPosition, potentialConnection]
   )
 
-  const onDragOver: React.DragEventHandler = useCallback(
-    (event) => event.preventDefault(),
-    []
-  )
+  const onDragOver: React.DragEventHandler = useCallback((event) => event.preventDefault(), [])
 
   return useMemo(() => ({ onDrop, onDragOver }), [onDrop, onDragOver])
 }

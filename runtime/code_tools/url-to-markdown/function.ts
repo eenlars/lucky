@@ -1,9 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { fetcher } from "@runtime/code_tools/url-to-markdown/fetcher"
-import {
-  processHtmlToMarkdown,
-  type ProcessHtmlToMarkdownResult,
-} from "@runtime/code_tools/url-to-markdown/process"
+import { processHtmlToMarkdown, type ProcessHtmlToMarkdownResult } from "@runtime/code_tools/url-to-markdown/process"
 
 type HtmlToMarkdownOptions = {
   url: string
@@ -31,9 +28,7 @@ async function tryJinaFallback(url: string): Promise<string> {
     lgg.log(`jina ai fallback successful, content length: ${markdown.length}`)
     return markdown
   } catch (error) {
-    lgg.log(
-      `jina ai fallback failed: ${error instanceof Error ? error.message : String(error)}`
-    )
+    lgg.log(`jina ai fallback failed: ${error instanceof Error ? error.message : String(error)}`)
     throw error
   }
 }
@@ -77,34 +72,22 @@ export async function htmlToMarkdown({
         extractedFrom: url,
       }
     } catch (jinaError) {
-      lgg.error(
-        `jina fallback also failed:`,
-        String(jinaError).substring(0, 200)
-      )
+      lgg.error(`jina fallback also failed:`, String(jinaError).substring(0, 200))
     }
 
     if (error instanceof Error) {
       // more specific error categorization
       if (error.message.includes("timeout")) {
-        throw new Error(
-          `timeout fetching ${url}: ${error.message.substring(0, 200)}`
-        )
+        throw new Error(`timeout fetching ${url}: ${error.message.substring(0, 200)}`)
       }
       if (error.message.includes("invalid url")) {
         throw new Error(`invalid url: ${url}`)
       }
       if (error.message.includes("http error")) {
-        throw new Error(
-          `server error for ${url}: ${error.message.substring(0, 200)}`
-        )
+        throw new Error(`server error for ${url}: ${error.message.substring(0, 200)}`)
       }
-      if (
-        error.message.includes("Failed to fetch") ||
-        error.message.includes("network")
-      ) {
-        throw new Error(
-          `network error fetching ${url}: ${error.message.substring(0, 200)}`
-        )
+      if (error.message.includes("Failed to fetch") || error.message.includes("network")) {
+        throw new Error(`network error fetching ${url}: ${error.message.substring(0, 200)}`)
       }
     }
 

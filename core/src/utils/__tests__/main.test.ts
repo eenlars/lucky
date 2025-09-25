@@ -62,9 +62,7 @@ vi.mock("@core/workflow/Workflow", () => ({
     create: vi.fn().mockReturnValue({
       getWorkflowVersionId: () => "test-workflow-version-id",
       setWorkflowIO: vi.fn().mockResolvedValue(undefined),
-      getWorkflowIO: vi
-        .fn()
-        .mockReturnValue([{ input: "test", output: "result" }]),
+      getWorkflowIO: vi.fn().mockReturnValue([{ input: "test", output: "result" }]),
       improveNodesIteratively: vi.fn().mockResolvedValue({
         newConfig: { nodes: [], entryNodeId: "test-node" },
         cost: 0.02,
@@ -161,9 +159,7 @@ vi.mock("@core/improvement/GP/RunService", () => ({
     createRun: vi.fn().mockResolvedValue(undefined),
     getRunId: vi.fn().mockReturnValue("test-run-id"),
     getCurrentGenerationId: vi.fn().mockReturnValue("test-gen-id"),
-    createGeneration: vi
-      .fn()
-      .mockResolvedValue({ generationId: "test-gen-id" }),
+    createGeneration: vi.fn().mockResolvedValue({ generationId: "test-gen-id" }),
     completeGeneration: vi.fn().mockResolvedValue(undefined),
     completeRun: vi.fn().mockResolvedValue(undefined),
   })),
@@ -330,9 +326,7 @@ describe("main.ts", () => {
       // TODO: iterativeEvolutionMain is not used in the actual main.ts file
       // the main function calls runEvolution directly, not through iterativeEvolutionMain
       // mock setup needs complete refactoring to match actual implementation
-      mocks.iterativeEvolutionMain.mockRejectedValue(
-        new Error("iterative evolution failed")
-      )
+      mocks.iterativeEvolutionMain.mockRejectedValue(new Error("iterative evolution failed"))
 
       const { default: main } = await import("@core/main")
 
@@ -404,9 +398,7 @@ describe("main.ts", () => {
     it("should handle GP initialization errors", async () => {
       // IMPROVEMENT NEEDED: Test runs in iterative mode due to CLI arg mocking
       // Should throw GP error but won't reach GP code path
-      mocks.evolutionEngineRun.mockRejectedValue(
-        new Error("GP initialization failed")
-      )
+      mocks.evolutionEngineRun.mockRejectedValue(new Error("GP initialization failed"))
 
       const { default: main } = await import("@core/main")
 
@@ -416,9 +408,7 @@ describe("main.ts", () => {
     it("should create evolution engine with correct config", async () => {
       // IMPROVEMENT NEEDED: EvolutionEngine not called in iterative mode
       const { default: main } = await import("@core/main")
-      const { EvolutionEngine } = await import(
-        "@core/improvement/gp/evolutionengine"
-      )
+      const { EvolutionEngine } = await import("@core/improvement/gp/evolutionengine")
 
       await main()
 
@@ -439,9 +429,7 @@ describe("main.ts", () => {
     it("should handle missing workflow setup", async () => {
       // IMPROVEMENT NEEDED: loadSingleWorkflow is used, not getWorkflowSetup
       // Need to mock the correct function for this error path
-      mocks.getWorkflowSetup.mockRejectedValue(
-        new Error("workflow setup not found")
-      )
+      mocks.getWorkflowSetup.mockRejectedValue(new Error("workflow setup not found"))
 
       const { default: main } = await import("@core/main")
 
@@ -500,9 +488,7 @@ describe("main.ts", () => {
     it("should handle workflow creation failure", async () => {
       // TODO: workflowCreate is not the function called - need to mock Workflow.create
       // Need to mock Workflow.create to throw error
-      mocks.workflowCreate.mockRejectedValue(
-        new Error("workflow creation failed")
-      )
+      mocks.workflowCreate.mockRejectedValue(new Error("workflow creation failed"))
 
       const { default: main } = await import("@core/main")
 

@@ -13,11 +13,7 @@ describe("Parameter Schema Visibility", () => {
     inputSchema: zodSchema(
       z.object({
         query: z.string().describe("Search query"),
-        maxResultCount: z
-          .number()
-          .max(20)
-          .default(10)
-          .describe("Number of results to return"),
+        maxResultCount: z.number().max(20).default(10).describe("Number of results to return"),
       })
     ),
     execute: async () => "mock result",
@@ -56,9 +52,7 @@ describe("Parameter Schema Visibility", () => {
       }),
     }))
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
-    const { selectToolStrategyV2 } = await import(
-      "@core/messages/pipeline/selectTool/selectToolStrategyV2"
-    )
+    const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
       tools: mockTools,
@@ -99,9 +93,7 @@ describe("Parameter Schema Visibility", () => {
       }),
     }))
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
-    const { selectToolStrategyV2 } = await import(
-      "@core/messages/pipeline/selectTool/selectToolStrategyV2"
-    )
+    const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
       tools: mockTools,
@@ -119,9 +111,7 @@ describe("Parameter Schema Visibility", () => {
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
 
     expect(userMessage.content).toContain("Tool: searchGoogleMaps")
-    expect(userMessage.content).toContain(
-      "Description: Search Google Maps for business information"
-    )
+    expect(userMessage.content).toContain("Description: Search Google Maps for business information")
     expect(userMessage.content).toContain("Args: not shown")
     expect(userMessage.content).not.toContain("maxResultCount")
   })
@@ -156,9 +146,7 @@ describe("Parameter Schema Visibility", () => {
       }),
     }))
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
-    const { selectToolStrategyV2 } = await import(
-      "@core/messages/pipeline/selectTool/selectToolStrategyV2"
-    )
+    const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
       tools: complexTools,

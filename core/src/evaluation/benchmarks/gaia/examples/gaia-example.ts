@@ -1,8 +1,5 @@
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
-import type {
-  EvaluationInput,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
+import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { GAIALocalLoader } from "../GAIALocalLoader"
 
 /**
@@ -60,15 +57,11 @@ async function runGAIAExample() {
     }
 
     // convert GAIA evaluation to WorkflowIO format
-    const workflowCases: WorkflowIO[] =
-      await IngestionLayer.convert(gaiaEvaluation)
+    const workflowCases: WorkflowIO[] = await IngestionLayer.convert(gaiaEvaluation)
 
     console.log("✅ Successfully converted to workflow format")
     console.log("Input keys:", Object.keys(workflowCases[0].workflowInput))
-    console.log(
-      "Expected output keys:",
-      Object.keys(workflowCases[0].workflowOutput)
-    )
+    console.log("Expected output keys:", Object.keys(workflowCases[0].workflowOutput))
     console.log()
   }
 
@@ -76,9 +69,7 @@ async function runGAIAExample() {
   const randomTasks = GAIALocalLoader.fetchRandom(2, "validation")
   console.log(`Random tasks for testing:`)
   for (const task of randomTasks) {
-    console.log(
-      `- ${task.task_id} (Level ${task.Level}): ${task.Question.substring(0, 60)}...`
-    )
+    console.log(`- ${task.task_id} (Level ${task.Level}): ${task.Question.substring(0, 60)}...`)
   }
 }
 

@@ -25,9 +25,7 @@ describe("vercel.integration.test", () => {
     // Expected values based on the actual multiOutput.json fixture
     expect(agentSteps.map((s: any) => s.name)).toEqual(["tool1"])
     expect(agentSteps.map((s: any) => s.return)).toEqual(["result1"])
-    expect(agentSteps.map((s: any) => s.args)).toEqual([
-      { input: "Please provide the result you want." }
-    ])
+    expect(agentSteps.map((s: any) => s.args)).toEqual([{ input: "Please provide the result you want." }])
 
     // Final output should be the tool return
     expect(getFinalOutputNodeInvocation(agentSteps as any)).toBe("result1")

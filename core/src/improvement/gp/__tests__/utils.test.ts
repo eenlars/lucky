@@ -8,9 +8,7 @@ describe("GP Utilities", () => {
       const point2 = [4, 5, 6]
 
       // euclidean distance formula: sqrt((x2-x1)² + (y2-y1)² + (z2-z1)²)
-      const expectedDistance = Math.sqrt(
-        Math.pow(4 - 1, 2) + Math.pow(5 - 2, 2) + Math.pow(6 - 3, 2)
-      )
+      const expectedDistance = Math.sqrt(Math.pow(4 - 1, 2) + Math.pow(5 - 2, 2) + Math.pow(6 - 3, 2))
 
       expect(expectedDistance).toBeCloseTo(5.196, 3)
     })
@@ -18,9 +16,7 @@ describe("GP Utilities", () => {
     it("should calculate standard deviation", () => {
       const values = [1, 2, 3, 4, 5]
       const mean = values.reduce((sum, val) => sum + val, 0) / values.length
-      const variance =
-        values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
-        values.length
+      const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length
       const stdDev = Math.sqrt(variance)
 
       expect(mean).toBe(3)
@@ -29,9 +25,7 @@ describe("GP Utilities", () => {
 
     it("should handle edge cases in distance calculation", () => {
       const samePoint = [1, 2, 3]
-      const distance = Math.sqrt(
-        Math.pow(1 - 1, 2) + Math.pow(2 - 2, 2) + Math.pow(3 - 3, 2)
-      )
+      const distance = Math.sqrt(Math.pow(1 - 1, 2) + Math.pow(2 - 2, 2) + Math.pow(3 - 3, 2))
 
       expect(distance).toBe(0)
     })
@@ -49,9 +43,7 @@ describe("GP Utilities", () => {
       // simulate tournament selection
       const tournamentSize = 3
       const tournament = population.slice(0, tournamentSize)
-      const winner = tournament.reduce((best, current) =>
-        current.fitness > best.fitness ? current : best
-      )
+      const winner = tournament.reduce((best, current) => (current.fitness > best.fitness ? current : best))
 
       expect(winner.id).toBe("a")
       expect(winner.fitness).toBe(0.9)
@@ -225,9 +217,7 @@ describe("GP Utilities", () => {
       // basic validation
       expect(workflow.nodes).toHaveLength(1)
       expect(workflow.entryNodeId).toBeDefined()
-      expect(workflow.nodes.some((n) => n.id === workflow.entryNodeId)).toBe(
-        true
-      )
+      expect(workflow.nodes.some((n) => n.id === workflow.entryNodeId)).toBe(true)
 
       const node = workflow.nodes[0]
       expect(node.id).toBeTruthy()
@@ -268,10 +258,7 @@ describe("GP Utilities", () => {
   describe("Error Handling", () => {
     it("should handle division by zero", () => {
       const values: number[] = []
-      const safeAverage =
-        values.length > 0
-          ? values.reduce((a, b) => a + b, 0) / values.length
-          : 0
+      const safeAverage = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0
 
       expect(safeAverage).toBe(0)
       expect(Number.isNaN(safeAverage)).toBe(false)

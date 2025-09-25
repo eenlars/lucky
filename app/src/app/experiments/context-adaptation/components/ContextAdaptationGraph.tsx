@@ -41,10 +41,7 @@ export default function ContextAdaptationGraph({
     async function run() {
       setLoading(true)
       try {
-        const res = await fetch(
-          `/api/experiments/context-adaptation?t=${Date.now()}`,
-          { cache: "no-store" }
-        )
+        const res = await fetch(`/api/experiments/context-adaptation?t=${Date.now()}`, { cache: "no-store" })
         if (!res.ok) throw new Error("Request failed")
         const json = (await res.json()) as ApiResponse
         if (!cancelled) {
@@ -74,8 +71,7 @@ export default function ContextAdaptationGraph({
     // auto: pick the api's selected source first, then fallback
     if (apiData.source === "final") return ds.final ?? apiData.chartData
     if (apiData.source === "baseline") return ds.baseline ?? apiData.chartData
-    if (apiData.source === "our-algorithm")
-      return ds.ourAlgorithm ?? apiData.chartData
+    if (apiData.source === "our-algorithm") return ds.ourAlgorithm ?? apiData.chartData
     return apiData.chartData
   }, [apiData, dataset])
 
@@ -96,10 +92,7 @@ export default function ContextAdaptationGraph({
   }, [apiData, dataset])
 
   return (
-    <div
-      className={`w-full bg-white rounded-lg shadow p-4 ${className}`}
-      style={{ height }}
-    >
+    <div className={`w-full bg-white rounded-lg shadow p-4 ${className}`} style={{ height }}>
       <h2 className="text-xl font-semibold mb-1">{resolvedTitle}</h2>
       <p className="text-xs text-gray-500 mb-2">{sourceLabel}</p>
 
@@ -107,9 +100,7 @@ export default function ContextAdaptationGraph({
         <AdaptationSuccessChart data={selectedData} />
       </div>
 
-      {loading ? (
-        <div className="mt-2 text-xs text-gray-500">Loading…</div>
-      ) : null}
+      {loading ? <div className="mt-2 text-xs text-gray-500">Loading…</div> : null}
       {errors.length ? (
         <div className="mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1">
           <strong>Errors:</strong> {errors.join("; ")}

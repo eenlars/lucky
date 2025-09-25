@@ -19,23 +19,12 @@ function transformLocationData(input) {
 }
 
 function extractName(loc) {
-  return (
-    loc.name ||
-    loc.title ||
-    loc.business_name ||
-    loc.display_name ||
-    (loc.meta && loc.meta.title) ||
-    null
-  )
+  return loc.name || loc.title || loc.business_name || loc.display_name || (loc.meta && loc.meta.title) || null
 }
 
 function extractAddress(loc) {
   if (loc.display_address_line1) return loc.display_address_line1
-  const parts = [
-    loc.street,
-    loc.house_number,
-    loc.house_number_addition,
-  ].filter((p) => p !== null && p !== undefined)
+  const parts = [loc.street, loc.house_number, loc.house_number_addition].filter((p) => p !== null && p !== undefined)
   return parts.length ? parts.join(" ") : null
 }
 
@@ -67,15 +56,7 @@ function extractCoordinates(loc) {
 }
 
 function transformOpeningHours(loc) {
-  const dayNames = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ]
+  const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
   // start all closed
   const result = dayNames.reduce((acc, d) => {
     acc[d] = "closed"
@@ -113,7 +94,4 @@ function generateMetadata(loc) {
 const transformed = transformLocationData(acetate)
 
 // save to file
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/acetate.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/acetate.json", JSON.stringify(transformed, null, 2))

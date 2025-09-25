@@ -11,16 +11,11 @@ export class EnvironmentKeysManager {
   // Prefer a robust UUID when available; fall back in SSR/tests
   private static newId(): string {
     const g: any = globalThis as any
-    if (
-      typeof g.crypto !== "undefined" &&
-      g.crypto !== null &&
-      typeof g.crypto.randomUUID === "function"
-    ) {
+    if (typeof g.crypto !== "undefined" && g.crypto !== null && typeof g.crypto.randomUUID === "function") {
       return g.crypto.randomUUID()
     }
     // RFC4122-ish v4 fallback
-    const rnd = (len = 16) =>
-      Array.from({ length: len }, () => Math.floor(Math.random() * 256))
+    const rnd = (len = 16) => Array.from({ length: len }, () => Math.floor(Math.random() * 256))
     const bytes = Uint8Array.from(rnd())
     bytes[6] = (bytes[6] & 0x0f) | 0x40
     bytes[8] = (bytes[8] & 0x3f) | 0x80

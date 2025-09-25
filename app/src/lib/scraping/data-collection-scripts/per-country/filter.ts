@@ -66,9 +66,7 @@ function main() {
       phone: biz.phone,
       mainImage: biz.mainImage,
       hours: biz.hours,
-      coordinates:
-        extractCoordinates(biz as unknown as GoogleScraperBusinessExtended) ||
-        undefined,
+      coordinates: extractCoordinates(biz as unknown as GoogleScraperBusinessExtended) || undefined,
     }
 
     return transformLocationData([mappedBusiness], {

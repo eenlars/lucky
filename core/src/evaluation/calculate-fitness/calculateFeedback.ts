@@ -1,10 +1,7 @@
 import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
-import {
-  singleFeedbackSystemPrompt,
-  singleFeedbackUserPrompt,
-} from "@core/prompts/evaluator/feedback/singleFeedback.p"
+import { singleFeedbackSystemPrompt, singleFeedbackUserPrompt } from "@core/prompts/evaluator/feedback/singleFeedback.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -14,17 +11,11 @@ import { getDefaultModels } from "@runtime/settings/models"
 export async function calculateFeedback({
   agentSteps,
   evaluation,
-}: Omit<
-  FitnessFunctionInput,
-  "totalTime" | "totalCost" | "finalWorkflowOutput"
->): Promise<RS<string>> {
+}: Omit<FitnessFunctionInput, "totalTime" | "totalCost" | "finalWorkflowOutput">): Promise<RS<string>> {
   if (isNir(agentSteps)) {
     lgg.warn("No outputs found")
     // Gracefully handle missing outputs by returning default feedback
-    return R.success(
-      "No outputs produced by the workflow run, skipping feedback.",
-      0
-    )
+    return R.success("No outputs produced by the workflow run, skipping feedback.", 0)
   }
   const outputStr = toolUsageToString(agentSteps, 1000, {
     includeArgs: false,
@@ -32,11 +23,7 @@ export async function calculateFeedback({
 
   const useReasoning = true
 
-  const systemPrompt = singleFeedbackSystemPrompt(
-    evaluation,
-    outputStr,
-    useReasoning
-  )
+  const systemPrompt = singleFeedbackSystemPrompt(evaluation, outputStr, useReasoning)
   const userPrompt = singleFeedbackUserPrompt(outputStr)
 
   const response = await sendAI({
@@ -44,9 +31,7 @@ export async function calculateFeedback({
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: useReasoning
-      ? getDefaultModels().reasoning
-      : getDefaultModels().fitness,
+    model: useReasoning ? getDefaultModels().reasoning : getDefaultModels().fitness,
     mode: "text",
     opts: {
       reasoning: useReasoning,

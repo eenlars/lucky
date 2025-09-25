@@ -1,7 +1,4 @@
-import type {
-  FitnessFunctionInput,
-  FitnessOfWorkflow,
-} from "@core/evaluation/calculate-fitness/fitness.types"
+import type { FitnessFunctionInput, FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -21,11 +18,7 @@ export async function calculateFitness(
   numRounds: number = 1,
   numModels: number = 2
 ): Promise<RS<FitnessOfWorkflow>> {
-  const models = [
-    getDefaultModels().fitness,
-    getDefaultModels().nano,
-    getDefaultModels().reasoning,
-  ]
+  const models = [getDefaultModels().fitness, getDefaultModels().nano, getDefaultModels().reasoning]
     // de-duplicate in case multiple keys map to same underlying model id
     .filter((value, index, self) => self.indexOf(value) === index)
 
@@ -33,9 +26,7 @@ export async function calculateFitness(
   const promises = models
     .slice(0, numModels)
     .flatMap((model) =>
-      Array.from({ length: numRounds }, () =>
-        baseCalculateFitness({ ...input, overrideModel: model })
-      )
+      Array.from({ length: numRounds }, () => baseCalculateFitness({ ...input, overrideModel: model }))
     )
 
   // Execute all fitness calculations in parallel

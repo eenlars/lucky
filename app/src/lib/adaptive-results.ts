@@ -4,18 +4,14 @@ export const ADAPTIVE_RESULTS = {
   scenarios: [
     {
       id: "basic-failure",
-      prompt:
-        "Please fetch 5 objects with the query 'item' and return the combined results.",
-      expectedBehavior:
-        "Should try fetch_objects(item, 5), fail, then adapt by splitting into smaller requests",
+      prompt: "Please fetch 5 objects with the query 'item' and return the combined results.",
+      expectedBehavior: "Should try fetch_objects(item, 5), fail, then adapt by splitting into smaller requests",
       expectedFinalCount: 5,
     },
     {
       id: "larger-request",
-      prompt:
-        "I need 8 objects with the query 'product'. Please get them and combine the results.",
-      expectedBehavior:
-        "Should fail initially, then make multiple smaller requests to reach 8 total",
+      prompt: "I need 8 objects with the query 'product'. Please get them and combine the results.",
+      expectedBehavior: "Should fail initially, then make multiple smaller requests to reach 8 total",
       expectedFinalCount: 8,
     },
     {
@@ -37,11 +33,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -64,17 +58,11 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            results: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
           },
           result: {
             total_count: 2,
-            combined_items: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            combined_items: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
             summary: "Successfully combined 2 items",
           },
           success: true,
@@ -118,30 +106,17 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1",
-              "item_object_2",
-              "item_object_3",
-              "item_object_1",
-              "item_object_2",
-            ],
+            results: ["item_object_1", "item_object_2", "item_object_3", "item_object_1", "item_object_2"],
           },
           result: {
             total_count: 5,
-            combined_items: [
-              "item_object_1",
-              "item_object_2",
-              "item_object_3",
-              "item_object_1",
-              "item_object_2",
-            ],
+            combined_items: ["item_object_1", "item_object_2", "item_object_3", "item_object_1", "item_object_2"],
             summary: "Successfully combined 5 items",
           },
           success: true,
         },
       ],
-      finalResponse:
-        "I have fetched 5 objects with the query 'item' and combined the results.",
+      finalResponse: "I have fetched 5 objects with the query 'item' and combined the results.",
       success: true,
       adaptiveBehavior: {
         initialFailure: false,
@@ -163,11 +138,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -175,11 +148,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 4,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -187,11 +158,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 4,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -199,11 +168,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 4,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -211,11 +178,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 4,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -223,11 +188,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 4,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -301,19 +264,11 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "product_object_1",
-              "product_object_2",
-              "product_object_3",
-            ],
+            results: ["product_object_1", "product_object_2", "product_object_3"],
           },
           result: {
             total_count: 3,
-            combined_items: [
-              "product_object_1",
-              "product_object_2",
-              "product_object_3",
-            ],
+            combined_items: ["product_object_1", "product_object_2", "product_object_3"],
             summary: "Successfully combined 3 items",
           },
           success: true,
@@ -432,11 +387,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -444,11 +397,9 @@ export const ADAPTIVE_RESULTS = {
             query: "object",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -456,11 +407,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -468,11 +417,9 @@ export const ADAPTIVE_RESULTS = {
             query: "thing",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -513,17 +460,11 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            results: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
           },
           result: {
             total_count: 2,
-            combined_items: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            combined_items: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
             summary: "Successfully combined 2 items",
           },
           success: true,
@@ -552,11 +493,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -564,11 +503,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -576,11 +513,9 @@ export const ADAPTIVE_RESULTS = {
             query: "goods",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -588,11 +523,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product listing",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -600,11 +533,9 @@ export const ADAPTIVE_RESULTS = {
             query: "inventory",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -612,11 +543,9 @@ export const ADAPTIVE_RESULTS = {
             query: "items for sale",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -624,11 +553,9 @@ export const ADAPTIVE_RESULTS = {
             query: "available products",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -636,11 +563,9 @@ export const ADAPTIVE_RESULTS = {
             query: "merchandise",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -785,11 +710,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "combine_results",
@@ -809,11 +732,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -854,17 +775,11 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            results: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
           },
           result: {
             total_count: 2,
-            combined_items: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            combined_items: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
             summary: "Successfully combined 2 items",
           },
           success: true,
@@ -893,11 +808,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "combine_results",
@@ -917,11 +830,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -1066,11 +977,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -1111,17 +1020,11 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            results: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
           },
           result: {
             total_count: 2,
-            combined_items: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            combined_items: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
             summary: "Successfully combined 2 items",
           },
           success: true,
@@ -1150,11 +1053,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -1299,11 +1200,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1311,11 +1210,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1323,11 +1220,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1335,11 +1230,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1347,11 +1240,9 @@ export const ADAPTIVE_RESULTS = {
             query: "item",
             count: 5,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -1392,24 +1283,17 @@ export const ADAPTIVE_RESULTS = {
         {
           toolName: "combine_results",
           args: {
-            results: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            results: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
           },
           result: {
             total_count: 2,
-            combined_items: [
-              "item_object_1,item_object_2,item_object_3",
-              "item_object_1,item_object_2",
-            ],
+            combined_items: ["item_object_1,item_object_2,item_object_3", "item_object_1,item_object_2"],
             summary: "Successfully combined 2 items",
           },
           success: true,
         },
       ],
-      finalResponse:
-        "Here are the combined results of the 5 objects related to the query 'item'.",
+      finalResponse: "Here are the combined results of the 5 objects related to the query 'item'.",
       success: true,
       adaptiveBehavior: {
         initialFailure: false,
@@ -1431,11 +1315,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1443,11 +1325,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1455,11 +1335,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
         {
           toolName: "fetch_objects",
@@ -1467,11 +1345,9 @@ export const ADAPTIVE_RESULTS = {
             query: "product",
             count: 8,
           },
-          result:
-            "ERROR: Request failed - please try again with different parameters",
+          result: "ERROR: Request failed - please try again with different parameters",
           success: false,
-          error:
-            "ERROR: Request failed - please try again with different parameters",
+          error: "ERROR: Request failed - please try again with different parameters",
         },
       ],
       finalResponse:
@@ -1566,8 +1442,7 @@ export const ADAPTIVE_RESULTS = {
           success: true,
         },
       ],
-      finalResponse:
-        "I have fetched 2 objects with the query 'sample': sample_object_1 and sample_object_2.",
+      finalResponse: "I have fetched 2 objects with the query 'sample': sample_object_1 and sample_object_2.",
       success: true,
       adaptiveBehavior: {
         initialFailure: false,

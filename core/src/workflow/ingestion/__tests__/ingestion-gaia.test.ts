@@ -26,9 +26,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    const spy = vi
-      .spyOn(GAIALoader, "fetchByLevel")
-      .mockResolvedValueOnce(mockGAIAInstances as any)
+    const spy = vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -61,9 +59,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(
-      mockGAIAInstances as any
-    )
+    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -75,9 +71,7 @@ describe("IngestionLayer - GAIA", () => {
     const result = await IngestionLayer.convert(evaluation)
 
     expect(result[0].workflowInput).toContain("attached file: data.xlsx")
-    expect(result[0].workflowInput).toContain(
-      "The file content should be processed"
-    )
+    expect(result[0].workflowInput).toContain("The file content should be processed")
   })
 
   it("should use specified split", async () => {
@@ -90,9 +84,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    const spy = vi
-      .spyOn(GAIALoader, "fetchByLevel")
-      .mockResolvedValueOnce(mockGAIAInstances as any)
+    const spy = vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -119,9 +111,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    const spy = vi
-      .spyOn(GAIALoader, "fetchByLevel")
-      .mockResolvedValueOnce(mockGAIAInstances as any)
+    const spy = vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -132,12 +122,7 @@ describe("IngestionLayer - GAIA", () => {
 
     await IngestionLayer.convert(evaluation)
 
-    expect(spy).toHaveBeenCalledWith(
-      1,
-      "validation",
-      expect.any(Number),
-      "test-token-123"
-    )
+    expect(spy).toHaveBeenCalledWith(1, "validation", expect.any(Number), "test-token-123")
   })
 
   it("should handle GAIA instance without final answer", async () => {
@@ -150,9 +135,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(
-      mockGAIAInstances as any
-    )
+    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -176,9 +159,7 @@ describe("IngestionLayer - GAIA", () => {
       },
     ]
 
-    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(
-      mockGAIAInstances as any
-    )
+    vi.spyOn(GAIALoader, "fetchByLevel").mockResolvedValueOnce(mockGAIAInstances as any)
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -194,9 +175,7 @@ describe("IngestionLayer - GAIA", () => {
   })
 
   it("should handle errors from GAIALoader", async () => {
-    vi.spyOn(GAIALoader, "fetchByLevel").mockRejectedValueOnce(
-      new Error("Failed to fetch GAIA instance")
-    )
+    vi.spyOn(GAIALoader, "fetchByLevel").mockRejectedValueOnce(new Error("Failed to fetch GAIA instance"))
 
     const evaluation: EvaluationInput = {
       type: "gaia",
@@ -212,9 +191,7 @@ describe("IngestionLayer - GAIA", () => {
 
   it("should return a fallback case on authentication errors", async () => {
     vi.spyOn(GAIALoader, "fetchByLevel").mockRejectedValueOnce(
-      new Error(
-        "Authentication required. GAIA is a gated dataset - please provide HF_TOKEN"
-      )
+      new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN")
     )
 
     const evaluation: EvaluationInput = {
@@ -226,12 +203,8 @@ describe("IngestionLayer - GAIA", () => {
 
     const result = await IngestionLayer.convert(evaluation)
     expect(result).toHaveLength(1)
-    expect(result[0].workflowInput).toContain(
-      "GAIA dataset requires authentication"
-    )
-    expect(result[0].workflowInput).toContain(
-      "Fallback Question: What is 2 + 2?"
-    )
+    expect(result[0].workflowInput).toContain("GAIA dataset requires authentication")
+    expect(result[0].workflowInput).toContain("Fallback Question: What is 2 + 2?")
     expect(result[0].workflowOutput.output).toBe("4")
   })
 })

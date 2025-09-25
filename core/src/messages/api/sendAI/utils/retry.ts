@@ -17,12 +17,7 @@ export async function retryWithBackoff<T>(
     attempts: number
     backoffMs?: number
     shouldRetry?: (value: T) => boolean
-    onAttempt?: (info: {
-      attempt: number
-      attempts: number
-      value?: T
-      error?: unknown
-    }) => void
+    onAttempt?: (info: { attempt: number; attempts: number; value?: T; error?: unknown }) => void
   }
 ): Promise<T> {
   let lastError: unknown
@@ -47,7 +42,5 @@ export async function retryWithBackoff<T>(
   }
   // Should never reach here, but TypeScript wants a return.
   // If it does, rethrow the last error.
-  throw lastError instanceof Error
-    ? lastError
-    : new Error(String(lastError ?? "retryWithBackoff: unknown error"))
+  throw lastError instanceof Error ? lastError : new Error(String(lastError ?? "retryWithBackoff: unknown error"))
 }

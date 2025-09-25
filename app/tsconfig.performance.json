@@ -15,14 +15,7 @@
     "watchDirectory": "useFsEvents",
     "fallbackPolling": "dynamicPriority",
     "synchronousWatchDirectory": false,
-    "excludeDirectories": [
-      "**/node_modules",
-      ".next",
-      "dist",
-      "build",
-      ".git",
-      "src/runtime/logging_folder"
-    ],
+    "excludeDirectories": ["**/node_modules", ".next", "dist", "build", ".git", "src/runtime/logging_folder"],
     "excludeFiles": ["**/*.log", "**/*.tmp"]
   },
   "exclude": [

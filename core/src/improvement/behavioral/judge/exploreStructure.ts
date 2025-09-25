@@ -18,8 +18,7 @@ export async function exploreStructure(
   fitness: FitnessOfWorkflow,
   goal: string
 ): Promise<RS<StructureExplorationResult>> {
-  const randomWorkflowStructure =
-    SharedWorkflowPrompts.randomWorkflowStructure()
+  const randomWorkflowStructure = SharedWorkflowPrompts.randomWorkflowStructure()
 
   const systemPrompt = `
   You are an expert workflow structure analyst. Your role is to evaluate if a specific workflow structure pattern would improve the current workflow.
@@ -75,28 +74,16 @@ Return your analysis with a clear recommendation.`
     ],
     mode: "structured",
     schema: z.object({
-      shouldImplement: z
-        .boolean()
-        .describe(
-          "Whether implementing this structure pattern would improve the workflow"
-        ),
-      recommendedStructure: z
-        .string()
-        .describe("The structure pattern that was evaluated"),
+      shouldImplement: z.boolean().describe("Whether implementing this structure pattern would improve the workflow"),
+      recommendedStructure: z.string().describe("The structure pattern that was evaluated"),
       structuralReason: z
         .string()
-        .describe(
-          "Detailed explanation of why this structure would or would not improve the workflow"
-        ),
+        .describe("Detailed explanation of why this structure would or would not improve the workflow"),
     }),
   })
 
   if (!response.success || !response.data) {
-    return R.error(
-      response.error ||
-        "Failed to get response from AI during structure exploration",
-      response.usdCost
-    )
+    return R.error(response.error || "Failed to get response from AI during structure exploration", response.usdCost)
   }
 
   return R.success(

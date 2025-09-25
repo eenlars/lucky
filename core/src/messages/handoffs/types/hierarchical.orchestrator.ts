@@ -9,13 +9,7 @@ export function buildOrchestratorPrompt(params: {
   isFromStart: boolean
   workflowMessage: WorkflowMessage
 }): string {
-  const {
-    content,
-    handOffs,
-    usageContext = "",
-    isFromStart,
-    workflowMessage,
-  } = params
+  const { content, handOffs, usageContext = "", isFromStart, workflowMessage } = params
   const options = handOffs.join(", ")
   const incomingMessages = extractTextFromPayload(workflowMessage.payload)
 

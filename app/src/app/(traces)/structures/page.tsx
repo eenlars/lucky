@@ -1,17 +1,11 @@
 "use client"
 
-import {
-  toWorkflowConfig,
-  type WorkflowConfig,
-} from "@core/workflow/schema/workflow.types"
+import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared"
 import { MODELS } from "@runtime/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import {
-  StructureMiniMap,
-  getNodeCountFromDsl,
-} from "../trace/[wf_inv_id]/structure/StructureMiniMap"
+import { StructureMiniMap, getNodeCountFromDsl } from "../trace/[wf_inv_id]/structure/StructureMiniMap"
 import { Button } from "@/ui/button"
 
 // Calculate workflow complexity based on structure
@@ -30,9 +24,7 @@ function getComplexityScore(config: WorkflowConfig): number {
       parentCounts.set(target, (parentCounts.get(target) || 0) + 1)
     })
   })
-  const convergencePoints = Array.from(parentCounts.values()).filter(
-    (count) => count > 1
-  ).length
+  const convergencePoints = Array.from(parentCounts.values()).filter((count) => count > 1).length
 
   // Calculate depth (max levels)
   const visited = new Set<string>()
@@ -43,9 +35,7 @@ function getComplexityScore(config: WorkflowConfig): number {
     const node = config.nodes.find((n) => n.nodeId === nodeId)
     if (!node || node.handOffs.length === 0) return currentDepth + 1
 
-    return Math.max(
-      ...node.handOffs.map((target) => getDepth(target, currentDepth + 1))
-    )
+    return Math.max(...node.handOffs.map((target) => getDepth(target, currentDepth + 1)))
   }
 
   const depth = getDepth(config.entryNodeId)
@@ -209,9 +199,7 @@ const testWorkflows: WorkflowConfig[] = [
 ]
 
 export default function StructuresPage() {
-  const [allVersions, setAllVersions] = useState<Tables<"WorkflowVersion">[]>(
-    []
-  )
+  const [allVersions, setAllVersions] = useState<Tables<"WorkflowVersion">[]>([])
   const [minNodes, setMinNodes] = useState(2)
   const [loading, setLoading] = useState(true)
   const [showTestBed, setShowTestBed] = useState(false)
@@ -257,9 +245,7 @@ export default function StructuresPage() {
           return getNodeCountFromDsl(configB) - getNodeCountFromDsl(configA)
         case "time":
         default:
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          )
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }
     })
     .slice(0, 50)
@@ -300,18 +286,14 @@ export default function StructuresPage() {
               <label className="text-sm font-medium">Sort by:</label>
               <select
                 value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as "time" | "complexity" | "nodes")
-                }
+                onChange={(e) => setSortBy(e.target.value as "time" | "complexity" | "nodes")}
                 className="border border-gray-300 rounded px-3 py-1"
               >
                 <option value="time">Latest</option>
                 <option value="complexity">Complexity</option>
                 <option value="nodes">Node Count</option>
               </select>
-              <span className="text-sm text-gray-500">
-                ({filteredVersions.length} workflows)
-              </span>
+              <span className="text-sm text-gray-500">({filteredVersions.length} workflows)</span>
             </>
           )}
         </div>
@@ -320,33 +302,21 @@ export default function StructuresPage() {
       {showTestBed ? (
         <div className="space-y-8">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-blue-900 mb-2">
-              Test Bed: Parallel Node Configurations
-            </h2>
+            <h2 className="text-lg font-semibold text-blue-900 mb-2">Test Bed: Parallel Node Configurations</h2>
             <p className="text-blue-700 text-sm">
-              Experimenting with simple workflow configurations that demonstrate
-              parallel execution patterns.
+              Experimenting with simple workflow configurations that demonstrate parallel execution patterns.
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-6">
             {testWorkflows.map((workflow, index) => {
               const nodeCount = getNodeCountFromDsl(workflow)
-              const workflowNames = [
-                "Simple Parallel",
-                "Fan-Out/Fan-In",
-                "Nested Parallel",
-              ]
+              const workflowNames = ["Simple Parallel", "Fan-Out/Fan-In", "Nested Parallel"]
 
               return (
-                <div
-                  key={index}
-                  className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow"
-                >
+                <div key={index} className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
                   <div className="mb-4">
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">
-                      {workflowNames[index]}
-                    </h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">{workflowNames[index]}</h3>
                     <p className="text-xs text-gray-500">{nodeCount} nodes</p>
                   </div>
 
@@ -356,19 +326,12 @@ export default function StructuresPage() {
                     <div className="font-medium mb-1">Node Flow:</div>
                     <div className="space-y-1">
                       {workflow.nodes.map((node) => (
-                        <div
-                          key={node.nodeId}
-                          className="flex items-center gap-2"
-                        >
-                          <span className="font-mono bg-gray-100 px-1 rounded">
-                            {node.nodeId}
-                          </span>
+                        <div key={node.nodeId} className="flex items-center gap-2">
+                          <span className="font-mono bg-gray-100 px-1 rounded">{node.nodeId}</span>
                           {node.handOffs.length > 0 && (
                             <>
                               <span>→</span>
-                              <span className="text-gray-500">
-                                {node.handOffs.join(", ")}
-                              </span>
+                              <span className="text-gray-500">{node.handOffs.join(", ")}</span>
                             </>
                           )}
                         </div>
@@ -394,9 +357,7 @@ export default function StructuresPage() {
                 className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2 truncate">
-                    {version.commit_message}
-                  </h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-2 truncate">{version.commit_message}</h3>
                   <div className="text-xs text-gray-500 space-y-1">
                     <p>
                       {nodeCount} nodes • complexity {complexityScore}

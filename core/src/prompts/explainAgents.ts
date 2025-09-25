@@ -2,10 +2,7 @@ import { llmify } from "@core/utils/common/llmify"
 import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
-export function explainAgents(
-  nodes: WorkflowNodeConfig[],
-  easyModelNames: boolean = false
-): string {
+export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames: boolean = false): string {
   return llmify(`
     ${nodes
       .map(
@@ -25,9 +22,7 @@ export function explainAgents(
   `)
 }
 
-export const mapModelNameToEasyName = (
-  modelName: AnyModelName
-): "low" | "medium" | "high" => {
+export const mapModelNameToEasyName = (modelName: AnyModelName): "low" | "medium" | "high" => {
   if (modelName === "openai/gpt-4.1-nano") return "low"
   if (modelName === "openai/gpt-4.1-mini") return "medium"
   if (modelName === "openai/gpt-4.1") return "high"

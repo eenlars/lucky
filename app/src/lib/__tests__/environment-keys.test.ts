@@ -1,8 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import {
-  EnvironmentKeysManager,
-  type EnvironmentKey,
-} from "../environment-keys"
+import { EnvironmentKeysManager, type EnvironmentKey } from "../environment-keys"
 
 // Minimal in-memory localStorage stub
 class MemoryStorage {

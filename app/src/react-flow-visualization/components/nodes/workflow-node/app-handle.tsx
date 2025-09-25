@@ -1,13 +1,6 @@
 "use client"
 
-import {
-  Position,
-  useConnection,
-  useInternalNode,
-  useNodeConnections,
-  useNodeId,
-  XYPosition,
-} from "@xyflow/react"
+import { Position, useConnection, useInternalNode, useNodeConnections, useNodeId, XYPosition } from "@xyflow/react"
 import clsx from "clsx"
 import { useCallback, useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
@@ -16,10 +9,7 @@ import { type AppStore } from "@/react-flow-visualization/store/app-store"
 
 import { AppDropdownMenu } from "@/react-flow-visualization/components/app-dropdown-menu"
 import { ButtonHandle } from "@/react-flow-visualization/components/button-handle"
-import {
-  type AppNodeType,
-  NodeConfig,
-} from "@/react-flow-visualization/components/nodes"
+import { type AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 
 import { useDropdown } from "@/react-flow-visualization/hooks/use-dropdown"
@@ -38,32 +28,22 @@ const compatibleNodeTypes = (type: "source" | "target") => {
   }
   return (node: NodeConfig) => {
     return (
-      node.id === "transform-node" ||
-      node.id === "join-node" ||
-      node.id === "branch-node" ||
-      node.id === "initial-node"
+      node.id === "transform-node" || node.id === "join-node" || node.id === "branch-node" || node.id === "initial-node"
     )
   }
 }
 
-const selector =
-  (nodeId: string, type: string, id?: string | null) => (state: AppStore) => ({
-    addNodeInBetween: state.addNodeInBetween,
-    draggedNodes: state.draggedNodes,
-    connectionSites: state.connectionSites,
-    isPotentialConnection:
-      state.potentialConnection?.id === `handle-${nodeId}-${type}-${id}`,
-  })
+const selector = (nodeId: string, type: string, id?: string | null) => (state: AppStore) => ({
+  addNodeInBetween: state.addNodeInBetween,
+  draggedNodes: state.draggedNodes,
+  connectionSites: state.connectionSites,
+  isPotentialConnection: state.potentialConnection?.id === `handle-${nodeId}-${type}-${id}`,
+})
 
 // TODO: we need to streamline how we calculate the yOffset
 const yOffset = (type: "source" | "target") => (type === "source" ? 50 : -65)
 
-function getIndicatorPostion(
-  nodePosition: XYPosition,
-  x: number,
-  y: number,
-  type: "source" | "target"
-) {
+function getIndicatorPostion(nodePosition: XYPosition, x: number, y: number, type: "source" | "target") {
   return {
     x: nodePosition.x + x,
     y: nodePosition.y + y + yOffset(type),
@@ -97,16 +77,12 @@ export function AppHandle({
   const isConnectionInProgress = useConnection((c) => c.inProgress)
 
   const { isOpen, toggleDropdown } = useDropdown()
-  const {
-    draggedNodes,
-    addNodeInBetween,
-    connectionSites,
-    isPotentialConnection,
-  } = useAppStore(useShallow(selector(nodeId, type, id)))
+  const { draggedNodes, addNodeInBetween, connectionSites, isPotentialConnection } = useAppStore(
+    useShallow(selector(nodeId, type, id))
+  )
 
   // We get the actual position of the node
-  const nodePosition =
-    useInternalNode(nodeId)?.internals.positionAbsolute ?? fallbackPosition
+  const nodePosition = useInternalNode(nodeId)?.internals.positionAbsolute ?? fallbackPosition
 
   const onClick = () => {
     toggleDropdown()
@@ -130,10 +106,7 @@ export function AppHandle({
     [nodeId, id, type, nodePosition, x, y, toggleDropdown, addNodeInBetween]
   )
 
-  const displayAddButton =
-    connections.length === 0 &&
-    !isConnectionInProgress &&
-    !draggedNodes.has(nodeId)
+  const displayAddButton = connections.length === 0 && !isConnectionInProgress && !draggedNodes.has(nodeId)
 
   const connectionId = `handle-${nodeId}-${type}-${id}`
   useEffect(() => {
@@ -151,17 +124,7 @@ export function AppHandle({
     return () => {
       connectionSites.delete(connectionId)
     }
-  }, [
-    nodePosition,
-    connectionSites,
-    connectionId,
-    id,
-    nodeId,
-    type,
-    x,
-    y,
-    displayAddButton,
-  ])
+  }, [nodePosition, connectionSites, connectionId, id, nodeId, type, x, y, displayAddButton])
   return (
     <ButtonHandle
       type={type}
@@ -183,10 +146,7 @@ export function AppHandle({
       </Button>
       {isOpen && (
         <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2">
-          <AppDropdownMenu
-            onAddNode={onAddNode}
-            filterNodes={compatibleNodeTypes(type)}
-          />
+          <AppDropdownMenu onAddNode={onAddNode} filterNodes={compatibleNodeTypes(type)} />
         </div>
       )}
     </ButtonHandle>

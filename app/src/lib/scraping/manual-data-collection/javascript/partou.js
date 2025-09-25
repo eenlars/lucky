@@ -18,24 +18,13 @@ function transformPartouData(input) {
   return locations.map((item) => {
     // Build coordinates array if present
     const coords =
-      item.geoLocation &&
-      item.geoLocation.longitude &&
-      item.geoLocation.latitude
-        ? [
-            parseFloat(item.geoLocation.longitude),
-            parseFloat(item.geoLocation.latitude),
-          ]
+      item.geoLocation && item.geoLocation.longitude && item.geoLocation.latitude
+        ? [parseFloat(item.geoLocation.longitude), parseFloat(item.geoLocation.latitude)]
         : null
 
     // Collect all venue images into one array
     const ownerImgs = (item.venues || []).flatMap((v) =>
-      [
-        v.headerPhoto,
-        v.photoDesktopFirst,
-        v.photoDesktopLast,
-        v.photoMobileFirst,
-        v.photoMobileLast,
-      ].filter(Boolean)
+      [v.headerPhoto, v.photoDesktopFirst, v.photoDesktopLast, v.photoMobileFirst, v.photoMobileLast].filter(Boolean)
     )
 
     return {
@@ -61,7 +50,4 @@ function transformPartouData(input) {
 // load → Transform → Save
 const transformed = transformPartouData(json)
 
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/partou.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/partou.json", JSON.stringify(transformed, null, 2))

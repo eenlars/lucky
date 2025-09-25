@@ -25,9 +25,7 @@ const humanHelp = defineTool({
   name: "humanHelp",
   description: "Ask for human help or provide an answer",
   params: z.object({
-    action: z
-      .enum(["question", "answer"])
-      .describe("Action to perform: 'question' to ask, 'answer' to respond."),
+    action: z.enum(["question", "answer"]).describe("Action to perform: 'question' to ask, 'answer' to respond."),
     content: z.string().describe("The question or answer content."),
   }),
   async execute(params, context) {
@@ -52,18 +50,12 @@ const humanHelp = defineTool({
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       const helpUrl = `${baseUrl}/help?id=${newHelpId}&workflow=${workflowInvocationId}`
 
-      lgg.info(
-        "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      )
+      lgg.info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
       lgg.info("🆘 HUMAN HELP REQUESTED")
-      lgg.info(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      )
+      lgg.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
       lgg.info(`Question: ${content}`)
       lgg.info(`\n👉 Click here to help: ${helpUrl}\n`)
-      lgg.info(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-      )
+      lgg.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 
       const startTime = Date.now()
       const timeoutSeconds = 30
@@ -82,14 +74,10 @@ const humanHelp = defineTool({
         try {
           const requestData = await fs.readFile(requestFilePath, "utf-8")
           const currentRequest: HelpRequest = JSON.parse(requestData)
-          console.log(
-            `[humanHelp tool] Polling help request ${newHelpId}: status is ${currentRequest.status}`
-          )
+          console.log(`[humanHelp tool] Polling help request ${newHelpId}: status is ${currentRequest.status}`)
 
           if (currentRequest.status === "answered") {
-            lgg.info(
-              `✅ Help received: ${currentRequest.response || "No response provided"}`
-            )
+            lgg.info(`✅ Help received: ${currentRequest.response || "No response provided"}`)
             return {
               success: true,
               data: {
@@ -99,10 +87,7 @@ const humanHelp = defineTool({
             }
           }
         } catch (error) {
-          console.log(
-            `[humanHelp tool] Polling error for help request ${newHelpId}:`,
-            error
-          )
+          console.log(`[humanHelp tool] Polling error for help request ${newHelpId}:`, error)
           // Continue polling
         }
 
@@ -116,10 +101,7 @@ const humanHelp = defineTool({
           const filePath = path.join(HELP_STORAGE_PATH, file)
           const data = await fs.readFile(filePath, "utf-8")
           const req: HelpRequest = JSON.parse(data)
-          if (
-            req.workflowInvocationId === workflowInvocationId &&
-            req.status === "pending"
-          ) {
+          if (req.workflowInvocationId === workflowInvocationId && req.status === "pending") {
             pendingFile = filePath
             break
           }

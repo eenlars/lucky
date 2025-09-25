@@ -44,8 +44,7 @@ export async function POST() {
       .update({
         status: "interrupted",
         end_time: new Date().toISOString(),
-        notes:
-          "Automatically marked as interrupted due to being stale (>5 hours runtime)",
+        notes: "Automatically marked as interrupted due to being stale (>5 hours runtime)",
       })
       .in("run_id", staleRunIds)
 
@@ -61,9 +60,6 @@ export async function POST() {
     })
   } catch (error) {
     console.error("Error in cleanup:", error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

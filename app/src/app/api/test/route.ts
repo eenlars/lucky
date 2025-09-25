@@ -8,20 +8,14 @@ export async function POST(request: NextRequest) {
     if (authResult instanceof NextResponse) return authResult
     // Check if API key is available
     if (!process.env.XAI_API_KEY) {
-      return NextResponse.json(
-        { error: "XAI_API_KEY environment variable is not set" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "XAI_API_KEY environment variable is not set" }, { status: 500 })
     }
 
     const body = await request.json()
     const { message } = body
 
     if (!message) {
-      return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Message is required" }, { status: 400 })
     }
 
     // Call X.AI API
@@ -61,10 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (!aiMessage) {
       console.error("No message content in X.AI response:", data)
-      return NextResponse.json(
-        { error: "No response content from AI" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "No response content from AI" }, { status: 500 })
     }
 
     return NextResponse.json({

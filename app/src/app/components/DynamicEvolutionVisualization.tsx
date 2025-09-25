@@ -21,18 +21,10 @@ export function DynamicEvolutionVisualization() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Evolution Dashboard
-              </h1>
-              <p className="text-gray-600">
-                Explore different workflow evolution runs
-              </p>
+              <h1 className="text-2xl font-bold text-gray-900">Evolution Dashboard</h1>
+              <p className="text-gray-600">Explore different workflow evolution runs</p>
             </div>
-            <EvolutionSelector
-              currentRunId={selectedRunId}
-              onRunSelect={handleRunSelect}
-              loading={loading}
-            />
+            <EvolutionSelector currentRunId={selectedRunId} onRunSelect={handleRunSelect} loading={loading} />
           </div>
         </div>
       </div>

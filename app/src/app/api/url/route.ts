@@ -19,9 +19,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     lgg.error(error)
-    return NextResponse.json(
-      { error: "Failed to convert URL to markdown" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to convert URL to markdown" }, { status: 500 })
   }
 }

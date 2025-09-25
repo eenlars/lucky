@@ -1,14 +1,10 @@
 import { lgg } from "@core/utils/logging/Logger"
-import type {
-  SWEBenchInstance,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
+import type { SWEBenchInstance, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 
 export class SWEBenchLoader {
   private static readonly DATASET = "princeton-nlp/SWE-bench"
   private static readonly CONFIG = "default"
-  private static readonly BASE_URL =
-    "https://datasets-server.huggingface.co/rows"
+  private static readonly BASE_URL = "https://datasets-server.huggingface.co/rows"
   private static readonly TIMEOUT_MS = 10000 // 10 second timeout
 
   static async fetchAsWorkflowIO(
@@ -102,10 +98,7 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
     }
   }
 
-  static async fetchById(
-    id: string,
-    split: "train" | "dev" | "test" = "test"
-  ): Promise<SWEBenchInstance> {
+  static async fetchById(id: string, split: "train" | "dev" | "test" = "test"): Promise<SWEBenchInstance> {
     const url = new URL(this.BASE_URL)
     url.searchParams.set("dataset", this.DATASET)
     url.searchParams.set("config", this.CONFIG)
@@ -171,9 +164,7 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
 
       // check if this is a network connectivity issue
       if (this.isNetworkError(error)) {
-        lgg.warn(
-          "Network connectivity issue detected, falling back to mock data"
-        )
+        lgg.warn("Network connectivity issue detected, falling back to mock data")
         return this.getMockInstance(id)
       }
 

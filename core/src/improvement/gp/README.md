@@ -126,10 +126,7 @@ interface WorkflowGenome extends Workflow {
 **LLM-Powered Recombination** that semantically combines parent workflows:
 
 ```typescript
-async function crossover(
-  parent1: WorkflowGenome,
-  parent2: WorkflowGenome
-): Promise<WorkflowGenome> {
+async function crossover(parent1: WorkflowGenome, parent2: WorkflowGenome): Promise<WorkflowGenome> {
   // Send both parents to LLM with crossover instructions
   const prompt = `
     Analyze these two successful workflows and create a hybrid offspring that combines 
@@ -203,18 +200,13 @@ interface SelectionConfig {
 }
 
 // Tournament selection process
-function selectParents(
-  population: WorkflowGenome[],
-  scores: FitnessScore[]
-): WorkflowGenome[] {
+function selectParents(population: WorkflowGenome[], scores: FitnessScore[]): WorkflowGenome[] {
   const parents: WorkflowGenome[] = []
 
   for (let i = 0; i < requiredParents; i++) {
     // Random tournament
     const tournament = sampleRandom(population, tournamentSize)
-    const winner = tournament.reduce((best, current) =>
-      scores[current.id] > scores[best.id] ? current : best
-    )
+    const winner = tournament.reduce((best, current) => (scores[current.id] > scores[best.id] ? current : best))
     parents.push(winner)
   }
 
@@ -534,9 +526,7 @@ config.generations = 20
 const evaluateWithTimeout = async (genome) => {
   return Promise.race([
     evaluator.evaluate(genome),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Evaluation timeout")), 30000)
-    ),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Evaluation timeout")), 30000)),
   ])
 }
 ```
@@ -548,16 +538,10 @@ const evaluateWithTimeout = async (genome) => {
 ```typescript
 // Implement custom crossover
 class CustomCrossover {
-  async crossover(
-    parent1: WorkflowGenome,
-    parent2: WorkflowGenome
-  ): Promise<WorkflowGenome> {
+  async crossover(parent1: WorkflowGenome, parent2: WorkflowGenome): Promise<WorkflowGenome> {
     // Custom crossover logic
     const hybridConfig = this.combineConfigs(parent1.config, parent2.config)
-    return this.createOffspring(hybridConfig, [
-      parent1.evolutionId,
-      parent2.evolutionId,
-    ])
+    return this.createOffspring(hybridConfig, [parent1.evolutionId, parent2.evolutionId])
   }
 }
 

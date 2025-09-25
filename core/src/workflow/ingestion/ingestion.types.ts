@@ -131,10 +131,7 @@ export const hasGroundTruth = (evaluation: EvaluationInput): boolean => {
       return (evaluation.answer ?? "").trim().length > 0
     case "csv":
       // evaluable only when a column is specified to compare against
-      return (
-        typeof evaluation.evaluation === "string" &&
-        evaluation.evaluation.trim().length > 0
-      )
+      return typeof evaluation.evaluation === "string" && evaluation.evaluation.trim().length > 0
     case "gaia":
     case "swebench":
     case "webarena":
@@ -149,16 +146,13 @@ export const hasGroundTruth = (evaluation: EvaluationInput): boolean => {
 }
 
 /** True if the input type implies an evaluation phase is possible. */
-export const needsEvaluation = (evaluation: EvaluationInput) =>
-  hasGroundTruth(evaluation)
+export const needsEvaluation = (evaluation: EvaluationInput) => hasGroundTruth(evaluation)
 
 // the goal of this is to convert the evaluation to an array of WorkflowIO.
 // one workflow has to work on many types of evaluations, so we need to
 // convert the input to a format that every workflow can understand.
 /** Function type for converting evaluation inputs into workflow IO cases. */
-export type EvaluationToWorkflowIO = (
-  evaluations: EvaluationInput
-) => WorkflowIO[]
+export type EvaluationToWorkflowIO = (evaluations: EvaluationInput) => WorkflowIO[]
 
 /**
  * Shared goal and workflow identifier used by all evaluation inputs.

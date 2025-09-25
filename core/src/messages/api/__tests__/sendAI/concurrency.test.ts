@@ -9,7 +9,7 @@ vi.mock("ai", () => ({
   })),
   tool: vi.fn((config: any) => config),
   genObject: vi.fn(),
-  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  stepCountIs: vi.fn((count: number) => ({ type: "stepCount", count })),
   zodSchema: vi.fn((schema: any) => schema),
 }))
 

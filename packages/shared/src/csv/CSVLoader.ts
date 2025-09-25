@@ -34,9 +34,7 @@ export class CSVLoader {
       const parsed = Papa.parse(csvContent, { header: false })
       return parsed.data.map((row) => (row as string[]).join(",")).join("\n")
     } catch (error) {
-      throw new Error(
-        `failed to load csv as string from ${this.filePath}: ${error}`
-      )
+      throw new Error(`failed to load csv as string from ${this.filePath}: ${error}`)
     }
   }
 
@@ -58,9 +56,7 @@ export class CSVLoader {
             .filter((index) => !isNaN(index))
 
           if (columnIndices.length > 0) {
-            data = data.map((row) =>
-              columnIndices.map((index) => (row as any[])[index])
-            ) as T[]
+            data = data.map((row) => columnIndices.map((index) => (row as any[])[index])) as T[]
           }
         }
 
@@ -72,9 +68,7 @@ export class CSVLoader {
         .map((row) => this.filterColumns(row))
         .filter((item) => this.isValidRow(item)) as T[]
     } catch (error) {
-      throw new Error(
-        `failed to load csv as json from ${this.filePath}: ${error}`
-      )
+      throw new Error(`failed to load csv as json from ${this.filePath}: ${error}`)
     }
   }
 
@@ -85,9 +79,7 @@ export class CSVLoader {
 
     const mapped: Record<string, any> = {}
 
-    for (const [targetField, possibleNames] of Object.entries(
-      this.options.columnMappings
-    )) {
+    for (const [targetField, possibleNames] of Object.entries(this.options.columnMappings)) {
       let value = ""
 
       for (const name of possibleNames) {
@@ -124,21 +116,14 @@ export class CSVLoader {
       return true
     }
 
-    return Object.keys(this.options.columnMappings).some(
-      (field) => item[field] && item[field] !== ""
-    )
+    return Object.keys(this.options.columnMappings).some((field) => item[field] && item[field] !== "")
   }
 
   private async loadContent(): Promise<string> {
-    if (
-      this.filePath.startsWith("http://") ||
-      this.filePath.startsWith("https://")
-    ) {
+    if (this.filePath.startsWith("http://") || this.filePath.startsWith("https://")) {
       const response = await fetch(this.filePath)
       if (!response.ok) {
-        throw new Error(
-          `failed to fetch csv from ${this.filePath}: ${response.status} ${response.statusText}`
-        )
+        throw new Error(`failed to fetch csv from ${this.filePath}: ${response.status} ${response.statusText}`)
       }
       return await response.text()
     } else {
@@ -146,10 +131,7 @@ export class CSVLoader {
     }
   }
 
-  static fromRelativePath(
-    relativePath: string,
-    options?: CSVLoaderOptions
-  ): CSVLoader {
+  static fromRelativePath(relativePath: string, options?: CSVLoaderOptions): CSVLoader {
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = dirname(__filename)
     const fullPath = join(__dirname, relativePath)

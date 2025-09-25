@@ -30,17 +30,17 @@ interface WorkflowInvocationFilters {
 // Allowed columns for sorting to prevent SQL injection and runtime errors
 const ALLOWED_SORT_FIELDS = [
   "start_time",
-  "end_time", 
+  "end_time",
   "status",
   "usd_cost",
   "accuracy",
   "fitness_score",
   "run_id",
   "generation_id",
-  "wf_version_id"
+  "wf_version_id",
 ] as const
 
-type AllowedSortField = typeof ALLOWED_SORT_FIELDS[number]
+type AllowedSortField = (typeof ALLOWED_SORT_FIELDS)[number]
 
 interface WorkflowInvocationSortOptions {
   field: AllowedSortField
@@ -70,17 +70,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const sortParam = JSON.parse(
-      searchParams.get("sort") || '{"field": "start_time", "order": "desc"}'
-    )
-    
+    const sortParam = JSON.parse(searchParams.get("sort") || '{"field": "start_time", "order": "desc"}')
+
     // Validate sort field against whitelist
-    const field = ALLOWED_SORT_FIELDS.includes(sortParam.field) 
-      ? sortParam.field 
-      : "start_time"
-    
+    const field = ALLOWED_SORT_FIELDS.includes(sortParam.field) ? sortParam.field : "start_time"
+
     const order = sortParam.order === "asc" ? "asc" : "desc"
-    
+
     sort = { field, order }
   } catch {
     // Use default sort if parsing fails
@@ -88,9 +84,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let query = supabase
-      .from("WorkflowInvocation")
-      .select("*", { count: "exact" })
+    let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
 
     // Apply filters
     if (filters.status) {
@@ -110,9 +104,7 @@ export async function GET(request: NextRequest) {
       query = query.eq("wf_version_id", filters.wfVersionId)
     }
     if (filters.dateRange) {
-      query = query
-        .gte("start_time", filters.dateRange.start)
-        .lte("start_time", filters.dateRange.end)
+      query = query.gte("start_time", filters.dateRange.start).lte("start_time", filters.dateRange.end)
     }
     if (filters.dateFrom) {
       query = query.gte("start_time", filters.dateFrom)
@@ -173,10 +165,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching workflow invocations:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch invocations" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to fetch invocations" }, { status: 500 })
   }
 }
 
@@ -190,16 +179,10 @@ export async function DELETE(request: NextRequest) {
     const { ids } = body
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json(
-        { error: "No invocation IDs provided" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "No invocation IDs provided" }, { status: 400 })
     }
 
-    const { error } = await supabase
-      .from("WorkflowInvocation")
-      .delete()
-      .in("wf_invocation_id", ids)
+    const { error } = await supabase.from("WorkflowInvocation").delete().in("wf_invocation_id", ids)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -210,10 +193,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting workflow invocations:", error)
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to delete invocations",
+        error: error instanceof Error ? error.message : "Failed to delete invocations",
       },
       { status: 500 }
     )

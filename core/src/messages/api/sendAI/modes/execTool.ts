@@ -46,18 +46,14 @@ const spending = SpendingTracker.getInstance()
 // TODO: implement tool execution dependency resolution
 // TODO: add tool execution debugging and profiling
 // TODO: create tool execution security auditing
-export async function execTool(
-  req: ToolRequest
-): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
+export async function execTool(req: ToolRequest): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
   const requestedModel = modelIn ?? getDefaultModels().default
 
   try {
     // TODO: add tool compatibility validation for model
     // TODO: implement smart tool selection based on model capabilities
-    const modelName = shouldUseModelFallback(requestedModel)
-      ? getFallbackModel(requestedModel)
-      : requestedModel
+    const modelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
     const model = getLanguageModelWithReasoning(modelName, opts)
 
@@ -75,14 +71,11 @@ export async function execTool(
     // TODO: implement adaptive timeouts based on tool complexity
     // TODO: add tool execution progress tracking
     // TODO: create tool-specific timeout configurations
-    const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
-      baseOptions,
-      {
-        modelName: modelName,
-        overallTimeoutMs: 300_000,
-        stallTimeoutMs: 200_000,
-      }
-    )
+    const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
+      modelName: modelName,
+      overallTimeoutMs: 300_000,
+      stallTimeoutMs: 200_000,
+    })
 
     // TODO: add tool execution cost analysis and optimization
     // TODO: implement tool usage budgeting and alerts
@@ -109,17 +102,14 @@ export async function execTool(
     // handle tool errors gracefully without dumping large stacks
     const isArgValidationError =
       typeof error?.name === "string" &&
-      (error.name.includes("AI_InvalidToolArgumentsError") ||
-        error.name.includes("AI_TypeValidationError"))
+      (error.name.includes("AI_InvalidToolArgumentsError") || error.name.includes("AI_TypeValidationError"))
     const isTypeValidationText =
-      typeof error?.message === "string" &&
-      error.message.toLowerCase().includes("type validation failed")
+      typeof error?.message === "string" && error.message.toLowerCase().includes("type validation failed")
 
     // TODO: expand error categorization beyond validation errors
     // TODO: implement error-specific logging strategies
     // prepare normalized info for logging without dumping full error object
-    const { message: errMessageForLog, debug: debugForLog } =
-      normalizeError(error)
+    const { message: errMessageForLog, debug: debugForLog } = normalizeError(error)
 
     if (!isArgValidationError && !isTypeValidationText) {
       // only log concise details for unexpected errors
@@ -132,9 +122,7 @@ export async function execTool(
       })
     } else {
       // keep logs concise for validation errors
-      lgg.warn(
-        `execTool validation error: ${error?.message ?? "invalid tool arguments"}`
-      )
+      lgg.warn(`execTool validation error: ${error?.message ?? "invalid tool arguments"}`)
     }
 
     // TODO: implement structured error response parsing

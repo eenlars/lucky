@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const { workflow } = await request.json()
 
     if (!workflow) {
-      return NextResponse.json(
-        { error: "Workflow configuration is required" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Workflow configuration is required" }, { status: 400 })
     }
 
     const result = await verifyWorkflowConfig(workflow, { throwOnError: false })
@@ -25,11 +22,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         isValid: false,
-        errors: [
-          error instanceof Error
-            ? `Verification Error: ${error.message}`
-            : "Unknown verification error",
-        ],
+        errors: [error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"],
       },
       { status: 500 }
     )

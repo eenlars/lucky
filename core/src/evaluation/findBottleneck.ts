@@ -26,11 +26,7 @@ export interface WorkflowAnalysisResult {
 }
 
 const baseSchema = {
-  mainBottleNeck: z
-    .string()
-    .describe(
-      "The main bottleneck identified in the workflow for not reaching 100% accuracy"
-    ),
+  mainBottleNeck: z.string().describe("The main bottleneck identified in the workflow for not reaching 100% accuracy"),
   improvement: z.string().describe(
     llmify(
       `Suggested improvement to address the bottleneck, 
@@ -39,16 +35,12 @@ const baseSchema = {
         that will improve the overall efficiency.`
     )
   ),
-  shouldRemoveNode: z
-    .boolean()
-    .describe("if we need to remove a node, boolean"),
+  shouldRemoveNode: z.boolean().describe("if we need to remove a node, boolean"),
   shouldAddNode: z.boolean().describe("if we need to add a node, boolean"),
   shouldEditNode: z.boolean().describe("if we need to edit a node, boolean"),
   improvementSuggestions: z
     .string()
-    .describe(
-      "feedback, weaknesses, strengths, improvement suggestions, estimated impact"
-    ),
+    .describe("feedback, weaknesses, strengths, improvement suggestions, estimated impact"),
 }
 
 /**
@@ -76,12 +68,7 @@ export async function analyzeWorkflowBottlenecks(
   lgg.log()
 
   const { data, success, error, usdCost } = await sendAI({
-    messages: WorkflowAnalysisPrompts.analyzeWorkflow(
-      transcript,
-      workflow,
-      fitness,
-      previousMemory
-    ),
+    messages: WorkflowAnalysisPrompts.analyzeWorkflow(transcript, workflow, fitness, previousMemory),
     model,
     mode: "structured",
     schema: z.object({

@@ -19,16 +19,8 @@ describe("Select", () => {
 
   describe("selectRandomParents", () => {
     it("should select parents with fitness > 0", async () => {
-      const validGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.8)
-      )
-      const invalidGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0)
-      )
+      const validGenome = await createMockGenome(0, [], createMockWorkflowScore(0.8))
+      const invalidGenome = await createMockGenome(0, [], createMockWorkflowScore(0))
 
       validGenome.getFitnessScore.mockReturnValue(0.8)
       invalidGenome.getFitnessScore.mockReturnValue(0)
@@ -114,21 +106,9 @@ describe("Select", () => {
       })
 
       // Create genomes with different fitness scores
-      const bestGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.9)
-      )
-      const goodGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.7)
-      )
-      const okGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.5)
-      )
+      const bestGenome = await createMockGenome(0, [], createMockWorkflowScore(0.9))
+      const goodGenome = await createMockGenome(0, [], createMockWorkflowScore(0.7))
+      const okGenome = await createMockGenome(0, [], createMockWorkflowScore(0.5))
 
       // Set up proper fitness and evaluation status
       bestGenome.getFitnessScore.mockReturnValue(0.9)
@@ -171,11 +151,7 @@ describe("Select", () => {
         configurable: true,
       })
 
-      const unevaluatedGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.8)
-      )
+      const unevaluatedGenome = await createMockGenome(0, [], createMockWorkflowScore(0.8))
       unevaluatedGenome.isEvaluated = false
 
       const mockPopulation = {
@@ -191,24 +167,14 @@ describe("Select", () => {
           population: mockPopulation as any,
           config,
         })
-      ).rejects.toThrow(
-        "No valid genomes with fitness scores found in population"
-      )
+      ).rejects.toThrow("No valid genomes with fitness scores found in population")
     })
   })
 
   describe("tournamentSelection", () => {
     it("should select winner from tournament", async () => {
-      const highFitnessGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.9)
-      )
-      const lowFitnessGenome = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.3)
-      )
+      const highFitnessGenome = await createMockGenome(0, [], createMockWorkflowScore(0.9))
+      const lowFitnessGenome = await createMockGenome(0, [], createMockWorkflowScore(0.3))
 
       highFitnessGenome.getFitnessScore.mockReturnValue(0.9)
       lowFitnessGenome.getFitnessScore.mockReturnValue(0.3)
@@ -252,16 +218,8 @@ describe("Select", () => {
         configurable: true,
       })
 
-      const mockParent = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.7)
-      )
-      const mockOffspring = await createMockGenome(
-        1,
-        [],
-        createMockWorkflowScore(0.6)
-      )
+      const mockParent = await createMockGenome(0, [], createMockWorkflowScore(0.7))
+      const mockOffspring = await createMockGenome(1, [], createMockWorkflowScore(0.6))
       const config = createMockEvolutionSettings({ populationSize: 2 })
 
       const mod = await import("@core/improvement/gp/Select")
@@ -289,26 +247,10 @@ describe("Select", () => {
         configurable: true,
       })
 
-      const parent1 = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.8)
-      )
-      const parent2 = await createMockGenome(
-        0,
-        [],
-        createMockWorkflowScore(0.7)
-      )
-      const offspring1 = await createMockGenome(
-        1,
-        [],
-        createMockWorkflowScore(0.9)
-      )
-      const offspring2 = await createMockGenome(
-        1,
-        [],
-        createMockWorkflowScore(0.6)
-      )
+      const parent1 = await createMockGenome(0, [], createMockWorkflowScore(0.8))
+      const parent2 = await createMockGenome(0, [], createMockWorkflowScore(0.7))
+      const offspring1 = await createMockGenome(1, [], createMockWorkflowScore(0.9))
+      const offspring2 = await createMockGenome(1, [], createMockWorkflowScore(0.6))
 
       parent1.getFitnessScore.mockReturnValue(0.8)
       parent1.isEvaluated = true

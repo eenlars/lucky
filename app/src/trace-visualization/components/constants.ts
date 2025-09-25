@@ -5,5 +5,4 @@ export const STATUS_TO_COLOR = {
   default: "bg-muted",
 }
 
-export const formatCost = (cost: number | null) =>
-  cost != null ? `$${(cost * 1000).toFixed(4)} × 10³` : "mini$0.0000"
+export const formatCost = (cost: number | null) => (cost != null ? `$${(cost * 1000).toFixed(4)} × 10³` : "mini$0.0000")

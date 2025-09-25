@@ -6,10 +6,7 @@ export interface InvocationScores {
   fitness_score: number
 }
 
-export async function updateWorkflowInvocationScores(
-  invocationId: string,
-  scores: InvocationScores
-): Promise<void> {
+export async function updateWorkflowInvocationScores(invocationId: string, scores: InvocationScores): Promise<void> {
   try {
     const roundedAccuracy = Math.round(scores.accuracy)
     const roundedFitness = Math.round(scores.fitness_score)

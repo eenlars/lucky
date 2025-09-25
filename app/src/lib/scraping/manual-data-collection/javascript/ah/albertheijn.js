@@ -78,7 +78,5 @@
   observer.observe(container, { childList: true, subtree: true })
   scheduleFinish()
 
-  lgg.info(
-    '▶️ Observer started. Click "Next" as needed; after 15 s of no new items it will log the JSON.'
-  )
+  lgg.info('▶️ Observer started. Click "Next" as needed; after 15 s of no new items it will log the JSON.')
 })()

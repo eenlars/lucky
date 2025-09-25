@@ -22,9 +22,7 @@ async function demonstrateGAIAUsage() {
 
   // 2. Fetch specific instance by ID
   console.log("\n2. Fetch specific instance:")
-  const instance = await GAIALoader.fetchById(
-    "c61d22de-5f6c-4958-a7f6-5e9707bd3466"
-  )
+  const instance = await GAIALoader.fetchById("c61d22de-5f6c-4958-a7f6-5e9707bd3466")
   console.log(`Task ID: ${instance.task_id}`)
   console.log(`Question: ${instance.Question}`)
   console.log(`Level: ${instance.Level}`)
@@ -56,9 +54,7 @@ async function demonstrateGAIAUsage() {
 
   // 6. Example of using GAIA in a workflow
   console.log("\n6. Example workflow usage:")
-  const testInstance = await GAIALoader.fetchById(
-    "5d0080cb-90d7-4712-bc33-848150e917d3"
-  )
+  const testInstance = await GAIALoader.fetchById("5d0080cb-90d7-4712-bc33-848150e917d3")
   console.log(`Question: "${testInstance.Question}"`)
   console.log(`Expected answer: "${testInstance["Final answer"]}"`)
   console.log(`This would be passed to an AI agent for solving...`)

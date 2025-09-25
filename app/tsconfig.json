@@ -37,10 +37,5 @@
     ".next/types/**/*.ts",
     "src/core/utils/db/supabase/types.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "src/runtime/logging_folder",
-    "../packages/experiments/src/experiments-2/**",
-    ".next/**"
-  ]
+  "exclude": ["node_modules", "src/runtime/logging_folder", "../packages/experiments/src/experiments-2/**", ".next/**"]
 }

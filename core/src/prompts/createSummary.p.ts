@@ -23,8 +23,7 @@ ${truncater(content, 1000)}
   },
   summaryLongPromptText: (content: string, outputLength?: string): string => {
     const missingText = content.length > 2000 ? content.length - 2000 : 0
-    const missingTextMessage =
-      missingText > 0 ? `${missingText} characters removed for brevity` : ""
+    const missingTextMessage = missingText > 0 ? `${missingText} characters removed for brevity` : ""
     return `
 <task>
 imagine you are reporting to a human about data. 

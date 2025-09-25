@@ -3,10 +3,7 @@ import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta } from "../_lib/meta"
 import { getDataSet, getDatasetRecords } from "@/lib/db/dataset"
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { datasetId: string } }
-) {
+export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -37,9 +34,6 @@ export async function GET(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }

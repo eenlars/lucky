@@ -44,10 +44,7 @@ interface MemoryStoreFile extends ContextFileInfo {
  */
 export class InMemoryContextStore implements ContextStore {
   private data = new Map<string, MemoryStoreFile>()
-  private metadata = new Map<
-    string,
-    { created: string; modified: string; size: number; dataType: string }
-  >()
+  private metadata = new Map<string, { created: string; modified: string; size: number; dataType: string }>()
 
   constructor(private workflowInvocationId: string) {}
 
@@ -59,10 +56,7 @@ export class InMemoryContextStore implements ContextStore {
    * Retrieves data from the store by scope and key.
    * Runtime complexity: O(1) via Map lookup.
    */
-  async get<T>(
-    scope: "workflow" | "node",
-    key: string
-  ): Promise<T | undefined> {
+  async get<T>(scope: "workflow" | "node", key: string): Promise<T | undefined> {
     const file = this.data.get(this.makeKey(scope, key))
     // todo-typesafety: unsafe 'as' type assertion - violates CLAUDE.md "we hate as"
     return file?.data as T | undefined
@@ -80,11 +74,7 @@ export class InMemoryContextStore implements ContextStore {
    *
    * @throws May throw if summary generation fails
    */
-  async set<T>(
-    scope: "workflow" | "node",
-    key: string,
-    value: T
-  ): Promise<void> {
+  async set<T>(scope: "workflow" | "node", key: string, value: T): Promise<void> {
     const mapKey = this.makeKey(scope, key)
     const now = new Date().toISOString()
     const dataStr = JSON.stringify(value, null, 2)
@@ -119,10 +109,7 @@ export class InMemoryContextStore implements ContextStore {
     this.metadata.delete(mapKey)
   }
 
-  async getSummary(
-    scope: "workflow" | "node",
-    key: string
-  ): Promise<string | undefined> {
+  async getSummary(scope: "workflow" | "node", key: string): Promise<string | undefined> {
     const file = this.data.get(this.makeKey(scope, key))
     return file?.summary
   }

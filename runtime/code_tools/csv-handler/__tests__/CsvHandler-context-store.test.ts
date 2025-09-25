@@ -74,13 +74,11 @@ describe("CsvHandler ContextStore Integration", () => {
     await csvHandler.writeData("no-overwrite-test", data)
 
     // try to write again without overwrite flag
-    await expect(
-      csvHandler.writeData("no-overwrite-test", data)
-    ).rejects.toThrow("data already exists with key: no-overwrite-test")
+    await expect(csvHandler.writeData("no-overwrite-test", data)).rejects.toThrow(
+      "data already exists with key: no-overwrite-test"
+    )
 
     // should work with overwrite flag
-    await expect(
-      csvHandler.writeData("no-overwrite-test", data, { overwrite: true })
-    ).resolves.not.toThrow()
+    await expect(csvHandler.writeData("no-overwrite-test", data, { overwrite: true })).resolves.not.toThrow()
   })
 })

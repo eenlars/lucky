@@ -5,9 +5,7 @@ import { EvolutionGraph } from "../components/EvolutionGraph"
 export default function TestEvolutionGraphPage() {
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">
-        Testing Evolution Graph Component
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">Testing Evolution Graph Component</h1>
       <div className="space-y-8">
         <div>
           <h2 className="text-lg font-semibold mb-2">Test 1: evo_run_66fcac</h2>

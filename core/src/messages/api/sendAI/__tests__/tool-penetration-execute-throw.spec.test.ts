@@ -27,8 +27,7 @@ describe("sendAI tool mode – execute throw penetration", () => {
       messages: [
         {
           role: "user",
-          content:
-            "Call the explode tool with a reason; ensure the tool is invoked.",
+          content: "Call the explode tool with a reason; ensure the tool is invoked.",
         },
       ],
       opts: {

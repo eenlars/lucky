@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest"
-import {
-  transformLocationData,
-  type GoogleScraperBusinessExtended,
-} from "../convert"
+import { transformLocationData, type GoogleScraperBusinessExtended } from "../convert"
 
 describe("Google Scraper Data Conversion", () => {
   it("should transform Albert Heijn Google Maps data to standardized format", () => {
@@ -11,8 +8,7 @@ describe("Google Scraper Data Conversion", () => {
       storeName: "Albert Heijn",
       stars: "4,1",
       numberOfReviews: 913,
-      googleUrl:
-        "https://www.google.com/maps/place/Albert+Heijn/@52.2899!3d52.2899!4d4.6377",
+      googleUrl: "https://www.google.com/maps/place/Albert+Heijn/@52.2899!3d52.2899!4d4.6377",
       bizWebsite: "https://www.ah.nl/winkel/1253",
       address: "Adres: Händelplein 185, 2151 NN Nieuw-Vennep",
       category: "Supermarkt",
@@ -57,8 +53,7 @@ describe("Google Scraper Data Conversion", () => {
         original_data: inputAlbertHeijn,
         category: "Supermarkt",
         status: "Sluit binnenkort",
-        googleUrl:
-          "https://www.google.com/maps/place/Albert+Heijn/@52.2899!3d52.2899!4d4.6377",
+        googleUrl: "https://www.google.com/maps/place/Albert+Heijn/@52.2899!3d52.2899!4d4.6377",
         bizWebsite: "https://www.ah.nl/winkel/1253",
         stars: "4,1",
         numberOfReviews: 913,
@@ -83,33 +78,17 @@ describe("Google Scraper Data Conversion", () => {
       latitude: 52.2899,
       longitude: 4.6377,
     })
-    expect(transformedLocation.opening_times).toEqual(
-      expectedOutput.opening_times
-    )
+    expect(transformedLocation.opening_times).toEqual(expectedOutput.opening_times)
     expect(transformedLocation.owner_imgs).toEqual(expectedOutput.owner_imgs)
 
     // verify metadata
-    expect(transformedLocation.metadata.category).toBe(
-      expectedOutput.metadata.category
-    )
-    expect(transformedLocation.metadata.status).toBe(
-      expectedOutput.metadata.status
-    )
-    expect(transformedLocation.metadata.googleUrl).toBe(
-      expectedOutput.metadata.googleUrl
-    )
-    expect(transformedLocation.metadata.bizWebsite).toBe(
-      expectedOutput.metadata.bizWebsite
-    )
-    expect(transformedLocation.metadata.stars).toBe(
-      expectedOutput.metadata.stars
-    )
-    expect(transformedLocation.metadata.numberOfReviews).toBe(
-      expectedOutput.metadata.numberOfReviews
-    )
-    expect(transformedLocation.metadata.scrapedAt).toMatch(
-      /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
-    )
+    expect(transformedLocation.metadata.category).toBe(expectedOutput.metadata.category)
+    expect(transformedLocation.metadata.status).toBe(expectedOutput.metadata.status)
+    expect(transformedLocation.metadata.googleUrl).toBe(expectedOutput.metadata.googleUrl)
+    expect(transformedLocation.metadata.bizWebsite).toBe(expectedOutput.metadata.bizWebsite)
+    expect(transformedLocation.metadata.stars).toBe(expectedOutput.metadata.stars)
+    expect(transformedLocation.metadata.numberOfReviews).toBe(expectedOutput.metadata.numberOfReviews)
+    expect(transformedLocation.metadata.scrapedAt).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
     expect(transformedLocation.metadata.original_data).toEqual(inputAlbertHeijn)
   })
 

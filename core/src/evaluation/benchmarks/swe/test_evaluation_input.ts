@@ -47,10 +47,7 @@ async function downloadSWEBenchDataset(): Promise<void> {
     await mkdir(downloadsDir, { recursive: true })
 
     // Try to download from different repository names
-    const possibleRepos = [
-      "princeton-nlp/SWE-bench",
-      "datasets/princeton-nlp/SWE-bench",
-    ]
+    const possibleRepos = ["princeton-nlp/SWE-bench", "datasets/princeton-nlp/SWE-bench"]
 
     for (const repoId of possibleRepos) {
       try {
@@ -69,10 +66,7 @@ async function downloadSWEBenchDataset(): Promise<void> {
 
         // Find a suitable dataset file
         const datasetFiles = fileList.filter(
-          (f) =>
-            f.endsWith(".jsonl") ||
-            f.endsWith(".json") ||
-            f.endsWith(".parquet")
+          (f) => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet")
         )
 
         if (datasetFiles.length > 0) {
@@ -91,19 +85,14 @@ async function downloadSWEBenchDataset(): Promise<void> {
           console.log(`📥 Downloading ${filename}...`)
 
           const cleanRepoId = repoId.replace("datasets/", "")
-          const response = await fetch(
-            `https://huggingface.co/datasets/${cleanRepoId}/resolve/main/${filename}`,
-            {
-              headers: {
-                Authorization: `Bearer ${HF_TOKEN}`,
-              },
-            }
-          )
+          const response = await fetch(`https://huggingface.co/datasets/${cleanRepoId}/resolve/main/${filename}`, {
+            headers: {
+              Authorization: `Bearer ${HF_TOKEN}`,
+            },
+          })
 
           if (!response.ok) {
-            throw new Error(
-              `Failed to download: ${response.status} ${response.statusText}`
-            )
+            throw new Error(`Failed to download: ${response.status} ${response.statusText}`)
           }
 
           const fileBuffer = await response.arrayBuffer()
@@ -113,17 +102,12 @@ async function downloadSWEBenchDataset(): Promise<void> {
           return
         }
       } catch (error) {
-        console.log(
-          `Failed to access ${repoId}:`,
-          error instanceof Error ? error.message : String(error)
-        )
+        console.log(`Failed to access ${repoId}:`, error instanceof Error ? error.message : String(error))
         continue
       }
     }
 
-    console.log(
-      "⚠️  Could not download SWE-bench dataset, but tests can continue with API access"
-    )
+    console.log("⚠️  Could not download SWE-bench dataset, but tests can continue with API access")
   } catch (error) {
     console.log("⚠️  Dataset download failed:", error)
   }
@@ -195,8 +179,7 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
       messages: [
         {
           role: "system",
-          content:
-            "You are an expert code reviewer and software engineering evaluator.",
+          content: "You are an expert code reviewer and software engineering evaluator.",
         },
         { role: "user", content: validationPrompt },
       ],
@@ -213,39 +196,16 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
 
     // Enhanced validation scoring based on structured content analysis
     const validationResults = {
-      hasCodeChanges: /```|diff|patch|\+\+\+|---|\+[^+]|-[^-]|@@ /.test(
-        aiSolution.solution
-      ),
+      hasCodeChanges: /```|diff|patch|\+\+\+|---|\+[^+]|-[^-]|@@ /.test(aiSolution.solution),
       addressesProblem: aiSolution.analysis
         .toLowerCase()
-        .includes(
-          instance.problem_statement
-            .toLowerCase()
-            .split(" ")
-            .slice(0, 5)
-            .join(" ")
-            .toLowerCase()
-        ),
-      formatQuality:
-        aiSolution.solution.length > 100 &&
-        aiSolution.implementationSteps.length > 0,
-      testAwareness: /test|spec|assert|expect|should|verify/i.test(
-        aiSolution.testingConsiderations
-      ),
-      groundTruthSimilarity: calculateSimilarity(
-        aiSolution.solution,
-        instance.patch
-      ),
+        .includes(instance.problem_statement.toLowerCase().split(" ").slice(0, 5).join(" ").toLowerCase()),
+      formatQuality: aiSolution.solution.length > 100 && aiSolution.implementationSteps.length > 0,
+      testAwareness: /test|spec|assert|expect|should|verify/i.test(aiSolution.testingConsiderations),
+      groundTruthSimilarity: calculateSimilarity(aiSolution.solution, instance.patch),
       meetsEvaluationGoal: aiSolution.analysis
         .toLowerCase()
-        .includes(
-          evaluationInput.goal
-            .toLowerCase()
-            .split(" ")
-            .slice(0, 3)
-            .join(" ")
-            .toLowerCase()
-        ),
+        .includes(evaluationInput.goal.toLowerCase().split(" ").slice(0, 3).join(" ").toLowerCase()),
     }
 
     // Calculate overall score with enhanced scoring based on structured response
@@ -259,31 +219,18 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
       confidence: Math.min(aiSolution.confidence, 10), // Use AI's confidence as additional factor
     }
 
-    const overallScore =
-      Object.values(scores).reduce((a, b) => a + b, 0) /
-      Object.keys(scores).length
+    const overallScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length
 
     console.log("✅ AI Validation Results:")
-    console.log(
-      "💰 Validation Cost:",
-      `$${response.usdCost?.toFixed(4) || "0.0000"}`
-    )
+    console.log("💰 Validation Cost:", `$${response.usdCost?.toFixed(4) || "0.0000"}`)
     console.log("\n📊 Validation Scores:")
-    console.log(
-      `- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`
-    )
+    console.log(`- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`)
     console.log(
       `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`
     )
-    console.log(
-      `- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`
-    )
-    console.log(
-      `- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`
-    )
-    console.log(
-      `- Ground Truth Similarity: ${scores.groundTruthSimilarity.toFixed(1)}/10`
-    )
+    console.log(`- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`)
+    console.log(`- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`)
+    console.log(`- Ground Truth Similarity: ${scores.groundTruthSimilarity.toFixed(1)}/10`)
     console.log(
       `- Meets Evaluation Goal: ${scores.meetsEvaluationGoal}/10 (${validationResults.meetsEvaluationGoal ? "✅" : "❌"})`
     )
@@ -327,10 +274,7 @@ interface AISolutionResponse {
   implementationSteps: string[]
 }
 
-async function solveWithAI(
-  workflowInput: string,
-  expectedOutput: string
-): Promise<any> {
+async function solveWithAI(workflowInput: string, expectedOutput: string): Promise<any> {
   console.log("\n🤖 Solving with AI...")
   console.log("=".repeat(40))
 
@@ -356,26 +300,12 @@ Focus on:
 Be thorough in your analysis and provide a working solution.`
 
   const solutionSchema = z.object({
-    analysis: z
-      .string()
-      .describe("Detailed analysis of the problem and root cause"),
-    solution: z
-      .string()
-      .describe("The actual code solution/patch that fixes the issue"),
-    reasoning: z
-      .string()
-      .describe("Step-by-step reasoning behind your solution approach"),
-    testingConsiderations: z
-      .string()
-      .describe("Relevant tests and testing considerations"),
-    confidence: z
-      .number()
-      .min(0)
-      .max(10)
-      .describe("Confidence level from 0-10 in your solution"),
-    implementationSteps: z
-      .array(z.string())
-      .describe("Step-by-step implementation instructions"),
+    analysis: z.string().describe("Detailed analysis of the problem and root cause"),
+    solution: z.string().describe("The actual code solution/patch that fixes the issue"),
+    reasoning: z.string().describe("Step-by-step reasoning behind your solution approach"),
+    testingConsiderations: z.string().describe("Relevant tests and testing considerations"),
+    confidence: z.number().min(0).max(10).describe("Confidence level from 0-10 in your solution"),
+    implementationSteps: z.array(z.string()).describe("Step-by-step implementation instructions"),
   })
 
   try {
@@ -431,9 +361,7 @@ Be thorough in your analysis and provide a working solution.`
   }
 }
 
-async function testSWEBenchEvaluationInput(
-  evaluationInput: EvaluationInput
-): Promise<{
+async function testSWEBenchEvaluationInput(evaluationInput: EvaluationInput): Promise<{
   evaluationInput: EvaluationInput
   workflowCases: any[]
   aiSolutions: any[]
@@ -466,43 +394,27 @@ async function testSWEBenchEvaluationInput(
     for (let i = 0; i < workflowCases.length; i++) {
       const workflowCase = workflowCases[i]
 
-      console.log(
-        `\n📝 Processing workflow case ${i + 1}/${workflowCases.length}`
-      )
+      console.log(`\n📝 Processing workflow case ${i + 1}/${workflowCases.length}`)
       console.log("Input length:", workflowCase.workflowInput.length)
-      console.log(
-        "Expected output length:",
-        workflowCase.workflowOutput.output.length
-      )
+      console.log("Expected output length:", workflowCase.workflowOutput.output.length)
 
       // Step 3: Solve with AI
-      const aiResponse = await solveWithAI(
-        workflowCase.workflowInput,
-        workflowCase.workflowOutput.output
-      )
+      const aiResponse = await solveWithAI(workflowCase.workflowInput, workflowCase.workflowOutput.output)
       aiSolutions.push(aiResponse)
       totalCost += aiResponse.usdCost || 0
 
       // Step 4: Validate if we have SWE-bench data
       if (evaluationInput.type === "swebench") {
         const swebenchId = (evaluationInput as any).swebenchId
-        const instance = (await SWEBenchLoader.fetchById(
-          swebenchId
-        )) as SWEBenchInstanceFull
-        const validation = await validateAISolution(
-          aiResponse.data as AISolutionResponse,
-          instance,
-          evaluationInput
-        )
+        const instance = (await SWEBenchLoader.fetchById(swebenchId)) as SWEBenchInstanceFull
+        const validation = await validateAISolution(aiResponse.data as AISolutionResponse, instance, evaluationInput)
         validations.push(validation)
         totalCost += validation.cost
 
         // Step 5: Show ground truth comparison
         console.log("\n🎯 Ground Truth Solution:")
         console.log("-".repeat(50))
-        console.log(
-          workflowCase.workflowOutput.output.substring(0, 500) + "..."
-        )
+        console.log(workflowCase.workflowOutput.output.substring(0, 500) + "...")
 
         if (instance.test_patch) {
           console.log("\n🧪 Ground Truth Test Patch:")
@@ -560,9 +472,7 @@ async function runEvaluationInputTests() {
     await downloadSWEBenchDataset()
 
     // Step 2: Test with sample evaluation inputs
-    console.log(
-      `\n🧪 Testing ${SAMPLE_EVALUATION_INPUTS.length} sample evaluation inputs...`
-    )
+    console.log(`\n🧪 Testing ${SAMPLE_EVALUATION_INPUTS.length} sample evaluation inputs...`)
 
     const results = []
     let totalCost = 0
@@ -571,9 +481,7 @@ async function runEvaluationInputTests() {
       const evaluationInput = SAMPLE_EVALUATION_INPUTS[i]
 
       console.log(`\n${"=".repeat(70)}`)
-      console.log(
-        `📋 Test ${i + 1}/${SAMPLE_EVALUATION_INPUTS.length}: ${(evaluationInput as any).swebenchId}`
-      )
+      console.log(`📋 Test ${i + 1}/${SAMPLE_EVALUATION_INPUTS.length}: ${(evaluationInput as any).swebenchId}`)
       console.log(`${"=".repeat(70)}`)
 
       const result = await testSWEBenchEvaluationInput(evaluationInput)
@@ -585,10 +493,7 @@ async function runEvaluationInputTests() {
         const validation = result.validations[0]
         console.log(`\n📊 Test ${i + 1} Summary:`)
         console.log("Instance ID:", (evaluationInput as any).swebenchId)
-        console.log(
-          "Validation Score:",
-          `${validation.overallScore.toFixed(1)}/10`
-        )
+        console.log("Validation Score:", `${validation.overallScore.toFixed(1)}/10`)
         console.log("Cost:", `$${result.totalCost.toFixed(4)}`)
       }
     }
@@ -607,11 +512,7 @@ async function runEvaluationInputTests() {
       }
     })
 
-    const avgScore =
-      results.reduce(
-        (sum, r) => sum + (r.validations[0]?.overallScore || 0),
-        0
-      ) / results.length
+    const avgScore = results.reduce((sum, r) => sum + (r.validations[0]?.overallScore || 0), 0) / results.length
     console.log(`\nAverage Score: ${avgScore.toFixed(1)}/10`)
     console.log(`Total Cost: $${totalCost.toFixed(4)}`)
     console.log(`\n✅ All evaluation input tests completed successfully!`)

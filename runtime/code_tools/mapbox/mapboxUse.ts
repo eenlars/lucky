@@ -31,16 +31,8 @@ const DEFAULTS = {
  * core mapbox geocoding function that can be used locally
  * splits the functionality from the tool wrapper
  */
-export async function geocodeLocation(
-  options: MapboxGeocodeOptions
-): Promise<RS<LocationData>> {
-  const {
-    query,
-    country = DEFAULTS.country,
-    limit = DEFAULTS.limit,
-    types = DEFAULTS.types,
-    place,
-  } = options
+export async function geocodeLocation(options: MapboxGeocodeOptions): Promise<RS<LocationData>> {
+  const { query, country = DEFAULTS.country, limit = DEFAULTS.limit, types = DEFAULTS.types, place } = options
 
   if (!query) {
     return R.error("search_string is null: " + query, 0)

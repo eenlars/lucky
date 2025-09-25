@@ -22,9 +22,7 @@ export async function retrieveNodeInvocationSummaries(
 ): Promise<NodeInvocationSummary[]> {
   let query = supabase
     .from("NodeInvocation")
-    .select(
-      "node_invocation_id, node_id, start_time, end_time, summary, usd_cost, status"
-    )
+    .select("node_invocation_id, node_id, start_time, end_time, summary, usd_cost, status")
     .eq("wf_invocation_id", workflowInvocationId)
 
   if (nodeId) {

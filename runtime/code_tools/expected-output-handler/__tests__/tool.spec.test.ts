@@ -9,11 +9,7 @@ describe("expectedOutputHandler integration tests", () => {
     const recipeSchema = z.object({
       name: z.string(),
       servings: z.number().int().positive(),
-      prepTime: z
-        .number()
-        .int()
-        .positive()
-        .describe("Preparation time in minutes"),
+      prepTime: z.number().int().positive().describe("Preparation time in minutes"),
       ingredients: z
         .array(
           z.object({
@@ -110,8 +106,7 @@ describe("expectedOutputHandler integration tests", () => {
     }
 
     const params = {
-      dataToTransform:
-        "Just some random text that can't possibly match the strict schema requirements",
+      dataToTransform: "Just some random text that can't possibly match the strict schema requirements",
       strictness: "strict" as const,
     }
 
@@ -130,10 +125,7 @@ describe("expectedOutputHandler integration tests", () => {
 
     if (result.data.success && result.data.output) {
       // If it managed to transform, check if it's valid or a failure response
-      if (
-        "success" in result.data.output &&
-        result.data.output.success === false
-      ) {
+      if ("success" in result.data.output && result.data.output.success === false) {
         expect(result.data.output).toHaveProperty("reason")
         expect(typeof result.data.output.reason).toBe("string")
       } else {

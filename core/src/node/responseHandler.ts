@@ -41,15 +41,9 @@ export async function handleSuccess(
 
   // Debug logging for tool calls
   if (response.agentSteps) {
-    lgg.onlyIf(
-      CONFIG.logging.override.Tools,
-      `[handleSuccess] Tool calls found: ${response.agentSteps.length} outputs`
-    )
+    lgg.onlyIf(CONFIG.logging.override.Tools, `[handleSuccess] Tool calls found: ${response.agentSteps.length} outputs`)
   } else {
-    lgg.onlyIf(
-      CONFIG.logging.override.Tools,
-      `[handleSuccess] No tool calls found for response type: ${response.type}`
-    )
+    lgg.onlyIf(CONFIG.logging.override.Tools, `[handleSuccess] No tool calls found for response type: ${response.type}`)
   }
 
   // Collect files used by this node invocation
@@ -61,9 +55,7 @@ export async function handleSuccess(
   // Compute full output string for validation and storage
   const finalNodeInvocationOutput = getResponseContent(response) ?? ""
   // Ensure we always have non-empty text to hand off to the next node
-  const incomingPrompt = extractTextFromPayload(
-    context.workflowMessageIncoming.payload
-  )
+  const incomingPrompt = extractTextFromPayload(context.workflowMessageIncoming.payload)
   const baseTextForNext =
     (finalNodeInvocationOutput && finalNodeInvocationOutput.trim().length > 0
       ? finalNodeInvocationOutput
@@ -72,13 +64,12 @@ export async function handleSuccess(
         : nodeConfig.systemPrompt) || ""
 
   // Validate output before handoff decision
-  const { shouldProceed, validationError, validationCost } =
-    await validateAndDecide({
-      nodeOutput: finalNodeInvocationOutput,
-      workflowMessage: context.workflowMessageIncoming,
-      systemPrompt: nodeConfig.systemPrompt,
-      nodeId: nodeConfig.nodeId,
-    })
+  const { shouldProceed, validationError, validationCost } = await validateAndDecide({
+    nodeOutput: finalNodeInvocationOutput,
+    workflowMessage: context.workflowMessageIncoming,
+    systemPrompt: nodeConfig.systemPrompt,
+    nodeId: nodeConfig.nodeId,
+  })
 
   // Handle validation blocking
   // todo-errorhandling: validation errors not properly propagated up call stack
@@ -87,9 +78,7 @@ export async function handleSuccess(
       context,
       errorMessage: validationError,
       summary: "validation error",
-      agentSteps: response.agentSteps ?? [
-        { type: "error", return: validationError },
-      ],
+      agentSteps: response.agentSteps ?? [{ type: "error", return: validationError }],
       debugPrompts,
     })
   }
@@ -129,17 +118,12 @@ export async function handleSuccess(
     // Fallback: existing selection logic
     // Check if this is a node that should send to multiple targets (parallel processing)
     const isParallelNode =
-      nodeConfig.handOffType === "parallel" &&
-      nodeConfig.handOffs.length > 1 &&
-      !nodeConfig.handOffs.includes("end")
+      nodeConfig.handOffType === "parallel" && nodeConfig.handOffs.length > 1 && !nodeConfig.handOffs.includes("end")
 
     if (isParallelNode) {
       nextIds = nodeConfig.handOffs
       replyMessage = {
-        kind:
-          CONFIG.coordinationType === "sequential"
-            ? "sequential"
-            : "delegation",
+        kind: CONFIG.coordinationType === "sequential" ? "sequential" : "delegation",
         prompt: baseTextForNext,
         context: "",
       }
@@ -153,10 +137,7 @@ export async function handleSuccess(
         systemPrompt: nodeConfig.systemPrompt,
         workflowMessage: context.workflowMessageIncoming,
         handOffs: nodeConfig.handOffs,
-        content:
-          CONFIG.workflow.handoffContent === "full"
-            ? baseTextForNext
-            : truncater(baseTextForNext, 500),
+        content: CONFIG.workflow.handoffContent === "full" ? baseTextForNext : truncater(baseTextForNext, 500),
         agentSteps: agentSteps ?? undefined,
         workflowConfig: context.workflowConfig,
       })
@@ -167,8 +148,7 @@ export async function handleSuccess(
     }
   }
 
-  const totalUsdCost =
-    response.cost + validationCost + handoffCost + (extraCost ?? 0)
+  const totalUsdCost = response.cost + validationCost + handoffCost + (extraCost ?? 0)
 
   // save to db
   let nodeInvocationId: string
@@ -201,9 +181,7 @@ export async function handleSuccess(
     replyMessage,
     outgoingMessages,
     summaryWithInfo: formatSummary(response.summary ?? "", nodeConfig.nodeId),
-    agentSteps: response.agentSteps ?? [
-      { type: "text", return: finalNodeInvocationOutput },
-    ],
+    agentSteps: response.agentSteps ?? [{ type: "text", return: finalNodeInvocationOutput }],
     updatedMemory: updatedMemory ?? undefined,
     debugPrompts,
   }

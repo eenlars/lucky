@@ -10,12 +10,7 @@ interface ActionBarProps {
   isLoading: boolean
 }
 
-export default function ActionBar({
-  onSave,
-  onRun,
-  isDirty,
-  isLoading,
-}: ActionBarProps) {
+export default function ActionBar({ onSave, onRun, isDirty, isLoading }: ActionBarProps) {
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [commitMessage, setCommitMessage] = useState("")
 
@@ -39,11 +34,7 @@ export default function ActionBar({
   return (
     <>
       <div className="flex gap-2">
-        <Button
-          onClick={handleSaveClick}
-          disabled={!isDirty || isLoading}
-          data-save-button
-        >
+        <Button onClick={handleSaveClick} disabled={!isDirty || isLoading} data-save-button>
           {isLoading ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -54,11 +45,7 @@ export default function ActionBar({
           )}
         </Button>
 
-        <Button
-          onClick={onRun}
-          disabled={isLoading}
-          className="bg-green-600 hover:bg-green-700"
-        >
+        <Button onClick={onRun} disabled={isLoading} className="bg-green-600 hover:bg-green-700">
           {isLoading ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -74,15 +61,10 @@ export default function ActionBar({
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">
-              Save Workflow Version
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Save Workflow Version</h3>
 
             <div className="mb-4">
-              <label
-                htmlFor="commitMessage"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="commitMessage" className="block text-sm font-medium text-gray-700 mb-2">
                 Commit Message
               </label>
               <textarea
@@ -99,10 +81,7 @@ export default function ActionBar({
               <Button onClick={handleSaveCancel} variant="ghost">
                 Cancel
               </Button>
-              <Button
-                onClick={handleSaveConfirm}
-                disabled={!commitMessage.trim()}
-              >
+              <Button onClick={handleSaveConfirm} disabled={!commitMessage.trim()}>
                 Save
               </Button>
             </div>

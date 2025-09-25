@@ -24,10 +24,7 @@ const defaultOptions = {
 }
 
 //toString method for a workflow. has options to include tool explanations, adjacency list, and agents
-export function workflowToString(
-  workflow: Workflow,
-  options: SimplifyOptions
-): string {
+export function workflowToString(workflow: Workflow, options: SimplifyOptions): string {
   const {
     includeToolExplanations = defaultOptions.includeToolExplanations,
     includeAdjacencyList = defaultOptions.includeAdjacencyList,
@@ -47,20 +44,15 @@ export function workflowToString(
         ])
     )
   }
-  if (includeAdjacencyList)
-    totalString += workflowToAdjacencyList(workflow.getConfig())
+  if (includeAdjacencyList) totalString += workflowToAdjacencyList(workflow.getConfig())
 
-  if (includeAgents)
-    totalString += explainAgents(workflow.getConfig().nodes, easyModelNames)
+  if (includeAgents) totalString += explainAgents(workflow.getConfig().nodes, easyModelNames)
 
   if (includeMemory) totalString += JSON.stringify(workflow.getMemory())
   return totalString
 }
 
-export function workflowToStringFromConfig(
-  config: WorkflowConfig,
-  options: SimplifyOptions
-): string {
+export function workflowToStringFromConfig(config: WorkflowConfig, options: SimplifyOptions): string {
   const {
     includeToolExplanations = defaultOptions.includeToolExplanations,
     includeAdjacencyList = defaultOptions.includeAdjacencyList,

@@ -2,10 +2,7 @@ import { openai } from "@ai-sdk/openai"
 import { groqProvider } from "@core/utils/clients/groq/groqClient"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import type { ModelName } from "@core/utils/spending/models.types"
-import {
-  CURRENT_PROVIDER,
-  type LuckyProvider,
-} from "@core/utils/spending/provider"
+import { CURRENT_PROVIDER, type LuckyProvider } from "@core/utils/spending/provider"
 import { LanguageModel } from "ai"
 
 /**
@@ -28,10 +25,7 @@ export function getLanguageModel(modelName: ModelName): LanguageModel {
  * - OpenAI: `{ reasoningEffort: 'medium' }`
  * - Groq: no-op (SDK does not expose reasoning controls)
  */
-export function getLanguageModelWithReasoning(
-  modelName: ModelName,
-  opts?: { reasoning?: boolean }
-): LanguageModel {
+export function getLanguageModelWithReasoning(modelName: ModelName, opts?: { reasoning?: boolean }): LanguageModel {
   const provider = CURRENT_PROVIDER as LuckyProvider
   const wantsReasoning = Boolean(opts?.reasoning)
 
@@ -41,8 +35,7 @@ export function getLanguageModelWithReasoning(
     const modelStr = String(modelName).toLowerCase()
     const isAnthropic = modelStr.startsWith("anthropic/")
     const isGeminiThinking =
-      modelStr.includes("gemini") &&
-      (modelStr.includes("thinking") || modelStr.includes("think"))
+      modelStr.includes("gemini") && (modelStr.includes("thinking") || modelStr.includes("think"))
 
     if (isAnthropic || isGeminiThinking) {
       return openrouter(modelName, { reasoning: { max_tokens: 2048 } as any })

@@ -96,10 +96,7 @@ import json from "./companyname.json" assert { type: "json" }
 ```javascript
 const transformed = transformLocationData(json)
 // save to file
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/companyname.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/companyname.json", JSON.stringify(transformed, null, 2))
 ```
 
 ## Key Considerations

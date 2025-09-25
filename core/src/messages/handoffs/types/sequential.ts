@@ -1,9 +1,5 @@
 import type { HandoffResult } from "@core/messages/handoffs/handOffUtils"
-import {
-  buildResultHandoff,
-  callModelHandoff,
-  handoffPrompts,
-} from "@core/messages/handoffs/handOffUtils"
+import { buildResultHandoff, callModelHandoff, handoffPrompts } from "@core/messages/handoffs/handOffUtils"
 import type { ChooseHandoffOpts } from "@core/messages/handoffs/main"
 import type { Payload } from "@core/messages/MessagePayload"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
@@ -85,15 +81,10 @@ export async function chooseHandoffSequential({
           .join("\n")}`
       : ""
 
-  const contentContext = content
-    ? `\n\nContent:\n${JSON.stringify(content)}`
-    : ""
+  const contentContext = content ? `\n\nContent:\n${JSON.stringify(content)}` : ""
 
   const sanitizedHandOffs = handOffs
-  const handOffsContext =
-    sanitizedHandOffs.length > 0
-      ? `\n\nAvailable handoffs: ${sanitizedHandOffs.join(", ")}`
-      : ""
+  const handOffsContext = sanitizedHandOffs.length > 0 ? `\n\nAvailable handoffs: ${sanitizedHandOffs.join(", ")}` : ""
 
   const prompt = `
       #choosing a handoff
