@@ -1,7 +1,7 @@
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@core/utils/types"
 import { R } from "@core/utils/types"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -9,7 +9,7 @@ import { z } from "zod"
 // Consider refactoring to use dependency injection
 // Set up mocks BEFORE importing modules under test
 type GenObjectMockFn = (args: {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   schema: z.ZodSchema
   model?: ModelName
   opts?: { retries?: number; repair?: boolean }

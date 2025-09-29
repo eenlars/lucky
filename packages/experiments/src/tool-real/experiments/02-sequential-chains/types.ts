@@ -2,7 +2,7 @@
  * Type definitions for sequential tool execution experiments
  */
 
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 
 export interface ToolExecution {
   toolName: string
@@ -13,7 +13,7 @@ export interface ToolExecution {
 }
 
 export interface SequentialRunResult {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   toolExecutions: ToolExecution[]
   finalResponse: string
   success: boolean

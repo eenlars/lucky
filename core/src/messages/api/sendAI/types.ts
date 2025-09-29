@@ -17,7 +17,7 @@
 // TODO: implement request/response serialization types
 
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { CoreMessage, GenerateTextResult, LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
+import type { GenerateTextResult, LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import type { Schema, ZodTypeAny } from "zod"
 
 /**
@@ -39,7 +39,7 @@ export type TResponse<T> =
       summary?: string
       usdCost: number
       error: null
-      debug_input: CoreMessage[]
+      debug_input: ModelMessage[]
       debug_output: any
     }
   | {
@@ -48,7 +48,7 @@ export type TResponse<T> =
       summary?: string
       usdCost?: number
       error: string
-      debug_input: CoreMessage[]
+      debug_input: ModelMessage[]
       debug_output: any
     }
 
@@ -88,7 +88,7 @@ export type PreparedStepsFunction<T extends ToolSet = ToolSet, M extends Languag
 // TODO: implement request priority levels
 // TODO: add request correlation tracking
 interface RequestBase {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   debug?: boolean
   model?: ModelName
   retries?: number

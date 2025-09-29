@@ -2,7 +2,7 @@ import { contextFilePrompt, type WorkflowFiles } from "@core/tools/context/conte
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import chalk from "chalk"
 import { llmify } from "../../utils/common/llmify"
 
@@ -33,7 +33,7 @@ export interface BuildSimpleMessageContext extends WorkflowFiles {
 /**
  * Constructs a properly formatted message array for AI model consumption
  * @param context - Configuration object containing message parameters
- * @returns Array of CoreMessage objects ready for AI processing
+ * @returns Array of ModelMessage objects ready for AI processing
  */
 export function buildSimpleMessage({
   message,
@@ -46,7 +46,7 @@ export function buildSimpleMessage({
   evalExplanation,
   outputType,
   debug = true,
-}: BuildSimpleMessageContext): CoreMessage[] {
+}: BuildSimpleMessageContext): ModelMessage[] {
   // validate input
   if (!message) {
     throw new Error(
@@ -62,7 +62,7 @@ export function buildSimpleMessage({
     content.push("workflow_invocation_id:test-invocation-123")
   }
 
-  let sdkMessages: CoreMessage[] = [
+  let sdkMessages: ModelMessage[] = [
     {
       role: "user",
       content: content.join("\n"),

@@ -4,7 +4,7 @@ import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { agentSystemPrompt } from "@core/prompts/standardPrompt"
 import type { WorkflowFiles } from "@core/tools/context/contextStore.types"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 
 /**
  * Parameters for composing a complete message set for model consumption.
@@ -33,7 +33,7 @@ export function buildMessages({
   evalExplanation,
   outputType,
   mainWorkflowGoal,
-}: BuildMessagesContext): CoreMessage[] {
+}: BuildMessagesContext): ModelMessage[] {
   const { payload } = workflowMessageIncoming
 
   // Shared params for every buildSimpleMessage call

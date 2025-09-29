@@ -1,15 +1,15 @@
-import { ClerkProvider } from "@clerk/nextjs"
-import { auth } from "@clerk/nextjs/server"
 import { IntegratedAside } from "@/app/components/aside"
 import MainContent from "@/components/MainContent"
+import { SidebarProvider } from "@/contexts/SidebarContext"
 import { AppStoreProvider } from "@/react-flow-visualization/store"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
+import { ClerkProvider } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import { ColorMode } from "@xyflow/react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import NextTopLoader from "nextjs-toploader"
 import { Toaster } from "sonner"
-import { SidebarProvider } from "@/contexts/SidebarContext"
 
 import "./globals.css"
 

@@ -1,10 +1,10 @@
 import { AgentDescriptionsWithToolsSchema } from "@core/node/schemas/agentWithTools"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import z from "zod"
 
 export const WorkflowRepairPrompts = {
-  repairWorkflowPrompt: (config: WorkflowConfig, verificationSummary: string): CoreMessage[] => {
+  repairWorkflowPrompt: (config: WorkflowConfig, verificationSummary: string): ModelMessage[] => {
     return [
       {
         role: "user",

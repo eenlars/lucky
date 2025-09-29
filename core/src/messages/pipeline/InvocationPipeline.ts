@@ -11,7 +11,6 @@ import {
   type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
 // @sdk-import - marker for easy removal when ejecting SDK
-import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
@@ -22,11 +21,12 @@ import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"
 import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
+import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import { isNir } from "@core/utils/common/isNir"
 import { JSONN } from "@lucky/shared"
 import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
-import type { CoreMessage, GenerateTextResult, ToolChoice, ToolSet } from "ai"
+import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
 const maxRounds = CONFIG.tools.experimentalMultiStepLoopMaxRounds
@@ -70,7 +70,7 @@ const verbose = CONFIG.logging.override.InvocationPipeline
  */
 export class InvocationPipeline {
   /* ------------------------------- state --------------------------------- */
-  private sdkMessages: CoreMessage[] = []
+  private sdkMessages: ModelMessage[] = []
   private tools: ToolSet = {}
   private toolChoice: ToolChoice<ToolSet> | null = null
 

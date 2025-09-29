@@ -3,7 +3,7 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { CoreMessage, ToolSet } from "ai"
+import type { ModelMessage, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../input.types"
 
 /**
@@ -76,8 +76,8 @@ export const toolUsageToString = (
     .join("\n")
 }
 
-export const prompt = (content: string): CoreMessage[] => {
-  const messages: CoreMessage[] = [
+export const prompt = (content: string): ModelMessage[] => {
+  const messages: ModelMessage[] = [
     {
       role: "user",
       content,
@@ -85,7 +85,7 @@ export const prompt = (content: string): CoreMessage[] => {
   ]
   return messages
 }
-export const system = (content: string): CoreMessage[] => {
+export const system = (content: string): ModelMessage[] => {
   return [
     {
       role: "system",

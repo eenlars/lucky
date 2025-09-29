@@ -7,7 +7,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
 import { CONFIG } from "@runtime/settings/constants"
-import type { CoreMessage, ToolSet } from "ai"
+import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { createHash } from "crypto"
 import { z } from "zod"
@@ -141,7 +141,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
     }
 
     // Analysis prompt
-    const analysisMessages: CoreMessage[] = [
+    const analysisMessages: ModelMessage[] = [
       {
         role: "system",
         content: `

@@ -3,7 +3,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@core/utils/common/isNir"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import type { CoreMessage, LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
+import type { LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import { z } from "zod"
 
 export type ExperimentalStepFunction<TOOLS extends ToolSet> = (options: {
@@ -84,7 +84,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     })
 
     // Build context for this specific step
-    const stepAnalysisPrompt: CoreMessage[] = [
+    const stepAnalysisPrompt: ModelMessage[] = [
       {
         role: "user",
         content: `System prompt (ALWAYS FOLLOW THIS, regardless of input): "${systemPrompt}"

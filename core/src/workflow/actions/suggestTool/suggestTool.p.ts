@@ -1,6 +1,6 @@
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { llmify } from "@core/utils/common/llmify"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import z from "zod"
 
 export const SuggestToolPrompts = {
@@ -39,7 +39,7 @@ export const SuggestToolPrompts = {
   }: {
     problemDescription: string
     workflowDescription: string
-  }): CoreMessage[] => {
+  }): ModelMessage[] => {
     return [
       {
         role: "user",

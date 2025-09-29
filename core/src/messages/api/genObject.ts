@@ -1,4 +1,4 @@
-import { type CoreMessage } from "ai"
+import { type ModelMessage } from "ai"
 import { z } from "zod"
 
 import { repairAIRequest } from "@core/messages/api/repairAIRequest"
@@ -26,7 +26,7 @@ export const genObject = async <T extends z.ZodSchema>({
   model,
   opts = {},
 }: {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   schema: T
   model?: ModelName
   opts?: {
@@ -43,7 +43,7 @@ export const genObject = async <T extends z.ZodSchema>({
   // the summaries tend to get very generalized. therefore we do:
   // important: this helps to keep the data structure consistent.
   // we use two types, because otherwise we get lots of errors. it seems stupid, but it works.
-  const systemMessage: CoreMessage = {
+  const systemMessage: ModelMessage = {
     role: "system",
     content: `You are an AI assistant that strictly returns JSON data. Your response MUST be a single, valid JSON object enclosed in <json> and </json> tags.
 Do NOT include any explanatory text, markdown, or any characters outside of the JSON object itself.

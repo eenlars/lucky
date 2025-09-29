@@ -5,7 +5,7 @@ import { R, type RS } from "@core/utils/types"
 import { JSONN } from "@lucky/shared"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import { z } from "zod"
 
 // the response is already malformed, but we want to try to repair it
@@ -15,7 +15,7 @@ export const repairAIRequest = async <T extends z.ZodTypeAny>(response: string, 
       `⚠️  [repairAIRequest] we need to repair this response: ${truncater(JSON.stringify(response, null, 2), 500)}`
     )
   }
-  const messages: CoreMessage[] = [
+  const messages: ModelMessage[] = [
     {
       role: "system",
       content: `You are a helpful assistant that can repair malformed JSON responses. 

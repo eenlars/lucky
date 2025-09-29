@@ -1,4 +1,4 @@
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 
 export type NonEmpty<S extends string> = S extends "" ? never : S
 
@@ -24,7 +24,7 @@ export interface PromptBuilderOptions {
   }
 }
 
-export type PromptMessage = readonly [CoreMessage]
+export type PromptMessage = readonly [ModelMessage]
 
 export type PromptBuilder = PromptMessage & {
   limitations(limitation: string | undefined | null): PromptBuilder

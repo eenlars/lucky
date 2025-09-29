@@ -5,7 +5,7 @@ import { explainTools } from "@core/tools/any/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
-import type { CoreMessage, ToolSet } from "ai"
+import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { z } from "zod"
 
@@ -51,7 +51,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
   const agentStepsString = toolUsageToString(agentSteps, 1000)
 
   // Analysis prompt
-  const analysisMessages: CoreMessage[] = [
+  const analysisMessages: ModelMessage[] = [
     {
       role: "system",
       content: `
