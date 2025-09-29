@@ -1,20 +1,14 @@
 import { isNir } from "@core/utils/common/isNir"
 
 export const Errors = {
-  workflowInvocationIdNotSet:
-    "Workflow invocation ID is not set, probably you have never run the system.",
+  workflowInvocationIdNotSet: "Workflow invocation ID is not set, probably you have never run the system.",
   entryNodeIdNotSet: "Entry node ID is not set",
-  noActiveRunId:
-    "No active run ID available - ensure createRun() was called first",
-  noCurrentGenerationId:
-    "No current generation ID available - ensure createGeneration() was called first",
+  noActiveRunId: "No active run ID available - ensure createRun() was called first",
+  noCurrentGenerationId: "No current generation ID available - ensure createGeneration() was called first",
 }
 
 // also checks empty arrays, objects, etc. (only empty stuff. a false boolean is not empty.)
-export function guard<T>(
-  value: T,
-  message: string
-): asserts value is NonNullable<T> {
+export function guard<T>(value: T, message: string): asserts value is NonNullable<T> {
   if (isNir(value)) throw new Error(message)
 }
 
@@ -31,10 +25,7 @@ export function ensure<T>(value: T | null | undefined, message: string): T {
   return value
 }
 
-export function throwIf(
-  value: boolean,
-  message: string
-): asserts value is Exclude<typeof value, true> {
+export function throwIf(value: boolean, message: string): asserts value is Exclude<typeof value, true> {
   if (value === true) throw new Error(message)
 }
 

@@ -7,11 +7,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
     error: vi.fn().mockResolvedValue(undefined),
     debug: vi.fn().mockResolvedValue(undefined),
     trace: vi.fn().mockResolvedValue(undefined),
-    onlyIf: vi
-      .fn()
-      .mockImplementation((decider: boolean, ...args: any[]) =>
-        decider ? Promise.resolve(args) : null
-      ),
+    onlyIf: vi.fn().mockImplementation((decider: boolean, ...args: any[]) => (decider ? Promise.resolve(args) : null)),
     logAndSave: vi.fn().mockResolvedValue(undefined),
     finalizeWorkflowLog: vi.fn().mockResolvedValue(null),
   },
@@ -268,9 +264,7 @@ vi.mock("@core/prompts/makeLearning", () => ({
 }))
 
 vi.mock("@core/utils/persistence/node/saveNodeInvocation", () => ({
-  saveNodeInvocationToDB: vi
-    .fn()
-    .mockResolvedValue({ nodeInvocationId: "test-invocation-id" }),
+  saveNodeInvocationToDB: vi.fn().mockResolvedValue({ nodeInvocationId: "test-invocation-id" }),
 }))
 
 vi.mock("@core/utils/persistence/message/saveMessage", () => ({
@@ -304,37 +298,28 @@ vi.mock("@core/node/responseHandler", () => ({
             berichten: [{ type: "text", text: "ok" }],
           },
           summaryWithInfo: "summary",
-          agentSteps: agentSteps?.length
-            ? agentSteps
-            : (response?.agentSteps ?? [{ type: "text", return: "ok" }]),
+          agentSteps: agentSteps?.length ? agentSteps : (response?.agentSteps ?? [{ type: "text", return: "ok" }]),
           updatedMemory: updatedMemory ?? undefined,
           debugPrompts,
         })
     ),
   handleError: vi
     .fn()
-    .mockImplementation(
-      ({
-        errorMessage,
-        debugPrompts,
-      }: {
-        errorMessage: string
-        debugPrompts: string[]
-      }) =>
-        Promise.resolve({
-          nodeInvocationId: "error-id",
-          nodeInvocationFinalOutput: errorMessage,
-          usdCost: 0,
-          nextIds: ["end"],
-          error: { message: errorMessage },
-          summaryWithInfo: errorMessage,
-          replyMessage: {
-            kind: "result",
-            berichten: [{ type: "text", text: errorMessage }],
-          },
-          agentSteps: [{ type: "text", return: errorMessage }],
-          debugPrompts: debugPrompts ?? [],
-        })
+    .mockImplementation(({ errorMessage, debugPrompts }: { errorMessage: string; debugPrompts: string[] }) =>
+      Promise.resolve({
+        nodeInvocationId: "error-id",
+        nodeInvocationFinalOutput: errorMessage,
+        usdCost: 0,
+        nextIds: ["end"],
+        error: { message: errorMessage },
+        summaryWithInfo: errorMessage,
+        replyMessage: {
+          kind: "result",
+          berichten: [{ type: "text", text: errorMessage }],
+        },
+        agentSteps: [{ type: "text", return: errorMessage }],
+        debugPrompts: debugPrompts ?? [],
+      })
     ),
 }))
 
@@ -411,12 +396,7 @@ describe("InvocationPipeline", () => {
     })
 
     it("handles tool strategy selection with prepare step strategy", async () => {
-      const toolManager = new ToolManager(
-        "test",
-        [],
-        ["jsExecutor", "saveFileLegacy"],
-        "v1"
-      )
+      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
@@ -426,12 +406,7 @@ describe("InvocationPipeline", () => {
 
   describe("execute()", () => {
     it("executes successfully with experimental multi-step loop", async () => {
-      const toolManager = new ToolManager(
-        "test",
-        [],
-        ["jsExecutor", "saveFileLegacy"],
-        "v1"
-      )
+      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
@@ -447,12 +422,7 @@ describe("InvocationPipeline", () => {
     })
 
     it("multi-step loop executes tool strategy and terminates properly", async () => {
-      const toolManager = new ToolManager(
-        "test",
-        [],
-        ["jsExecutor", "saveFileLegacy"],
-        "v1"
-      )
+      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
@@ -468,12 +438,8 @@ describe("InvocationPipeline", () => {
         })
       )
       // May also have terminate output from multi-step loop
-      const hasTerminate = agentSteps.some(
-        (output) => output.type === "terminate"
-      )
-      const hasReasoning = agentSteps.some(
-        (output) => output.type === "reasoning"
-      )
+      const hasTerminate = agentSteps.some((output) => output.type === "terminate")
+      const hasReasoning = agentSteps.some((output) => output.type === "reasoning")
       expect(hasTerminate || hasReasoning).toBe(true)
     })
 
@@ -502,9 +468,7 @@ describe("InvocationPipeline", () => {
       const mockSendAI = sendAI as unknown as ReturnType<typeof vi.fn>
       ;(mockSendAI as any).mockRejectedValueOnce(new Error("AI service error"))
 
-      await expect(pipeline.execute()).rejects.toThrow(
-        "Execution error: AI service error"
-      )
+      await expect(pipeline.execute()).rejects.toThrow("Execution error: AI service error")
     })
   })
 

@@ -18,10 +18,7 @@ export type RunOptions = {
   timeoutMs?: number
 }
 
-export type ResultsById = Record<
-  string,
-  InvokeWorkflowResult | { error: string }
->
+export type ResultsById = Record<string, InvokeWorkflowResult | { error: string }>
 
 type RunConfigState = {
   datasetName?: string
@@ -50,12 +47,7 @@ type RunConfigState = {
   setOptions: (opts: Partial<RunOptions>) => void
 
   // Running
-  runOne: (
-    cfg: WorkflowConfig,
-    row: CaseRow,
-    goalOverride?: string,
-    signal?: AbortSignal
-  ) => Promise<void>
+  runOne: (cfg: WorkflowConfig, row: CaseRow, goalOverride?: string, signal?: AbortSignal) => Promise<void>
   runAll: (cfg: WorkflowConfig) => Promise<void>
   cancel: (id: string) => void
   cancelAll: () => void
@@ -193,8 +185,7 @@ export const useRunConfigStore = create<RunConfigState>()(
       setPrompt: (prompt) => set({ prompt }),
       setDatasetName: (name) => set({ datasetName: name }),
       setDatasetId: (id) => set({ datasetId: id }),
-      setOptions: (opts) =>
-        set((s) => ({ options: { ...s.options, ...opts } })),
+      setOptions: (opts) => set((s) => ({ options: { ...s.options, ...opts } })),
 
       runOne: async (cfg, row, goalOverride, externalSignal) => {
         // mark busy
@@ -244,9 +235,7 @@ export const useRunConfigStore = create<RunConfigState>()(
               const error = first?.error || "Failed"
               if (retryCount < maxRetries) {
                 // Exponential backoff: 1s, 2s, 4s...
-                await new Promise((r) =>
-                  setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000))
-                )
+                await new Promise((r) => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
                 return attemptFetch(retryCount + 1)
               }
               set((s) => ({
@@ -261,9 +250,7 @@ export const useRunConfigStore = create<RunConfigState>()(
             const error = isAbort ? "Canceled" : e?.message || "Error"
 
             if (!isAbort && retryCount < maxRetries) {
-              await new Promise((r) =>
-                setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000))
-              )
+              await new Promise((r) => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
               return attemptFetch(retryCount + 1)
             }
 
@@ -303,10 +290,7 @@ export const useRunConfigStore = create<RunConfigState>()(
           await runNext()
         }
 
-        const workers = Array.from(
-          { length: Math.min(concurrency, target.length) },
-          () => runNext()
-        )
+        const workers = Array.from({ length: Math.min(concurrency, target.length) }, () => runNext())
         await Promise.all(workers)
       },
 

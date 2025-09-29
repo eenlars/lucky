@@ -3,16 +3,10 @@ import {
   type FitnessFunctionInput,
   type FitnessOfWorkflow,
 } from "@core/evaluation/calculate-fitness/fitness.types"
-import {
-  normalizeCost,
-  normalizeTime,
-} from "@core/evaluation/calculate-fitness/fitnessNormalize"
+import { normalizeCost, normalizeTime } from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
-import {
-  fitnessSystemPrompt,
-  fitnessUserPrompt,
-} from "@core/prompts/evaluator/fitness/fitnessPrompt"
+import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -45,9 +39,7 @@ async function calculateFitness({
     )
   }
 
-  const outputSchemaStr: string | undefined = outputSchema
-    ? zodToJson(outputSchema)
-    : undefined
+  const outputSchemaStr: string | undefined = outputSchema ? zodToJson(outputSchema) : undefined
 
   const outputStr = toolUsageToString(agentSteps) + "\n\n" + finalWorkflowOutput
 

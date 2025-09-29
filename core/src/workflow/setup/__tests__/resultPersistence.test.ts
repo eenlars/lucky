@@ -4,15 +4,7 @@ import { PATHS } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import * as fs from "fs/promises"
 import * as path from "path"
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-} from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 describe("resultPersistence", () => {
   const testWorkflowConfig: WorkflowConfig = {
@@ -118,9 +110,7 @@ describe("resultPersistence", () => {
         (f) =>
           f.startsWith(`${testFileName}_`) ||
           // DO NOT delete setupfile.json backups - only test file backups
-          f.match(
-            /concurrent-test-\d+\.json_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z\.json/
-          )
+          f.match(/concurrent-test-\d+\.json_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z\.json/)
       )
 
       // Only delete specific backup files, never entire directories
@@ -198,9 +188,7 @@ describe("resultPersistence", () => {
       // check that backup directory has files
       const backupFiles = await fs.readdir(actualBackupDir)
       const backupName = path.basename(testFileName, path.extname(testFileName))
-      const testBackups = backupFiles.filter((f) =>
-        f.startsWith(`${backupName}_`)
-      )
+      const testBackups = backupFiles.filter((f) => f.startsWith(`${backupName}_`))
 
       expect(testBackups.length).toBeGreaterThan(0)
 
@@ -311,11 +299,7 @@ describe("resultPersistence", () => {
       }))
 
       // save all configs concurrently
-      await Promise.all(
-        configs.map((config, i) =>
-          persistWorkflow(config, `concurrent-test-${i}.json`)
-        )
-      )
+      await Promise.all(configs.map((config, i) => persistWorkflow(config, `concurrent-test-${i}.json`)))
 
       // verify all files exist
       for (let i = 0; i < configs.length; i++) {

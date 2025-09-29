@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "../../../_lib/meta"
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { datasetId: string; ioId: string } }
-) {
+export async function PUT(req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -17,15 +14,13 @@ export async function PUT(
     }>
     const meta = await loadDatasetMeta(params.datasetId)
     const idx = (meta.ios || []).findIndex((x) => x.id === params.ioId)
-    if (idx === -1)
-      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (idx === -1) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
     const cur = meta.ios[idx]
     const next = {
       ...cur,
       input: typeof patch.input === "string" ? patch.input : cur.input,
-      expected:
-        typeof patch.expected === "string" ? patch.expected : cur.expected,
+      expected: typeof patch.expected === "string" ? patch.expected : cur.expected,
     }
     meta.ios[idx] = next
     await saveDatasetMeta(meta)
@@ -34,17 +29,11 @@ export async function PUT(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { datasetId: string; ioId: string } }
-) {
+export async function DELETE(_req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -62,9 +51,6 @@ export async function DELETE(
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }

@@ -54,9 +54,7 @@ export class Population {
     runService: RunService
   ) {
     lgg.info(`[Population] Configuration validated successfully:`)
-    lgg.info(
-      `Population: ${config.populationSize}, Generations: ${config.generations}`
-    )
+    lgg.info(`Population: ${config.populationSize}, Generations: ${config.generations}`)
     this.runService = runService
   }
 
@@ -163,8 +161,7 @@ export class Population {
    * @throws Error if population is empty
    */
   getValidGenomes(): Genome[] {
-    if (isNir(this.genomes))
-      throw new Error("Population is empty, could not get valid genomes.")
+    if (isNir(this.genomes)) throw new Error("Population is empty, could not get valid genomes.")
 
     return this.genomes.filter((genome) => genome.isEvaluated)
   }
@@ -218,8 +215,7 @@ export class Population {
     const validGenomes = this.getValidGenomes()
 
     return validGenomes.reduce(
-      (best, current) =>
-        current.getFitnessScore() > best.getFitnessScore() ? current : best,
+      (best, current) => (current.getFitnessScore() > best.getFitnessScore() ? current : best),
       validGenomes[0]
     )
   }
@@ -248,9 +244,7 @@ export class Population {
    * @returns Array of top performing genomes
    */
   getTop(n: number): Genome[] {
-    return [...this.genomes]
-      .sort((a, b) => b.getFitnessScore() - a.getFitnessScore())
-      .slice(0, n)
+    return [...this.genomes].sort((a, b) => b.getFitnessScore() - a.getFitnessScore()).slice(0, n)
   }
 
   /**
@@ -262,21 +256,16 @@ export class Population {
    * Marks all genomes as unevaluated and clears their fitness data
    */
   resetGenomes(): void {
-    if (isNir(this.genomes))
-      throw new Error("Population is empty, could not reset.")
+    if (isNir(this.genomes)) throw new Error("Population is empty, could not reset.")
 
-    for (const genome of this.genomes)
-      genome.reset(this.runService.getEvolutionContext())
+    for (const genome of this.genomes) genome.reset(this.runService.getEvolutionContext())
   }
 
   /**
    * Remove genomes that are not evaluated (likely a failed evaluation).
    */
   async removeUnevaluated(): Promise<void> {
-    if (isNir(this.genomes))
-      throw new Error(
-        "Population is empty, could not remove unevaluated genomes."
-      )
+    if (isNir(this.genomes)) throw new Error("Population is empty, could not remove unevaluated genomes.")
 
     const countBefore = this.genomes?.length ?? 0
 
@@ -311,9 +300,7 @@ export class Population {
       const newGenomes = await this.generateRandomGenomes(needed)
       this.genomes.push(...newGenomes)
 
-      lgg.info(
-        `[Population] Added ${newGenomes.length} new genomes. Population size: ${this.genomes.length}`
-      )
+      lgg.info(`[Population] Added ${newGenomes.length} new genomes. Population size: ${this.genomes.length}`)
     }
 
     if (isNir(this.genomes))
@@ -327,9 +314,7 @@ export class Population {
       )
     }
 
-    lgg.info(
-      `[Population] Removed ${countBefore - countAfter} unevaluated genomes.`
-    )
+    lgg.info(`[Population] Removed ${countBefore - countAfter} unevaluated genomes.`)
   }
 
   /**
@@ -338,11 +323,9 @@ export class Population {
    */
   getUnevaluated(): Genome[] {
     const unevaluated: Genome[] = []
-    if (isNir(this.genomes))
-      throw new Error("Population is empty, could not get unevaluated genomes.")
+    if (isNir(this.genomes)) throw new Error("Population is empty, could not get unevaluated genomes.")
 
-    for (const genome of this.genomes)
-      if (!genome.isEvaluated) unevaluated.push(genome)
+    for (const genome of this.genomes) if (!genome.isEvaluated) unevaluated.push(genome)
 
     return unevaluated
   }
@@ -355,11 +338,9 @@ export class Population {
    */
   getEvaluated(): Genome[] {
     const evaluated: Genome[] = []
-    if (isNir(this.genomes))
-      throw new Error("Population is empty, could not get evaluated genomes.")
+    if (isNir(this.genomes)) throw new Error("Population is empty, could not get evaluated genomes.")
 
-    for (const genome of this.genomes)
-      if (genome.isEvaluated) evaluated.push(genome)
+    for (const genome of this.genomes) if (genome.isEvaluated) evaluated.push(genome)
 
     return evaluated
   }
@@ -419,9 +400,7 @@ export class Population {
       // Keep the best of similar genomes, remove others
       if (similar.length > 0) {
         const group = [this.genomes[i], ...similar]
-        group.sort(
-          (a, b) => (b.getFitness()?.score ?? 0) - (a.getFitness()?.score ?? 0)
-        )
+        group.sort((a, b) => (b.getFitness()?.score ?? 0) - (a.getFitness()?.score ?? 0))
 
         // Mark all but the best for removal
         for (let j = 1; j < group.length; j++) {
@@ -431,9 +410,7 @@ export class Population {
     }
 
     // Remove marked genomes
-    this.genomes = this.genomes.filter(
-      (g) => !toRemove.has(g.getWorkflowVersionId())
-    )
+    this.genomes = this.genomes.filter((g) => !toRemove.has(g.getWorkflowVersionId()))
   }
 
   /**
@@ -453,9 +430,7 @@ export class Population {
    */
   removeGenome(genomeId: string): boolean {
     const originalLength = this.genomes.length
-    this.genomes = this.genomes.filter(
-      (g) => g.getWorkflowVersionId() !== genomeId
-    )
+    this.genomes = this.genomes.filter((g) => g.getWorkflowVersionId() !== genomeId)
     return this.genomes.length < originalLength
   }
 
@@ -518,9 +493,7 @@ export class Population {
     }
 
     const results = await Promise.all(genomePromises)
-    const genomes = results
-      .filter((result) => result.success)
-      .map((result) => result.data)
+    const genomes = results.filter((result) => result.success).map((result) => result.data)
 
     const failures = results.filter((result) => !result.success)
     if (failures.length > 0) {
@@ -577,17 +550,13 @@ export class Population {
     const population = new Population(config, this.runService)
     const results = await Promise.all(genomePromises)
 
-    const genomes = results
-      .filter((result) => result.success)
-      .map((result) => result.data)
+    const genomes = results.filter((result) => result.success).map((result) => result.data)
 
     const failures = results.filter((result) => !result.success)
 
     population.setPopulation(genomes)
 
-    lgg.info(
-      `Population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`
-    )
+    lgg.info(`Population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`)
 
     if (failures.length > 0) {
       lgg.warn(
@@ -598,9 +567,7 @@ export class Population {
       // TODO: make minimum viable population threshold configurable
       // TODO: add recovery strategies for extreme population loss scenarios
       if (genomes.length < config.populationSize * 0.5) {
-        lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.populationSize} genomes created successfully`
-        )
+        lgg.error(`Critical: Only ${genomes.length} out of ${config.populationSize} genomes created successfully`)
       }
     }
     return population
@@ -649,17 +616,13 @@ export class Population {
     const population = new Population(config, this.runService)
     const results = await Promise.all(genomePromises)
 
-    const genomes = results
-      .filter((result) => result.success)
-      .map((result) => result.data)
+    const genomes = results.filter((result) => result.success).map((result) => result.data)
 
     const failures = results.filter((result) => !result.success)
 
     population.setPopulation(genomes)
 
-    lgg.info(
-      `Prepared population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`
-    )
+    lgg.info(`Prepared population initialized: ${genomes.length}/${config.populationSize} genomes created successfully`)
 
     if (failures.length > 0) {
       lgg.warn(

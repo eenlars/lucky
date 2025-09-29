@@ -14,8 +14,7 @@ const QUESTIONS = {
   hard: {
     type: "text",
     question: `Give me the title of the scientific paper published in EMNLP 2018-2023 where the first author did their undergrad at Dartmouth and the fourth author at UPenn.`,
-    answer:
-      "Frequency Effects on Syntactic Rule Learning in Transformers, EMNLP 2021",
+    answer: "Frequency Effects on Syntactic Rule Learning in Transformers, EMNLP 2021",
     goal: "find the title of the scientific paper",
     workflowId: "wf-scientific-paper",
   },
@@ -81,8 +80,7 @@ const QUESTIONS = {
     `,
     evaluation: "column:expected_output",
 
-    inputFile:
-      "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated-empty-response.csv",
+    inputFile: "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated-empty-response.csv",
 
     onlyIncludeInputColumns: [
       "company_name",
@@ -104,8 +102,7 @@ const QUESTIONS = {
   },
   tonys: {
     type: "text",
-    question:
-      "Find the amount of locations of Tony's Chocolonely stores in the Netherlands",
+    question: "Find the amount of locations of Tony's Chocolonely stores in the Netherlands",
     answer: "2",
     goal: "Find the amount of locations of Tony's Chocolonely stores in the Netherlands, headquarters excluded.",
     workflowId: "wf-tonys-chocolonely",
@@ -120,8 +117,7 @@ const QUESTIONS = {
     `,
     evaluation: "column:expected_output",
 
-    inputFile:
-      "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated.csv",
+    inputFile: "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated.csv",
 
     onlyIncludeInputColumns: [
       "company_name",
@@ -149,8 +145,7 @@ const QUESTIONS = {
     If the HQ of the company is not in the Netherlands AND the countries of operation field is empty, you can skip it.
     We only want the physical stores where customers can go to (B2C). if not, do not include it.
     `,
-    inputFile:
-      "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated-full.csv",
+    inputFile: "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/input//annotated-full.csv",
     evaluation: "column:expected_output",
     onlyIncludeInputColumns: [
       "company_name",

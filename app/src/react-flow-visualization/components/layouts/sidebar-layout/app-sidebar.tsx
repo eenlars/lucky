@@ -4,11 +4,7 @@ import { useReactFlow } from "@xyflow/react"
 import { Command, GripVertical, Plus } from "lucide-react"
 import { ComponentProps, useCallback, useRef, useState } from "react"
 
-import nodesConfig, {
-  AppNode,
-  createNodeByType,
-  type NodeConfig,
-} from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { AppNode, createNodeByType, type NodeConfig } from "@/react-flow-visualization/components/nodes"
 import { SettingsDialog } from "@/react-flow-visualization/components/settings-dialog"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import {
@@ -72,8 +68,7 @@ const selector = (state: AppStore) => ({
 
 function DraggableItem(props: NodeConfig) {
   const { screenToFlowPosition } = useReactFlow()
-  const { addNode, checkForPotentialConnection, resetPotentialConnection } =
-    useAppStore(useShallow(selector))
+  const { addNode, checkForPotentialConnection, resetPotentialConnection } = useAppStore(useShallow(selector))
   const [isDragging, setIsDragging] = useState(false)
 
   const onClick = useCallback(() => {
@@ -149,10 +144,7 @@ function DraggableItem(props: NodeConfig) {
       key={props.displayName}
     >
       {isDragging && (
-        <span
-          role="presentation"
-          className="absolute -top-3 -right-3 rounded-md border-2 border-green-500 bg-card"
-        >
+        <span role="presentation" className="absolute -top-3 -right-3 rounded-md border-2 border-green-500 bg-card">
           <Plus className="size-4" />
         </span>
       )}

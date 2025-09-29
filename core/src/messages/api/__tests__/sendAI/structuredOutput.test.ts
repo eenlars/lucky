@@ -1,7 +1,7 @@
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@core/utils/types"
 import { R } from "@core/utils/types"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -9,7 +9,7 @@ import { z } from "zod"
 // Consider refactoring to use dependency injection
 // Set up mocks BEFORE importing modules under test
 type GenObjectMockFn = (args: {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   schema: z.ZodSchema
   model?: ModelName
   opts?: { retries?: number; repair?: boolean }
@@ -33,7 +33,7 @@ vi.mock("ai", () => ({
   generateText: vi.fn(),
   tool: vi.fn((config: any) => config),
   genObject: vi.fn(),
-  stepCountIs: vi.fn((count: number) => ({ type: 'stepCount', count })),
+  stepCountIs: vi.fn((count: number) => ({ type: "stepCount", count })),
   zodSchema: vi.fn((schema: any) => schema),
   APICallError: class APICallError extends Error {
     constructor(message: string) {
@@ -53,10 +53,7 @@ vi.mock("@core/utils/spending/SpendingTracker", () => ({
       ({
         canMakeRequest: () => true,
         addCost: vi.fn(),
-      }) satisfies Pick<
-        import("@core/utils/spending/SpendingTracker").SpendingTracker,
-        "canMakeRequest" | "addCost"
-      >,
+      }) satisfies Pick<import("@core/utils/spending/SpendingTracker").SpendingTracker, "canMakeRequest" | "addCost">,
   },
 }))
 
@@ -160,9 +157,7 @@ describe("sendAIRequest with structuredOutput", () => {
   })
 
   it("should support enum output via z.enum schema", async () => {
-    vi.mocked(genObject).mockResolvedValueOnce(
-      R.success({ value: "action", summary: "Enum summary" }, 0.01)
-    )
+    vi.mocked(genObject).mockResolvedValueOnce(R.success({ value: "action", summary: "Enum summary" }, 0.01))
 
     const result = await sendAI({
       messages: [

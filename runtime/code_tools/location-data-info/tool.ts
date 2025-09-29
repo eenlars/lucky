@@ -2,10 +2,7 @@
 
 import { defineTool } from "@core/tools/toolFactory"
 import { z } from "zod"
-import {
-  getLocationData,
-  getLocationDataMinimal,
-} from "../location-data-manager/api"
+import { getLocationData, getLocationDataMinimal } from "../location-data-manager/api"
 
 /**
  * location data info tool for verification operations:
@@ -22,20 +19,14 @@ const locationDataInfo = defineTool({
     action: z.enum(["count", "getLocations", "verify", "summary"], {
       invalid_type_error: "verification action to perform",
     }),
-    includeDetails: z
-      .boolean()
-      .nullish()
-      .default(false)
-      .describe("include additional details like quality assessment"),
+    includeDetails: z.boolean().nullish().default(false).describe("include additional details like quality assessment"),
   }),
   async execute(params, externalContext) {
     const { action, includeDetails } = params
 
     switch (action) {
       case "count": {
-        const result = await getLocationData(
-          externalContext.workflowInvocationId
-        )
+        const result = await getLocationData(externalContext.workflowInvocationId)
         if (!result.success || !result.output) {
           return { success: false, count: 0 }
         }
@@ -46,8 +37,7 @@ const locationDataInfo = defineTool({
         if (includeDetails) {
           const qualityCounts = result.output.locations.reduce(
             (acc, loc) => {
-              acc[loc.quality || "unknown"] =
-                (acc[loc.quality || "unknown"] || 0) + 1
+              acc[loc.quality || "unknown"] = (acc[loc.quality || "unknown"] || 0) + 1
               return acc
             },
             {} as Record<string, number>
@@ -59,9 +49,7 @@ const locationDataInfo = defineTool({
       }
 
       case "getLocations": {
-        const result = await getLocationData(
-          externalContext.workflowInvocationId
-        )
+        const result = await getLocationData(externalContext.workflowInvocationId)
         if (!result.success || !result.output) {
           return { success: false, addresses: [], count: 0 }
         }
@@ -91,9 +79,7 @@ const locationDataInfo = defineTool({
       }
 
       case "verify": {
-        const result = await getLocationData(
-          externalContext.workflowInvocationId
-        )
+        const result = await getLocationData(externalContext.workflowInvocationId)
         if (!result.success || !result.output) {
           return { success: false, verification: null }
         }
@@ -128,9 +114,7 @@ const locationDataInfo = defineTool({
           totalLocations: totalCount,
           qualityStats,
           missingDataCounts: missingData,
-          completenessPercentage: Math.round(
-            ((qualityStats.complete || 0) / totalCount) * 100
-          ),
+          completenessPercentage: Math.round(((qualityStats.complete || 0) / totalCount) * 100),
         }
       }
 
@@ -157,10 +141,7 @@ const locationDataInfo = defineTool({
         return {
           totalLocations: locations.length,
           qualityStats,
-          summary:
-            summaryResult.success && summaryResult.output
-              ? summaryResult.output.summary
-              : "summary unavailable",
+          summary: summaryResult.success && summaryResult.output ? summaryResult.output.summary : "summary unavailable",
         }
       }
 

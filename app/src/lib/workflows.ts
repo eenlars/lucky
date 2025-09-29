@@ -10,8 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 
 // Type aliases for clarity
 export type Workflow = Database["public"]["Tables"]["Workflow"]["Row"]
-export type WorkflowVersion =
-  Database["public"]["Tables"]["WorkflowVersion"]["Row"]
+export type WorkflowVersion = Database["public"]["Tables"]["WorkflowVersion"]["Row"]
 
 // Extended types for UI
 export interface WorkflowWithVersions extends Workflow {
@@ -52,7 +51,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
         .from("WorkflowVersion")
         .select("*", { count: "exact", head: true })
         .eq("workflow_id", workflowId)
-      
+
       return { workflowId, count: count || 0 }
     })
   )
@@ -72,10 +71,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
     })
   )
 
-  const [versionCountsResults, latestVersionsResults] = await Promise.all([
-    versionCountsPromise,
-    latestVersionsPromise,
-  ])
+  const [versionCountsResults, latestVersionsResults] = await Promise.all([versionCountsPromise, latestVersionsPromise])
 
   // Build version count map
   const versionCountMap = new Map()
@@ -103,9 +99,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
 /**
  * Get a single workflow with its versions
  */
-export async function getWorkflow(
-  workflowId: string
-): Promise<WorkflowWithVersions | null> {
+export async function getWorkflow(workflowId: string): Promise<WorkflowWithVersions | null> {
   const supabase = createClient()
 
   const { data, error } = await supabase
@@ -125,8 +119,7 @@ export async function getWorkflow(
   }
 
   const sortedVersions = (data.versions || []).sort(
-    (a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   )
 
   return {
@@ -139,10 +132,7 @@ export async function getWorkflow(
 /**
  * Ensure the main workflow exists in the database
  */
-async function ensureWorkflowExists(
-  description: string,
-  workflowId: string
-): Promise<void> {
+async function ensureWorkflowExists(description: string, workflowId: string): Promise<void> {
   const supabase = createClient()
 
   const workflowInsertable: TablesInsert<"Workflow"> = {
@@ -193,11 +183,9 @@ async function createWorkflowVersion({
     parent2_id: null,
   }
 
-  const { error } = await supabase
-    .from("WorkflowVersion")
-    .upsert(workflowVersionInsertable, {
-      onConflict: "wf_version_id",
-    })
+  const { error } = await supabase.from("WorkflowVersion").upsert(workflowVersionInsertable, {
+    onConflict: "wf_version_id",
+  })
 
   if (error) {
     throw new Error(`Failed to upsert workflow version: ${error.message}`)
@@ -258,10 +246,7 @@ export async function deleteWorkflow(workflowId: string): Promise<boolean> {
   const supabase = createClient()
 
   // First delete all versions
-  const { error: versionError } = await supabase
-    .from("WorkflowVersion")
-    .delete()
-    .eq("workflow_id", workflowId)
+  const { error: versionError } = await supabase.from("WorkflowVersion").delete().eq("workflow_id", workflowId)
 
   if (versionError) {
     console.error("Failed to delete workflow versions:", versionError)
@@ -269,10 +254,7 @@ export async function deleteWorkflow(workflowId: string): Promise<boolean> {
   }
 
   // Then delete the workflow
-  const { error: workflowError } = await supabase
-    .from("Workflow")
-    .delete()
-    .eq("wf_id", workflowId)
+  const { error: workflowError } = await supabase.from("Workflow").delete().eq("wf_id", workflowId)
 
   if (workflowError) {
     console.error("Failed to delete workflow:", workflowError)
@@ -285,10 +267,7 @@ export async function deleteWorkflow(workflowId: string): Promise<boolean> {
 /**
  * Update workflow description
  */
-export async function updateWorkflowDescription(
-  workflowId: string,
-  description: string
-): Promise<boolean> {
+export async function updateWorkflowDescription(workflowId: string, description: string): Promise<boolean> {
   const supabase = createClient()
 
   const { error } = await supabase

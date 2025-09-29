@@ -2,10 +2,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import {
-  MemoryResponseSchema,
-  type NodeMemory,
-} from "@core/utils/memory/memorySchema"
+import { MemoryResponseSchema, type NodeMemory } from "@core/utils/memory/memorySchema"
 import { getDefaultModels } from "@runtime/settings/models"
 import { isNir } from "../utils/common/isNir"
 import { GENERALIZATION_LIMITS } from "./generalizationLimits"
@@ -44,9 +41,7 @@ Main workflow goal: ${mainWorkflowGoal}
 Node's instructions: ${nodeSystemPrompt}
 Current memory:
 ${
-  currentMemory && Object.keys(currentMemory).length > 0
-    ? JSON.stringify(currentMemory, null, 2)
-    : "No existing memory"
+  currentMemory && Object.keys(currentMemory).length > 0 ? JSON.stringify(currentMemory, null, 2) : "No existing memory"
 }
 What happened during execution:
 ${JSON.stringify(toolLogs, null, 2)}
@@ -120,8 +115,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
     return {
       agentStep: {
         type: "error",
-        return:
-          "error when making learning" + JSON.stringify(memoryResponse.error),
+        return: "error when making learning" + JSON.stringify(memoryResponse.error),
       },
       updatedMemory: currentMemory,
     }

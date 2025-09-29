@@ -14,19 +14,15 @@ export interface EvolutionRun {
 
 export function defaultFormatRunTitle(run: EvolutionRun) {
   const date = new Date(run.start_time).toLocaleDateString()
-  const goalPreview =
-    run.goal_text.slice(0, 40) + (run.goal_text.length > 40 ? "..." : "")
+  const goalPreview = run.goal_text.slice(0, 40) + (run.goal_text.length > 40 ? "..." : "")
   const mode = run.config?.mode || "unknown"
   const successRate =
     run.total_invocations && run.total_invocations > 0
       ? `${Math.round(((run.successful_invocations || 0) / run.total_invocations) * 100)}%`
       : "0%"
-  const genInfo = run.generation_count
-    ? `${run.generation_count} generations`
-    : "0 generations"
+  const genInfo = run.generation_count ? `${run.generation_count} generations` : "0 generations"
   const invocationInfo = `${run.total_invocations || 0} invocations`
-  const statusIcon =
-    run.successful_invocations && run.successful_invocations > 0 ? "✅" : "⚠️"
+  const statusIcon = run.successful_invocations && run.successful_invocations > 0 ? "✅" : "⚠️"
 
   return `${statusIcon} ${date} - ${mode} - ${genInfo}, ${invocationInfo} (${successRate}) - ${goalPreview}`
 }
@@ -75,9 +71,7 @@ export function RunSelect({
           </>
         )}
       </select>
-      {loading && (
-        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-      )}
+      {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>}
     </div>
   )
 }

@@ -1,7 +1,4 @@
-import nodesConfig, {
-  AppNodeType,
-  NodeConfig,
-} from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,19 +23,11 @@ export function AppDropdownMenu({
         {Object.values(nodesConfig)
           .filter(filterNodes)
           .map((item) => {
-            const IconComponent = item?.icon
-              ? iconMapping[item.icon]
-              : undefined
+            const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
-              <button
-                key={item.displayName}
-                onClick={() => onAddNode(item.id)}
-                className="w-full"
-              >
+              <button key={item.displayName} onClick={() => onAddNode(item.id)} className="w-full">
                 <DropdownMenuItem className="flex items-center space-x-2">
-                  {IconComponent ? (
-                    <IconComponent aria-label={item?.icon} />
-                  ) : null}
+                  {IconComponent ? <IconComponent aria-label={item?.icon} /> : null}
                   <span>New {item.displayName}</span>
                 </DropdownMenuItem>
               </button>

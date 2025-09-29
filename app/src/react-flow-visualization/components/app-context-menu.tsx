@@ -2,9 +2,7 @@
 
 import { ReactNode } from "react"
 
-import nodesConfig, {
-  AppNodeType,
-} from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { AppNodeType } from "@/react-flow-visualization/components/nodes"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -33,19 +31,11 @@ export default function AppContextMenu({ children }: { children: ReactNode }) {
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           {Object.values(nodesConfig).map((item) => {
-            const IconComponent = item?.icon
-              ? iconMapping[item.icon]
-              : undefined
+            const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
-              <button
-                key={item.displayName}
-                onClick={() => onItemClick(item.id)}
-                className="w-full"
-              >
+              <button key={item.displayName} onClick={() => onItemClick(item.id)} className="w-full">
                 <ContextMenuItem className="flex items-center space-x-2">
-                  {IconComponent ? (
-                    <IconComponent aria-label={item?.icon} />
-                  ) : null}
+                  {IconComponent ? <IconComponent aria-label={item?.icon} /> : null}
                   <span>New {item.displayName}</span>
                 </ContextMenuItem>
               </button>

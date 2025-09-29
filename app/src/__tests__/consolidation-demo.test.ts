@@ -1,9 +1,5 @@
 // demonstration of mock consolidation - before and after comparison
-import {
-  mockRuntimeConstantsForGP,
-  setupCoreTest,
-  setupGPTestMocks,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { mockRuntimeConstantsForGP, setupCoreTest, setupGPTestMocks } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // BEFORE: Duplicate mock setup that would appear in multiple files
@@ -79,10 +75,7 @@ describe("Consolidation benefits", () => {
 
     const linesBeforeConsolidation = 50
     const linesAfterConsolidation = 5
-    const reductionPercentage =
-      ((linesBeforeConsolidation - linesAfterConsolidation) /
-        linesBeforeConsolidation) *
-      100
+    const reductionPercentage = ((linesBeforeConsolidation - linesAfterConsolidation) / linesBeforeConsolidation) * 100
 
     expect(reductionPercentage).toBe(90)
   })

@@ -1,10 +1,7 @@
 // DO NOT CHANGE ANYTHING IN THIS FILE OR ANY TYPE WITHOUT CONSENT
 
 import type { providersV2 } from "@core/utils/spending/modelInfo"
-import type {
-  CURRENT_PROVIDER,
-  LuckyProvider,
-} from "@core/utils/spending/provider"
+import type { CURRENT_PROVIDER, LuckyProvider } from "@core/utils/spending/provider"
 
 /* ---------- PRICING TYPES ---------- */
 export type ModelPricingV2 = {
@@ -38,9 +35,7 @@ type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> = {
 // DO NOT CHANGE THIS OR ANY TYPE WITHOUT CONSENT
 
 // Only allow ACTIVE models from the current provider
-export type AllowedModelName<
-  T extends LuckyProvider = typeof CURRENT_PROVIDER,
-> = ActiveKeys<(typeof providersV2)[T]>
+export type AllowedModelName<T extends LuckyProvider = typeof CURRENT_PROVIDER> = ActiveKeys<(typeof providersV2)[T]>
 
 export type ModelName = AllowedModelName<typeof CURRENT_PROVIDER>
 

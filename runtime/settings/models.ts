@@ -1,9 +1,5 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
-import type {
-  ModelName,
-  ModelPricingV2,
-  StandardModels,
-} from "@core/utils/spending/models.types"
+import type { ModelName, ModelPricingV2, StandardModels } from "@core/utils/spending/models.types"
 import type { LuckyProvider } from "@core/utils/spending/provider"
 
 // model runtime configuration
@@ -61,8 +57,7 @@ export const DEFAULT_MODELS = {
   [T in LuckyProvider]: StandardModels<T, "any">
 }
 
-type DEFAULT_MODELS_BY_CURRENT_PROVIDER =
-  (typeof DEFAULT_MODELS)[typeof MODEL_CONFIG.provider]
+type DEFAULT_MODELS_BY_CURRENT_PROVIDER = (typeof DEFAULT_MODELS)[typeof MODEL_CONFIG.provider]
 
 export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
   const provider = MODEL_CONFIG.provider
@@ -84,10 +79,7 @@ export const getCheapestActiveModelId = (): ModelName => {
   for (const [modelId, pricing] of Object.entries(models)) {
     if (!pricing?.active) continue
     if (inactive.has(modelId)) continue
-    const inputPrice =
-      typeof pricing.input === "number"
-        ? pricing.input
-        : Number.POSITIVE_INFINITY
+    const inputPrice = typeof pricing.input === "number" ? pricing.input : Number.POSITIVE_INFINITY
     if (inputPrice < lowestInput) {
       lowestInput = inputPrice
       cheapestId = modelId as ModelName
@@ -104,21 +96,12 @@ export const experimentalModels = {
   gpt41nano: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-nano"],
   gpt4o: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o"],
   gpt4oMini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o-mini"],
-  mistral:
-    providersV2[MODEL_CONFIG.provider][
-      "mistralai/mistral-small-3.2-24b-instruct"
-    ],
-  gemini25pro:
-    providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-pro-preview"],
-  geminiLite:
-    providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-flash-lite"],
-  claude35haiku:
-    providersV2[MODEL_CONFIG.provider]["anthropic/claude-3-5-haiku"],
-  claudesonnet4:
-    providersV2[MODEL_CONFIG.provider]["anthropic/claude-sonnet-4"],
-  moonshotKimiK2Instruct:
-    providersV2[MODEL_CONFIG.provider]["moonshotai/kimi-k2-instruct"],
-  llama318bInstruct:
-    providersV2[MODEL_CONFIG.provider]["meta-llama/llama-3.1-8b-instruct"],
+  mistral: providersV2[MODEL_CONFIG.provider]["mistralai/mistral-small-3.2-24b-instruct"],
+  gemini25pro: providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-pro-preview"],
+  geminiLite: providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-flash-lite"],
+  claude35haiku: providersV2[MODEL_CONFIG.provider]["anthropic/claude-3-5-haiku"],
+  claudesonnet4: providersV2[MODEL_CONFIG.provider]["anthropic/claude-sonnet-4"],
+  moonshotKimiK2Instruct: providersV2[MODEL_CONFIG.provider]["moonshotai/kimi-k2-instruct"],
+  llama318bInstruct: providersV2[MODEL_CONFIG.provider]["meta-llama/llama-3.1-8b-instruct"],
   gpt5: providersV2[MODEL_CONFIG.provider]["openai/gpt-5"],
 } as const satisfies Record<string, ModelPricingV2>

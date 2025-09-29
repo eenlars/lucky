@@ -22,7 +22,7 @@ export const createSequentialTestTools = () => {
   })
 
   const tool2 = tool({
-    description: "Second tool in sequence - processes input conditionally", 
+    description: "Second tool in sequence - processes input conditionally",
     inputSchema: zodSchema(SimpleToolParams),
     execute: async ({ input }: { input?: string }) => {
       return input === "555" ? "B" : "2"
@@ -31,7 +31,7 @@ export const createSequentialTestTools = () => {
 
   const tool3 = tool({
     description: "Third tool in sequence - final processing",
-    inputSchema: zodSchema(SimpleToolParams), 
+    inputSchema: zodSchema(SimpleToolParams),
     execute: async ({ input }: { input?: string }) => {
       return input === "B" ? "9" : "C"
     },
@@ -39,7 +39,7 @@ export const createSequentialTestTools = () => {
 
   return {
     tool1,
-    tool2, 
+    tool2,
     tool3,
     // Named versions for strategy tests
     nod_333: tool1,
@@ -60,7 +60,7 @@ export const createDistractorTools = () => {
   })
 
   const mod_333 = tool({
-    description: "Another distractor tool - should be ignored", 
+    description: "Another distractor tool - should be ignored",
     inputSchema: zodSchema(SimpleToolParams),
     execute: async () => "F",
   })
@@ -76,7 +76,8 @@ export const createDistractorTools = () => {
  */
 export const SEQUENTIAL_SYSTEM_PROMPTS = {
   basic: "You must first run nod-333, then mod-888 with nod-333's output, then rod-999 with mod-888's output.",
-  withStrategy: "You must first run nod_333, then mod_888 with nod_333's output, then rod_999 with mod_888's output. Execute the tools in this exact sequence.",
+  withStrategy:
+    "You must first run nod_333, then mod_888 with nod_333's output, then rod_999 with mod_888's output. Execute the tools in this exact sequence.",
 } as const
 
 /**
@@ -91,6 +92,6 @@ export const TOOL_TEST_MESSAGES = {
  */
 export const EXPECTED_SEQUENTIAL_RESULTS = {
   tool1: "555",
-  tool2: "B", 
+  tool2: "B",
   tool3: "9",
 } as const

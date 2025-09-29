@@ -51,14 +51,11 @@ export class BatchScraper {
 
     // load existing data
     const { allBusinesses, failures } = this.dataManager.loadExistingData()
-    const processedLocationIds =
-      this.dataManager.getProcessedLocationIds(allBusinesses)
+    const processedLocationIds = this.dataManager.getProcessedLocationIds(allBusinesses)
     const failedLocationIds = this.dataManager.getFailedLocationIds(failures)
 
     lgg.log(`found ${processedLocationIds.size} already processed location IDs`)
-    lgg.log(
-      `found ${failures.length} previous failures (${failedLocationIds.size} unique failed location IDs)`
-    )
+    lgg.log(`found ${failures.length} previous failures (${failedLocationIds.size} unique failed location IDs)`)
     lgg.log(`total locations to process: ${locations.length}`)
 
     // filter out already processed locations AND previously failed locations
@@ -74,9 +71,7 @@ export class BatchScraper {
 
     // get proxies for concurrent processing
     const proxies = await getMultipleWebshareProxiesFull(this.config.proxyCount)
-    lgg.log(
-      `got ${this.config.proxyCount} different proxies for concurrent processing:`
-    )
+    lgg.log(`got ${this.config.proxyCount} different proxies for concurrent processing:`)
     proxies.forEach((proxy, index) => {
       lgg.log(`proxy ${index + 1}: ${proxy.ip}:${proxy.port}`)
     })
@@ -99,9 +94,7 @@ export class BatchScraper {
           `batch ${batchIndex} complete (${batchSize} locations). total businesses saved: ${updatedBusinesses.length}`
         )
         lgg.log(
-          `progress: ${stats.processedCount} processed, ${
-            stats.skippedCount
-          } skipped, ${stats.errorCount} errors (${
+          `progress: ${stats.processedCount} processed, ${stats.skippedCount} skipped, ${stats.errorCount} errors (${
             stats.totalFailures
           } total failures), current time: ${new Date().toISOString()}`
         )
@@ -159,13 +152,9 @@ export class BatchScraper {
   // get current stats without processing
   getStats(
     locations: LocationMapLink[]
-  ): Omit<
-    BatchScraperStats,
-    "processedThisRun" | "skippedThisRun" | "errorsThisRun"
-  > {
+  ): Omit<BatchScraperStats, "processedThisRun" | "skippedThisRun" | "errorsThisRun"> {
     const { allBusinesses, failures } = this.dataManager.loadExistingData()
-    const processedLocationIds =
-      this.dataManager.getProcessedLocationIds(allBusinesses)
+    const processedLocationIds = this.dataManager.getProcessedLocationIds(allBusinesses)
     const failedLocationIds = this.dataManager.getFailedLocationIds(failures)
     const locationsToProcess = this.dataManager.filterUnprocessedLocations(
       locations,

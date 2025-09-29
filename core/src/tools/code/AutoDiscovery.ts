@@ -30,9 +30,7 @@ export class CodeToolAutoDiscovery {
 
     try {
       // Find all tool*.ts files in subdirectories from repo-rooted runtime paths
-      const toolPattern = path
-        .join(PATHS.codeTools, "**/tool*.ts")
-        .replace(/\\/g, "/")
+      const toolPattern = path.join(PATHS.codeTools, "**/tool*.ts").replace(/\\/g, "/")
 
       const allFiles = await glob(toolPattern, {
         absolute: true,
@@ -43,9 +41,7 @@ export class CodeToolAutoDiscovery {
         lgg.log(`🔍 Discovering tools from pattern: ${toolPattern}`)
         lgg.log(
           `📁 Found ${allFiles.length} potential tool files:`,
-          allFiles.map(
-            (f) => `${path.basename(path.dirname(f))}/${path.basename(f)}`
-          )
+          allFiles.map((f) => `${path.basename(path.dirname(f))}/${path.basename(f)}`)
         )
       }
 
@@ -55,9 +51,7 @@ export class CodeToolAutoDiscovery {
       for (const filePath of allFiles) {
         try {
           // Convert absolute path in runtime to package alias import path
-          const relativeToRuntime = path
-            .relative(PATHS.runtime, filePath)
-            .replace(/\\/g, "/")
+          const relativeToRuntime = path.relative(PATHS.runtime, filePath).replace(/\\/g, "/")
           const importPath = `@runtime/${relativeToRuntime.replace(/\.ts$/, "")}`
 
           if (CONFIG.logging.override.Tools) {
@@ -65,19 +59,14 @@ export class CodeToolAutoDiscovery {
           }
 
           // Dynamic import the tool module with explicit path handling
-          const toolModule = await import(
-            /* webpackChunkName: "code-tools" */ `${importPath}`
-          )
+          const toolModule = await import(/* webpackChunkName: "code-tools" */ `${importPath}`)
 
           // Convention: Prioritize the standard 'tool' export
           let foundTool: FlexibleToolDefinition | undefined
 
           if (toolModule.tool && this.isValidTool(toolModule.tool)) {
             foundTool = toolModule.tool as FlexibleToolDefinition
-          } else if (
-            toolModule.default &&
-            this.isValidTool(toolModule.default)
-          ) {
+          } else if (toolModule.default && this.isValidTool(toolModule.default)) {
             foundTool = toolModule.default as FlexibleToolDefinition
           } else {
             // Look for any export that looks like a tool (from defineTool)
@@ -100,19 +89,14 @@ export class CodeToolAutoDiscovery {
             tools.push(foundTool)
             seenTools.add(foundTool.name)
             if (CONFIG.logging.override.Tools) {
-              lgg.log(
-                `✅ Discovered tool: ${foundTool.name} from ${path.basename(filePath)}`
-              )
+              lgg.log(`✅ Discovered tool: ${foundTool.name} from ${path.basename(filePath)}`)
             }
           } else if (CONFIG.logging.override.Tools && !foundTool) {
             lgg.log(`⏭️ No valid tool found in: ${path.basename(filePath)}`)
           }
         } catch (error) {
           if (CONFIG.logging.override.Tools) {
-            lgg.warn(
-              `⚠️ Failed to import potential tool from ${filePath}:`,
-              error
-            )
+            lgg.warn(`⚠️ Failed to import potential tool from ${filePath}:`, error)
           }
         }
       }
@@ -179,9 +163,7 @@ export class CodeToolAutoDiscovery {
 
     const stats = codeToolRegistry.getStats()
     if (CONFIG.logging.override.Tools) {
-      lgg.log(
-        `🎉 Auto-discovery complete! ${stats.totalTools} tools registered.`
-      )
+      lgg.log(`🎉 Auto-discovery complete! ${stats.totalTools} tools registered.`)
     }
 
     return tools

@@ -1,8 +1,5 @@
 "use server"
-import {
-  cleanupTestEvolutionRunsCompletely,
-  previewTestEvolutionRunCleanup,
-} from "./cleanup.js"
+import { cleanupTestEvolutionRunsCompletely, previewTestEvolutionRunCleanup } from "./cleanup.js"
 
 async function runCleanup() {
   try {
@@ -14,9 +11,7 @@ async function runCleanup() {
       console.log(
         `\n🧹 Running COMPLETE cleanup on ${preview.testRuns.length} EvolutionRuns and ${preview.invocationsCount} WorkflowInvocations...`
       )
-      console.log(
-        "⚠️ This will delete the EvolutionRuns themselves, not just WorkflowInvocations"
-      )
+      console.log("⚠️ This will delete the EvolutionRuns themselves, not just WorkflowInvocations")
 
       const result = await cleanupTestEvolutionRunsCompletely()
       console.log("Cleanup result:", JSON.stringify(result, null, 2))
@@ -24,9 +19,7 @@ async function runCleanup() {
       if (result.success) {
         console.log("\n🎉 Cleanup successful!")
         console.log(`   - Deleted ${result.deletedRuns} EvolutionRuns`)
-        console.log(
-          `   - Deleted ${result.deletedInvocations} WorkflowInvocations`
-        )
+        console.log(`   - Deleted ${result.deletedInvocations} WorkflowInvocations`)
       } else {
         console.log("\n❌ Cleanup failed!")
       }

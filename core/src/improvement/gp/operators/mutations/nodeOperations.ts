@@ -8,10 +8,7 @@
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import type { Genome } from "../../Genome"
 import type { NodeMutationOperator } from "./mutation.types"
@@ -37,10 +34,7 @@ export class NodeOperations {
    * - Tracks failures for evolution statistics
    */
   static readonly addNode: NodeMutationOperator = {
-    async execute(
-      mutatedConfig: WorkflowConfig,
-      parent?: Genome
-    ): Promise<void> {
+    async execute(mutatedConfig: WorkflowConfig, parent?: Genome): Promise<void> {
       if (!parent) {
         lgg.error("Add node mutation requires parent genome")
         return
@@ -63,9 +57,7 @@ export class NodeOperations {
           mutatedConfig.nodes = data.nodes
           mutatedConfig.entryNodeId = data.entryNodeId
         } else {
-          lgg.error(
-            "Add node mutation failed - formalizeWorkflow returned success=false"
-          )
+          lgg.error("Add node mutation failed - formalizeWorkflow returned success=false")
           failureTracker.trackMutationFailure()
         }
       } catch (error) {
@@ -101,15 +93,10 @@ export class NodeOperations {
         // this is critical for maintaining learned knowledge across mutations
         const victimMemory = victim.memory
         if (victimMemory && Object.keys(victimMemory).length > 0) {
-          lgg.log(
-            `Preserving memory from deleted node ${victim.nodeId}:`,
-            victimMemory
-          )
+          lgg.log(`Preserving memory from deleted node ${victim.nodeId}:`, victimMemory)
 
           // find a suitable node to transfer the memory to
-          const remainingNodes = mutatedConfig.nodes.filter(
-            (n) => n.nodeId !== victim.nodeId
-          )
+          const remainingNodes = mutatedConfig.nodes.filter((n) => n.nodeId !== victim.nodeId)
           if (remainingNodes.length > 0) {
             // transfer to the first remaining node
             // future enhancement: use similarity matching to find best target
@@ -127,9 +114,7 @@ export class NodeOperations {
           }
         }
 
-        mutatedConfig.nodes = mutatedConfig.nodes.filter(
-          (node: WorkflowNodeConfig) => node.nodeId !== victim.nodeId
-        )
+        mutatedConfig.nodes = mutatedConfig.nodes.filter((node: WorkflowNodeConfig) => node.nodeId !== victim.nodeId)
       } catch (error) {
         lgg.error("Delete node mutation failed:", error)
         failureTracker.trackMutationFailure()
@@ -147,16 +132,12 @@ export class NodeOperations {
    * Leaf nodes are nodes with no outgoing connections (handOffs).
    * The entry node is never selected for deletion to maintain workflow integrity.
    */
-  private static randomNonFrozenLeaf(
-    workflow: WorkflowConfig
-  ): WorkflowNodeConfig | null {
+  private static randomNonFrozenLeaf(workflow: WorkflowConfig): WorkflowNodeConfig | null {
     const candidateNodes = workflow.nodes.filter(
       (node: WorkflowNodeConfig) =>
         node.nodeId !== workflow.entryNodeId && // don't delete entry node
         node.handOffs.length === 0 // only delete leaf nodes
     )
-    return candidateNodes.length > 0
-      ? candidateNodes[Math.floor(Math.random() * candidateNodes.length)]
-      : null
+    return candidateNodes.length > 0 ? candidateNodes[Math.floor(Math.random() * candidateNodes.length)] : null
   }
 }

@@ -9,23 +9,11 @@ interface EvolutionSelectorProps {
   loading?: boolean
 }
 
-export function EvolutionSelector({
-  currentRunId,
-  onRunSelect,
-  loading = false,
-}: EvolutionSelectorProps) {
+export function EvolutionSelector({ currentRunId, onRunSelect, loading = false }: EvolutionSelectorProps) {
   return (
     <div className="flex items-center gap-6">
-      <CulturalEvolutionSelector
-        currentRunId={currentRunId}
-        onRunSelect={onRunSelect}
-        loading={loading}
-      />
-      <GPEvolutionSelector
-        currentRunId={currentRunId}
-        onRunSelect={onRunSelect}
-        loading={loading}
-      />
+      <CulturalEvolutionSelector currentRunId={currentRunId} onRunSelect={onRunSelect} loading={loading} />
+      <GPEvolutionSelector currentRunId={currentRunId} onRunSelect={onRunSelect} loading={loading} />
     </div>
   )
 }

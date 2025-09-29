@@ -12,20 +12,13 @@ const contextGet = defineTool({
   params: z.object({
     scope: z
       .enum(["workflow", "node"])
-      .describe(
-        "Data scope: 'workflow' for shared data across all nodes, 'node' for node-specific data"
-      ),
+      .describe("Data scope: 'workflow' for shared data across all nodes, 'node' for node-specific data"),
 
     key: z.string().describe("The key name to retrieve data for"),
 
-    workflowInvocationId: z
-      .string()
-      .describe("Workflow invocation ID for the context store"),
+    workflowInvocationId: z.string().describe("Workflow invocation ID for the context store"),
 
-    defaultValue: z
-      .any()
-      .nullish()
-      .describe("Optional default value to return if key is not found"),
+    defaultValue: z.any().nullish().describe("Optional default value to return if key is not found"),
   }),
 
   async execute(params) {

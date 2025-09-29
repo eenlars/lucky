@@ -30,12 +30,7 @@ import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
 import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
 import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
-import type {
-  SendAI,
-  StructuredRequest,
-  TextRequest,
-  ToolRequest,
-} from "@core/messages/api/sendAI/types"
+import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
@@ -45,9 +40,7 @@ import type { ModelName } from "@core/utils/spending/models.types"
  * @param req - The AI request (text, tool, or structured mode)
  * @returns Promise resolving to the AI response or error result
  */
-async function _sendAIInternal(
-  req: TextRequest | ToolRequest | StructuredRequest<any>
-): Promise<any> {
+async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredRequest<any>): Promise<any> {
   /* ---- global guard‑rails ---- */
   // TODO: make guard checks configurable per environment
   // TODO: add custom guard rules based on model type
@@ -76,11 +69,7 @@ async function _sendAIInternal(
   if (
     !req.messages?.length ||
     !req.messages.some((m) =>
-      typeof m.content === "string"
-        ? m.content.trim()
-        : Array.isArray(m.content)
-          ? m.content.length
-          : false
+      typeof m.content === "string" ? m.content.trim() : Array.isArray(m.content) ? m.content.length : false
     )
   ) {
     return {
@@ -136,9 +125,7 @@ async function _sendAIInternal(
  * @param req - The AI request (text, tool, or structured mode)
  * @returns Promise resolving to standardized response format
  */
-export const sendAI: SendAI = async (
-  req: TextRequest | ToolRequest | StructuredRequest<any>
-) => {
+export const sendAI: SendAI = async (req: TextRequest | ToolRequest | StructuredRequest<any>) => {
   // TODO: optimize caller detection performance
   // TODO: add request correlation IDs for distributed tracing
   // TODO: implement proper structured logging instead of console.error
@@ -150,11 +137,7 @@ export const sendAI: SendAI = async (
     // find the first stack line outside this file
     const lines = stack.split("\n")
     for (const line of lines) {
-      if (
-        line.includes(".ts") &&
-        !line.includes("sendAI.ts") &&
-        !line.includes("/sendAI/index.ts")
-      ) {
+      if (line.includes(".ts") && !line.includes("sendAI.ts") && !line.includes("/sendAI/index.ts")) {
         // try to extract the file path
         const match = line.match(/(?:\()?(.*?\.ts):\d+:\d+\)?/)
         if (match && match[1]) {

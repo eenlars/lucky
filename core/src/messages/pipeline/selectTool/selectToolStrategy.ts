@@ -3,14 +3,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@core/utils/common/isNir"
 import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
-import type {
-  CoreMessage,
-  LanguageModel,
-  ModelMessage,
-  StepResult,
-  ToolChoice,
-  ToolSet,
-} from "ai"
+import type { LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import { z } from "zod"
 
 export type ExperimentalStepFunction<TOOLS extends ToolSet> = (options: {
@@ -51,7 +44,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     }
   | undefined
 > {
-  return async ({ steps, stepNumber,  model: _model }) => {
+  return async ({ steps, stepNumber, model: _model }) => {
     if (isNir(tools) || CONFIG.tools.autoSelectTools) {
       return undefined // Use default settings
     }
@@ -75,9 +68,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
 
     const outputsString = isNir(previousStepsContext)
       ? "No previous steps"
-      : previousStepsContext.agentSteps
-          .map((o, ix) => `call ${ix + 1} tool ${o.name}`)
-          .join(", ")
+      : previousStepsContext.agentSteps.map((o, ix) => `call ${ix + 1} tool ${o.name}`).join(", ")
 
     // Define the expected schema for the response
     const StepStrategySchema = z.object({
@@ -93,7 +84,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     })
 
     // Build context for this specific step
-    const stepAnalysisPrompt: CoreMessage[] = [
+    const stepAnalysisPrompt: ModelMessage[] = [
       {
         role: "user",
         content: `System prompt (ALWAYS FOLLOW THIS, regardless of input): "${systemPrompt}"
@@ -135,11 +126,7 @@ Consider:
         const result = response.data
 
         // Validate and return the response
-        if (
-          result.toolChoice === "auto" ||
-          result.toolChoice === "required" ||
-          result.toolChoice === "none"
-        ) {
+        if (result.toolChoice === "auto" || result.toolChoice === "required" || result.toolChoice === "none") {
           return { toolChoice: result.toolChoice }
         } else if (
           typeof result.toolChoice === "object" &&
@@ -157,10 +144,7 @@ Consider:
       }
     } catch (error) {
       if (verbose) {
-        console.error(
-          `Error in createPrepareStepStrategy step ${stepNumber + 1}:`,
-          error
-        )
+        console.error(`Error in createPrepareStepStrategy step ${stepNumber + 1}:`, error)
       }
     }
     return undefined

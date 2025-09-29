@@ -69,9 +69,7 @@ describe("calculateFitness - anomalous presence summary vs structured evidence",
           saturday: "09:00-17:30",
           sunday: "12:00-17:00",
         },
-        owner_imgs: [
-          "https://lh3.googleusercontent.com/p/AF1QipP_Zyt0FCxpxm-7UG1xhNKEVFhZ0PTuXXztAIVG=w408-h335-k-no",
-        ],
+        owner_imgs: ["https://lh3.googleusercontent.com/p/AF1QipP_Zyt0FCxpxm-7UG1xhNKEVFhZ0PTuXXztAIVG=w408-h335-k-no"],
       },
       {
         name: "De Bonte Koe Chocolade",
@@ -205,9 +203,7 @@ describe("calculateFitness - anomalous presence summary vs structured evidence",
           saturday: "13:00-21:00",
           sunday: "13:00-21:00",
         },
-        owner_imgs: [
-          "https://lh3.googleusercontent.com/p/AF1QipNpQbO6AChFbN-FBqI48zkrH4hOSJxetO3G-A0B=w408-h544-k-no",
-        ],
+        owner_imgs: ["https://lh3.googleusercontent.com/p/AF1QipNpQbO6AChFbN-FBqI48zkrH4hOSJxetO3G-A0B=w408-h544-k-no"],
       },
     ]
 

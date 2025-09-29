@@ -48,8 +48,7 @@ export function rateLimit(): string | null {
   const now = Date.now()
 
   // remove expired timestamps from sliding window
-  while (hitTimestamps.length && now - hitTimestamps[0] > RATE_WINDOW_MS)
-    hitTimestamps.shift()
+  while (hitTimestamps.length && now - hitTimestamps[0] > RATE_WINDOW_MS) hitTimestamps.shift()
 
   if (hitTimestamps.length >= MAX_REQUESTS_PER_WINDOW) {
     return `sendAI: Rate limit exceeded: ${MAX_REQUESTS_PER_WINDOW} req / ${RATE_WINDOW_MS} ms`

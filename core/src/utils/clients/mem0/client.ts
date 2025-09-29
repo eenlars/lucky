@@ -7,9 +7,7 @@ export function getMem0Client(): Mem0 | null {
   if (!mem0Client) {
     const apiKey = envi.MEM0_API_KEY
     if (!apiKey) {
-      console.warn(
-        "MEM0_API_KEY environment variable not found, memory functionality disabled"
-      )
+      console.warn("MEM0_API_KEY environment variable not found, memory functionality disabled")
       return null
     }
 
@@ -29,11 +27,7 @@ export async function addMemory(message: string, runId: string): Promise<any> {
   })
 }
 
-export async function getMemories(
-  query: string,
-  runId?: string,
-  limit?: number
-): Promise<any[]> {
+export async function getMemories(query: string, runId?: string, limit?: number): Promise<any[]> {
   const client = getMem0Client()
   if (!client) throw new Error("Memory service unavailable")
   return await client.search(query, {

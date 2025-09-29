@@ -42,9 +42,7 @@ async function fetchBatch(
   const res = await fetch(url.toString(), { headers })
   if (!res.ok) {
     const body = await res.text().catch(() => "")
-    throw new Error(
-      `HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`
-    )
+    throw new Error(`HTTP ${res.status} ${res.statusText}${body ? ` - ${body}` : ""}`)
   }
   return res.json()
 }
@@ -61,11 +59,7 @@ function mapRow(row: any): GaiaRow | null {
   return out
 }
 
-async function downloadSplit(
-  split: "validation" | "test",
-  limit: number,
-  authToken?: string
-): Promise<GaiaRow[]> {
+async function downloadSplit(split: "validation" | "test", limit: number, authToken?: string): Promise<GaiaRow[]> {
   const batchSize = 100
   let offset = 0
   const items: GaiaRow[] = []
@@ -131,10 +125,7 @@ export async function downloadGAIA({
     console.log(`GAIA downloaded to ${OUTPUT_DIR}`)
   } catch (err: any) {
     // eslint-disable-next-line no-console
-    console.error(
-      "Failed to download GAIA via datasets-server:",
-      err?.message || err
-    )
+    console.error("Failed to download GAIA via datasets-server:", err?.message || err)
     // Re-throw to allow caller to fallback (e.g., to direct method)
     throw err
   }

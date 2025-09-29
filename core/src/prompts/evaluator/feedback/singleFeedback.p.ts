@@ -2,11 +2,7 @@ import { feedbackPrompt } from "@core/prompts/evaluator/feedback/feedback.p"
 import { rcaPrompt } from "@core/prompts/evaluator/root-cause/rca"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 
-export const singleFeedbackSystemPrompt = (
-  evaluation: string,
-  outputStr: string,
-  hasReasoning: boolean
-) => `
+export const singleFeedbackSystemPrompt = (evaluation: string, outputStr: string, hasReasoning: boolean) => `
     ${rcaPrompt}
 
     # ground truth
@@ -17,9 +13,7 @@ export const singleFeedbackSystemPrompt = (
     ${feedbackPrompt}
     - In your feedback, include the required elements as specified.
     - keep your output concise. at most 100 words. ${
-      hasReasoning
-        ? "only provide the final feedback, in one short paragraph."
-        : ""
+      hasReasoning ? "only provide the final feedback, in one short paragraph." : ""
     } 
 `
 

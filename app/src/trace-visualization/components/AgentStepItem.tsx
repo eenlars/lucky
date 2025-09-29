@@ -54,15 +54,8 @@ export const AgentStepItem = ({
             {truncate((step as any).return || "")}
           </div>
           <div className="flex items-center gap-1">
-            {step.type === "terminate" && (
-              <span className="text-[9px] text-blue-600 font-medium">
-                RESULT
-              </span>
-            )}
-            <ChevronDown
-              size={12}
-              className="text-slate-400 dark:text-slate-500"
-            />
+            {step.type === "terminate" && <span className="text-[9px] text-blue-600 font-medium">RESULT</span>}
+            <ChevronDown size={12} className="text-slate-400 dark:text-slate-500" />
           </div>
         </div>
       </Card>
@@ -87,13 +80,9 @@ export const AgentStepItem = ({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className={`${theme.iconClass}`}>{getStepIcon(step.type)}</div>
-            <span className={`${theme.labelClass} text-xs`}>
-              {simpleStepLabels[step.type]}
-            </span>
+            <span className={`${theme.labelClass} text-xs`}>{simpleStepLabels[step.type]}</span>
           </div>
-          <div
-            className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-          >
+          <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
             {(step as any).return}
           </div>
         </div>
@@ -128,29 +117,17 @@ export const AgentStepItem = ({
         onClick={onToggleCollapsed}
       >
         <div className="flex items-start gap-3">
-          <div className={`mt-0.5 ${theme.iconClass}`}>
-            {getStepIcon(step.type)}
-          </div>
+          <div className={`mt-0.5 ${theme.iconClass}`}>{getStepIcon(step.type)}</div>
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <span
-                className={`text-xs font-medium px-2 py-1 rounded-full border ${theme.labelClass}`}
-              >
-                Error
-              </span>
+              <span className={`text-xs font-medium px-2 py-1 rounded-full border ${theme.labelClass}`}>Error</span>
             </div>
             <div
               className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
             >
-              <SmartContent
-                value={(step as any).return}
-                collapsed={1}
-                enableClipboard
-                showExpanders
-                jsonTheme="auto"
-              />
+              <SmartContent value={(step as any).return} collapsed={1} enableClipboard showExpanders jsonTheme="auto" />
             </div>
           </div>
         </div>
@@ -185,17 +162,11 @@ export const AgentStepItem = ({
     >
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <div className={`${themeUnknown.iconClass}`}>
-            {getStepIcon((step as any).type)}
-          </div>
-          <span className={`${themeUnknown.labelClass} text-xs`}>
-            {(step as any).type}
-          </span>
+          <div className={`${themeUnknown.iconClass}`}>{getStepIcon((step as any).type)}</div>
+          <span className={`${themeUnknown.labelClass} text-xs`}>{(step as any).type}</span>
         </div>
         {(step as any).return && (
-          <div
-            className={`text-sm leading-relaxed whitespace-pre-wrap ${themeUnknown.contentClass}`}
-          >
+          <div className={`text-sm leading-relaxed whitespace-pre-wrap ${themeUnknown.contentClass}`}>
             {typeof (step as any).return === "string"
               ? (step as any).return
               : JSON.stringify((step as any).return, null, 2)}

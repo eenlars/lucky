@@ -17,15 +17,11 @@ interface ExpectedOutputDialogProps {
   expectedOutputType: Json
 }
 
-export function ExpectedOutputDialog({
-  expectedOutputType,
-}: ExpectedOutputDialogProps) {
+export function ExpectedOutputDialog({ expectedOutputType }: ExpectedOutputDialogProps) {
   const [isCopied, setIsCopied] = useState(false)
 
   const jsonString =
-    typeof expectedOutputType === "string"
-      ? expectedOutputType
-      : JSON.stringify(expectedOutputType, null, 2)
+    typeof expectedOutputType === "string" ? expectedOutputType : JSON.stringify(expectedOutputType, null, 2)
 
   const handleCopy = async () => {
     try {
@@ -39,8 +35,7 @@ export function ExpectedOutputDialog({
 
   // Create a preview - first 5 lines for better context
   const lines = jsonString.split("\n")
-  const preview =
-    lines.length > 5 ? lines.slice(0, 5).join("\n") + "\n..." : jsonString
+  const preview = lines.length > 5 ? lines.slice(0, 5).join("\n") + "\n..." : jsonString
 
   return (
     <div className="space-y-2">
@@ -63,26 +58,18 @@ export function ExpectedOutputDialog({
                   <FileJson size={20} />
                   Expected Output Schema
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="gap-2"
-                >
+                <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
                   <Copy size={14} />
                   {isCopied ? "Copied!" : "Copy"}
                 </Button>
               </DialogTitle>
               <DialogDescription>
-                The schema that defines the expected structure and types for the
-                workflow output
+                The schema that defines the expected structure and types for the workflow output
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4 overflow-auto max-h-[60vh]">
               <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono overflow-x-auto">
-                <code className="text-gray-800 whitespace-pre">
-                  {jsonString}
-                </code>
+                <code className="text-gray-800 whitespace-pre">{jsonString}</code>
               </pre>
             </div>
           </DialogContent>
@@ -91,9 +78,7 @@ export function ExpectedOutputDialog({
 
       {/* Preview section */}
       <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-        <pre className="text-sm text-gray-700 font-mono whitespace-pre-wrap">
-          {preview}
-        </pre>
+        <pre className="text-sm text-gray-700 font-mono whitespace-pre-wrap">{preview}</pre>
       </div>
     </div>
   )

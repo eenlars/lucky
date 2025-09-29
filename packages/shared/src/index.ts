@@ -7,11 +7,4 @@ export * from "./fs/index"
 export * from "./utils/files/json/jsonParse"
 
 // Types
-export type {
-  Database,
-  Enums,
-  Json,
-  Tables,
-  TablesInsert,
-  TablesUpdate,
-} from "./types/database.types"
+export type { Database, Enums, Json, Tables, TablesInsert, TablesUpdate } from "./types/database.types"

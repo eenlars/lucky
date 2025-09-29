@@ -132,17 +132,13 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav
-        className={cn(
-          "flex-1 px-2.5 py-3 transition-all duration-300 ease-out",
-          isCollapsed && !isMobile && "px-2"
-        )}
+        className={cn("flex-1 px-2.5 py-3 transition-all duration-300 ease-out", isCollapsed && !isMobile && "px-2")}
         aria-label="Primary navigation"
       >
         <ul className="space-y-0.5">
           {sidebarItems.map((item) => {
             const isDisabled = !isProd && disabledHrefs.has(item.href)
-            const isActive =
-              pathname === item.href || pathname?.startsWith(`${item.href}/`)
+            const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
             const Icon = item.icon
 
             const commonClasses = cn(
@@ -223,9 +219,7 @@ export default function Sidebar() {
                 >
                   {item.label}
                 </span>
-                {isActive && !isCollapsed && !isMobile && (
-                  <span className="sr-only">(current)</span>
-                )}
+                {isActive && !isCollapsed && !isMobile && <span className="sr-only">(current)</span>}
               </Link>
             )
 
@@ -240,11 +234,7 @@ export default function Sidebar() {
                       className="bg-popover text-popover-foreground border border-border shadow-md"
                     >
                       <p className="font-medium">{item.label}</p>
-                      {item.description && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {item.description}
-                        </p>
-                      )}
+                      {item.description && <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>}
                     </TooltipContent>
                   </Tooltip>
                 ) : (
@@ -272,11 +262,7 @@ export default function Sidebar() {
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           data-testid="sidebar-collapse-toggle"
         >
-          {isCollapsed ? (
-            <ChevronRight className="size-3" />
-          ) : (
-            <ChevronLeft className="size-3" />
-          )}
+          {isCollapsed ? <ChevronRight className="size-3" /> : <ChevronLeft className="size-3" />}
         </button>
       )}
 
@@ -324,13 +310,7 @@ export default function Sidebar() {
         className={cn(
           "fixed left-0 top-0 z-40 h-screen bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border/50",
           "transition-all duration-300 ease-out",
-          isMobile
-            ? isMobileOpen
-              ? "translate-x-0 w-64"
-              : "-translate-x-full w-64"
-            : isCollapsed
-              ? "w-16"
-              : "w-64"
+          isMobile ? (isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64") : isCollapsed ? "w-16" : "w-64"
         )}
         aria-label="Primary sidebar"
       >

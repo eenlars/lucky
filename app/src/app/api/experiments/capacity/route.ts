@@ -1,7 +1,4 @@
-import {
-  getLatestFileByPrefix,
-  publicExperimentDir,
-} from "@/lib/experiments/file-utils"
+import { getLatestFileByPrefix, publicExperimentDir } from "@/lib/experiments/file-utils"
 import type { ToolCapacityResponse } from "@experiments/tool-real/experiments/01-capacity-limits/main-experiment"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
@@ -45,18 +42,12 @@ export async function GET() {
   try {
     const resultsDir = publicExperimentDir("01-capacity-limits")
 
-    const analysisPath = await getLatestFile(
-      resultsDir,
-      "tool-capacity-analysis"
-    )
+    const analysisPath = await getLatestFile(resultsDir, "tool-capacity-analysis")
 
     const resultsPath = await getLatestFile(resultsDir, "tool-capacity-results")
 
     if (!analysisPath && !resultsPath) {
-      return NextResponse.json(
-        { ok: false, error: "No capacity results found" },
-        { status: 404 }
-      )
+      return NextResponse.json({ ok: false, error: "No capacity results found" }, { status: 404 })
     }
 
     const analysis = analysisPath
@@ -66,9 +57,7 @@ export async function GET() {
         })
       : null
 
-    const results = resultsPath
-      ? JSON.parse(await fs.readFile(resultsPath, "utf-8"))
-      : null
+    const results = resultsPath ? JSON.parse(await fs.readFile(resultsPath, "utf-8")) : null
 
     return NextResponse.json<ToolCapacityExperimentResponse>({
       ok: true,

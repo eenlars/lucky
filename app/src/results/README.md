@@ -55,22 +55,14 @@ import { WorkflowEvolutionVisualization } from "@/results/WorkflowEvolutionVisua
 import evolutionData from "@/results/evolution-graph-b463376e.json"
 
 export default function Page() {
-  return (
-    <WorkflowEvolutionVisualization
-      graph={evolutionData.graph}
-      visualization={evolutionData.visualization}
-    />
-  )
+  return <WorkflowEvolutionVisualization graph={evolutionData.graph} visualization={evolutionData.visualization} />
 }
 ```
 
 ### Programmatic Access
 
 ```typescript
-import {
-  traceWorkflowEvolution,
-  createEvolutionVisualizationData,
-} from "@/results/workflow-evolution-tracer"
+import { traceWorkflowEvolution, createEvolutionVisualizationData } from "@/results/workflow-evolution-tracer"
 
 const graph = await traceWorkflowEvolution("b463376e")
 const visualization = createEvolutionVisualizationData(graph)

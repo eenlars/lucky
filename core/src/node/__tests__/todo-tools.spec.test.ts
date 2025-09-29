@@ -8,12 +8,8 @@ describe("Todo Tools Integration Test", () => {
   // also uses console.log for debugging output that should be removed.
   it("should execute todoWrite and todoRead workflow", async () => {
     // Import the todo tools directly
-    const todoWrite = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-write"
-    )
-    const todoRead = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-read"
-    )
+    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     const workflowInvocationId = `todo-integration-test-${Date.now()}`
@@ -52,9 +48,7 @@ describe("Todo Tools Integration Test", () => {
     expect(readResult.success).toBe(true)
     expect(readResult.data?.output?.todos).toBeDefined()
     expect(readResult.data?.output?.todos.length).toBe(1)
-    expect(readResult.data?.output?.todos[0].content).toBe(
-      "Integration test task"
-    )
+    expect(readResult.data?.output?.todos[0].content).toBe("Integration test task")
 
     console.log("TodoRead result:", readResult.data?.output?.todos)
 
@@ -63,11 +57,7 @@ describe("Todo Tools Integration Test", () => {
     // adds unnecessary complexity, cost, and potential flakiness. should remove
     // this entire verification step and rely on direct assertions.
     // Step 3: Verify the workflow with AI
-    const todoListContent = JSON.stringify(
-      readResult.data?.output?.todos,
-      null,
-      2
-    )
+    const todoListContent = JSON.stringify(readResult.data?.output?.todos, null, 2)
 
     const verification = await sendAI({
       model: getDefaultModels().default,
@@ -97,12 +87,8 @@ describe("Todo Tools Integration Test", () => {
   }, 20000)
 
   it("should handle multiple todos in workflow", async () => {
-    const todoWrite = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-write"
-    )
-    const todoRead = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-read"
-    )
+    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
 
     const workflowInvocationId = `todo-multi-integration-test-${Date.now()}`
 

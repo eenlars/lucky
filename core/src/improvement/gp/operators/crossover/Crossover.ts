@@ -85,13 +85,9 @@ export class Crossover {
     // TODO: improve error messages with parent identifiers for debugging
     // TODO: implement fallback strategies when feedback is missing
     if (!parent1.getFeedback() && operatorsWithFeedback)
-      lgg.error(
-        `Crossover not going well: parent1 ${parent1.getWorkflowVersionId()} has no feedback`
-      )
+      lgg.error(`Crossover not going well: parent1 ${parent1.getWorkflowVersionId()} has no feedback`)
     if (!parent2.getFeedback() && operatorsWithFeedback)
-      lgg.error(
-        `Crossover not going well: parent2 ${parent2.getWorkflowVersionId()} has no feedback`
-      )
+      lgg.error(`Crossover not going well: parent2 ${parent2.getWorkflowVersionId()} has no feedback`)
 
     return `Create a new workflow by performing crossover between these two parent workflows:
 
@@ -174,9 +170,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
     evaluationInput: EvaluationInput
     _evolutionContext: EvolutionContext
   }): Promise<RS<Genome>> {
-    const parentWorkflowVersionIds = parents.map((p) =>
-      p.getWorkflowVersionId()
-    )
+    const parentWorkflowVersionIds = parents.map((p) => p.getWorkflowVersionId())
     const [parent1, parent2] = parents
 
     if (CONFIG.evolution.GP.verbose || verbose) {
@@ -251,60 +245,37 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         crossoverInstructions
       )
 
-      const { data: workflowConfig, error } = await formalizeWorkflow(
-        crossoverPrompt,
-        {
-          workflowConfig: parent1.getWorkflowConfig(),
-          verifyWorkflow: "normal",
-          repairWorkflowAfterGeneration: true,
-        }
-      )
-      console.log(
-        "[Crossover DEBUG] formalize returned data?",
-        !!workflowConfig
-      )
+      const { data: workflowConfig, error } = await formalizeWorkflow(crossoverPrompt, {
+        workflowConfig: parent1.getWorkflowConfig(),
+        verifyWorkflow: "normal",
+        repairWorkflowAfterGeneration: true,
+      })
+      console.log("[Crossover DEBUG] formalize returned data?", !!workflowConfig)
 
       if (workflowConfig) {
         // preserve memories from both parents to maintain learned knowledge
         // crossover should combine memories, not lose them
         const { MemoryPreservation } = await import("../memoryPreservation")
-        MemoryPreservation.preserveCrossoverMemory(
-          workflowConfig,
-          parent1,
-          parent2
-        )
+        MemoryPreservation.preserveCrossoverMemory(workflowConfig, parent1, parent2)
 
         // enforce memory preservation - throw error if any memories were lost
         // this is critical for maintaining knowledge across generations
-        MemoryPreservation.enforceMemoryPreservation(
-          workflowConfig,
-          [parent1, parent2],
-          "crossover"
-        )
+        MemoryPreservation.enforceMemoryPreservation(workflowConfig, [parent1, parent2], "crossover")
 
         const verifyResult = await verifyWorkflowConfig(workflowConfig, {
           throwOnError: false,
           verbose: false,
         })
-        console.log(
-          "[Crossover DEBUG] verifyWorkflowConfig result:",
-          verifyResult
-        )
+        console.log("[Crossover DEBUG] verifyWorkflowConfig result:", verifyResult)
 
         const { isValid, errors: verifyErrors } =
           verifyResult && typeof verifyResult === "object"
             ? (verifyResult as { isValid: boolean; errors: string[] })
             : { isValid: true, errors: [] as string[] }
         if (!isValid) {
-          lgg.error(
-            "Crossover failed: invalid workflow after verifying",
-            verifyErrors
-          )
+          lgg.error("Crossover failed: invalid workflow after verifying", verifyErrors)
           failureTracker.trackCrossoverFailure() // Track verification failure
-          return R.error(
-            "Crossover failed: invalid workflow after verifying",
-            0
-          )
+          return R.error("Crossover failed: invalid workflow after verifying", 0)
         }
         if (verifyErrors.length > 0) {
           lgg.error("Crossover failed: error verifying workflow", verifyErrors)
@@ -319,9 +290,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           operation: "crossover",
         })
         if (!wfToGenomeResp || typeof wfToGenomeResp !== "object") {
-          lgg.error(
-            "Crossover failed: no data (invalid response from workflowConfigToGenome)"
-          )
+          lgg.error("Crossover failed: no data (invalid response from workflowConfigToGenome)")
           failureTracker.trackCrossoverFailure()
           return R.error("Crossover failed: no data", 0)
         }
@@ -335,30 +304,16 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         return R.success(data, crossoverCost)
       } else {
         lgg.error("formalizeWorkflow returned no valid workflow", error)
-        console.log(
-          "[Crossover DEBUG] formalizeWorkflow returned no valid workflow",
-          error
-        )
+        console.log("[Crossover DEBUG] formalizeWorkflow returned no valid workflow", error)
         failureTracker.trackCrossoverFailure() // Track workflow formalization failure
-        return R.error(
-          "formalizeWorkflow returned no valid workflow" +
-            (error ? `: ${error}` : ""),
-          0
-        )
+        return R.error("formalizeWorkflow returned no valid workflow" + (error ? `: ${error}` : ""), 0)
       }
     } catch (error) {
-      lgg.error(
-        "llm crossover failed for parents",
-        parentWorkflowVersionIds,
-        error
-      )
+      lgg.error("llm crossover failed for parents", parentWorkflowVersionIds, error)
       console.log("[Crossover DEBUG] exception:", error)
       failureTracker.trackCrossoverFailure() // Track exception failure
       // TODO: include specific error details in error message for debugging
-      return R.error(
-        `Crossover failed: ${error instanceof Error ? error.message : String(error)}`,
-        0
-      )
+      return R.error(`Crossover failed: ${error instanceof Error ? error.message : String(error)}`, 0)
     }
   }
 }

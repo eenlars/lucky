@@ -29,10 +29,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
-import {
-  createWorkflowVersion,
-  ensureWorkflowExists,
-} from "@core/utils/persistence/workflow/registerWorkflow"
+import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { getActiveModelNames } from "@core/utils/spending/functions"
 import { R, type RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -41,10 +38,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
 import { CONFIG } from "@runtime/settings/constants"
 import crypto from "crypto"
-import type {
-  GenomeEvaluationResults,
-  WorkflowGenome,
-} from "./resources/gp.types"
+import type { GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 import type { EvolutionContext } from "./resources/types"
 
 /**
@@ -77,13 +71,7 @@ export class Genome extends Workflow {
     _evolutionContext: EvolutionContext,
     workflowVersionId: string | undefined = undefined
   ) {
-    super(
-      Genome.toWorkflowConfig(genome),
-      evaluationInput,
-      _evolutionContext,
-      undefined,
-      workflowVersionId
-    )
+    super(Genome.toWorkflowConfig(genome), evaluationInput, _evolutionContext, undefined, workflowVersionId)
     this.genome = genome
 
     const genomeEvaluationResults: GenomeEvaluationResults = {
@@ -169,19 +157,13 @@ export class Genome extends Workflow {
       // in verbose mode, skip expensive workflow generation for testing
       if (CONFIG.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
-        return R.success(
-          createDummyGenome(parentWorkflowVersionIds, _evolutionContext),
-          0
-        )
+        return R.success(createDummyGenome(parentWorkflowVersionIds, _evolutionContext), 0)
       }
 
       // baseWorkflow method: start from existing workflow and mutate it
       if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
         if (!baseWorkflow) {
-          return R.error(
-            "Base workflow required for baseWorkflow initialization method",
-            0
-          )
+          return R.error("Base workflow required for baseWorkflow initialization method", 0)
         }
         const { data: baseWorkflowGenome } = await workflowConfigToGenome({
           workflowConfig: baseWorkflow,
@@ -206,8 +188,7 @@ export class Genome extends Workflow {
       // default method: generate completely new workflow from scratch
       // select random model for diversity in initial population
       const activeModels = getActiveModelNames()
-      const randomModel =
-        activeModels[Math.floor(Math.random() * activeModels.length)]
+      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `
@@ -242,15 +223,8 @@ export class Genome extends Workflow {
     } catch (e) {
       // TODO: implement proper error handling with lgg.error throughout
       // TODO: add metrics tracking for random genome generation failures
-      lgg.error(
-        "failed to create random genome",
-        e,
-        truncater(JSON.stringify(e), 1000)
-      )
-      return R.error(
-        "Failed to create random genome " + truncater(JSON.stringify(e), 200),
-        0
-      )
+      lgg.error("failed to create random genome", e, truncater(JSON.stringify(e), 1000))
+      return R.error("Failed to create random genome " + truncater(JSON.stringify(e), 200), 0)
     }
   }
 
@@ -275,18 +249,14 @@ export class Genome extends Workflow {
       const randomness = EvolutionUtils.poisson(1, 4, 5)
       if (CONFIG.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createPrepared")
-        return R.success(
-          createDummyGenome(parentWorkflowVersionIds, _evolutionContext),
-          0
-        )
+        return R.success(createDummyGenome(parentWorkflowVersionIds, _evolutionContext), 0)
       }
 
       // Use the already-computed problem analysis passed from Workflow.prepareWorkflow()
       const enhancedAnalysis = problemAnalysis
 
       const activeModels = getActiveModelNames()
-      const randomModel =
-        activeModels[Math.floor(Math.random() * activeModels.length)]
+      const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
         prompt: `
@@ -330,15 +300,8 @@ export class Genome extends Workflow {
       genome.addCost(generatedWorkflowForGenomeFromIdea.usdCost || 0)
       return R.success(genome, usdCost)
     } catch (e) {
-      lgg.error(
-        "failed to create prepared genome",
-        e,
-        truncater(JSON.stringify(e), 1000)
-      )
-      return R.error(
-        "Failed to create prepared genome " + truncater(JSON.stringify(e), 200),
-        0
-      )
+      lgg.error("failed to create prepared genome", e, truncater(JSON.stringify(e), 1000))
+      return R.error("Failed to create prepared genome " + truncater(JSON.stringify(e), 200), 0)
     }
   }
 
@@ -396,13 +359,7 @@ export class Genome extends Workflow {
    * TODO: implement proper cleanup of evaluation results between generations
    * TODO: consider using WeakMap for storing transient evaluation data
    */
-  setFitnessAndFeedback({
-    fitness,
-    feedback,
-  }: {
-    fitness: FitnessOfWorkflow
-    feedback: string | null
-  }): void {
+  setFitnessAndFeedback({ fitness, feedback }: { fitness: FitnessOfWorkflow; feedback: string | null }): void {
     this.genomeEvaluationResults = {
       ...(this.genomeEvaluationResults || {}),
       ...fitness,
@@ -415,11 +372,7 @@ export class Genome extends Workflow {
     // Use new feedback if provided, otherwise keep existing feedback
     const hasCurrentFeedback = !isNir(this.feedback)
     const hasNewFeedback = !isNir(feedback)
-    this.feedback = hasNewFeedback
-      ? feedback
-      : hasCurrentFeedback
-        ? this.feedback
-        : null
+    this.feedback = hasNewFeedback ? feedback : hasCurrentFeedback ? this.feedback : null
     this.fitness = fitness.score > 0 ? fitness : undefined
     this.isEvaluated = true
   }

@@ -55,9 +55,7 @@ export function useRubricManagement(
   }
 
   const updateCriteria = (id: string, updates: Partial<RubricCriteria>) => {
-    setCriteria((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
-    )
+    setCriteria((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)))
   }
 
   const removeCriteria = (id: string) => {

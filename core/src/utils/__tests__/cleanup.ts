@@ -26,10 +26,7 @@ export const cleanupTestEvolutionRunInvocations = async () => {
   const runIds = testRuns.map((run) => run.run_id)
 
   // 2. Delete WorkflowInvocations referencing those runs
-  const { error: invocationsError, count } = await supabase
-    .from("WorkflowInvocation")
-    .delete()
-    .in("run_id", runIds)
+  const { error: invocationsError, count } = await supabase.from("WorkflowInvocation").delete().in("run_id", runIds)
 
   if (invocationsError) throw invocationsError
 
@@ -73,22 +70,14 @@ export const cleanupTestEvolutionRunsCompletely = async () => {
 
   const runIds = testRuns.map((run) => run.run_id)
   console.log(`📊 Found ${runIds.length} test EvolutionRuns to delete`)
-  console.log(
-    `🔗 Run IDs: ${runIds.slice(0, 5).join(", ")}${runIds.length > 5 ? "..." : ""}`
-  )
+  console.log(`🔗 Run IDs: ${runIds.slice(0, 5).join(", ")}${runIds.length > 5 ? "..." : ""}`)
 
   // 2. Delete WorkflowInvocations first (foreign key constraint)
   console.log("🗑️ Step 2: Deleting WorkflowInvocations...")
-  const invocationsDeleteResult = await supabase
-    .from("WorkflowInvocation")
-    .delete()
-    .in("run_id", runIds)
+  const invocationsDeleteResult = await supabase.from("WorkflowInvocation").delete().in("run_id", runIds)
 
   if (invocationsDeleteResult.error) {
-    console.error(
-      "❌ Error deleting WorkflowInvocations:",
-      invocationsDeleteResult.error
-    )
+    console.error("❌ Error deleting WorkflowInvocations:", invocationsDeleteResult.error)
     throw invocationsDeleteResult.error
   }
 
@@ -97,17 +86,11 @@ export const cleanupTestEvolutionRunsCompletely = async () => {
 
   // 3. Delete the EvolutionRuns themselves
   console.log("🗑️ Step 3: Deleting EvolutionRuns...")
-  const runsDeleteResult = await supabase
-    .from("EvolutionRun")
-    .delete()
-    .in("run_id", runIds)
+  const runsDeleteResult = await supabase.from("EvolutionRun").delete().in("run_id", runIds)
 
   if (runsDeleteResult.error) {
     console.error("❌ Error deleting EvolutionRuns:", runsDeleteResult.error)
-    console.error(
-      "Full error object:",
-      JSON.stringify(runsDeleteResult.error, null, 2)
-    )
+    console.error("Full error object:", JSON.stringify(runsDeleteResult.error, null, 2))
     throw runsDeleteResult.error
   }
 
@@ -127,9 +110,7 @@ export const cleanupTestEvolutionRunsCompletely = async () => {
   } else {
     const remainingCount = remainingRuns?.length || 0
     const actuallyDeleted = runIds.length - remainingCount
-    console.log(
-      `📊 Verification: ${actuallyDeleted} EvolutionRuns actually deleted, ${remainingCount} remaining`
-    )
+    console.log(`📊 Verification: ${actuallyDeleted} EvolutionRuns actually deleted, ${remainingCount} remaining`)
 
     return {
       success: true,

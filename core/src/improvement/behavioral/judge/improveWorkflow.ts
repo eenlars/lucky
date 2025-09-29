@@ -27,9 +27,7 @@ export interface UnifiedImprovementResult {
  * 3. LLM judge outputs new_schema_full_json or null
  */
 //todo-leak :: Unified improvement function receives fitness parameter during improvement
-export async function improveWorkflowUnified(
-  params: UnifiedImprovementParams
-): Promise<UnifiedImprovementResult> {
+export async function improveWorkflowUnified(params: UnifiedImprovementParams): Promise<UnifiedImprovementResult> {
   const { config, fitness, feedback } = params
   let totalCost = 0
 
@@ -44,11 +42,7 @@ export async function improveWorkflowUnified(
 
   const { data, success, error, usdCost } = await sendAI({
     // watch out: this is without the easyModelNames option!
-    messages: WorkflowEvolutionPrompts.createJudgePrompt(
-      inputConfig,
-      fitness,
-      feedback
-    ),
+    messages: WorkflowEvolutionPrompts.createJudgePrompt(inputConfig, fitness, feedback),
     model: getDefaultModels().reasoning,
     mode: "structured",
     schema: WorkflowConfigSchema,

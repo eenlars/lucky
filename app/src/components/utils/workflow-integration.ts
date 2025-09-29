@@ -4,9 +4,7 @@ import type { Metrics, RubricCriteria } from "../types/evaluation"
 /**
  * Parse workflow results and extract metrics
  */
-export function parseWorkflowResultToMetrics(
-  result: InvokeWorkflowResult
-): Metrics {
+export function parseWorkflowResultToMetrics(result: InvokeWorkflowResult): Metrics {
   const { queueRunResult, fitness, usdCost } = result
 
   return {
@@ -50,8 +48,7 @@ export function calculateRubricScores(
 
   return criteria.map((criterion) => {
     // Check if the criterion name appears in the output
-    const criterionMentioned =
-      criterion.name && outputLower.includes(criterion.name.toLowerCase())
+    const criterionMentioned = criterion.name && outputLower.includes(criterion.name.toLowerCase())
 
     // Simple heuristic: if mentioned, give partial credit
     const achievedPoints = criterionMentioned
@@ -82,9 +79,7 @@ export function extractErrorInfo(error: unknown): string {
 /**
  * Format workflow feedback for display
  */
-export function formatWorkflowFeedback(
-  result: InvokeWorkflowResult
-): string | null {
+export function formatWorkflowFeedback(result: InvokeWorkflowResult): string | null {
   if (result.feedback) {
     return result.feedback
   }

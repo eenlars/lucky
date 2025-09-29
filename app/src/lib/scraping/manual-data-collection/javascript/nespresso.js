@@ -14,9 +14,7 @@ const DEFAULT_OPENING = {
 
 function transformNespressoData(input) {
   // input is an array of objects each with a `stores` array
-  const allStores = Array.isArray(input)
-    ? input.flatMap((item) => item.stores || [])
-    : input.stores || []
+  const allStores = Array.isArray(input) ? input.flatMap((item) => item.stores || []) : input.stores || []
 
   return allStores.map((store) => ({
     name: store.name || null,
@@ -39,10 +37,7 @@ function transformNespressoData(input) {
 
 // load → Transform → Save
 const transformed = transformNespressoData(json)
-fs.writeFileSync(
-  "app/src/lib/evals/parsed/nespresso.json",
-  JSON.stringify(transformed, null, 2)
-)
+fs.writeFileSync("app/src/lib/evals/parsed/nespresso.json", JSON.stringify(transformed, null, 2))
 
 // for quick debugging:
 lgg.info(JSON.stringify(transformed, null, 2))

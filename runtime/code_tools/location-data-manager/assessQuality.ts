@@ -5,9 +5,7 @@ export function assessDataQuality(data: LocationData): DataQuality {
   const requiredFields = ["name"] as const
 
   // check if required fields are present
-  const hasRequiredFields = requiredFields.every(
-    (field) => !!data[field as keyof LocationData]
-  )
+  const hasRequiredFields = requiredFields.every((field) => !!data[field as keyof LocationData])
   if (!hasRequiredFields) return DataQuality.MINIMAL
 
   // check if we have coordinates
@@ -21,9 +19,7 @@ export function assessDataQuality(data: LocationData): DataQuality {
 
   // check other detail fields
   const detailFields = ["address", "city", "country", "postcode"] as const
-  const detailFieldCount = detailFields.filter(
-    (field) => !!data[field as keyof LocationData]
-  ).length
+  const detailFieldCount = detailFields.filter((field) => !!data[field as keyof LocationData]).length
 
   if (detailFieldCount >= 3) return DataQuality.COMPLETE
   if (detailFieldCount >= 2) return DataQuality.PARTIAL

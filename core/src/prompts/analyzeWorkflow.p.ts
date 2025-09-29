@@ -3,7 +3,7 @@ import { toolsExplanations } from "@core/prompts/explainTools"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { llmify } from "@core/utils/common/llmify"
 import type { Workflow } from "@core/workflow/Workflow"
-import type { CoreMessage } from "ai"
+import type { ModelMessage } from "ai"
 
 export const WorkflowAnalysisPrompts = {
   // This is the judge that analyzes a workflow its messaging
@@ -13,7 +13,7 @@ export const WorkflowAnalysisPrompts = {
     workflow: Workflow,
     fitness: FitnessOfWorkflow,
     previousMemory: Record<string, string> = {}
-  ): CoreMessage[] => {
+  ): ModelMessage[] => {
     return [
       {
         // todo-cost: this has a downside: it actually needs a smart model, but putting in the transcript will make the context

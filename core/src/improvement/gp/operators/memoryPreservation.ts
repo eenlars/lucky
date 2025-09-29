@@ -15,19 +15,12 @@ export class MemoryPreservation {
    * merges memories from both parents, with parent1 taking precedence for conflicts
    * CRITICAL: memories are NEVER deleted, only transferred and merged
    */
-  static preserveCrossoverMemory(
-    offspring: WorkflowConfig,
-    parent1: Genome,
-    parent2: Genome
-  ): void {
+  static preserveCrossoverMemory(offspring: WorkflowConfig, parent1: Genome, parent2: Genome): void {
     const parent1Memory = parent1.getMemory()
     const parent2Memory = parent2.getMemory()
 
     // preserve workflow-level memory
-    if (
-      parent1.getWorkflowConfig().memory ||
-      parent2.getWorkflowConfig().memory
-    ) {
+    if (parent1.getWorkflowConfig().memory || parent2.getWorkflowConfig().memory) {
       offspring.memory = {
         ...parent2.getWorkflowConfig().memory,
         ...parent1.getWorkflowConfig().memory, // parent1 takes precedence
@@ -46,30 +39,18 @@ export class MemoryPreservation {
         }
 
         // logger may be partially mocked in tests
-        lgg.onlyIf?.(
-          MemoryPreservation.verbose,
-          `Preserved memory for node ${node.nodeId}:`,
-          node.memory
-        )
+        lgg.onlyIf?.(MemoryPreservation.verbose, `Preserved memory for node ${node.nodeId}:`, node.memory)
       }
     }
 
     // for new nodes that don't exist in parents, try to find similar nodes
     for (const node of offspring.nodes) {
       if (!parent1Memory[node.nodeId] && !parent2Memory[node.nodeId]) {
-        const similarNodeMemory = this.findSimilarNodeMemory(
-          node,
-          parent1Memory,
-          parent2Memory
-        )
+        const similarNodeMemory = this.findSimilarNodeMemory(node, parent1Memory, parent2Memory)
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
           // logger may be partially mocked in tests
-          lgg.onlyIf?.(
-            MemoryPreservation.verbose,
-            `Inherited similar memory for new node ${node.nodeId}:`,
-            node.memory
-          )
+          lgg.onlyIf?.(MemoryPreservation.verbose, `Inherited similar memory for new node ${node.nodeId}:`, node.memory)
         }
       }
     }
@@ -80,10 +61,7 @@ export class MemoryPreservation {
    * copies all memories from parent, maintaining continuity
    * CRITICAL: ALL parent memories are preserved, NEVER deleted
    */
-  static preserveMutationMemory(
-    offspring: WorkflowConfig,
-    parent: Genome
-  ): void {
+  static preserveMutationMemory(offspring: WorkflowConfig, parent: Genome): void {
     const parentMemory = parent.getMemory()
 
     // preserve workflow-level memory
@@ -98,11 +76,7 @@ export class MemoryPreservation {
         node.memory = { ...parentNodeMemory }
 
         // logger may be partially mocked in tests
-        lgg.onlyIf?.(
-          MemoryPreservation.verbose,
-          `Preserved memory for mutated node ${node.nodeId}:`,
-          node.memory
-        )
+        lgg.onlyIf?.(MemoryPreservation.verbose, `Preserved memory for mutated node ${node.nodeId}:`, node.memory)
       }
     }
 
@@ -113,11 +87,7 @@ export class MemoryPreservation {
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
           // logger may be partially mocked in tests
-          lgg.onlyIf?.(
-            MemoryPreservation.verbose,
-            `Inherited memory for new mutated node ${node.nodeId}:`,
-            node.memory
-          )
+          lgg.onlyIf?.(MemoryPreservation.verbose, `Inherited memory for new mutated node ${node.nodeId}:`, node.memory)
         }
       }
     }
@@ -130,10 +100,7 @@ export class MemoryPreservation {
     targetNode: { nodeId: string; systemPrompt: string },
     ...memorySources: Record<string, Record<string, string>>[]
   ): Record<string, string> | null {
-    const allMemories = memorySources.reduce(
-      (acc, source) => ({ ...acc, ...source }),
-      {}
-    )
+    const allMemories = memorySources.reduce((acc, source) => ({ ...acc, ...source }), {})
 
     // simple heuristic: find node with most similar system prompt
     let bestMatch: {
@@ -179,10 +146,7 @@ export class MemoryPreservation {
     // check workflow-level memory preservation
     for (const parent of parents) {
       const parentWorkflowMemory = parent.getWorkflowConfig().memory
-      if (
-        parentWorkflowMemory &&
-        Object.keys(parentWorkflowMemory).length > 0
-      ) {
+      if (parentWorkflowMemory && Object.keys(parentWorkflowMemory).length > 0) {
         if (!offspring.memory) {
           missingMemories.push("workflow-level memory completely missing")
         } else {
@@ -196,9 +160,7 @@ export class MemoryPreservation {
     }
 
     // check node-level memory preservation
-    for (const [nodeId, parentNodeMemory] of Object.entries(
-      allParentMemories
-    )) {
+    for (const [nodeId, parentNodeMemory] of Object.entries(allParentMemories)) {
       if (parentNodeMemory && Object.keys(parentNodeMemory).length > 0) {
         const offspringNode = offspring.nodes.find((n) => n.nodeId === nodeId)
         if (offspringNode) {
@@ -207,9 +169,7 @@ export class MemoryPreservation {
           } else {
             for (const [key, value] of Object.entries(parentNodeMemory)) {
               if (!(key in offspringNode.memory)) {
-                missingMemories.push(
-                  `node '${nodeId}' memory key '${key}' lost`
-                )
+                missingMemories.push(`node '${nodeId}' memory key '${key}' lost`)
               }
             }
           }
@@ -250,10 +210,7 @@ export class MemoryPreservation {
   /**
    * simple prompt similarity calculation
    */
-  private static calculatePromptSimilarity(
-    prompt1: string,
-    prompt2: string
-  ): number {
+  private static calculatePromptSimilarity(prompt1: string, prompt2: string): number {
     const words1 = new Set(prompt1.toLowerCase().split(/\s+/))
     const words2 = new Set(prompt2.toLowerCase().split(/\s+/))
 

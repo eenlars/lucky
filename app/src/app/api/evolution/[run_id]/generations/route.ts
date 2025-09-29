@@ -17,10 +17,7 @@ interface WorkflowInvocationSubset {
   generation_id: string | null
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ run_id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -79,13 +76,8 @@ export async function GET(
 
     // Group data by generation
     const generationsWithData = generations.map((generation) => {
-      const genVersions =
-        versions?.filter((v) => v.generation_id === generation.generation_id) ||
-        []
-      const genInvocations =
-        invocations?.filter(
-          (i) => i.generation_id === generation.generation_id
-        ) || []
+      const genVersions = versions?.filter((v) => v.generation_id === generation.generation_id) || []
+      const genInvocations = invocations?.filter((i) => i.generation_id === generation.generation_id) || []
 
       return {
         generation,
@@ -99,10 +91,7 @@ export async function GET(
     console.error("Error fetching generations data:", error)
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch generations data",
+        error: error instanceof Error ? error.message : "Failed to fetch generations data",
       },
       { status: 500 }
     )

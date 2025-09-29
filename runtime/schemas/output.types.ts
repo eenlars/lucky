@@ -23,28 +23,16 @@ export const StoreSchema = z.array(
         longitude: z.number(),
       })
       .describe("Latitude and longitude coordinates"),
-    bcorp_id: z
-      .number()
-      .int()
-      .describe("Certification ID (optional)")
-      .nullish(),
-    is_headquarters: z
-      .boolean()
-      .describe("True if this store is a headquarters (optional)")
-      .nullish(),
+    bcorp_id: z.number().int().describe("Certification ID (optional)").nullish(),
+    is_headquarters: z.boolean().describe("True if this store is a headquarters (optional)").nullish(),
     opening_times: OpeningTimesSchema.nullish(),
-    owner_imgs: z
-      .array(z.string().url())
-      .describe("URLs of owner images (optional)")
-      .nullish(),
+    owner_imgs: z.array(z.string().url()).describe("URLs of owner images (optional)").nullish(),
   })
 )
 
 export const SkipReasonSchema = z.object({
   result: z.null(),
-  reason: z
-    .string()
-    .describe("Reason why no store data was found or why it was skipped"),
+  reason: z.string().describe("Reason why no store data was found or why it was skipped"),
 })
 
 export const OutputSchema = z.union([StoreSchema, SkipReasonSchema])

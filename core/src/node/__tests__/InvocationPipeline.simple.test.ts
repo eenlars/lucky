@@ -112,8 +112,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
     }))
 
     // Verify the system prompt would lead to correct tool selection
-    const systemPrompt =
-      "use todo write first, and then return the output of todo read"
+    const systemPrompt = "use todo write first, and then return the output of todo read"
 
     // TODO: this comment describes what should be tested but the test doesn't actually
     // instantiate or use InvocationPipeline at all. it's just calling mocked functions
@@ -130,17 +129,14 @@ describe("InvocationPipeline System Prompt Integration", () => {
     expect(firstResponse.data.toolCalls[0].function.name).toBe("todoWrite")
 
     // Execute todoWrite
-    const writeResult = await mockTodoWrite(
-      JSON.parse(firstResponse.data.toolCalls[0].function.arguments),
-      {
-        workflowInvocationId: "test",
-        nodeId: "test",
-        workflowFiles: [],
-        expectedOutputType: undefined,
-        workflowId: "test",
-        mainWorkflowGoal: "test",
-      }
-    )
+    const writeResult = await mockTodoWrite(JSON.parse(firstResponse.data.toolCalls[0].function.arguments), {
+      workflowInvocationId: "test",
+      nodeId: "test",
+      workflowFiles: [],
+      expectedOutputType: undefined,
+      workflowId: "test",
+      mainWorkflowGoal: "test",
+    })
     expect(writeResult.success).toBe(true)
 
     // Second AI call - should choose todoRead to return output
@@ -187,8 +183,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
     console.log("  - System prompt:", systemPrompt)
     console.log(
       "  - todoWrite called first:",
-      mockTodoWrite.mock.invocationCallOrder[0] <
-        mockTodoRead.mock.invocationCallOrder[0]
+      mockTodoWrite.mock.invocationCallOrder[0] < mockTodoRead.mock.invocationCallOrder[0]
     )
     console.log("  - Final output contains todos:", finalTodos.length > 0)
     console.log("  - Final todo content:", finalTodos[0].content)

@@ -82,9 +82,7 @@ export class CodeToolRegistry {
         }
       }
 
-      lgg.log(
-        `✅ Registered ${ALL_TOOLS.length} code tools from static registry`
-      )
+      lgg.log(`✅ Registered ${ALL_TOOLS.length} code tools from static registry`)
     } catch (error) {
       lgg.warn("⚠️ Static tool registration failed:", error)
       // Don't create placeholder tools - just fail gracefully
@@ -104,9 +102,7 @@ export class CodeToolRegistry {
   /**
    * Get the tool registry compatible with the AI framework
    */
-  getToolRegistry(
-    toolExecutionContext?: ToolExecutionContext
-  ): Record<string, Tool> {
+  getToolRegistry(toolExecutionContext?: ToolExecutionContext): Record<string, Tool> {
     if (!toolExecutionContext) {
       throw new Error(
         "ToolExecutionContext is required to create tools. " +
@@ -125,10 +121,7 @@ export class CodeToolRegistry {
   /**
    * Get tools for specific tool names
    */
-  getToolsForNames(
-    names: CodeToolName[],
-    toolExecutionContext?: ToolExecutionContext
-  ): Record<string, Tool> {
+  getToolsForNames(names: CodeToolName[], toolExecutionContext?: ToolExecutionContext): Record<string, Tool> {
     if (!toolExecutionContext) {
       throw new Error(
         "ToolExecutionContext is required to create tools. " +

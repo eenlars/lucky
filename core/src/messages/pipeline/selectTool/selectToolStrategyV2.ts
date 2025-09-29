@@ -1,14 +1,11 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
-import type {
-  SelectToolStrategyOptions,
-  StrategyResult,
-} from "@core/messages/pipeline/selectTool/toolstrategy.types"
+import type { SelectToolStrategyOptions, StrategyResult } from "@core/messages/pipeline/selectTool/toolstrategy.types"
 import { explainTools } from "@core/tools/any/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { CONFIG } from "@runtime/settings/constants"
-import type { CoreMessage, ToolSet } from "ai"
+import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { z } from "zod"
 
@@ -27,14 +24,7 @@ const verboseOverride = true
 export async function selectToolStrategyV2<T extends ToolSet>(
   options: SelectToolStrategyOptions<T>
 ): Promise<StrategyResult<T>> {
-  const {
-    tools,
-    identityPrompt,
-    agentSteps,
-    roundsLeft,
-    systemMessage,
-    model,
-  } = options
+  const { tools, identityPrompt, agentSteps, roundsLeft, systemMessage, model } = options
 
   if (isNir(tools) || Object.keys(tools).length === 0) {
     // this should never happen.
@@ -61,7 +51,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
   const agentStepsString = toolUsageToString(agentSteps, 1000)
 
   // Analysis prompt
-  const analysisMessages: CoreMessage[] = [
+  const analysisMessages: ModelMessage[] = [
     {
       role: "system",
       content: `
@@ -161,11 +151,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       }
 
       //likely bug: toolKeys.includes() check may fail due to type casting issues
-      if (
-        decision.type === "tool" &&
-        decision.toolName &&
-        String(decision.toolName) in tools
-      ) {
+      if (decision.type === "tool" && decision.toolName && String(decision.toolName) in tools) {
         return {
           type: "tool",
           toolName: decision.toolName as keyof T,

@@ -377,10 +377,8 @@ interface QualityMetrics {
 ```typescript
 const logger = {
   info: (message: string, data?: any) => console.log(`[INFO] ${message}`, data),
-  warn: (message: string, data?: any) =>
-    console.warn(`[WARN] ${message}`, data),
-  error: (message: string, error?: Error) =>
-    console.error(`[ERROR] ${message}`, error),
+  warn: (message: string, data?: any) => console.warn(`[WARN] ${message}`, data),
+  error: (message: string, error?: Error) => console.error(`[ERROR] ${message}`, error),
 }
 
 // Usage in scraper

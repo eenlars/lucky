@@ -22,48 +22,29 @@ const contextManage = defineTool({
 
     scope: z.enum(["workflow", "node"]).describe("Data scope to operate on"),
 
-    key: z
-      .string()
-      .nullish()
-      .describe(
-        "Key name (required for delete, copy, move, exists operations)"
-      ),
+    key: z.string().nullish().describe("Key name (required for delete, copy, move, exists operations)"),
 
-    targetKey: z
-      .string()
-      .nullish()
-      .describe("Target key name (required for copy, move operations)"),
+    targetKey: z.string().nullish().describe("Target key name (required for copy, move operations)"),
 
     targetScope: z
       .enum(["workflow", "node"])
       .nullish()
-      .describe(
-        "Target scope (optional for copy, move operations, defaults to same scope)"
-      ),
+      .describe("Target scope (optional for copy, move operations, defaults to same scope)"),
     force: z
       .boolean()
       .nullish()
       .default(false)
-      .describe(
-        "Force operation even if target exists (for copy, move operations)"
-      ),
+      .describe("Force operation even if target exists (for copy, move operations)"),
 
-    pattern: z
-      .string()
-      .nullish()
-      .describe("Pattern for batch operations (supports wildcards with *)"),
+    pattern: z.string().nullish().describe("Pattern for batch operations (supports wildcards with *)"),
   }),
 
-  async execute(
-    params,
-    toolExecutionContext
-  ): Promise<CodeToolResult<OutputType>> {
+  async execute(params, toolExecutionContext): Promise<CodeToolResult<OutputType>> {
     if (!toolExecutionContext?.workflowInvocationId) {
       throw new Error("workflowInvocationId is required")
     }
 
-    const { operation, scope, key, targetKey, targetScope, force, pattern } =
-      params
+    const { operation, scope, key, targetKey, targetScope, force, pattern } = params
 
     lgg.info(`contextManage: ${operation} operation`, {
       scope,
@@ -73,10 +54,7 @@ const contextManage = defineTool({
     })
 
     try {
-      const store = createContextStore(
-        "supabase",
-        toolExecutionContext?.workflowInvocationId
-      )
+      const store = createContextStore("supabase", toolExecutionContext?.workflowInvocationId)
 
       switch (operation) {
         case "delete": {
@@ -272,8 +250,7 @@ const contextManage = defineTool({
         }
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : JSON.stringify(error)
+      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error)
       lgg.error("contextManage error:", errorMessage)
       return Tools.createFailure("contextManage", {
         location: "contextManage:error",

@@ -1,10 +1,7 @@
 // src/core/workflow/Workflow.ts
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
-import {
-  prepareProblem,
-  type PrepareProblemMethod,
-} from "@core/improvement/behavioral/prepare/workflow/prepareMain"
+import { prepareProblem, type PrepareProblemMethod } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
@@ -13,10 +10,7 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
-import {
-  createContextStore,
-  type ContextStore,
-} from "@core/utils/persistence/memory/ContextStore"
+import { createContextStore, type ContextStore } from "@core/utils/persistence/memory/ContextStore"
 import {
   createWorkflowInvocation,
   createWorkflowVersion,
@@ -25,35 +19,16 @@ import {
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@core/utils/types"
 import { R } from "@core/utils/types"
-import {
-  verifyWorkflowConfig,
-  verifyWorkflowConfigStrict,
-} from "@core/utils/validation/workflow"
+import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { zodToJson } from "@core/utils/zod/zodToJson"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
-import {
-  workflowToString,
-  type SimplifyOptions,
-} from "@core/workflow/actions/generate/workflowToString"
-import type {
-  EvaluationInput,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
-import {
-  aggregateResults,
-  evaluateRuns,
-  runAllIO,
-} from "@core/workflow/runner/runAllInputs"
-import type {
-  AggregateEvaluationResult,
-  RunResult,
-} from "@core/workflow/runner/types"
+import { workflowToString, type SimplifyOptions } from "@core/workflow/actions/generate/workflowToString"
+import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
+import { aggregateResults, evaluateRuns, runAllIO } from "@core/workflow/runner/runAllInputs"
+import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner/types"
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
@@ -120,9 +95,7 @@ export class Workflow {
 
       for (const tool of allNodeTools) {
         if (INACTIVE_TOOLS.has(tool)) {
-          inactiveToolsUsed.push(
-            `node "${node.nodeId}" uses inactive tool "${tool}"`
-          )
+          inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
         }
       }
     }
@@ -150,13 +123,7 @@ export class Workflow {
     toolContext: Partial<ToolExecutionContext> | undefined
     workflowVersionId?: string
   }): Workflow {
-    const wf = new Workflow(
-      config,
-      evaluationInput,
-      evolutionContext,
-      toolContext ?? undefined,
-      workflowVersionId
-    )
+    const wf = new Workflow(config, evaluationInput, evolutionContext, toolContext ?? undefined, workflowVersionId)
     return wf
   }
 
@@ -168,10 +135,7 @@ export class Workflow {
     evaluationInput: EvaluationInput,
     problemAnalysisMethod: PrepareProblemMethod
   ): Promise<void> {
-    const { newGoal, workflowIO, problemAnalysis } = await prepareProblem(
-      evaluationInput,
-      problemAnalysisMethod
-    )
+    const { newGoal, workflowIO, problemAnalysis } = await prepareProblem(evaluationInput, problemAnalysisMethod)
 
     this.workflowIO = workflowIO
     this.mainGoal = newGoal
@@ -256,28 +220,18 @@ export class Workflow {
    * @returns aggregated evaluation result
    */
   async runAndEvaluate(): Promise<RS<AggregateEvaluationResult>> {
-    lgg.log(
-      `[Workflow.runAndEvaluate] Starting run phase for ${this.getWorkflowVersionId()}`
-    )
+    lgg.log(`[Workflow.runAndEvaluate] Starting run phase for ${this.getWorkflowVersionId()}`)
     const { error } = await this.run()
     if (error) {
-      lgg.error(
-        `[Workflow.runAndEvaluate] Run phase failed for ${this.getWorkflowVersionId()}: ${error}`
-      )
+      lgg.error(`[Workflow.runAndEvaluate] Run phase failed for ${this.getWorkflowVersionId()}: ${error}`)
       return R.error(error, 0)
     }
-    lgg.log(
-      `[Workflow.runAndEvaluate] Run phase succeeded for ${this.getWorkflowVersionId()}, starting evaluate phase`
-    )
+    lgg.log(`[Workflow.runAndEvaluate] Run phase succeeded for ${this.getWorkflowVersionId()}, starting evaluate phase`)
     const result = await this.evaluate()
     if (result.success) {
-      lgg.log(
-        `[Workflow.runAndEvaluate] Evaluate phase succeeded for ${this.getWorkflowVersionId()}`
-      )
+      lgg.log(`[Workflow.runAndEvaluate] Evaluate phase succeeded for ${this.getWorkflowVersionId()}`)
     } else {
-      lgg.error(
-        `[Workflow.runAndEvaluate] Evaluate phase failed for ${this.getWorkflowVersionId()}: ${result.error}`
-      )
+      lgg.error(`[Workflow.runAndEvaluate] Evaluate phase failed for ${this.getWorkflowVersionId()}: ${result.error}`)
     }
     return result
   }
@@ -293,15 +247,11 @@ export class Workflow {
     lgg.log(`[Workflow.run] Starting setup for ${this.getWorkflowVersionId()}`)
     await this.setup()
 
-    lgg.log(
-      `[Workflow.run] Setup complete, starting runAllIO for ${this.getWorkflowVersionId()}`
-    )
+    lgg.log(`[Workflow.run] Setup complete, starting runAllIO for ${this.getWorkflowVersionId()}`)
     const { data: runResults, error } = await runAllIO(this)
     this.hasRun = true
     if (error) {
-      lgg.error(
-        `[Workflow.run] runAllIO failed for ${this.getWorkflowVersionId()}: ${error}`
-      )
+      lgg.error(`[Workflow.run] runAllIO failed for ${this.getWorkflowVersionId()}: ${error}`)
       return R.error(error, 0)
     }
     lgg.log(
@@ -357,10 +307,7 @@ export class Workflow {
     })
 
     for (const workflowNodeConfig of this.config.nodes) {
-      const workflowNode = await WorkFlowNode.create(
-        workflowNodeConfig,
-        this.workflowVersionId
-      )
+      const workflowNode = await WorkFlowNode.create(workflowNodeConfig, this.workflowVersionId)
       this.nodeMap.set(workflowNodeConfig.nodeId, workflowNode)
       this.nodes.push(workflowNode)
     }
@@ -372,10 +319,7 @@ export class Workflow {
    * @param workflowIO - The specific WorkflowIO object for this invocation
    * @returns The created workflowInvocationId
    */
-  async createInvocationForIO(
-    index: number,
-    workflowIO: WorkflowIO
-  ): Promise<string> {
+  async createInvocationForIO(index: number, workflowIO: WorkflowIO): Promise<string> {
     const workflowInvocationId = genShortId()
 
     await createWorkflowInvocation({
@@ -387,9 +331,7 @@ export class Workflow {
         configFiles: this.config.contextFile ? [this.config.contextFile] : [],
         workflowIOIndex: index,
       },
-      expectedOutputType: this.evaluationInput.outputSchema
-        ? zodToJson(this.evaluationInput.outputSchema)
-        : null,
+      expectedOutputType: this.evaluationInput.outputSchema ? zodToJson(this.evaluationInput.outputSchema) : null,
       workflowInput: workflowIO.workflowInput as any,
       workflowOutput: workflowIO.workflowOutput as any,
     })
@@ -441,10 +383,7 @@ export class Workflow {
     // If no index provided, return the first one (for backward compatibility)
     const idx = index ?? 0
     const invocationId = this.workflowInvocationIds.get(idx)
-    guard(
-      invocationId,
-      `Workflow invocation ID not found for index ${idx}. Create invocation first.`
-    )
+    guard(invocationId, `Workflow invocation ID not found for index ${idx}. Create invocation first.`)
     return invocationId
   }
 
@@ -461,11 +400,7 @@ export class Workflow {
    * @param backend - Backend to use ("memory" or "supabase")
    * @returns ContextStore instance
    */
-  getContextStore(
-    name: string,
-    backend: "memory" | "supabase" = "supabase",
-    index?: number
-  ): ContextStore {
+  getContextStore(name: string, backend: "memory" | "supabase" = "supabase", index?: number): ContextStore {
     const key = `${name}_${index ?? 0}`
     if (this.contextStores.has(key)) {
       return this.contextStores.get(key)!
@@ -516,9 +451,7 @@ export class Workflow {
   }
 
   getToolExecutionContext(workflowInvocationId: string): ToolExecutionContext {
-    const files = this.getWorkflowFiles()
-      ? Array.from(this.getWorkflowFiles())
-      : []
+    const files = this.getWorkflowFiles() ? Array.from(this.getWorkflowFiles()) : []
 
     const context: ToolExecutionContext = {
       expectedOutputType: this.toolContext?.expectedOutputType,
@@ -621,16 +554,11 @@ export class Workflow {
 
     if (!workflowIdeaResponse.success) {
       lgg.error("ideaToWorkflow", workflowIdeaResponse.error)
-      return R.error(
-        "Failed to generate workflow idea in generateWorkflowIdea",
-        workflowIdeaResponse.usdCost
-      )
+      return R.error("Failed to generate workflow idea in generateWorkflowIdea", workflowIdeaResponse.usdCost)
     }
 
     if (CONFIG.logging.override.GP) {
-      lgg.log(
-        `[Converter] Workflow idea: ${workflowIdeaResponse.data.workflow}`
-      )
+      lgg.log(`[Converter] Workflow idea: ${workflowIdeaResponse.data.workflow}`)
     }
 
     const {
@@ -644,14 +572,8 @@ export class Workflow {
     })
 
     if (!success) {
-      lgg.error(
-        "Failed to generate workflow from already generated idea - ideaToWorkflow 1",
-        error
-      )
-      return R.error(
-        "Failed to generate workflow from already generated idea - ideaToWorkflow 2",
-        usdCost
-      )
+      lgg.error("Failed to generate workflow from already generated idea - ideaToWorkflow 1", error)
+      return R.error("Failed to generate workflow from already generated idea - ideaToWorkflow 2", usdCost)
     }
 
     return R.success(fullWorkflowResult, usdCost)

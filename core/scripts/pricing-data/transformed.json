@@ -215,13 +215,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "mistralai/codestral-2508",
@@ -297,14 +291,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"]
   },
   {
     "id": "z-ai/glm-4.5",
@@ -535,13 +522,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"]
   },
   {
     "id": "qwen/qwen3-coder",
@@ -1841,14 +1822,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "x-ai/grok-3-mini",
@@ -2158,14 +2132,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "include_reasoning",
-      "max_tokens",
-      "reasoning",
-      "seed",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "seed", "temperature", "top_p"]
   },
   {
     "id": "deepseek/deepseek-r1-0528-qwen3-8b:free",
@@ -2755,14 +2722,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "nousresearch/deephermes-3-mistral-24b-preview",
@@ -4148,14 +4108,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "openai/o3",
@@ -4188,14 +4141,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "openai/o4-mini",
@@ -4228,14 +4174,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "shisa-ai/shisa-v2-llama3.3-70b:free",
@@ -5574,12 +5513,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs"]
   },
   {
     "id": "mistralai/mistral-small-3.1-24b-instruct:free",
@@ -5711,14 +5645,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "temperature", "top_p"]
   },
   {
     "id": "google/gemma-3-4b-it",
@@ -5932,12 +5859,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "structured_outputs",
-      "web_search_options"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "web_search_options"]
   },
   {
     "id": "openai/gpt-4o-search-preview",
@@ -5969,12 +5891,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "structured_outputs",
-      "web_search_options"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "web_search_options"]
   },
   {
     "id": "rekaai/reka-flash-3:free",
@@ -7041,14 +6958,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "deepseek/deepseek-r1-distill-llama-8b",
@@ -7170,14 +7080,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"]
   },
   {
     "id": "aion-labs/aion-1.0",
@@ -7209,13 +7112,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "include_reasoning",
-      "max_tokens",
-      "reasoning",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature", "top_p"]
   },
   {
     "id": "aion-labs/aion-1.0-mini",
@@ -7247,13 +7144,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "include_reasoning",
-      "max_tokens",
-      "reasoning",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature", "top_p"]
   },
   {
     "id": "aion-labs/aion-rp-llama-3.1-8b",
@@ -7317,14 +7208,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "temperature",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"]
   },
   {
     "id": "qwen/qwen-turbo",
@@ -7572,14 +7456,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "deepseek/deepseek-r1-distill-qwen-1.5b",
@@ -8165,12 +8042,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "include_reasoning",
-      "max_tokens",
-      "reasoning",
-      "temperature"
-    ]
+    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature"]
   },
   {
     "id": "deepseek/deepseek-r1",
@@ -8475,14 +8347,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "response_format",
-      "seed",
-      "structured_outputs",
-      "tool_choice",
-      "tools"
-    ]
+    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"]
   },
   {
     "id": "x-ai/grok-2-vision-1212",
@@ -8781,14 +8646,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"]
   },
   {
     "id": "amazon/nova-micro-v1",
@@ -8820,14 +8678,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"]
   },
   {
     "id": "amazon/nova-pro-v1",
@@ -8859,14 +8710,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"]
   },
   {
     "id": "qwen/qwq-32b-preview",
@@ -9399,15 +9243,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3.5-haiku",
@@ -9441,15 +9277,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3.5-haiku-20241022",
@@ -9483,15 +9311,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthracite-org/magnum-v4-72b",
@@ -9570,15 +9390,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3.5-sonnet",
@@ -9612,15 +9424,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "mistralai/ministral-8b",
@@ -10798,13 +10602,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"]
   },
   {
     "id": "nousresearch/hermes-3-llama-3.1-70b",
@@ -11644,15 +11442,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3.5-sonnet-20240620",
@@ -11686,15 +11476,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "sao10k/l3-euryale-70b",
@@ -12047,13 +11829,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"]
   },
   {
     "id": "microsoft/phi-3-medium-128k-instruct",
@@ -12085,13 +11861,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"]
   },
   {
     "id": "neversleep/llama-3-lumimaid-70b",
@@ -12947,15 +12717,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3-haiku",
@@ -12989,15 +12751,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3-opus:beta",
@@ -13031,15 +12785,7 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "anthropic/claude-3-opus",
@@ -13073,15 +12819,7 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": [
-      "max_tokens",
-      "stop",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_p"
-    ]
+    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"]
   },
   {
     "id": "cohere/command-r-03-2024",

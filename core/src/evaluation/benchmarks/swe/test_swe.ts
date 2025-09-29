@@ -41,8 +41,7 @@ interface SWEBenchInstanceFull {
 }
 
 async function getRandomSWEBenchInstance(): Promise<SWEBenchInstanceFull> {
-  const randomId =
-    SAMPLE_INSTANCE_IDS[Math.floor(Math.random() * SAMPLE_INSTANCE_IDS.length)]
+  const randomId = SAMPLE_INSTANCE_IDS[Math.floor(Math.random() * SAMPLE_INSTANCE_IDS.length)]
   console.log(`🎲 Selected random instance: ${randomId}`)
 
   try {
@@ -50,10 +49,7 @@ async function getRandomSWEBenchInstance(): Promise<SWEBenchInstanceFull> {
   } catch (error) {
     console.log(`⚠️  Could not fetch ${randomId}, trying another...`)
     // Try a different random ID
-    const fallbackId =
-      SAMPLE_INSTANCE_IDS[
-        Math.floor(Math.random() * SAMPLE_INSTANCE_IDS.length)
-      ]
+    const fallbackId = SAMPLE_INSTANCE_IDS[Math.floor(Math.random() * SAMPLE_INSTANCE_IDS.length)]
     return (await SWEBenchLoader.fetchById(fallbackId)) as SWEBenchInstanceFull
   }
 }
@@ -113,8 +109,7 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
       messages: [
         {
           role: "system",
-          content:
-            "You are an expert code reviewer and software engineering evaluator.",
+          content: "You are an expert code reviewer and software engineering evaluator.",
         },
         { role: "user", content: validationPrompt },
       ],
@@ -131,21 +126,11 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
 
     // Simple validation scoring based on content analysis
     const validationResults = {
-      hasCodeChanges: /```|diff|patch|\+\+\+|---|\+[^+]|-[^-]|@@ /.test(
-        aiSolution
-      ),
+      hasCodeChanges: /```|diff|patch|\+\+\+|---|\+[^+]|-[^-]|@@ /.test(aiSolution),
       addressesProblem: aiSolution
         .toLowerCase()
-        .includes(
-          instance.problem_statement
-            .toLowerCase()
-            .split(" ")
-            .slice(0, 5)
-            .join(" ")
-            .toLowerCase()
-        ),
-      formatQuality:
-        aiSolution.length > 100 && /analysis|solution|code/i.test(aiSolution),
+        .includes(instance.problem_statement.toLowerCase().split(" ").slice(0, 5).join(" ").toLowerCase()),
+      formatQuality: aiSolution.length > 100 && /analysis|solution|code/i.test(aiSolution),
       testAwareness: /test|spec|assert|expect|should|verify/i.test(aiSolution),
       groundTruthSimilarity: calculateSimilarity(aiSolution, instance.patch),
     }
@@ -159,31 +144,18 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
       groundTruthSimilarity: validationResults.groundTruthSimilarity * 10,
     }
 
-    const overallScore =
-      Object.values(scores).reduce((a, b) => a + b, 0) /
-      Object.keys(scores).length
+    const overallScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length
 
     console.log("✅ AI Validation Results:")
-    console.log(
-      "💰 Validation Cost:",
-      `$${response.usdCost?.toFixed(4) || "0.0000"}`
-    )
+    console.log("💰 Validation Cost:", `$${response.usdCost?.toFixed(4) || "0.0000"}`)
     console.log("\n📊 Validation Scores:")
-    console.log(
-      `- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`
-    )
+    console.log(`- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`)
     console.log(
       `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`
     )
-    console.log(
-      `- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`
-    )
-    console.log(
-      `- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`
-    )
-    console.log(
-      `- Ground Truth Similarity: ${scores.groundTruthSimilarity.toFixed(1)}/10`
-    )
+    console.log(`- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`)
+    console.log(`- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`)
+    console.log(`- Ground Truth Similarity: ${scores.groundTruthSimilarity.toFixed(1)}/10`)
     console.log(`\n🎯 Overall Score: ${overallScore.toFixed(1)}/10`)
 
     console.log("\n🤖 AI Reviewer Feedback:")
@@ -317,10 +289,7 @@ async function testSWEBenchAISolver() {
     console.log("ID:", instance.instance_id)
     console.log("Repository:", instance.repo)
     console.log("Base commit:", instance.base_commit)
-    console.log(
-      "Problem statement preview:",
-      instance.problem_statement.substring(0, 150) + "..."
-    )
+    console.log("Problem statement preview:", instance.problem_statement.substring(0, 150) + "...")
     console.log("Has patch:", !!instance.patch)
     console.log("Patch length:", instance.patch?.length || 0)
     console.log("Has test patch:", !!instance.test_patch)
@@ -334,10 +303,7 @@ async function testSWEBenchAISolver() {
     const aiResponse = await solveSWEBenchInstance(instance)
 
     // Step 3: Validate the AI solution
-    const validation = await validateAISolution(
-      aiResponse.data?.text || "",
-      instance
-    )
+    const validation = await validateAISolution(aiResponse.data?.text || "", instance)
 
     // Step 4: Show ground truth for comparison
     if (instance.patch) {
@@ -382,9 +348,7 @@ async function testBasicSWEBenchLoader() {
 
     return result
   } catch (error) {
-    console.log(
-      "⚠️  Basic loader test failed, but continuing with AI solver test..."
-    )
+    console.log("⚠️  Basic loader test failed, but continuing with AI solver test...")
     console.log("Error:", error)
   }
 }
@@ -404,26 +368,11 @@ async function runTests() {
     console.log("\n📊 Final Results Summary:")
     console.log("=".repeat(40))
     console.log("Instance ID:", result.instanceId)
-    console.log(
-      "Validation Score:",
-      `${result.validation.overallScore.toFixed(1)}/10`
-    )
-    console.log(
-      "Has Code Changes:",
-      result.validation.validationResults.hasCodeChanges ? "✅" : "❌"
-    )
-    console.log(
-      "Addresses Problem:",
-      result.validation.validationResults.addressesProblem ? "✅" : "❌"
-    )
-    console.log(
-      "Format Quality:",
-      result.validation.validationResults.formatQuality ? "✅" : "❌"
-    )
-    console.log(
-      "Test Awareness:",
-      result.validation.validationResults.testAwareness ? "✅" : "❌"
-    )
+    console.log("Validation Score:", `${result.validation.overallScore.toFixed(1)}/10`)
+    console.log("Has Code Changes:", result.validation.validationResults.hasCodeChanges ? "✅" : "❌")
+    console.log("Addresses Problem:", result.validation.validationResults.addressesProblem ? "✅" : "❌")
+    console.log("Format Quality:", result.validation.validationResults.formatQuality ? "✅" : "❌")
+    console.log("Test Awareness:", result.validation.validationResults.testAwareness ? "✅" : "❌")
     console.log(
       "Ground Truth Similarity:",
       `${(result.validation.validationResults.groundTruthSimilarity * 10).toFixed(1)}/10`

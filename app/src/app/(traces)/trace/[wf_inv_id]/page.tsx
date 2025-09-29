@@ -17,19 +17,11 @@ const SUPABASE_TABLES = {
   WorkflowInvocation: 17720,
 } as const
 
-export default function TraceDetailPage({
-  params,
-}: {
-  params: Promise<{ wf_inv_id: string }>
-}) {
+export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_id: string }> }) {
   const { wf_inv_id } = use(params)
-  const [workflow, setWorkflow] = useState<Tables<"WorkflowInvocation"> | null>(
-    null
-  )
-  const [workflowVersion, setWorkflowVersion] =
-    useState<Tables<"WorkflowVersion"> | null>(null)
-  const [_workflowDetails, setWorkflowDetails] =
-    useState<Tables<"Workflow"> | null>(null)
+  const [workflow, setWorkflow] = useState<Tables<"WorkflowInvocation"> | null>(null)
+  const [workflowVersion, setWorkflowVersion] = useState<Tables<"WorkflowVersion"> | null>(null)
+  const [_workflowDetails, setWorkflowDetails] = useState<Tables<"Workflow"> | null>(null)
   const [timeline, setTimeline] = useState<FullTraceEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [timelineLoading, setTimelineLoading] = useState(true)
@@ -63,10 +55,7 @@ export default function TraceDetailPage({
           msg_id: "last-node-output",
           seq: 0,
           role: "result",
-          payload:
-            typeof inv.output === "string"
-              ? { kind: "result", workDone: inv.output }
-              : inv.output,
+          payload: typeof inv.output === "string" ? { kind: "result", workDone: inv.output } : inv.output,
           created_at: inv.end_time || inv.start_time,
           wf_invocation_id: inv.wf_invocation_id,
           origin_invocation_id: inv.node_invocation_id,
@@ -100,15 +89,10 @@ export default function TraceDetailPage({
   }
 
   // Calculate performance metrics from workflow and timeline data
-  const calculatePerformanceMetrics = (
-    workflow: Tables<"WorkflowInvocation">,
-    timeline: FullTraceEntry[]
-  ) => {
+  const calculatePerformanceMetrics = (workflow: Tables<"WorkflowInvocation">, timeline: FullTraceEntry[]) => {
     // Calculate total duration in seconds
     const totalDuration = workflow.end_time
-      ? (new Date(workflow.end_time).getTime() -
-          new Date(workflow.start_time).getTime()) /
-        1000
+      ? (new Date(workflow.end_time).getTime() - new Date(workflow.start_time).getTime()) / 1000
       : 0
 
     // Count nodes
@@ -118,10 +102,7 @@ export default function TraceDetailPage({
     const totalCost =
       workflow.usd_cost && workflow.usd_cost > 0
         ? workflow.usd_cost
-        : timeline.reduce(
-            (sum, entry) => sum + (entry.invocation.usd_cost || 0),
-            0
-          )
+        : timeline.reduce((sum, entry) => sum + (entry.invocation.usd_cost || 0), 0)
 
     // Find bottleneck node (longest running)
     let bottleneckNode = null
@@ -129,15 +110,12 @@ export default function TraceDetailPage({
 
     timeline.forEach((entry) => {
       const startTime = new Date(entry.invocation.start_time).getTime()
-      const endTime = entry.invocation.end_time
-        ? new Date(entry.invocation.end_time).getTime()
-        : Date.now()
+      const endTime = entry.invocation.end_time ? new Date(entry.invocation.end_time).getTime() : Date.now()
       const duration = (endTime - startTime) / 1000
 
       if (duration > maxDuration) {
         maxDuration = duration
-        bottleneckNode =
-          entry.nodeDefinition.node_id || `Node ${entry.invocation.node_id}`
+        bottleneckNode = entry.nodeDefinition.node_id || `Node ${entry.invocation.node_id}`
       }
     })
 
@@ -171,12 +149,9 @@ export default function TraceDetailPage({
 
         // Then fetch detailed node data asynchronously (via API) with retry
         setTimelineLoading(true)
-        const res = await fetchWithRetry(
-          `/api/trace/${wf_inv_id}/node-invocations`,
-          {
-            cache: "no-store",
-          }
-        )
+        const res = await fetchWithRetry(`/api/trace/${wf_inv_id}/node-invocations`, {
+          cache: "no-store",
+        })
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err?.error || "Failed to fetch node invocations")
@@ -186,23 +161,16 @@ export default function TraceDetailPage({
         }
 
         // Convert nodeInvocations to timeline entries
-        const timelineEntries = createTimelineEntries(
-          nodeInvocationData,
-          workflowVersion
-        )
+        const timelineEntries = createTimelineEntries(nodeInvocationData, workflowVersion)
         setTimeline(timelineEntries)
 
         // Calculate performance metrics
-        setPerformanceMetrics(
-          calculatePerformanceMetrics(workflowInvocation, timelineEntries)
-        )
+        setPerformanceMetrics(calculatePerformanceMetrics(workflowInvocation, timelineEntries))
         setTimelineLoading(false)
         setDataFreshness(Date.now())
       } catch (err) {
         console.error("Error fetching trace data:", err)
-        setError(
-          err instanceof Error ? err.message : "Failed to load trace data."
-        )
+        setError(err instanceof Error ? err.message : "Failed to load trace data.")
         setLoading(false)
         setTimelineLoading(false)
       }
@@ -232,29 +200,18 @@ export default function TraceDetailPage({
               setWorkflowDetails(workflow)
 
               // Refresh node data (via API) with retry
-              const res = await fetchWithRetry(
-                `/api/trace/${wf_inv_id}/node-invocations`,
-                { cache: "no-store" }
-              )
+              const res = await fetchWithRetry(`/api/trace/${wf_inv_id}/node-invocations`, { cache: "no-store" })
               if (!res.ok) {
                 const err = await res.json().catch(() => ({}))
-                throw new Error(
-                  err?.error || "Failed to refresh node invocations"
-                )
+                throw new Error(err?.error || "Failed to refresh node invocations")
               }
-              const { nodeInvocations: nodeInvocationData } =
-                (await res.json()) as {
-                  nodeInvocations: NodeInvocationExtended[]
-                }
-              const timelineEntries = createTimelineEntries(
-                nodeInvocationData,
-                workflowVersion
-              )
+              const { nodeInvocations: nodeInvocationData } = (await res.json()) as {
+                nodeInvocations: NodeInvocationExtended[]
+              }
+              const timelineEntries = createTimelineEntries(nodeInvocationData, workflowVersion)
               setTimeline(timelineEntries)
 
-              setPerformanceMetrics(
-                calculatePerformanceMetrics(workflowInvocation, timelineEntries)
-              )
+              setPerformanceMetrics(calculatePerformanceMetrics(workflowInvocation, timelineEntries))
               setDataFreshness(Date.now())
             } catch (err) {
               console.error("Error refreshing trace data:", err)
@@ -275,9 +232,7 @@ export default function TraceDetailPage({
       <div className="p-6 flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center space-y-4">
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-xl text-gray-900 dark:text-gray-100">
-            Loading trace data…
-          </p>
+          <p className="text-xl text-gray-900 dark:text-gray-100">Loading trace data…</p>
         </div>
       </div>
     )
@@ -287,10 +242,7 @@ export default function TraceDetailPage({
     return (
       <div className="p-6">
         <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <Link
-          href="/invocations"
-          className="text-blue-500 dark:text-blue-400 hover:underline"
-        >
+        <Link href="/invocations" className="text-blue-500 dark:text-blue-400 hover:underline">
           ← Back to invocations
         </Link>
       </div>
@@ -305,32 +257,18 @@ export default function TraceDetailPage({
             href="/invocations"
             className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Invocations
           </Link>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Trace for Workflow Invocation
-          </h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Trace for Workflow Invocation</h1>
         </div>
 
         {workflowVersion && (
           <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                wf_invocation_id:
-              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">wf_invocation_id:</span>
               <Link
                 href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowInvocation}?schema=public&sort=start_time:desc&filter=wf_invocation_id%3Aeq%3A${wf_inv_id}`}
                 target="_blank"
@@ -341,9 +279,7 @@ export default function TraceDetailPage({
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                wf_version_id:
-              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">wf_version_id:</span>
               <Link
                 href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowVersion}?schema=public&sort=created_at:desc&filter=wf_version_id%3Aeq%3A${workflowVersion.wf_version_id}`}
                 target="_blank"
@@ -354,18 +290,14 @@ export default function TraceDetailPage({
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                Operation:
-              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">Operation:</span>
               <span className="capitalize bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs">
                 {workflowVersion.operation}
               </span>
             </div>
             {workflowVersion.generation_id && (
               <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-900 dark:text-gray-100">
-                  Generation:
-                </span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">Generation:</span>
                 <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs">
                   {workflowVersion.generation_id}...
                 </span>
@@ -388,9 +320,7 @@ export default function TraceDetailPage({
         <div className="p-6 flex justify-center items-center min-h-[30vh]">
           <div className="flex flex-col items-center space-y-4">
             <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-lg text-gray-900 dark:text-gray-100">
-              Loading timeline data…
-            </p>
+            <p className="text-lg text-gray-900 dark:text-gray-100">Loading timeline data…</p>
           </div>
         </div>
       ) : (

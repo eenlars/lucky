@@ -15,9 +15,7 @@ export function useWorkflowRunner() {
   // runner removed; keep noop API for compatibility
   const [logMessages] = useState<string[]>([])
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
-  const [_pendingStartNodeId, _setPendingStartNodeId] = useState<
-    string | undefined
-  >()
+  const [_pendingStartNodeId, _setPendingStartNodeId] = useState<string | undefined>()
   const isRunning = useRef(false)
   const {
     getNodes,
@@ -56,10 +54,7 @@ export function useWorkflowRunner() {
     // Functionality removed
   }, [])
 
-  const executeWorkflowWithPrompt = useCallback(
-    async (_prompt: string) => {},
-    []
-  )
+  const executeWorkflowWithPrompt = useCallback(async (_prompt: string) => {}, [])
 
   const runWorkflow = useCallback(
     async (_startNodeId?: string) => {
@@ -91,11 +86,7 @@ export function useWorkflowRunner() {
  * This is a very simplified example of how you might traverse a graph and collect nodes to process.
  * It's not meant to be used in production, but you can use it as a starting point for your own logic.
  */
-function _collectNodesToProcess(
-  _nodes: AppNode[],
-  _edges: AppEdge[],
-  _startNodeId: string
-) {
+function _collectNodesToProcess(_nodes: AppNode[], _edges: AppEdge[], _startNodeId: string) {
   const _nodesToProcess: AppNode[] = []
   const _visited = new Set()
 

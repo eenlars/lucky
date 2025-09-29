@@ -25,10 +25,7 @@ const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
 
 // Helper function to get ReactJson theme based on current theme
 const getReactJsonTheme = () => {
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
+  if (typeof window !== "undefined" && document.documentElement.classList.contains("dark")) {
     return "monokai"
   }
   return "rjv-default"
@@ -39,28 +36,19 @@ interface ToolCallsDisplayProps {
   expandAll?: boolean | null
 }
 
-export const ToolCallsDisplay = ({
-  agentSteps,
-  expandAll,
-}: ToolCallsDisplayProps) => {
+export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProps) => {
   const [expandedCalls, setExpandedCalls] = useState<Set<number>>(new Set())
   const [collapsedCalls, setCollapsedCalls] = useState<Set<number>>(() => {
     // Collapse reasoning, planning, and tool boxes by default, but keep terminate expanded
     const initialCollapsed = new Set<number>()
     agentSteps?.forEach((output, index) => {
-      if (
-        output.type === "reasoning" ||
-        output.type === "plan" ||
-        output.type === "tool"
-      ) {
+      if (output.type === "reasoning" || output.type === "plan" || output.type === "tool") {
         initialCollapsed.add(index)
       }
     })
     return initialCollapsed
   })
-  const [_showResultButton, _setShowResultButton] = useState<
-    Record<number, boolean>
-  >({})
+  const [_showResultButton, _setShowResultButton] = useState<Record<number, boolean>>({})
   const resultRefs = useRef<Record<number, HTMLDivElement | null>>({})
 
   // Debug logging to see what agentSteps we receive
@@ -112,11 +100,7 @@ export const ToolCallsDisplay = ({
   const normalizedOutputs = agentSteps.map((output: any) => {
     if (output.type === "tool") {
       // Handle legacy format: toolArgs, toolName, toolResponse
-      if (
-        "toolArgs" in output ||
-        "toolName" in output ||
-        "toolResponse" in output
-      ) {
+      if ("toolArgs" in output || "toolName" in output || "toolResponse" in output) {
         return {
           type: "tool" as const,
           name: output.toolName || output.name || "",
@@ -130,11 +114,7 @@ export const ToolCallsDisplay = ({
 
   // Filter out empty outputs
   const relevantOutputs = normalizedOutputs.filter((output) => {
-    if (
-      output.type === "learning" ||
-      output.type === "reasoning" ||
-      output.type === "text"
-    ) {
+    if (output.type === "learning" || output.type === "reasoning" || output.type === "text") {
       return output.return && String(output.return).trim().length > 0
     }
     if (output.type === "terminate") {
@@ -257,9 +237,7 @@ export const ToolCallsDisplay = ({
           if (typeof content !== "string") {
             content = JSON.stringify(content)
           }
-          return content.length > 80
-            ? content.substring(0, 80) + "..."
-            : content
+          return content.length > 80 ? content.substring(0, 80) + "..." : content
         }
 
         // If collapsed, show minimal one-line version
@@ -271,25 +249,14 @@ export const ToolCallsDisplay = ({
               onClick={() => toggleCollapsed(index)}
             >
               <div className="flex items-center gap-2">
-                <div className={`${theme.iconClass}`}>
-                  {getStepIcon(output.type)}
-                </div>
-                <div
-                  className={`text-xs truncate flex-1 ${theme.contentClass}`}
-                >
+                <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
+                <div className={`text-xs truncate flex-1 ${theme.contentClass}`}>
                   {output.type === "terminate" ? "Final Result: " : ""}
                   {getTruncatedContent(output.return || "")}
                 </div>
                 <div className="flex items-center gap-1">
-                  {output.type === "terminate" && (
-                    <span className="text-[9px] text-blue-600 font-medium">
-                      RESULT
-                    </span>
-                  )}
-                  <ChevronDown
-                    size={12}
-                    className="text-slate-400 dark:text-slate-500"
-                  />
+                  {output.type === "terminate" && <span className="text-[9px] text-blue-600 font-medium">RESULT</span>}
+                  <ChevronDown size={12} className="text-slate-400 dark:text-slate-500" />
                 </div>
               </div>
             </Card>
@@ -305,16 +272,10 @@ export const ToolCallsDisplay = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className={`${theme.iconClass}`}>
-                    {getStepIcon(output.type)}
-                  </div>
-                  <span className={`${theme.labelClass} text-xs`}>
-                    Reasoning
-                  </span>
+                  <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
+                  <span className={`${theme.labelClass} text-xs`}>Reasoning</span>
                 </div>
-                <div
-                  className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-                >
+                <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
                   {output.return}
                 </div>
               </div>
@@ -331,16 +292,10 @@ export const ToolCallsDisplay = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className={`${theme.iconClass}`}>
-                    {getStepIcon(output.type)}
-                  </div>
-                  <span className={`${theme.labelClass} text-xs`}>
-                    Planning
-                  </span>
+                  <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
+                  <span className={`${theme.labelClass} text-xs`}>Planning</span>
                 </div>
-                <div
-                  className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-                >
+                <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
                   {output.return}
                 </div>
               </div>
@@ -357,16 +312,10 @@ export const ToolCallsDisplay = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className={`${theme.iconClass}`}>
-                    {getStepIcon(output.type)}
-                  </div>
-                  <span className={`${theme.labelClass} text-xs`}>
-                    Learning
-                  </span>
+                  <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
+                  <span className={`${theme.labelClass} text-xs`}>Learning</span>
                 </div>
-                <div
-                  className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-                >
+                <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
                   {output.return}
                 </div>
               </div>
@@ -395,10 +344,7 @@ export const ToolCallsDisplay = ({
                 isExpanded
                   ? undefined
                   : (e) => {
-                      if (
-                        e.target === e.currentTarget ||
-                        !(e.target as Element).closest("button")
-                      ) {
+                      if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                         toggleCollapsed(index)
                       }
                     }
@@ -407,18 +353,12 @@ export const ToolCallsDisplay = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className={`${theme.iconClass}`}>
-                      {getStepIcon(output.type)}
-                    </div>
+                    <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
                     <span className={`${theme.labelClass} text-xs`}>
                       {isError ? "Final Result (Error)" : "Final Result"}
                     </span>
-                    <span className="text-[10px] text-slate-500 ml-2">
-                      (click to view result)
-                    </span>
-                    {!isError && (
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    )}
+                    <span className="text-[10px] text-slate-500 ml-2">(click to view result)</span>
+                    {!isError && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -426,17 +366,12 @@ export const ToolCallsDisplay = ({
                       onClick={(e) => {
                         e.stopPropagation()
                         copyToClipboard(
-                          typeof returnData === "string"
-                            ? returnData
-                            : JSON.stringify(returnData, null, 2)
+                          typeof returnData === "string" ? returnData : JSON.stringify(returnData, null, 2)
                         )
                       }}
                       title="Copy result"
                     >
-                      <Copy
-                        size={14}
-                        className="text-slate-500 dark:text-slate-400"
-                      />
+                      <Copy size={14} className="text-slate-500 dark:text-slate-400" />
                     </button>
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
@@ -447,24 +382,16 @@ export const ToolCallsDisplay = ({
                       title="Toggle details"
                     >
                       {isExpanded ? (
-                        <ChevronUp
-                          size={14}
-                          className="text-slate-500 dark:text-slate-400"
-                        />
+                        <ChevronUp size={14} className="text-slate-500 dark:text-slate-400" />
                       ) : (
-                        <ChevronDown
-                          size={14}
-                          className="text-slate-500 dark:text-slate-400"
-                        />
+                        <ChevronDown size={14} className="text-slate-500 dark:text-slate-400" />
                       )}
                     </button>
                   </div>
                 </div>
                 <div>
                   {hasSummary && (
-                    <div
-                      className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}
-                    >
+                    <div className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}>
                       <span className="font-medium">Summary: </span>
                       <span>{output.summary}</span>
                     </div>
@@ -474,11 +401,7 @@ export const ToolCallsDisplay = ({
                     <div className="space-y-2">
                       <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent"></div>
                       <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                        <div
-                          className={`text-sm font-medium mb-2 ${theme.contentClass}`}
-                        >
-                          Complete Result:
-                        </div>
+                        <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Complete Result:</div>
                         <div
                           ref={(el) => {
                             resultRefs.current[index] = el
@@ -486,11 +409,7 @@ export const ToolCallsDisplay = ({
                           className="overflow-hidden"
                         >
                           <ReactJson
-                            src={
-                              typeof returnData === "string"
-                                ? { result: returnData }
-                                : returnData
-                            }
+                            src={typeof returnData === "string" ? { result: returnData } : returnData}
                             theme={getReactJsonTheme()}
                             collapsed={1}
                             displayObjectSize={false}
@@ -532,14 +451,10 @@ export const ToolCallsDisplay = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className={`${theme.iconClass}`}>
-                    {getStepIcon(output.type)}
-                  </div>
+                  <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
                   <span className={`${theme.labelClass} text-xs`}>Message</span>
                 </div>
-                <div
-                  className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-                >
+                <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
                   {output.return}
                 </div>
               </div>
@@ -556,20 +471,14 @@ export const ToolCallsDisplay = ({
               onClick={() => toggleCollapsed(index)}
             >
               <div className="flex items-start gap-3">
-                <div className={`mt-0.5 ${theme.iconClass}`}>
-                  {getStepIcon(output.type)}
-                </div>
+                <div className={`mt-0.5 ${theme.iconClass}`}>{getStepIcon(output.type)}</div>
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full border ${theme.labelClass}`}
-                    >
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full border ${theme.labelClass}`}>
                       Error
                     </span>
                   </div>
-                  <div
-                    className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-                  >
+                  <div className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}>
                     {output.return}
                   </div>
                 </div>
@@ -592,10 +501,7 @@ export const ToolCallsDisplay = ({
                 isExpanded
                   ? undefined
                   : (e) => {
-                      if (
-                        e.target === e.currentTarget ||
-                        !(e.target as Element).closest("button")
-                      ) {
+                      if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                         toggleCollapsed(index)
                       }
                     }
@@ -604,18 +510,10 @@ export const ToolCallsDisplay = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className={`${theme.iconClass}`}>
-                      {getStepIcon(output.type)}
-                    </div>
-                    <span className={`${theme.labelClass} text-xs`}>
-                      {output.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2">
-                      (click to view details)
-                    </span>
-                    {hasResult && (
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    )}
+                    <div className={`${theme.iconClass}`}>{getStepIcon(output.type)}</div>
+                    <span className={`${theme.labelClass} text-xs`}>{output.name}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2">(click to view details)</span>
+                    {hasResult && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -626,10 +524,7 @@ export const ToolCallsDisplay = ({
                       }}
                       title="Copy arguments"
                     >
-                      <Copy
-                        size={14}
-                        className="text-slate-500 dark:text-slate-400"
-                      />
+                      <Copy size={14} className="text-slate-500 dark:text-slate-400" />
                     </button>
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
@@ -640,24 +535,16 @@ export const ToolCallsDisplay = ({
                       title="Toggle details"
                     >
                       {isExpanded ? (
-                        <Minimize2
-                          size={14}
-                          className="text-slate-500 dark:text-slate-400"
-                        />
+                        <Minimize2 size={14} className="text-slate-500 dark:text-slate-400" />
                       ) : (
-                        <Maximize2
-                          size={14}
-                          className="text-slate-500 dark:text-slate-400"
-                        />
+                        <Maximize2 size={14} className="text-slate-500 dark:text-slate-400" />
                       )}
                     </button>
                   </div>
                 </div>
 
                 {hasSummary && (
-                  <div
-                    className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}
-                  >
+                  <div className={`text-sm ${theme.contentClass} bg-slate-50 dark:bg-slate-800 rounded-lg p-2 mb-2`}>
                     <span className="font-medium">Summary: </span>
                     <span>{output.summary}</span>
                   </div>
@@ -667,28 +554,15 @@ export const ToolCallsDisplay = ({
                   <div className="space-y-2">
                     {hasResult && (
                       <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                        <div
-                          className={`text-xs font-medium mb-1 ${theme.contentClass}`}
-                        >
-                          Result Preview:
-                        </div>
+                        <div className={`text-xs font-medium mb-1 ${theme.contentClass}`}>Result Preview:</div>
                         <code className="text-xs text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
-                          {JSON.stringify(
-                            getResultSummary(output.return)
-                          ).substring(0, 100)}
-                          {JSON.stringify(getResultSummary(output.return))
-                            .length > 100
-                            ? "..."
-                            : ""}
+                          {JSON.stringify(getResultSummary(output.return)).substring(0, 100)}
+                          {JSON.stringify(getResultSummary(output.return)).length > 100 ? "..." : ""}
                         </code>
                       </div>
                     )}
                     <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                      <div
-                        className={`text-xs font-medium mb-1 ${theme.contentClass}`}
-                      >
-                        Arguments:
-                      </div>
+                      <div className={`text-xs font-medium mb-1 ${theme.contentClass}`}>Arguments:</div>
                       <code className="text-xs text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
                         {formatArgsSummary(output.args)}
                       </code>
@@ -701,11 +575,7 @@ export const ToolCallsDisplay = ({
                     <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent"></div>
 
                     <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                      <div
-                        className={`text-sm font-medium mb-2 ${theme.contentClass}`}
-                      >
-                        Arguments:
-                      </div>
+                      <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Arguments:</div>
                       <pre className="text-xs text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 p-2 rounded overflow-x-auto leading-relaxed">
                         {JSON.stringify(output.args, null, 2)}
                       </pre>
@@ -713,11 +583,7 @@ export const ToolCallsDisplay = ({
 
                     {hasResult && (
                       <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
-                        <div
-                          className={`text-sm font-medium mb-2 ${theme.contentClass}`}
-                        >
-                          Result:
-                        </div>
+                        <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Result:</div>
                         <div
                           ref={(el) => {
                             resultRefs.current[index] = el
@@ -725,11 +591,7 @@ export const ToolCallsDisplay = ({
                           className="overflow-hidden"
                         >
                           <pre className="text-xs text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 p-2 rounded overflow-x-auto leading-relaxed">
-                            {JSON.stringify(
-                              getResultSummary(output.return),
-                              null,
-                              2
-                            )}
+                            {JSON.stringify(getResultSummary(output.return), null, 2)}
                           </pre>
                         </div>
                       </div>
@@ -751,20 +613,12 @@ export const ToolCallsDisplay = ({
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className={`${themeUnknown.iconClass}`}>
-                  {getStepIcon(output.type)}
-                </div>
-                <span className={`${themeUnknown.labelClass} text-xs`}>
-                  {output.type}
-                </span>
+                <div className={`${themeUnknown.iconClass}`}>{getStepIcon(output.type)}</div>
+                <span className={`${themeUnknown.labelClass} text-xs`}>{output.type}</span>
               </div>
               {output.return && (
-                <div
-                  className={`text-sm leading-relaxed whitespace-pre-wrap ${themeUnknown.contentClass}`}
-                >
-                  {typeof output.return === "string"
-                    ? output.return
-                    : JSON.stringify(output.return, null, 2)}
+                <div className={`text-sm leading-relaxed whitespace-pre-wrap ${themeUnknown.contentClass}`}>
+                  {typeof output.return === "string" ? output.return : JSON.stringify(output.return, null, 2)}
                 </div>
               )}
             </div>

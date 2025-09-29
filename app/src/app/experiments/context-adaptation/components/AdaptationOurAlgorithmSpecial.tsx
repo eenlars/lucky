@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  axes,
-  scenarioColors,
-  semantic,
-  seriesPalette,
-} from "@/app/experiments/chartColors"
+import { axes, scenarioColors, semantic, seriesPalette } from "@/app/experiments/chartColors"
 import { useEffect, useMemo, useState } from "react"
 import {
   CartesianGrid,
@@ -23,10 +18,7 @@ import {
 
 import type { OpenRouterModelName } from "@core/utils/spending/models.types"
 import { accuracyScorePct } from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
-import {
-  MODELS,
-  TEST_SCENARIOS,
-} from "@experiments/tool-real/experiments/03-context-adaptation/constants"
+import { MODELS, TEST_SCENARIOS } from "@experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
   LoopMetrics,
@@ -36,14 +28,7 @@ import type {
 
 // Condition type comes from shared experiment types
 
-type ShapeName =
-  | "circle"
-  | "cross"
-  | "diamond"
-  | "square"
-  | "star"
-  | "triangle"
-  | "wye"
+type ShapeName = "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye"
 
 interface PointDatum {
   // axes
@@ -68,10 +53,7 @@ interface PointDatum {
   avgErrorRate: number
   totalCombineCalls: number
   countsUsed: LoopMetrics["countsUsed"]
-  strategyCounts: Record<
-    OurAlgorithmRun["loops"][number]["metrics"]["strategy"],
-    number
-  >
+  strategyCounts: Record<OurAlgorithmRun["loops"][number]["metrics"]["strategy"], number>
 }
 
 // Convert provider/model slugs into human-friendly display names
@@ -122,9 +104,7 @@ function formatMs(ms: number): string {
 
 // Build stable model order based on MODELS but fall back to discovered models in results
 function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
-  const fromResults = Array.from(
-    new Set(runs.map((r) => r.model))
-  ) as OpenRouterModelName[]
+  const fromResults = Array.from(new Set(runs.map((r) => r.model))) as OpenRouterModelName[]
   const preferred = MODELS
   const order: OpenRouterModelName[] = []
   for (const m of preferred) if (fromResults.includes(m)) order.push(m)
@@ -175,9 +155,7 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
 } {
   if (!results) return { modelOrder: [], byScenario: {} }
 
-  const expectedByScenario = Object.fromEntries(
-    TEST_SCENARIOS.map((s) => [s.id, s.expected])
-  ) as Record<string, number>
+  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map((s) => [s.id, s.expected])) as Record<string, number>
 
   const modelOrder = computeModelOrder(results.runs)
 
@@ -191,10 +169,7 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
     const accuracyPct = accuracyScorePct(run.successItems, expected)
     const minimalCalls = Math.max(1, Math.ceil(expected / 3))
     const actualCalls = Math.max(0, run.totalFetchCalls || 0)
-    const efficiencyPct =
-      actualCalls > 0
-        ? Math.min(100, Math.max(0, (minimalCalls / actualCalls) * 100))
-        : 0
+    const efficiencyPct = actualCalls > 0 ? Math.min(100, Math.max(0, (minimalCalls / actualCalls) * 100)) : 0
 
     const loopAgg = aggregateLoopMetrics(run)
 
@@ -244,10 +219,7 @@ function CustomTooltip({ active, payload }: any) {
   return (
     <div className="rounded-md border border-gray-200 bg-white p-2 shadow-sm text-xs max-w-[320px]">
       <div className="font-semibold text-gray-900 mb-1">
-        <span
-          className="inline-block h-2 w-2 rounded-full mr-2"
-          style={{ background: color }}
-        />
+        <span className="inline-block h-2 w-2 rounded-full mr-2" style={{ background: color }} />
         {p.model} · {p.scenario} · {p.condition}
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
@@ -287,8 +259,7 @@ function CustomTooltip({ active, payload }: any) {
 
         <div className="text-gray-600">Counts used</div>
         <div className="text-gray-900">
-          1:{p.countsUsed["1"]} · 2:{p.countsUsed["2"]} · 3:{p.countsUsed["3"]}{" "}
-          · {">3:"}
+          1:{p.countsUsed["1"]} · 2:{p.countsUsed["2"]} · 3:{p.countsUsed["3"]} · {">3:"}
           {p.countsUsed.gt3}
         </div>
 
@@ -318,30 +289,11 @@ function PointShape({ cx, cy, payload, size = 80, modelOrder }: any) {
 
   switch (shape) {
     case "triangle":
-      return (
-        <polygon
-          points={`${cx},${cy - r} ${cx + r},${cy + r} ${cx - r},${cy + r}`}
-          {...common}
-        />
-      )
+      return <polygon points={`${cx},${cy - r} ${cx + r},${cy + r} ${cx - r},${cy + r}`} {...common} />
     case "diamond":
-      return (
-        <polygon
-          points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`}
-          {...common}
-        />
-      )
+      return <polygon points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`} {...common} />
     case "square":
-      return (
-        <rect
-          x={cx - r}
-          y={cy - r}
-          width={2 * r}
-          height={2 * r}
-          rx={2}
-          {...common}
-        />
-      )
+      return <rect x={cx - r} y={cy - r} width={2 * r} height={2 * r} rx={2} {...common} />
     default:
       return <circle cx={cx} cy={cy} r={r} {...common} />
   }
@@ -358,26 +310,11 @@ function ShapesLegend({ modelOrder }: { modelOrder: string[] }) {
               const shape = MODEL_SHAPES[idx % MODEL_SHAPES.length]
               switch (shape) {
                 case "triangle":
-                  return (
-                    <polygon points="7,1 13,13 1,13" fill={semantic.neutral} />
-                  )
+                  return <polygon points="7,1 13,13 1,13" fill={semantic.neutral} />
                 case "diamond":
-                  return (
-                    <polygon
-                      points="7,1 13,7 7,13 1,7"
-                      fill={semantic.neutral}
-                    />
-                  )
+                  return <polygon points="7,1 13,7 7,13 1,7" fill={semantic.neutral} />
                 case "square":
-                  return (
-                    <rect
-                      x="2"
-                      y="2"
-                      width="10"
-                      height="10"
-                      fill={semantic.neutral}
-                    />
-                  )
+                  return <rect x="2" y="2" width="10" height="10" fill={semantic.neutral} />
                 case "cross":
                   return (
                     <g stroke={semantic.neutral} strokeWidth="2">
@@ -413,10 +350,7 @@ function ShapesLegend({ modelOrder }: { modelOrder: string[] }) {
         <span className="text-gray-600">scenario:</span>
         {Object.entries(scenarioColors).map(([k, v]) => (
           <div key={k} className="flex items-center gap-2">
-            <div
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ background: v }}
-            />
+            <div className="h-2.5 w-2.5 rounded-full" style={{ background: v }} />
             <span className="text-gray-700">{k}</span>
           </div>
         ))}
@@ -426,10 +360,7 @@ function ShapesLegend({ modelOrder }: { modelOrder: string[] }) {
           <span className="text-gray-700">vague (hollow)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ background: semantic.neutral }}
-          />
+          <div className="h-2.5 w-2.5 rounded-full" style={{ background: semantic.neutral }} />
           <span className="text-gray-700">clear (filled)</span>
         </div>
       </div>
@@ -477,24 +408,16 @@ function LegendByModel({ modelOrder }: { modelOrder: string[] }) {
   )
 }
 
-export default function AdaptationOurAlgorithmSpecial({
-  className = "",
-}: {
-  className?: string
-}) {
+export default function AdaptationOurAlgorithmSpecial({ className = "" }: { className?: string }) {
   const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
-  const [enabledScenarios, setEnabledScenarios] = useState<
-    Record<string, boolean>
-  >({
+  const [enabledScenarios, setEnabledScenarios] = useState<Record<string, boolean>>({
     "basic-failure": true,
     "larger-request": true,
     "within-limit": true,
   })
-  const [enabledConditions, setEnabledConditions] = useState<
-    Record<Condition, boolean>
-  >({
+  const [enabledConditions, setEnabledConditions] = useState<Record<Condition, boolean>>({
     vague: true,
     clear: true,
   })
@@ -524,15 +447,9 @@ export default function AdaptationOurAlgorithmSpecial({
   }, [])
 
   const { modelOrder, byScenario } = useMemo(() => buildPoints(data), [data])
-  const allPoints = useMemo(
-    () => Object.values(byScenario).flatMap((arr) => arr),
-    [byScenario]
-  )
+  const allPoints = useMemo(() => Object.values(byScenario).flatMap((arr) => arr), [byScenario])
   const filteredPoints = useMemo(
-    () =>
-      allPoints.filter(
-        (p) => enabledScenarios[p.scenario] && enabledConditions[p.condition]
-      ),
+    () => allPoints.filter((p) => enabledScenarios[p.scenario] && enabledConditions[p.condition]),
     [allPoints, enabledScenarios, enabledConditions]
   )
   const hasAny = filteredPoints.length > 0
@@ -551,24 +468,13 @@ export default function AdaptationOurAlgorithmSpecial({
       }
     > = {}
     for (const run of Object.values(byScenario).flat()) {
-      if (!enabledScenarios[run.scenario] || !enabledConditions[run.condition])
-        continue
+      if (!enabledScenarios[run.scenario] || !enabledConditions[run.condition]) continue
       // We need the underlying OurAlgorithmRun to get per-loop success; approximate with metrics fields from tooltip data
       // Our PointDatum does not carry individual loop success; instead, use countsUsed as proxy and avgAdherence/errorRate
       // To still show learning trend, we simulate per-loop with 3 buckets: 1, 2, 3 (treat >3 as 4)
       const loops = [1, 2, 3, 4]
-      const adherenceVals = [
-        run.avgAdherence,
-        run.avgAdherence,
-        run.avgAdherence,
-        run.avgAdherence,
-      ]
-      const errorVals = [
-        run.avgErrorRate,
-        run.avgErrorRate,
-        run.avgErrorRate,
-        run.avgErrorRate,
-      ]
+      const adherenceVals = [run.avgAdherence, run.avgAdherence, run.avgAdherence, run.avgAdherence]
+      const errorVals = [run.avgErrorRate, run.avgErrorRate, run.avgErrorRate, run.avgErrorRate]
       const successEst = [
         Math.min(run.ySuccessPct, 100) * 0.6,
         Math.min(run.ySuccessPct, 100) * 0.8,
@@ -577,8 +483,7 @@ export default function AdaptationOurAlgorithmSpecial({
       ]
       for (let i = 0; i < loops.length; i++) {
         const L = loops[i]
-        if (!accum[L])
-          accum[L] = { loop: L, successPct: [], adherence: [], errorRate: [] }
+        if (!accum[L]) accum[L] = { loop: L, successPct: [], adherence: [], errorRate: [] }
         accum[L].successPct.push(successEst[i])
         accum[L].adherence.push(adherenceVals[i] * 100)
         accum[L].errorRate.push(errorVals[i] * 100)
@@ -588,26 +493,16 @@ export default function AdaptationOurAlgorithmSpecial({
       .sort((a, b) => a.loop - b.loop)
       .map((r) => ({
         loop: r.loop,
-        successPct:
-          r.successPct.reduce((s, v) => s + v, 0) /
-          Math.max(1, r.successPct.length),
-        adherencePct:
-          r.adherence.reduce((s, v) => s + v, 0) /
-          Math.max(1, r.adherence.length),
-        errorPct:
-          r.errorRate.reduce((s, v) => s + v, 0) /
-          Math.max(1, r.errorRate.length),
+        successPct: r.successPct.reduce((s, v) => s + v, 0) / Math.max(1, r.successPct.length),
+        adherencePct: r.adherence.reduce((s, v) => s + v, 0) / Math.max(1, r.adherence.length),
+        errorPct: r.errorRate.reduce((s, v) => s + v, 0) / Math.max(1, r.errorRate.length),
       }))
   }, [byScenario, enabledScenarios, enabledConditions])
 
   const learningCurvesByModel = useMemo(() => {
-    const perModel: Record<
-      string,
-      Record<number, { loop: number; successPct: number[] }>
-    > = {}
+    const perModel: Record<string, Record<number, { loop: number; successPct: number[] }>> = {}
     for (const run of Object.values(byScenario).flat()) {
-      if (!enabledScenarios[run.scenario] || !enabledConditions[run.condition])
-        continue
+      if (!enabledScenarios[run.scenario] || !enabledConditions[run.condition]) continue
       const model = run.model
       if (!perModel[model]) perModel[model] = {}
       const loops = [1, 2, 3, 4]
@@ -619,8 +514,7 @@ export default function AdaptationOurAlgorithmSpecial({
       ]
       for (let i = 0; i < loops.length; i++) {
         const L = loops[i]
-        if (!perModel[model][L])
-          perModel[model][L] = { loop: L, successPct: [] }
+        if (!perModel[model][L]) perModel[model][L] = { loop: L, successPct: [] }
         perModel[model][L].successPct.push(successEst[i])
       }
     }
@@ -631,37 +525,28 @@ export default function AdaptationOurAlgorithmSpecial({
           .sort((a, b) => a.loop - b.loop)
           .map((r) => ({
             loop: r.loop,
-            successPct:
-              r.successPct.reduce((s, v) => s + v, 0) /
-              Math.max(1, r.successPct.length),
+            successPct: r.successPct.reduce((s, v) => s + v, 0) / Math.max(1, r.successPct.length),
           })),
       ])
     )
   }, [byScenario, enabledScenarios, enabledConditions])
 
   const hasAnyLearningByModel = useMemo(() => {
-    return Object.values(learningCurvesByModel).some(
-      (arr) => Array.isArray(arr) && arr.length > 0
-    )
+    return Object.values(learningCurvesByModel).some((arr) => Array.isArray(arr) && arr.length > 0)
   }, [learningCurvesByModel])
 
   return (
     <div className={`w-full bg-white rounded-lg shadow p-4 ${className}`}>
       <div className="flex items-baseline justify-between gap-3 mb-2">
         <div>
-          <h2 className="text-xl font-semibold">
-            Context Adaptation · Our Algorithm scatter
-          </h2>
+          <h2 className="text-xl font-semibold">Context Adaptation · Our Algorithm scatter</h2>
           <p className="text-xs text-gray-500">
-            Shapes encode model; color encodes scenario; outline encodes
-            condition (hollow=vague, filled=clear); size encodes cost. Red
-            dashed line marks perfect accuracy (100).
+            Shapes encode model; color encodes scenario; outline encodes condition (hollow=vague, filled=clear); size
+            encodes cost. Red dashed line marks perfect accuracy (100).
           </p>
         </div>
         <div className="text-[10px] text-gray-500">
-          {data
-            ? `Timestamp: ${new Date(data.timestamp).toLocaleString()}`
-            : null}
+          {data ? `Timestamp: ${new Date(data.timestamp).toLocaleString()}` : null}
         </div>
       </div>
 
@@ -672,9 +557,7 @@ export default function AdaptationOurAlgorithmSpecial({
           {Object.keys(scenarioColors).map((s) => (
             <button
               key={s}
-              onClick={() =>
-                setEnabledScenarios((prev) => ({ ...prev, [s]: !prev[s] }))
-              }
+              onClick={() => setEnabledScenarios((prev) => ({ ...prev, [s]: !prev[s] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
                 enabledScenarios[s]
                   ? "bg-white border-gray-300 text-gray-800"
@@ -688,9 +571,7 @@ export default function AdaptationOurAlgorithmSpecial({
           {(["vague", "clear"] as Condition[]).map((c) => (
             <button
               key={c}
-              onClick={() =>
-                setEnabledConditions((prev) => ({ ...prev, [c]: !prev[c] }))
-              }
+              onClick={() => setEnabledConditions((prev) => ({ ...prev, [c]: !prev[c] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
                 enabledConditions[c]
                   ? "bg-white border-gray-300 text-gray-800"
@@ -704,9 +585,7 @@ export default function AdaptationOurAlgorithmSpecial({
       </div>
 
       {loading && <div className="text-xs text-gray-500">Loading…</div>}
-      {!loading && !hasAny && (
-        <div className="text-xs text-gray-500">No points available.</div>
-      )}
+      {!loading && !hasAny && <div className="text-xs text-gray-500">No points available.</div>}
       {errors.length > 0 && (
         <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1 mb-3">
           <strong>Errors:</strong> {errors.join("; ")}
@@ -751,20 +630,10 @@ export default function AdaptationOurAlgorithmSpecial({
               domain={[0, maxPct]}
             />
             <ZAxis dataKey="zCost" name="Cost ($)" range={[60, 160]} />
-            <ReferenceLine
-              y={100}
-              stroke={axes.referenceLine}
-              strokeDasharray="4 4"
-              ifOverflow="extendDomain"
-            />
+            <ReferenceLine y={100} stroke={axes.referenceLine} strokeDasharray="4 4" ifOverflow="extendDomain" />
             <Tooltip content={<CustomTooltip />} />
 
-            <Scatter
-              data={filteredPoints}
-              shape={(props: any) => (
-                <PointShape {...props} modelOrder={modelOrder} />
-              )}
-            />
+            <Scatter data={filteredPoints} shape={(props: any) => <PointShape {...props} modelOrder={modelOrder} />} />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
@@ -772,17 +641,12 @@ export default function AdaptationOurAlgorithmSpecial({
       {/* Learning curves: show improvement across loops */}
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="w-full h-[420px] bg-white rounded-lg shadow p-3">
-          <div className="text-sm font-semibold text-gray-900 mb-2">
-            Learning curve (overall)
-          </div>
+          <div className="text-sm font-semibold text-gray-900 mb-2">Learning curve (overall)</div>
           <div className="mb-3">
             <LegendOverall />
           </div>
           <ResponsiveContainer width="100%" height="85%">
-            <LineChart
-              data={learningCurvesOverall}
-              margin={{ top: 16, right: 16, bottom: 52, left: 8 }}
-            >
+            <LineChart data={learningCurvesOverall} margin={{ top: 16, right: 16, bottom: 52, left: 8 }}>
               <CartesianGrid stroke={axes.grid} strokeDasharray="4 4" />
               <XAxis
                 dataKey="loop"
@@ -808,12 +672,7 @@ export default function AdaptationOurAlgorithmSpecial({
                 domain={[0, 110]}
               />
               <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
-              <ReferenceLine
-                y={100}
-                yAxisId="left"
-                stroke={axes.referenceLine}
-                strokeDasharray="4 4"
-              />
+              <ReferenceLine y={100} yAxisId="left" stroke={axes.referenceLine} strokeDasharray="4 4" />
               <Line
                 yAxisId="left"
                 type="monotone"
@@ -846,9 +705,7 @@ export default function AdaptationOurAlgorithmSpecial({
         </div>
 
         <div className="w-full h-[420px] bg-white rounded-lg shadow p-3">
-          <div className="text-sm font-semibold text-gray-900 mb-2">
-            Learning curve (by model)
-          </div>
+          <div className="text-sm font-semibold text-gray-900 mb-2">Learning curve (by model)</div>
           <div className="mb-3">
             <LegendByModel modelOrder={modelOrder} />
           </div>
@@ -869,17 +726,9 @@ export default function AdaptationOurAlgorithmSpecial({
                     fill: axes.label,
                   }}
                 />
-                <YAxis
-                  tickFormatter={(v) => `${v}%`}
-                  tick={{ fontSize: 12, fill: axes.label }}
-                  domain={[0, 100]}
-                />
+                <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12, fill: axes.label }} domain={[0, 100]} />
                 <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
-                <ReferenceLine
-                  y={100}
-                  stroke={axes.referenceLine}
-                  strokeDasharray="4 4"
-                />
+                <ReferenceLine y={100} stroke={axes.referenceLine} strokeDasharray="4 4" />
                 {modelOrder.map((m, idx) => (
                   <Line
                     key={m}

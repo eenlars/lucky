@@ -22,8 +22,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const approvalId = searchParams.get("id")
     const action = searchParams.get("action") || "approve"
-    const response =
-      searchParams.get("text") || searchParams.get("response") || "Approved"
+    const response = searchParams.get("text") || searchParams.get("response") || "Approved"
 
     console.log("=== Approve Route - Processing Approval ===")
     console.log("Approval ID:", approvalId)
@@ -37,9 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Sanitize approvalId to prevent path traversal attacks
-    const sanitizedApprovalId = path
-      .basename(approvalId)
-      .replace(/[^a-zA-Z0-9_-]/g, "")
+    const sanitizedApprovalId = path.basename(approvalId).replace(/[^a-zA-Z0-9_-]/g, "")
     if (!sanitizedApprovalId || sanitizedApprovalId !== approvalId) {
       return NextResponse.json<ApproveData>({
         text: "Error: Invalid approval ID format",
@@ -54,9 +51,7 @@ export async function GET(request: NextRequest) {
       // legacy: CWD/logging_folder/approvals
       path.join(process.cwd(), "logging_folder", "approvals"),
     ]
-    const candidateFiles = candidateDirs.map((dir) =>
-      path.join(dir, `${sanitizedApprovalId}.json`)
-    )
+    const candidateFiles = candidateDirs.map((dir) => path.join(dir, `${sanitizedApprovalId}.json`))
 
     try {
       // Find the first existing candidate file
@@ -81,10 +76,7 @@ export async function GET(request: NextRequest) {
       approvalRequest.response = response
 
       // save the updated request
-      await fs.writeFile(
-        requestFilePath,
-        JSON.stringify(approvalRequest, null, 2)
-      )
+      await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
 
       return NextResponse.json<ApproveData>({
         text: `Approval ${approvalRequest.status}: ${response}`,
@@ -97,9 +89,6 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error in approve route:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to process request" },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: "Failed to process request" }, { status: 500 })
   }
 }

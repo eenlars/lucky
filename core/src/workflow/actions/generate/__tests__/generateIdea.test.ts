@@ -7,8 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 vi.mock("@runtime/settings/constants", () => mockRuntimeConstants())
 
 // Create typed mock instances
-const mockSendAIRequest =
-  vi.fn<(req: Parameters<SendAI>[0]) => Promise<TResponse<unknown>>>()
+const mockSendAIRequest = vi.fn<(req: Parameters<SendAI>[0]) => Promise<TResponse<unknown>>>()
 const mockToolsExplanations = vi.fn<(type?: "mcp" | "code" | "all") => string>()
 
 // mock external dependencies using vi.mock
@@ -22,12 +21,10 @@ vi.mock("@core/prompts/explainTools", () => ({
 }))
 
 vi.mock("@core/tools/tool.types", () => {
-  const tools = [
-    "csvReader",
-    "csvInfo",
-    "locationDataManager",
-    "contextHandler",
-  ] as const satisfies [AllToolNames, ...AllToolNames[]]
+  const tools = ["csvReader", "csvInfo", "locationDataManager", "contextHandler"] as const satisfies [
+    AllToolNames,
+    ...AllToolNames[],
+  ]
   return {
     ALL_ACTIVE_TOOL_NAMES: tools,
   }
@@ -300,12 +297,7 @@ describe("generateWorkflowIdea", () => {
       data: {
         workflow:
           "1: search locations (tools: csvReader, locationDataManager); connects to 2\n2: verify data (tools: csvInfo); connects to 3\n3: save results (tools: contextHandler); connects to end",
-        tools: [
-          "csvReader",
-          "locationDataManager",
-          "csvInfo",
-          "contextHandler",
-        ],
+        tools: ["csvReader", "locationDataManager", "csvInfo", "contextHandler"],
         amountOfNodes: 3,
         whyItsSolvesTheProblem: "",
         problemDestructuring: "",

@@ -8,7 +8,7 @@
 import { processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import type { CoreMessage, Tool, ToolSet } from "ai"
+import type { ModelMessage, Tool, ToolSet } from "ai"
 
 // Basic tools
 import { spec as alwaysErrorSpec } from "../../shared/tools/alwaysError"
@@ -65,7 +65,7 @@ export type ToolCallTrace = {
 }
 
 export type RunTrace = {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   toolCalls: ToolCallTrace[]
   usdCost?: number
 }
@@ -78,7 +78,7 @@ export async function chatWithTools(
   userContent: string,
   tools: ToolSet
 ): Promise<RunTrace> {
-  const messages: CoreMessage[] = [{ role: "user", content: userContent }]
+  const messages: ModelMessage[] = [{ role: "user", content: userContent }]
 
   const response = await sendAI({
     mode: "tool",
@@ -112,8 +112,7 @@ export async function chatWithTools(
     .map((o) => ({
       toolName: o.name ?? "",
       args: o.args ?? {},
-      result:
-        typeof o.return === "string" ? o.return : JSON.stringify(o.return),
+      result: typeof o.return === "string" ? o.return : JSON.stringify(o.return),
     }))
 
   return { messages, toolCalls, usdCost }

@@ -38,10 +38,7 @@ export const saveNodeInvocationToDB = async ({
   updatedMemory,
 }: SaveNodeInvocationOpts): Promise<{ nodeInvocationId: string }> => {
   // Debug logging for tool calls
-  lgg.onlyIf(
-    CONFIG.logging.override.Tools,
-    `[saveNodeInvocation] Saving agentSteps: ${agentSteps?.length} outputs`
-  )
+  lgg.onlyIf(CONFIG.logging.override.Tools, `[saveNodeInvocation] Saving agentSteps: ${agentSteps?.length} outputs`)
 
   const contentToSave = JSONN.isJSON(output)
     ? JSONN.extract(output) // Don't throw on JSON parse failure
@@ -88,18 +85,10 @@ export const saveNodeInvocationToDB = async ({
     }
   }
 
-  const { error, data } = await supabase
-    .from("NodeInvocation")
-    .insert(insertable)
-    .select()
-    .single()
+  const { error, data } = await supabase.from("NodeInvocation").insert(insertable).select().single()
 
   if (error) {
-    lgg.error(
-      "Error saving node invocation:",
-      JSONN.show(insertable),
-      JSONN.show(error)
-    )
+    lgg.error("Error saving node invocation:", JSONN.show(insertable), JSONN.show(error))
   }
 
   if (!data) {

@@ -1,24 +1,10 @@
 "use client"
 
-import type {
-  AgentStep,
-  AgentSteps,
-} from "@core/messages/pipeline/AgentStep.types"
-import {
-  AlertCircle,
-  BookOpen,
-  Brain,
-  Target,
-  Terminal,
-  Type,
-  Wrench,
-} from "lucide-react"
+import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
+import { AlertCircle, BookOpen, Brain, Target, Terminal, Type, Wrench } from "lucide-react"
 
 export const getReactJsonTheme = () => {
-  if (
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-  ) {
+  if (typeof window !== "undefined" && document.documentElement.classList.contains("dark")) {
     return "monokai"
   }
   return "rjv-default"
@@ -77,9 +63,7 @@ export const formatArgsSummary = (args: any): string => {
     }
     return `${key}: ${typeof value}`
   }
-  return `{${keys.length} keys: ${keys.slice(0, 3).join(", ")}${
-    keys.length > 3 ? "..." : ""
-  }}`
+  return `{${keys.length} keys: ${keys.slice(0, 3).join(", ")}${keys.length > 3 ? "..." : ""}}`
 }
 
 export const getResultSummary = (toolResponse: any): any => {
@@ -93,37 +77,21 @@ export const getResultSummary = (toolResponse: any): any => {
 export const filterRelevantSteps = (steps?: AgentSteps): AgentSteps => {
   if (!steps) return []
   return steps.filter((output: AgentStep) => {
-    if (
-      output.type === "learning" ||
-      output.type === "reasoning" ||
-      output.type === "text"
-    ) {
-      return (
-        (output as any).return &&
-        String((output as any).return).trim().length > 0
-      )
+    if (output.type === "learning" || output.type === "reasoning" || output.type === "text") {
+      return (output as any).return && String((output as any).return).trim().length > 0
     }
     if (output.type === "terminate") {
-      return (
-        (output as any).return &&
-        String((output as any).return).trim().length > 0
-      )
+      return (output as any).return && String((output as any).return).trim().length > 0
     }
     if (output.type === "tool") {
-      return (
-        (output as any).name && String((output as any).name).trim().length > 0
-      )
+      return (output as any).name && String((output as any).name).trim().length > 0
     }
     return true
   })
 }
 
 // Generate a resilient React key for a step item
-export const generateStepKey = (
-  prefix: string,
-  index: number,
-  step: AgentStep
-): string => {
+export const generateStepKey = (prefix: string, index: number, step: AgentStep): string => {
   const base = `${prefix}-${step.type}-${index}`
   if (step.type === "tool") {
     const name = (step as any).name || ""
@@ -131,10 +99,7 @@ export const generateStepKey = (
   }
   if ((step as any).return) {
     try {
-      const str =
-        typeof (step as any).return === "string"
-          ? (step as any).return
-          : JSON.stringify((step as any).return)
+      const str = typeof (step as any).return === "string" ? (step as any).return : JSON.stringify((step as any).return)
       const snippet = str.slice(0, 24).replace(/\s+/g, "_")
       return `${base}-${snippet}`
     } catch {

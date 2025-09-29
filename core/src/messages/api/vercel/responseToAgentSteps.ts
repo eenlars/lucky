@@ -3,11 +3,7 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { truncater } from "@core/utils/common/llmify"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { GenerateTextResult, ToolSet } from "ai"
-import {
-  isErrorProcessed,
-  isTextProcessed,
-  isToolProcessed,
-} from "../vercel/processResponse.types"
+import { isErrorProcessed, isTextProcessed, isToolProcessed } from "../vercel/processResponse.types"
 
 /**
  * Convert a raw Vercel AI SDK generateText response into AgentSteps.
@@ -46,9 +42,7 @@ export function responseToAgentSteps({
       return: processed.content,
     })
   } else if (isErrorProcessed(processed)) {
-    const details = processed.details
-      ? " details:" + truncater(JSON.stringify(processed.details), 200)
-      : ""
+    const details = processed.details ? " details:" + truncater(JSON.stringify(processed.details), 200) : ""
     agentSteps.push({
       type: "error",
       return: processed.message + details,

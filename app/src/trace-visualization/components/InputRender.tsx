@@ -1,17 +1,8 @@
 "use client"
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/react-flow-visualization/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { CodeInput } from "@/ui/code"
-import {
-  extractTextFromPayload,
-  isDelegationPayload,
-  isSequentialPayload,
-} from "@core/messages/MessagePayload"
+import { extractTextFromPayload, isDelegationPayload, isSequentialPayload } from "@core/messages/MessagePayload"
 import type { Json } from "@lucky/shared"
 import { Maximize2, MessageSquare, Users } from "lucide-react"
 import { useState } from "react"
@@ -31,20 +22,11 @@ const tryParseJson = (str: any) => {
   }
 }
 
-export const PayloadRender = ({
-  payload,
-  msgId,
-  inspectable = false,
-}: PayloadRenderProps) => {
+export const PayloadRender = ({ payload, msgId, inspectable = false }: PayloadRenderProps) => {
   const [open, setOpen] = useState(false)
 
   // handle aggregated payload (combines multiple messages from awaited nodes)
-  if (
-    payload &&
-    typeof payload === "object" &&
-    (payload as any).kind === "aggregated" &&
-    (payload as any).messages
-  ) {
+  if (payload && typeof payload === "object" && (payload as any).kind === "aggregated" && (payload as any).messages) {
     const aggregatedPayload = payload as {
       kind: "aggregated"
       messages: Array<{ payload: any; fromNodeId: string }>
@@ -60,21 +42,12 @@ export const PayloadRender = ({
         </div>
         <div className="space-y-2">
           {aggregatedPayload.messages.map((message, index) => (
-            <div
-              key={index}
-              className="p-3 bg-blue-50 border border-blue-200 rounded"
-            >
+            <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded">
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare className="h-3 w-3 text-blue-600" />
-                <span className="text-xs font-medium text-blue-700">
-                  from: {message.fromNodeId}
-                </span>
+                <span className="text-xs font-medium text-blue-700">from: {message.fromNodeId}</span>
               </div>
-              <PayloadRender
-                payload={message.payload}
-                msgId={`${msgId}-${index}`}
-                inspectable={false}
-              />
+              <PayloadRender payload={message.payload} msgId={`${msgId}-${index}`} inspectable={false} />
             </div>
           ))}
         </div>
@@ -84,10 +57,7 @@ export const PayloadRender = ({
     if (inspectable) {
       return (
         <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
+          <div className="relative group cursor-pointer" onClick={() => setOpen(true)}>
             {content}
             <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
               <Maximize2 className="h-3 w-3" />
@@ -99,9 +69,7 @@ export const PayloadRender = ({
               <DialogHeader>
                 <DialogTitle>Aggregated Messages</DialogTitle>
               </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
+              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">{content}</div>
             </DialogContent>
           </Dialog>
         </>
@@ -113,17 +81,13 @@ export const PayloadRender = ({
 
   // handle delegation payload
   if (isDelegationPayload(payload)) {
-    const parsedData: Json | string = tryParseJson(
-      extractTextFromPayload(payload)
-    )
+    const parsedData: Json | string = tryParseJson(extractTextFromPayload(payload))
 
     const content = (
       <div className="flex flex-col gap-2" key={msgId}>
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4 text-blue-500" />
-          <div className="text-sm font-medium text-blue-600">
-            {payload.kind}
-          </div>
+          <div className="text-sm font-medium text-blue-600">{payload.kind}</div>
         </div>
         {typeof parsedData === "string" ? (
           <div className="text-sm break-all">{parsedData}</div>
@@ -139,10 +103,7 @@ export const PayloadRender = ({
     if (inspectable) {
       return (
         <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
+          <div className="relative group cursor-pointer" onClick={() => setOpen(true)}>
             {content}
             <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
               <Maximize2 className="h-3 w-3" />
@@ -154,9 +115,7 @@ export const PayloadRender = ({
               <DialogHeader>
                 <DialogTitle>Payload: {payload.kind}</DialogTitle>
               </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
+              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">{content}</div>
             </DialogContent>
           </Dialog>
         </>
@@ -168,17 +127,13 @@ export const PayloadRender = ({
 
   // handle any payload
   if (isSequentialPayload(payload)) {
-    const parsedData: Json | string = tryParseJson(
-      extractTextFromPayload(payload)
-    )
+    const parsedData: Json | string = tryParseJson(extractTextFromPayload(payload))
 
     const content = (
       <div className="flex flex-col gap-2" key={msgId}>
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4 text-gray-500" />
-          <div className="text-sm font-medium text-gray-600">
-            {payload.kind}
-          </div>
+          <div className="text-sm font-medium text-gray-600">{payload.kind}</div>
         </div>
         {typeof parsedData === "string" ? (
           <div className="text-sm break-all">{parsedData}</div>
@@ -194,10 +149,7 @@ export const PayloadRender = ({
     if (inspectable) {
       return (
         <>
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
+          <div className="relative group cursor-pointer" onClick={() => setOpen(true)}>
             {content}
             <div className="absolute right-2 top-2 p-1 rounded-md bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity">
               <Maximize2 className="h-3 w-3" />
@@ -209,9 +161,7 @@ export const PayloadRender = ({
               <DialogHeader>
                 <DialogTitle>Payload: {payload.kind}</DialogTitle>
               </DialogHeader>
-              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">
-                {content}
-              </div>
+              <div className="overflow-x-auto overflow-y-auto max-h-[calc(80vh-8rem)]">{content}</div>
             </DialogContent>
           </Dialog>
         </>
@@ -243,11 +193,7 @@ export const PayloadRender = ({
               <DialogTitle>JSON Payload</DialogTitle>
             </DialogHeader>
             <div className="overflow-x-auto overflow-y-auto max-h-[calc(85vh-8rem)]">
-              <CodeInput
-                block
-                wrap={false}
-                className="text-sm leading-[20px] whitespace-pre font-mono w-full"
-              >
+              <CodeInput block wrap={false} className="text-sm leading-[20px] whitespace-pre font-mono w-full">
                 {jsonContent}
               </CodeInput>
             </div>
@@ -257,9 +203,5 @@ export const PayloadRender = ({
     )
   }
 
-  return (
-    <pre className="mt-1 block break-words rounded bg-gray-100 p-2 text-xs">
-      {jsonContent}
-    </pre>
-  )
+  return <pre className="mt-1 block break-words rounded bg-gray-100 p-2 text-xs">{jsonContent}</pre>
 }

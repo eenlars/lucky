@@ -26,8 +26,7 @@ export function createDefaultEvolutionSettings(): EvolutionSettings {
     evaluationDataset: "",
     baselineComparison: false,
     mutationParams: {
-      mutationInstructions:
-        "Apply semantic mutations to improve workflow performance",
+      mutationInstructions: "Apply semantic mutations to improve workflow performance",
     },
     crossoverRate: 0.7,
     mutationRate: 0.3,
@@ -37,17 +36,13 @@ export function createDefaultEvolutionSettings(): EvolutionSettings {
 }
 
 // Create evolution settings with optional overrides
-export function createEvolutionSettingsWithConfig(
-  overrides?: Partial<EvolutionSettings>
-): EvolutionSettings {
+export function createEvolutionSettingsWithConfig(overrides?: Partial<EvolutionSettings>): EvolutionSettings {
   const defaults = createDefaultEvolutionSettings()
   return { ...defaults, ...overrides }
 }
 
 // Validate evolution settings
-export function validateEvolutionSettings(
-  settings: EvolutionSettings
-): boolean {
+export function validateEvolutionSettings(settings: EvolutionSettings): boolean {
   if (settings.populationSize <= 0) return false
   if (settings.generations <= 0) return false
   if (settings.maxCostUSD <= 0) return false

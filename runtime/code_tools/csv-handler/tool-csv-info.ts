@@ -16,8 +16,7 @@ const TOOLNAME = "csvInfo"
 
 // descriptions of the tools
 const toolsDescriptions = {
-  getStats:
-    "getStats returns the total number of rows and columns in the csv file, names indeces and the headers.",
+  getStats: "getStats returns the total number of rows and columns in the csv file, names indeces and the headers.",
   getAllHeaders:
     "getAllHeaders returns the headers of the csv file. the headers are the names of the columns in the csv file.",
   readColumns:
@@ -30,13 +29,7 @@ const csvInfoTool = defineTool({
   params: z.object({
     action: z
       .enum(["readColumns", "getAllHeaders", "getStats"])
-      .describe(
-        llmify(
-          `action to perform on csv file. ${Object.values(
-            toolsDescriptions
-          ).join(";")}`
-        )
-      ),
+      .describe(llmify(`action to perform on csv file. ${Object.values(toolsDescriptions).join(";")}`)),
   }),
   async execute(params, context) {
     const { action } = params
@@ -56,10 +49,7 @@ const csvInfoTool = defineTool({
     }
 
     try {
-      const contextStore = createContextStore(
-        "supabase",
-        context.workflowInvocationId
-      )
+      const contextStore = createContextStore("supabase", context.workflowInvocationId)
       const csvHandler = new CsvHandler(context.workflowFiles[0], contextStore)
 
       if (action === "readColumns") {

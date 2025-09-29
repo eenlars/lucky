@@ -34,7 +34,7 @@ describe("real world data", () => {
     expect(result?.agentSteps[1].name).toBe("tool2")
     expect(result?.agentSteps[1].args).toEqual({ input: "output of tool1" })
     expect(result?.agentSteps[1].return).toBe("processed_output of tool1")
-    
+
     expect(result?.agentSteps[2].name).toBe("tool3")
     expect(result?.agentSteps[2].args).toEqual({ input: "output of tool2" })
     expect(result?.agentSteps[2].return).toBe("final_output of tool2")

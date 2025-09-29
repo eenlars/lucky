@@ -74,18 +74,12 @@ function tTest(group1: number[], group2: number[]): number | null {
   const mean1 = group1.reduce((sum, val) => sum + val, 0) / group1.length
   const mean2 = group2.reduce((sum, val) => sum + val, 0) / group2.length
 
-  const variance1 =
-    group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) /
-    (group1.length - 1)
-  const variance2 =
-    group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) /
-    (group2.length - 1)
+  const variance1 = group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) / (group1.length - 1)
+  const variance2 = group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) / (group2.length - 1)
 
   if (variance1 === 0 && variance2 === 0) return null
 
-  const pooledSE = Math.sqrt(
-    variance1 / group1.length + variance2 / group2.length
-  )
+  const pooledSE = Math.sqrt(variance1 / group1.length + variance2 / group2.length)
   if (pooledSE === 0) return null
 
   const tStat = Math.abs(mean1 - mean2) / pooledSE
@@ -103,12 +97,8 @@ function cohensD(group1: number[], group2: number[]): number | null {
   const mean1 = group1.reduce((sum, val) => sum + val, 0) / group1.length
   const mean2 = group2.reduce((sum, val) => sum + val, 0) / group2.length
 
-  const variance1 =
-    group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) /
-    (group1.length - 1)
-  const variance2 =
-    group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) /
-    (group2.length - 1)
+  const variance1 = group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) / (group1.length - 1)
+  const variance2 = group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) / (group2.length - 1)
 
   const pooledStd = Math.sqrt((variance1 + variance2) / 2)
   if (pooledStd === 0) return null
@@ -122,9 +112,7 @@ function calculateStats(values: number[]): StatisticalResult {
   }
 
   const mean = values.reduce((sum, val) => sum + val, 0) / values.length
-  const variance =
-    values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
-    (values.length - 1)
+  const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (values.length - 1)
   const std = Math.sqrt(variance)
   const ci = bootstrap(values)
 
@@ -148,10 +136,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
     const baselineData = JSON.parse(baselineRaw)
 
     // Load Our Algorithm data (adaptive-results.our-algorithm.json)
-    const ourAlgorithmPath = path.join(
-      experimentsDir,
-      "adaptive-results.our-algorithm.json"
-    )
+    const ourAlgorithmPath = path.join(experimentsDir, "adaptive-results.our-algorithm.json")
     const ourAlgorithmRaw = await fs.readFile(ourAlgorithmPath, "utf-8")
     const ourAlgorithmData = JSON.parse(ourAlgorithmRaw)
 
@@ -176,14 +161,8 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
     }
 
     // Extract loop-specific results from our algorithm runs
-    const groupedOurAlgorithmLoop1 = new Map<
-      string,
-      { vague: any[]; clear: any[] }
-    >()
-    const groupedOurAlgorithmLoop3 = new Map<
-      string,
-      { vague: any[]; clear: any[] }
-    >()
+    const groupedOurAlgorithmLoop1 = new Map<string, { vague: any[]; clear: any[] }>()
+    const groupedOurAlgorithmLoop3 = new Map<string, { vague: any[]; clear: any[] }>()
 
     for (const run of ourAlgorithmRuns) {
       const loops = run.loops || []
@@ -233,11 +212,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
     // Get all models that have data
     const models = Array.from(
-      new Set([
-        ...groupedBaseline.keys(),
-        ...groupedOurAlgorithmLoop1.keys(),
-        ...groupedOurAlgorithmLoop3.keys(),
-      ])
+      new Set([...groupedBaseline.keys(), ...groupedOurAlgorithmLoop1.keys(), ...groupedOurAlgorithmLoop3.keys()])
     ).filter(Boolean)
 
     const results: ComparisonRow[] = []
@@ -285,26 +260,14 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
       const vagueMetrics = extractMetrics(vagueRuns)
       const clearMetrics = extractMetrics(clearRuns)
-      const thisMethod1RunVagueMetrics = extractMetrics(
-        ourAlgorithmLoop1Group.vague
-      )
-      const thisMethod1RunClearMetrics = extractMetrics(
-        ourAlgorithmLoop1Group.clear
-      )
-      const thisMethod3RunsVagueMetrics = extractMetrics(
-        ourAlgorithmLoop3Group.vague
-      )
-      const thisMethod3RunsClearMetrics = extractMetrics(
-        ourAlgorithmLoop3Group.clear
-      )
+      const thisMethod1RunVagueMetrics = extractMetrics(ourAlgorithmLoop1Group.vague)
+      const thisMethod1RunClearMetrics = extractMetrics(ourAlgorithmLoop1Group.clear)
+      const thisMethod3RunsVagueMetrics = extractMetrics(ourAlgorithmLoop3Group.vague)
+      const thisMethod3RunsClearMetrics = extractMetrics(ourAlgorithmLoop3Group.clear)
 
       // Statistical analysis for each condition
-      const vagueAdaptationStats = calculateStats(
-        vagueMetrics.adaptations.map((x: number) => x * 100)
-      )
-      const clearAdaptationStats = calculateStats(
-        clearMetrics.adaptations.map((x: number) => x * 100)
-      )
+      const vagueAdaptationStats = calculateStats(vagueMetrics.adaptations.map((x: number) => x * 100))
+      const clearAdaptationStats = calculateStats(clearMetrics.adaptations.map((x: number) => x * 100))
       const thisMethod1RunVagueAdaptationStats = calculateStats(
         thisMethod1RunVagueMetrics.adaptations.map((x: number) => x * 100)
       )
@@ -320,39 +283,20 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
       const vagueCostStats = calculateStats(vagueMetrics.costs)
       const clearCostStats = calculateStats(clearMetrics.costs)
-      const thisMethod1RunVagueCostStats = calculateStats(
-        thisMethod1RunVagueMetrics.costs
-      )
-      const thisMethod1RunClearCostStats = calculateStats(
-        thisMethod1RunClearMetrics.costs
-      )
-      const thisMethod3RunsVagueCostStats = calculateStats(
-        thisMethod3RunsVagueMetrics.costs
-      )
-      const thisMethod3RunsClearCostStats = calculateStats(
-        thisMethod3RunsClearMetrics.costs
-      )
+      const thisMethod1RunVagueCostStats = calculateStats(thisMethod1RunVagueMetrics.costs)
+      const thisMethod1RunClearCostStats = calculateStats(thisMethod1RunClearMetrics.costs)
+      const thisMethod3RunsVagueCostStats = calculateStats(thisMethod3RunsVagueMetrics.costs)
+      const thisMethod3RunsClearCostStats = calculateStats(thisMethod3RunsClearMetrics.costs)
 
       const vagueDurationStats = calculateStats(vagueMetrics.durations)
       const clearDurationStats = calculateStats(clearMetrics.durations)
-      const thisMethod1RunVagueDurationStats = calculateStats(
-        thisMethod1RunVagueMetrics.durations
-      )
-      const thisMethod1RunClearDurationStats = calculateStats(
-        thisMethod1RunClearMetrics.durations
-      )
-      const thisMethod3RunsVagueDurationStats = calculateStats(
-        thisMethod3RunsVagueMetrics.durations
-      )
-      const thisMethod3RunsClearDurationStats = calculateStats(
-        thisMethod3RunsClearMetrics.durations
-      )
+      const thisMethod1RunVagueDurationStats = calculateStats(thisMethod1RunVagueMetrics.durations)
+      const thisMethod1RunClearDurationStats = calculateStats(thisMethod1RunClearMetrics.durations)
+      const thisMethod3RunsVagueDurationStats = calculateStats(thisMethod3RunsVagueMetrics.durations)
+      const thisMethod3RunsClearDurationStats = calculateStats(thisMethod3RunsClearMetrics.durations)
 
       // Significance tests (against vague baseline)
-      const clearVsVagueAdaptationP = tTest(
-        vagueMetrics.adaptations,
-        clearMetrics.adaptations
-      )
+      const clearVsVagueAdaptationP = tTest(vagueMetrics.adaptations, clearMetrics.adaptations)
       const thisMethod1RunVagueVsVagueAdaptationP = tTest(
         vagueMetrics.adaptations,
         thisMethod1RunVagueMetrics.adaptations
@@ -371,10 +315,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       )
 
       // Effect sizes (against vague baseline)
-      const clearVsVagueEffectSize = cohensD(
-        vagueMetrics.adaptations,
-        clearMetrics.adaptations
-      )
+      const clearVsVagueEffectSize = cohensD(vagueMetrics.adaptations, clearMetrics.adaptations)
       const thisMethod1RunVagueVsVagueEffectSize = cohensD(
         vagueMetrics.adaptations,
         thisMethod1RunVagueMetrics.adaptations
@@ -393,10 +334,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       )
 
       // Clean model name for display
-      const cleanModelName = model
-        .replace("openai/", "")
-        .replace("anthropic/", "")
-        .replace("google/", "")
+      const cleanModelName = model.replace("openai/", "").replace("anthropic/", "").replace("google/", "")
 
       // Add vague prompt row (baseline)
       if (vagueRuns.length > 0) {
@@ -424,8 +362,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           avgDuration: clearDurationStats,
           pValue: clearVsVagueAdaptationP,
           effectSize: clearVsVagueEffectSize,
-          significant:
-            clearVsVagueAdaptationP !== null && clearVsVagueAdaptationP < 0.05,
+          significant: clearVsVagueAdaptationP !== null && clearVsVagueAdaptationP < 0.05,
         })
       }
 
@@ -440,9 +377,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           avgDuration: thisMethod1RunVagueDurationStats,
           pValue: thisMethod1RunVagueVsVagueAdaptationP,
           effectSize: thisMethod1RunVagueVsVagueEffectSize,
-          significant:
-            thisMethod1RunVagueVsVagueAdaptationP !== null &&
-            thisMethod1RunVagueVsVagueAdaptationP < 0.05,
+          significant: thisMethod1RunVagueVsVagueAdaptationP !== null && thisMethod1RunVagueVsVagueAdaptationP < 0.05,
         })
       }
 
@@ -456,9 +391,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           avgDuration: thisMethod1RunClearDurationStats,
           pValue: thisMethod1RunClearVsVagueAdaptationP,
           effectSize: thisMethod1RunClearVsVagueEffectSize,
-          significant:
-            thisMethod1RunClearVsVagueAdaptationP !== null &&
-            thisMethod1RunClearVsVagueAdaptationP < 0.05,
+          significant: thisMethod1RunClearVsVagueAdaptationP !== null && thisMethod1RunClearVsVagueAdaptationP < 0.05,
         })
       }
 
@@ -472,9 +405,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           avgDuration: thisMethod3RunsVagueDurationStats,
           pValue: thisMethod3RunsVagueVsVagueAdaptationP,
           effectSize: thisMethod3RunsVagueVsVagueEffectSize,
-          significant:
-            thisMethod3RunsVagueVsVagueAdaptationP !== null &&
-            thisMethod3RunsVagueVsVagueAdaptationP < 0.05,
+          significant: thisMethod3RunsVagueVsVagueAdaptationP !== null && thisMethod3RunsVagueVsVagueAdaptationP < 0.05,
         })
       }
 
@@ -488,9 +419,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
           avgDuration: thisMethod3RunsClearDurationStats,
           pValue: thisMethod3RunsClearVsVagueAdaptationP,
           effectSize: thisMethod3RunsClearVsVagueEffectSize,
-          significant:
-            thisMethod3RunsClearVsVagueAdaptationP !== null &&
-            thisMethod3RunsClearVsVagueAdaptationP < 0.05,
+          significant: thisMethod3RunsClearVsVagueAdaptationP !== null && thisMethod3RunsClearVsVagueAdaptationP < 0.05,
         })
       }
     }
@@ -498,9 +427,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
     return results
   } catch (error) {
     console.error("Error loading experimental data:", error)
-    throw new Error(
-      `Failed to load experimental data: ${error instanceof Error ? error.message : String(error)}`
-    )
+    throw new Error(`Failed to load experimental data: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 

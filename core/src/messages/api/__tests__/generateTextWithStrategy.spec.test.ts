@@ -92,11 +92,7 @@ describe("generateText with createPrepareStepStrategy", () => {
       "You must first run nod_333, then mod_888 with nod_333's output, then rod_999 with mod_888's output."
     const userPayload = "Execute the three tools in sequence"
 
-    const prepareStep = createPrepareStepStrategy(
-      tools,
-      systemPrompt,
-      userPayload
-    )
+    const prepareStep = createPrepareStepStrategy(tools, systemPrompt, userPayload)
 
     const result = await generateText({
       model,
@@ -145,11 +141,7 @@ describe("generateText with createPrepareStepStrategy", () => {
       "You must first run nod_333, then mod_888 with nod_333's output, then rod_999 with mod_888's output. Execute the tools in this exact sequence."
     const userPayload = "Execute the three tools in sequence"
 
-    const prepareStep = createPrepareStepStrategy(
-      tools,
-      systemPrompt,
-      userPayload
-    )
+    const prepareStep = createPrepareStepStrategy(tools, systemPrompt, userPayload)
 
     const result = await generateText({
       model,

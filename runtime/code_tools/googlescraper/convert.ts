@@ -63,16 +63,12 @@ export function transformLocationData(
       opening_times: transformOpeningHours(location),
       owner_imgs: extractOwnerImages(location),
       metadata: generateMetadata(location, extraMetadata),
-      domain: location.bizWebsite
-        ? normalizeHostname(location.bizWebsite)
-        : null,
+      domain: location.bizWebsite ? normalizeHostname(location.bizWebsite) : null,
     }
   })
 }
 
-function extractName(
-  location: GoogleMapsBusiness | GoogleScraperBusinessExtended
-): string {
+function extractName(location: GoogleMapsBusiness | GoogleScraperBusinessExtended): string {
   return location.storeName || ""
 }
 
@@ -221,11 +217,7 @@ export async function convertGoogleScraperData() {
   try {
     // read the input file
     const inputPath = path.join(__dirname, "output", "all_businesses.json")
-    const outputPath = path.join(
-      __dirname,
-      "output",
-      "standardized_locations.json"
-    )
+    const outputPath = path.join(__dirname, "output", "standardized_locations.json")
 
     const rawData = fs.readFileSync(inputPath, "utf8")
     const businesses = JSON.parse(rawData) as GoogleMapsBusiness[]
@@ -234,15 +226,9 @@ export async function convertGoogleScraperData() {
     const standardizedLocations = transformLocationData(businesses)
 
     // write the output file
-    fs.writeFileSync(
-      outputPath,
-      JSON.stringify(standardizedLocations, null, 2),
-      "utf8"
-    )
+    fs.writeFileSync(outputPath, JSON.stringify(standardizedLocations, null, 2), "utf8")
 
-    lgg.log(
-      `Successfully converted ${businesses.length} businesses to standardized format.`
-    )
+    lgg.log(`Successfully converted ${businesses.length} businesses to standardized format.`)
     lgg.log(`Output saved to: ${outputPath}`)
   } catch (error) {
     lgg.error("Error converting Google scraper data:", error)

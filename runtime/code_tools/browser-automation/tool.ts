@@ -1,7 +1,4 @@
-import {
-  browserAutomation,
-  inputSchemaBrowserAutomation,
-} from "@runtime/code_tools/browser-automation/main"
+import { browserAutomation, inputSchemaBrowserAutomation } from "@runtime/code_tools/browser-automation/main"
 import { defineTool } from "@core/tools/toolFactory"
 
 /**

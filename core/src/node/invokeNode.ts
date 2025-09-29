@@ -66,9 +66,7 @@ export interface InvokeAgentInput {
  * - Creates initial message from "start" node
  * - Handles tool context creation automatically
  */
-export async function invokeAgent(
-  input: InvokeAgentInput
-): Promise<NodeInvocationResult> {
+export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocationResult> {
   const {
     nodeConfig,
     prompt,
@@ -94,11 +92,7 @@ export async function invokeAgent(
     }
 
     // Create node
-    const node = await WorkFlowNode.create(
-      nodeConfigWithHandoffs,
-      workflowVersionId,
-      skipDatabasePersistence
-    )
+    const node = await WorkFlowNode.create(nodeConfigWithHandoffs, workflowVersionId, skipDatabasePersistence)
 
     // Create input message
     const message = new WorkflowMessage({
@@ -129,9 +123,7 @@ export async function invokeAgent(
       workflowId,
     }
 
-    lgg.log(
-      `[invokeNode] Invoking node with prompt: ${prompt.slice(0, 100)}...`
-    )
+    lgg.log(`[invokeNode] Invoking node with prompt: ${prompt.slice(0, 100)}...`)
 
     // Invoke node
     const result = await node.invoke({

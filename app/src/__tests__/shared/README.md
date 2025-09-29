@@ -83,8 +83,7 @@ mockRuntimeConstantsForDatabase({
 
 ```typescript
 vi.mock("@runtime/settings/constants", async (importOriginal) => {
-  const mod =
-    await importOriginal<typeof import("@runtime/settings/constants")>()
+  const mod = await importOriginal<typeof import("@runtime/settings/constants")>()
   return {
     ...mod,
     MODELS: {
@@ -240,9 +239,7 @@ describe("WorkflowPersistence", () => {
     await persistence.save(workflow)
 
     expect(supabase.from).toHaveBeenCalledWith("workflow_versions")
-    expect(supabase.insert).toHaveBeenCalledWith(
-      expect.objectContaining({ wf_version_id: workflow.id })
-    )
+    expect(supabase.insert).toHaveBeenCalledWith(expect.objectContaining({ wf_version_id: workflow.id }))
   })
 })
 ```

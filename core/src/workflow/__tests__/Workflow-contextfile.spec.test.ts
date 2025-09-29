@@ -23,9 +23,7 @@ describe("ContextFile Integration", () => {
     expect(messages[0].content).toContain("contextSet")
     expect(messages[0].content).toContain("contextList")
     expect(messages[0].content).toContain("contextManage")
-    expect(messages[0].content).toContain(
-      "you are the following node: Test node"
-    )
+    expect(messages[0].content).toContain("you are the following node: Test node")
     expect(messages[0].content).toContain("You are a test agent")
 
     // Check the user message is last
@@ -48,9 +46,7 @@ describe("ContextFile Integration", () => {
     expect(messages).toHaveLength(2)
 
     // Should not contain contextFile message
-    const contextFileMessage = messages.find((m) =>
-      (m.content as string)?.includes("persistent context store")
-    )
+    const contextFileMessage = messages.find((m) => (m.content as string)?.includes("persistent context store"))
     expect(contextFileMessage).toBeUndefined()
   })
 
@@ -66,14 +62,10 @@ describe("ContextFile Integration", () => {
     const userMessage = messages.find((m) => m.role === "user")
     expect(userMessage?.content).toContain("Test message")
     expect(userMessage?.content).toContain("Context: Some payload context")
-    expect(userMessage?.content).toContain(
-      "workflow_invocation_id:test-invocation-123"
-    )
+    expect(userMessage?.content).toContain("workflow_invocation_id:test-invocation-123")
 
     // Check contextFile system message exists
-    const contextFileMessage = messages.find((m) =>
-      (m.content as string)?.includes("persistent context store named")
-    )
+    const contextFileMessage = messages.find((m) => (m.content as string)?.includes("persistent context store named"))
     expect(contextFileMessage).toBeDefined()
   })
 })

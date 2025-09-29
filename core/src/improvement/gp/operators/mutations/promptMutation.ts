@@ -12,10 +12,7 @@ import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import type { Genome } from "../../Genome"
 import type { IntensityLevel, MutationOperator } from "./mutation.types"
@@ -49,11 +46,7 @@ export class PromptMutation implements MutationOperator {
    * - Uses fast AI model for cost-effective mutations
    * - Tracks failures for evolution statistics
    */
-  async execute(
-    mutatedConfig: WorkflowConfig,
-    parent: Genome,
-    intensity: number
-  ): Promise<number> {
+  async execute(mutatedConfig: WorkflowConfig, parent: Genome, intensity: number): Promise<number> {
     const node = this.randomNonFrozenNode(mutatedConfig)
     if (!node) return 0
 
@@ -90,10 +83,7 @@ export class PromptMutation implements MutationOperator {
       if (result.success) {
         node.systemPrompt = result.data.text
       } else {
-        lgg.error(
-          "Prompt mutation failed - AI request unsuccessful:",
-          result.error
-        )
+        lgg.error("Prompt mutation failed - AI request unsuccessful:", result.error)
         failureTracker.trackMutationFailure()
       }
 
@@ -133,20 +123,14 @@ export class PromptMutation implements MutationOperator {
    * - Falls back to entry node for single-node workflows
    * - Entry nodes are considered "frozen" in multi-node workflows
    */
-  private randomNonFrozenNode(
-    workflow: WorkflowConfig
-  ): WorkflowNodeConfig | null {
-    const nonFrozenNodes = workflow.nodes.filter(
-      (node: WorkflowNodeConfig) => node.nodeId !== workflow.entryNodeId
-    )
+  private randomNonFrozenNode(workflow: WorkflowConfig): WorkflowNodeConfig | null {
+    const nonFrozenNodes = workflow.nodes.filter((node: WorkflowNodeConfig) => node.nodeId !== workflow.entryNodeId)
 
     // if no non-entry nodes exist, allow mutation of entry node (for single-node workflows)
     if (nonFrozenNodes.length === 0 && workflow.nodes.length === 1) {
       return workflow.nodes[0]
     }
 
-    return nonFrozenNodes.length > 0
-      ? nonFrozenNodes[Math.floor(Math.random() * nonFrozenNodes.length)]
-      : null
+    return nonFrozenNodes.length > 0 ? nonFrozenNodes[Math.floor(Math.random() * nonFrozenNodes.length)] : null
   }
 }

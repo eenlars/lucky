@@ -35,10 +35,7 @@ interface WorkflowStore {
     commitMessage: string,
     parentVersionId?: string
   ) => Promise<{ success: boolean; versionId?: string }>
-  updateDescription: (
-    workflowId: string,
-    description: string
-  ) => Promise<boolean>
+  updateDescription: (workflowId: string, description: string) => Promise<boolean>
   remove: (workflowId: string) => Promise<boolean>
   clearError: () => void
   reset: () => void
@@ -60,10 +57,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           set({ workflows, loading: false })
         } catch (error) {
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to load workflows",
+            error: error instanceof Error ? error.message : "Failed to load workflows",
             loading: false,
           })
         }
@@ -78,34 +72,21 @@ export const useWorkflowStore = create<WorkflowStore>()(
           // Also update in the list if present
           if (workflow) {
             set((state) => ({
-              workflows: state.workflows.map((w) =>
-                w.wf_id === id ? workflow : w
-              ),
+              workflows: state.workflows.map((w) => (w.wf_id === id ? workflow : w)),
             }))
           }
         } catch (error) {
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to load workflow",
+            error: error instanceof Error ? error.message : "Failed to load workflow",
             loading: false,
           })
         }
       },
 
-      create: async (
-        description: string,
-        dsl: WorkflowConfig,
-        commitMessage: string
-      ) => {
+      create: async (description: string, dsl: WorkflowConfig, commitMessage: string) => {
         set({ saving: true, error: null })
         try {
-          const { workflowId } = await createWorkflow(
-            description,
-            dsl,
-            commitMessage
-          )
+          const { workflowId } = await createWorkflow(description, dsl, commitMessage)
 
           // Reload workflows to get the new one
           await get().loadWorkflows()
@@ -114,30 +95,17 @@ export const useWorkflowStore = create<WorkflowStore>()(
           return { success: true, workflowId }
         } catch (error) {
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to create workflow",
+            error: error instanceof Error ? error.message : "Failed to create workflow",
             saving: false,
           })
           return { success: false }
         }
       },
 
-      saveVersion: async (
-        workflowId: string,
-        dsl: WorkflowConfig,
-        commitMessage: string,
-        parentVersionId?: string
-      ) => {
+      saveVersion: async (workflowId: string, dsl: WorkflowConfig, commitMessage: string, parentVersionId?: string) => {
         set({ saving: true, error: null })
         try {
-          const versionId = await saveWorkflowVersion(
-            workflowId,
-            dsl,
-            commitMessage,
-            parentVersionId
-          )
+          const versionId = await saveWorkflowVersion(workflowId, dsl, commitMessage, parentVersionId)
 
           // Reload the specific workflow to get updated versions
           await get().loadWorkflow(workflowId)
@@ -146,8 +114,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           return { success: true, versionId }
         } catch (error) {
           set({
-            error:
-              error instanceof Error ? error.message : "Failed to save version",
+            error: error instanceof Error ? error.message : "Failed to save version",
             saving: false,
           })
           return { success: false }
@@ -157,18 +124,13 @@ export const useWorkflowStore = create<WorkflowStore>()(
       updateDescription: async (workflowId: string, description: string) => {
         set({ saving: true, error: null })
         try {
-          const success = await updateWorkflowDescription(
-            workflowId,
-            description
-          )
+          const success = await updateWorkflowDescription(workflowId, description)
 
           if (success) {
             // Update locally
             set((state) => ({
               workflows: state.workflows.map((w) =>
-                w.wf_id === workflowId
-                  ? { ...w, description, updated_at: new Date().toISOString() }
-                  : w
+                w.wf_id === workflowId ? { ...w, description, updated_at: new Date().toISOString() } : w
               ),
               currentWorkflow:
                 state.currentWorkflow?.wf_id === workflowId
@@ -187,10 +149,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           return success
         } catch (error) {
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to update workflow",
+            error: error instanceof Error ? error.message : "Failed to update workflow",
             saving: false,
           })
           return false
@@ -206,10 +165,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
             // Remove from local state
             set((state) => ({
               workflows: state.workflows.filter((w) => w.wf_id !== workflowId),
-              currentWorkflow:
-                state.currentWorkflow?.wf_id === workflowId
-                  ? null
-                  : state.currentWorkflow,
+              currentWorkflow: state.currentWorkflow?.wf_id === workflowId ? null : state.currentWorkflow,
               saving: false,
             }))
           } else {
@@ -219,10 +175,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           return success
         } catch (error) {
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to delete workflow",
+            error: error instanceof Error ? error.message : "Failed to delete workflow",
             saving: false,
           })
           return false

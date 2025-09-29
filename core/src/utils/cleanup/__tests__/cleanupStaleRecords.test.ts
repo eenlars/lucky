@@ -91,9 +91,7 @@ describe("cleanupStaleRecords", () => {
 
     expect(mockFrom).toHaveBeenCalledWith("WorkflowInvocation")
     expect(stats.workflowInvocations).toBe(1)
-    expect(mockLgg.info).toHaveBeenCalledWith(
-      "marked 1 stale workflow invocations as failed"
-    )
+    expect(mockLgg.info).toHaveBeenCalledWith("marked 1 stale workflow invocations as failed")
   })
 
   it("should handle database errors gracefully", async () => {
@@ -117,10 +115,7 @@ describe("cleanupStaleRecords", () => {
 
     const stats = await cleanupStaleRecords()
 
-    expect(mockLgg.error).toHaveBeenCalledWith(
-      "failed to cleanup stale workflow invocations:",
-      error
-    )
+    expect(mockLgg.error).toHaveBeenCalledWith("failed to cleanup stale workflow invocations:", error)
     expect(stats.workflowInvocations).toBe(0)
   })
 })

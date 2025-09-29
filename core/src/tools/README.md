@@ -182,8 +182,7 @@ export const TOOLS = {
     proxy: "Proxy requests to a specific URL",
   },
   code: {
-    expectedOutputHandler:
-      "Handle LLM requests with expected output validation",
+    expectedOutputHandler: "Handle LLM requests with expected output validation",
     searchGoogleMaps: "Search Google Maps for business information",
     saveFileLegacy: "Save any data to a file at specified path",
     verifyLocation: "Get geographic coordinates using Mapbox",
@@ -288,8 +287,7 @@ Tools integrate seamlessly into the autonomous workflow system:
 // Node configuration specifies available tools
 const nodeConfig = {
   id: "data-processor",
-  systemPrompt:
-    "Process CSV data and save results using csvReader and contextHandler",
+  systemPrompt: "Process CSV data and save results using csvReader and contextHandler",
   tools: ["csvReader", "contextHandler", "saveFileLegacy"],
   coordination: "sequential",
 }

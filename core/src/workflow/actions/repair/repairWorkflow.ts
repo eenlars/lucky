@@ -3,10 +3,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { WorkflowRepairPrompts } from "@core/workflow/actions/repair/repairWorkflow.p"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 
 /**
@@ -35,15 +32,10 @@ export async function repairWorkflow(
   }
 
   // build enhancement prompt
-  const verificationSummary = [
-    ...verificationResult.errors.map((error) => `ERROR: ${error}`),
-  ].join("\n")
+  const verificationSummary = [...verificationResult.errors.map((error) => `ERROR: ${error}`)].join("\n")
 
   const { data, success, error, usdCost } = await sendAI({
-    messages: WorkflowRepairPrompts.repairWorkflowPrompt(
-      config,
-      verificationSummary
-    ),
+    messages: WorkflowRepairPrompts.repairWorkflowPrompt(config, verificationSummary),
     model: getDefaultModels().medium,
     mode: "structured",
     schema: WorkflowRepairPrompts.expectedOutput,

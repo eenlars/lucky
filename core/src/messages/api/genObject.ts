@@ -1,4 +1,4 @@
-import { type CoreMessage } from "ai"
+import { type ModelMessage } from "ai"
 import { z } from "zod"
 
 import { repairAIRequest } from "@core/messages/api/repairAIRequest"
@@ -26,7 +26,7 @@ export const genObject = async <T extends z.ZodSchema>({
   model,
   opts = {},
 }: {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   schema: T
   model?: ModelName
   opts?: {
@@ -43,7 +43,7 @@ export const genObject = async <T extends z.ZodSchema>({
   // the summaries tend to get very generalized. therefore we do:
   // important: this helps to keep the data structure consistent.
   // we use two types, because otherwise we get lots of errors. it seems stupid, but it works.
-  const systemMessage: CoreMessage = {
+  const systemMessage: ModelMessage = {
     role: "system",
     content: `You are an AI assistant that strictly returns JSON data. Your response MUST be a single, valid JSON object enclosed in <json> and </json> tags.
 Do NOT include any explanatory text, markdown, or any characters outside of the JSON object itself.
@@ -77,10 +77,7 @@ output:
 
   const extractedJson = JSONN.extract(result.data.text)
   if (!extractedJson) {
-    return R.error(
-      `No valid JSON found in response: ${JSONN.show(result.data.text)}`,
-      usdCost
-    )
+    return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, usdCost)
   }
 
   // Validate the extracted JSON against the schema
@@ -96,18 +93,11 @@ output:
           JSON.stringify(jsonSchema, null, 2)
         )
       }
-      const {
-        success,
-        data,
-        usdCost: repairedUsdCost,
-      } = await repairAIRequest(JSON.stringify(extractedJson), schema)
+      const { success, data, usdCost: repairedUsdCost } = await repairAIRequest(JSON.stringify(extractedJson), schema)
       usdCost += repairedUsdCost ?? 0
       return success
         ? R.success(data, usdCost)
-        : R.error(
-            `Failed to repair JSON: ${llmify(truncater(error.message, 400))}`,
-            usdCost
-          )
+        : R.error(`Failed to repair JSON: ${llmify(truncater(error.message, 400))}`, usdCost)
     }
     return R.error(`JSON validation failed: ${error.message}`, usdCost)
   }

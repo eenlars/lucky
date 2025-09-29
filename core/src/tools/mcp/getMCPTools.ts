@@ -10,10 +10,8 @@ interface MCPToolInfo {
  * Get all available MCP tools with their descriptions
  */
 export function getMCPTools(): MCPToolInfo[] {
-  return Object.entries(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).map(
-    ([name, description]) => ({
-      name: name as MCPToolName,
-      description,
-    })
-  )
+  return Object.entries(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).map(([name, description]) => ({
+    name: name as MCPToolName,
+    description,
+  }))
 }

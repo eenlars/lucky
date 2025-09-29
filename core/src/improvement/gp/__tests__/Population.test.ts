@@ -333,10 +333,7 @@ describe("Population", () => {
     }
 
     // Test zero population size
-    const zeroPopulation = new Population(
-      createMockEvolutionSettings({ populationSize: 0 }),
-      mockRunService as any
-    )
+    const zeroPopulation = new Population(createMockEvolutionSettings({ populationSize: 0 }), mockRunService as any)
     expect(zeroPopulation.size()).toBe(0)
     expect(zeroPopulation.getGenomes()).toEqual([])
 
@@ -350,10 +347,7 @@ describe("Population", () => {
     expect(zeroPopulation.getTop(10)).toEqual([])
 
     // Test single genome case
-    const singlePopulation = new Population(
-      createMockEvolutionSettings({ populationSize: 1 }),
-      mockRunService as any
-    )
+    const singlePopulation = new Population(createMockEvolutionSettings({ populationSize: 1 }), mockRunService as any)
     const genome = {
       getWorkflowVersionId: () => "single",
       getFitness: () => ({ score: 0.5 }),

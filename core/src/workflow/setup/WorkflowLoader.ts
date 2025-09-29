@@ -4,14 +4,8 @@ import { mkdirIfMissing } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
-import {
-  WorkflowConfigSchema,
-  WorkflowConfigSchemaDisplay,
-} from "@core/workflow/schema/workflowSchema"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
 import { CONFIG, PATHS } from "@runtime/settings/constants"
 
 class WorkflowConfigError extends Error {
@@ -73,11 +67,7 @@ export class WorkflowConfigHandler {
       }
       return setupFolderPath
     } catch (error) {
-      throw new FileSystemError(
-        "create directory",
-        setupFolderPath,
-        error as Error
-      )
+      throw new FileSystemError("create directory", setupFolderPath, error as Error)
     }
   }
 
@@ -110,8 +100,7 @@ export class WorkflowConfigHandler {
           modelName: "openai/gpt-4.1-mini",
           mcpTools: [],
           codeTools: [],
-          systemPrompt:
-            "You are a helpful assistant. Complete the task as requested.",
+          systemPrompt: "You are a helpful assistant. Complete the task as requested.",
           handOffs: ["end"],
           memory: {},
         },
@@ -123,9 +112,7 @@ export class WorkflowConfigHandler {
   /**
    * Create missing setup file in runtime/setup folder
    */
-  private async createMissingSetupFile(
-    originalFilePath: string
-  ): Promise<string> {
+  private async createMissingSetupFile(originalFilePath: string): Promise<string> {
     if (typeof window !== "undefined") {
       throw new Error("File operations not available in browser environment")
     }
@@ -137,9 +124,7 @@ export class WorkflowConfigHandler {
     const filename = path.basename(originalFilePath)
     const targetFilePath = path.join(setupFolderPath, filename)
 
-    lgg.log(
-      `[WorkflowConfigHandler] Creating ${filename} in runtime/setup folder`
-    )
+    lgg.log(`[WorkflowConfigHandler] Creating ${filename} in runtime/setup folder`)
 
     try {
       // Create default workflow
@@ -165,13 +150,9 @@ export class WorkflowConfigHandler {
   /**
    * Load single workflow configuration from setupfile.json
    */
-  async loadSingleWorkflow(
-    filePath: string = PATHS.setupFile
-  ): Promise<WorkflowConfig> {
+  async loadSingleWorkflow(filePath: string = PATHS.setupFile): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
-      throw new Error(
-        "File operations not available in browser environment. Use API routes instead."
-      )
+      throw new Error("File operations not available in browser environment. Use API routes instead.")
     }
 
     try {
@@ -186,8 +167,7 @@ export class WorkflowConfigHandler {
 
       // Determine source (default vs custom)
       const defaultFilename = path.basename(PATHS.setupFile)
-      const isDefault =
-        filename === defaultFilename || filePath === PATHS.setupFile
+      const isDefault = filename === defaultFilename || filePath === PATHS.setupFile
 
       // Check if file exists, if not create it
       let actualFilePath = normalizedPath
@@ -198,17 +178,13 @@ export class WorkflowConfigHandler {
       }
 
       // Clarify exactly what will be used
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Resolved workflow file",
-        {
-          source: isDefault ? "default" : "custom",
-          requested: filePath,
-          resolved: normalizedPath,
-          used: actualFilePath,
-          created: wasCreated,
-        }
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Resolved workflow file", {
+        source: isDefault ? "default" : "custom",
+        requested: filePath,
+        resolved: normalizedPath,
+        used: actualFilePath,
+        created: wasCreated,
+      })
 
       let fileContent: string
       let rawData: any
@@ -237,17 +213,14 @@ export class WorkflowConfigHandler {
         entryNodeId: rawData.entryNodeId,
         contextFile: rawData.contextFile,
         toolsInformation:
-          rawData.toolsInformation &&
-          isValidToolInformation(rawData.toolsInformation)
+          rawData.toolsInformation && isValidToolInformation(rawData.toolsInformation)
             ? rawData.toolsInformation
             : undefined,
       }
 
       // Apply default tools from CONFIG if any are specified
       if (CONFIG.tools.defaultTools.size > 0) {
-        const defaultCodeTools = Array.from(
-          CONFIG.tools.defaultTools
-        ) as CodeToolName[]
+        const defaultCodeTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
 
         workflowConfig.nodes = workflowConfig.nodes.map((node) => {
           // Get unique tools by combining existing and defaults
@@ -267,30 +240,22 @@ export class WorkflowConfigHandler {
           }
         })
 
-        lgg.onlyIf(
-          this.verbose,
-          "[WorkflowConfigHandler] Applied default tools",
-          {
-            defaultTools: CONFIG.tools.defaultTools,
-            nodesTooLCount: workflowConfig.nodes?.map((n) => ({
-              nodeId: n.nodeId,
-              toolCount: n.codeTools.length,
-            })),
-          }
-        )
+        lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Applied default tools", {
+          defaultTools: CONFIG.tools.defaultTools,
+          nodesTooLCount: workflowConfig.nodes?.map((n) => ({
+            nodeId: n.nodeId,
+            toolCount: n.codeTools.length,
+          })),
+        })
       }
 
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Successfully loaded workflow",
-        {
-          entryNodeId: workflowConfig.entryNodeId,
-          nodeCount: workflowConfig.nodes.length,
-          hasToolsInfo: !!workflowConfig.toolsInformation,
-          filePath: actualFilePath,
-          source: isDefault ? "default" : "custom",
-        }
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Successfully loaded workflow", {
+        entryNodeId: workflowConfig.entryNodeId,
+        nodeCount: workflowConfig.nodes.length,
+        hasToolsInfo: !!workflowConfig.toolsInformation,
+        filePath: actualFilePath,
+        source: isDefault ? "default" : "custom",
+      })
 
       return workflowConfig
     } catch (error) {
@@ -299,10 +264,7 @@ export class WorkflowConfigHandler {
         throw error
       } else {
         lgg.error("[WorkflowConfigHandler] Unexpected error:", error)
-        throw new WorkflowConfigError(
-          `Unexpected error loading workflow: ${error}`,
-          error as Error
-        )
+        throw new WorkflowConfigError(`Unexpected error loading workflow: ${error}`, error as Error)
       }
     }
   }
@@ -312,11 +274,7 @@ export class WorkflowConfigHandler {
    */
   async loadFromDatabase(workflowVersionId: string): Promise<WorkflowConfig> {
     try {
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Loading workflow from database:",
-        { workflowVersionId }
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from database:", { workflowVersionId })
 
       const { data, error } = await supabase
         .from("WorkflowVersion")
@@ -325,9 +283,7 @@ export class WorkflowConfigHandler {
         .single()
 
       if (error || !data) {
-        throw new DatabaseError(
-          `Workflow version ${workflowVersionId} not found: ${error?.message}`
-        )
+        throw new DatabaseError(`Workflow version ${workflowVersionId} not found: ${error?.message}`)
       }
 
       const parsedConfig = WorkflowConfigSchema.parse(data.dsl)
@@ -336,25 +292,18 @@ export class WorkflowConfigHandler {
       if (error instanceof WorkflowConfigError) {
         throw error
       }
-      throw new DatabaseError(
-        `Failed to load workflow ${workflowVersionId}`,
-        error as Error
-      )
+      throw new DatabaseError(`Failed to load workflow ${workflowVersionId}`, error as Error)
     }
   }
 
   /**
    * Load workflow config from database for display only (allows legacy model names)
    */
-  async loadFromDatabaseForDisplay(
-    workflowVersionId: string
-  ): Promise<WorkflowConfig> {
+  async loadFromDatabaseForDisplay(workflowVersionId: string): Promise<WorkflowConfig> {
     try {
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Loading workflow from database for display:",
-        { workflowVersionId }
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from database for display:", {
+        workflowVersionId,
+      })
 
       const { data, error } = await supabase
         .from("WorkflowVersion")
@@ -363,9 +312,7 @@ export class WorkflowConfigHandler {
         .single()
 
       if (error || !data) {
-        throw new DatabaseError(
-          `Workflow version ${workflowVersionId} not found: ${error?.message}`
-        )
+        throw new DatabaseError(`Workflow version ${workflowVersionId} not found: ${error?.message}`)
       }
 
       const parsedConfig = WorkflowConfigSchemaDisplay.parse(data.dsl)
@@ -374,10 +321,7 @@ export class WorkflowConfigHandler {
       if (error instanceof WorkflowConfigError) {
         throw error
       }
-      throw new DatabaseError(
-        `Failed to load workflow ${workflowVersionId}`,
-        error as Error
-      )
+      throw new DatabaseError(`Failed to load workflow ${workflowVersionId}`, error as Error)
     }
   }
 
@@ -386,33 +330,21 @@ export class WorkflowConfigHandler {
    */
   async loadFromFile(filename: string): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
-      throw new Error(
-        "File operations not available in browser environment. Use API routes instead."
-      )
+      throw new Error("File operations not available in browser environment. Use API routes instead.")
     }
 
     try {
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Loading workflow from file:",
-        { filename }
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from file:", { filename })
 
       const path = await import("path")
       const fs = await import("fs")
 
-      const filePath = path.isAbsolute(filename)
-        ? filename
-        : path.join(PATHS.runtime, filename)
+      const filePath = path.isAbsolute(filename) ? filename : path.join(PATHS.runtime, filename)
 
       const fileContent = fs.readFileSync(filePath, "utf-8")
 
       if (!fileContent.trim()) {
-        throw new FileSystemError(
-          "read",
-          filename,
-          new Error("File content is empty")
-        )
+        throw new FileSystemError("read", filename, new Error("File content is empty"))
       }
 
       const fileData = JSON.parse(fileContent)
@@ -431,10 +363,7 @@ export class WorkflowConfigHandler {
    */
   async loadFromDSL(dslConfig: WorkflowConfig): Promise<WorkflowConfig> {
     try {
-      lgg.onlyIf(
-        this.verbose,
-        "[WorkflowConfigHandler] Loading workflow from DSL config"
-      )
+      lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from DSL config")
 
       console.log("dslConfig", JSON.stringify(dslConfig, null, 2))
 
@@ -445,20 +374,14 @@ export class WorkflowConfigHandler {
 
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
-      throw new WorkflowConfigError(
-        "Failed to parse DSL config",
-        error as Error
-      )
+      throw new WorkflowConfigError("Failed to parse DSL config", error as Error)
     }
   }
 
   /**
    * Atomic write function for JSON data
    */
-  private async writeJsonAtomic(
-    filePath: string,
-    data: WorkflowConfig
-  ): Promise<void> {
+  private async writeJsonAtomic(filePath: string, data: WorkflowConfig): Promise<void> {
     if (typeof window !== "undefined") {
       throw new Error("File operations not available in browser environment")
     }
@@ -497,10 +420,7 @@ export class WorkflowConfigHandler {
     // Create backup unless skipBackup is true
     if (!skipBackup) {
       const backupName = path.basename(filename, path.extname(filename))
-      await this.writeJsonAtomic(
-        path.join(backupDir, `${backupName}_${stamp}.json`),
-        config
-      )
+      await this.writeJsonAtomic(path.join(backupDir, `${backupName}_${stamp}.json`), config)
       lgg.log(`✅ persisted + backed up ${configPath}`)
     } else {
       lgg.log(`✅ persisted ${configPath} (backup skipped)`)
@@ -510,10 +430,7 @@ export class WorkflowConfigHandler {
   /**
    * Legacy method: Save workflow config to output folder (for backward compatibility)
    */
-  async saveWorkflowConfigToOutput(
-    config: WorkflowConfig,
-    filename: string
-  ): Promise<void> {
+  async saveWorkflowConfigToOutput(config: WorkflowConfig, filename: string): Promise<void> {
     const fs = await import("fs/promises")
     const path = await import("path")
 
@@ -527,26 +444,17 @@ export class WorkflowConfigHandler {
 
 // Export convenience functions for backward compatibility
 export const workflowConfigHandler = WorkflowConfigHandler.getInstance()
-export const loadSingleWorkflow = (filePath?: string) =>
-  workflowConfigHandler.loadSingleWorkflow(filePath)
-export const loadFromDatabase = (workflowVersionId: string) =>
-  workflowConfigHandler.loadFromDatabase(workflowVersionId)
+export const loadSingleWorkflow = (filePath?: string) => workflowConfigHandler.loadSingleWorkflow(filePath)
+export const loadFromDatabase = (workflowVersionId: string) => workflowConfigHandler.loadFromDatabase(workflowVersionId)
 
 export const loadFromDatabaseForDisplay = (workflowVersionId: string) =>
   workflowConfigHandler.loadFromDatabaseForDisplay(workflowVersionId)
-export const loadFromFile = (filename: string) =>
-  workflowConfigHandler.loadFromFile(filename)
-export const loadFromDSL = (dslConfig: WorkflowConfig) =>
-  workflowConfigHandler.loadFromDSL(dslConfig)
-export const saveWorkflowConfig = (
-  config: WorkflowConfig,
-  filename: string,
-  skipBackup?: boolean
-) => workflowConfigHandler.saveWorkflowConfig(config, filename, skipBackup)
-export const saveWorkflowConfigToOutput = (
-  config: WorkflowConfig,
-  filename: string
-) => workflowConfigHandler.saveWorkflowConfigToOutput(config, filename)
+export const loadFromFile = (filename: string) => workflowConfigHandler.loadFromFile(filename)
+export const loadFromDSL = (dslConfig: WorkflowConfig) => workflowConfigHandler.loadFromDSL(dslConfig)
+export const saveWorkflowConfig = (config: WorkflowConfig, filename: string, skipBackup?: boolean) =>
+  workflowConfigHandler.saveWorkflowConfig(config, filename, skipBackup)
+export const saveWorkflowConfigToOutput = (config: WorkflowConfig, filename: string) =>
+  workflowConfigHandler.saveWorkflowConfigToOutput(config, filename)
 
 // Alias for backward compatibility with resultPersistence.ts
 export const persistWorkflow = (
@@ -554,9 +462,5 @@ export const persistWorkflow = (
   fileName: string = "setupfile.json",
   skipBackup: boolean = false
 ): Promise<void> => {
-  return workflowConfigHandler.saveWorkflowConfig(
-    finalConfig,
-    fileName,
-    skipBackup
-  )
+  return workflowConfigHandler.saveWorkflowConfig(finalConfig, fileName, skipBackup)
 }

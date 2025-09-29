@@ -46,9 +46,7 @@ function normalizeAndFilterTools(toolNames: string[]): AllToolNames[] {
   return toolNames
     .map((name) => name?.toString().trim()) // normalize: convert to string and trim
     .filter((name): name is string => Boolean(name)) // remove empty/null/undefined
-    .filter((name): name is AllToolNames =>
-      activeToolsSet.has(name as AllToolNames)
-    )
+    .filter((name): name is AllToolNames => activeToolsSet.has(name as AllToolNames))
     .filter((name, index, arr) => arr.indexOf(name) === index) // remove duplicates
 }
 
@@ -71,10 +69,7 @@ export const toolsExplanations = (type: "mcp" | "code" | "all" = "all") => {
     return `mcpTools:[${mcpToolsStr}], codeTools:[${codeToolsStr}]`
   }
 
-  const tools =
-    type === "mcp"
-      ? ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION
-      : ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION
+  const tools = type === "mcp" ? ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION : ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION
 
   return Object.entries(tools)
     .map(([id, desc]) => `id:${id},description:${desc}`)

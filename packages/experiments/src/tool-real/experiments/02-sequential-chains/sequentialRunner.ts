@@ -6,7 +6,7 @@ import { processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { CoreMessage, ToolSet } from "ai"
+import type { ModelMessage, ToolSet } from "ai"
 import type { SequentialRunResult, ToolExecution } from "./types"
 
 export async function runSequentialTools(
@@ -17,7 +17,7 @@ export async function runSequentialTools(
   maxSteps?: number
 ): Promise<SequentialRunResult> {
   const overallStart = Date.now()
-  const messages: CoreMessage[] = [
+  const messages: ModelMessage[] = [
     {
       role: "system",
       content:

@@ -21,8 +21,7 @@ describe("prompt-only 2-step math workflow", () => {
       nodes: [
         {
           nodeId: "adder",
-          description:
-            "Adds 7 to the provided integer and returns only the integer.",
+          description: "Adds 7 to the provided integer and returns only the integer.",
           systemPrompt:
             "You will receive the workflow input containing a starting integer N. Compute N + 7. Return only the integer with no extra text, no formatting, no explanations.",
           modelName: getDefaultModels().nano,
@@ -32,8 +31,7 @@ describe("prompt-only 2-step math workflow", () => {
         },
         {
           nodeId: "multiplier",
-          description:
-            "Takes the previous node's integer output and returns that value multiplied by 4.",
+          description: "Takes the previous node's integer output and returns that value multiplied by 4.",
           systemPrompt:
             "You will receive a single integer from the previous node. Multiply it by 4 and return only the resulting integer with no extra text, no formatting, no explanations.",
           modelName: getDefaultModels().nano,

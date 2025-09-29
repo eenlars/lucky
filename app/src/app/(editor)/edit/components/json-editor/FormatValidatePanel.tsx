@@ -31,12 +31,7 @@ export default function FormatValidatePanel({
     <div className="flex-1 bg-white overflow-y-auto">
       <div className="px-6 py-4">
         <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-          <svg
-            className="w-5 h-5 text-blue-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -62,12 +57,7 @@ export default function FormatValidatePanel({
               variant="outline"
               className="w-full"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -78,27 +68,11 @@ export default function FormatValidatePanel({
               Format JSON
             </Button>
 
-            <Button
-              onClick={onVerify}
-              disabled={isVerifying || !!jsonParseError}
-              variant="outline"
-              className="w-full"
-            >
+            <Button onClick={onVerify} disabled={isVerifying || !!jsonParseError} variant="outline" className="w-full">
               {isVerifying ? (
                 <>
-                  <svg
-                    className="w-4 h-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path
                       className="opacity-75"
                       fill="currentColor"
@@ -109,12 +83,7 @@ export default function FormatValidatePanel({
                 </>
               ) : jsonParseError ? (
                 <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -126,12 +95,7 @@ export default function FormatValidatePanel({
                 </>
               ) : (
                 <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -150,12 +114,7 @@ export default function FormatValidatePanel({
           >
             <div className="flex items-center gap-2">
               {jsonParseError ? (
-                <svg
-                  className="w-4 h-4 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -164,29 +123,15 @@ export default function FormatValidatePanel({
                   />
                 </svg>
               ) : (
-                <svg
-                  className="w-4 h-4 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}
-              <span
-                className={`text-sm font-medium ${jsonParseError ? "text-red-800" : "text-green-800"}`}
-              >
+              <span className={`text-sm font-medium ${jsonParseError ? "text-red-800" : "text-green-800"}`}>
                 {jsonParseError ? "Invalid JSON" : "Valid JSON"}
               </span>
             </div>
-            {jsonParseError && (
-              <p className="text-xs text-red-600 mt-1">{jsonParseError}</p>
-            )}
+            {jsonParseError && <p className="text-xs text-red-600 mt-1">{jsonParseError}</p>}
           </div>
 
           {verificationResult && (
@@ -195,12 +140,7 @@ export default function FormatValidatePanel({
             >
               <div className="flex items-center gap-2">
                 {verificationResult.isValid ? (
-                  <svg
-                    className="w-4 h-4 text-emerald-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -209,12 +149,7 @@ export default function FormatValidatePanel({
                     />
                   </svg>
                 ) : (
-                  <svg
-                    className="w-4 h-4 text-orange-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -226,9 +161,7 @@ export default function FormatValidatePanel({
                 <span
                   className={`text-sm font-medium ${verificationResult.isValid ? "text-emerald-800" : "text-orange-800"}`}
                 >
-                  {verificationResult.isValid
-                    ? "Workflow Ready"
-                    : `${verificationResult.errors.length} Issues Found`}
+                  {verificationResult.isValid ? "Workflow Ready" : `${verificationResult.errors.length} Issues Found`}
                 </span>
                 <span className="text-xs text-gray-500 ml-auto">Status</span>
               </div>
@@ -240,9 +173,7 @@ export default function FormatValidatePanel({
                     </li>
                   ))}
                   {verificationResult.errors.length > 3 && (
-                    <li className="text-xs text-orange-600">
-                      + {verificationResult.errors.length - 3} more issues
-                    </li>
+                    <li className="text-xs text-orange-600">+ {verificationResult.errors.length - 3} more issues</li>
                   )}
                 </ul>
               )}
@@ -250,29 +181,21 @@ export default function FormatValidatePanel({
           )}
 
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">
-              Quick Start Templates
-            </h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Start Templates</h4>
             <div className="space-y-2">
               {WORKFLOW_TEMPLATES.map((template) => (
                 <Button
                   key={template.id}
                   onClick={() => {
-                    updateWorkflowJSON(
-                      JSON.stringify(template.workflow, null, 2)
-                    )
+                    updateWorkflowJSON(JSON.stringify(template.workflow, null, 2))
                     setIsDirty(true)
                   }}
                   variant="outline"
                   className="w-full justify-start text-left h-auto py-2.5"
                 >
                   <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {template.name}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {template.description}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900">{template.name}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{template.description}</div>
                   </div>
                 </Button>
               ))}

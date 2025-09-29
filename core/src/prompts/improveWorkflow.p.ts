@@ -178,13 +178,9 @@ Return the advisory object with fields described above. Include enough details t
       shouldImplement: boolean
     }
   ): string {
-    const workflowStructure =
-      structureInfo?.recommendedStructure ||
-      SharedWorkflowPrompts.randomWorkflowStructure()
+    const workflowStructure = structureInfo?.recommendedStructure || SharedWorkflowPrompts.randomWorkflowStructure()
     const shouldImplementStructure = structureInfo?.shouldImplement ?? true
-    const structuralAnalysis =
-      structureInfo?.structuralReason ||
-      "No prior structural analysis available"
+    const structuralAnalysis = structureInfo?.structuralReason || "No prior structural analysis available"
 
     const systemPrompt = `
 You are an expert workflow structural optimization judge. 
@@ -277,13 +273,9 @@ Explain how the new structure addresses identified performance issues and implem
       shouldImplement: boolean
     }
   ) {
-    const workflowStructure =
-      structureInfo?.recommendedStructure ||
-      SharedWorkflowPrompts.randomWorkflowStructure()
+    const workflowStructure = structureInfo?.recommendedStructure || SharedWorkflowPrompts.randomWorkflowStructure()
     const shouldImplementStructure = structureInfo?.shouldImplement ?? true
-    const structuralAnalysis =
-      structureInfo?.structuralReason ||
-      "No prior structural analysis available"
+    const structuralAnalysis = structureInfo?.structuralReason || "No prior structural analysis available"
 
     const systemPrompt = `You are a structural workflow optimization mechanic advisor. Your role is to ADVISE structural changes, not to produce a final workflow. Another system will formalize your advice.
 

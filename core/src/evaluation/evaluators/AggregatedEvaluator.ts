@@ -17,24 +17,18 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
     // run the workflow once with all questions
     const startTime = Date.now()
 
-    lgg.log(
-      `[AggregatedEvaluator] Starting workflow evaluation for ${workflow.getWorkflowVersionId()}`
-    )
+    lgg.log(`[AggregatedEvaluator] Starting workflow evaluation for ${workflow.getWorkflowVersionId()}`)
     lgg.log(`[AggregatedEvaluator] Workflow has ${workflow.nodes.length} nodes`)
     lgg.log(`[AggregatedEvaluator] Entry node ID: ${workflow.getEntryNodeId()}`)
 
     const { success, error, data, usdCost } = await workflow.runAndEvaluate()
 
     if (!success) {
-      lgg.error(
-        `[AggregatedEvaluator] Workflow runAndEvaluate failed for ${workflow.getWorkflowVersionId()}: ${error}`
-      )
+      lgg.error(`[AggregatedEvaluator] Workflow runAndEvaluate failed for ${workflow.getWorkflowVersionId()}: ${error}`)
       return R.error(`Failed to evaluate workflow: ${error}`, 0)
     }
 
-    lgg.log(
-      `[AggregatedEvaluator] Workflow runAndEvaluate succeeded for ${workflow.getWorkflowVersionId()}`
-    )
+    lgg.log(`[AggregatedEvaluator] Workflow runAndEvaluate succeeded for ${workflow.getWorkflowVersionId()}`)
 
     const { results, averageFitness, averageFeedback } = data
     const totalTime = Date.now() - startTime
@@ -52,9 +46,7 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
 
     // get combined transcript and summaries from all results
     // results: EvaluationResult[] from queueRun evaluate; build string transcript
-    const combinedTranscript = results
-      .map((r) => JSON.stringify(r.transcript))
-      .join("\n\n")
+    const combinedTranscript = results.map((r) => JSON.stringify(r.transcript)).join("\n\n")
     const combinedSummaries = results.flatMap((r) => r.summaries)
 
     return {

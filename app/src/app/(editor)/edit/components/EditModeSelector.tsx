@@ -22,10 +22,7 @@ import DatasetSelector from "@/components/DatasetSelector"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import {
-  loadFromDSLClient,
-  loadFromDSLClientDisplay,
-} from "@core/workflow/setup/WorkflowLoader.client"
+import { loadFromDSLClient, loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
 
 type EditMode = "graph" | "json" | "eval"
 
@@ -34,11 +31,7 @@ interface EditModeSelectorProps {
 }
 
 // Stable, top-level component to avoid remounts that close the dialog
-function GraphRunWithPromptButton({
-  exportToJSON,
-}: {
-  exportToJSON: () => string
-}) {
+function GraphRunWithPromptButton({ exportToJSON }: { exportToJSON: () => string }) {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
@@ -91,9 +84,7 @@ function GraphRunWithPromptButton({
 
       if (result?.success) {
         const first = result?.data?.[0]
-        const out =
-          first?.queueRunResult?.finalWorkflowOutput ??
-          first?.finalWorkflowOutputs
+        const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
         addLog("✅ Workflow completed successfully!")
         addLog(`Result: ${out || "No response"}`)
       } else {
@@ -139,9 +130,7 @@ function GraphRunWithPromptButton({
   )
 }
 
-export default function EditModeSelector({
-  workflowVersion,
-}: EditModeSelectorProps) {
+export default function EditModeSelector({ workflowVersion }: EditModeSelectorProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<EditMode>("graph")
@@ -218,16 +207,12 @@ export default function EditModeSelector({
         if (datasetId) {
           // Get the updated case count after loading
           const currentState = useRunConfigStore.getState()
-          toast.success(
-            `Dataset loaded with ${currentState.cases.length} test cases`
-          )
+          toast.success(`Dataset loaded with ${currentState.cases.length} test cases`)
         } else {
           toast.success("Dataset selection cleared")
         }
       } catch (error) {
-        toast.error(
-          `Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`
-        )
+        toast.error(`Failed to load dataset: ${error instanceof Error ? error.message : "Unknown error"}`)
       } finally {
         setDatasetLoading(false)
       }
@@ -250,12 +235,7 @@ export default function EditModeSelector({
   // Guarded to run only once even if nodes change multiple times
   const organizedOnceRef = useRef(false)
   useEffect(() => {
-    if (
-      !workflowVersion &&
-      _nodes &&
-      _nodes.length > 0 &&
-      !organizedOnceRef.current
-    ) {
+    if (!workflowVersion && _nodes && _nodes.length > 0 && !organizedOnceRef.current) {
       organizedOnceRef.current = true
       // Defer to next tick to ensure ReactFlow is mounted
       setTimeout(() => {
@@ -291,12 +271,7 @@ export default function EditModeSelector({
         organizeLayout()
       })
     }
-  }, [
-    workflowVersion,
-    updateWorkflowJSON,
-    loadWorkflowFromData,
-    organizeLayout,
-  ])
+  }, [workflowVersion, updateWorkflowJSON, loadWorkflowFromData, organizeLayout])
 
   const handleModeChange = async (newMode: EditMode) => {
     // Sync data when switching modes
@@ -395,12 +370,8 @@ export default function EditModeSelector({
             <div className="flex items-center justify-between gap-3 mb-3">
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase">
-                    Goal
-                  </label>
-                  <span className="text-xs text-gray-500 italic">
-                    (Define your evaluation objective)
-                  </span>
+                  <label className="text-sm font-semibold text-gray-700 uppercase">Goal</label>
+                  <span className="text-xs text-gray-500 italic">(Define your evaluation objective)</span>
                 </div>
                 <input
                   type="text"
@@ -413,12 +384,8 @@ export default function EditModeSelector({
 
                 {/* Dataset Selection */}
                 <div className="flex items-center gap-2 mt-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase">
-                    Dataset
-                  </label>
-                  <span className="text-xs text-gray-500 italic">
-                    (Load test cases from database)
-                  </span>
+                  <label className="text-sm font-semibold text-gray-700 uppercase">Dataset</label>
+                  <span className="text-xs text-gray-500 italic">(Load test cases from database)</span>
                 </div>
                 <div className="w-full max-w-xs">
                   <DatasetSelector
@@ -426,11 +393,7 @@ export default function EditModeSelector({
                     onSelect={handleDatasetSelect}
                     disabled={datasetLoading}
                   />
-                  {datasetLoading && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      Loading dataset records...
-                    </div>
-                  )}
+                  {datasetLoading && <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -482,9 +445,7 @@ export default function EditModeSelector({
                 >
                   + Add Test
                 </Button>
-                <div className="text-xs text-gray-400">
-                  Tab = Next · Enter = Run
-                </div>
+                <div className="text-xs text-gray-400">Tab = Next · Enter = Run</div>
               </div>
             </div>
           </div>

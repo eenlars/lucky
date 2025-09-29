@@ -17,43 +17,29 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null
     const type = (formData.get("type") as IngestionType | null) ?? null
     const goal = (formData.get("goal") as string | null) ?? ""
-    const evaluation =
-      (formData.get("evaluation") as string | null) ?? undefined
-    const onlyIncludeInputColumnsRaw =
-      (formData.get("onlyIncludeInputColumns") as string | null) ?? ""
+    const evaluation = (formData.get("evaluation") as string | null) ?? undefined
+    const onlyIncludeInputColumnsRaw = (formData.get("onlyIncludeInputColumns") as string | null) ?? ""
 
     // text-specific fields
     const question = (formData.get("question") as string | null) ?? ""
     const answer = (formData.get("answer") as string | null) ?? ""
 
     if (!type) {
-      return NextResponse.json(
-        { error: "Missing ingestion type" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Missing ingestion type" }, { status: 400 })
     }
 
     if (type === "csv") {
       if (!file) {
-        return NextResponse.json(
-          { error: "CSV requires a file" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "CSV requires a file" }, { status: 400 })
       }
       if (!goal) {
-        return NextResponse.json(
-          { error: "CSV ingestion requires a goal" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "CSV ingestion requires a goal" }, { status: 400 })
       }
     }
 
     if (type === "text") {
       if (!question || !answer) {
-        return NextResponse.json(
-          { error: "Text ingestion requires question and answer" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "Text ingestion requires question and answer" }, { status: 400 })
       }
     }
 
@@ -68,18 +54,13 @@ export async function POST(req: NextRequest) {
       // Upload CSV file
       uploadPath = `${folder}/${file.name}`
       fileName = file.name
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(uploadPath, file, {
-          cacheControl: "3600",
-          upsert: true,
-          contentType: file.type || "application/octet-stream",
-        })
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(uploadPath, file, {
+        cacheControl: "3600",
+        upsert: true,
+        contentType: file.type || "application/octet-stream",
+      })
       if (uploadError) {
-        return NextResponse.json(
-          { error: `Upload failed: ${uploadError.message}` },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
       }
     } else if (type === "text") {
       // Create text data file
@@ -104,10 +85,7 @@ export async function POST(req: NextRequest) {
         }
       )
       if (uploadError) {
-        return NextResponse.json(
-          { error: `Upload failed: ${uploadError.message}` },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
       }
     }
 
@@ -122,20 +100,12 @@ export async function POST(req: NextRequest) {
       type,
       goal,
       evaluation: evaluation ?? null,
-      onlyIncludeInputColumns: onlyIncludeInputColumns.length
-        ? onlyIncludeInputColumns
-        : undefined,
+      onlyIncludeInputColumns: onlyIncludeInputColumns.length ? onlyIncludeInputColumns : undefined,
       file: {
         path: uploadPath,
         name: fileName,
-        contentType:
-          type === "text"
-            ? "application/json"
-            : file?.type || "application/octet-stream",
-        size:
-          type === "text"
-            ? new Blob([JSON.stringify({ question, answer })]).size
-            : file?.size || 0,
+        contentType: type === "text" ? "application/json" : file?.type || "application/octet-stream",
+        size: type === "text" ? new Blob([JSON.stringify({ question, answer })]).size : file?.size || 0,
       },
       createdAt: new Date().toISOString(),
     }
@@ -143,19 +113,12 @@ export async function POST(req: NextRequest) {
     // Write meta.json in the dataset folder
     const { error: metaError } = await supabase.storage
       .from(bucket)
-      .upload(
-        `${folder}/meta.json`,
-        new Blob([JSON.stringify(meta, null, 2)], { type: "application/json" }),
-        {
-          upsert: true,
-          contentType: "application/json",
-        }
-      )
+      .upload(`${folder}/meta.json`, new Blob([JSON.stringify(meta, null, 2)], { type: "application/json" }), {
+        upsert: true,
+        contentType: "application/json",
+      })
     if (metaError) {
-      return NextResponse.json(
-        { error: `Failed to write meta.json: ${metaError.message}` },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: `Failed to write meta.json: ${metaError.message}` }, { status: 500 })
     }
 
     // Write a manifest at root for easy listing: ingestions/{datasetId}.json
@@ -175,10 +138,7 @@ export async function POST(req: NextRequest) {
       { upsert: true, contentType: "application/json" }
     )
     if (manifestError) {
-      return NextResponse.json(
-        { error: `Failed to write manifest: ${manifestError.message}` },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: `Failed to write manifest: ${manifestError.message}` }, { status: 500 })
     }
 
     // Create database entries
@@ -206,9 +166,7 @@ export async function POST(req: NextRequest) {
 
             // Find input and output columns
             const inputCol = headers.findIndex(
-              (h) =>
-                h.toLowerCase().includes("input") ||
-                h.toLowerCase().includes("question")
+              (h) => h.toLowerCase().includes("input") || h.toLowerCase().includes("question")
             )
             let outputCol = headers.findIndex(
               (h) =>
@@ -226,15 +184,10 @@ export async function POST(req: NextRequest) {
             // Create records for each row
             for (let i = 1; i < lines.length && i <= 50; i++) {
               // Limit to 50 records for performance
-              const values = lines[i]
-                .split(",")
-                .map((v) => v.trim().replace(/^"|"$/g, ""))
+              const values = lines[i].split(",").map((v) => v.trim().replace(/^"|"$/g, ""))
               if (values.length >= headers.length) {
                 const input = inputCol >= 0 ? values[inputCol] : values[0] || ""
-                const output =
-                  outputCol >= 0
-                    ? values[outputCol]
-                    : values[values.length - 1] || ""
+                const output = outputCol >= 0 ? values[outputCol] : values[values.length - 1] || ""
 
                 if (input && output) {
                   await createDatasetRecord({
@@ -258,9 +211,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, dataset: meta })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

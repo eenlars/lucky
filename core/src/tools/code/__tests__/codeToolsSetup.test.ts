@@ -6,11 +6,7 @@ import { describe, expect, it } from "vitest"
 describe("setupCodeToolsForNode", () => {
   it("should set up the searchGoogleMaps code tool without errors", async () => {
     // Test with a specific tool name defined in codeToolsSetup.ts
-    const toolNames: CodeToolName[] = [
-      "searchGoogleMaps",
-      "todoWrite",
-      "todoRead",
-    ]
+    const toolNames: CodeToolName[] = ["searchGoogleMaps", "todoWrite", "todoRead"]
 
     // Provide proper toolExecutionContext as required by the function
     const mockContext: ToolExecutionContext = {
@@ -22,9 +18,7 @@ describe("setupCodeToolsForNode", () => {
       workflowId: "test-workflow-id",
     }
 
-    await expect(
-      setupCodeToolsForNode(toolNames, mockContext)
-    ).resolves.toBeTypeOf("object")
+    await expect(setupCodeToolsForNode(toolNames, mockContext)).resolves.toBeTypeOf("object")
     // TODO: This assertion is too weak - almost everything in JS is type "object".
     // Should test the specific structure and properties of the returned tools.
 

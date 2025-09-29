@@ -10,17 +10,10 @@ import {
   XYPosition,
 } from "@xyflow/react"
 import { create } from "zustand"
-import {
-  createJSONStorage,
-  persist,
-  subscribeWithSelector,
-} from "zustand/middleware"
+import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware"
 
 import { setColorModeCookie } from "@/react-flow-visualization/components/actions/cookies"
-import {
-  createEdge,
-  type AppEdge,
-} from "@/react-flow-visualization/components/edges"
+import { createEdge, type AppEdge } from "@/react-flow-visualization/components/edges"
 import nodesConfig, {
   createNodeByType,
   type AppNode,
@@ -142,20 +135,13 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const dragged = get().draggedNodes
           const filteredChanges =
             dragged && dragged.size > 0
-              ? changes.filter(
-                  (change) =>
-                    change.type !== "position" ||
-                    dragged.has((change as any).id)
-                )
+              ? changes.filter((change) => change.type !== "position" || dragged.has((change as any).id))
               : changes
 
           const nextNodes = applyNodeChanges(filteredChanges, get().nodes)
           set({ nodes: nextNodes })
 
-          if (
-            get().layout === "fixed" &&
-            changes.some((change) => change.type === "dimensions")
-          ) {
+          if (get().layout === "fixed" && changes.some((change) => change.type === "dimensions")) {
             const layoutedNodes = await layoutGraph(nextNodes, get().edges)
             set({ nodes: layoutedNodes })
           } else {
@@ -174,9 +160,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           // Remove the node
           const filteredNodes = get().nodes.filter((node) => node.id !== nodeId)
           // Remove all edges connected to this node
-          const filteredEdges = get().edges.filter(
-            (edge) => edge.source !== nodeId && edge.target !== nodeId
-          )
+          const filteredEdges = get().edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
           set({ nodes: filteredNodes, edges: filteredEdges })
         },
 
@@ -192,40 +176,23 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
         getNodes: () => get().nodes,
 
-        addNodeInBetween: ({
-          source,
-          target,
-          type,
-          sourceHandleId,
-          targetHandleId,
-          position,
-        }) => {
+        addNodeInBetween: ({ source, target, type, sourceHandleId, targetHandleId, position }) => {
           const newNodeId = get().addNodeByType(type, position)
           if (!newNodeId) return
 
-          get().removeEdge(
-            `${source}-${sourceHandleId ?? ""}-${target}-${targetHandleId ?? ""}`
-          )
+          get().removeEdge(`${source}-${sourceHandleId ?? ""}-${target}-${targetHandleId ?? ""}`)
 
           const nodeHandles = nodesConfig[type].handles
-          const nodeSource = nodeHandles.find(
-            (handle) => handle.type === "source"
-          )
-          const nodeTarget = nodeHandles.find(
-            (handle) => handle.type === "target"
-          )
+          const nodeSource = nodeHandles.find((handle) => handle.type === "source")
+          const nodeTarget = nodeHandles.find((handle) => handle.type === "target")
 
           const edges = []
           if (nodeTarget && source) {
-            edges.push(
-              createEdge(source, newNodeId, sourceHandleId, nodeTarget.id)
-            )
+            edges.push(createEdge(source, newNodeId, sourceHandleId, nodeTarget.id))
           }
 
           if (nodeSource && target) {
-            edges.push(
-              createEdge(newNodeId, target, nodeSource.id, targetHandleId)
-            )
+            edges.push(createEdge(newNodeId, target, nodeSource.id, targetHandleId))
           }
 
           const nextEdges = [...get().edges, ...edges]
@@ -241,20 +208,14 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const sourceNode = nodes.find((n) => n.id === edge.source)
           const targetNode = nodes.find((n) => n.id === edge.target)
 
-          if (
-            requiresHandle(sourceNode?.type, "source") &&
-            !edge.sourceHandle
-          ) {
+          if (requiresHandle(sourceNode?.type, "source") && !edge.sourceHandle) {
             console.error(
               `Edge rejected: missing sourceHandle for node '${edge.source}' which has multiple source handles`
             )
             return
           }
 
-          if (
-            requiresHandle(targetNode?.type, "target") &&
-            !edge.targetHandle
-          ) {
+          if (requiresHandle(targetNode?.type, "target") && !edge.targetHandle) {
             console.error(
               `Edge rejected: missing targetHandle for node '${edge.target}' which has multiple target handles`
             )
@@ -279,20 +240,14 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const sourceNode = nodes.find((n) => n.id === connection.source)
           const targetNode = nodes.find((n) => n.id === connection.target)
 
-          if (
-            requiresHandle(sourceNode?.type, "source") &&
-            !connection.sourceHandle
-          ) {
+          if (requiresHandle(sourceNode?.type, "source") && !connection.sourceHandle) {
             console.error(
               `Connection rejected: missing sourceHandle for node '${connection.source}' which has multiple source handles`
             )
             return
           }
 
-          if (
-            requiresHandle(targetNode?.type, "target") &&
-            !connection.targetHandle
-          ) {
+          if (requiresHandle(targetNode?.type, "target") && !connection.targetHandle) {
             console.error(
               `Connection rejected: missing targetHandle for node '${connection.target}' which has multiple target handles`
             )
@@ -336,18 +291,11 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               continue
             }
 
-            if (
-              options?.type &&
-              options.type &&
-              options.type === connectionSite.type
-            ) {
+            if (options?.type && options.type && options.type === connectionSite.type) {
               continue
             }
 
-            const distance = Math.hypot(
-              connectionSite.position.x - position.x,
-              connectionSite.position.y - position.y
-            )
+            const distance = Math.hypot(connectionSite.position.x - position.x, connectionSite.position.y - position.y)
 
             if (distance < closest.distance) {
               closest.distance = distance
@@ -356,8 +304,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
 
           set({
-            potentialConnection:
-              closest.distance < 150 ? closest.potentialConnection : undefined,
+            potentialConnection: closest.distance < 150 ? closest.potentialConnection : undefined,
           })
         },
 
@@ -382,9 +329,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             const response = await fetch(`/api/workflow/config?mode=${mode}`)
 
             if (!response.ok) {
-              throw new Error(
-                `Failed to load workflow config: ${response.statusText}`
-              )
+              throw new Error(`Failed to load workflow config: ${response.statusText}`)
             }
 
             const workflowConfig = await response.json()
@@ -408,10 +353,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             // apply layout to position nodes properly
             console.log("Applying layout to nodes...")
             const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
-            console.log(
-              "Layout applied, positioned nodes:",
-              layoutedNodes.length
-            )
+            console.log("Layout applied, positioned nodes:", layoutedNodes.length)
 
             set({
               nodes: layoutedNodes,
@@ -421,8 +363,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             console.log("Workflow config loading completed")
           } catch (error) {
             console.error("Error loading workflow config:", error)
-            const errorMessage =
-              error instanceof Error ? error.message : "Unknown error"
+            const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
               workflowLoading: false,
               workflowError: errorMessage,
@@ -434,14 +375,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           set({ workflowLoading: true, workflowError: undefined })
 
           try {
-            const response = await fetch(
-              `/api/workflow/version/${workflowVersionId}`
-            )
+            const response = await fetch(`/api/workflow/version/${workflowVersionId}`)
 
             if (!response.ok) {
-              throw new Error(
-                `Failed to load workflow version: ${response.statusText}`
-              )
+              throw new Error(`Failed to load workflow version: ${response.statusText}`)
             }
 
             const workflowConfig = await response.json()
@@ -457,8 +394,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               currentWorkflowId: workflowVersionId, // Set workflow ID for saving
             })
           } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : "Unknown error"
+            const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
               workflowLoading: false,
               workflowError: errorMessage,
@@ -481,8 +417,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               workflowLoading: false,
             })
           } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : "Unknown error"
+            const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
               workflowLoading: false,
               workflowError: errorMessage,
@@ -497,8 +432,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const workflowNodes = nodes
             .filter((node) => node.id !== "start" && node.id !== "end")
             .map((node) => {
-              const { label, icon, status, messageCount, ...coreData } =
-                node.data
+              const { label, icon, status, messageCount, ...coreData } = node.data
               return {
                 ...coreData,
                 nodeId: node.id, // Ensure nodeId matches the graph node id
@@ -510,9 +444,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
           // Build handOffs from visual connections (simple approach)
           const workflowNodesWithConnections = workflowNodes.map((node) => {
-            const nodeEdges = edges.filter(
-              (edge) => edge.source === node.nodeId
-            )
+            const nodeEdges = edges.filter((edge) => edge.source === node.nodeId)
             return {
               ...node,
               handOffs: nodeEdges.map((edge) => edge.target),
@@ -570,16 +502,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
           if (isRename) {
             // Prevent renaming special nodes
-            if (
-              targetNode.type === "initial-node" ||
-              targetNode.type === "output-node"
-            ) {
+            if (targetNode.type === "initial-node" || targetNode.type === "output-node") {
               console.warn("Renaming is disabled for initial/output nodes")
             } else if (currentNodes.some((n) => n.id === requestedNewId)) {
-              console.error(
-                "Cannot rename: node ID already exists:",
-                requestedNewId
-              )
+              console.error("Cannot rename: node ID already exists:", requestedNewId)
             } else {
               const newId = requestedNewId as string
               // Update nodes and edges to reflect new ID
@@ -607,18 +533,13 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               set({
                 nodes: nextNodes,
                 edges: nextEdges,
-                selectedNodeId:
-                  get().selectedNodeId === nodeId
-                    ? newId
-                    : get().selectedNodeId,
+                selectedNodeId: get().selectedNodeId === nodeId ? newId : get().selectedNodeId,
               })
             }
           } else {
             // Simple data update
             set({
-              nodes: currentNodes.map((n) =>
-                n.id === nodeId ? { ...n, data: { ...n.data, ...updates } } : n
-              ),
+              nodes: currentNodes.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, ...updates } } : n)),
             })
           }
 
@@ -636,9 +557,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               },
               body: JSON.stringify({
                 dsl: workflow,
-                commitMessage: isRename
-                  ? `Renamed node ${nodeId} -> ${updates.nodeId}`
-                  : `Updated node ${nodeId}`,
+                commitMessage: isRename ? `Renamed node ${nodeId} -> ${updates.nodeId}` : `Updated node ${nodeId}`,
                 workflowId,
                 iterationBudget: 50,
                 timeBudgetSeconds: 3600,
@@ -668,9 +587,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
   store.subscribe(
     (state) => state.colorMode,
     async (colorMode: ColorMode) => {
-      document
-        .querySelector("html")
-        ?.classList.toggle("dark", colorMode === "dark")
+      document.querySelector("html")?.classList.toggle("dark", colorMode === "dark")
 
       await setColorModeCookie(colorMode)
     }

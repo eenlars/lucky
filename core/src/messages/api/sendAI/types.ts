@@ -17,15 +17,7 @@
 // TODO: implement request/response serialization types
 
 import type { ModelName } from "@core/utils/spending/models.types"
-import type {
-  CoreMessage,
-  GenerateTextResult,
-  LanguageModel,
-  ModelMessage,
-  StepResult,
-  ToolChoice,
-  ToolSet,
-} from "ai"
+import type { GenerateTextResult, LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import type { Schema, ZodTypeAny } from "zod"
 
 /**
@@ -47,7 +39,7 @@ export type TResponse<T> =
       summary?: string
       usdCost: number
       error: null
-      debug_input: CoreMessage[]
+      debug_input: ModelMessage[]
       debug_output: any
     }
   | {
@@ -56,7 +48,7 @@ export type TResponse<T> =
       summary?: string
       usdCost?: number
       error: string
-      debug_input: CoreMessage[]
+      debug_input: ModelMessage[]
       debug_output: any
     }
 
@@ -72,10 +64,7 @@ export type TResponse<T> =
 // TODO: add step preparation validation
 // TODO: implement step caching for repeated patterns
 // TODO: add step execution metrics
-export type PreparedStepsFunction<
-  T extends ToolSet = ToolSet,
-  M extends LanguageModel = LanguageModel,
-> = (o: {
+export type PreparedStepsFunction<T extends ToolSet = ToolSet, M extends LanguageModel = LanguageModel> = (o: {
   steps: StepResult<T>[]
   stepNumber: number
   model: M
@@ -99,7 +88,7 @@ export type PreparedStepsFunction<
 // TODO: implement request priority levels
 // TODO: add request correlation tracking
 interface RequestBase {
-  messages: CoreMessage[]
+  messages: ModelMessage[]
   debug?: boolean
   model?: ModelName
   retries?: number
@@ -151,8 +140,7 @@ export interface ToolRequest extends RequestBase {
 // TODO: add schema validation error handling
 // TODO: implement schema evolution and versioning
 // TODO: add output post-processing hooks
-export interface StructuredRequest<S extends ZodTypeAny | Schema<any>>
-  extends RequestBase {
+export interface StructuredRequest<S extends ZodTypeAny | Schema<any>> extends RequestBase {
   mode: "structured"
   schema: S
   output?: "object" | "array"
@@ -168,10 +156,6 @@ export interface StructuredRequest<S extends ZodTypeAny | Schema<any>>
 // TODO: add batch request support
 // TODO: implement request middleware system
 // TODO: add request/response transformation hooks
-export type SendAI = (<S extends ZodTypeAny>(
-  req: StructuredRequest<S>
-) => Promise<TResponse<import("zod").infer<S>>>) &
+export type SendAI = (<S extends ZodTypeAny>(req: StructuredRequest<S>) => Promise<TResponse<import("zod").infer<S>>>) &
   ((req: ToolRequest) => Promise<TResponse<GenerateTextResult<ToolSet, any>>>) &
-  ((
-    req: TextRequest
-  ) => Promise<TResponse<{ text: string; reasoning?: string }>>)
+  ((req: TextRequest) => Promise<TResponse<{ text: string; reasoning?: string }>>)

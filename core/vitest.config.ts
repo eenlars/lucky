@@ -42,12 +42,7 @@ export default defineConfig({
       deps: {
         // Avoid prebundling puppeteer/stealth which use dynamic requires for evasions
         inline: [/(?!.*)/],
-        external: [
-          "puppeteer",
-          "puppeteer-extra",
-          "puppeteer-extra-plugin",
-          "puppeteer-extra-plugin-stealth",
-        ],
+        external: ["puppeteer", "puppeteer-extra", "puppeteer-extra-plugin", "puppeteer-extra-plugin-stealth"],
       },
     },
     projects: [

@@ -1,9 +1,6 @@
 // src/core/workflow/queueRun.ts
 
-import type {
-  AggregatedPayload,
-  MessageType,
-} from "@core/messages/MessagePayload"
+import type { AggregatedPayload, MessageType } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
@@ -78,9 +75,7 @@ export async function queueRun({
   workflowInput,
   workflowInvocationId,
 }: QueueRunParams): Promise<QueueRunResult> {
-  lgg.log(
-    `[queueRun] Starting for workflow ${workflow.getWorkflowVersionId()}, invocation ${workflowInvocationId}`
-  )
+  lgg.log(`[queueRun] Starting for workflow ${workflow.getWorkflowVersionId()}, invocation ${workflowInvocationId}`)
 
   // validate entry point exists - workflows must have a designated starting node
   const entryNodeId = workflow.getEntryNodeId()
@@ -107,9 +102,7 @@ export async function queueRun({
   const perNodeInvocationCounts = new Map<string, number>()
   let totalNodeInvocationsCount = 0
   const maxTotalNodeInvocations = CONFIG.workflow.maxTotalNodeInvocations
-  const maxPerNodeInvocations =
-    CONFIG.workflow.maxPerNodeInvocations ??
-    CONFIG.workflow.maxTotalNodeInvocations
+  const maxPerNodeInvocations = CONFIG.workflow.maxPerNodeInvocations ?? CONFIG.workflow.maxTotalNodeInvocations
   const summaries: InvocationSummary[] = []
   const startTime = Date.now()
   let lastNodeOutput = "" // tracks final output for workflow result
@@ -120,8 +113,7 @@ export async function queueRun({
   // aggregation storage for nodes with waitingFor - collects messages until all dependencies arrive
   const waitingMessages = new Map<string, WorkflowMessage[]>()
 
-  const messageType: MessageType =
-    coordinationType === "sequential" ? "sequential" : "delegation"
+  const messageType: MessageType = coordinationType === "sequential" ? "sequential" : "delegation"
 
   // Add initial message to the queue
   const initialMessage = new WorkflowMessage({
@@ -142,24 +134,16 @@ export async function queueRun({
   })
 
   messageQueue.push(initialMessage)
-  lgg.onlyIf(
-    verbose,
-    `[queueRun] Initial message queued, starting processing loop`
-  )
+  lgg.onlyIf(verbose, `[queueRun] Initial message queued, starting processing loop`)
 
   // Process messages until queue is empty
   while (messageQueue.length > 0) {
     let currentMessage = messageQueue.shift()!
-    lgg.onlyIf(
-      verbose,
-      `[queueRun] Processing message to node ${currentMessage.toNodeId}`
-    )
+    lgg.onlyIf(verbose, `[queueRun] Processing message to node ${currentMessage.toNodeId}`)
 
     // Check global and per-node max invocations limits
     if (totalNodeInvocationsCount >= maxTotalNodeInvocations) {
-      lgg.warn(
-        `[queueRun] Max node invocations reached: ${maxTotalNodeInvocations}`
-      )
+      lgg.warn(`[queueRun] Max node invocations reached: ${maxTotalNodeInvocations}`)
       break
     }
 
@@ -167,9 +151,7 @@ export async function queueRun({
     const toNodeId = currentMessage.toNodeId
     const currentCount = perNodeInvocationCounts.get(toNodeId) ?? 0
     if (currentCount >= maxPerNodeInvocations) {
-      lgg.warn(
-        `[queueRun] Max node invocations reached for ${toNodeId}: ${maxPerNodeInvocations}`
-      )
+      lgg.warn(`[queueRun] Max node invocations reached for ${toNodeId}: ${maxPerNodeInvocations}`)
       // skip invoking this node; continue processing other messages
       continue
     }
@@ -188,15 +170,10 @@ export async function queueRun({
       throw new Error(error)
     }
 
-    lgg.onlyIf(
-      verbose,
-      `[queueRun] Found target node ${currentMessage.toNodeId}, invoking`
-    )
+    lgg.onlyIf(verbose, `[queueRun] Found target node ${currentMessage.toNodeId}, invoking`)
 
     // check if this node is waiting for multiple messages (fan-in pattern)
-    const nodeConfig = workflow
-      .getConfig()
-      .nodes.find((n) => n.nodeId === currentMessage.toNodeId)
+    const nodeConfig = workflow.getConfig().nodes.find((n) => n.nodeId === currentMessage.toNodeId)
     const waitingFor = nodeConfig?.waitingFor || nodeConfig?.waitFor
 
     if (waitingFor && waitingFor.length > 0) {
@@ -209,12 +186,8 @@ export async function queueRun({
 
       // check if all required messages are received
       const receivedMessages = waitingMessages.get(waitingKey)!
-      const receivedFromNodes = new Set(
-        receivedMessages.map((m) => m.fromNodeId)
-      )
-      const allReceived = waitingFor.every((nodeId) =>
-        receivedFromNodes.has(nodeId)
-      )
+      const receivedFromNodes = new Set(receivedMessages.map((m) => m.fromNodeId))
+      const allReceived = waitingFor.every((nodeId) => receivedFromNodes.has(nodeId))
 
       if (!allReceived) {
         // still waiting for more messages, skip this node for now
@@ -256,10 +229,7 @@ export async function queueRun({
     // Validate hierarchical message flow if coordination type is hierarchical
     if (coordinationType === "hierarchical") {
       const workflowConfig = workflow.getConfig()
-      const fromNodeRole = getNodeRole(
-        currentMessage.fromNodeId,
-        workflowConfig
-      )
+      const fromNodeRole = getNodeRole(currentMessage.fromNodeId, workflowConfig)
       const toNodeRole = getNodeRole(currentMessage.toNodeId, workflowConfig)
 
       // Validate hierarchical constraints
@@ -282,13 +252,9 @@ export async function queueRun({
         )
       }
     }
-    const toolContext: ToolExecutionContext =
-      workflow.getToolExecutionContext(workflowInvocationId)
+    const toolContext: ToolExecutionContext = workflow.getToolExecutionContext(workflowInvocationId)
 
-    lgg.onlyIf(
-      verbose,
-      `[queueRun] Starting node invocation for ${targetNode.nodeId}`
-    )
+    lgg.onlyIf(verbose, `[queueRun] Starting node invocation for ${targetNode.nodeId}`)
 
     const {
       nodeInvocationFinalOutput,
@@ -315,17 +281,11 @@ export async function queueRun({
     )
 
     if (error) {
-      lgg.error(
-        `[queueRun] Node invocation error for ${targetNode.nodeId}`,
-        error
-      )
+      lgg.error(`[queueRun] Node invocation error for ${targetNode.nodeId}`, error)
     }
 
     // increment per-node and global invocation counts after invocation (even on error)
-    perNodeInvocationCounts.set(
-      targetNode.nodeId,
-      (perNodeInvocationCounts.get(targetNode.nodeId) ?? 0) + 1
-    )
+    perNodeInvocationCounts.set(targetNode.nodeId, (perNodeInvocationCounts.get(targetNode.nodeId) ?? 0) + 1)
     totalNodeInvocationsCount++
 
     // Aggregate agent steps from this node invocation into the run-level transcript
@@ -352,9 +312,7 @@ export async function queueRun({
     // Save memory updates if provided
     if (updatedMemory) {
       // Update the node's memory in the workflow config
-      const nodeConfig = workflow
-        .getConfig()
-        .nodes.find((n) => n.nodeId === targetNode.nodeId)
+      const nodeConfig = workflow.getConfig().nodes.find((n) => n.nodeId === targetNode.nodeId)
       if (nodeConfig) {
         nodeConfig.memory = updatedMemory
       }
@@ -362,9 +320,7 @@ export async function queueRun({
       // If this is a terminal node, we should persist the memory update
       if (isTerminalNode && verbose) {
         lgg.log(
-          chalk.green(
-            `[queueRun] Terminal node ${targetNode.nodeId} updated memory: ${JSON.stringify(updatedMemory)}`
-          )
+          chalk.green(`[queueRun] Terminal node ${targetNode.nodeId} updated memory: ${JSON.stringify(updatedMemory)}`)
         )
       }
     }
@@ -382,10 +338,7 @@ export async function queueRun({
           wfInvId: workflowInvocationId,
         })
         messageQueue.push(nextMessage)
-        lgg.onlyIf(
-          verbose,
-          `[queueRun] Added message to queue (handler): ${targetNode.nodeId} -> ${om.toNodeId}`
-        )
+        lgg.onlyIf(verbose, `[queueRun] Added message to queue (handler): ${targetNode.nodeId} -> ${om.toNodeId}`)
       }
     } else {
       // generate messages for each target node based on handoff IDs
@@ -416,9 +369,7 @@ export async function queueRun({
             context: `Branched delegation to ${nextId}: ${getMessageContent(replyMessage)}`,
           }
           if (verbose) {
-            lgg.log(
-              `[queueRun] Branched delegation to ${nextId}: ${messagePayload.prompt.substring(0, 50)}...`
-            )
+            lgg.log(`[queueRun] Branched delegation to ${nextId}: ${messagePayload.prompt.substring(0, 50)}...`)
           }
         } else {
           // single target - use original message without modification
@@ -434,10 +385,7 @@ export async function queueRun({
           wfInvId: workflowInvocationId,
         })
         messageQueue.push(nextMessage)
-        lgg.onlyIf(
-          verbose,
-          `[queueRun] Added message to queue: ${targetNode.nodeId} -> ${nextId}`
-        )
+        lgg.onlyIf(verbose, `[queueRun] Added message to queue: ${targetNode.nodeId} -> ${nextId}`)
       }
     }
   }
@@ -450,16 +398,11 @@ export async function queueRun({
     throw new Error(error)
   }
 
-  lgg.onlyIf(
-    verbose,
-    `[queueRun] Got ${summaries.length} summaries, ${agentSteps.length} outputs`
-  )
+  lgg.onlyIf(verbose, `[queueRun] Got ${summaries.length} summaries, ${agentSteps.length} outputs`)
 
   // persist memory updates to database if any nodes updated their memory
   // this enables learning across workflow invocations
-  const hasMemoryUpdates = workflow
-    .getConfig()
-    .nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+  const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
   if (hasMemoryUpdates) {
     try {
       await updateWorkflowMemory({
@@ -467,10 +410,7 @@ export async function queueRun({
         workflowConfig: workflow.getConfig(),
       })
 
-      lgg.onlyIf(
-        verbose,
-        chalk.green("[queueRun] Memory updates persisted to database")
-      )
+      lgg.onlyIf(verbose, chalk.green("[queueRun] Memory updates persisted to database"))
     } catch (error) {
       // todo-errorhandling: silently swallowing persistence errors could mask critical failures
       lgg.error(`[queueRun] Failed to persist memory updates: ${error}`)
@@ -479,10 +419,7 @@ export async function queueRun({
     }
   }
 
-  lgg.onlyIf(
-    verbose,
-    `[queueRun] Completed successfully for ${workflow.getWorkflowVersionId()}`
-  )
+  lgg.onlyIf(verbose, `[queueRun] Completed successfully for ${workflow.getWorkflowVersionId()}`)
 
   return {
     success: true,

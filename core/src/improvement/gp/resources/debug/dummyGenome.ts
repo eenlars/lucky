@@ -1,10 +1,6 @@
 import { Genome } from "@core/improvement/gp/Genome"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import {
-  getActiveTools,
-  type CodeToolName,
-  type MCPToolName,
-} from "@core/tools/tool.types"
+import { getActiveTools, type CodeToolName, type MCPToolName } from "@core/tools/tool.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { TOOLS } from "@runtime/settings/tools"
 
@@ -29,24 +25,15 @@ const getRandomString = (length: number) => {
   return result
 }
 
-export const createDummySurvivors = (
-  parents: Genome[],
-  offspring: Genome[]
-): Genome[] => {
+export const createDummySurvivors = (parents: Genome[], offspring: Genome[]): Genome[] => {
   const survivors = parents.map((parent) =>
-    createDummyGenome(
-      parent.genome.parentWorkflowVersionIds,
-      parent.getEvolutionContext()
-    )
+    createDummyGenome(parent.genome.parentWorkflowVersionIds, parent.getEvolutionContext())
   )
 
   return survivors
 }
 
-export const createDummyGenome = (
-  parentWorkflowVersionIds: string[],
-  _evolutionContext: EvolutionContext
-): Genome => {
+export const createDummyGenome = (parentWorkflowVersionIds: string[], _evolutionContext: EvolutionContext): Genome => {
   const entryNodeId = "start-node"
   const secondNodeId = "process-node"
   const thirdNodeId = "end-node"
@@ -57,34 +44,14 @@ export const createDummyGenome = (
   const randomModel3 = getRandomElement(Object.values(defaultModels))
 
   const activeMcpTools = Object.keys(getActiveTools(TOOLS.mcp)) as MCPToolName[]
-  const activeCodeTools = Object.keys(
-    getActiveTools(TOOLS.code)
-  ) as CodeToolName[]
+  const activeCodeTools = Object.keys(getActiveTools(TOOLS.code)) as CodeToolName[]
 
-  const randomMcpTools1 = getRandomSubset<MCPToolName>(
-    activeMcpTools,
-    Math.floor(Math.random() * 2) + 1
-  )
-  const randomCodeTools1 = getRandomSubset<CodeToolName>(
-    activeCodeTools,
-    Math.floor(Math.random() * 2) + 1
-  )
-  const randomMcpTools2 = getRandomSubset<MCPToolName>(
-    activeMcpTools,
-    Math.floor(Math.random() * 2) + 1
-  )
-  const randomCodeTools2 = getRandomSubset<CodeToolName>(
-    activeCodeTools,
-    Math.floor(Math.random() * 2) + 1
-  )
-  const randomMcpTools3 = getRandomSubset<MCPToolName>(
-    activeMcpTools,
-    Math.floor(Math.random() * 2) + 1
-  )
-  const randomCodeTools3 = getRandomSubset<CodeToolName>(
-    activeCodeTools,
-    Math.floor(Math.random() * 2) + 1
-  )
+  const randomMcpTools1 = getRandomSubset<MCPToolName>(activeMcpTools, Math.floor(Math.random() * 2) + 1)
+  const randomCodeTools1 = getRandomSubset<CodeToolName>(activeCodeTools, Math.floor(Math.random() * 2) + 1)
+  const randomMcpTools2 = getRandomSubset<MCPToolName>(activeMcpTools, Math.floor(Math.random() * 2) + 1)
+  const randomCodeTools2 = getRandomSubset<CodeToolName>(activeCodeTools, Math.floor(Math.random() * 2) + 1)
+  const randomMcpTools3 = getRandomSubset<MCPToolName>(activeMcpTools, Math.floor(Math.random() * 2) + 1)
+  const randomCodeTools3 = getRandomSubset<CodeToolName>(activeCodeTools, Math.floor(Math.random() * 2) + 1)
 
   return new Genome(
     {

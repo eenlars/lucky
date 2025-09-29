@@ -62,8 +62,7 @@ export const TOOLS = {
       "Manage persistent memories using Mem0: add, get/search, getAll, update, or delete memories for context persistence in workflows.",
     humanApproval:
       "Request human approval during workflow execution. Displays message in terminal with clickable link, blocks until approval/rejection received. Supports custom messages, optional choices, and configurable timeout. LIMITS: requires manual intervention, blocks workflow execution, timeout default 5 minutes.",
-    humanHelp:
-      "call a human for help. you can ask anything you want to improve.",
+    humanHelp: "call a human for help. you can ask anything you want to improve.",
     runInspector:
       "Inspect and analyze the current workflow invocation logs. Provides comprehensive information about what happened in the workflow so far, including node invocations, messages, execution status, costs, and errors. Use this to debug workflows, understand execution flow, or get detailed logs for analysis.",
     jsExecutor:

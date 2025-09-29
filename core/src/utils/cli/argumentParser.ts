@@ -30,9 +30,7 @@ function parseArgument(arg: string): [string, string] {
 function parseInteger(value: string, name: string): number {
   const num = parseInt(value, 10)
   if (isNaN(num) || num <= 0) {
-    throw new ArgumentParsingError(
-      `${name} must be a positive integer, got: ${value}`
-    )
+    throw new ArgumentParsingError(`${name} must be a positive integer, got: ${value}`)
   }
   return num
 }
@@ -41,9 +39,7 @@ function parseBoolean(value: string): boolean {
   const normalized = value.toLowerCase()
   if (["true", "1", "yes"].includes(normalized)) return true
   if (["false", "0", "no"].includes(normalized)) return false
-  throw new ArgumentParsingError(
-    `Boolean value must be true/false/1/0/yes/no, got: ${value}`
-  )
+  throw new ArgumentParsingError(`Boolean value must be true/false/1/0/yes/no, got: ${value}`)
 }
 
 const VALID_MODES = ["iterative", "GP", "genetic"] as const
@@ -68,9 +64,7 @@ export function parseCliArguments(args: string[]): ParsedArgs {
     switch (key) {
       case "--mode":
         if (!VALID_MODES.includes(value as FlowEvolutionMode)) {
-          throw new ArgumentParsingError(
-            `Invalid mode: ${value}. Valid: ${VALID_MODES.join(", ")}`
-          )
+          throw new ArgumentParsingError(`Invalid mode: ${value}. Valid: ${VALID_MODES.join(", ")}`)
         }
         parsed.mode = value as FlowEvolutionMode
         break

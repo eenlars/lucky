@@ -16,11 +16,7 @@ const formatJSON = (obj: unknown, indent: number = 2): string => {
 }
 import { StructureMiniMap } from "./StructureMiniMap"
 
-export default function WorkflowStructurePage({
-  params,
-}: {
-  params: Promise<{ wf_inv_id: string }>
-}) {
+export default function WorkflowStructurePage({ params }: { params: Promise<{ wf_inv_id: string }> }) {
   const { wf_inv_id } = use(params)
   const [workflowData, setWorkflowData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -40,11 +36,7 @@ export default function WorkflowStructurePage({
         setWorkflowData(data)
       } catch (err) {
         console.error("Error fetching workflow structure:", err)
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load workflow structure."
-        )
+        setError(err instanceof Error ? err.message : "Failed to load workflow structure.")
       } finally {
         setLoading(false)
       }
@@ -81,10 +73,7 @@ export default function WorkflowStructurePage({
 
   return (
     <div className="p-6 space-y-6">
-      <Link
-        href={`/trace/${wf_inv_id}`}
-        className="inline-flex items-center gap-2 text-blue-500 hover:underline"
-      >
+      <Link href={`/trace/${wf_inv_id}`} className="inline-flex items-center gap-2 text-blue-500 hover:underline">
         <ArrowLeft size={16} />
         Back to trace
       </Link>

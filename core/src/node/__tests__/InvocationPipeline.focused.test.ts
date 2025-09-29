@@ -4,24 +4,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 // ensure a single shared instance per workflowInvocationId so tools see
 // the same state across calls (write -> read)
 vi.mock("@core/utils/persistence/memory/ContextStore", async () => {
-  const actual = await vi.importActual<
-    typeof import("@core/utils/persistence/memory/ContextStore")
-  >("@core/utils/persistence/memory/ContextStore")
-  const { InMemoryContextStore } = await import(
-    "@core/utils/persistence/memory/MemoryStore"
+  const actual = await vi.importActual<typeof import("@core/utils/persistence/memory/ContextStore")>(
+    "@core/utils/persistence/memory/ContextStore"
   )
+  const { InMemoryContextStore } = await import("@core/utils/persistence/memory/MemoryStore")
 
   const stores = new Map<string, InstanceType<typeof InMemoryContextStore>>()
 
-  function createContextStore(
-    _backend: "memory" | "supabase",
-    workflowInvocationId: string
-  ) {
+  function createContextStore(_backend: "memory" | "supabase", workflowInvocationId: string) {
     if (!stores.has(workflowInvocationId)) {
-      stores.set(
-        workflowInvocationId,
-        new InMemoryContextStore(workflowInvocationId)
-      )
+      stores.set(workflowInvocationId, new InMemoryContextStore(workflowInvocationId))
     }
     return stores.get(workflowInvocationId)!
   }
@@ -46,12 +38,8 @@ describe("InvocationPipeline Focused Integration", () => {
     const workflowInvocationId = `focused-test-${Date.now()}`
 
     // Import todo tools directly - these should work without circular deps
-    const todoWrite = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-write"
-    )
-    const todoRead = await import(
-      "@runtime/code_tools/todo-manager/tool-todo-read"
-    )
+    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
 
     const toolContext = {
       workflowInvocationId,
@@ -62,9 +50,7 @@ describe("InvocationPipeline Focused Integration", () => {
       mainWorkflowGoal: "Test focused todo workflow",
     }
 
-    console.log(
-      "🎯 Testing the exact workflow: use todo write first, then return output of todo read"
-    )
+    console.log("🎯 Testing the exact workflow: use todo write first, then return output of todo read")
 
     // Step 1: Execute todoWrite first (as per system prompt)
     const writeResult = await todoWrite.default.execute(
@@ -88,10 +74,7 @@ describe("InvocationPipeline Focused Integration", () => {
     // And the tool payload also reports success
     // (this mirrors the structure of CodeToolResult<T>)
     expect(writeResult.data?.output?.success).toBe(true)
-    console.log(
-      "✅ Step 1 - todoWrite executed:",
-      writeResult.data?.output?.message
-    )
+    console.log("✅ Step 1 - todoWrite executed:", writeResult.data?.output?.message)
 
     // Step 2: Execute todoRead second (to return the output as per system prompt)
     const readResult = await todoRead.default.execute({}, toolContext)
@@ -100,14 +83,9 @@ describe("InvocationPipeline Focused Integration", () => {
     expect(readResult.data?.success).toBe(true)
     expect(readResult.data?.output?.todos).toBeDefined()
     expect(readResult.data?.output?.todos.length).toBe(1)
-    expect(readResult.data?.output?.todos[0].content).toBe(
-      "Focused integration test task"
-    )
+    expect(readResult.data?.output?.todos[0].content).toBe("Focused integration test task")
 
-    console.log(
-      "✅ Step 2 - todoRead executed, output:",
-      JSON.stringify(readResult.data?.output?.todos, null, 2)
-    )
+    console.log("✅ Step 2 - todoRead executed, output:", JSON.stringify(readResult.data?.output?.todos, null, 2))
 
     // This is the key test: the final output should be the result of todoRead
     const finalOutput = readResult.data?.output
@@ -144,8 +122,7 @@ describe("InvocationPipeline Focused Integration", () => {
     // natural language instructions. the test is too simplistic - real system prompts are
     // more complex and require semantic understanding, not just string.includes() checks.
     // Test the logic that would interpret the system prompt
-    const systemPrompt =
-      "use todo write first, and then return the output of todo read"
+    const systemPrompt = "use todo write first, and then return the output of todo read"
 
     // Parse the system prompt to extract requirements
     const requirements = {
@@ -162,16 +139,13 @@ describe("InvocationPipeline Focused Integration", () => {
 
     // Simulate what InvocationPipeline tool selection logic should do
     const availableTools = ["todoWrite", "todoRead", "saveFileLegacy"]
-    const requiredTools = requirements.toolOrder.filter((tool) =>
-      availableTools.includes(tool)
-    )
+    const requiredTools = requirements.toolOrder.filter((tool) => availableTools.includes(tool))
 
     expect(requiredTools).toEqual(["todoWrite", "todoRead"])
 
     // Test tool execution order validation
     const executionOrder = ["todoWrite", "todoRead"]
-    const isCorrectOrder =
-      executionOrder.indexOf("todoWrite") < executionOrder.indexOf("todoRead")
+    const isCorrectOrder = executionOrder.indexOf("todoWrite") < executionOrder.indexOf("todoRead")
     expect(isCorrectOrder).toBe(true)
 
     console.log("🧠 System prompt interpretation test:")
@@ -190,8 +164,7 @@ describe("InvocationPipeline Focused Integration", () => {
     const mockDecisionFlow = [
       {
         step: 1,
-        analysis:
-          "User wants todo management. System prompt says use todoWrite first.",
+        analysis: "User wants todo management. System prompt says use todoWrite first.",
         decision: {
           type: "tool",
           toolName: "todoWrite",
@@ -200,8 +173,7 @@ describe("InvocationPipeline Focused Integration", () => {
       },
       {
         step: 2,
-        analysis:
-          "todoWrite completed. System prompt says return output of todoRead.",
+        analysis: "todoWrite completed. System prompt says return output of todoRead.",
         decision: {
           type: "tool",
           toolName: "todoRead",
@@ -210,8 +182,7 @@ describe("InvocationPipeline Focused Integration", () => {
       },
       {
         step: 3,
-        analysis:
-          "Both required tools executed in correct order. Task complete.",
+        analysis: "Both required tools executed in correct order. Task complete.",
         decision: {
           type: "terminate",
           reasoning: "System prompt requirements fulfilled",
@@ -227,15 +198,11 @@ describe("InvocationPipeline Focused Integration", () => {
     // Verify reasoning mentions system prompt compliance
     expect(mockDecisionFlow[0].decision.reasoning).toContain("todoWrite first")
     expect(mockDecisionFlow[1].decision.reasoning).toContain("todoRead output")
-    expect(mockDecisionFlow[2].decision.reasoning).toContain(
-      "requirements fulfilled"
-    )
+    expect(mockDecisionFlow[2].decision.reasoning).toContain("requirements fulfilled")
 
     console.log("🔄 Multi-step decision flow simulation:")
     mockDecisionFlow.forEach((step, i) => {
-      console.log(
-        `  Step ${i + 1}: ${step.decision.type} - ${step.decision.toolName || "N/A"}`
-      )
+      console.log(`  Step ${i + 1}: ${step.decision.type} - ${step.decision.toolName || "N/A"}`)
       console.log(`    Reasoning: ${step.decision.reasoning}`)
     })
 

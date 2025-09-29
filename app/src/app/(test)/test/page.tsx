@@ -236,12 +236,7 @@ export default function TestPage() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -251,9 +246,7 @@ export default function TestPage() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900">
-                  AI Assistant Test
-                </h1>
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900">AI Assistant Test</h1>
                 <p className="text-xs text-gray-600 hidden sm:block">
                   Test the AI assistant functionality and API connections
                 </p>
@@ -266,23 +259,15 @@ export default function TestPage() {
                   <div
                     className={`w-2 h-2 rounded-full ${loading ? "bg-amber-400 animate-pulse" : "bg-green-400"}`}
                   ></div>
-                  <span className="hidden sm:inline">
-                    {loading ? "Processing..." : "Ready"}
-                  </span>
+                  <span className="hidden sm:inline">{loading ? "Processing..." : "Ready"}</span>
                   <span className="sm:hidden">{loading ? "..." : "Ready"}</span>
                 </div>
                 {totalCost > 0 && (
                   <div className="flex items-center space-x-1 px-2 py-1 bg-green-50 text-green-700 rounded-lg border border-green-200">
-                    <svg
-                      className="w-3 h-3"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
-                    <span className="text-xs font-medium">
-                      ${totalCost.toFixed(6)}
-                    </span>
+                    <span className="text-xs font-medium">${totalCost.toFixed(6)}</span>
                     <span className="text-xs hidden sm:inline">
                       ({calls.length} call{calls.length !== 1 ? "s" : ""})
                     </span>
@@ -294,12 +279,7 @@ export default function TestPage() {
                 disabled={loading}
                 className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium text-sm transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
               >
-                <svg
-                  className="w-4 h-4 sm:mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -313,12 +293,7 @@ export default function TestPage() {
                 onClick={clearChat}
                 className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                <svg
-                  className="w-4 h-4 sm:mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -341,12 +316,8 @@ export default function TestPage() {
           <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-gray-50/50 flex-shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-3">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-                  Input Editor
-                </h3>
-                <div className="text-sm text-gray-500">
-                  {message.length.toLocaleString()} chars
-                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800">Input Editor</h3>
+                <div className="text-sm text-gray-500">{message.length.toLocaleString()} chars</div>
               </div>
               <div className="flex items-center justify-between sm:justify-end space-x-2">
                 <button
@@ -355,9 +326,7 @@ export default function TestPage() {
                 >
                   Clear
                 </button>
-                <div className="text-xs sm:text-sm text-gray-500">
-                  Ctrl+Enter to send
-                </div>
+                <div className="text-xs sm:text-sm text-gray-500">Ctrl+Enter to send</div>
               </div>
             </div>
           </div>
@@ -370,12 +339,7 @@ export default function TestPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    (e.ctrlKey || e.metaKey) &&
-                    !loading &&
-                    message.trim()
-                  ) {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !loading && message.trim()) {
                     e.preventDefault()
                     sendMessage()
                   }
@@ -398,10 +362,7 @@ export default function TestPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
               <div className="flex items-center space-x-2 sm:space-x-4 text-xs sm:text-sm text-gray-600 overflow-x-auto">
                 <div>Lines: {message.split("\n").length}</div>
-                <div>
-                  Words:{" "}
-                  {message.trim() ? message.trim().split(/\s+/).length : 0}
-                </div>
+                <div>Words: {message.trim() ? message.trim().split(/\s+/).length : 0}</div>
                 <div
                   className={`px-2 py-1 rounded text-xs whitespace-nowrap ${
                     message.length > 10000
@@ -411,11 +372,7 @@ export default function TestPage() {
                         : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {message.length > 10000
-                    ? "Very Large"
-                    : message.length > 5000
-                      ? "Large"
-                      : "Normal"}
+                  {message.length > 10000 ? "Very Large" : message.length > 5000 ? "Large" : "Normal"}
                 </div>
               </div>
 
@@ -431,12 +388,7 @@ export default function TestPage() {
                   </>
                 ) : (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -445,9 +397,7 @@ export default function TestPage() {
                       />
                     </svg>
                     <span>Send</span>
-                    <kbd className="px-2 py-1 bg-white/20 rounded text-xs hidden sm:inline">
-                      Ctrl+↵
-                    </kbd>
+                    <kbd className="px-2 py-1 bg-white/20 rounded text-xs hidden sm:inline">Ctrl+↵</kbd>
                   </>
                 )}
               </button>
@@ -460,28 +410,18 @@ export default function TestPage() {
           {/* Output Header */}
           <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-gray-50/50 flex-shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-                Output
-              </h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Output</h3>
               <div className="flex items-center space-x-2 sm:space-x-4 text-sm text-gray-500">
                 <span>
                   {messages.length} {messages.length === 1 ? "msg" : "msgs"}
                 </span>
                 {calls.length > 0 && (
                   <div className="flex items-center space-x-1 text-xs">
-                    <span className="font-medium text-green-600">
-                      ${totalCost.toFixed(6)} total
-                    </span>
+                    <span className="font-medium text-green-600">${totalCost.toFixed(6)} total</span>
                     <span>•</span>
                     <span>
                       {calls
-                        .reduce(
-                          (sum, call) =>
-                            sum +
-                            call.tokens.inputTokens +
-                            call.tokens.outputTokens,
-                          0
-                        )
+                        .reduce((sum, call) => sum + call.tokens.inputTokens + call.tokens.outputTokens, 0)
                         .toLocaleString()}{" "}
                       tokens
                     </span>
@@ -511,15 +451,11 @@ export default function TestPage() {
                       />
                     </svg>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
-                    Welcome to AI Chat
-                  </h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Welcome to AI Chat</h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
                     Start a conversation by typing a message in the input panel{" "}
-                    <span className="hidden lg:inline">
-                      , or test the connection with the button above
-                    </span>
-                    . Your messages and AI responses will appear here.
+                    <span className="hidden lg:inline">, or test the connection with the button above</span>. Your
+                    messages and AI responses will appear here.
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm text-gray-500">
                     <kbd className="px-2 sm:px-3 py-1 sm:py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-medium shadow-sm">
@@ -532,10 +468,7 @@ export default function TestPage() {
             ) : (
               <div className="space-y-6 pb-4">
                 {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}
-                  >
+                  <div key={msg.id} className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`flex max-w-[90%] ${msg.isUser ? "flex-row-reverse" : "flex-row"} items-start space-x-3`}
                     >
@@ -547,19 +480,11 @@ export default function TestPage() {
                         }`}
                       >
                         {msg.isUser ? (
-                          <svg
-                            className="w-4 h-4 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                           </svg>
                         ) : (
-                          <svg
-                            className="w-4 h-4 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                           </svg>
                         )}
@@ -572,9 +497,7 @@ export default function TestPage() {
                         }`}
                       >
                         {msg.isUser || !msg.isMarkdown ? (
-                          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                            {msg.content}
-                          </p>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                         ) : (
                           <div className="text-sm leading-relaxed prose prose-sm max-w-none">
                             <ReactMarkdown
@@ -582,27 +505,19 @@ export default function TestPage() {
                               rehypePlugins={[rehypeHighlight]}
                               components={{
                                 pre: ({ children }) => (
-                                  <pre className="bg-gray-100 rounded-lg p-3 overflow-x-auto">
-                                    {children}
-                                  </pre>
+                                  <pre className="bg-gray-100 rounded-lg p-3 overflow-x-auto">{children}</pre>
                                 ),
                                 code: ({ children, className }) => {
                                   const isInline = !className
                                   return isInline ? (
-                                    <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">
-                                      {children}
-                                    </code>
+                                    <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{children}</code>
                                   ) : (
-                                    <code className={className}>
-                                      {children}
-                                    </code>
+                                    <code className={className}>{children}</code>
                                   )
                                 },
                                 table: ({ children }) => (
                                   <div className="overflow-x-auto">
-                                    <table className="min-w-full border border-gray-300">
-                                      {children}
-                                    </table>
+                                    <table className="min-w-full border border-gray-300">{children}</table>
                                   </div>
                                 ),
                                 th: ({ children }) => (
@@ -610,11 +525,7 @@ export default function TestPage() {
                                     {children}
                                   </th>
                                 ),
-                                td: ({ children }) => (
-                                  <td className="border border-gray-300 px-2 py-1">
-                                    {children}
-                                  </td>
-                                ),
+                                td: ({ children }) => <td className="border border-gray-300 px-2 py-1">{children}</td>,
                               }}
                             >
                               {msg.content}
@@ -646,27 +557,15 @@ export default function TestPage() {
                           </div>
                           {!msg.isUser && msg.model && msg.tokens && (
                             <div className="text-xs text-gray-400 flex items-center space-x-2">
-                              <span className="font-mono">
-                                {msg.model.replace(/^[^/]+\//, "")}
-                              </span>
+                              <span className="font-mono">{msg.model.replace(/^[^/]+\//, "")}</span>
                               <span>•</span>
-                              <span>
-                                {(
-                                  msg.tokens.inputTokens +
-                                  msg.tokens.outputTokens
-                                ).toLocaleString()}{" "}
-                                tokens
-                              </span>
-                              {msg.tokens.cachedInputTokens &&
-                                msg.tokens.cachedInputTokens > 0 && (
-                                  <>
-                                    <span>•</span>
-                                    <span>
-                                      {msg.tokens.cachedInputTokens.toLocaleString()}{" "}
-                                      cached
-                                    </span>
-                                  </>
-                                )}
+                              <span>{(msg.tokens.inputTokens + msg.tokens.outputTokens).toLocaleString()} tokens</span>
+                              {msg.tokens.cachedInputTokens && msg.tokens.cachedInputTokens > 0 && (
+                                <>
+                                  <span>•</span>
+                                  <span>{msg.tokens.cachedInputTokens.toLocaleString()} cached</span>
+                                </>
+                              )}
                             </div>
                           )}
                         </div>
@@ -679,11 +578,7 @@ export default function TestPage() {
                   <div className="flex justify-start">
                     <div className="flex max-w-[90%] items-start space-x-3">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mr-3 bg-gradient-to-br from-gray-400 to-gray-500 shadow-sm">
-                        <svg
-                          className="w-4 h-4 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                         </svg>
                       </div>
@@ -700,9 +595,7 @@ export default function TestPage() {
                               style={{ animationDelay: "0.2s" }}
                             ></div>
                           </div>
-                          <span className="text-sm text-gray-600 font-medium">
-                            AI is thinking...
-                          </span>
+                          <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
                         </div>
                       </div>
                     </div>

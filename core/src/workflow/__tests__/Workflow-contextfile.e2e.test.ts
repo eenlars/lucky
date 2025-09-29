@@ -152,36 +152,25 @@ if (typeof (vi as any).mock === "function")
       from: vi.fn().mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            single: vi
-              .fn()
-              .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+            single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
           }),
         }),
-        upsert: vi
-          .fn()
-          .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+        upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
         select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-        update: vi
-          .fn()
-          .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+        update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
         delete: vi.fn().mockResolvedValue({ error: null }),
         eq: vi.fn().mockReturnThis(),
         not: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         limit: vi.fn().mockReturnThis(),
-        single: vi
-          .fn()
-          .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+        single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
       }),
     },
   }))
 
 import { buildMessages } from "@core/messages/create/buildMessages"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import {
-  createMockEvaluationInput,
-  createMockWorkflowFile,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
@@ -267,9 +256,7 @@ describe("ContextFile End-to-End Integration", () => {
     const userMessage = messages.find((msg) => msg.role === "user")
     expect(userMessage?.content).toContain("Hello, analyze this data")
     // Context is empty for this test case, so only user content and invocation id are asserted
-    expect(userMessage?.content).toContain(
-      "workflow_invocation_id:test-invocation-123"
-    )
+    expect(userMessage?.content).toContain("workflow_invocation_id:test-invocation-123")
 
     // After merging, there is a single system message containing all parts
     const systemMessages = messages.filter((msg) => msg.role === "system")
@@ -278,8 +265,6 @@ describe("ContextFile End-to-End Integration", () => {
     // The merged system message includes both the system prompt and node description
     const mergedSystem = systemMessages[0]
     expect(mergedSystem.content).toContain("You are a data analyst")
-    expect(mergedSystem.content).toContain(
-      "you are the following node: Data analysis node"
-    )
+    expect(mergedSystem.content).toContain("you are the following node: Data analysis node")
   })
 })

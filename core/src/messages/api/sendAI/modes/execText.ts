@@ -29,11 +29,7 @@ import { CONFIG } from "@runtime/settings/constants"
 import { getDefaultModels } from "@runtime/settings/models"
 import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
 import { generateText, GenerateTextResult, ToolSet, stepCountIs } from "ai"
-import {
-  getFallbackModel,
-  shouldUseModelFallback,
-  trackTimeoutForModel,
-} from "../fallbacks"
+import { getFallbackModel, shouldUseModelFallback, trackTimeoutForModel } from "../fallbacks"
 import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import type { TextRequest, TResponse } from "../types"
 
@@ -53,21 +49,12 @@ const spending = SpendingTracker.getInstance()
 // TODO: implement text generation confidence scoring
 // TODO: add text generation retry strategies with exponential backoff
 // TODO: create text generation debugging and profiling tools
-export async function execText(
-  req: TextRequest
-): Promise<TResponse<{ text: string; reasoning?: string }>> {
-  const {
-    messages,
-    model: wanted = getDefaultModels().default,
-    retries = 2,
-    opts = {},
-  } = req
+export async function execText(req: TextRequest): Promise<TResponse<{ text: string; reasoning?: string }>> {
+  const { messages, model: wanted = getDefaultModels().default, retries = 2, opts = {} } = req
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
-  const modelName = shouldUseModelFallback(wanted)
-    ? getFallbackModel(wanted)
-    : wanted
+  const modelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
   const model = getLanguageModelWithReasoning(modelName, opts)
 
@@ -97,14 +84,11 @@ export async function execText(
     }> = []
 
     const attemptOnce = async () => {
-      const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(
-        baseOptions,
-        {
-          modelName: modelName,
-          overallTimeoutMs,
-          stallTimeoutMs,
-        }
-      )
+      const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
+        modelName: modelName,
+        overallTimeoutMs,
+        stallTimeoutMs,
+      })
 
       const usd = calculateUsageCost(gen?.usage, modelName)
       if (opts.saveOutputs && gen) await saveResultOutput(gen)
@@ -168,10 +152,7 @@ export async function execText(
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking
     // track model timeouts to enable temporary fallback if a model times out frequently.
-    if (
-      typeof message === "string" &&
-      (message.includes("Overall timeout") || message.includes("Stall timeout"))
-    ) {
+    if (typeof message === "string" && (message.includes("Overall timeout") || message.includes("Stall timeout"))) {
       trackTimeoutForModel(modelName)
     }
 

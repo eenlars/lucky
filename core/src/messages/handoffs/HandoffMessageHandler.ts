@@ -1,9 +1,5 @@
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
-import type {
-  DelegationPayload,
-  Payload,
-  SequentialPayload,
-} from "@core/messages/MessagePayload"
+import type { DelegationPayload, Payload, SequentialPayload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@runtime/settings/constants"
@@ -53,36 +49,22 @@ export class HandoffMessageHandler {
     this.nodeConfig = nodeConfig
   }
 
-  buildMessages(
-    agentSteps: AgentSteps | undefined,
-    options?: HandoffMessageHandlerOptions
-  ): OutgoingHandoffMessage[] {
+  buildMessages(agentSteps: AgentSteps | undefined, options?: HandoffMessageHandlerOptions): OutgoingHandoffMessage[] {
     const { overrideTargets, currentOutputText, kindOverride } = options ?? {}
 
-    const handOffs: string[] = Array.isArray(this.nodeConfig.handOffs)
-      ? this.nodeConfig.handOffs
-      : []
+    const handOffs: string[] = Array.isArray(this.nodeConfig.handOffs) ? this.nodeConfig.handOffs : []
 
     // Determine base prompt from inputs
-    const derivedPrompt =
-      currentOutputText ??
-      (agentSteps ? getFinalOutputNodeInvocation(agentSteps) : null) ??
-      ""
+    const derivedPrompt = currentOutputText ?? (agentSteps ? getFinalOutputNodeInvocation(agentSteps) : null) ?? ""
 
     // Determine payload kind
     const defaultKind: "sequential" | "delegation" =
-      kindOverride ??
-      (CONFIG.coordinationType === "sequential" ? "sequential" : "delegation")
+      kindOverride ?? (CONFIG.coordinationType === "sequential" ? "sequential" : "delegation")
 
     // Determine targets
-    const useParallel =
-      this.nodeConfig.handOffType === "parallel" &&
-      handOffs.length > 1 &&
-      !handOffs.includes("end")
+    const useParallel = this.nodeConfig.handOffType === "parallel" && handOffs.length > 1 && !handOffs.includes("end")
 
-    const targets: string[] =
-      overrideTargets ??
-      (useParallel ? handOffs : this.selectDefaultTarget(handOffs))
+    const targets: string[] = overrideTargets ?? (useParallel ? handOffs : this.selectDefaultTarget(handOffs))
 
     // If there are no targets, return empty
     if (!targets.length) return []
@@ -103,9 +85,7 @@ export class HandoffMessageHandler {
     // Build payloads per target
     const payloads = targets.map((toNodeId) => {
       // For parallel fan-out, add light per-target templating (minimal & compatible)
-      const textForBerichten = useParallel
-        ? `Branched delegation to ${toNodeId}: ${derivedPrompt}`
-        : derivedPrompt
+      const textForBerichten = useParallel ? `Branched delegation to ${toNodeId}: ${derivedPrompt}` : derivedPrompt
 
       const base: DelegationPayload | SequentialPayload =
         defaultKind === "delegation"
@@ -148,8 +128,7 @@ export class HandoffMessageHandler {
     if (handOffs.length === 1) {
       return handOffs[0] === "end" ? ["end"] : []
     }
-    if (handOffs.length > 1 && handOffs.every((h) => h === "end"))
-      return ["end"]
+    if (handOffs.length > 1 && handOffs.every((h) => h === "end")) return ["end"]
     // Multiple non-parallel targets present → selection should be done elsewhere (LLM/logic)
     return []
   }

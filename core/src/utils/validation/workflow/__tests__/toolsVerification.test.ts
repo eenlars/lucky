@@ -2,11 +2,7 @@ import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@runtime/settings/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import {
-  verifyModelNameExists,
-  verifyModelsAreActive,
-  verifyNoDuplicateHandoffs,
-} from "../index"
+import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../index"
 import {
   verifyAllToolsAreActive,
   verifyMaxToolsPerAgent,
@@ -87,11 +83,7 @@ const wrongExample: WorkflowConfig = {
       modelName: getDefaultModels().medium,
       mcpTools: [],
       codeTools: [],
-      handOffs: [
-        "google-maps-scraper",
-        "enhanced-store-extractor",
-        "store-data-automation",
-      ],
+      handOffs: ["google-maps-scraper", "enhanced-store-extractor", "store-data-automation"],
       memory: {},
     },
     {
@@ -104,12 +96,9 @@ const wrongExample: WorkflowConfig = {
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
       memory: {
-        search_accuracy:
-          "Need to improve the thoroughness of store extraction to include all locations.",
-        verification:
-          "Implement better cross-referencing to ensure list completeness.",
-        efficiency:
-          "Reduce search time by optimizing query parameters and response handling.",
+        search_accuracy: "Need to improve the thoroughness of store extraction to include all locations.",
+        verification: "Implement better cross-referencing to ensure list completeness.",
+        efficiency: "Reduce search time by optimizing query parameters and response handling.",
       },
     },
     {
@@ -132,10 +121,8 @@ const wrongExample: WorkflowConfig = {
       codeTools: ["verifyLocation"],
       handOffs: ["file-saver-1"],
       memory: {
-        search_accuracy:
-          "Focus on improving the thoroughness of store extraction to include all locations.",
-        verification:
-          "Cross-reference results with multiple sources to ensure list completeness.",
+        search_accuracy: "Focus on improving the thoroughness of store extraction to include all locations.",
+        verification: "Cross-reference results with multiple sources to ensure list completeness.",
         efficiency: "Optimize search parameters to reduce response time.",
       },
     },
@@ -149,8 +136,7 @@ const wrongExample: WorkflowConfig = {
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
       memory: {
-        user_preference:
-          "User prefers faster and more automated solutions for data extraction tasks.",
+        user_preference: "User prefers faster and more automated solutions for data extraction tasks.",
       },
     },
   ],
@@ -479,9 +465,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
       ],
     }
 
-    const errors = await verifyToolSetEachNodeIsUnique(
-      internalDuplicateWorkflow
-    )
+    const errors = await verifyToolSetEachNodeIsUnique(internalDuplicateWorkflow)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("duplicate tools in its own tool set")
     expect(errors[0]).toContain("node1")
@@ -558,14 +542,7 @@ describe("verifyMaxToolsPerAgent", () => {
           description: "node with too many mcp tools",
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
-          mcpTools: [
-            "tavily",
-            "firecrawl",
-            "browserUse",
-            "proxy",
-            "googleScholar",
-            "serpAPI",
-          ], // 6 tools, limit is 3 + 2 defaultTools = 5
+          mcpTools: ["tavily", "firecrawl", "browserUse", "proxy", "googleScholar", "serpAPI"], // 6 tools, limit is 3 + 2 defaultTools = 5
           codeTools: [],
           handOffs: ["end"],
         },
@@ -696,9 +673,7 @@ describe("Edge cases and comprehensive validation", () => {
     // Should not crash and should handle gracefully
     const uniqueErrors = await verifyToolsUnique(undefinedToolsWorkflow)
     const activeErrors = await verifyAllToolsAreActive(undefinedToolsWorkflow)
-    const setErrors = await verifyToolSetEachNodeIsUnique(
-      undefinedToolsWorkflow
-    )
+    const setErrors = await verifyToolSetEachNodeIsUnique(undefinedToolsWorkflow)
     const maxErrors = await verifyMaxToolsPerAgent(undefinedToolsWorkflow)
 
     // All should handle undefined gracefully

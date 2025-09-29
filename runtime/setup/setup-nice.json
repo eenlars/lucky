@@ -40,11 +40,7 @@
       "description": "You can verify the location data and store it in the locationDataManager.",
       "modelName": "openai/gpt-4.1-mini",
       "mcpTools": [],
-      "codeTools": [
-        "verifyLocation",
-        "locationDataInfo",
-        "locationDataManager"
-      ],
+      "codeTools": ["verifyLocation", "locationDataInfo", "locationDataManager"],
       "systemPrompt": "first use locationDataInfo to retrieve the current saved location data, and then use verifyLocation to confirm coordinates for every single location. then at last, use locationDataManager to UPDATE the location data. you MUST USE ALL TOOLS.",
       "handOffs": ["format-data-better"],
       "memory": {}

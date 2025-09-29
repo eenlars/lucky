@@ -16,8 +16,7 @@ type InvocationRow = {
 function configMatchesAnnotatedFull(config: unknown): boolean {
   if (config == null) return false
   try {
-    const text =
-      typeof config === "string" ? config : JSON.stringify(config, null, 0)
+    const text = typeof config === "string" ? config : JSON.stringify(config, null, 0)
     return text.toLowerCase().includes("annotated-full")
   } catch {
     return false
@@ -35,10 +34,7 @@ function formatTimestampForFilename(date: Date): string {
 }
 
 async function main() {
-  const baseUrl = (process.env.APP_BASE_URL || "http://localhost:3000").replace(
-    /\/$/,
-    ""
-  )
+  const baseUrl = (process.env.APP_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
 
   const projectRoot = join(__dirname, "..")
   const reportsDir = join(projectRoot, "reports")
@@ -47,9 +43,7 @@ async function main() {
     mkdirSync(reportsDir, { recursive: true })
   }
 
-  console.log(
-    "Listing EvolutionRun rows with config containing 'annotated-full'\n"
-  )
+  console.log("Listing EvolutionRun rows with config containing 'annotated-full'\n")
 
   const { data: runs, error: runsError } = await supabase
     .from("EvolutionRun")
@@ -60,9 +54,7 @@ async function main() {
     throw new Error(`Failed to fetch EvolutionRun rows: ${runsError.message}`)
   }
 
-  const matchingRuns: EvolutionRunRow[] = (runs || []).filter((r) =>
-    configMatchesAnnotatedFull(r.config)
-  )
+  const matchingRuns: EvolutionRunRow[] = (runs || []).filter((r) => configMatchesAnnotatedFull(r.config))
 
   if (matchingRuns.length === 0) {
     console.log("No EvolutionRun rows matched 'annotated-full'.")
@@ -79,9 +71,7 @@ async function main() {
     .in("run_id", runIds)
 
   if (invError) {
-    throw new Error(
-      `Failed to fetch WorkflowInvocation rows: ${invError.message}`
-    )
+    throw new Error(`Failed to fetch WorkflowInvocation rows: ${invError.message}`)
   }
 
   const counts = new Map<string, number>()

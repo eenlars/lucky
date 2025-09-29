@@ -1,8 +1,5 @@
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
-import {
-  slugifyBCorp,
-  toDomain,
-} from "@/lib/scraping/data-collection-scripts/utils"
+import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { csv } from "@lucky/shared"
 import { saveInLoc } from "@runtime/code_tools/file-saver/save"
@@ -19,15 +16,9 @@ const B_CORP_ROOT = "https://www.bcorporation.net/en-us/find-a-b-corp/company/"
 const INPUT_CSV = PATHS.app + "/src/runtime/evaluation/input.csv"
 
 // progress tracking files
-const PROGRESS_FILE =
-  PATHS.node.logging +
-  "/backup/bcorp-countries-extractor/countries-extractor-progress.json"
-const RESULTS_FILE =
-  PATHS.node.logging +
-  "/backup/bcorp-countries-extractor/bcorp-countries-data.json"
-const ERRORS_FILE =
-  PATHS.node.logging +
-  "/backup/bcorp-countries-extractor/bcorp-countries-errors.json"
+const PROGRESS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/countries-extractor-progress.json"
+const RESULTS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/bcorp-countries-data.json"
+const ERRORS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/bcorp-countries-errors.json"
 const BACKUP_DIR = PATHS.node.logging + "/backup/bcorp-countries-extractor"
 
 interface CountryExtractionProgress {
@@ -94,19 +85,14 @@ function saveResults(results: CompanyCountryData[]): void {
     // save main results file
     saveInLoc(RESULTS_FILE, results)
 
-    lgg.log(
-      `✅ countries data saved: ${results.length} companies to ${RESULTS_FILE}`
-    )
+    lgg.log(`✅ countries data saved: ${results.length} companies to ${RESULTS_FILE}`)
   } catch (error) {
     lgg.error("❌ failed to save results:", error)
   }
 }
 
 /** save error data separately for analysis */
-function saveErrors(
-  errors: ExtractionError[],
-  errorResults: CompanyCountryData[]
-): void {
+function saveErrors(errors: ExtractionError[], errorResults: CompanyCountryData[]): void {
   try {
     // ensure backup directory exists
     if (!fs.existsSync(BACKUP_DIR)) {
@@ -172,18 +158,12 @@ async function processBatch<T, R>(
 ): Promise<R[]> {
   const results: R[] = [...progress.results] as R[]
 
-  for (
-    let i = progress.currentBatch * batchSize;
-    i < items.length;
-    i += batchSize
-  ) {
+  for (let i = progress.currentBatch * batchSize; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize)
     const batchNumber = Math.floor(i / batchSize) + 1
     const totalBatches = Math.ceil(items.length / batchSize)
 
-    lgg.log(
-      `countries-extractor: processing batch ${batchNumber}/${totalBatches} (${batch.length} companies)`
-    )
+    lgg.log(`countries-extractor: processing batch ${batchNumber}/${totalBatches} (${batch.length} companies)`)
 
     const batchResults = await Promise.all(batch.map(processor))
     results.push(...batchResults)
@@ -205,24 +185,18 @@ async function processBatch<T, R>(
 
 ;(async () => {
   /* 1️⃣  load the CSV ---------------------------------------------------------- */
-  lgg.log(
-    "countries-extractor: starting sustainable company countries extraction script."
-  )
+  lgg.log("countries-extractor: starting sustainable company countries extraction script.")
   const loader = new CSVLoader(INPUT_CSV)
 
   type Row = { company_name: string; website: string }
-  const allRows = (await loader.loadAsJSON<Row>()).filter(
-    (r) => r.company_name && r.website
-  )
+  const allRows = (await loader.loadAsJSON<Row>()).filter((r) => r.company_name && r.website)
   lgg.log(`countries-extractor: loaded ${allRows.length} rows from csv.`)
 
   /* 1️⃣a load/create progress tracking ---------------------------------------- */
   const progress = loadProgress(allRows.length)
 
   // filter out already processed companies
-  const rows = allRows.filter(
-    (row) => !progress.processedCompanies.includes(row.company_name)
-  )
+  const rows = allRows.filter((row) => !progress.processedCompanies.includes(row.company_name))
 
   // deduplicate rows by company name to prevent processing duplicates
   const seenCompanies = new Set<string>()
@@ -236,9 +210,7 @@ async function processBatch<T, R>(
     return true
   })
 
-  lgg.log(
-    `countries-extractor: ${rows.length} companies remaining to process (${uniqueRows.length} unique).`
-  )
+  lgg.log(`countries-extractor: ${rows.length} companies remaining to process (${uniqueRows.length} unique).`)
 
   if (uniqueRows.length === 0) {
     lgg.log("✅ all countries already extracted! loading final results...")
@@ -251,23 +223,12 @@ async function processBatch<T, R>(
 
   /* 2️⃣  extract countries for all companies ---------------------------------- */
   const BATCH_SIZE = 100 // extract countries from 5 companies at a time
-  lgg.log(
-    `countries-extractor: starting controlled batch processing (batch size: ${BATCH_SIZE}).`
-  )
+  lgg.log(`countries-extractor: starting controlled batch processing (batch size: ${BATCH_SIZE}).`)
 
-  const companyData = await processBatch<
-    { company_name: string; website: string },
-    CompanyCountryData
-  >(
+  const companyData = await processBatch<{ company_name: string; website: string }, CompanyCountryData>(
     uniqueRows, // use uniqueRows instead of rows
     BATCH_SIZE,
-    async ({
-      company_name,
-      website,
-    }: {
-      company_name: string
-      website: string
-    }): Promise<CompanyCountryData> => {
+    async ({ company_name, website }: { company_name: string; website: string }): Promise<CompanyCountryData> => {
       lgg.log(`countries-extractor: processing company: ${company_name}`)
       const slug = slugifyBCorp(company_name)
       const bCorpUrl = `${B_CORP_ROOT}${slug}/`
@@ -276,11 +237,8 @@ async function processBatch<T, R>(
 
       try {
         /* extract "operates in" countries from the certification directory page */
-        lgg.log(
-          `countries-extractor: extracting countries for ${company_name}...`
-        )
-        const { countries, error: countryError } =
-          await extractCountriesOperation(bCorpUrl)
+        lgg.log(`countries-extractor: extracting countries for ${company_name}...`)
+        const { countries, error: countryError } = await extractCountriesOperation(bCorpUrl)
 
         result = {
           company_name,
@@ -293,9 +251,7 @@ async function processBatch<T, R>(
         }
 
         if (countryError) {
-          lgg.log(
-            `countries-extractor: ⚠️ error extracting countries for ${company_name}: ${countryError}`
-          )
+          lgg.log(`countries-extractor: ⚠️ error extracting countries for ${company_name}: ${countryError}`)
         } else {
           lgg.log(
             `countries-extractor: ✅ extracted ${countries.length} countries for ${company_name}: ${countries.join(", ")}`
@@ -306,9 +262,7 @@ async function processBatch<T, R>(
         progress.processedCompanies.push(company_name)
       } catch (err) {
         const error = (err as Error).message
-        lgg.error(
-          `countries-extractor: ❌ fatal error processing ${company_name}: ${error}`
-        )
+        lgg.error(`countries-extractor: ❌ fatal error processing ${company_name}: ${error}`)
 
         // still mark as processed to avoid infinite retry
         progress.processedCompanies.push(company_name)
@@ -351,17 +305,13 @@ async function processBatch<T, R>(
   const finalResults = Array.from(finalResultsMap.values())
 
   // separate successful results from error results
-  const successfulResults = finalResults.filter(
-    (result) => !result.extraction_error
-  )
+  const successfulResults = finalResults.filter((result) => !result.extraction_error)
   const errorResults = finalResults.filter((result) => result.extraction_error)
 
   lgg.log("countries-extractor: finished all processing. saving final results.")
   lgg.log(`📊 processed ${finalResults.length} companies total`)
   lgg.log(`✅ successful extractions: ${successfulResults.length}`)
-  lgg.log(
-    `❌ encountered ${progress.errors.length} errors (${errorResults.length} companies with extraction errors)`
-  )
+  lgg.log(`❌ encountered ${progress.errors.length} errors (${errorResults.length} companies with extraction errors)`)
 
   // save successful results
   saveResults(successfulResults)

@@ -59,15 +59,9 @@ describe("ContextStore", () => {
       const info = await store.listWithInfo("workflow")
 
       expect(info).toHaveLength(2)
-      expect(
-        info.some((i) => i.key === "config" && i.dataType === "object")
-      ).toBe(true)
-      expect(
-        info.some((i) => i.key === "settings" && i.dataType === "array")
-      ).toBe(true)
-      expect(info.every((i) => i.created && i.modified && i.size > 0)).toBe(
-        true
-      )
+      expect(info.some((i) => i.key === "config" && i.dataType === "object")).toBe(true)
+      expect(info.some((i) => i.key === "settings" && i.dataType === "array")).toBe(true)
+      expect(info.every((i) => i.created && i.modified && i.size > 0)).toBe(true)
       // TODO: This doesn't test the actual values of created/modified timestamps.
       // Should verify they're valid dates and that modified >= created.
     })

@@ -21,12 +21,7 @@ export async function adjustWorkflowStructure(
   fitness: FitnessOfWorkflow,
   structureInfo?: StructureExplorationResult
 ): Promise<RS<WorkflowConfig>> {
-  const messages = WorkflowEvolutionPrompts.mechanicAdvisorStructure(
-    workflow,
-    fitness,
-    feedback,
-    structureInfo
-  )
+  const messages = WorkflowEvolutionPrompts.mechanicAdvisorStructure(workflow, fitness, feedback, structureInfo)
 
   const response = await sendAI({
     model: getDefaultModels().reasoning,
@@ -41,20 +36,14 @@ export async function adjustWorkflowStructure(
   })
 
   if (!response.success || !response.data) {
-    return R.error(
-      response.error || "Failed to get advisor response for structure",
-      response.usdCost
-    )
+    return R.error(response.error || "Failed to get advisor response for structure", response.usdCost)
   }
 
-  const formalized = await Workflow.formalizeWorkflow(
-    response.data.instruction,
-    {
-      workflowConfig: workflow,
-      verifyWorkflow: "normal",
-      repairWorkflowAfterGeneration: true,
-    }
-  )
+  const formalized = await Workflow.formalizeWorkflow(response.data.instruction, {
+    workflowConfig: workflow,
+    verifyWorkflow: "normal",
+    repairWorkflowAfterGeneration: true,
+  })
 
   const totalCost = (response.usdCost || 0) + (formalized.usdCost || 0)
   if (!formalized.success) {

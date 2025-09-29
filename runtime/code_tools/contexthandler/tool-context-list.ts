@@ -50,16 +50,9 @@ const contextList = defineTool({
       .enum(["workflow", "node", "both"])
       .nullish()
       .default("both")
-      .describe(
-        "Data scope to list: 'workflow', 'node', or 'both' (default: both)"
-      ),
+      .describe("Data scope to list: 'workflow', 'node', or 'both' (default: both)"),
 
-    filter: z
-      .string()
-      .nullish()
-      .describe(
-        "Optional filter pattern to match key names (supports wildcards with *)"
-      ),
+    filter: z.string().nullish().describe("Optional filter pattern to match key names (supports wildcards with *)"),
 
     includeMetadata: z
       .boolean()
@@ -67,11 +60,7 @@ const contextList = defineTool({
       .default(false)
       .describe("Whether to include metadata and value previews for each key"),
 
-    limit: z
-      .number()
-      .nullish()
-      .default(50)
-      .describe("Maximum number of keys to return (default: 50)"),
+    limit: z.number().nullish().default(50).describe("Maximum number of keys to return (default: 50)"),
   }),
 
   async execute(params, externalContext): Promise<CodeToolResult<OutputType>> {
@@ -89,9 +78,7 @@ const contextList = defineTool({
 
       // get keys from requested scopes
       const scopesToCheck =
-        scope === "both"
-          ? (["workflow", "node"] as const)
-          : ([scope as "workflow" | "node"] as const)
+        scope === "both" ? (["workflow", "node"] as const) : ([scope as "workflow" | "node"] as const)
       const allKeys: Array<{ scope: "workflow" | "node"; key: string }> = []
 
       for (const currentScope of scopesToCheck) {
@@ -111,9 +98,7 @@ const contextList = defineTool({
       const limitedKeys = filteredKeys.slice(0, limit ?? undefined)
 
       // process keys to get metadata
-      const processedKeys: Array<
-        { scope: "workflow" | "node"; key: string } & KeyMetadata
-      > = await Promise.all(
+      const processedKeys: Array<{ scope: "workflow" | "node"; key: string } & KeyMetadata> = await Promise.all(
         limitedKeys.map(async ({ scope: keyScope, key }) => {
           if (!includeMetadata) {
             // return minimal data when metadata not requested
@@ -135,8 +120,7 @@ const contextList = defineTool({
               ? Array.isArray(value)
                 ? `Array(${value.length})`
                 : `Object(${Object.keys(value).length} keys)`
-              : String(value).slice(0, 50) +
-                (String(value).length > 50 ? "..." : "")
+              : String(value).slice(0, 50) + (String(value).length > 50 ? "..." : "")
 
             return {
               scope: keyScope,

@@ -10,10 +10,7 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { genShortId } from "@core/utils/common/utils"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type {
-  WorkflowConfig,
-  WorkflowNodeConfig,
-} from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import chalk from "chalk"
 import { createHash } from "crypto"
 import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
@@ -52,39 +49,19 @@ export class WorkFlowNode {
   /**
    * Private constructor: no async work, no runtime‐only wiring.
    */
-  private constructor(
-    config: WorkflowNodeConfig,
-    workflowVersionId: string,
-    skipDatabasePersistence: boolean = false
-  ) {
+  private constructor(config: WorkflowNodeConfig, workflowVersionId: string, skipDatabasePersistence: boolean = false) {
     this.nodeId = config.nodeId
     this.nodeVersionId = genShortId()
     this.config = config
 
     // Create managers
-    this.toolManager = new ToolManager(
-      config.nodeId,
-      config.mcpTools,
-      config.codeTools,
-      workflowVersionId
-    )
+    this.toolManager = new ToolManager(config.nodeId, config.mcpTools, config.codeTools, workflowVersionId)
 
-    this.persistenceManager = new NodePersistenceManager(
-      config.nodeId,
-      config,
-      {},
-      skipDatabasePersistence
-    )
+    this.persistenceManager = new NodePersistenceManager(config.nodeId, config, {}, skipDatabasePersistence)
 
     // Debug: Log if node has memory
-    if (
-      config.memory &&
-      Object.keys(config.memory).length > 0 &&
-      NodePersistenceManager.verbose
-    ) {
-      lgg.log(
-        `[WorkFlowNode] Created node ${config.nodeId} with memory: ${JSON.stringify(config.memory)}`
-      )
+    if (config.memory && Object.keys(config.memory).length > 0 && NodePersistenceManager.verbose) {
+      lgg.log(`[WorkFlowNode] Created node ${config.nodeId} with memory: ${JSON.stringify(config.memory)}`)
     }
 
     // Register node in database
@@ -99,11 +76,7 @@ export class WorkFlowNode {
     workflowVersionId: string,
     skipDatabasePersistence: boolean = false
   ): Promise<WorkFlowNode> {
-    const node = new WorkFlowNode(
-      config,
-      workflowVersionId,
-      skipDatabasePersistence
-    )
+    const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence)
     await node.toolManager.initializeTools()
     return node
   }
@@ -251,8 +224,6 @@ export class WorkFlowNode {
   }
 
   hashNode(): string {
-    return createHash("sha256")
-      .update(JSON.stringify(this.config))
-      .digest("hex")
+    return createHash("sha256").update(JSON.stringify(this.config)).digest("hex")
   }
 }

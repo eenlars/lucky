@@ -23,11 +23,7 @@ describe("Template String Validation", () => {
       operation: "insertLocations",
     }
 
-    const result = validateAndCorrectWithSchema(
-      "locationDataManager",
-      invalidParams,
-      schema
-    )
+    const result = validateAndCorrectWithSchema("locationDataManager", invalidParams, schema)
 
     // Should identify this as uncorrectable for now
     expect(result.corrected).toBe(false)
@@ -84,11 +80,7 @@ describe("Template String Validation", () => {
       operation: "insertLocations" as const,
     }
 
-    const result = validateAndCorrectWithSchema(
-      "locationDataManager",
-      validParams,
-      schema
-    )
+    const result = validateAndCorrectWithSchema("locationDataManager", validParams, schema)
 
     expect(result.corrected).toBe(false) // No correction needed
     expect(result.warnings).toHaveLength(0)

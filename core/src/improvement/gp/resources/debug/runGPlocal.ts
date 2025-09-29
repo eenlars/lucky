@@ -66,28 +66,18 @@ const runEvolution = async () => {
     })
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error("Evolution timed out after 60 seconds")),
-        60000
-      )
+      setTimeout(() => reject(new Error("Evolution timed out after 60 seconds")), 60000)
     )
 
-    const { bestGenome, stats, totalCost } = (await Promise.race([
-      evolutionPromise,
-      timeoutPromise,
-    ])) as {
+    const { bestGenome, stats, totalCost } = (await Promise.race([evolutionPromise, timeoutPromise])) as {
       bestGenome: Genome
       stats: PopulationStats[]
       totalCost: number
     }
 
     lgg.log("\n--- evolution complete ---")
-    lgg.log(
-      `best genome workflowVersionId: ${bestGenome.getWorkflowVersionId()}`
-    )
-    lgg.log(
-      `best genome raw: ${JSON.stringify(bestGenome.getRawGenome(), null, 2)}`
-    )
+    lgg.log(`best genome workflowVersionId: ${bestGenome.getWorkflowVersionId()}`)
+    lgg.log(`best genome raw: ${JSON.stringify(bestGenome.getRawGenome(), null, 2)}`)
     lgg.log(`total cost: $${totalCost.toFixed(2)}`)
     lgg.log("population stats:")
     stats.forEach((s: unknown) => lgg.log(JSON.stringify(s)))

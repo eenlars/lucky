@@ -1,8 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import type {
-  WebArenaInstance,
-  WorkflowIO,
-} from "@core/workflow/ingestion/ingestion.types"
+import type { WebArenaInstance, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 
 export class WebArenaLoader {
   private static readonly DATASET_REPO = "web-arena-x/webarena"
@@ -10,10 +7,7 @@ export class WebArenaLoader {
     "https://raw.githubusercontent.com/web-arena-x/webarena/main/config_files/test.raw.json"
   private static readonly TIMEOUT_MS = 10000 // 10 second timeout
 
-  static async fetchAsWorkflowIO(
-    limit: number = 100,
-    sites?: string[]
-  ): Promise<WorkflowIO[]> {
+  static async fetchAsWorkflowIO(limit: number = 100, sites?: string[]): Promise<WorkflowIO[]> {
     lgg.info(`Fetching ${limit} WebArena tasks as WorkflowIO[]`)
 
     try {
@@ -30,11 +24,7 @@ export class WebArenaLoader {
       }
 
       const allTasks = JSON.parse(rawData) as WebArenaInstance[]
-      const tasks = allTasks
-        .filter(
-          (task) => !sites || task.sites.some((site) => sites.includes(site))
-        )
-        .slice(0, limit)
+      const tasks = allTasks.filter((task) => !sites || task.sites.some((site) => sites.includes(site))).slice(0, limit)
 
       if (tasks.length === 0) {
         throw new Error("No WebArena tasks found")
@@ -58,18 +48,12 @@ Please complete this task by interacting with the specified websites.`
 - Expected exact match: "${task.eval.reference_answers.exact_match}"`
         }
 
-        if (
-          task.eval.reference_answers.must_include &&
-          task.eval.reference_answers.must_include.length > 0
-        ) {
+        if (task.eval.reference_answers.must_include && task.eval.reference_answers.must_include.length > 0) {
           workflowOutput += `
 - Must include: ${JSON.stringify(task.eval.reference_answers.must_include, null, 2)}`
         }
 
-        if (
-          task.eval.reference_answers.fuzzy_match &&
-          task.eval.reference_answers.fuzzy_match.length > 0
-        ) {
+        if (task.eval.reference_answers.fuzzy_match && task.eval.reference_answers.fuzzy_match.length > 0) {
           workflowOutput += `
 - Fuzzy match options: ${JSON.stringify(task.eval.reference_answers.fuzzy_match, null, 2)}`
         }
@@ -125,9 +109,7 @@ Please complete this task by interacting with the specified websites.`
 
       // check if this is a network connectivity issue
       if (this.isNetworkError(error)) {
-        lgg.warn(
-          "Network connectivity issue detected, falling back to mock data"
-        )
+        lgg.warn("Network connectivity issue detected, falling back to mock data")
         return this.getMockInstance(taskId)
       }
 
@@ -135,10 +117,7 @@ Please complete this task by interacting with the specified websites.`
     }
   }
 
-  static async fetchBySites(
-    sites: string[],
-    limit: number = 10
-  ): Promise<WebArenaInstance[]> {
+  static async fetchBySites(sites: string[], limit: number = 10): Promise<WebArenaInstance[]> {
     lgg.info(`Fetching WebArena tasks for sites: ${sites.join(", ")}`)
 
     try {
@@ -155,17 +134,12 @@ Please complete this task by interacting with the specified websites.`
       }
 
       const allTasks = JSON.parse(rawData) as WebArenaInstance[]
-      const tasks = allTasks
-        .filter((task) => task.sites.some((site) => sites.includes(site)))
-        .slice(0, limit)
+      const tasks = allTasks.filter((task) => task.sites.some((site) => sites.includes(site))).slice(0, limit)
 
       lgg.info(`Fetched ${tasks.length} WebArena tasks for the specified sites`)
       return tasks
     } catch (error) {
-      lgg.error(
-        `Failed to fetch WebArena tasks for sites ${sites.join(", ")}:`,
-        error
-      )
+      lgg.error(`Failed to fetch WebArena tasks for sites ${sites.join(", ")}:`, error)
       throw new Error(`Failed to fetch WebArena tasks: ${error}`)
     }
   }

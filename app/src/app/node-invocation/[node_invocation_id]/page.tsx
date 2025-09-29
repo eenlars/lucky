@@ -9,9 +9,7 @@ interface PageProps {
   }>
 }
 
-async function getNodeInvocationData(
-  nodeInvocationId: string
-): Promise<FullTraceEntry> {
+async function getNodeInvocationData(nodeInvocationId: string): Promise<FullTraceEntry> {
   const { data: nodeInvocation, error } = await supabase
     .from("NodeInvocation")
     .select(
@@ -29,12 +27,7 @@ async function getNodeInvocationData(
     throw new Error("Node invocation not found")
   }
 
-  const {
-    NodeVersion: nodeDefinition,
-    inputs = [],
-    outputs = [],
-    ...invocation
-  } = nodeInvocation
+  const { NodeVersion: nodeDefinition, inputs = [], outputs = [], ...invocation } = nodeInvocation
 
   return {
     invocation: {

@@ -1,15 +1,6 @@
-import type {
-  FormatOptions,
-  NonEmpty,
-  PromptBuilder,
-  PromptBuilderOptions,
-  PromptMessage,
-} from "./prompt.types"
+import type { FormatOptions, NonEmpty, PromptBuilder, PromptBuilderOptions, PromptMessage } from "./prompt.types"
 
-export function promptr<P extends string>(
-  text: NonEmpty<P> | P,
-  options?: FormatOptions
-): PromptBuilder {
+export function promptr<P extends string>(text: NonEmpty<P> | P, options?: FormatOptions): PromptBuilder {
   type State = {
     readonly prompt: string
     readonly limits: ReadonlyArray<string>
@@ -89,11 +80,9 @@ export function promptr<P extends string>(
     ])
 
     const hasAllowed = (k: PropertyKey): boolean =>
-      (typeof k === "string" || typeof k === "symbol") &&
-      allowedPreFinalize.has(k)
+      (typeof k === "string" || typeof k === "symbol") && allowedPreFinalize.has(k)
 
-    const MSG =
-      "PromptBuilder not finalized. Call `.content` once before using it as a PromptMessage."
+    const MSG = "PromptBuilder not finalized. Call `.content` once before using it as a PromptMessage."
 
     const proxy = new Proxy(self as object, {
       get(target, prop, receiver) {
@@ -144,62 +133,33 @@ function compile(state: {
   if (state.prompt) parts.push(sentence(state.prompt, addTerminalPunctuation))
 
   if (state.limits.length) {
-    parts.push(
-      sentence(
-        `${labels.limitations}: ${state.limits.join("; ")}`,
-        addTerminalPunctuation
-      )
-    )
+    parts.push(sentence(`${labels.limitations}: ${state.limits.join("; ")}`, addTerminalPunctuation))
   }
 
   if (state.roles.length && labels.role) {
-    parts.push(
-      sentence(
-        `${labels.role}: ${state.roles.join("; ")}`,
-        addTerminalPunctuation
-      )
-    )
+    parts.push(sentence(`${labels.role}: ${state.roles.join("; ")}`, addTerminalPunctuation))
   }
 
   if (state.contexts.length && labels.context) {
-    parts.push(
-      sentence(
-        `${labels.context}: ${state.contexts.join("; ")}`,
-        addTerminalPunctuation
-      )
-    )
+    parts.push(sentence(`${labels.context}: ${state.contexts.join("; ")}`, addTerminalPunctuation))
   }
 
   if (state.outputs.length) {
-    parts.push(
-      sentence(
-        `${labels.output}: ${state.outputs.join("; ")}`,
-        addTerminalPunctuation
-      )
-    )
+    parts.push(sentence(`${labels.output}: ${state.outputs.join("; ")}`, addTerminalPunctuation))
   }
 
   return normalizeWhitespace(parts.join(joiner))
 }
 
-function normalizeOptions(
-  opts?: FormatOptions,
-  base?: PromptBuilderOptions
-): PromptBuilderOptions {
+function normalizeOptions(opts?: FormatOptions, base?: PromptBuilderOptions): PromptBuilderOptions {
   const joiner = opts?.joiner ?? base?.joiner ?? " "
-  const addTerminalPunctuation =
-    opts?.addTerminalPunctuation ?? base?.addTerminalPunctuation ?? true
+  const addTerminalPunctuation = opts?.addTerminalPunctuation ?? base?.addTerminalPunctuation ?? true
 
   const labels = {
-    limitations:
-      opts?.labels?.limitations ??
-      base?.labels?.limitations ??
-      "Your limitations are",
+    limitations: opts?.labels?.limitations ?? base?.labels?.limitations ?? "Your limitations are",
     role: opts?.labels?.role ?? base?.labels?.role ?? "Your role is",
-    context:
-      opts?.labels?.context ?? base?.labels?.context ?? "Your context is",
-    output:
-      opts?.labels?.output ?? base?.labels?.output ?? "Your output should be",
+    context: opts?.labels?.context ?? base?.labels?.context ?? "Your context is",
+    output: opts?.labels?.output ?? base?.labels?.output ?? "Your output should be",
   } as const
 
   return freeze({ joiner, addTerminalPunctuation, labels })
@@ -211,18 +171,13 @@ function sentence(s: string, punct: boolean): string {
   return punct && !/[.!?…”’)"\]]$/u.test(t) ? `${t}.` : t
 }
 
-function normalizeList(
-  arg: string | ReadonlyArray<string> | undefined | null
-): ReadonlyArray<string> {
+function normalizeList(arg: string | ReadonlyArray<string> | undefined | null): ReadonlyArray<string> {
   if (!arg) return [] as const
   const list = Array.isArray(arg) ? arg : [arg]
   return list.map(safeTrim).filter(Boolean)
 }
 
-function mergeUnique(
-  existing: ReadonlyArray<string>,
-  incoming: ReadonlyArray<string>
-): ReadonlyArray<string> {
+function mergeUnique(existing: ReadonlyArray<string>, incoming: ReadonlyArray<string>): ReadonlyArray<string> {
   if (!incoming.length) return existing
   const seen = new Set(existing.map((k) => k.toLocaleLowerCase()))
   const out: string[] = [...existing]

@@ -127,26 +127,18 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
-          single: vi
-            .fn()
-            .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+          single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
         }),
       }),
-      upsert: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      upsert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       select: vi.fn().mockResolvedValue({ error: null, data: [] }),
-      update: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      update: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
       delete: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       not: vi.fn().mockReturnThis(),
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
-      single: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: { id: "test-id" } }),
+      single: vi.fn().mockResolvedValue({ error: null, data: { id: "test-id" } }),
     }),
   },
 }))

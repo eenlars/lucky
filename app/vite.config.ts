@@ -15,9 +15,7 @@ export default defineConfig(({ mode }) => {
   if (mode === "test") {
     alias.push({
       find: "elkjs/lib/elk.bundled.js",
-      replacement: fileURLToPath(
-        new URL("./src/__tests__/mocks/elk.ts", import.meta.url)
-      ),
+      replacement: fileURLToPath(new URL("./src/__tests__/mocks/elk.ts", import.meta.url)),
     })
   }
   return {

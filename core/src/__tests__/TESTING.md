@@ -45,9 +45,7 @@ describe("MyEvaluator", () => {
   })
 
   it("should evaluate successfully", async () => {
-    const { AggregatedEvaluator } = await import(
-      "@core/evaluation/evaluators/AggregatedEvaluator"
-    )
+    const { AggregatedEvaluator } = await import("@core/evaluation/evaluators/AggregatedEvaluator")
     vi.mocked(AggregatedEvaluator).mockImplementation(() => ({
       evaluate: vi.fn().mockResolvedValue({
         success: true,
@@ -96,9 +94,7 @@ describe("MyDatabaseFunction", () => {
   it("should save to database", async () => {
     const { supabase } = await import("@core/utils/clients/supabase/client")
     vi.mocked(supabase.from).mockReturnValue({
-      insert: vi
-        .fn()
-        .mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
+      insert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),
     })
 
     const result = await myDatabaseFunction(data)
@@ -116,12 +112,8 @@ describe("MyToolFunction", () => {
   })
 
   it("should use tools", async () => {
-    const { codeToolAutoDiscovery } = await import(
-      "@core/tools/code/AutoDiscovery"
-    )
-    vi.mocked(codeToolAutoDiscovery.discoverTools).mockResolvedValue([
-      { name: "testTool", description: "test" },
-    ])
+    const { codeToolAutoDiscovery } = await import("@core/tools/code/AutoDiscovery")
+    vi.mocked(codeToolAutoDiscovery.discoverTools).mockResolvedValue([{ name: "testTool", description: "test" }])
 
     const result = await myToolFunction()
     expect(result).toBeDefined()

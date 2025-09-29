@@ -93,10 +93,7 @@ export async function createCsvFile(
     const handler = new CsvHandler({} as WorkflowFile, contextStore)
     await handler.writeData(key, data, options)
 
-    return Tools.createSuccess(
-      "csvWriter",
-      `csv data created successfully with key: ${key}`
-    )
+    return Tools.createSuccess("csvWriter", `csv data created successfully with key: ${key}`)
   } catch (error) {
     return Tools.createFailure("csvWriter", {
       location: "createCsvFile",
@@ -166,10 +163,7 @@ export async function appendToCsv(
     const handler = new CsvHandler({} as WorkflowFile, contextStore)
     await handler.appendData(key, data, options)
 
-    return Tools.createSuccess(
-      "csvWriter",
-      `data appended successfully to key: ${key}`
-    )
+    return Tools.createSuccess("csvWriter", `data appended successfully to key: ${key}`)
   } catch (error) {
     return Tools.createFailure("csvWriter", {
       location: "appendToCsv",
