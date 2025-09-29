@@ -1,15 +1,12 @@
 "use client"
 
-import React from "react"
+import { useSidebar } from "@/contexts/SidebarContext"
+import { cn } from "@/lib/utils"
+import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Settings, Wrench, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { useSidebar } from "@/contexts/SidebarContext"
-import { Logo } from "./logo"
-import { NavIcon } from "./nav-icon"
+import React, { useState } from "react"
 import { UserProfile } from "./user-profile"
-import { Home, Network, Wrench, BarChart2, Boxes, Dna, Settings, Hammer, Menu, X } from "lucide-react"
-import { useState } from "react"
 
 // Navigation items with submenu information
 interface SubMenuItem {
