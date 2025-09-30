@@ -12,12 +12,12 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   const tools: ToolSet = {
     sum: {
       description: "add two numbers",
-      parameters: zodSchema(z.object({ a: z.number(), b: z.number() })),
+      inputSchema: zodSchema(z.object({ a: z.number(), b: z.number() })),
       execute: async ({ a, b }: { a: number; b: number }) => a + b,
     },
     echo: {
       description: "echo text",
-      parameters: zodSchema(z.object({ text: z.string() })),
+      inputSchema: zodSchema(z.object({ text: z.string() })),
       execute: async ({ text }: { text: string }) => text,
     },
   }
