@@ -127,7 +127,7 @@ export default function HelpPage() {
 
             <textarea
               value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
+              onChange={e => setAnswer(e.target.value)}
               placeholder="Type your answer here..."
               rows={6}
               className="w-full px-4 py-4 text-lg border border-slate-300 rounded-lg focus:border-slate-900 focus:outline-none transition-colors duration-200 bg-white placeholder:text-slate-400 resize-y mt-6"

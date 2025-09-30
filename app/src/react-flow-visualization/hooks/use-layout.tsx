@@ -23,7 +23,7 @@ export function useLayout(shouldFitView: boolean = false) {
 
     const layoutedNodes = await layoutGraph(nodes, edges)
 
-    const updatedEdges = edges.map((edge) => ({
+    const updatedEdges = edges.map(edge => ({
       ...edge,
       style: { ...edge.style, opacity: 1 },
     }))

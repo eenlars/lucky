@@ -1,3 +1,4 @@
+import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
 import type { CodeToolName } from "@core/tools/tool.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
@@ -6,12 +7,11 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
 
 class WorkflowConfigError extends Error {
   constructor(
     message: string,
-    public cause?: Error
+    public cause?: Error,
   ) {
     super(message)
     this.name = "WorkflowConfigError"
@@ -45,7 +45,7 @@ class DatabaseError extends WorkflowConfigError {
  */
 export class WorkflowConfigHandler {
   private static instance: WorkflowConfigHandler | null = null
-  private verbose: boolean = CONFIG.logging.override.Setup
+  private verbose: boolean = isLoggingEnabled("Setup")
 
   private constructor() {}
 
@@ -110,7 +110,7 @@ export class WorkflowConfigHandler {
   }
 
   /**
-   * Create missing setup file in runtime/setup folder
+   * Create missing setup file in examples/setup folder
    */
   private async createMissingSetupFile(originalFilePath: string): Promise<string> {
     if (typeof window !== "undefined") {
@@ -124,7 +124,7 @@ export class WorkflowConfigHandler {
     const filename = path.basename(originalFilePath)
     const targetFilePath = path.join(setupFolderPath, filename)
 
-    lgg.log(`[WorkflowConfigHandler] Creating ${filename} in runtime/setup folder`)
+    lgg.log(`[WorkflowConfigHandler] Creating ${filename} in examples/setup folder`)
 
     try {
       // Create default workflow
@@ -160,7 +160,7 @@ export class WorkflowConfigHandler {
       const fs = await import("fs")
       const { readText } = await import("@lucky/shared")
 
-      // Normalize path to absolute runtime/setup folder and build absolute file path
+      // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
       const filename = path.basename(filePath)
       const normalizedPath = path.join(setupFolderPath, filename)
@@ -208,7 +208,7 @@ export class WorkflowConfigHandler {
             ...node,
             // Ensure memory is a properly typed Record<string, string>
             memory: node.memory ? { ...node.memory } : {},
-          })
+          }),
         ),
         entryNodeId: rawData.entryNodeId,
         contextFile: rawData.contextFile,
@@ -222,7 +222,7 @@ export class WorkflowConfigHandler {
       if (CONFIG.tools.defaultTools.size > 0) {
         const defaultCodeTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
 
-        workflowConfig.nodes = workflowConfig.nodes.map((node) => {
+        workflowConfig.nodes = workflowConfig.nodes.map(node => {
           // Get unique tools by combining existing and defaults
           const existingTools = new Set(node.codeTools || [])
           const combinedTools = [...(node.codeTools || [])]
@@ -242,7 +242,7 @@ export class WorkflowConfigHandler {
 
         lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Applied default tools", {
           defaultTools: CONFIG.tools.defaultTools,
-          nodesTooLCount: workflowConfig.nodes?.map((n) => ({
+          nodesTooLCount: workflowConfig.nodes?.map(n => ({
             nodeId: n.nodeId,
             toolCount: n.codeTools.length,
           })),
@@ -368,11 +368,13 @@ export class WorkflowConfigHandler {
       console.log("dslConfig", JSON.stringify(dslConfig, null, 2))
 
       const parsedConfig = WorkflowConfigSchema.parse(dslConfig)
-      await verifyWorkflowConfig(parsedConfig, {
+      // Cast to WorkflowConfig - Zod schema validates structure, runtime validates model names
+      const workflowConfig = parsedConfig as unknown as WorkflowConfig
+      await verifyWorkflowConfig(workflowConfig, {
         throwOnError: true,
       })
 
-      return this.normalizeWorkflowConfig(parsedConfig)
+      return this.normalizeWorkflowConfig(workflowConfig)
     } catch (error) {
       throw new WorkflowConfigError("Failed to parse DSL config", error as Error)
     }
@@ -398,7 +400,7 @@ export class WorkflowConfigHandler {
   async saveWorkflowConfig(
     config: WorkflowConfig,
     filename: string = "setupfile.json",
-    skipBackup: boolean = false
+    skipBackup: boolean = false,
   ): Promise<void> {
     if (typeof window !== "undefined") {
       throw new Error("File operations not available in browser environment")
@@ -460,7 +462,7 @@ export const saveWorkflowConfigToOutput = (config: WorkflowConfig, filename: str
 export const persistWorkflow = (
   finalConfig: WorkflowConfig,
   fileName: string = "setupfile.json",
-  skipBackup: boolean = false
+  skipBackup: boolean = false,
 ): Promise<void> => {
   return workflowConfigHandler.saveWorkflowConfig(finalConfig, fileName, skipBackup)
 }

@@ -91,7 +91,7 @@ export type AppActions = {
   onNodeDragStop: OnNodeDrag<AppNode>
   checkForPotentialConnection: (
     position: XYPosition,
-    options?: { exclude?: string[]; type?: "source" | "target" }
+    options?: { exclude?: string[]; type?: "source" | "target" },
   ) => void
   resetPotentialConnection: () => void
   loadWorkflowConfig: (mode?: "cultural" | "genetic") => Promise<void>
@@ -131,17 +131,17 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       subscribeWithSelector((set, get) => ({
         ...initialState,
 
-        onNodesChange: async (changes) => {
+        onNodesChange: async changes => {
           const dragged = get().draggedNodes
           const filteredChanges =
             dragged && dragged.size > 0
-              ? changes.filter((change) => change.type !== "position" || dragged.has((change as any).id))
+              ? changes.filter(change => change.type !== "position" || dragged.has((change as any).id))
               : changes
 
           const nextNodes = applyNodeChanges(filteredChanges, get().nodes)
           set({ nodes: nextNodes })
 
-          if (get().layout === "fixed" && changes.some((change) => change.type === "dimensions")) {
+          if (get().layout === "fixed" && changes.some(change => change.type === "dimensions")) {
             const layoutedNodes = await layoutGraph(nextNodes, get().edges)
             set({ nodes: layoutedNodes })
           } else {
@@ -149,18 +149,18 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
         },
 
-        setNodes: (nodes) => set({ nodes }),
+        setNodes: nodes => set({ nodes }),
 
-        addNode: (node) => {
+        addNode: node => {
           const nextNodes = [...get().nodes, node]
           set({ nodes: nextNodes })
         },
 
-        removeNode: (nodeId) => {
+        removeNode: nodeId => {
           // Remove the node
-          const filteredNodes = get().nodes.filter((node) => node.id !== nodeId)
+          const filteredNodes = get().nodes.filter(node => node.id !== nodeId)
           // Remove all edges connected to this node
-          const filteredEdges = get().edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+          const filteredEdges = get().edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId)
           set({ nodes: filteredNodes, edges: filteredEdges })
         },
 
@@ -183,8 +183,8 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           get().removeEdge(`${source}-${sourceHandleId ?? ""}-${target}-${targetHandleId ?? ""}`)
 
           const nodeHandles = nodesConfig[type].handles
-          const nodeSource = nodeHandles.find((handle) => handle.type === "source")
-          const nodeTarget = nodeHandles.find((handle) => handle.type === "target")
+          const nodeSource = nodeHandles.find(handle => handle.type === "source")
+          const nodeTarget = nodeHandles.find(handle => handle.type === "target")
 
           const edges = []
           if (nodeTarget && source) {
@@ -199,25 +199,25 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           set({ edges: nextEdges })
         },
 
-        setEdges: (edges) => set({ edges }),
+        setEdges: edges => set({ edges }),
 
         getEdges: () => get().edges,
 
-        addEdge: (edge) => {
+        addEdge: edge => {
           const nodes = get().nodes
-          const sourceNode = nodes.find((n) => n.id === edge.source)
-          const targetNode = nodes.find((n) => n.id === edge.target)
+          const sourceNode = nodes.find(n => n.id === edge.source)
+          const targetNode = nodes.find(n => n.id === edge.target)
 
           if (requiresHandle(sourceNode?.type, "source") && !edge.sourceHandle) {
             console.error(
-              `Edge rejected: missing sourceHandle for node '${edge.source}' which has multiple source handles`
+              `Edge rejected: missing sourceHandle for node '${edge.source}' which has multiple source handles`,
             )
             return
           }
 
           if (requiresHandle(targetNode?.type, "target") && !edge.targetHandle) {
             console.error(
-              `Edge rejected: missing targetHandle for node '${edge.target}' which has multiple target handles`
+              `Edge rejected: missing targetHandle for node '${edge.target}' which has multiple target handles`,
             )
             return
           }
@@ -226,30 +226,30 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           set({ edges: nextEdges })
         },
 
-        removeEdge: (edgeId) => {
-          set({ edges: get().edges.filter((edge) => edge.id !== edgeId) })
+        removeEdge: edgeId => {
+          set({ edges: get().edges.filter(edge => edge.id !== edgeId) })
         },
 
-        onEdgesChange: (changes) => {
+        onEdgesChange: changes => {
           const nextEdges = applyEdgeChanges(changes, get().edges)
           set({ edges: nextEdges })
         },
 
-        onConnect: (connection) => {
+        onConnect: connection => {
           const nodes = get().nodes
-          const sourceNode = nodes.find((n) => n.id === connection.source)
-          const targetNode = nodes.find((n) => n.id === connection.target)
+          const sourceNode = nodes.find(n => n.id === connection.source)
+          const targetNode = nodes.find(n => n.id === connection.target)
 
           if (requiresHandle(sourceNode?.type, "source") && !connection.sourceHandle) {
             console.error(
-              `Connection rejected: missing sourceHandle for node '${connection.source}' which has multiple source handles`
+              `Connection rejected: missing sourceHandle for node '${connection.source}' which has multiple source handles`,
             )
             return
           }
 
           if (requiresHandle(targetNode?.type, "target") && !connection.targetHandle) {
             console.error(
-              `Connection rejected: missing targetHandle for node '${connection.target}' which has multiple target handles`
+              `Connection rejected: missing targetHandle for node '${connection.target}' which has multiple target handles`,
             )
             return
           }
@@ -268,12 +268,12 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         },
 
         toggleDarkMode: () =>
-          set((state) => ({
+          set(state => ({
             colorMode: state.colorMode === "dark" ? "light" : "dark",
           })),
 
         toggleLayout: () =>
-          set((state) => ({
+          set(state => ({
             layout: state.layout === "fixed" ? "free" : "fixed",
           })),
 
@@ -430,8 +430,8 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
           // Filter out start/end nodes and convert to WorkflowNodeConfig
           const workflowNodes = nodes
-            .filter((node) => node.id !== "start" && node.id !== "end")
-            .map((node) => {
+            .filter(node => node.id !== "start" && node.id !== "end")
+            .map(node => {
               const { label, icon, status, messageCount, ...coreData } = node.data
               return {
                 ...coreData,
@@ -440,14 +440,14 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             })
 
           // Find entry node (connected from start)
-          const entryEdge = edges.find((edge) => edge.source === "start")
+          const entryEdge = edges.find(edge => edge.source === "start")
 
           // Build handOffs from visual connections (simple approach)
-          const workflowNodesWithConnections = workflowNodes.map((node) => {
-            const nodeEdges = edges.filter((edge) => edge.source === node.nodeId)
+          const workflowNodesWithConnections = workflowNodes.map(node => {
+            const nodeEdges = edges.filter(edge => edge.source === node.nodeId)
             return {
               ...node,
-              handOffs: nodeEdges.map((edge) => edge.target),
+              handOffs: nodeEdges.map(edge => edge.target),
             }
           })
 
@@ -483,7 +483,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           set({ nodes: layoutedNodes })
         },
 
-        openNodeDetails: (nodeId) => {
+        openNodeDetails: nodeId => {
           set({ selectedNodeId: nodeId, nodeDetailsOpen: true })
         },
 
@@ -494,7 +494,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         updateNode: (nodeId, updates) => {
           const currentNodes = get().nodes
           const currentEdges = get().edges
-          const targetNode = currentNodes.find((n) => n.id === nodeId)
+          const targetNode = currentNodes.find(n => n.id === nodeId)
           if (!targetNode) return
 
           const requestedNewId = updates.nodeId && updates.nodeId.trim()
@@ -504,21 +504,21 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             // Prevent renaming special nodes
             if (targetNode.type === "initial-node" || targetNode.type === "output-node") {
               console.warn("Renaming is disabled for initial/output nodes")
-            } else if (currentNodes.some((n) => n.id === requestedNewId)) {
+            } else if (currentNodes.some(n => n.id === requestedNewId)) {
               console.error("Cannot rename: node ID already exists:", requestedNewId)
             } else {
               const newId = requestedNewId as string
               // Update nodes and edges to reflect new ID
-              const nextNodes = currentNodes.map((n) =>
+              const nextNodes = currentNodes.map(n =>
                 n.id === nodeId
                   ? {
                       ...n,
                       id: newId,
                       data: { ...n.data, ...updates, nodeId: newId },
                     }
-                  : n
+                  : n,
               )
-              const nextEdges = currentEdges.map((e) => {
+              const nextEdges = currentEdges.map(e => {
                 const newSource = e.source === nodeId ? newId : e.source
                 const newTarget = e.target === nodeId ? newId : e.target
                 const newEdgeId = `${newSource}-${e.sourceHandle ?? ""}-${newTarget}-${e.targetHandle ?? ""}`
@@ -539,7 +539,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           } else {
             // Simple data update
             set({
-              nodes: currentNodes.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, ...updates } } : n)),
+              nodes: currentNodes.map(n => (n.id === nodeId ? { ...n, data: { ...n.data, ...updates } } : n)),
             })
           }
 
@@ -562,7 +562,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 iterationBudget: 50,
                 timeBudgetSeconds: 3600,
               }),
-            }).catch((error) => {
+            }).catch(error => {
               console.error("Failed to save node update:", error)
             })
           }
@@ -571,7 +571,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
       {
         name: "workflow-editor-state",
         storage: createJSONStorage(() => localStorage),
-        partialize: (state) => ({
+        partialize: state => ({
           // Only persist the essential workflow data
           nodes: state.nodes,
           edges: state.edges,
@@ -580,17 +580,17 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           layout: state.layout,
           colorMode: state.colorMode,
         }),
-      }
-    )
+      },
+    ),
   )
 
   store.subscribe(
-    (state) => state.colorMode,
+    state => state.colorMode,
     async (colorMode: ColorMode) => {
       document.querySelector("html")?.classList.toggle("dark", colorMode === "dark")
 
       await setColorModeCookie(colorMode)
-    }
+    },
   )
 
   return store

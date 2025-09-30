@@ -74,7 +74,7 @@ export class WorkFlowNode {
   public static async create(
     config: WorkflowNodeConfig,
     workflowVersionId: string,
-    skipDatabasePersistence: boolean = false
+    skipDatabasePersistence: boolean = false,
   ): Promise<WorkFlowNode> {
     const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence)
     await node.toolManager.initializeTools()

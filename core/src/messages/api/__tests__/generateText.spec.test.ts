@@ -1,7 +1,7 @@
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
-import { JSONN } from "@lucky/shared"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { JSONN } from "@core/utils/json"
+import { getDefaultModels } from "@core/core-config/compat"
 import { generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
@@ -15,7 +15,7 @@ const tool1 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return "555"
@@ -27,7 +27,7 @@ const tool2 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return input === "555" ? "B" : "2"
@@ -39,7 +39,7 @@ const tool3 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return input === "B" ? "9" : "C"
@@ -78,9 +78,9 @@ describe("generateText with sequential tools", () => {
     expect(resultV2?.agentSteps).toBeDefined()
     expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "tool1")
-    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "tool2")
-    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "tool3")
+    const tool1Result = resultV2?.agentSteps.find(r => r.name === "tool1")
+    const tool2Result = resultV2?.agentSteps.find(r => r.name === "tool2")
+    const tool3Result = resultV2?.agentSteps.find(r => r.name === "tool3")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")
@@ -138,9 +138,9 @@ Now, let me execute the tools as requested.`,
     expect(resultV2?.agentSteps).toBeDefined()
     expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "tool1")
-    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "tool2")
-    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "tool3")
+    const tool1Result = resultV2?.agentSteps.find(r => r.name === "tool1")
+    const tool2Result = resultV2?.agentSteps.find(r => r.name === "tool2")
+    const tool3Result = resultV2?.agentSteps.find(r => r.name === "tool3")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")

@@ -25,13 +25,13 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const { busyIds, resultsById, updateCase, removeCase, runOne } = useRunConfigStore(
-    useShallow((s) => ({
+    useShallow(s => ({
       busyIds: s.busyIds,
       resultsById: s.resultsById,
       updateCase: s.updateCase,
       removeCase: s.removeCase,
       runOne: s.runOne,
-    }))
+    })),
   )
 
   // Use custom hooks
@@ -117,7 +117,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
                   task && task.trim().length < 10 ? "border-red-400 bg-red-50" : "border-gray-300"
                 }`}
                 value={task}
-                onChange={(e) => setTask(e.target.value)}
+                onChange={e => setTask(e.target.value)}
                 onBlur={handleSave}
                 disabled={!isTaskEditable}
                 placeholder="Min 10 characters..."
@@ -132,7 +132,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
               <textarea
                 className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
                 value={io.expected}
-                onChange={(e) => updateCase(io.id, { expected: e.target.value })}
+                onChange={e => updateCase(io.id, { expected: e.target.value })}
                 placeholder="Enter expected output..."
                 disabled={busy}
                 data-testid={`test-case-expected-${io.id}`}

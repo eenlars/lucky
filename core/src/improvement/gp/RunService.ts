@@ -28,8 +28,8 @@ import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
-import { JSONN } from "@lucky/shared"
+import type { Tables, TablesInsert, TablesUpdate } from "@core/utils/json"
+import { JSONN } from "@core/utils/json"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 
@@ -59,7 +59,7 @@ export class RunService {
     operation: () => Promise<T>,
     context: string,
     maxRetries = 3,
-    retryDelay = 1000
+    retryDelay = 1000,
   ): Promise<T> {
     let lastError: any = null
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -73,7 +73,7 @@ export class RunService {
         if (code === "23505" || code === "PGRST116") break // constraint or not found
         lgg.warn(`[RunService] ${context} failed (attempt ${attempt}/${maxRetries}):`, error)
         if (attempt < maxRetries) {
-          await new Promise((resolve) => setTimeout(resolve, retryDelay * attempt))
+          await new Promise(resolve => setTimeout(resolve, retryDelay * attempt))
         }
       }
     }
@@ -114,7 +114,7 @@ export class RunService {
   async createRun(
     inputText: string,
     config: EvolutionSettings | IterativeConfig,
-    continueRunId?: string
+    continueRunId?: string,
   ): Promise<void> {
     if (continueRunId) {
       const lastCompletedGeneration = await this.getLastCompletedGeneration(continueRunId)
@@ -279,7 +279,7 @@ export class RunService {
   static async ensureWorkflowVersion(
     genome: Genome,
     generationId: string,
-    operator: WorkflowOperator = "mutation"
+    operator: WorkflowOperator = "mutation",
   ): Promise<string> {
     const workflowVersionId = genome.getWorkflowVersionId()
 
@@ -362,7 +362,7 @@ export class RunService {
         throw error
       }
       lgg.log(
-        `[RunService] Completed generation: ${activeGenerationId} with best workflow version: ${workflowVersionId}`
+        `[RunService] Completed generation: ${activeGenerationId} with best workflow version: ${workflowVersionId}`,
       )
     }, `completeGeneration(generationId=${activeGenerationId}, operator=${operator})`)
   }

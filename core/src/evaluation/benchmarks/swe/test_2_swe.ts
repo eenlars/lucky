@@ -1,5 +1,5 @@
 import { listFiles } from "@huggingface/hub"
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { execSync } from "child_process"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import { readParquet } from "parquet-wasm"
@@ -73,7 +73,7 @@ async function testSWEBenchLoader() {
       }
 
       // Try to find a suitable dataset file
-      const datasetFiles = fileList.filter((f) => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet"))
+      const datasetFiles = fileList.filter(f => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet"))
 
       if (datasetFiles.length > 0) {
         const filename = datasetFiles[0]
@@ -241,7 +241,7 @@ async function processDataset(tempPath: string) {
     console.log("Testing specific instance lookup...")
 
     const targetId = "django__django-11099"
-    const targetInstance = instances.find((inst) => inst.instance_id === targetId)
+    const targetInstance = instances.find(inst => inst.instance_id === targetId)
 
     if (targetInstance) {
       console.log("Found target instance:", targetInstance.instance_id)

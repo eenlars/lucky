@@ -3,7 +3,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@core/utils/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 export interface StructureExplorationResult {
@@ -16,7 +16,7 @@ export async function exploreStructure(
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow,
-  goal: string
+  goal: string,
 ): Promise<RS<StructureExplorationResult>> {
   const randomWorkflowStructure = SharedWorkflowPrompts.randomWorkflowStructure()
 
@@ -92,6 +92,6 @@ Return your analysis with a clear recommendation.`
       structuralReason: response.data.structuralReason,
       shouldImplement: response.data.shouldImplement,
     },
-    response.usdCost
+    response.usdCost,
   )
 }

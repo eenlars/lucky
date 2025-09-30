@@ -23,19 +23,19 @@ beforeEach(() => {
 describe("sendAI provider smoke", () => {
   it.each(providers)(
     "%s: three text generations across default models",
-    async (provider) => {
+    async provider => {
       // Mock the runtime provider before importing sendAI
-      vi.doMock("@runtime/settings/models", async () => {
-        const real = await vi.importActual<any>("@runtime/settings/models")
+      vi.doMock("@core/core-config/compat", async () => {
+        const real = await vi.importActual<any>("@core/core-config/compat")
         return {
           ...real,
           MODEL_CONFIG: { ...real.MODEL_CONFIG, provider },
-          getDefaultModels: () => real.DEFAULT_MODELS[provider],
+          getDefaultModels: () => real.MODELS,
         }
       })
 
       const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
-      const { getDefaultModels } = await import("@runtime/settings/models")
+      const { getDefaultModels } = await import("@core/core-config/compat")
 
       const models = getDefaultModels()
       const modelIds: string[] = [String(models.summary), String(models.default), String(models.reasoning)]
@@ -63,6 +63,6 @@ describe("sendAI provider smoke", () => {
         expect(res.data?.text?.trim().length).toBeGreaterThan(0)
       }
     },
-    90_000
+    90_000,
   )
 })

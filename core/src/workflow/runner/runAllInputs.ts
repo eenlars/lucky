@@ -20,7 +20,7 @@ import { R, type RS } from "@core/utils/types"
 import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { AggregateEvaluationResult, EvaluationResult, RunResult } from "./types"
 
 /**
@@ -81,23 +81,23 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
     })
 
     const batchResults = await Promise.all(batchPromises)
-    const validResults = batchResults.filter((r) => !isNir(r))
-    const failedResults = batchResults.filter((r) => isNir(r))
+    const validResults = batchResults.filter(r => !isNir(r))
+    const failedResults = batchResults.filter(r => isNir(r))
     results.push(...validResults)
     lgg.onlyIf(
       verbose,
-      `[runAllIO] Batch ${Math.floor(i / batchSize) + 1} completed: ${validResults.length}/${batch.length} succeeded`
+      `[runAllIO] Batch ${Math.floor(i / batchSize) + 1} completed: ${validResults.length}/${batch.length} succeeded`,
     )
     lgg.onlyIf(
       verbose,
       `[runAllIO] Batch ${Math.floor(i / batchSize) + 1} failed: ${failedResults.length}/${batch.length} failed`,
-      JSON.stringify(failedResults)
+      JSON.stringify(failedResults),
     )
   }
 
   lgg.onlyIf(
     verbose,
-    `[runAllIO] All batches completed for ${workflow.getWorkflowVersionId()}: ${results.length}/${workflowIo.length} total succeeded`
+    `[runAllIO] All batches completed for ${workflow.getWorkflowVersionId()}: ${results.length}/${workflowIo.length} total succeeded`,
   )
 
   if (isNir(results)) {
@@ -124,7 +124,7 @@ export async function evaluateRuns(workflow: Workflow, runResults: RunResult[]):
   const workflowIo = workflow.getWorkflowIO()
   lgg.onlyIf(
     workflowIo.length !== runResults.length,
-    `Mismatch between run results and IO: ${workflowIo.length} !== ${runResults.length}`
+    `Mismatch between run results and IO: ${workflowIo.length} !== ${runResults.length}`,
   )
 
   const evalPromises = runResults.map(async (runResult, index) => {
@@ -165,9 +165,9 @@ export async function aggregateResults(evals: EvaluationResult[]): Promise<RS<Ag
 
   const totalCost = evals.reduce((acc, result) => acc + result.fitness.totalCostUsd, 0)
 
-  const averageFitness = calculateAverageFitness(evals.map((r) => r.fitness))
+  const averageFitness = calculateAverageFitness(evals.map(r => r.fitness))
   let averageFeedback: string | undefined
-  const evalFeedback = evals.map((r) => r.feedback)
+  const evalFeedback = evals.map(r => r.feedback)
   guard(evalFeedback.length > 0, "No feedback to average")
   lgg.log("[aggregateResults] Individual feedback from evaluations:", evalFeedback)
   lgg.log("[aggregateResults] operatorsWithFeedback flag:", CONFIG.improvement.flags.operatorsWithFeedback)
@@ -188,6 +188,6 @@ export async function aggregateResults(evals: EvaluationResult[]): Promise<RS<Ag
       averageFitness,
       averageFeedback: averageFeedback ?? "feedback is disabled.",
     },
-    totalCost
+    totalCost,
   )
 }

@@ -1,8 +1,8 @@
 import { supabase } from "@core/utils/clients/supabase/client"
+import type { Json, TablesInsert, TablesUpdate } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Json, TablesInsert, TablesUpdate } from "@lucky/shared"
 
 /**
  * Auxiliary function to ensure the main workflow exists in the database
@@ -187,7 +187,7 @@ export const updateWorkflowVersionWithIO = async ({
 }): Promise<void> => {
   // Ensure we only store JSON-serializable data in the DB.
   // Drop non-serializable fields like outputSchema (ZodTypeAny).
-  const jsonSafeWorkflowIO: Json[] = allWorkflowIO.map((io) => {
+  const jsonSafeWorkflowIO: Json[] = allWorkflowIO.map(io => {
     const output = io.workflowOutput?.output
     let jsonSafeOutput: unknown = null
     try {

@@ -10,7 +10,7 @@ export class WorkflowEvolutionPrompts {
   static createJudgePrompt(
     config: WorkflowConfig,
     fitness: FitnessOfWorkflow | undefined,
-    feedback: string | undefined
+    feedback: string | undefined,
   ) {
     const systemPrompt = `You are an expert workflow optimization judge. Your role is to analyze a workflow and either:
 1. Return an improved WorkflowConfig (full JSON) if improvements are needed
@@ -96,7 +96,7 @@ VARIATION HINTS:
   static mechanicAdvisorOneNode(
     config: WorkflowConfig,
     fitness: FitnessOfWorkflow | undefined,
-    feedback: string | undefined
+    feedback: string | undefined,
   ) {
     const systemPrompt = `
     You are an expert workflow optimization mechanic advisor. 
@@ -176,7 +176,7 @@ Return the advisory object with fields described above. Include enough details t
       recommendedStructure: string
       structuralReason: string
       shouldImplement: boolean
-    }
+    },
   ): string {
     const workflowStructure = structureInfo?.recommendedStructure || SharedWorkflowPrompts.randomWorkflowStructure()
     const shouldImplementStructure = structureInfo?.shouldImplement ?? true
@@ -271,7 +271,7 @@ Explain how the new structure addresses identified performance issues and implem
       recommendedStructure: string
       structuralReason: string
       shouldImplement: boolean
-    }
+    },
   ) {
     const workflowStructure = structureInfo?.recommendedStructure || SharedWorkflowPrompts.randomWorkflowStructure()
     const shouldImplementStructure = structureInfo?.shouldImplement ?? true

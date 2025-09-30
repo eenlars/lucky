@@ -1,8 +1,9 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -11,6 +12,9 @@ export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  // Ensure core is initialized
+  ensureCoreInit()
 
   try {
     const body = await req.json()

@@ -2,7 +2,7 @@ import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitne
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Parameters for node self-improvement
@@ -20,7 +20,7 @@ export interface NodeSelfImprovementParams {
  */
 export async function improveNodesSelfImprovement(
   workflow: Workflow,
-  params: NodeSelfImprovementParams
+  params: NodeSelfImprovementParams,
 ): Promise<WorkflowNodeConfig[]> {
   if (!CONFIG.improvement.flags.selfImproveNodes) {
     return []

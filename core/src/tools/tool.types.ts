@@ -1,5 +1,5 @@
-import { CONFIG } from "@runtime/settings/constants.client"
-import { TOOLS } from "@runtime/settings/tools"
+import { CONFIG } from "@core/core-config/compat"
+import { TOOLS } from "@core/core-config/compat"
 
 const INACTIVE_TOOLS = CONFIG.tools.inactive
 const DEFAULT_TOOLS = CONFIG.tools.defaultTools
@@ -8,8 +8,9 @@ export const getActiveTools = <T extends Record<string, any>>(tools: T, includeD
   if (INACTIVE_TOOLS.size === 0 && DEFAULT_TOOLS.size === 0) return tools
   return Object.fromEntries(
     Object.entries(tools).filter(
-      ([key]) => !INACTIVE_TOOLS.has(key as AllToolNames) && (includeDefault || !DEFAULT_TOOLS.has(key as AllToolNames))
-    )
+      ([key]) =>
+        !INACTIVE_TOOLS.has(key as AllToolNames) && (includeDefault || !DEFAULT_TOOLS.has(key as AllToolNames)),
+    ),
   ) as T
 }
 

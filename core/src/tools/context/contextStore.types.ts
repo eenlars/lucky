@@ -1,5 +1,5 @@
 import { llmify } from "@core/utils/common/llmify"
-import { JSONN } from "@lucky/shared"
+import { JSONN } from "@core/utils/json"
 
 export type WorkflowFile = {
   store: "supabase"
@@ -24,10 +24,10 @@ export const contextFilePrompt = (
   workflowFiles: WorkflowFile[],
   inputFile?: string,
   evalExplanation?: string,
-  outputType?: any
+  outputType?: any,
 ) => {
   let contextContent = `You have access to a persistent context store named 
-  "${workflowFiles.map((file) => file.filePath).join(", ")}". 
+  "${workflowFiles.map(file => file.filePath).join(", ")}". 
   Use these specialized context tools for efficient data management:
 
 • contextGet - Retrieve data by key with optional defaults

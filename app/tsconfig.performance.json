@@ -20,7 +20,7 @@
   },
   "exclude": [
     "node_modules",
-    "src/runtime/logging_folder",
+    "src/examples/logging_folder",
     "src/research-experiments",
     ".next",
     "dist",

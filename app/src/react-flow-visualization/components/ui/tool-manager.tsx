@@ -60,7 +60,7 @@ export function ToolManager({
       <div className="flex gap-2">
         <Input
           value={newTool}
-          onChange={(e) => setNewTool(e.target.value)}
+          onChange={e => setNewTool(e.target.value)}
           placeholder={placeholder}
           onKeyPress={handleKeyPress}
         />

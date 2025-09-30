@@ -2,7 +2,7 @@ import { ApproveData } from "@/app/(test)/approve/page"
 import { NextRequest, NextResponse } from "next/server"
 import * as fs from "fs/promises"
 import * as path from "path"
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@examples/settings/constants"
 
 // Use shared runtime path so writers and readers agree
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       // legacy: CWD/logging_folder/approvals
       path.join(process.cwd(), "logging_folder", "approvals"),
     ]
-    const candidateFiles = candidateDirs.map((dir) => path.join(dir, `${sanitizedApprovalId}.json`))
+    const candidateFiles = candidateDirs.map(dir => path.join(dir, `${sanitizedApprovalId}.json`))
 
     try {
       // Find the first existing candidate file

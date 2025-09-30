@@ -1,5 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import { htmlToMarkdown } from "@runtime/code_tools/url-to-markdown/function"
+import { htmlToMarkdown } from "@examples/code_tools/url-to-markdown/function"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {

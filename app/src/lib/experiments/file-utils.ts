@@ -8,20 +8,20 @@ export async function getLatestFileByPrefix(baseDirAbsolutePath: string, prefix:
   try {
     const entries = await fs.readdir(baseDirAbsolutePath)
     const candidates = entries
-      .filter((fileName) => fileName.startsWith(prefix) && fileName.endsWith(".json"))
-      .map((fileName) => path.join(baseDirAbsolutePath, fileName))
+      .filter(fileName => fileName.startsWith(prefix) && fileName.endsWith(".json"))
+      .map(fileName => path.join(baseDirAbsolutePath, fileName))
 
     if (candidates.length === 0) return null
 
     const stats = await Promise.all(
-      candidates.map(async (absolutePath) => {
+      candidates.map(async absolutePath => {
         try {
           const stat = await fs.stat(absolutePath)
           return { filePath: absolutePath, mtimeMs: stat.mtimeMs }
         } catch {
           return { filePath: absolutePath, mtimeMs: 0 }
         }
-      })
+      }),
     )
     stats.sort((a, b) => b.mtimeMs - a.mtimeMs)
     return stats[0]?.filePath ?? null
@@ -34,21 +34,21 @@ export async function getLatestFileByPrefixes(baseDirAbsolutePath: string, prefi
   try {
     const entries = await fs.readdir(baseDirAbsolutePath)
     const candidates = entries
-      .filter((fileName) => prefixes.some((p) => fileName.startsWith(p)))
-      .filter((fileName) => fileName.endsWith(".json"))
-      .map((fileName) => path.join(baseDirAbsolutePath, fileName))
+      .filter(fileName => prefixes.some(p => fileName.startsWith(p)))
+      .filter(fileName => fileName.endsWith(".json"))
+      .map(fileName => path.join(baseDirAbsolutePath, fileName))
 
     if (candidates.length === 0) return null
 
     const stats = await Promise.all(
-      candidates.map(async (absolutePath) => {
+      candidates.map(async absolutePath => {
         try {
           const stat = await fs.stat(absolutePath)
           return { filePath: absolutePath, mtimeMs: stat.mtimeMs }
         } catch {
           return { filePath: absolutePath, mtimeMs: 0 }
         }
-      })
+      }),
     )
     stats.sort((a, b) => b.mtimeMs - a.mtimeMs)
     return stats[0]?.filePath ?? null
@@ -81,7 +81,7 @@ export async function readJsonRemote<T>(url: string): Promise<T> {
 
 export async function loadJsonProdOrLocal<T>(
   prodUrl: string,
-  localAbsolutePath: string
+  localAbsolutePath: string,
 ): Promise<{
   json: T | null
   source: "remote" | "local" | "none"

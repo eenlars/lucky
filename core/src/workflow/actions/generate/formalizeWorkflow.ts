@@ -12,18 +12,18 @@ import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/a
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { handleWorkflowCompletion, WorkflowConfigSchemaEasy } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
   prompt: string, // try not to input a full workflow here. the aim is to give an instruction to change a workflow.
-  options: GenerationOptions & AfterGenerationOptions
+  options: GenerationOptions & AfterGenerationOptions,
 ): Promise<RS<WorkflowConfig>> {
   console.log("formalizeWorkflow", prompt, JSON.stringify(options, null, 2))
   // Sanitize base workflow for the prompt to avoid advertising inactive tools
   const baseSanitized = options.workflowConfig ? sanitizeConfigTools(options.workflowConfig) : undefined
 
-  const normalizedConfigNodes = baseSanitized?.nodes.map((node) => {
+  const normalizedConfigNodes = baseSanitized?.nodes.map(node => {
     return {
       ...node,
       modelName: mapModelNameToEasyName(node.modelName),
@@ -48,7 +48,7 @@ ${JSON.stringify(
     nodes: normalizedConfigNodes,
   },
   null,
-  2
+  2,
 )}
 
 IMPROVEMENT GOAL: ${options.workflowGoal}

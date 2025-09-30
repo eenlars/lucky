@@ -22,7 +22,7 @@ vi.mock("@core/messages/api/genObject", () => {
         value: { name: "John Doe", age: 30, email: "john@example.com" },
         summary: "Test summary",
       },
-      0.01
+      0.01,
     )
   const genObject = vi.fn<GenObjectMockFn>(defaultImpl)
   return { genObject }
@@ -61,14 +61,14 @@ vi.mock("@core/messages/utils/saveResult", () => ({
   saveResultOutput: vi.fn(),
 }))
 
-vi.mock("@runtime/code_tools/file-saver/save", () => ({
+vi.mock("@examples/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
 // Import after mocks so modules receive mocked versions
 import { genObject } from "@core/messages/api/genObject"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 // TODO: Missing tests for:
 // - Schema validation edge cases (nullable, union types)
@@ -112,7 +112,7 @@ describe("sendAIRequest with structuredOutput", () => {
           email: "john@example.com",
         },
         summary: expect.any(String),
-      })
+      }),
     )
     expect(result.error).toBeNull()
   })
@@ -132,8 +132,8 @@ describe("sendAIRequest with structuredOutput", () => {
           ],
           summary: "List summary",
         },
-        0.02
-      )
+        0.02,
+      ),
     )
 
     const result = await sendAI({

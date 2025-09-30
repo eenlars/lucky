@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { isNir } from "@core/utils/common/isNir"
-import { TOOLS } from "@runtime/settings/tools"
+import { TOOLS } from "@examples/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Eye } from "lucide-react"
 import dynamic from "next/dynamic"
@@ -57,13 +57,13 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
       ? extractInputSummary(inputs[0]?.payload)
       : { summary: "No input", original: null, isTruncated: false }
 
-  const allToolOutputs = agentSteps?.filter((output) => output.type === "tool") || []
+  const allToolOutputs = agentSteps?.filter(output => output.type === "tool") || []
   const availableTools = nodeDefinition?.tools || []
-  const usedTools = allToolOutputs.map((output) => output.name) || []
+  const usedTools = allToolOutputs.map(output => output.name) || []
   const allTools = Array.from(new Set([...availableTools, ...usedTools]))
 
   const handleToolClick = (toolName: string) => {
-    const toolOutput = allToolOutputs.find((t) => t.name === toolName)
+    const toolOutput = allToolOutputs.find(t => t.name === toolName)
     if (toolOutput) {
       setSelectedTool(toolName)
       setRightPanelMode("json")
@@ -589,7 +589,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             <div className="space-y-4">
               {allTools.map((tool, index) => {
                 const wasUsed = usedTools.includes(tool)
-                const toolUsageCount = allToolOutputs.filter((output) => output.name === tool).length
+                const toolUsageCount = allToolOutputs.filter(output => output.name === tool).length
 
                 return (
                   <div
@@ -654,7 +654,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                           const terminateStep = agentSteps?.[stepIndex]
                           return terminateStep || {}
                         }
-                        return allToolOutputs.find((t) => t.name === selectedTool) || {}
+                        return allToolOutputs.find(t => t.name === selectedTool) || {}
                       })()}
                       theme={getReactJsonTheme()}
                       collapsed={1}

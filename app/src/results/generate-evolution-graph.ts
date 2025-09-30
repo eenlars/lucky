@@ -31,8 +31,8 @@ async function generateEvolutionGraph(invocationId: string) {
         visualization,
       },
       null,
-      2
-    )
+      2,
+    ),
   )
 
   console.log(`💾 Evolution graph saved to: ${outputPath}`)
@@ -68,7 +68,7 @@ generateEvolutionGraph(invocationId)
   .then(() => {
     console.log("\n🎉 Generation complete!")
   })
-  .catch((err) => {
+  .catch(err => {
     console.error("❌ Generation failed:", err)
     process.exit(1)
   })

@@ -5,7 +5,7 @@ export const isNir = (value: unknown): value is null | undefined => {
   }
   if (Array.isArray(value)) {
     if (value.length === 0) return true
-    else return value.every((v) => isNir(v))
+    else return value.every(v => isNir(v))
   }
   if (typeof value === "object") {
     // More thorough empty object check

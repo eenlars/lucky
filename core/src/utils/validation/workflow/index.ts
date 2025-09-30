@@ -21,7 +21,7 @@ import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/ve
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 // verify that each node has a modelname that exists
 export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
@@ -68,7 +68,7 @@ export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<Ver
 // main Verification Function
 export const verifyWorkflowConfig = async (
   config: WorkflowConfig,
-  options: ValidationOptions
+  options: ValidationOptions,
 ): Promise<VerificationResult> => {
   const errors: string[] = []
   try {
@@ -107,7 +107,7 @@ export const verifyWorkflowConfig = async (
 
   if (options.verbose && !isNir(errors)) {
     // do not change the console.log to lgg.log
-    errors.forEach((error) => console.log(`Error: ${error}`))
+    errors.forEach(error => console.log(`Error: ${error}`))
   }
 
   if (config.nodes.length === 1) {

@@ -19,7 +19,7 @@ export async function prepareIncomingMessage(
   ctx: NodeInvocationCallContext,
   tools: ToolSet,
   nodeMemory: NodeMemory,
-  agentSteps: AgentSteps
+  agentSteps: AgentSteps,
 ) {
   const toolsAvailable = Object.keys(tools)
   const incomingText = extractTextFromPayload(ctx.workflowMessageIncoming.payload)

@@ -24,13 +24,13 @@ export class WebArenaLoader {
       }
 
       const allTasks = JSON.parse(rawData) as WebArenaInstance[]
-      const tasks = allTasks.filter((task) => !sites || task.sites.some((site) => sites.includes(site))).slice(0, limit)
+      const tasks = allTasks.filter(task => !sites || task.sites.some(site => sites.includes(site))).slice(0, limit)
 
       if (tasks.length === 0) {
         throw new Error("No WebArena tasks found")
       }
 
-      return tasks.map((task) => {
+      return tasks.map(task => {
         // compose the workflow input with the task intent and context
         const workflowInput = `Task: ${task.intent}
 
@@ -70,7 +70,7 @@ Please complete this task by interacting with the specified websites.`
     } catch (error) {
       lgg.error("Failed to fetch WebArena as WorkflowIO", error)
       throw new Error(
-        `Failed to convert WebArena to WorkflowIO: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to convert WebArena to WorkflowIO: ${error instanceof Error ? error.message : String(error)}`,
       )
     }
   }
@@ -93,7 +93,7 @@ Please complete this task by interacting with the specified websites.`
 
       const tasks = JSON.parse(rawData) as WebArenaInstance[]
 
-      const found = tasks.find((task) => task.task_id === taskId)
+      const found = tasks.find(task => task.task_id === taskId)
 
       if (!found) {
         throw new Error(`WebArena task ${taskId} not found`)
@@ -134,7 +134,7 @@ Please complete this task by interacting with the specified websites.`
       }
 
       const allTasks = JSON.parse(rawData) as WebArenaInstance[]
-      const tasks = allTasks.filter((task) => task.sites.some((site) => sites.includes(site))).slice(0, limit)
+      const tasks = allTasks.filter(task => task.sites.some(site => sites.includes(site))).slice(0, limit)
 
       lgg.info(`Fetched ${tasks.length} WebArena tasks for the specified sites`)
       return tasks

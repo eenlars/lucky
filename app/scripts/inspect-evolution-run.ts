@@ -171,14 +171,14 @@ async function main() {
       statuses.set(key, (statuses.get(key) || 0) + 1)
     }
 
-    const genCost = sum(invocations.map((i) => i.usd_cost))
-    const genAccAvg = average(invocations.map((i) => i.accuracy))
-    const genFitAvg = average(invocations.map((i) => i.fitness_score))
+    const genCost = sum(invocations.map(i => i.usd_cost))
+    const genAccAvg = average(invocations.map(i => i.accuracy))
+    const genFitAvg = average(invocations.map(i => i.fitness_score))
 
     totalInvocations += invocations.length
     totalCost += genCost
-    allAccuracies.push(...invocations.map((i) => i.accuracy))
-    allFitness.push(...invocations.map((i) => i.fitness_score))
+    allAccuracies.push(...invocations.map(i => i.accuracy))
+    allFitness.push(...invocations.map(i => i.fitness_score))
 
     const statusSummary =
       Array.from(statuses.entries())
@@ -297,7 +297,7 @@ async function main() {
   console.log("Tip: pass a different run id with --run=... or set APP_BASE_URL to point elsewhere.")
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("\nFailed to inspect evolution run:\n", err)
   process.exitCode = 1
 })

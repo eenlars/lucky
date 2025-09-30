@@ -6,7 +6,7 @@ export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames: boole
   return llmify(`
     ${nodes
       .map(
-        (node) => `
+        node => `
         # agent ${node.nodeId}
         nodeId: ${node.nodeId}
         description: ${node.description}
@@ -16,7 +16,7 @@ export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames: boole
         codeTools: ${JSON.stringify(node.codeTools)}
         handOffs: ${JSON.stringify(node.handOffs)}
         memory: ${JSON.stringify(node.memory)}
-        `
+        `,
       )
       .join("\n")}
   `)

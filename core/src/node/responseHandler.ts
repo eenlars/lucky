@@ -15,7 +15,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
 import { validateAndDecide } from "@core/utils/validation/message"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 
 /**
  * Handles successful response processing.
@@ -26,7 +26,7 @@ export async function handleSuccess(
   debugPrompts: string[],
   extraCost?: number,
   updatedMemory?: NodeMemory | null,
-  agentSteps?: AgentSteps
+  agentSteps?: AgentSteps,
 ): Promise<NodeInvocationResult> {
   const { nodeConfig, workflowFiles, workflowConfig } = context
   if (!response) {
@@ -41,15 +41,15 @@ export async function handleSuccess(
 
   // Debug logging for tool calls
   if (response.agentSteps) {
-    lgg.onlyIf(CONFIG.logging.override.Tools, `[handleSuccess] Tool calls found: ${response.agentSteps.length} outputs`)
+    lgg.onlyIf(isLoggingEnabled("Tools"), `[handleSuccess] Tool calls found: ${response.agentSteps.length} outputs`)
   } else {
-    lgg.onlyIf(CONFIG.logging.override.Tools, `[handleSuccess] No tool calls found for response type: ${response.type}`)
+    lgg.onlyIf(isLoggingEnabled("Tools"), `[handleSuccess] No tool calls found for response type: ${response.type}`)
   }
 
   // Collect files used by this node invocation
   const filesUsed: string[] = []
   if (workflowFiles) {
-    filesUsed.push(...workflowFiles.map((file) => file.filePath))
+    filesUsed.push(...workflowFiles.map(file => file.filePath))
   }
 
   // Compute full output string for validation and storage
@@ -100,8 +100,8 @@ export async function handleSuccess(
     }
   } catch (e) {
     lgg.onlyIf(
-      CONFIG.logging.override.Messaging,
-      `[handleSuccess] HandoffMessageHandler failed, falling back: ${String(e)}`
+      isLoggingEnabled("Messaging"),
+      `[handleSuccess] HandoffMessageHandler failed, falling back: ${String(e)}`,
     )
   }
 
@@ -111,7 +111,7 @@ export async function handleSuccess(
   let replyMessage: any
 
   if (outgoingMessages && outgoingMessages.length > 0) {
-    nextIds = outgoingMessages.map((m) => m.toNodeId)
+    nextIds = outgoingMessages.map(m => m.toNodeId)
     // Keep replyMessage for backward compatibility (will be overridden per-target in queueRun)
     replyMessage = outgoingMessages[0].payload
   } else {
@@ -205,7 +205,7 @@ export async function handleError({
   // Collect files used by this node invocation (even in error cases)
   const filesUsed: string[] = []
   if (context.workflowFiles) {
-    filesUsed.push(...context.workflowFiles.map((file) => file.filePath))
+    filesUsed.push(...context.workflowFiles.map(file => file.filePath))
   }
 
   // Respect skipDatabasePersistence similarly to handleSuccess

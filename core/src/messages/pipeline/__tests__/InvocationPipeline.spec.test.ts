@@ -1,6 +1,6 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
-import { getDefaultModels } from "@runtime/settings/models"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../InvocationPipeline"
 import type { NodeInvocationCallContext } from "../input.types"
@@ -21,8 +21,8 @@ interface TestResult {
 describe("InvocationPipeline Real Integration", () => {
   const extractTestResult = (pipeline: InvocationPipeline, pipelineResult: NodeInvocationResult): TestResult => {
     const agentSteps = pipeline.getAgentSteps()
-    const toolCalls = agentSteps.filter((output) => output.type === "tool")
-    const toolsUsed = toolCalls.map((call) => call.name)
+    const toolCalls = agentSteps.filter(output => output.type === "tool")
+    const toolsUsed = toolCalls.map(call => call.name)
     const toolExecutionOrder = toolsUsed.map((tool, index) => ({
       tool,
       sequence: index,
@@ -147,7 +147,7 @@ describe("InvocationPipeline Real Integration", () => {
       "real-pipeline-test",
       [],
       ["todoWrite", "todoRead"], // Real tools
-      workflowVersionId
+      workflowVersionId,
     )
 
     // Create REAL InvocationPipeline instance
@@ -217,7 +217,7 @@ describe("InvocationPipeline Real Integration", () => {
     // Clean summary output
     console.log("✅ Test Results:", {
       systemPromptFollowed: "use todo write first, and then return the output of todo read",
-      toolExecutionOrder: testResult.toolExecutionOrder.map((t) => t.tool),
+      toolExecutionOrder: testResult.toolExecutionOrder.map(t => t.tool),
       correctOrder: todoWriteIndex < todoReadIndex,
       cost: testResult.cost,
       responseValid: verification.data?.text?.includes("SUCCESS"),
@@ -228,7 +228,7 @@ describe("InvocationPipeline Real Integration", () => {
     const { WorkflowMessage } = await import("@core/messages/WorkflowMessage")
     const { InvocationPipeline } = await import("../InvocationPipeline")
     const { ToolManager } = await import("@core/node/toolManager")
-    const { CONFIG } = await import("@runtime/settings/constants")
+    const { CONFIG } = await import("@core/core-config/compat")
 
     const originalMultiStep = CONFIG.tools.experimentalMultiStepLoop
 
@@ -342,7 +342,7 @@ describe("InvocationPipeline Real Integration", () => {
   // Test with medium model
   const testModels = [getDefaultModels().medium]
 
-  testModels.forEach((modelName) => {
+  testModels.forEach(modelName => {
     it(`should work with model ${modelName}`, async () => {
       const { WorkflowMessage } = await import("@core/messages/WorkflowMessage")
       const { InvocationPipeline } = await import("../InvocationPipeline")
@@ -402,7 +402,7 @@ describe("InvocationPipeline Real Integration", () => {
         `model-test-${modelName.replace(/\W/g, "-")}`,
         [],
         ["todoWrite", "todoRead"],
-        workflowVersionId
+        workflowVersionId,
       )
 
       const pipeline = new InvocationPipeline(context, toolManager)
@@ -458,7 +458,7 @@ describe("InvocationPipeline Real Integration", () => {
       expect(verification.data?.text).toContain("SUCCESS")
 
       console.log(`✅ ${modelName} Test:`, {
-        toolOrder: testResult.toolExecutionOrder.map((t) => t.tool),
+        toolOrder: testResult.toolExecutionOrder.map(t => t.tool),
         correctOrder: todoWriteIndex < todoReadIndex,
         cost: testResult.cost,
         valid: verification.data?.text?.includes("SUCCESS"),

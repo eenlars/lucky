@@ -22,18 +22,18 @@ interface BehaviorMetricsProps {
 
 export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
   // Process data for retry attempts analysis
-  const retryData = data.models.map((model) => {
+  const retryData = data.models.map(model => {
     const vagueAttempts =
       data.behaviorMetrics
-        .filter((d) => d.model === model && d.condition === "vague")
+        .filter(d => d.model === model && d.condition === "vague")
         .reduce((sum, d) => sum + d.retryAttempts, 0) /
-      data.behaviorMetrics.filter((d) => d.model === model && d.condition === "vague").length
+      data.behaviorMetrics.filter(d => d.model === model && d.condition === "vague").length
 
     const clearAttempts =
       data.behaviorMetrics
-        .filter((d) => d.model === model && d.condition === "clear")
+        .filter(d => d.model === model && d.condition === "clear")
         .reduce((sum, d) => sum + d.retryAttempts, 0) /
-      data.behaviorMetrics.filter((d) => d.model === model && d.condition === "clear").length
+      data.behaviorMetrics.filter(d => d.model === model && d.condition === "clear").length
 
     return {
       model: model.replace("gpt-", ""),
@@ -61,10 +61,10 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
   }
 
   // Tool call efficiency data
-  const efficiencyData = data.models.map((model) => {
-    const modelData = data.behaviorMetrics.filter((d) => d.model === model)
+  const efficiencyData = data.models.map(model => {
+    const modelData = data.behaviorMetrics.filter(d => d.model === model)
     const avgToolCalls = modelData.reduce((sum, d) => sum + d.toolCalls, 0) / modelData.length
-    const successRate = (modelData.filter((d) => d.success).length / modelData.length) * 100
+    const successRate = (modelData.filter(d => d.success).length / modelData.length) * 100
 
     return {
       model: model.replace("gpt-", ""),
@@ -178,7 +178,7 @@ export default function BehaviorMetrics({ data }: BehaviorMetricsProps) {
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-lg font-semibold mb-4">Model Efficiency Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {efficiencyData.map((model) => (
+          {efficiencyData.map(model => (
             <div key={model.model} className="text-center p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium text-gray-900 mb-2">{model.model}</h4>
               <div className="text-2xl font-bold text-blue-600 mb-1">{model.avgToolCalls}</div>

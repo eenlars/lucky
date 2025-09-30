@@ -50,7 +50,7 @@ export class NodeOperations {
             workflowConfig: mutatedConfig,
             verifyWorkflow: "normal",
             repairWorkflowAfterGeneration: true,
-          }
+          },
         )
 
         if (success && data) {
@@ -96,7 +96,7 @@ export class NodeOperations {
           lgg.log(`Preserving memory from deleted node ${victim.nodeId}:`, victimMemory)
 
           // find a suitable node to transfer the memory to
-          const remainingNodes = mutatedConfig.nodes.filter((n) => n.nodeId !== victim.nodeId)
+          const remainingNodes = mutatedConfig.nodes.filter(n => n.nodeId !== victim.nodeId)
           if (remainingNodes.length > 0) {
             // transfer to the first remaining node
             // future enhancement: use similarity matching to find best target
@@ -136,7 +136,7 @@ export class NodeOperations {
     const candidateNodes = workflow.nodes.filter(
       (node: WorkflowNodeConfig) =>
         node.nodeId !== workflow.entryNodeId && // don't delete entry node
-        node.handOffs.length === 0 // only delete leaf nodes
+        node.handOffs.length === 0, // only delete leaf nodes
     )
     return candidateNodes.length > 0 ? candidateNodes[Math.floor(Math.random() * candidateNodes.length)] : null
   }

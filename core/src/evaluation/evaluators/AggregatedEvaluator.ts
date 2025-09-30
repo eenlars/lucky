@@ -46,8 +46,8 @@ export class AggregatedEvaluator extends WorkflowEvaluator {
 
     // get combined transcript and summaries from all results
     // results: EvaluationResult[] from queueRun evaluate; build string transcript
-    const combinedTranscript = results.map((r) => JSON.stringify(r.transcript)).join("\n\n")
-    const combinedSummaries = results.flatMap((r) => r.summaries)
+    const combinedTranscript = results.map(r => JSON.stringify(r.transcript)).join("\n\n")
+    const combinedSummaries = results.flatMap(r => r.summaries)
 
     return {
       success: true,

@@ -12,7 +12,7 @@ describe("Template String Validation", () => {
         z.object({
           name: z.string(),
           address: z.string(),
-        })
+        }),
       ),
       operation: z.enum(["insertLocations", "getLocations"]),
     })
@@ -67,7 +67,7 @@ describe("Template String Validation", () => {
         z.object({
           name: z.string(),
           address: z.string(),
-        })
+        }),
       ),
       operation: z.enum(["insertLocations", "getLocations"]),
     })

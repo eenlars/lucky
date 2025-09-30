@@ -11,6 +11,7 @@ import {
   type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
 // @sdk-import - marker for easy removal when ejecting SDK
+import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
@@ -23,15 +24,14 @@ import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import { isNir } from "@core/utils/common/isNir"
-import { JSONN } from "@lucky/shared"
-import { saveInLoc, saveInLogging } from "@runtime/code_tools/file-saver/save"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { saveInLoc, saveInLogging } from "@core/utils/fs/fileSaver"
+import { JSONN } from "@core/utils/json"
 import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
 const maxRounds = CONFIG.tools.experimentalMultiStepLoopMaxRounds
 
-const verbose = CONFIG.logging.override.InvocationPipeline
+const verbose = isLoggingEnabled("InvocationPipeline")
 
 /* -------------------------------------------------------------------------- */
 /*                         🚀  INVOCATION  PIPELINE                           */
@@ -83,7 +83,7 @@ export class InvocationPipeline {
   constructor(
     private readonly ctx: NodeInvocationCallContext,
     private readonly toolManager: ToolManager,
-    private readonly saveOutputs?: boolean
+    private readonly saveOutputs?: boolean,
   ) {}
 
   /* ---------------------------------------------------------------------- */
@@ -266,7 +266,7 @@ export class InvocationPipeline {
       this.debugPrompts,
       this.usdCost,
       this.updatedMemory,
-      this.agentSteps
+      this.agentSteps,
     )
 
     return result
@@ -297,7 +297,7 @@ export class InvocationPipeline {
       this.ctx.nodeConfig.nodeId,
       fullPrompt,
       this.ctx.nodeConfig.sdkConfig,
-      this.ctx.workflowInvocationId
+      this.ctx.workflowInvocationId,
     )
 
     // Set the processed response and agent steps
@@ -386,7 +386,7 @@ export class InvocationPipeline {
       const ts = Date.now()
       saveInLoc(
         `${PATHS.node.logging}/debug/response_after_processing_${ts}_${this.ctx.nodeConfig.nodeId}`,
-        JSONN.show(processed)
+        JSONN.show(processed),
       )
     }
 
@@ -413,8 +413,8 @@ export class InvocationPipeline {
       model: this.ctx.nodeConfig.modelName,
       maxRounds,
       verbose,
-      addCost: (cost) => this.addCost(cost),
-      setUpdatedMemory: (memory) => {
+      addCost: cost => this.addCost(cost),
+      setUpdatedMemory: memory => {
         this.updatedMemory = memory
       },
       getTotalCost: () => this.usdCost,
@@ -431,8 +431,8 @@ export class InvocationPipeline {
       model: this.ctx.nodeConfig.modelName,
       maxRounds,
       verbose,
-      addCost: (cost) => this.addCost(cost),
-      setUpdatedMemory: (memory) => {
+      addCost: cost => this.addCost(cost),
+      setUpdatedMemory: memory => {
         this.updatedMemory = memory
       },
       getTotalCost: () => this.usdCost,

@@ -1,9 +1,9 @@
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
 import { lgg } from "@core/utils/logging/Logger"
+import { saveInLoc } from "@examples/code_tools/file-saver/save"
+import { PATHS } from "@examples/settings/constants"
 import { csv } from "@lucky/shared"
-import { saveInLoc } from "@runtime/code_tools/file-saver/save"
-import { PATHS } from "@runtime/settings/constants"
 import crypto from "crypto"
 import fs from "fs"
 const { CSVLoader } = csv
@@ -13,7 +13,7 @@ const { CSVLoader } = csv
 
 /* ────────────────────────────────────────────────────────────────── helpers ───── */
 const B_CORP_ROOT = "https://www.bcorporation.net/en-us/find-a-b-corp/company/"
-const INPUT_CSV = PATHS.app + "/src/runtime/evaluation/input.csv"
+const INPUT_CSV = PATHS.app + "/src/examples/evaluation/input.csv"
 
 // progress tracking files
 const PROGRESS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/countries-extractor-progress.json"
@@ -63,7 +63,7 @@ function saveProgress(progress: CountryExtractionProgress): void {
     saveInLoc(PROGRESS_FILE, progress)
 
     lgg.log(
-      `💾 countries extraction progress saved: ${progress.processedCompanies.length}/${progress.totalCompanies} companies`
+      `💾 countries extraction progress saved: ${progress.processedCompanies.length}/${progress.totalCompanies} companies`,
     )
   } catch (error) {
     lgg.error("❌ failed to save progress:", error)
@@ -117,7 +117,7 @@ function saveErrors(errors: ExtractionError[], errorResults: CompanyCountryData[
     saveInLoc(ERRORS_FILE, errorData)
 
     lgg.log(
-      `📝 error data saved: ${errors.length} errors and ${errorResults.length} companies with errors to ${ERRORS_FILE}`
+      `📝 error data saved: ${errors.length} errors and ${errorResults.length} companies with errors to ${ERRORS_FILE}`,
     )
   } catch (error) {
     lgg.error("❌ failed to save error data:", error)
@@ -130,7 +130,7 @@ function loadProgress(totalCompanies: number): CountryExtractionProgress {
     if (fs.existsSync(PROGRESS_FILE)) {
       const data = JSON.parse(fs.readFileSync(PROGRESS_FILE, "utf-8"))
       lgg.log(
-        `🔄 resuming countries extraction: ${data.processedCompanies.length}/${data.totalCompanies} companies already processed`
+        `🔄 resuming countries extraction: ${data.processedCompanies.length}/${data.totalCompanies} companies already processed`,
       )
       return data
     }
@@ -154,7 +154,7 @@ async function processBatch<T, R>(
   items: T[],
   batchSize: number,
   processor: (item: T) => Promise<R>,
-  progress: CountryExtractionProgress
+  progress: CountryExtractionProgress,
 ): Promise<R[]> {
   const results: R[] = [...progress.results] as R[]
 
@@ -176,7 +176,7 @@ async function processBatch<T, R>(
     // small delay between batches to be respectful
     if (i + batchSize < items.length) {
       lgg.log("countries-extractor: waiting 1s between batches...")
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 1000))
     }
   }
 
@@ -189,18 +189,18 @@ async function processBatch<T, R>(
   const loader = new CSVLoader(INPUT_CSV)
 
   type Row = { company_name: string; website: string }
-  const allRows = (await loader.loadAsJSON<Row>()).filter((r) => r.company_name && r.website)
+  const allRows = (await loader.loadAsJSON<Row>()).filter(r => r.company_name && r.website)
   lgg.log(`countries-extractor: loaded ${allRows.length} rows from csv.`)
 
   /* 1️⃣a load/create progress tracking ---------------------------------------- */
   const progress = loadProgress(allRows.length)
 
   // filter out already processed companies
-  const rows = allRows.filter((row) => !progress.processedCompanies.includes(row.company_name))
+  const rows = allRows.filter(row => !progress.processedCompanies.includes(row.company_name))
 
   // deduplicate rows by company name to prevent processing duplicates
   const seenCompanies = new Set<string>()
-  const uniqueRows = rows.filter((row) => {
+  const uniqueRows = rows.filter(row => {
     const key = row.company_name.toLowerCase().trim()
     if (seenCompanies.has(key)) {
       lgg.log(`⚠️ skipping duplicate company in CSV: ${row.company_name}`)
@@ -254,7 +254,7 @@ async function processBatch<T, R>(
           lgg.log(`countries-extractor: ⚠️ error extracting countries for ${company_name}: ${countryError}`)
         } else {
           lgg.log(
-            `countries-extractor: ✅ extracted ${countries.length} countries for ${company_name}: ${countries.join(", ")}`
+            `countries-extractor: ✅ extracted ${countries.length} countries for ${company_name}: ${countries.join(", ")}`,
           )
         }
 
@@ -286,7 +286,7 @@ async function processBatch<T, R>(
 
       return result as CompanyCountryData
     },
-    progress
+    progress,
   )
 
   /* 3️⃣  save final results & show stats --------------------------------------- */
@@ -305,8 +305,8 @@ async function processBatch<T, R>(
   const finalResults = Array.from(finalResultsMap.values())
 
   // separate successful results from error results
-  const successfulResults = finalResults.filter((result) => !result.extraction_error)
-  const errorResults = finalResults.filter((result) => result.extraction_error)
+  const successfulResults = finalResults.filter(result => !result.extraction_error)
+  const errorResults = finalResults.filter(result => result.extraction_error)
 
   lgg.log("countries-extractor: finished all processing. saving final results.")
   lgg.log(`📊 processed ${finalResults.length} companies total`)
@@ -331,9 +331,9 @@ async function processBatch<T, R>(
   }
 
   lgg.log(
-    `✅ countries-extractor completed successfully! results saved to ${RESULTS_FILE}, errors saved to ${ERRORS_FILE}`
+    `✅ countries-extractor completed successfully! results saved to ${RESULTS_FILE}, errors saved to ${ERRORS_FILE}`,
   )
-})().catch((err) => {
+})().catch(err => {
   lgg.error("countries-extractor: fatal error:", err)
   process.exit(1)
 })

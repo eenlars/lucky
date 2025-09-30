@@ -4,7 +4,7 @@
  */
 
 import { lgg } from "@core/utils/logging/Logger"
-import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
 import { RunService } from "../../RunService"
 
 async function testRunService() {

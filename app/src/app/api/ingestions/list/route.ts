@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextRequest, NextResponse } from "next/server"
 import { listDataSets } from "@/lib/db/dataset"
 import { requireAuth } from "@/lib/api-auth"
@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest) {
       if (datasets.length > 0) {
         return NextResponse.json({
           success: true,
-          datasets: datasets.map((ds) => ({
+          datasets: datasets.map(ds => ({
             datasetId: ds.dataset_id,
             name: ds.name,
             description: ds.description,
@@ -39,9 +39,9 @@ export async function GET(_req: NextRequest) {
       return NextResponse.json({ error: `Listing failed: ${error.message}` }, { status: 500 })
     }
 
-    const manifests = data?.filter((f) => f.name.endsWith(".json")) || []
+    const manifests = data?.filter(f => f.name.endsWith(".json")) || []
     const results = await Promise.all(
-      manifests.map(async (file) => {
+      manifests.map(async file => {
         const path = `ingestions/${file.name}`
         const { data: blob, error: dlErr } = await supabase.storage.from(bucket).download(path)
         if (dlErr || !blob) return null
@@ -52,7 +52,7 @@ export async function GET(_req: NextRequest) {
         } catch {
           return null
         }
-      })
+      }),
     )
 
     return NextResponse.json({

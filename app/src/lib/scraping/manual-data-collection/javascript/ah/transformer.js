@@ -3,7 +3,7 @@ import json from "../../../../../lib/evals/all/albertheijn.json" assert { type: 
 function transformLocationData(input) {
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((location) => ({
+  return locations.map(location => ({
     name: extractName(location),
     address: extractAddress(location),
     city: extractCity(location),
@@ -92,7 +92,7 @@ function transformOpeningHours(loc) {
       6: "saturday",
       7: "sunday",
     }
-    loc.opening_hours.forEach((e) => {
+    loc.opening_hours.forEach(e => {
       const dayName = dowMap[e.day_of_the_week ?? e.day]
       if (!dayName) return
       if (e.closed) {
@@ -109,7 +109,7 @@ function transformOpeningHours(loc) {
       // normalize “HH.MM” → “HH:MM”
       const closeTime = m[1].replace(".", ":")
       // assume open from midnight if we have no better info
-      Object.keys(days).forEach((d) => {
+      Object.keys(days).forEach(d => {
         days[d] = `08:00-${closeTime}`
       })
     }

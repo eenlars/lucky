@@ -458,7 +458,7 @@ class RetryManager {
         if (attempt === maxRetries - 1) throw error
 
         const delay = baseDelay * Math.pow(2, attempt)
-        await new Promise((resolve) => setTimeout(resolve, delay))
+        await new Promise(resolve => setTimeout(resolve, delay))
       }
     }
     throw new Error("Max retries exceeded")

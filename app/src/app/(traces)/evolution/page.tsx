@@ -61,28 +61,28 @@ export default function EvolutionPage() {
   const [_, setTimeUpdate] = useState(0)
   const [_isNavigating, _setIsNavigating] = useState(false)
 
-  const evolutionRuns = useEvolutionRunsStore((s) => s.evolutionRuns)
-  const loading = useEvolutionRunsStore((s) => s.loading)
-  const error = useEvolutionRunsStore((s) => s.error)
-  const hasMore = useEvolutionRunsStore((s) => s.hasMore)
-  const sortField = useEvolutionRunsStore((s) => s.sortField)
-  const sortDirection = useEvolutionRunsStore((s) => s.sortDirection)
+  const evolutionRuns = useEvolutionRunsStore(s => s.evolutionRuns)
+  const loading = useEvolutionRunsStore(s => s.loading)
+  const error = useEvolutionRunsStore(s => s.error)
+  const hasMore = useEvolutionRunsStore(s => s.hasMore)
+  const sortField = useEvolutionRunsStore(s => s.sortField)
+  const sortDirection = useEvolutionRunsStore(s => s.sortDirection)
 
-  const searchTerm = useEvolutionRunsStore((s) => s.searchTerm)
-  const statusFilter = useEvolutionRunsStore((s) => s.statusFilter)
-  const modeFilter = useEvolutionRunsStore((s) => s.modeFilter)
-  const dateFilter = useEvolutionRunsStore((s) => s.dateFilter)
-  const hideEmptyRuns = useEvolutionRunsStore((s) => s.hideEmptyRuns)
-  const limit = useEvolutionRunsStore((s) => s.limit)
+  const searchTerm = useEvolutionRunsStore(s => s.searchTerm)
+  const statusFilter = useEvolutionRunsStore(s => s.statusFilter)
+  const modeFilter = useEvolutionRunsStore(s => s.modeFilter)
+  const dateFilter = useEvolutionRunsStore(s => s.dateFilter)
+  const hideEmptyRuns = useEvolutionRunsStore(s => s.hideEmptyRuns)
+  const limit = useEvolutionRunsStore(s => s.limit)
 
-  const setSearchTerm = useEvolutionRunsStore((s) => s.setSearchTerm)
-  const setStatusFilter = useEvolutionRunsStore((s) => s.setStatusFilter)
-  const setModeFilter = useEvolutionRunsStore((s) => s.setModeFilter)
-  const setDateFilter = useEvolutionRunsStore((s) => s.setDateFilter)
-  const setHideEmptyRuns = useEvolutionRunsStore((s) => s.setHideEmptyRuns)
-  const setSortField = useEvolutionRunsStore((s) => s.setSortField)
-  const setSortDirection = useEvolutionRunsStore((s) => s.setSortDirection)
-  const fetchRuns = useEvolutionRunsStore((s) => s.fetchRuns)
+  const setSearchTerm = useEvolutionRunsStore(s => s.setSearchTerm)
+  const setStatusFilter = useEvolutionRunsStore(s => s.setStatusFilter)
+  const setModeFilter = useEvolutionRunsStore(s => s.setModeFilter)
+  const setDateFilter = useEvolutionRunsStore(s => s.setDateFilter)
+  const setHideEmptyRuns = useEvolutionRunsStore(s => s.setHideEmptyRuns)
+  const setSortField = useEvolutionRunsStore(s => s.setSortField)
+  const setSortDirection = useEvolutionRunsStore(s => s.setSortDirection)
+  const fetchRuns = useEvolutionRunsStore(s => s.fetchRuns)
 
   useEffect(() => {
     fetchRuns({ showLoading: true, reset: true })
@@ -131,7 +131,7 @@ export default function EvolutionPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeUpdate((prev) => prev + 1)
+      setTimeUpdate(prev => prev + 1)
     }, 1000)
 
     return () => clearInterval(interval)
@@ -156,7 +156,7 @@ export default function EvolutionPage() {
                   type="text"
                   placeholder="Search runs..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
                 <svg
@@ -192,7 +192,7 @@ export default function EvolutionPage() {
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={e => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Statuses</option>
@@ -207,7 +207,7 @@ export default function EvolutionPage() {
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
               <select
                 value={modeFilter}
-                onChange={(e) => setModeFilter(e.target.value)}
+                onChange={e => setModeFilter(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Types</option>
@@ -220,7 +220,7 @@ export default function EvolutionPage() {
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time Range</label>
               <select
                 value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
+                onChange={e => setDateFilter(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Time</option>
@@ -235,7 +235,7 @@ export default function EvolutionPage() {
                 <input
                   type="checkbox"
                   checked={hideEmptyRuns}
-                  onChange={(e) => setHideEmptyRuns(e.target.checked)}
+                  onChange={e => setHideEmptyRuns(e.target.checked)}
                   className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                 />
                 <span>Hide empty runs</span>
@@ -267,13 +267,13 @@ export default function EvolutionPage() {
                 {evolutionRuns.length} runs{hasMore && " loaded"}
               </span>
 
-              {evolutionRuns.some((run) => run.status === "running") && (
+              {evolutionRuns.some(run => run.status === "running") && (
                 <span className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                   </span>
-                  {evolutionRuns.filter((run) => run.status === "running").length} running
+                  {evolutionRuns.filter(run => run.status === "running").length} running
                 </span>
               )}
 

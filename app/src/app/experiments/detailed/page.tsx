@@ -346,10 +346,10 @@ export default function DetailedExperimentsPage() {
       acc[key].strategies[run.strategy] = (acc[key].strategies[run.strategy] || 0) + 1
       return acc
     },
-    {} as Record<string, any>
+    {} as Record<string, any>,
   )
 
-  const _scatterData = adaptiveData.map((run) => ({
+  const _scatterData = adaptiveData.map(run => ({
     x: run.attempts,
     y: run.items_retrieved,
     model: run.model,
@@ -364,7 +364,7 @@ export default function DetailedExperimentsPage() {
       acc[key].models[run.model] = run.score * 100
       return acc
     },
-    {} as Record<number, any>
+    {} as Record<number, any>,
   )
 
   const _colors = modelColors
@@ -393,9 +393,9 @@ export default function DetailedExperimentsPage() {
                 <BarChart
                   data={(() => {
                     const models = ["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4-turbo"]
-                    return models.map((model) => {
-                      const vagueRuns = adaptiveData.filter((d) => d.model === model && d.condition === "vague")
-                      const clearRuns = adaptiveData.filter((d) => d.model === model && d.condition === "clear")
+                    return models.map(model => {
+                      const vagueRuns = adaptiveData.filter(d => d.model === model && d.condition === "vague")
+                      const clearRuns = adaptiveData.filter(d => d.model === model && d.condition === "clear")
                       const vagueAvg = vagueRuns.reduce((sum, r) => sum + r.attempts, 0) / vagueRuns.length
                       const clearAvg = clearRuns.reduce((sum, r) => sum + r.attempts, 0) / clearRuns.length
                       return {
@@ -424,12 +424,12 @@ export default function DetailedExperimentsPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold mb-4">Strategy Distribution by Model</h3>
               <div className="space-y-4">
-                {["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4-turbo"].map((model) => {
+                {["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4-turbo"].map(model => {
                   const vagueCount = adaptiveData.filter(
-                    (d) => d.model === model && d.condition === "vague" && d.strategy === "optimal-split"
+                    d => d.model === model && d.condition === "vague" && d.strategy === "optimal-split",
                   ).length
                   const clearCount = adaptiveData.filter(
-                    (d) => d.model === model && d.condition === "clear" && d.strategy === "optimal-split"
+                    d => d.model === model && d.condition === "clear" && d.strategy === "optimal-split",
                   ).length
                   return (
                     <div key={model} className="space-y-2">
@@ -465,7 +465,7 @@ export default function DetailedExperimentsPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4">Individual Run Results</h3>
             <div className="space-y-4">
-              {["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4-turbo"].map((model) => (
+              {["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4-turbo"].map(model => (
                 <div key={model} className="space-y-2">
                   <h4 className="font-medium">{model}</h4>
                   <div className="grid grid-cols-2 gap-4">
@@ -473,7 +473,7 @@ export default function DetailedExperimentsPage() {
                       <div className="text-sm text-gray-600 mb-1">Vague Prompt Runs</div>
                       <div className="flex space-x-1">
                         {adaptiveData
-                          .filter((d) => d.model === model && d.condition === "vague")
+                          .filter(d => d.model === model && d.condition === "vague")
                           .map((run, idx) => (
                             <div
                               key={idx}
@@ -491,7 +491,7 @@ export default function DetailedExperimentsPage() {
                       <div className="text-sm text-gray-600 mb-1">Clear Prompt Runs</div>
                       <div className="flex space-x-1">
                         {adaptiveData
-                          .filter((d) => d.model === model && d.condition === "clear")
+                          .filter(d => d.model === model && d.condition === "clear")
                           .map((run, idx) => (
                             <div
                               key={idx}
@@ -524,13 +524,13 @@ export default function DetailedExperimentsPage() {
                 <BarChart
                   data={(() => {
                     const models = ["gpt-3.5-turbo", "gpt-4-turbo", "o3"]
-                    return models.map((model) => {
-                      const modelData = sequentialData.filter((d) => d.model === model)
+                    return models.map(model => {
+                      const modelData = sequentialData.filter(d => d.model === model)
                       return {
                         model,
-                        "2-step": (modelData.find((d) => d.steps === 2)?.score ?? 0) * 100,
-                        "5-step": (modelData.find((d) => d.steps === 5)?.score ?? 0) * 100,
-                        "10-step": (modelData.find((d) => d.steps === 10)?.score ?? 0) * 100,
+                        "2-step": (modelData.find(d => d.steps === 2)?.score ?? 0) * 100,
+                        "5-step": (modelData.find(d => d.steps === 5)?.score ?? 0) * 100,
+                        "10-step": (modelData.find(d => d.steps === 10)?.score ?? 0) * 100,
                       }
                     })
                   })()}
@@ -538,7 +538,7 @@ export default function DetailedExperimentsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="model" />
                   <YAxis domain={[0, 100]} />
-                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Tooltip formatter={value => `${value}%`} />
                   <Legend />
                   <Bar dataKey="2-step" fill={stepColors["2-step"]} />
                   <Bar dataKey="5-step" fill={stepColors["5-step"]} />
@@ -556,13 +556,13 @@ export default function DetailedExperimentsPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
                   data={(() => {
-                    const stepData = [2, 5, 10].map((steps) => {
-                      const runsForStep = sequentialData.filter((d) => d.steps === steps && d.duration_ms > 0)
+                    const stepData = [2, 5, 10].map(steps => {
+                      const runsForStep = sequentialData.filter(d => d.steps === steps && d.duration_ms > 0)
                       return {
                         steps: `${steps}-step`,
-                        "gpt-3.5-turbo": runsForStep.find((d) => d.model === "gpt-3.5-turbo")?.duration_ms || 0,
-                        "gpt-4-turbo": runsForStep.find((d) => d.model === "gpt-4-turbo")?.duration_ms || 0,
-                        o3: runsForStep.find((d) => d.model === "o3")?.duration_ms || 0,
+                        "gpt-3.5-turbo": runsForStep.find(d => d.model === "gpt-3.5-turbo")?.duration_ms || 0,
+                        "gpt-4-turbo": runsForStep.find(d => d.model === "gpt-4-turbo")?.duration_ms || 0,
+                        o3: runsForStep.find(d => d.model === "o3")?.duration_ms || 0,
                       }
                     })
                     return stepData
@@ -571,7 +571,7 @@ export default function DetailedExperimentsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="steps" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `${((value as number) / 1000).toFixed(1)}s`} />
+                  <Tooltip formatter={value => `${((value as number) / 1000).toFixed(1)}s`} />
                   <Legend />
                   <Line type="monotone" dataKey="gpt-3.5-turbo" stroke={modelColors["gpt-3.5-turbo"]} strokeWidth={2} />
                   <Line type="monotone" dataKey="gpt-4-turbo" stroke={modelColors["gpt-4-turbo"]} strokeWidth={2} />
@@ -596,11 +596,11 @@ export default function DetailedExperimentsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {["gpt-3.5-turbo", "gpt-4-turbo", "o3"].map((model) => (
+                  {["gpt-3.5-turbo", "gpt-4-turbo", "o3"].map(model => (
                     <tr key={model} className="border-b">
                       <td className="py-3 font-medium">{model}</td>
-                      {[2, 5, 10].map((steps) => {
-                        const run = sequentialData.find((d) => d.model === model && d.steps === steps)
+                      {[2, 5, 10].map(steps => {
+                        const run = sequentialData.find(d => d.model === model && d.steps === steps)
                         if (!run)
                           return (
                             <td key={steps} className="text-center py-3">
@@ -655,12 +655,12 @@ export default function DetailedExperimentsPage() {
                 <li>Conditions: 2 (vague vs clear)</li>
                 <li>Runs per condition: 3</li>
                 <li>
-                  Overall vague success: {adaptiveData.filter((d) => d.condition === "vague" && d.adapted).length}/
-                  {adaptiveData.filter((d) => d.condition === "vague").length}
+                  Overall vague success: {adaptiveData.filter(d => d.condition === "vague" && d.adapted).length}/
+                  {adaptiveData.filter(d => d.condition === "vague").length}
                 </li>
                 <li>
-                  Overall clear success: {adaptiveData.filter((d) => d.condition === "clear" && d.adapted).length}/
-                  {adaptiveData.filter((d) => d.condition === "clear").length}
+                  Overall clear success: {adaptiveData.filter(d => d.condition === "clear" && d.adapted).length}/
+                  {adaptiveData.filter(d => d.condition === "clear").length}
                 </li>
               </ul>
             </div>
@@ -671,14 +671,14 @@ export default function DetailedExperimentsPage() {
                 <li>Models tested: 3</li>
                 <li>Chain types: 3 (2-step, 5-step, 10-step)</li>
                 <li>
-                  Perfect scores: {sequentialData.filter((d) => d.score === 1.0).length}/{sequentialData.length}
+                  Perfect scores: {sequentialData.filter(d => d.score === 1.0).length}/{sequentialData.length}
                 </li>
-                <li>Timeouts: {sequentialData.filter((d) => d.status === "timeout").length}</li>
+                <li>Timeouts: {sequentialData.filter(d => d.status === "timeout").length}</li>
                 <li>
                   Average duration:{" "}
                   {Math.round(
-                    sequentialData.filter((d) => d.duration_ms > 0).reduce((sum, d) => sum + d.duration_ms, 0) /
-                      sequentialData.filter((d) => d.duration_ms > 0).length
+                    sequentialData.filter(d => d.duration_ms > 0).reduce((sum, d) => sum + d.duration_ms, 0) /
+                      sequentialData.filter(d => d.duration_ms > 0).length,
                   )}
                   ms
                 </li>

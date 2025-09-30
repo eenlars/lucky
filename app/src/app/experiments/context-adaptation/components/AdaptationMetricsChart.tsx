@@ -60,7 +60,7 @@ export default function AdaptationMetricsChart({ data, metric }: Props) {
         <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="model" tick={{ fontSize: 12 }} />
-          <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}${unit}`} />
+          <YAxis tick={{ fontSize: 12 }} tickFormatter={v => `${v}${unit}`} />
           <Tooltip
             formatter={(v: any) => {
               const decimals =

@@ -1,13 +1,13 @@
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { experimentalModels } from "../../../runtime/settings/models"
+import { experimentalModels } from "../../../examples/settings/models"
 import {
-  CLEAR_SYSTEM_PROMPT,
-  TEST_SCENARIOS,
-  VAGUE_SYSTEM_PROMPT,
+    CLEAR_SYSTEM_PROMPT,
+    TEST_SCENARIOS,
+    VAGUE_SYSTEM_PROMPT,
 } from "../src/tool-real/experiments/03-context-adaptation/constants"
-import type { Condition } from "../src/tool-real/experiments/03-context-adaptation/types"
 import { runMultiToolOurAlgorithm } from "../src/tool-real/experiments/03-context-adaptation/our-algorithm-helper-runner"
+import type { Condition } from "../src/tool-real/experiments/03-context-adaptation/types"
 import { adaptiveTools } from "../src/tool-real/shared/tools/adaptive/adaptiveTools"
 
 const __filename = fileURLToPath(import.meta.url)

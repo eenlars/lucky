@@ -12,7 +12,7 @@ export function createClient() {
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error(
-      "Missing Supabase configuration. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      "Missing Supabase configuration. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
     )
   }
 

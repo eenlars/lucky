@@ -20,11 +20,11 @@ const normaliseResults = <T extends ToolSet>(step: StepResult<T>) => {
   const arrayified = Array.isArray(raw) ? raw : [raw]
 
   const looksWrapped = arrayified.every(
-    (item) => item && typeof item === "object" && ("output" in item || "result" in item)
+    item => item && typeof item === "object" && ("output" in item || "result" in item),
   )
 
   if (looksWrapped) {
-    return arrayified.map((r) => (r as any).output ?? (r as any).result)
+    return arrayified.map(r => (r as any).output ?? (r as any).result)
   }
 
   // If toolResults is already the raw payload (e.g., an array of places),
@@ -71,7 +71,7 @@ const convertV5Step = (step: any) => {
 
 export const processStepsV2 = <T extends ToolSet>(
   steps: StepResult<T>[],
-  modelUsed: ModelName
+  modelUsed: ModelName,
 ): { usdCost: number; agentSteps: AgentSteps } | undefined => {
   if (isNir(steps) || !Array.isArray(steps)) return { usdCost: 0, agentSteps: [] }
 

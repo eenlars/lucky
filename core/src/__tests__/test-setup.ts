@@ -54,7 +54,7 @@ const TEST_MEMORY_WORKFILES = path.join(TEST_TMP_ROOT, "memory", "workfiles")
 const TEST_ERROR_DIR = path.join(TEST_TMP_ROOT, "node", "error")
 
 // Mock runtime constants to prevent import resolution issues and avoid writing to root
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -158,7 +158,7 @@ vi.mock("@runtime/settings/constants", () => ({
   PATHS: {
     root: TEST_TMP_ROOT,
     app: path.join(TEST_TMP_ROOT, "app"),
-    runtime: path.join(TEST_TMP_ROOT, "runtime"),
+    runtime: path.join(TEST_TMP_ROOT, "examples"),
     codeTools: path.join(TEST_TMP_ROOT, "codeTools"),
     setupFile: path.join(TEST_TMP_ROOT, "setup.json"),
     improver: path.join(TEST_TMP_ROOT, "improver"),
@@ -173,14 +173,8 @@ vi.mock("@runtime/settings/constants", () => ({
   },
 }))
 
-// Point MCP loader to the real mcp-secret.json if it exists; otherwise leave unset
-try {
-  const REPO_ROOT = path.resolve(__dirname, "../../../..")
-  const SRC_SECRET = path.join(REPO_ROOT, "runtime", "mcp-secret.json")
-  if (fs.existsSync(SRC_SECRET)) {
-    process.env.MCP_SECRET_PATH = SRC_SECRET
-  }
-} catch {}
+// Note: MCP tests (*.spec.test.ts in tools/mcp/__tests__/) should set up their own
+// MCP_SECRET_PATH if needed. General tests don't require MCP configuration.
 
 // Mock Supabase client to prevent database connection issues
 vi.mock("@core/utils/clients/supabase/client", () => ({

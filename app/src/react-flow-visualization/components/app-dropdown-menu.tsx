@@ -22,7 +22,7 @@ export function AppDropdownMenu({
         <DropdownMenuLabel>Nodes</DropdownMenuLabel>
         {Object.values(nodesConfig)
           .filter(filterNodes)
-          .map((item) => {
+          .map(item => {
             const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
               <button key={item.displayName} onClick={() => onAddNode(item.id)} className="w-full">

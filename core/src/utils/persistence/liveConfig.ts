@@ -5,7 +5,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { workflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
-import { getDefaultModels, PATHS } from "@runtime/settings/constants"
+import { getDefaultModels, PATHS } from "@core/core-config/compat"
 
 /**
  * Decide whether to use database-backed storage for live workflow config.
@@ -43,7 +43,7 @@ function makeDefaultConfig(): WorkflowConfig {
  */
 export async function loadLiveWorkflowConfig(
   fileName: string = PATHS.setupFile,
-  opts?: { wfVersionId?: string; workflowId?: string }
+  opts?: { wfVersionId?: string; workflowId?: string },
 ): Promise<WorkflowConfig> {
   if (!useDbForLiveConfig()) {
     return workflowConfigHandler.loadSingleWorkflow(fileName)
@@ -102,13 +102,13 @@ export async function saveLiveWorkflowConfig(
     parentVersionId?: string
     iterationBudget?: number
     timeBudgetSeconds?: number
-  }
+  },
 ): Promise<{ wfVersionId?: string; workflowId?: string }> {
   if (!useDbForLiveConfig()) {
     await workflowConfigHandler.saveWorkflowConfig(
       config,
       options?.fileName || "setupfile.json",
-      options?.skipBackup ?? false
+      options?.skipBackup ?? false,
     )
     return {}
   }

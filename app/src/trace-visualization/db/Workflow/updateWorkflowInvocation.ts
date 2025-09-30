@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { lgg } from "@core/utils/logging/Logger"
 
 export interface InvocationScores {

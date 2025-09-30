@@ -1,7 +1,7 @@
 "use server"
 import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { Tables } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
@@ -54,7 +54,7 @@ export const fullWorkflow = cache(async (workflowInvocationId: string): Promise<
             inputs:Message!Message_target_invocation_id_fkey ( * ),
             outputs:Message!Message_origin_invocation_id_fkey ( * )
           )
-        `
+        `,
     )
     .eq("wf_invocation_id", workflowInvocationId)
     .order("start_time", { referencedTable: "NodeInvocation" })
@@ -134,7 +134,7 @@ const wrapLegacyPayload = (data: unknown) => {
 const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): NodeGroup[] => {
   const map = new Map<string, NodeGroup>()
 
-  invocations.forEach((inv) => {
+  invocations.forEach(inv => {
     const group = map.get(inv.node_id) ?? {
       node: inv.node,
       invocations: [],

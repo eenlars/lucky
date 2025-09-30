@@ -29,7 +29,7 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -65,7 +65,7 @@ export class Workflow {
     evaluationInput: EvaluationInput,
     evolutionContext?: EvolutionContext,
     toolContext?: Partial<ToolExecutionContext> | undefined,
-    workflowVersionId?: string
+    workflowVersionId?: string,
   ) {
     this.config = config
     this.workflowId = evaluationInput.workflowId
@@ -102,7 +102,7 @@ export class Workflow {
 
     if (inactiveToolsUsed.length > 0) {
       lgg.error("🚨 Workflow verification failed - inactive tools detected:")
-      inactiveToolsUsed.forEach((error) => lgg.error(`- ${error}`))
+      inactiveToolsUsed.forEach(error => lgg.error(`- ${error}`))
     }
   }
 
@@ -133,7 +133,7 @@ export class Workflow {
 
   public async prepareWorkflow(
     evaluationInput: EvaluationInput,
-    problemAnalysisMethod: PrepareProblemMethod
+    problemAnalysisMethod: PrepareProblemMethod,
   ): Promise<void> {
     const { newGoal, workflowIO, problemAnalysis } = await prepareProblem(evaluationInput, problemAnalysisMethod)
 
@@ -255,7 +255,7 @@ export class Workflow {
       return R.error(error, 0)
     }
     lgg.log(
-      `[Workflow.run] runAllIO succeeded for ${this.getWorkflowVersionId()}, got ${runResults?.length || 0} results`
+      `[Workflow.run] runAllIO succeeded for ${this.getWorkflowVersionId()}, got ${runResults?.length || 0} results`,
     )
     this.runResults = runResults
     return R.success(runResults ?? [], 0)
@@ -413,7 +413,7 @@ export class Workflow {
     } else {
       const invocationId = ensure(
         this.workflowInvocationIds.get(index ?? 0),
-        `Workflow invocation must be created for index ${index ?? 0} before creating Supabase context stores`
+        `Workflow invocation must be created for index ${index ?? 0} before creating Supabase context stores`,
       )
       store = createContextStore("supabase", invocationId)
     }
@@ -557,7 +557,7 @@ export class Workflow {
       return R.error("Failed to generate workflow idea in generateWorkflowIdea", workflowIdeaResponse.usdCost)
     }
 
-    if (CONFIG.logging.override.GP) {
+    if (isLoggingEnabled("GP")) {
       lgg.log(`[Converter] Workflow idea: ${workflowIdeaResponse.data.workflow}`)
     }
 

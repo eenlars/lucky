@@ -18,7 +18,7 @@
 // TODO: create per-operation fallback strategies (tools vs text vs structured)
 
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * Tracks timeout timestamps for each model.
@@ -51,7 +51,7 @@ const TIMEOUT_WINDOW_MS = 30_000 // 30 s rolling window
 // TODO: add model performance comparison metrics
 export function getModelTimeoutCount(model: ModelName): number {
   const now = Date.now()
-  return (modelTimeouts.get(model) || []).filter((t) => now - t <= TIMEOUT_WINDOW_MS).length
+  return (modelTimeouts.get(model) || []).filter(t => now - t <= TIMEOUT_WINDOW_MS).length
 }
 
 /**

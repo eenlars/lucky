@@ -42,7 +42,7 @@ export const toastPromise = <T>(
     loading?: string
     success?: string | ((data: T) => string)
     error?: string | ((error: any) => string)
-  }
+  },
 ) => {
   return toast.promise(promise, {
     loading: messages.loading || "Loading...",

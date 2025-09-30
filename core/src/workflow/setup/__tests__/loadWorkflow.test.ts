@@ -18,7 +18,7 @@ vi.mock("@core/utils/env.mjs", () => ({
 }))
 
 // Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -160,7 +160,7 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 

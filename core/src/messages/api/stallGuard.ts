@@ -10,7 +10,7 @@
  * @module messages/api/stallGuard
  */
 
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { generateText, StepResult } from "ai"
 import pTimeout from "p-timeout"
 
@@ -52,7 +52,7 @@ export async function runWithStallGuard<R>(
     modelName: string
     overallTimeoutMs: number
     stallTimeoutMs: number
-  }
+  },
 ): Promise<R> {
   if (!CONFIG.limits.enableStallGuard) {
     return (await generateText(base)) as R
@@ -78,7 +78,7 @@ export async function runWithStallGuard<R>(
         Stall timeout (${stallTimeoutMs} ms) 
         for ${modelName} with ${base.messages?.length} messages 
         and ${base.messages?.reduce((acc, msg) => acc + msg.content.length, 0)} chars
-        `.replace(/\s+\n/g, " ")
+        `.replace(/\s+\n/g, " "),
       )
       ctrl.abort() // stop the request itself
       rejectBecauseOfStall(err) // make the race() reject with *our* error

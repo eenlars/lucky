@@ -1,4 +1,4 @@
-import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import { beforeEach, describe, expect, it } from "vitest"
 import { deduplicateBusinesses } from "../utils"
 
@@ -88,7 +88,7 @@ describe("deduplicateBusinesses", () => {
   // -------------------------------------------------------------------------
   // handles empty / falsy input
   // -------------------------------------------------------------------------
-  it.each([null, undefined, []])("returns [] for %p", (bad) => {
+  it.each([null, undefined, []])("returns [] for %p", bad => {
     const out = deduplicateBusinesses(bad)
     expect(out).toEqual([])
   })

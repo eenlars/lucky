@@ -15,7 +15,7 @@ import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { AgentSteps, AgentStepsLegacy } from "@core/messages/pipeline/AgentStep.types"
 import { isLegacyToolUsage, normalizeLegacyToolUsage } from "@core/messages/pipeline/LegacyToolUsage.types"
 import { isNir } from "@core/utils/common/isNir"
-import { TOOLS } from "@runtime/settings/tools"
+import { TOOLS } from "@examples/settings/tools"
 import { format } from "date-fns"
 import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -410,15 +410,14 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
       <div className="px-4 pb-3 space-y-3">
         {/* Tools section with usage indicator and summaries */}
         {((nodeDefinition?.tools && nodeDefinition.tools.length > 0) ||
-          agentSteps?.some((output) => output.type === "tool")) && (
+          agentSteps?.some(output => output.type === "tool")) && (
           <div className="space-y-2">
             {/* Tool usage badges */}
             <div className="flex flex-wrap gap-1">
               {(() => {
                 // Get all unique tools (available + used)
                 const availableTools = nodeDefinition?.tools || []
-                const usedTools =
-                  agentSteps?.filter((output) => output.type === "tool").map((output) => output.name) || []
+                const usedTools = agentSteps?.filter(output => output.type === "tool").map(output => output.name) || []
                 const allTools = Array.from(new Set([...availableTools, ...usedTools]))
 
                 return allTools.map((tool, index) => {
@@ -455,8 +454,8 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
 
             {/* Tool summaries - show quick overview of what tools accomplished */}
             {agentSteps
-              ?.filter((output) => output.type === "tool")
-              .filter((toolOutput) => "summary" in toolOutput && !isNir(toolOutput.summary))
+              ?.filter(output => output.type === "tool")
+              .filter(toolOutput => "summary" in toolOutput && !isNir(toolOutput.summary))
               .map((toolOutput, index) => (
                 <div
                   key={`tool-summary-${index}`}
@@ -536,7 +535,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                   }
                   setExpandedCalls(next)
                 }}
-                setResultRef={(el) => {
+                setResultRef={el => {
                   resultRefs.current[i] = el
                 }}
               />
@@ -588,7 +587,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                   }
                   setExpandedCalls(next)
                 }}
-                setResultRef={(el) => {
+                setResultRef={el => {
                   resultRefs.current[i] = el
                 }}
               />

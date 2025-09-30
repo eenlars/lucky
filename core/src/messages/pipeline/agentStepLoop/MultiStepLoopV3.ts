@@ -97,7 +97,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
       // check if we have any actionable outputs before termination
       // prevents empty responses when agent only performs reasoning
       const hasActionableOutputs = agentSteps.some(
-        (log) => log.type === "tool" || log.type === "text" || log.type === "terminate"
+        log => log.type === "tool" || log.type === "text" || log.type === "terminate",
       )
 
       if (!hasActionableOutputs) {
@@ -115,7 +115,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
             do it in plain english. show what tools you used, what you produced. max 200 characters. use specific details, but not too specific.
             for example: if you just handled a lot of files, you can say who, what, where, when, why, how. don't talk about only one file.
             `,
-        2
+        2,
       )
 
       if (!summary) {
@@ -194,7 +194,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
     // Log tool selection in multi-step loop
     if (verbose) {
       lgg.log(
-        `[InvocationPipeline] Multi-step round ${round + 1}: Selected tool "${String(selected)}" with plan: ${strategy.plan}`
+        `[InvocationPipeline] Multi-step round ${round + 1}: Selected tool "${String(selected)}" with plan: ${strategy.plan}`,
       )
     }
 
@@ -296,7 +296,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
             do it in plain english. show what tools you used, what you produced. max 200 characters. use specific details, but not too specific.
             for example: if you just handled a lot of files, you can say who, what, where, when, why, how. don't talk about only one file.
             `,
-    2
+    2,
   )
 
   if (!fallbackSummary) {

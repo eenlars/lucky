@@ -23,7 +23,7 @@ export const FitnessOfWorkflowSchema = z.object({
     .min(0)
     .max(100)
     .default(0)
-    .transform((val) => Math.max(0, Math.min(100, val)))
+    .transform(val => Math.max(0, Math.min(100, val)))
     .describe("Accuracy score 0-100 based on matching ground truth"),
   feedback: z.string().min(1).default("Reasoning").describe("reasoning about the accuracy of the workflow"),
 })

@@ -42,23 +42,23 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
   }
 
   // Get version counts and latest versions efficiently
-  const workflowIds = workflows.map((w) => w.wf_id)
+  const workflowIds = workflows.map(w => w.wf_id)
 
   // Get version counts for each workflow using server-side aggregation
   const versionCountsPromise = Promise.all(
-    workflowIds.map(async (workflowId) => {
+    workflowIds.map(async workflowId => {
       const { count } = await supabase
         .from("WorkflowVersion")
         .select("*", { count: "exact", head: true })
         .eq("workflow_id", workflowId)
 
       return { workflowId, count: count || 0 }
-    })
+    }),
   )
 
   // Get latest version for each workflow
   const latestVersionsPromise = Promise.all(
-    workflowIds.map(async (workflowId) => {
+    workflowIds.map(async workflowId => {
       const { data: latest } = await supabase
         .from("WorkflowVersion")
         .select("*")
@@ -68,7 +68,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
         .maybeSingle()
 
       return { workflowId, latest }
-    })
+    }),
   )
 
   const [versionCountsResults, latestVersionsResults] = await Promise.all([versionCountsPromise, latestVersionsPromise])
@@ -88,7 +88,7 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
   }
 
   // Transform workflows with version info
-  return workflows.map((w) => ({
+  return workflows.map(w => ({
     ...w,
     versions: [], // Don't load all versions by default
     activeVersion: latestVersionMap.get(w.wf_id) || null,
@@ -108,7 +108,7 @@ export async function getWorkflow(workflowId: string): Promise<WorkflowWithVersi
       `
       *,
       versions:WorkflowVersion(*)
-    `
+    `,
     )
     .eq("wf_id", workflowId)
     .single()
@@ -119,7 +119,7 @@ export async function getWorkflow(workflowId: string): Promise<WorkflowWithVersi
   }
 
   const sortedVersions = (data.versions || []).sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   )
 
   return {
@@ -198,7 +198,7 @@ async function createWorkflowVersion({
 export async function createWorkflow(
   description: string,
   dsl: WorkflowConfig,
-  commitMessage: string
+  commitMessage: string,
 ): Promise<{ workflowId: string; versionId: string }> {
   const workflowId = nanoid()
   const versionId = nanoid()
@@ -223,7 +223,7 @@ export async function saveWorkflowVersion(
   workflowId: string,
   dsl: WorkflowConfig,
   commitMessage: string,
-  parentVersionId?: string
+  parentVersionId?: string,
 ): Promise<string> {
   const versionId = nanoid()
 

@@ -31,7 +31,7 @@ export async function updateNodeMemory({
 
     // Update the node's memory in the DSL
     const dsl = version.dsl as unknown as WorkflowConfig
-    const node = dsl.nodes.find((n) => n.nodeId === nodeId)
+    const node = dsl.nodes.find(n => n.nodeId === nodeId)
 
     if (!node) {
       throw new Error(`Node ${nodeId} not found in workflow DSL`)

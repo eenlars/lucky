@@ -1,5 +1,5 @@
 import { llmify } from "@core/utils/common/llmify"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 function buildWorkflowRules(): string {
   const rules = [
@@ -11,14 +11,14 @@ function buildWorkflowRules(): string {
   if (CONFIG.workflow.parallelExecution) {
     rules.push(
       "- You can enable parallel execution of nodes by setting a node's handOffType to 'parallel' when it has multiple handOffs, allowing the workflow to branch into multiple simultaneous paths.",
-      "- if you want it to be a decision, you should not include handOffType, just multiple handOffs."
+      "- if you want it to be a decision, you should not include handOffType, just multiple handOffs.",
     )
   }
 
   if (CONFIG.workflow.asyncExecution && CONFIG.workflow.parallelExecution) {
     rules.push(
       "- you can do async execution of nodes. it only works if the async receiving node has the key 'waitFor' = ['node-id-1', 'node-id-2', ...] and those nodes are incoming nodes of the async receiving node.",
-      "- for async execution, the node that receives the input must have a handoff to the node that sends the output."
+      "- for async execution, the node that receives the input must have a handoff to the node that sends the output.",
     )
   }
 
@@ -28,7 +28,7 @@ function buildWorkflowRules(): string {
 
   if (CONFIG.tools.uniqueToolSetsPerAgent) {
     rules.unshift(
-      "- each node must have a completely unique combination of tools (no two nodes can have identical tool sets)"
+      "- each node must have a completely unique combination of tools (no two nodes can have identical tool sets)",
     )
   }
 

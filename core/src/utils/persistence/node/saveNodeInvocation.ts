@@ -1,12 +1,12 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { normalizeModelName } from "@core/messages/api/sendAI/sendAI"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { llmify } from "@core/utils/common/llmify"
+import type { Json, TablesInsert } from "@core/utils/json"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { Json, TablesInsert } from "@lucky/shared"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
 
 type SaveNodeInvocationOpts = {
   nodeId: string
@@ -38,7 +38,10 @@ export const saveNodeInvocationToDB = async ({
   updatedMemory,
 }: SaveNodeInvocationOpts): Promise<{ nodeInvocationId: string }> => {
   // Debug logging for tool calls
-  lgg.onlyIf(CONFIG.logging.override.Tools, `[saveNodeInvocation] Saving agentSteps: ${agentSteps?.length} outputs`)
+  lgg.onlyIf(
+    isLoggingEnabled("Tools") === true,
+    `[saveNodeInvocation] Saving agentSteps: ${agentSteps?.length} outputs`,
+  )
 
   const contentToSave = JSONN.isJSON(output)
     ? JSONN.extract(output) // Don't throw on JSON parse failure
@@ -68,7 +71,7 @@ export const saveNodeInvocationToDB = async ({
     model: normalizeModelName(model),
   }
 
-  if (CONFIG.logging.override.Database) {
+  if (isLoggingEnabled("Database")) {
     // Check if NodeVersion exists before attempting insert
     const { data: nodeVersionCheck, error: nodeVersionError } = await supabase
       .from("NodeVersion")
@@ -80,7 +83,7 @@ export const saveNodeInvocationToDB = async ({
     if (nodeVersionError || !nodeVersionCheck) {
       lgg.error(
         `[DB] CRITICAL: NodeVersion does not exist for nodeId: ${nodeId}, workflowVersionId: ${workflowVersionId}`,
-        JSONN.show(nodeVersionError)
+        JSONN.show(nodeVersionError),
       )
     }
   }
@@ -93,7 +96,7 @@ export const saveNodeInvocationToDB = async ({
 
   if (!data) {
     throw new Error(
-      `Failed to save node invocation for nodeId: ${nodeId}, messageId: ${messageId}, workflowInvocationId: ${workflowInvocationId}. Supabase returned no data after insert operation.`
+      `Failed to save node invocation for nodeId: ${nodeId}, messageId: ${messageId}, workflowInvocationId: ${workflowInvocationId}. Supabase returned no data after insert operation.`,
     )
   }
 

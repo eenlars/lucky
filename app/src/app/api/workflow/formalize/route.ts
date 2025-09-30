@@ -4,11 +4,15 @@ import type { RS } from "@core/utils/types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 
 export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  // Ensure core is initialized
+  ensureCoreInit()
 
   try {
     const body = await req.json()
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
         error: error instanceof Error ? error.message : "Failed to formalize workflow",
         data: null,
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

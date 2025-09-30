@@ -103,11 +103,11 @@ describe("InvocationPipeline System Prompt Integration", () => {
       normalizeModelName: vi.fn().mockReturnValue("openai/gpt-4.1-mini"),
     }))
 
-    vi.doMock("@runtime/code_tools/todo-manager/tool-todo-write", () => ({
+    vi.doMock("@core/code_tools/todo-manager/tool-todo-write", () => ({
       default: { execute: mockTodoWrite },
     }))
 
-    vi.doMock("@runtime/code_tools/todo-manager/tool-todo-read", () => ({
+    vi.doMock("@core/code_tools/todo-manager/tool-todo-read", () => ({
       default: { execute: mockTodoRead },
     }))
 
@@ -154,7 +154,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
         expectedOutputType: undefined,
         workflowId: "test",
         mainWorkflowGoal: "test",
-      }
+      },
     )) as {
       success: boolean
       data: {
@@ -183,7 +183,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
     console.log("  - System prompt:", systemPrompt)
     console.log(
       "  - todoWrite called first:",
-      mockTodoWrite.mock.invocationCallOrder[0] < mockTodoRead.mock.invocationCallOrder[0]
+      mockTodoWrite.mock.invocationCallOrder[0] < mockTodoRead.mock.invocationCallOrder[0],
     )
     console.log("  - Final output contains todos:", finalTodos.length > 0)
     console.log("  - Final todo content:", finalTodos[0].content)
@@ -195,7 +195,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
     // errors, retries, or complex decision flows. also modifies global CONFIG which could
     // affect other tests if not properly restored.
     // This test verifies that multi-step loop would follow the same system prompt
-    const { CONFIG } = await import("@runtime/settings/constants")
+    const { CONFIG } = await import("@core/core-config/compat")
 
     // Mock multi-step behavior - tool strategy calls followed by termination
     const mockSelectToolStrategyV2 = vi

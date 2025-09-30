@@ -46,9 +46,9 @@ describe("sendAI – text mode", () => {
       sendAI({
         mode: "text",
         messages: [{ role: "user", content: "x" }],
-      })
+      }),
     )
     const results = await Promise.all(promises)
-    expect(results.every((r) => r.success)).toBe(true)
+    expect(results.every(r => r.success)).toBe(true)
   })
 })

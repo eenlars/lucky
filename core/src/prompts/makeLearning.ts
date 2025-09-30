@@ -3,7 +3,7 @@ import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { MemoryResponseSchema, type NodeMemory } from "@core/utils/memory/memorySchema"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { isNir } from "../utils/common/isNir"
 import { GENERALIZATION_LIMITS } from "./generalizationLimits"
 

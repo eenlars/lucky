@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { generateText } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -32,7 +32,7 @@ vi.mock("@core/messages/utils/saveResult", () => ({
   saveResultOutput: vi.fn(),
 }))
 
-vi.mock("@runtime/code_tools/file-saver/save", () => ({
+vi.mock("@examples/code_tools/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
@@ -46,7 +46,7 @@ vi.mock("@core/messages", () => ({
   },
 }))
 
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     logging: {
       override: {
@@ -142,7 +142,7 @@ describe("sendAIRequest with expectedOutput", () => {
             content: expect.stringContaining("strictly returns JSON data"),
           }),
         ]),
-      })
+      }),
     )
     // Also ensure we instruct the model to wrap the JSON in <json> tags
     expect(mockedGenerateText).toHaveBeenCalledWith(
@@ -153,7 +153,7 @@ describe("sendAIRequest with expectedOutput", () => {
             content: expect.stringContaining("<json>"),
           }),
         ]),
-      })
+      }),
     )
   })
 

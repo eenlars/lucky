@@ -2,7 +2,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the constants module
-vi.mock("@runtime/constants", () => ({
+vi.mock("@examples/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     verification: {
@@ -11,8 +11,8 @@ vi.mock("@runtime/constants", () => ({
   },
 }))
 
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
 import { verifyNoCycles } from "../verifyDirectedGraph"
 import { getNodeRole, isOrchestrator, verifyHierarchicalStructure } from "../verifyHierarchical"

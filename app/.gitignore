@@ -34,7 +34,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/src/runtime/logging_folder/*
+/src/examples/logging_folder/*
 .cache
 
 # open-source cleanup

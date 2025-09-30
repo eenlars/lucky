@@ -57,7 +57,7 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
     }
   }
 
-  const selectedDataset = datasets.find((d) => d.datasetId === selectedDatasetId)
+  const selectedDataset = datasets.find(d => d.datasetId === selectedDatasetId)
 
   return (
     <div className="relative">
@@ -106,7 +106,7 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
               >
                 Clear selection
               </button>
-              {datasets.map((dataset) => (
+              {datasets.map(dataset => (
                 <button
                   key={dataset.datasetId}
                   onClick={() => {

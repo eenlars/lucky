@@ -33,7 +33,7 @@ import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { CodeToolName } from "@core/tools/tool.types"
 import { R, type RS } from "@core/utils/types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
-import { TOOLS } from "@runtime/settings/tools"
+import { TOOLS } from "@core/core-config/compat"
 import { tool, zodSchema, type Tool } from "ai"
 import { z, type ZodSchema, type ZodTypeAny } from "zod"
 
@@ -88,7 +88,7 @@ export function defineTool<
   params: Schema
   execute: (
     params: z.infer<Schema>, // already validated
-    externalContext: ToolExecutionContext
+    externalContext: ToolExecutionContext,
   ) => Promise<TResult> | TResult
 }) {
   /* Helper aliases – purely for readability */
@@ -143,7 +143,7 @@ export function defineTool<
  */
 export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
   toolDef: ReturnType<typeof defineTool<ParamsSchema, TResult>>,
-  toolExecutionContext: ToolExecutionContext
+  toolExecutionContext: ToolExecutionContext,
 ): Tool {
   return tool({
     description: toolDef.description,
@@ -157,7 +157,7 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
       } = validateAndCorrectWithSchema(
         toolDef.name,
         params,
-        toolDef.parameters // use the tool's Zod schema as single source of truth
+        toolDef.parameters, // use the tool's Zod schema as single source of truth
       )
 
       // log any auto-corrections for debugging

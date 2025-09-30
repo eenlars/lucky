@@ -31,13 +31,13 @@ export function parseWorkflowResultToMetrics(result: InvokeWorkflowResult): Metr
 export function calculateRubricScores(
   criteria: RubricCriteria[],
   workflowOutput: string,
-  fitness?: { accuracy?: number }
+  fitness?: { accuracy?: number },
 ): RubricCriteria[] {
   // If we have a fitness accuracy score, distribute it proportionally
   if (fitness?.accuracy) {
     const accuracyPercentage = fitness.accuracy / 100
 
-    return criteria.map((criterion) => ({
+    return criteria.map(criterion => ({
       ...criterion,
       achievedPoints: Math.round(criterion.maxPoints * accuracyPercentage),
     }))
@@ -46,7 +46,7 @@ export function calculateRubricScores(
   // Otherwise, try to parse the output for specific criteria mentions
   const outputLower = workflowOutput.toLowerCase()
 
-  return criteria.map((criterion) => {
+  return criteria.map(criterion => {
     // Check if the criterion name appears in the output
     const criterionMentioned = criterion.name && outputLower.includes(criterion.name.toLowerCase())
 

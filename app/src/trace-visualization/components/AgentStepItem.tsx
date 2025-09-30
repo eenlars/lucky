@@ -124,8 +124,8 @@ export const AgentStepItem = ({
             </div>
             <div
               className={`text-sm leading-relaxed whitespace-pre-wrap ${theme.contentClass}`}
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
               <SmartContent value={(step as any).return} collapsed={1} enableClipboard showExpanders jsonTheme="auto" />
             </div>

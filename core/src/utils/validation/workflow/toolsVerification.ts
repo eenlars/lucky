@@ -2,7 +2,7 @@ import { ALL_ACTIVE_TOOL_NAMES, INACTIVE_TOOLS } from "@core/tools/tool.types"
 import { isNir } from "@core/utils/common/isNir"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 // check that each tool is used by only one workflow node
 export const verifyToolsUnique = async (config: WorkflowConfig): Promise<VerificationErrors> => {
@@ -136,13 +136,13 @@ export const verifyMaxToolsPerAgent = async (config: WorkflowConfig): Promise<Ve
 
     if (mcpToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
       )
     }
 
     if (codeToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
       )
     }
   }

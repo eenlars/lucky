@@ -4,9 +4,9 @@ import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { JSONN } from "@core/utils/json"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { z } from "zod"
 
 export type PrepareProblemMethod = "workflow" | "ai" | "none"
@@ -15,18 +15,18 @@ const ProblemAnalysisSchema = z.object({
   problemAnalysis: z
     .string()
     .describe(
-      `Analysis of workflow input including boundaries, edge cases, difficulty level, assumptions, reasoning, and expected output.`
+      `Analysis of workflow input including boundaries, edge cases, difficulty level, assumptions, reasoning, and expected output.`,
     ),
   instructionsToNodes: z
     .string()
     .describe(
-      `to keep it more simple and concise, you need to think about the main goal of the workflow and the instructions to the nodes. make it concise and to the point. it needs to be clear.`
+      `to keep it more simple and concise, you need to think about the main goal of the workflow and the instructions to the nodes. make it concise and to the point. it needs to be clear.`,
     ),
 })
 
 export const prepareProblem = async (
   task: EvaluationInput,
-  method: PrepareProblemMethod
+  method: PrepareProblemMethod,
 ): Promise<{
   newGoal: string
   workflowIO: WorkflowIO[]
@@ -109,7 +109,7 @@ export const prepareProblem = async (
     const sampleWorkflowIO = basicWorkflowIO
       .sort(() => Math.random() - 0.5)
       .slice(0, 5)
-      .map((w) => w.workflowInput)
+      .map(w => w.workflowInput)
 
     const sampleWorkflowIOString = sampleWorkflowIO.join("\n")
 
@@ -169,7 +169,7 @@ Guidelines:
       }
     }
 
-    lgg.onlyIf(CONFIG.logging.override.Setup, `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`)
+    lgg.onlyIf(isLoggingEnabled("Setup"), `[prepareProblem] AI enhancement successful: ${JSONN.show(data, 2)}`)
 
     return {
       newGoal: data.instructionsToNodes,

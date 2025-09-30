@@ -9,7 +9,7 @@ async function runCleanup() {
 
     if (preview.testRuns.length > 0) {
       console.log(
-        `\n🧹 Running COMPLETE cleanup on ${preview.testRuns.length} EvolutionRuns and ${preview.invocationsCount} WorkflowInvocations...`
+        `\n🧹 Running COMPLETE cleanup on ${preview.testRuns.length} EvolutionRuns and ${preview.invocationsCount} WorkflowInvocations...`,
       )
       console.log("⚠️ This will delete the EvolutionRuns themselves, not just WorkflowInvocations")
 

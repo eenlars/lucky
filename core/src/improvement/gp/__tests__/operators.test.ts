@@ -67,7 +67,7 @@ describe("GP Operators", () => {
       expect(uniqueSelections.size).toBeGreaterThan(1)
 
       // all selections should be valid
-      selections.forEach((selection) => {
+      selections.forEach(selection => {
         expect(mutationTypes).toContain(selection)
       })
     })
@@ -126,7 +126,7 @@ Create a new workflow that inherits strengths from both parents.`
     it("should handle different crossover strategies", () => {
       const strategies = ["uniform_crossover", "single_point_crossover", "multi_point_crossover", "blend_crossover"]
 
-      strategies.forEach((strategy) => {
+      strategies.forEach(strategy => {
         const prompt = `Apply ${strategy} to combine parent genomes`
         expect(prompt).toContain(strategy)
         expect(typeof prompt).toBe("string")
@@ -264,7 +264,7 @@ Create a new workflow that inherits strengths from both parents.`
       const inputs = Array.from({ length: batchSize }, (_, i) => `input_${i}`)
 
       const start = Date.now()
-      const results = inputs.map((input) => `processed_${input}`)
+      const results = inputs.map(input => `processed_${input}`)
       const end = Date.now()
 
       expect(results).toHaveLength(batchSize)

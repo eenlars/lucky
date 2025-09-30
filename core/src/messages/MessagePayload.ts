@@ -1,5 +1,5 @@
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
-import type { Enums } from "@lucky/shared"
+import type { Enums } from "@core/utils/json"
 // collaboration Types
 
 // OFFLOAD
@@ -79,7 +79,7 @@ export type Payload = DelegationPayload | SequentialPayload | AggregatedPayload 
 const joinBerichtenTexts = (items: TextContent[] | undefined): string =>
   Array.isArray(items)
     ? items
-        .map((b) => (typeof b.text === "string" ? b.text : ""))
+        .map(b => (typeof b.text === "string" ? b.text : ""))
         .filter(Boolean)
         .join("\n")
     : ""
@@ -89,7 +89,7 @@ export const extractTextFromPayload = (payload: Payload): string => {
     case "aggregated": {
       const agg = payload as AggregatedPayload
       return agg.messages
-        .map((m) => extractTextFromPayload(m.payload))
+        .map(m => extractTextFromPayload(m.payload))
         .filter(Boolean)
         .join("\n")
     }

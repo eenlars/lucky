@@ -3,14 +3,18 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { beforeEach, describe, expect, it } from "vitest"
 import { setupCodeToolsForNode } from "../codeToolsSetup"
 import { codeToolRegistry } from "../index"
+import { CodeToolAutoDiscovery } from "../AutoDiscovery"
+import { PATHS as EXAMPLES_PATHS } from "@examples/settings/constants"
 
 describe("codeToolsSetup bug demonstration", () => {
   // TODO: This test suite is labeled as "bug demonstration" which suggests it's testing
   // known broken behavior. Tests should verify correct behavior, not document bugs.
   // If this is a regression test, it should be named accordingly and test the fix.
   beforeEach(async () => {
-    // Initialize registry
-    await codeToolRegistry.initialize()
+    // Reset and setup tools for testing from real example code_tools
+    await codeToolRegistry.destroy()
+    const localDiscovery = new CodeToolAutoDiscovery(EXAMPLES_PATHS.codeTools)
+    await localDiscovery.setupCodeTools()
   })
 
   it("shows tools are missing without context", async () => {

@@ -56,7 +56,7 @@ function formatModelDisplayName(modelId: string): string {
   const words = spaced
     .split(" ")
     .filter(Boolean)
-    .map((w) => {
+    .map(w => {
       const lower = w.toLowerCase()
       if (lower === "gpt") return "GPT"
       if (lower === "gemini") return "Gemini"
@@ -80,12 +80,12 @@ type Connection = {
 const MODEL_SHAPES: ShapeName[] = ["circle", "triangle", "diamond", "square"]
 
 function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
-  const fromResults = Array.from(new Set(runs.map((r) => r.model))) as OpenRouterModelName[]
+  const fromResults = Array.from(new Set(runs.map(r => r.model))) as OpenRouterModelName[]
   const preferred = MODELS
   const order: OpenRouterModelName[] = []
   for (const m of preferred) if (fromResults.includes(m)) order.push(m)
   for (const m of fromResults) if (!order.includes(m)) order.push(m)
-  return order.map((m) => String(m))
+  return order.map(m => String(m))
 }
 
 function aggregateLoopMetrics(run: OurAlgorithmRun) {
@@ -111,7 +111,7 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
   allPoints: PointDatum[]
 } {
   if (!results) return { modelOrder: [], allPoints: [] }
-  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map((s) => [s.id, s.expected])) as Record<string, number>
+  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map(s => [s.id, s.expected])) as Record<string, number>
 
   const modelOrder = computeModelOrder(results.runs)
   const allPoints: PointDatum[] = []
@@ -243,7 +243,7 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
       try {
         const res = await fetch(
           `/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.json?t=${Date.now()}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         )
         if (!res.ok) throw new Error(`Failed to load results: ${res.status}`)
         const json = (await res.json()) as OurAlgorithmExperimentResults
@@ -355,10 +355,7 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
     return lines
   }, [aggregatedPoints, modelOrder])
 
-  const aggregatedClearPoints = useMemo(
-    () => aggregatedPoints.filter((p) => p.condition === "clear"),
-    [aggregatedPoints]
-  )
+  const aggregatedClearPoints = useMemo(() => aggregatedPoints.filter(p => p.condition === "clear"), [aggregatedPoints])
 
   const hasAny = aggregatedPoints.length > 0
 
@@ -425,7 +422,7 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
                 offset: 8,
                 fill: axes.label,
               }}
-              tickFormatter={(v) => `${v}%`}
+              tickFormatter={v => `${v}%`}
               tick={{ fontSize: 10, fill: axes.label }}
               axisLine={{ stroke: axes.axisLine }}
               tickLine={{ stroke: axes.tickLine }}
@@ -436,7 +433,7 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
             <Tooltip content={<CustomTooltip />} />
 
             {/* Pair connections (one Line per model, aggregated across scenarios) */}
-            {connections.map((c) => (
+            {connections.map(c => (
               <Line
                 key={c.key}
                 data={c.data}

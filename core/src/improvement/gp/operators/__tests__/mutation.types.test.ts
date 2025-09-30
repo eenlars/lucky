@@ -15,7 +15,7 @@ describe("Mutation Types", () => {
     })
 
     it("should include iterative mutation", () => {
-      const iterativeWeight = MUTATION_WEIGHTS.find((w) => w.type === "iterative")
+      const iterativeWeight = MUTATION_WEIGHTS.find(w => w.type === "iterative")
 
       expect(iterativeWeight).toBeDefined()
       expect(iterativeWeight?.weight).toBe(0.15)
@@ -23,13 +23,13 @@ describe("Mutation Types", () => {
     })
 
     it("should have all weights be positive", () => {
-      MUTATION_WEIGHTS.forEach((weight) => {
+      MUTATION_WEIGHTS.forEach(weight => {
         expect(weight.weight).toBeGreaterThan(0)
       })
     })
 
     it("should have unique mutation types", () => {
-      const types = MUTATION_WEIGHTS.map((w) => w.type)
+      const types = MUTATION_WEIGHTS.map(w => w.type)
       const uniqueTypes = new Set(types)
 
       expect(uniqueTypes.size).toBe(types.length)
@@ -37,9 +37,9 @@ describe("Mutation Types", () => {
 
     it("should include all expected mutation types", () => {
       const expectedTypes = ["model", "prompt", "tool", "iterative", "structure", "addNode", "deleteNode"]
-      const actualTypes = MUTATION_WEIGHTS.map((w) => w.type)
+      const actualTypes = MUTATION_WEIGHTS.map(w => w.type)
 
-      expectedTypes.forEach((expectedType) => {
+      expectedTypes.forEach(expectedType => {
         expect(actualTypes).toContain(expectedType)
       })
     })

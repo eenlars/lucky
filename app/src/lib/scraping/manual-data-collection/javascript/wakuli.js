@@ -26,7 +26,7 @@ function expandRange(start, end) {
 function transformWakuliData(input) {
   const items = Array.isArray(input) ? input : [input]
 
-  return items.map((item) => {
+  return items.map(item => {
     // Build coordinates array
     const coords = item.longitude && item.latitude ? [parseFloat(item.longitude), parseFloat(item.latitude)] : null
 
@@ -48,9 +48,9 @@ function transformWakuliData(input) {
     }
 
     // Find "Opening times" custom field and parse it
-    const cf = (item.custom_fields || []).find((f) => f.name.toLowerCase().includes("opening"))
+    const cf = (item.custom_fields || []).find(f => f.name.toLowerCase().includes("opening"))
     if (cf && cf.value) {
-      cf.value.split("\n").forEach((line) => {
+      cf.value.split("\n").forEach(line => {
         // e.g. "mo - fr 07:00-18:00" or "sa - su 08:00-18:00"
         const parts = line.trim().split(/\s+/, 3)
         // parts[0] = start code, parts[1] = '-' or end code, parts[2] = times OR parts[1] = times
@@ -75,7 +75,7 @@ function transformWakuliData(input) {
         }
         // Assign
         if (dayCodes.length && times) {
-          dayCodes.forEach((dc) => {
+          dayCodes.forEach(dc => {
             const day = DAY_CODE_MAP[dc]
             if (day) {
               // normalize "HH:MM-HH:MM"

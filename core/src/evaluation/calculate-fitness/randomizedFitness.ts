@@ -1,7 +1,7 @@
 import type { FitnessFunctionInput, FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { calculateAverageFitness } from "./average"
 import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitness"
 
@@ -16,7 +16,7 @@ import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitn
 export async function calculateFitness(
   input: FitnessFunctionInput,
   numRounds: number = 1,
-  numModels: number = 2
+  numModels: number = 2,
 ): Promise<RS<FitnessOfWorkflow>> {
   const models = [getDefaultModels().fitness, getDefaultModels().nano, getDefaultModels().reasoning]
     // de-duplicate in case multiple keys map to same underlying model id
@@ -25,9 +25,7 @@ export async function calculateFitness(
   // Create all promises upfront for parallel execution
   const promises = models
     .slice(0, numModels)
-    .flatMap((model) =>
-      Array.from({ length: numRounds }, () => baseCalculateFitness({ ...input, overrideModel: model }))
-    )
+    .flatMap(model => Array.from({ length: numRounds }, () => baseCalculateFitness({ ...input, overrideModel: model })))
 
   // Execute all fitness calculations in parallel
   const allResults = await Promise.all(promises)
@@ -52,7 +50,7 @@ export async function calculateFitness(
         totalTimeSeconds: (input.totalTime ?? 0) / 1000,
         accuracy: 0,
       },
-      totalUsdCost
+      totalUsdCost,
     )
   }
 

@@ -10,7 +10,7 @@ export class NodePersistenceManager {
   constructor(
     private readonly nodeId: string,
     private readonly config: WorkflowNodeConfig,
-    private memory: Record<string, string> = {}
+    private memory: Record<string, string> = {},
   ) {
     // Initialize memory from config
     this.memory = { ...(config.memory ?? {}) }

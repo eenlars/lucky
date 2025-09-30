@@ -26,12 +26,12 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
-describe("improveWorkflowUnified sanitization", () => {
+describe("improveWorkflowUnified sanitization (core defaults)", () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it("removes inactive tools from improved configs (was failing before)", async () => {
+  it("keeps active tools by default (browserUse remains active in core)", async () => {
     const config: WorkflowConfig = {
       entryNodeId: "step-1",
       nodes: [
@@ -63,7 +63,7 @@ describe("improveWorkflowUnified sanitization", () => {
 
     expect(improvedConfig).not.toBeNull()
     for (const node of improvedConfig!.nodes) {
-      expect(node.mcpTools).not.toContain("browserUse")
+      expect(node.mcpTools).toContain("browserUse")
     }
   })
 })

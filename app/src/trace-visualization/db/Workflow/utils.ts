@@ -1,10 +1,19 @@
 import { JSONN, Tables } from "@lucky/shared"
 import { nanoid } from "nanoid"
 
+/**
+ * Subset of Message fields used for node invocation display.
+ * Optimized to exclude unnecessary fields like seq, to_node_id, wf_invocation_id, reply_to.
+ */
+export type MessageMetadata = Pick<
+  Tables<"Message">,
+  "msg_id" | "role" | "origin_invocation_id" | "target_invocation_id" | "created_at" | "payload" | "from_node_id"
+>
+
 export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {
   node: Tables<"NodeVersion">
-  inputs: Tables<"Message">[]
-  outputs: Tables<"Message">[]
+  inputs: MessageMetadata[]
+  outputs: MessageMetadata[]
 }
 
 export interface NodeGroup {
@@ -34,7 +43,7 @@ export const wrapLegacyPayload = (data: unknown) => {
 export const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): NodeGroup[] => {
   const map = new Map<string, NodeGroup>()
 
-  invocations.forEach((inv) => {
+  invocations.forEach(inv => {
     const group = map.get(inv.node_id) ?? {
       node: inv.node,
       invocations: [],

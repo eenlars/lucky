@@ -35,7 +35,7 @@ function CheckItem({
 }
 
 export function SettingsDialog() {
-  const state = useAppStore((state) => state)
+  const state = useAppStore(state => state)
 
   return (
     <Dialog>

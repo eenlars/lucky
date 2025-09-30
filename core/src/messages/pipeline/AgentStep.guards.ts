@@ -27,5 +27,5 @@ export function isAgentStep(value: unknown): value is AgentStep<any> {
 }
 
 export function isAgentSteps(value: unknown): value is AgentSteps<any> {
-  return Array.isArray(value) && value.every((v) => isAgentStep(v))
+  return Array.isArray(value) && value.every(v => isAgentStep(v))
 }

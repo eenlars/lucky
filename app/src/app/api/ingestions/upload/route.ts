@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { genShortId } from "@core/utils/common/utils"
 import { NextRequest, NextResponse } from "next/server"
 import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
           cacheControl: "3600",
           upsert: true,
           contentType: "application/json",
-        }
+        },
       )
       if (uploadError) {
         return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     // Build metadata
     const onlyIncludeInputColumns = onlyIncludeInputColumnsRaw
       .split(",")
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean)
 
     const meta = {
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
       new Blob([JSON.stringify(manifest, null, 2)], {
         type: "application/json",
       }),
-      { upsert: true, contentType: "application/json" }
+      { upsert: true, contentType: "application/json" },
     )
     if (manifestError) {
       return NextResponse.json({ error: `Failed to write manifest: ${manifestError.message}` }, { status: 500 })
@@ -160,31 +160,31 @@ export async function POST(req: NextRequest) {
         // Parse CSV and create records
         try {
           const csvText = await file.text()
-          const lines = csvText.split("\n").filter((line) => line.trim())
+          const lines = csvText.split("\n").filter(line => line.trim())
           if (lines.length > 1) {
-            const headers = lines[0].split(",").map((h) => h.trim())
+            const headers = lines[0].split(",").map(h => h.trim())
 
             // Find input and output columns
             const inputCol = headers.findIndex(
-              (h) => h.toLowerCase().includes("input") || h.toLowerCase().includes("question")
+              h => h.toLowerCase().includes("input") || h.toLowerCase().includes("question"),
             )
             let outputCol = headers.findIndex(
-              (h) =>
+              h =>
                 h.toLowerCase().includes("output") ||
                 h.toLowerCase().includes("answer") ||
-                h.toLowerCase().includes("expected")
+                h.toLowerCase().includes("expected"),
             )
 
             // If evaluation column is specified, use that
             if (evaluation && evaluation.startsWith("column:")) {
               const evalColName = evaluation.slice(7)
-              outputCol = headers.findIndex((h) => h === evalColName)
+              outputCol = headers.findIndex(h => h === evalColName)
             }
 
             // Create records for each row
             for (let i = 1; i < lines.length && i <= 50; i++) {
               // Limit to 50 records for performance
-              const values = lines[i].split(",").map((v) => v.trim().replace(/^"|"$/g, ""))
+              const values = lines[i].split(",").map(v => v.trim().replace(/^"|"$/g, ""))
               if (values.length >= headers.length) {
                 const input = inputCol >= 0 ? values[inputCol] : values[0] || ""
                 const output = outputCol >= 0 ? values[outputCol] : values[values.length - 1] || ""

@@ -14,7 +14,7 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@runtime/*": ["../../runtime/*"],
+      "@examples/*": ["../../examples/*"],
       "@core/*": ["../../core/src/*"],
       "@lucky/shared": ["../shared"],
       "@lucky/shared/*": ["../shared/*"]
@@ -26,7 +26,7 @@
     "**/*.tsx",
     "**/*.js",
     "../core/src/**/*.ts",
-    "../runtime/**/*.ts"
+    "../examples/**/*.ts"
   ],
   "exclude": ["node_modules", "src/experiments-2"]
 }

@@ -45,7 +45,7 @@ describe("Debug describeWorkflow", () => {
 
     // Test extracting tools from workflow
     const config = mockWorkflow.getConfig()
-    const allTools = config.nodes.flatMap((node) => [...node.mcpTools, ...node.codeTools])
+    const allTools = config.nodes.flatMap(node => [...node.mcpTools, ...node.codeTools])
     console.log("All tools from workflow:", allTools)
 
     // Test with only tool explanations

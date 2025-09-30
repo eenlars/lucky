@@ -54,7 +54,7 @@ describe("calculateFitness", () => {
         evaluation: "test evaluation",
         finalWorkflowOutput: "test final workflow output",
       },
-      1
+      1,
     )
 
     if (!success) {

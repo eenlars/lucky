@@ -9,7 +9,7 @@ describe("LocationDataManager Tool Integration", () => {
   it("should reproduce the exact error we're seeing", async () => {
     // Discover tools via registry instead of deep-importing
     await codeToolAutoDiscovery.setupCodeTools()
-    const locationDataManager = codeToolRegistry.getAllTools().find((t) => t.name === "locationDataManager")!
+    const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation",
@@ -59,7 +59,7 @@ describe("LocationDataManager Tool Integration", () => {
 
   it("should work correctly with proper array data", async () => {
     await codeToolAutoDiscovery.setupCodeTools()
-    const locationDataManager = codeToolRegistry.getAllTools().find((t) => t.name === "locationDataManager")!
+    const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation-2",

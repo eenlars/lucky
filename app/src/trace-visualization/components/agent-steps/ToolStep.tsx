@@ -69,7 +69,7 @@ export const ToolStep = ({
       onClick={
         isExpanded
           ? undefined
-          : (e) => {
+          : e => {
               if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                 onToggleCollapsed()
               }
@@ -87,7 +87,7 @@ export const ToolStep = ({
           <div className="flex items-center gap-2">
             <button
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 copyToClipboard(JSON.stringify(args, null, 2))
               }}
@@ -97,7 +97,7 @@ export const ToolStep = ({
             </button>
             <button
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 onToggleExpanded()
               }}

@@ -19,7 +19,7 @@ async function testAutoDiscovery() {
     lgg.log("1️⃣ Testing framework tool discovery...")
     const discoveredTools = await codeToolAutoDiscovery.discoverTools()
     lgg.log(`Found ${discoveredTools.length} tools:`)
-    discoveredTools.forEach((tool) => {
+    discoveredTools.forEach(tool => {
       lgg.log(`- ${tool.name}: ${tool.description}`)
     })
 
@@ -35,7 +35,7 @@ async function testAutoDiscovery() {
 
     const allTools = codeToolRegistry.getAllTools()
     lgg.log(`All registered tools:`)
-    allTools.forEach((tool) => {
+    allTools.forEach(tool => {
       lgg.log(`- ${tool.name}: ${tool.description}`)
     })
 

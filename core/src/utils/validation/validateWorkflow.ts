@@ -4,7 +4,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { repairWorkflow } from "@core/workflow/actions/repair/repairWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 
 const MAX_RETRIES = CONFIG.improvement.flags.maxRetriesForWorkflowRepair
 
@@ -16,7 +16,7 @@ const MAX_RETRIES = CONFIG.improvement.flags.maxRetriesForWorkflowRepair
  */
 export async function validateAndRepairWorkflow(
   initialConfig: WorkflowConfig,
-  options: { maxRetries?: number; onFail?: "throw" | "returnNull" } = {}
+  options: { maxRetries?: number; onFail?: "throw" | "returnNull" } = {},
 ): Promise<{ finalConfig: WorkflowConfig | null; cost: number }> {
   const { maxRetries = MAX_RETRIES, onFail = "throw" } = options
   let finalConfig = { ...initialConfig }
@@ -37,7 +37,7 @@ export async function validateAndRepairWorkflow(
       }
 
       lgg.log(
-        `⚠️ Repair attempt ${retryCount + 1}/${maxRetries}... ${truncater(JSON.stringify(verificationResult.errors, null, 2), 200)}`
+        `⚠️ Repair attempt ${retryCount + 1}/${maxRetries}... ${truncater(JSON.stringify(verificationResult.errors, null, 2), 200)}`,
       )
 
       // Repair if validation failed
@@ -50,7 +50,7 @@ export async function validateAndRepairWorkflow(
       currentCost += enhancementCost ?? 0
       retryCount++
     } catch (error) {
-      if (CONFIG.logging.override.API) {
+      if (isLoggingEnabled("API")) {
         lgg.error("❌ Error in workflow validation and repair:", error, JSON.stringify(finalConfig, null, 2))
       }
 
@@ -68,7 +68,7 @@ export async function validateAndRepairWorkflow(
     return { finalConfig: null, cost: currentCost }
   } else {
     throw new Error(
-      `Workflow repair failed after ${maxRetries} attempts. Please check the workflow configuration. ${verificationResult ? JSON.stringify(verificationResult.errors, null, 2) : ""}`
+      `Workflow repair failed after ${maxRetries} attempts. Please check the workflow configuration. ${verificationResult ? JSON.stringify(verificationResult.errors, null, 2) : ""}`,
     )
   }
 }

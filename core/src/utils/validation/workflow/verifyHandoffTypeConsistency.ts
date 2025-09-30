@@ -27,8 +27,8 @@ export async function verifyHandoffTypeConsistency(config: WorkflowConfig): Prom
     if (!["parallel", "sequential", "conditional"].includes(value)) {
       errors.push(
         `Node '${node.nodeId}' has invalid handOffType '${String(
-          value
-        )}'. Allowed: 'sequential' | 'parallel' | 'conditional'`
+          value,
+        )}'. Allowed: 'sequential' | 'parallel' | 'conditional'`,
       )
       continue
     }
@@ -38,12 +38,12 @@ export async function verifyHandoffTypeConsistency(config: WorkflowConfig): Prom
         errors.push(
           `Node '${node.nodeId}' has handOffType 'parallel' but only ${
             node.handOffs?.length ?? 0
-          } handOff(s). Require at least 2.`
+          } handOff(s). Require at least 2.`,
         )
       }
       if (node.handOffs?.includes("end")) {
         errors.push(
-          `Node '${node.nodeId}' has handOffType 'parallel' but includes 'end' in handOffs. Remove 'end' for proper parallel fan-out.`
+          `Node '${node.nodeId}' has handOffType 'parallel' but includes 'end' in handOffs. Remove 'end' for proper parallel fan-out.`,
         )
       }
     }
@@ -51,7 +51,7 @@ export async function verifyHandoffTypeConsistency(config: WorkflowConfig): Prom
     if (value === "conditional") {
       if (!node.handOffs || node.handOffs.length < 2) {
         errors.push(
-          `Node '${node.nodeId}' has handOffType 'conditional' but fewer than 2 handOffs. Provide multiple targets for a decision.`
+          `Node '${node.nodeId}' has handOffType 'conditional' but fewer than 2 handOffs. Provide multiple targets for a decision.`,
         )
       }
     }

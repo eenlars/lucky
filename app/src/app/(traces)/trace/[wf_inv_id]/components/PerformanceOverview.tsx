@@ -81,7 +81,7 @@ export default function PerformanceOverview({
       /^\s*>\s+/m, // Blockquotes
       /\|.*\|/, // Tables
     ]
-    return markdownPatterns.some((pattern) => pattern.test(content))
+    return markdownPatterns.some(pattern => pattern.test(content))
   }
 
   const formatDuration = (seconds: number) => {
@@ -190,7 +190,7 @@ export default function PerformanceOverview({
                       <div className="text-sm font-bold text-green-700 tabular-nums">
                         {Math.round(fitness.score)}/100
                       </div>
-                    </div>
+                    </div>,
                   )
                 }
 
@@ -203,7 +203,7 @@ export default function PerformanceOverview({
                       <div className="text-sm font-bold text-black tabular-nums">
                         ${fitness.totalCostUsd.toFixed(4)}
                       </div>
-                    </div>
+                    </div>,
                   )
                 }
 
@@ -216,7 +216,7 @@ export default function PerformanceOverview({
                       <div className="text-sm font-bold text-blue-700 tabular-nums">
                         {Math.round(fitness.accuracy)}%
                       </div>
-                    </div>
+                    </div>,
                   )
                 }
 
@@ -229,7 +229,7 @@ export default function PerformanceOverview({
                       <div className="text-sm font-bold text-orange-700 tabular-nums">
                         {Math.round(fitness.efficiency)}%
                       </div>
-                    </div>
+                    </div>,
                   )
                 }
 
@@ -415,7 +415,7 @@ export default function PerformanceOverview({
                     <h4 className="font-medium text-gray-900">Expected vs Actual Output</h4>
                     <button
                       className="p-1 rounded hover:bg-gray-100 transition-colors"
-                      onClick={() => setIsExpActExpanded((v) => !v)}
+                      onClick={() => setIsExpActExpanded(v => !v)}
                       aria-label={isExpActExpanded ? "Collapse outputs" : "Expand outputs"}
                       title={isExpActExpanded ? "Collapse" : "Expand"}
                     >

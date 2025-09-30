@@ -1,8 +1,8 @@
 import { Genome } from "@core/improvement/gp/Genome"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { getActiveTools, type CodeToolName, type MCPToolName } from "@core/tools/tool.types"
-import { getDefaultModels } from "@runtime/settings/models"
-import { TOOLS } from "@runtime/settings/tools"
+import { getDefaultModels } from "@core/core-config/compat"
+import { TOOLS } from "@core/core-config/compat"
 
 // function to get a random element from an array
 const getRandomElement = <T>(arr: T[]): T => {
@@ -26,8 +26,8 @@ const getRandomString = (length: number) => {
 }
 
 export const createDummySurvivors = (parents: Genome[], offspring: Genome[]): Genome[] => {
-  const survivors = parents.map((parent) =>
-    createDummyGenome(parent.genome.parentWorkflowVersionIds, parent.getEvolutionContext())
+  const survivors = parents.map(parent =>
+    createDummyGenome(parent.genome.parentWorkflowVersionIds, parent.getEvolutionContext()),
   )
 
   return survivors
@@ -119,6 +119,6 @@ export const createDummyGenome = (parentWorkflowVersionIds: string[], _evolution
       goal: "dummy-goal",
       workflowId: "dummy-workflow-id",
     },
-    _evolutionContext
+    _evolutionContext,
   )
 }

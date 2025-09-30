@@ -11,7 +11,7 @@ export default function AccuracyByModelChart({ data }: { data: Row[] }) {
       <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="model" />
-        <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+        <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} />
         <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
         <Legend />
         <Bar dataKey="accuracy" fill={semantic.info} name="Accuracy %" />

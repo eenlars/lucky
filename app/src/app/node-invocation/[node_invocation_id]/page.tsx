@@ -1,6 +1,6 @@
 import { NodeInvocation } from "@/trace-visualization/components"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 
 interface PageProps {
@@ -18,7 +18,7 @@ async function getNodeInvocationData(nodeInvocationId: string): Promise<FullTrac
       NodeVersion (*),
       inputs:Message!Message_target_invocation_id_fkey (*),
       outputs:Message!Message_origin_invocation_id_fkey (*)
-    `
+    `,
     )
     .eq("node_invocation_id", nodeInvocationId)
     .single()

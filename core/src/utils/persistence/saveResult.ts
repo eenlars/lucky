@@ -1,5 +1,5 @@
-import { saveInLoc } from "@runtime/code_tools/file-saver/save"
-import { PATHS } from "@runtime/settings/constants"
+import { saveInLoc } from "@core/utils/fs/fileSaver"
+import { PATHS } from "@core/core-config/compat"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 export async function saveResultOutput(result: GenerateTextResult<ToolSet, any>): Promise<void> {

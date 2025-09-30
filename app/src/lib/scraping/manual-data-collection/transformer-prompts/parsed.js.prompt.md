@@ -44,7 +44,7 @@ function transformLocationData(input) {
   // Handle both single objects and arrays
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((location) => {
+  return locations.map(location => {
     return {
       name: extractName(location),
       address: extractAddress(location),

@@ -19,7 +19,7 @@ function transformLocationData(input) {
     }, {})
   }
 
-  return locations.map((item) => {
+  return locations.map(item => {
     const store = item.store || {}
     return {
       name: item.name || null,

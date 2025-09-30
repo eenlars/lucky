@@ -9,7 +9,7 @@ export const createMockToolExecutionContext = (
     expectedOutputType: any
     mainWorkflowGoal: string
     workflowId: string
-  }> = {}
+  }> = {},
 ) => ({
   workflowInvocationId: overrides.workflowInvocationId || `test-invocation-${Date.now()}`,
   workflowFiles: overrides.workflowFiles || [],
@@ -30,7 +30,7 @@ export const setupVitest = () => {
 }
 
 // helper to create timeout promises for async tests
-export const createTimeoutPromise = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const createTimeoutPromise = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 // helper to expect async functions to complete within timeout
 export const expectWithinTimeout = async (asyncFn: () => Promise<any>, timeoutMs: number = 5000) => {

@@ -1,9 +1,18 @@
 import { setupCodeToolsForNode } from "@core/tools/code/codeToolsSetup"
 import type { CodeToolName } from "@core/tools/tool.types"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
-import { describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it } from "vitest"
+import { CodeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
+import { codeToolRegistry } from "@core/tools/code"
+import { PATHS as EXAMPLES_PATHS } from "@examples/settings/constants"
 
 describe("setupCodeToolsForNode", () => {
+  beforeAll(async () => {
+    // Ensure registry is populated from real example tools before running tests
+    await codeToolRegistry.destroy()
+    const discovery = new CodeToolAutoDiscovery(EXAMPLES_PATHS.codeTools)
+    await discovery.setupCodeTools()
+  })
   it("should set up the searchGoogleMaps code tool without errors", async () => {
     // Test with a specific tool name defined in codeToolsSetup.ts
     const toolNames: CodeToolName[] = ["searchGoogleMaps", "todoWrite", "todoRead"]

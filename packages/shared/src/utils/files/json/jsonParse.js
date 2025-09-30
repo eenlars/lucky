@@ -88,7 +88,7 @@ function findJSONCandidates(str) {
   // try bigger blobs first
   return results.sort((a, b) => b.length - a.length)
 }
-export const isJSON = (str) => {
+export const isJSON = str => {
   try {
     // if it's already an object or array, check if it's JSON-serializable
     if (typeof str === "object" && str !== null) {

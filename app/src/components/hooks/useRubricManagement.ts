@@ -13,7 +13,7 @@ import {
 export function useRubricManagement(
   ioId: string,
   initialExpected: string,
-  updateExpected: (id: string, expected: string) => void
+  updateExpected: (id: string, expected: string) => void,
 ) {
   const [criteria, setCriteria] = useState<RubricCriteria[]>(() => {
     // Try to parse existing rubric, fall back to default if parsing fails
@@ -43,7 +43,7 @@ export function useRubricManagement(
 
   const addCriteria = () => {
     const newId = String(criteria.length + 1)
-    setCriteria((prev) => [
+    setCriteria(prev => [
       ...prev,
       {
         id: newId,
@@ -55,15 +55,15 @@ export function useRubricManagement(
   }
 
   const updateCriteria = (id: string, updates: Partial<RubricCriteria>) => {
-    setCriteria((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)))
+    setCriteria(prev => prev.map(c => (c.id === id ? { ...c, ...updates } : c)))
   }
 
   const removeCriteria = (id: string) => {
-    setCriteria((prev) => prev.filter((c) => c.id !== id))
+    setCriteria(prev => prev.filter(c => c.id !== id))
   }
 
   const simulateRubricResults = () => {
-    setCriteria((prev) => generateFakeScores(prev))
+    setCriteria(prev => generateFakeScores(prev))
   }
 
   return {

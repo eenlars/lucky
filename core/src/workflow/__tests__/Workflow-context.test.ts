@@ -1,5 +1,5 @@
 import { createMockEvaluationInput } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
@@ -87,7 +87,7 @@ describe("Workflow ContextStore Integration", () => {
     const workflow = createWorkflow(mockConfig, mockGoalEval)
 
     expect(() => workflow.getContextStore("supabase")).toThrow(
-      "Workflow invocation must be created for index 0 before creating Supabase context stores"
+      "Workflow invocation must be created for index 0 before creating Supabase context stores",
     )
   })
 

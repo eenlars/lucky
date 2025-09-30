@@ -56,18 +56,18 @@ function toLineData(data: Awaited<ReturnType<typeof fetchCapacityData>>): {
 
   if (!Array.isArray(results) || results.length === 0) return { rows: [], series: [], points: [], usageRows: [] }
 
-  const uniqueModels = Array.from(new Set(results.map((r) => String(r.model))))
-  const series: SeriesDef[] = uniqueModels.map((m) => ({
+  const uniqueModels = Array.from(new Set(results.map(r => String(r.model))))
+  const series: SeriesDef[] = uniqueModels.map(m => ({
     key: sanitizeKey(m),
     label: m,
   }))
-  const uniqueToolCounts = Array.from(new Set(results.map((r) => Number(r.toolCount)))).sort((a, b) => a - b)
+  const uniqueToolCounts = Array.from(new Set(results.map(r => Number(r.toolCount)))).sort((a, b) => a - b)
 
-  const rows: LineRow[] = uniqueToolCounts.map((tc) => {
+  const rows: LineRow[] = uniqueToolCounts.map(tc => {
     const row: LineRow = { tools: tc }
     for (const model of uniqueModels) {
-      const subset = results.filter((r) => r.toolCount === tc && String(r.model) === model)
-      const accuracy = subset.length > 0 ? (subset.filter((r) => r.success).length / subset.length) * 100 : 0
+      const subset = results.filter(r => r.toolCount === tc && String(r.model) === model)
+      const accuracy = subset.length > 0 ? (subset.filter(r => r.success).length / subset.length) * 100 : 0
       row[sanitizeKey(model)] = Math.round(accuracy * 10) / 10
     }
     return row
@@ -129,10 +129,10 @@ function toLineData(data: Awaited<ReturnType<typeof fetchCapacityData>>): {
   }
 
   // compute usage index rows for right axis
-  const usageRows: LineRow[] = uniqueToolCounts.map((tc) => {
+  const usageRows: LineRow[] = uniqueToolCounts.map(tc => {
     const row: LineRow = { tools: tc }
     for (const model of uniqueModels) {
-      const subset = results.filter((r) => r.toolCount === tc && String(r.model) === model)
+      const subset = results.filter(r => r.toolCount === tc && String(r.model) === model)
       if (subset.length === 0) {
         row[sanitizeKey(model)] = 0
         continue
@@ -156,7 +156,7 @@ function toLineData(data: Awaited<ReturnType<typeof fetchCapacityData>>): {
 export default async function CapacityPage() {
   const data = await fetchCapacityData()
   const { rows: lineData, series, points } = toLineData(data)
-  const barData = (data?.analysis?.modelPerformance || []).map((m) => ({
+  const barData = (data?.analysis?.modelPerformance || []).map(m => ({
     model: m.model,
     accuracy: Math.round(m.accuracy * 10) / 10,
   }))

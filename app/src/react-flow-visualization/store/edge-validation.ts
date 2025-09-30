@@ -9,6 +9,6 @@ export type HandleRole = "source" | "target"
 export function requiresHandle(type: AppNode["type"] | undefined, role: HandleRole): boolean {
   if (!type) return false
   const handles = nodesConfig[type]?.handles || []
-  const count = handles.filter((h) => h.type === role).length
+  const count = handles.filter(h => h.type === role).length
   return count > 1
 }

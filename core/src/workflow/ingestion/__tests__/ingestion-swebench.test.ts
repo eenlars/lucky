@@ -7,11 +7,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 vi.mock("@core/evaluation/benchmarks/swe/SWEBenchLoader")
 
 // typed mock for runtime CONFIG so CONFIG.ingestion.taskLimit exists
-vi.mock("@runtime/settings/constants", () => {
+vi.mock("@examples/settings/constants", () => {
   const mockConfig = {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
-    logging: { level: "info", override: {} },
+    logging: {
+      level: "info",
+      override: {
+        API: false,
+        GP: false,
+        Database: false,
+        Tools: false,
+        Summary: false,
+        InvocationPipeline: false,
+        Messaging: false,
+        Improvement: false,
+        ValidationBeforeHandoff: false,
+        Setup: false,
+      },
+    },
     workflow: {
       parallelExecution: true,
       asyncExecution: true,
@@ -154,7 +168,7 @@ ${mockInstance.patch}`,
   it("should handle errors when fetching SWE-bench instance", async () => {
     // mock fetchAsWorkflowIO to throw an error
     vi.mocked(SWEBenchLoader.fetchAsWorkflowIO).mockRejectedValue(
-      new Error("SWE-bench instance test-instance not found in split test")
+      new Error("SWE-bench instance test-instance not found in split test"),
     )
 
     const evaluation: SWEBenchInput = {
@@ -165,7 +179,7 @@ ${mockInstance.patch}`,
 
     // expect the conversion to throw
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "failed to convert SWE-bench evaluation: SWE-bench instance test-instance not found in split test"
+      "failed to convert SWE-bench evaluation: SWE-bench instance test-instance not found in split test",
     )
   })
 
@@ -181,7 +195,7 @@ ${mockInstance.patch}`,
 
     // expect the conversion to throw with proper error message
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "failed to convert SWE-bench evaluation: Network error: Failed to fetch"
+      "failed to convert SWE-bench evaluation: Network error: Failed to fetch",
     )
   })
 })

@@ -1,7 +1,7 @@
 // Workflow templates for quick start
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@examples/settings/models"
 
 export interface WorkflowTemplate {
   id: string

@@ -31,7 +31,7 @@ export const SuggestToolPrompts = {
       Note that creating a tool is not the answer to every problem. 
       It should be distinct from the existing tools and serve a specific purpose 
       that is not already covered by the existing tools.
-        </limitations>`)
+        </limitations>`),
   ),
   suggestNewTool: ({
     problemDescription,

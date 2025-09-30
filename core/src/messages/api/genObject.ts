@@ -1,17 +1,16 @@
 import { type ModelMessage } from "ai"
 import { z } from "zod"
 
+import { getDefaultModels, isLoggingEnabled } from "@core/core-config/compat"
 import { repairAIRequest } from "@core/messages/api/repairAIRequest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
   return z.object({
@@ -84,13 +83,13 @@ output:
   const { success, data, error } = schema.safeParse(extractedJson)
   if (!success) {
     if (opts?.repair) {
-      if (CONFIG.logging.override.API) {
+      if (isLoggingEnabled("API")) {
         lgg.warn(
           "repairing",
           error.message,
           JSON.stringify(extractedJson, null, 2),
           JSON.stringify(messages, null, 2),
-          JSON.stringify(jsonSchema, null, 2)
+          JSON.stringify(jsonSchema, null, 2),
         )
       }
       const { success, data, usdCost: repairedUsdCost } = await repairAIRequest(JSON.stringify(extractedJson), schema)
@@ -107,7 +106,7 @@ output:
       value: data,
       summary: await quickSummary(data),
     },
-    usdCost
+    usdCost,
   )
 }
 
@@ -135,7 +134,7 @@ export const quickSummary = async (input: string): Promise<string> => {
 export const quickSummaryNull = async (
   input: string,
   retries = 1,
-  outputLength = "1-2 sentences"
+  outputLength = "1-2 sentences",
 ): Promise<string | null> => {
   if (isNir(input)) return null
   try {
@@ -161,7 +160,7 @@ export const quickSummaryNull = async (
 export const askLLM = async (
   input: string,
   retries = 1,
-  outputInstruction = "output length 1-2 sentences"
+  outputInstruction = "output length 1-2 sentences",
 ): Promise<string | null> => {
   if (isNir(input)) return null
   try {

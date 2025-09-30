@@ -7,7 +7,7 @@ export function buildEdgeId(
   source: string,
   target: string,
   sourceHandle?: string | null,
-  targetHandle?: string | null
+  targetHandle?: string | null,
 ): string {
   return `${source}-${sourceHandle ?? ""}-${target}-${targetHandle ?? ""}`
 }
@@ -16,7 +16,7 @@ export const createEdge = (
   source: string,
   target: string,
   sourceHandle?: string | null,
-  targetHandle?: string | null
+  targetHandle?: string | null,
 ): AppEdge => ({
   id: buildEdgeId(source, target, sourceHandle, targetHandle),
   source,

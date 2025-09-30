@@ -2,14 +2,14 @@ import { openai } from "@ai-sdk/openai"
 import { groqProvider } from "@core/utils/clients/groq/groqClient"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { CURRENT_PROVIDER, type LuckyProvider } from "@core/utils/spending/provider"
+import { getCurrentProvider, type LuckyProvider } from "@core/utils/spending/provider"
 import { LanguageModel } from "ai"
 
 /**
  * Base: map `ModelName` to a provider-bound `LanguageModelV1` without extras.
  */
 export function getLanguageModel(modelName: ModelName): LanguageModel {
-  const provider = CURRENT_PROVIDER as LuckyProvider
+  const provider = getCurrentProvider()
   if (provider === "openrouter") return openrouter(modelName)
   if (provider === "groq") return groqProvider(modelName)
   if (provider === "openai") return openai(modelName)
@@ -26,7 +26,7 @@ export function getLanguageModel(modelName: ModelName): LanguageModel {
  * - Groq: no-op (SDK does not expose reasoning controls)
  */
 export function getLanguageModelWithReasoning(modelName: ModelName, opts?: { reasoning?: boolean }): LanguageModel {
-  const provider = CURRENT_PROVIDER as LuckyProvider
+  const provider = getCurrentProvider()
   const wantsReasoning = Boolean(opts?.reasoning)
 
   if (provider === "openrouter") {

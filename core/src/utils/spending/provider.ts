@@ -1,6 +1,11 @@
-import { MODEL_CONFIG } from "@runtime/settings/models"
+import { getCoreConfig } from "@core/core-config"
 
 export type LuckyProvider = "openai" | "openrouter" | "groq"
 
-// Change this literal to switch providers - TypeScript will instantly re-type-check MODELS
-export const CURRENT_PROVIDER = MODEL_CONFIG.provider satisfies LuckyProvider
+/**
+ * Get the current provider from runtime configuration.
+ * This is the ONLY way to determine the active provider - no compile-time constants.
+ */
+export function getCurrentProvider(): LuckyProvider {
+  return getCoreConfig().models.provider
+}

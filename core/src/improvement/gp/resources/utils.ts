@@ -23,7 +23,7 @@ export class EvolutionUtils {
       return { avgFitness: 0, stdDev: 0, bestFitness: 0, worstFitness: 0 }
     }
 
-    const fitnesses = genomes.map((g) => g.getFitnessScore())
+    const fitnesses = genomes.map(g => g.getFitnessScore())
     const avgFitness = fitnesses.reduce((sum, f) => sum + f, 0) / fitnesses.length
     const variance = fitnesses.reduce((sum, f) => sum + Math.pow(f - avgFitness, 2), 0) / fitnesses.length
     const stdDev = Math.sqrt(variance)
@@ -45,7 +45,7 @@ export class EvolutionUtils {
    */
   static findSimilarGenomes(population: Genome[], target: Genome, threshold: number = 0.1): Genome[] {
     const targetFingerprint = EvolutionUtils.structuralFingerprintFromRaw(target)
-    return population.filter((genome) => {
+    return population.filter(genome => {
       if (genome.getWorkflowVersionId() === target.getWorkflowVersionId()) return false
       const genomeFingerprint = EvolutionUtils.structuralFingerprintFromRaw(genome)
       const distance = EvolutionUtils.fingerprintDistance(targetFingerprint, genomeFingerprint)

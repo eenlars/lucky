@@ -69,8 +69,8 @@ export default function SaveModal({
             <textarea
               id="commitMessage"
               value={commitMessage}
-              onChange={(e) => setCommitMessage(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setCommitMessage(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && commitMessage.trim() && !isLoading) {
                   e.preventDefault()
                   onSave()
@@ -98,7 +98,7 @@ export default function SaveModal({
                   "Fixed validation errors",
                   "Updated node connections",
                   "Improved error handling",
-                ].map((suggestion) => (
+                ].map(suggestion => (
                   <Button
                     key={suggestion}
                     onClick={() => setCommitMessage(suggestion)}

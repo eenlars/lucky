@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { VerificationErrors } from "./verify.types"
 
 export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {
@@ -17,7 +17,7 @@ export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {
  * white (0): unvisited, gray (1): currently visiting, black (2): visited
  */
 function hasCycle(nodes: Array<{ nodeId: string; handOffs: string[] }>): boolean {
-  const nodeMap = new Map(nodes.map((node) => [node.nodeId, node]))
+  const nodeMap = new Map(nodes.map(node => [node.nodeId, node]))
   const colors = new Map<string, number>()
 
   // initialize all nodes as white (unvisited)
@@ -40,7 +40,7 @@ function hasCycle(nodes: Array<{ nodeId: string; handOffs: string[] }>): boolean
 function dfsHasCycle(
   nodeId: string,
   nodeMap: Map<string, { nodeId: string; handOffs: string[] }>,
-  colors: Map<string, number>
+  colors: Map<string, number>,
 ): boolean {
   // mark current node as gray (visiting)
   colors.set(nodeId, 1)

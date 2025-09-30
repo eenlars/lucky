@@ -5,7 +5,7 @@ import { setupMCPForNode } from "@core/tools/mcp/mcp"
 import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { Tool, type ToolSet } from "ai"
 
 /**
@@ -47,7 +47,7 @@ export class ToolManager {
     private readonly nodeId: string,
     mcpToolNames: MCPToolName[] | null | undefined,
     codeToolNames: CodeToolName[] | null | undefined,
-    private readonly workflowVersionId: string
+    private readonly workflowVersionId: string,
   ) {
     // Normalize undefined/null to empty arrays to simplify downstream logic
     this.mcpToolNames = Array.isArray(mcpToolNames) ? mcpToolNames : []
@@ -73,7 +73,7 @@ export class ToolManager {
       return
     }
 
-    if (CONFIG.logging.override.Tools) {
+    if (isLoggingEnabled("Tools")) {
       lgg.info(`🔧 Initializing tools for node "${this.nodeId}"...`)
       lgg.info(`📋 MCP Tools: [${this.mcpToolNames.join(", ")}]`)
       lgg.info(`📋 Code Tools: [${this.codeToolNames.join(", ")}]`)
@@ -90,7 +90,7 @@ export class ToolManager {
       const codeToolNames = Object.keys(this.codeTools)
       const totalToolCount = mcpToolNames.length + codeToolNames.length
 
-      if (CONFIG.logging.override.Tools) {
+      if (isLoggingEnabled("Tools")) {
         lgg.info(`✅ Successfully initialized ${totalToolCount} tools for node "${this.nodeId}":`)
         if (mcpToolNames.length > 0) {
           lgg.info(`🔌 MCP Tools (${mcpToolNames.length}): ${mcpToolNames.join(", ")}`)
@@ -142,7 +142,7 @@ export class ToolManager {
 
     // Filter out any undefined tools
     const filteredTools = Object.fromEntries(
-      Object.entries(allTools).filter(([_, tool]) => tool !== undefined)
+      Object.entries(allTools).filter(([_, tool]) => tool !== undefined),
     ) as ToolSet
 
     if (Object.keys(filteredTools).length < Object.keys(allTools).length) {

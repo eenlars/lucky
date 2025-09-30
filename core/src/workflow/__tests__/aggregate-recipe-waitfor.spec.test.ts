@@ -1,3 +1,4 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { type AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
@@ -7,10 +8,9 @@ import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInv
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-// Copy of core/src/runtime/setup/setupfile.json placed inline for test isolation
+// Copy of core/src/examples/setup/setupfile.json placed inline for test isolation
 const recipeAggregationConfig: WorkflowConfig = {
   nodes: [
     {
@@ -81,7 +81,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
     const callArgsByNode: Record<string, InvokeArgs[]> = {}
 
     // Stub WorkFlowNode.create to avoid real tool init/LLM calls; preserve handoffs from config
-    vi.spyOn(WorkFlowNode, "create").mockImplementation(async (config) => {
+    vi.spyOn(WorkFlowNode, "create").mockImplementation(async config => {
       const nodeId = config.nodeId
       const mkReply = (text: string) => ({
         kind: "result" as const,
@@ -108,7 +108,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
           }
 
           // Follow handOffs from config
-          const nodeCfg = recipeAggregationConfig.nodes.find((n) => n.nodeId === nodeId)!
+          const nodeCfg = recipeAggregationConfig.nodes.find(n => n.nodeId === nodeId)!
           const nextIds = nodeCfg.handOffs
 
           // Persist a NodeInvocation record to DB to match real pipeline behavior
@@ -185,7 +185,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
     const payload = incoming.payload as AggregatedPayload
     expect(payload.kind).toBe("aggregated")
     expect(payload.messages.length).toBe(3)
-    const fromIds = payload.messages.map((m) => m.fromNodeId).sort()
+    const fromIds = payload.messages.map(m => m.fromNodeId).sort()
     expect(fromIds).toEqual(["fetch-recipe-1", "fetch-recipe-2", "fetch-recipe-3"].sort())
 
     // Sanity: upstream nodes each invoked once; start invoked once

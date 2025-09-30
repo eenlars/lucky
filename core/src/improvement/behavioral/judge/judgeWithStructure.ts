@@ -4,7 +4,7 @@ import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 import type { StructureExplorationResult } from "./exploreStructure"
 
@@ -19,7 +19,7 @@ export async function adjustWorkflowStructure(
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow,
-  structureInfo?: StructureExplorationResult
+  structureInfo?: StructureExplorationResult,
 ): Promise<RS<WorkflowConfig>> {
   const messages = WorkflowEvolutionPrompts.mechanicAdvisorStructure(workflow, fitness, feedback, structureInfo)
 

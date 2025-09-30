@@ -1,6 +1,6 @@
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import { ToolManager } from "../toolManager"
@@ -126,8 +126,8 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
     // also doesn't test error cases or edge conditions.
     // extract tool usage
     const agentSteps = pipeline.getAgentSteps()
-    const toolCalls = agentSteps.filter((output) => output.type === "tool")
-    const toolsUsed = toolCalls.map((call) => call.name)
+    const toolCalls = agentSteps.filter(output => output.type === "tool")
+    const toolsUsed = toolCalls.map(call => call.name)
 
     // verify both tools were called
     expect(toolsUsed).toContain("todoRead")

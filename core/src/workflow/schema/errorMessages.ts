@@ -15,7 +15,7 @@ export function guard<T>(value: T, message: string): asserts value is NonNullabl
 export function guardType<T>(
   value: unknown,
   predicate: (value: unknown) => value is T,
-  message: string
+  message: string,
 ): asserts value is T {
   if (!predicate(value)) throw new Error(message)
 }
@@ -41,7 +41,7 @@ export function onlyIf(condition: unknown, message: string): string {
 export class WorkflowError extends Error {
   constructor(
     message: string,
-    public readonly code?: string
+    public readonly code?: string,
   ) {
     super(message)
     this.name = "WorkflowError"

@@ -6,8 +6,8 @@ import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { saveInLoc } from "@runtime/code_tools/file-saver/save"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { saveInLoc } from "@core/utils/fs/fileSaver"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 
 export async function selfImproveHelper({
   n,
@@ -22,7 +22,7 @@ export async function selfImproveHelper({
   setup: WorkflowConfig
   goal: string
 }): Promise<{ config: WorkflowNodeConfig; usdCost: number }> {
-  const nodeConfig = setup.nodes.find((node) => node.nodeId === n.nodeId)
+  const nodeConfig = setup.nodes.find(node => node.nodeId === n.nodeId)
   if (!nodeConfig) {
     throw new Error(`Workflow node ${n.nodeId} not found in selfImproveHelper`)
   }
@@ -92,7 +92,7 @@ export async function selfImproveHelper({
 
   saveInLoc(
     `${PATHS.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
-    JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2)
+    JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2),
   )
 
   // update the node config

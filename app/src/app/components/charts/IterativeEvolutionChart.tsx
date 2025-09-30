@@ -45,7 +45,7 @@ interface AveragePoint {
 
 function buildSeriesData(
   invocationsByGeneration: GenerationData[] | undefined,
-  targetNodeId: string
+  targetNodeId: string,
 ): {
   points: ClusteredPoint[]
   averages: AveragePoint[]
@@ -54,7 +54,7 @@ function buildSeriesData(
   if (!invocationsByGeneration || invocationsByGeneration.length === 0)
     return { points: [], averages: [], isSingleGen: false }
 
-  const uniqueGenerations = new Set(invocationsByGeneration.map((g) => g.generation))
+  const uniqueGenerations = new Set(invocationsByGeneration.map(g => g.generation))
   const isSingleGeneration = uniqueGenerations.size === 1
 
   // Collect raw points first
@@ -69,7 +69,7 @@ function buildSeriesData(
 
   if (isSingleGeneration && invocationsByGeneration[0]) {
     const singleGenData = invocationsByGeneration[0]
-    const invocationsWithAccuracy = singleGenData.invocations.filter((inv) => inv.accuracy !== undefined)
+    const invocationsWithAccuracy = singleGenData.invocations.filter(inv => inv.accuracy !== undefined)
     invocationsWithAccuracy.forEach((inv, index) => {
       rawPoints.push({
         generation: index,
@@ -80,8 +80,8 @@ function buildSeriesData(
       })
     })
   } else {
-    invocationsByGeneration.forEach((genData) => {
-      genData.invocations.forEach((inv) => {
+    invocationsByGeneration.forEach(genData => {
+      genData.invocations.forEach(inv => {
         if (inv.accuracy !== undefined) {
           rawPoints.push({
             generation: genData.generation,
@@ -124,7 +124,7 @@ function buildSeriesData(
   const averages: AveragePoint[] = []
   if (isSingleGeneration && invocationsByGeneration[0]) {
     const singleGenData = invocationsByGeneration[0]
-    const invocationsWithAccuracy = singleGenData.invocations.filter((inv) => inv.accuracy !== undefined)
+    const invocationsWithAccuracy = singleGenData.invocations.filter(inv => inv.accuracy !== undefined)
     if (invocationsWithAccuracy.length > 0) {
       averages.push({
         generation: 0,
@@ -138,7 +138,7 @@ function buildSeriesData(
       })
     }
   } else {
-    invocationsByGeneration.forEach((genData) => {
+    invocationsByGeneration.forEach(genData => {
       averages.push({
         generation: genData.generation,
         averageAccuracy: genData.averageAccuracy,
@@ -260,7 +260,7 @@ export function IterativeEvolutionChart({
               <LabelList
                 dataKey="count"
                 position="top"
-                formatter={(label) => (typeof label === "number" && label > 1 ? String(label) : "")}
+                formatter={label => (typeof label === "number" && label > 1 ? String(label) : "")}
                 fill="#374151"
                 fontSize={10}
               />

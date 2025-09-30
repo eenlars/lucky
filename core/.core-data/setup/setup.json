@@ -1,0 +1,15 @@
+{
+  "entryNodeId": "main",
+  "nodes": [
+    {
+      "nodeId": "main",
+      "description": "Main workflow node",
+      "modelName": "openai/gpt-4.1-mini",
+      "mcpTools": [],
+      "codeTools": [],
+      "systemPrompt": "You are a helpful assistant. Complete the task as requested.",
+      "handOffs": ["end"],
+      "memory": {}
+    }
+  ]
+}

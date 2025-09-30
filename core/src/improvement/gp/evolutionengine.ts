@@ -39,8 +39,8 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
-import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
 import { Genome } from "./Genome"
 import type { GenomeEvaluationResults, PopulationStats } from "./resources/gp.types"
 import { StatsTracker } from "./resources/stats"
@@ -53,12 +53,12 @@ export class EvolutionEngine {
   private runService: RunService
   private population: Population
   private statsTracker: StatsTracker
-  static verbose = CONFIG.logging.override.GP
+  static verbose = isLoggingEnabled("GP")
 
   constructor(
     private evolutionSettings: EvolutionSettings,
     private evolutionMode: FlowEvolutionMode,
-    restartRunId?: string
+    restartRunId?: string,
   ) {
     // Validate configuration early to catch issues before evolution starts
     validateEvolutionSettings(evolutionSettings)
@@ -220,7 +220,7 @@ export class EvolutionEngine {
    * @returns Counts of successful and failed evaluations
    */
   private async evaluatePopulation(
-    evaluator: EvolutionEvaluator
+    evaluator: EvolutionEvaluator,
   ): Promise<{ failedEvaluations: number; successfulEvaluations: number }> {
     const unevaluated = this.population.getUnevaluated()
 
@@ -229,7 +229,7 @@ export class EvolutionEngine {
     let _successfulEvaluations = 0
     let _failedEvaluations = 0
 
-    const results = await parallelLimit(unevaluated, (genome) => this.evaluateGenome(genome, evaluator))
+    const results = await parallelLimit(unevaluated, genome => this.evaluateGenome(genome, evaluator))
 
     await Promise.all(
       results.map(async (result, idx) => {
@@ -253,7 +253,7 @@ export class EvolutionEngine {
           lgg.error(`[EvolutionEngine] Genome details: Evaluated: ${genome.isEvaluated}`)
           _failedEvaluations++
         }
-      })
+      }),
     )
 
     return {
@@ -305,7 +305,7 @@ export class EvolutionEngine {
         const evolutionContext = this.runService.getEvolutionContext()
 
         lgg.info(
-          `[EvolutionEngine] Starting evaluation of genome ${genome.getWorkflowVersionId()} (attempt ${attempt + 1}/${maxRetries + 1})`
+          `[EvolutionEngine] Starting evaluation of genome ${genome.getWorkflowVersionId()} (attempt ${attempt + 1}/${maxRetries + 1})`,
         )
 
         const { data, error, usdCost } = await evaluator.evaluate(genome, evolutionContext)
@@ -313,7 +313,7 @@ export class EvolutionEngine {
         if (error || isNir(data)) {
           lastError = error ?? "data is null/undefined"
           lgg.warn(
-            `[EvolutionEngine] Evaluation attempt ${attempt + 1} failed for genome ${genome.getWorkflowVersionId()}: ${lastError}`
+            `[EvolutionEngine] Evaluation attempt ${attempt + 1} failed for genome ${genome.getWorkflowVersionId()}: ${lastError}`,
           )
 
           if (attempt < maxRetries) {
@@ -324,16 +324,16 @@ export class EvolutionEngine {
             // Wait before retry (exponential backoff)
             const delay = Math.pow(2, attempt) * 1000
             lgg.info(`[EvolutionEngine] Retrying in ${delay}ms...`)
-            await new Promise((resolve) => setTimeout(resolve, delay))
+            await new Promise(resolve => setTimeout(resolve, delay))
             continue
           }
 
           // Final failure after all retries
           lgg.error(
-            `[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()} after ${maxRetries + 1} attempts: ${lastError}`
+            `[EvolutionEngine] Failed to evaluate genome ${genome.getWorkflowVersionId()} after ${maxRetries + 1} attempts: ${lastError}`,
           )
           lgg.error(
-            `[EvolutionEngine] Final evaluation result - data: ${data ? "present" : "null/undefined"}, error: ${error ?? "none"}, usdCost: ${usdCost ?? "none"}`
+            `[EvolutionEngine] Final evaluation result - data: ${data ? "present" : "null/undefined"}, error: ${error ?? "none"}, usdCost: ${usdCost ?? "none"}`,
           )
           failureTracker.trackEvaluationFailure()
           return null
@@ -342,7 +342,7 @@ export class EvolutionEngine {
         // Success
         if (attempt > 0) {
           lgg.info(
-            `[EvolutionEngine] Evaluation succeeded for genome ${genome.getWorkflowVersionId()} on attempt ${attempt + 1}`
+            `[EvolutionEngine] Evaluation succeeded for genome ${genome.getWorkflowVersionId()} on attempt ${attempt + 1}`,
           )
         }
 
@@ -360,7 +360,7 @@ export class EvolutionEngine {
       } catch (error) {
         lastError = error instanceof Error ? error.message : String(error)
         lgg.error(
-          `[EvolutionEngine] Exception in evaluation attempt ${attempt + 1} for genome ${genome.getWorkflowVersionId()}: ${lastError}`
+          `[EvolutionEngine] Exception in evaluation attempt ${attempt + 1} for genome ${genome.getWorkflowVersionId()}: ${lastError}`,
         )
 
         if (attempt < maxRetries) {
@@ -371,7 +371,7 @@ export class EvolutionEngine {
           // Wait before retry (exponential backoff)
           const delay = Math.pow(2, attempt) * 1000
           lgg.info(`[EvolutionEngine] Retrying after exception in ${delay}ms...`)
-          await new Promise((resolve) => setTimeout(resolve, delay))
+          await new Promise(resolve => setTimeout(resolve, delay))
           continue
         }
 

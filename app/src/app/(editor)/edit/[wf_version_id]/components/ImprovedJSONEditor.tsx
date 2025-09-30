@@ -17,7 +17,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
   const [isCopied, setIsCopied] = useState(false)
 
   // json linter
-  const jsonLinter = linter((view) => {
+  const jsonLinter = linter(view => {
     const diagnostics: Diagnostic[] = []
     const doc = view.state.doc.toString()
 
@@ -196,8 +196,8 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
           value={content}
           height="100%"
           extensions={extensions}
-          onChange={(value) => onChange(value)}
-          onKeyDown={(e) => {
+          onChange={value => onChange(value)}
+          onKeyDown={e => {
             // format shortcut
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "f") {
               e.preventDefault()

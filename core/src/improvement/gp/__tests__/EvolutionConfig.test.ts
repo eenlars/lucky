@@ -1,6 +1,6 @@
 // tests for evolution config
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import { createEvolutionSettingsWithConfig } from "@runtime/settings/evolution"
+import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 
 describe("EvolutionSettings", () => {
@@ -129,7 +129,7 @@ describe("EvolutionSettings", () => {
         "mutationParams",
       ]
 
-      requiredProps.forEach((prop) => {
+      requiredProps.forEach(prop => {
         expect(config).toHaveProperty(prop)
         expect(config[prop as keyof EvolutionSettings]).toBeDefined()
       })
@@ -151,7 +151,7 @@ describe("EvolutionSettings", () => {
         "numberOfParentsCreatingOffspring",
       ]
 
-      numericProps.forEach((prop) => {
+      numericProps.forEach(prop => {
         expect(typeof config[prop as keyof EvolutionSettings]).toBe("number")
       })
     })

@@ -2,7 +2,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import { openrouter } from "@openrouter/ai-sdk-provider"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { generateText, stepCountIs } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
@@ -156,7 +156,7 @@ describe.skip("browser session persistence tests", () => {
 
     // Check if we got content extraction
     const extractResults = processedSteps?.agentSteps.filter(
-      (output) => output.type === "tool" && output.name === "browser_extract_content"
+      output => output.type === "tool" && output.name === "browser_extract_content",
     )
     lgg.log("Extract content calls:", extractResults?.length)
 

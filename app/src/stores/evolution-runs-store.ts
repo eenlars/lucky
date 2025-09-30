@@ -72,14 +72,14 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
       modeFilter: "all",
       dateFilter: "all",
 
-      setSearchTerm: (v) => set({ searchTerm: v }),
-      setStatusFilter: (v) => set({ statusFilter: v }),
-      setModeFilter: (v) => set({ modeFilter: v }),
-      setDateFilter: (v) => set({ dateFilter: v }),
-      setHideEmptyRuns: (v) => set({ hideEmptyRuns: v }),
-      setLimit: (v) => set({ limit: v }),
-      setSortField: (field) => set({ sortField: field }),
-      setSortDirection: (dir) => set({ sortDirection: dir }),
+      setSearchTerm: v => set({ searchTerm: v }),
+      setStatusFilter: v => set({ statusFilter: v }),
+      setModeFilter: v => set({ modeFilter: v }),
+      setDateFilter: v => set({ dateFilter: v }),
+      setHideEmptyRuns: v => set({ hideEmptyRuns: v }),
+      setLimit: v => set({ limit: v }),
+      setSortField: field => set({ sortField: field }),
+      setSortDirection: dir => set({ sortDirection: dir }),
 
       clearFilters: () =>
         set({
@@ -92,7 +92,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
           sortDirection: "desc",
         }),
 
-      fetchRuns: async (opts) => {
+      fetchRuns: async opts => {
         const { showLoading = true, reset = false } = opts ?? {}
 
         if (showLoading) set({ loading: true })
@@ -103,7 +103,7 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
           if (reset) {
             const { cachedRunsById, statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns } = get()
 
-            const cachedList = Object.values(cachedRunsById).filter((run) => {
+            const cachedList = Object.values(cachedRunsById).filter(run => {
               // Always exclude runs with no generations (mirrors API)
               if (!run || (run.generation_count ?? 0) === 0) return false
 
@@ -182,12 +182,12 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
           // Cache older-than-2-days runs in persisted storage
           const twoDaysMs = 2 * 24 * 60 * 60 * 1000
           const now = Date.now()
-          const cacheable = data.filter((run) => {
+          const cacheable = data.filter(run => {
             const started = new Date(run.start_time).getTime()
             return now - started > twoDaysMs
           })
           if (cacheable.length > 0) {
-            set((s) => {
+            set(s => {
               const next = { ...s.cachedRunsById }
               for (const r of cacheable) next[r.run_id] = r
               return { cachedRunsById: next }
@@ -220,9 +220,9 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
     {
       name: "evolution-runs/v2",
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({
+      partialize: s => ({
         cachedRunsById: s.cachedRunsById,
       }),
-    }
-  )
+    },
+  ),
 )

@@ -22,9 +22,9 @@ import os from "os"
 import path from "path"
 
 // Mock runtime constants - typed and safe temp paths
-vi.mock("@runtime/settings/constants", () => {
+vi.mock("@examples/settings/constants", () => {
   const TEST_ROOT = path.join(os.tmpdir(), "together-tests", "workflowloader")
-  const RUNTIME = path.join(TEST_ROOT, "runtime")
+  const RUNTIME = path.join(TEST_ROOT, "examples")
   const LOGGING = path.join(RUNTIME, "logging_folder")
   const MEMORY_ROOT = path.join(LOGGING, "memory")
   const SETUP_FILE = path.join(RUNTIME, "setup", "setupfile.json")
@@ -60,7 +60,13 @@ vi.mock("@runtime/settings/constants", () => {
         API: false,
         GP: false,
         Database: false,
+        Tools: false,
         Summary: false,
+        InvocationPipeline: false,
+        Messaging: false,
+        Improvement: false,
+        ValidationBeforeHandoff: false,
+        Setup: false,
       },
     },
     workflow: {
@@ -170,7 +176,7 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler, loadSingleWorkflow } from "../WorkflowLoader"
 

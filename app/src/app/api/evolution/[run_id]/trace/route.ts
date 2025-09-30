@@ -1,6 +1,6 @@
 import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
 import { traceWorkflowEvolution } from "@/results/workflow-evolution-tracer"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 

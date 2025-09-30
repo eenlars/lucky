@@ -25,7 +25,7 @@ if (typeof (vi as any).mock === "function")
 
 // Mock runtime constants - comprehensive CONFIG
 if (typeof (vi as any).mock === "function")
-  vi.mock("@runtime/settings/constants", () => ({
+  vi.mock("@examples/settings/constants", () => ({
     CONFIG: {
       coordinationType: "sequential" as const,
       newNodeProbability: 0.7,
@@ -173,7 +173,7 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 // moved vitest import to top
 import { Workflow } from "../Workflow"
 
@@ -242,9 +242,7 @@ describe("ContextFile End-to-End Integration", () => {
     })
 
     // Check that contextFile system message is included
-    const contextFileMessage = messages.find((msg) =>
-      (msg.content as string)?.includes("persistent context store named")
-    )
+    const contextFileMessage = messages.find(msg => (msg.content as string)?.includes("persistent context store named"))
     expect(contextFileMessage).toBeDefined()
     expect(contextFileMessage?.role).toBe("system")
     expect(contextFileMessage?.content).toContain("contextGet")
@@ -253,13 +251,13 @@ describe("ContextFile End-to-End Integration", () => {
     expect(contextFileMessage?.content).toContain("contextManage")
 
     // Check that the user message contains the correct content
-    const userMessage = messages.find((msg) => msg.role === "user")
+    const userMessage = messages.find(msg => msg.role === "user")
     expect(userMessage?.content).toContain("Hello, analyze this data")
     // Context is empty for this test case, so only user content and invocation id are asserted
     expect(userMessage?.content).toContain("workflow_invocation_id:test-invocation-123")
 
     // After merging, there is a single system message containing all parts
-    const systemMessages = messages.filter((msg) => msg.role === "system")
+    const systemMessages = messages.filter(msg => msg.role === "system")
     expect(systemMessages).toHaveLength(1)
 
     // The merged system message includes both the system prompt and node description

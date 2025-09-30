@@ -1,5 +1,5 @@
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
@@ -110,8 +110,8 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
 
     // extract tool usage
     const agentSteps = pipeline.getAgentSteps()
-    const toolCalls = agentSteps.filter((output) => output.type === "tool")
-    const toolsUsed = toolCalls.map((call) => call.name)
+    const toolCalls = agentSteps.filter(output => output.type === "tool")
+    const toolsUsed = toolCalls.map(call => call.name)
 
     // TODO: console.log of entire agentSteps suggests debugging output left in test.
     // should either remove or convert to proper test assertions that verify the

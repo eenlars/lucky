@@ -33,9 +33,9 @@ async function _getLatestBaselinePath(baseDir: string) {
   try {
     const entries = await fs.readdir(baseDir)
     const candidates = entries
-      .filter((f) => f.startsWith("adaptive-results") && !f.startsWith("adaptive-results.our-algorithm"))
-      .filter((f) => f.endsWith(".json"))
-      .map((f) => path.join(baseDir, f))
+      .filter(f => f.startsWith("adaptive-results") && !f.startsWith("adaptive-results.our-algorithm"))
+      .filter(f => f.endsWith(".json"))
+      .map(f => path.join(baseDir, f))
     if (candidates.length === 0) {
       const exact = path.join(baseDir, "adaptive-results.json")
       try {
@@ -47,14 +47,14 @@ async function _getLatestBaselinePath(baseDir: string) {
       }
     }
     const stats = await Promise.all(
-      candidates.map(async (p) => {
+      candidates.map(async p => {
         try {
           const s = await fs.stat(p)
           return { filePath: p, mtimeMs: s.mtimeMs }
         } catch {
           return { filePath: p, mtimeMs: 0 }
         }
-      })
+      }),
     )
     stats.sort((a, b) => b.mtimeMs - a.mtimeMs)
     return stats[0]?.filePath ?? null
@@ -110,7 +110,7 @@ function _aggregateFinalFromRuns(
     model: string
     condition: Condition
     adapted?: boolean
-  }>
+  }>,
 ) {
   const byModel: Record<string, { vSucc: number; vTot: number; cSucc: number; cTot: number }> = {}
   for (const r of runs) {
@@ -227,7 +227,7 @@ export async function GET() {
   try {
     const resultsDir = path.resolve(
       process.cwd(),
-      "public/research-experiments/tool-real/experiments/03-context-adaptation"
+      "public/research-experiments/tool-real/experiments/03-context-adaptation",
     )
     const PROD_BASELINE_URL = ADAPTIVE_RESULTS_URL
 
@@ -282,7 +282,7 @@ export async function GET() {
     // Baseline results — production from Supabase, dev from local public
     const baselinePath = path.resolve(
       process.cwd(),
-      "public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.json"
+      "public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.json",
     )
 
     const baselineLoad = await loadJsonProdOrLocal<any>(PROD_BASELINE_URL, baselinePath)
@@ -364,7 +364,7 @@ export async function GET() {
         ok: false,
         error: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

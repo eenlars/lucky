@@ -6,11 +6,11 @@ import { execSync } from "child_process"
 const args = process.argv.slice(2)
 
 // Ensure --mode=GP is included if not specified
-if (!args.some((arg) => arg.startsWith("--mode="))) {
+if (!args.some(arg => arg.startsWith("--mode="))) {
   args.push("--mode=GP")
 }
 
-const command = ["rm -rf src/runtime/logging_folder", "&&", "tsx --env-file=.env src/main.ts", ...args].join(" ")
+const command = ["rm -rf src/examples/logging_folder", "&&", "tsx --env-file=.env src/main.ts", ...args].join(" ")
 
 // Execute the command
 try {

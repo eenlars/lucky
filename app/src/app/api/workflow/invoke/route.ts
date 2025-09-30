@@ -2,11 +2,15 @@ import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 
 export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  // Ensure core is initialized
+  ensureCoreInit()
 
   try {
     const body = await req.json()

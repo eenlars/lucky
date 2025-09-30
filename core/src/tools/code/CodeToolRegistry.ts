@@ -71,20 +71,11 @@ export class CodeToolRegistry {
     if (this.initialized) return
 
     try {
-      // Import all tools from static registry
-      const { ALL_TOOLS } = await import("@runtime/code_tools/registry")
-
-      // Register each tool
-      for (const tool of ALL_TOOLS) {
-        // todo-typesafety: unsafe 'as' assertions - violates CLAUDE.md "we hate as"
-        if (!this.tools.has(tool.name as CodeToolName)) {
-          this.tools.set(tool.name as CodeToolName, tool)
-        }
-      }
-
-      lgg.log(`✅ Registered ${ALL_TOOLS.length} code tools from static registry`)
+      // Tools should be registered via registerMany() by the tool loader
+      // This method is kept for backward compatibility
+      lgg.log(`✅ Tool registry initialized (${this.tools.size} tools registered)`)
     } catch (error) {
-      lgg.warn("⚠️ Static tool registration failed:", error)
+      lgg.warn("⚠️ Tool initialization failed:", error)
       // Don't create placeholder tools - just fail gracefully
     }
 
@@ -106,7 +97,7 @@ export class CodeToolRegistry {
     if (!toolExecutionContext) {
       throw new Error(
         "ToolExecutionContext is required to create tools. " +
-          "Tools must be created with proper workflow context for security and correctness."
+          "Tools must be created with proper workflow context for security and correctness.",
       )
     }
 
@@ -125,7 +116,7 @@ export class CodeToolRegistry {
     if (!toolExecutionContext) {
       throw new Error(
         "ToolExecutionContext is required to create tools. " +
-          "Tools must be created with proper workflow context for security and correctness."
+          "Tools must be created with proper workflow context for security and correctness.",
       )
     }
 

@@ -54,7 +54,7 @@ export function RunSelect({
       <select
         id={id}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         disabled={loading || runs.length === 0}
         className="block min-w-[420px] max-w-[600px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50 truncate"
       >
@@ -63,7 +63,7 @@ export function RunSelect({
         ) : (
           <>
             <option value="">{placeholder}</option>
-            {runs.map((run) => (
+            {runs.map(run => (
               <option key={run.run_id} value={run.run_id}>
                 {formatRunTitle(run)}
               </option>

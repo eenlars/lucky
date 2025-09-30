@@ -32,7 +32,7 @@ export class CSVLoader {
       }
 
       const parsed = Papa.parse(csvContent, { header: false })
-      return parsed.data.map((row) => (row as string[]).join(",")).join("\n")
+      return parsed.data.map(row => (row as string[]).join(",")).join("\n")
     } catch (error) {
       throw new Error(`failed to load csv as string from ${this.filePath}: ${error}`)
     }
@@ -52,11 +52,11 @@ export class CSVLoader {
 
         if (this.options.onlyIncludeInputColumns && Array.isArray(data[0])) {
           const columnIndices = this.options.onlyIncludeInputColumns
-            .map((col) => parseInt(col))
-            .filter((index) => !isNaN(index))
+            .map(col => parseInt(col))
+            .filter(index => !isNaN(index))
 
           if (columnIndices.length > 0) {
-            data = data.map((row) => columnIndices.map((index) => (row as any[])[index])) as T[]
+            data = data.map(row => columnIndices.map(index => (row as any[])[index])) as T[]
           }
         }
 
@@ -64,9 +64,9 @@ export class CSVLoader {
       }
 
       return (parsed.data as T[])
-        .map((row) => this.mapColumns(row as Record<string, any>))
-        .map((row) => this.filterColumns(row))
-        .filter((item) => this.isValidRow(item)) as T[]
+        .map(row => this.mapColumns(row as Record<string, any>))
+        .map(row => this.filterColumns(row))
+        .filter(item => this.isValidRow(item)) as T[]
     } catch (error) {
       throw new Error(`failed to load csv as json from ${this.filePath}: ${error}`)
     }
@@ -116,7 +116,7 @@ export class CSVLoader {
       return true
     }
 
-    return Object.keys(this.options.columnMappings).some((field) => item[field] && item[field] !== "")
+    return Object.keys(this.options.columnMappings).some(field => item[field] && item[field] !== "")
   }
 
   private async loadContent(): Promise<string> {

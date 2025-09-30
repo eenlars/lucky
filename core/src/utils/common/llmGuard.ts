@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { z } from "zod"
 
 export interface GuardResult {

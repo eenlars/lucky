@@ -1,6 +1,6 @@
 import type { MCPToolName } from "@core/tools/tool.types"
 import { envi } from "@core/utils/env.mjs"
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { experimental_createMCPClient, type ToolSet } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
 import fs from "fs"
@@ -34,7 +34,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     if (!fs.existsSync(configPath)) {
       // Don't throw during build - just return empty config
       console.warn(
-        "mcp-secret.json does not exist. MCP tools will not be available. Please create it in the runtime folder."
+        "mcp-secret.json does not exist. MCP tools will not be available. Please create it in the runtime folder.",
       )
       return {}
     }
@@ -101,7 +101,7 @@ const clientCache = new Map<string, any>()
  */
 export async function setupMCPForNode(
   toolNames: MCPToolName[] | null | undefined,
-  workflowId: string
+  workflowId: string,
 ): Promise<ToolSet> {
   const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
   if (safeToolNames.length === 0) {
@@ -110,7 +110,7 @@ export async function setupMCPForNode(
 
   // 1. Get or create clients (reuse cached clients for session persistence)
   const clientPromises = await Promise.all(
-    safeToolNames.map(async (name) => {
+    safeToolNames.map(async name => {
       // Create cache key combining workflow ID and tool name
       const cacheKey = workflowId ? `${workflowId}:${name}` : name
 
@@ -123,7 +123,7 @@ export async function setupMCPForNode(
       const cfg = createTools[name]
       if (!cfg) {
         console.warn(
-          `MCP tool '${name}' not found in configuration. Available tools: ${Object.keys(createTools).join(", ")}`
+          `MCP tool '${name}' not found in configuration. Available tools: ${Object.keys(createTools).join(", ")}`,
         )
         return null
       }
@@ -138,14 +138,14 @@ export async function setupMCPForNode(
       // Cache the client for reuse with workflow-specific key
       clientCache.set(cacheKey, client)
       return client
-    })
+    }),
   )
 
   // Filter out null clients
   const clients = clientPromises.filter((client): client is any => client !== null)
 
   // 2. Fetch each client's tool set
-  const toolSets = await Promise.all(clients.map((client) => client.tools()))
+  const toolSets = await Promise.all(clients.map(client => client.tools()))
 
   // 3. Merge all tool definitions into one flat object
   const tools = Object.assign({}, ...toolSets)
@@ -164,6 +164,6 @@ export function clearMCPClientCache() {
  * Clear cached MCP clients for a specific workflow
  */
 export function clearWorkflowMCPClientCache(workflowId: string) {
-  const keysToDelete = Array.from(clientCache.keys()).filter((key) => key.startsWith(`${workflowId}:`))
-  keysToDelete.forEach((key) => clientCache.delete(key))
+  const keysToDelete = Array.from(clientCache.keys()).filter(key => key.startsWith(`${workflowId}:`))
+  keysToDelete.forEach(key => clientCache.delete(key))
 }

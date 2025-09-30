@@ -1,5 +1,5 @@
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../vercel/vercelStepProcessor"
 

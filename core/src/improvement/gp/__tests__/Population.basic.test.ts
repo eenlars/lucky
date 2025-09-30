@@ -14,7 +14,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     evolution: {
       GP: {

@@ -1,6 +1,6 @@
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { IngestionLayer } from "../IngestionLayer"
 
@@ -185,13 +185,13 @@ describe("IngestionLayer - GAIA", () => {
     }
 
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "failed to convert GAIA evaluation: Failed to fetch GAIA instance"
+      "failed to convert GAIA evaluation: Failed to fetch GAIA instance",
     )
   })
 
   it("should return a fallback case on authentication errors", async () => {
     vi.spyOn(GAIALoader, "fetchByLevel").mockRejectedValueOnce(
-      new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN")
+      new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN"),
     )
 
     const evaluation: EvaluationInput = {

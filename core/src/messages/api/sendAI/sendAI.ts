@@ -24,7 +24,7 @@
 // TODO: create comprehensive audit logging for all AI interactions
 
 import { normalizeError } from "@core/messages/api/sendAI/errors"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
 import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
@@ -32,6 +32,7 @@ import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -68,8 +69,8 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
   // TODO: add validation for message roles and structure
   if (
     !req.messages?.length ||
-    !req.messages.some((m) =>
-      typeof m.content === "string" ? m.content.trim() : Array.isArray(m.content) ? m.content.length : false
+    !req.messages.some(m =>
+      typeof m.content === "string" ? m.content.trim() : Array.isArray(m.content) ? m.content.length : false,
     )
   ) {
     return {
@@ -80,10 +81,19 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
     }
   }
 
-  /* ---- normalize model ---- */
-  // TODO: implement model compatibility checking
-  // TODO: add model version tracking
-  req.model = req.model ?? getDefaultModels().default
+  /* ---- normalize and validate model ---- */
+  // Validate model is active for current provider - throws if inactive
+  try {
+    req.model = validateAndResolveModel(req.model, getDefaultModels().default)
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error instanceof Error ? error.message : String(error),
+      debug_input: req.messages,
+      debug_output: null,
+    }
+  }
 
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {

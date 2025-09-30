@@ -19,7 +19,7 @@ export class EnvironmentKeysManager {
     const bytes = Uint8Array.from(rnd())
     bytes[6] = (bytes[6] & 0x0f) | 0x40
     bytes[8] = (bytes[8] & 0x3f) | 0x80
-    const hex = [...bytes].map((b) => b.toString(16).padStart(2, "0"))
+    const hex = [...bytes].map(b => b.toString(16).padStart(2, "0"))
     return (
       hex.slice(0, 4).join("") +
       "-" +
@@ -60,7 +60,7 @@ export class EnvironmentKeysManager {
   static getKeyValue(name: string): string | undefined {
     const keys = this.getKeys()
     const trimmed = name.trim()
-    const key = keys.find((k) => k.name === trimmed)
+    const key = keys.find(k => k.name === trimmed)
     return key?.value
   }
 
@@ -68,7 +68,7 @@ export class EnvironmentKeysManager {
     const keys = this.getKeys()
     const env: Record<string, string> = {}
 
-    keys.forEach((key) => {
+    keys.forEach(key => {
       if (key.name && key.value) {
         env[key.name] = key.value
       }

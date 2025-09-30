@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@core": resolve(__dirname, "./src"),
-      "@runtime": resolve(__dirname, "../runtime"),
     },
   },
   test: {
@@ -15,12 +14,16 @@ export default defineConfig({
     globals: true,
     environment: "node",
     exclude: [...configDefaults.exclude, "**/e2e/**"],
+    // Avoid watching runtime output directories that may contain transient .tmp files
+    watchExclude: ["**/.core-data/**", "**/.core-data/**/*", "**/logs/backups/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json"],
       reportsDirectory: "coverage",
       include: ["src/**/*.{ts}"],
       exclude: [
+        "**/.core-data/**",
+        "**/.core-data/**/*",
         "node_modules/",
         "**/*.d.ts",
         "**/*.test.ts",

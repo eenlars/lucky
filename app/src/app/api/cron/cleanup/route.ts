@@ -1,7 +1,11 @@
 import { cleanupStaleRecords } from "@core/utils/cleanup/cleanupStaleRecords"
 import { NextResponse } from "next/server"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 
 export async function GET() {
+  // Ensure core is initialized
+  ensureCoreInit()
+
   try {
     const stats = await cleanupStaleRecords()
 
@@ -19,7 +23,7 @@ export async function GET() {
         message: "cleanup failed",
         error: error instanceof Error ? error.message : "unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

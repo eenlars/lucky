@@ -38,10 +38,10 @@ export function workflowToString(workflow: Workflow, options: SimplifyOptions): 
     totalString += explainSubsetOfTools(
       workflow
         .getConfig()
-        .nodes.flatMap((node) => [
+        .nodes.flatMap(node => [
           ...(Array.isArray(node.mcpTools) ? node.mcpTools : []),
           ...(Array.isArray(node.codeTools) ? node.codeTools : []),
-        ])
+        ]),
     )
   }
   if (includeAdjacencyList) totalString += workflowToAdjacencyList(workflow.getConfig())
@@ -63,10 +63,10 @@ export function workflowToStringFromConfig(config: WorkflowConfig, options: Simp
   let totalString = ""
   if (includeToolExplanations) {
     totalString += explainSubsetOfTools(
-      config.nodes.flatMap((node) => [
+      config.nodes.flatMap(node => [
         ...(Array.isArray(node.mcpTools) ? node.mcpTools : []),
         ...(Array.isArray(node.codeTools) ? node.codeTools : []),
-      ])
+      ]),
     )
   }
   if (includeAdjacencyList) {
@@ -82,8 +82,8 @@ export function workflowToStringFromConfig(config: WorkflowConfig, options: Simp
           if (node.memory) acc[node.nodeId] = node.memory
           return acc
         },
-        {} as Record<string, Record<string, string>>
-      )
+        {} as Record<string, Record<string, string>>,
+      ),
     )
   }
   return totalString

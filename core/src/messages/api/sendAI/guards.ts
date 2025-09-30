@@ -18,7 +18,7 @@
 // TODO: create guard rule templates for different environments
 
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 const spending = SpendingTracker.getInstance()
 const RATE_WINDOW_MS = CONFIG.limits.rateWindowMs

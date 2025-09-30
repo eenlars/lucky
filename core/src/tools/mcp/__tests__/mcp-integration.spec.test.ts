@@ -1,6 +1,6 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { existsSync } from "fs"
 import { resolve } from "path"
 import { describe, expect, it } from "vitest"
@@ -76,7 +76,7 @@ describe("MCP Integration Tests", () => {
         throw new Error(`AI request failed: ${response.error}`)
       }
     },
-    60000
+    60000,
   ) // Longer timeout for integration test
   // TODO: 60 second timeout confirms this is a slow integration test
 })

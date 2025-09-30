@@ -4,7 +4,7 @@ import type { RS } from "@core/utils/types"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { WorkflowRepairPrompts } from "@core/workflow/actions/repair/repairWorkflow.p"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * when a workflow contains errors,
@@ -12,7 +12,7 @@ import { getDefaultModels } from "@runtime/settings/models"
  */
 export async function repairWorkflow(
   config: WorkflowConfig,
-  verificationResult: VerificationResult
+  verificationResult: VerificationResult,
 ): Promise<
   RS<{
     nodes: WorkflowNodeConfig[]
@@ -32,7 +32,7 @@ export async function repairWorkflow(
   }
 
   // build enhancement prompt
-  const verificationSummary = [...verificationResult.errors.map((error) => `ERROR: ${error}`)].join("\n")
+  const verificationSummary = [...verificationResult.errors.map(error => `ERROR: ${error}`)].join("\n")
 
   const { data, success, error, usdCost } = await sendAI({
     messages: WorkflowRepairPrompts.repairWorkflowPrompt(config, verificationSummary),

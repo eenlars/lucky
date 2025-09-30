@@ -9,7 +9,7 @@ import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkfl
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Configuration options for the improvement process components
@@ -35,7 +35,7 @@ export interface IterativeImprovementParams {
  */
 export async function improveNodesIterativelyImpl(
   workflow: Workflow,
-  params: IterativeImprovementParams
+  params: IterativeImprovementParams,
 ): Promise<WorkflowImprovementResult> {
   const { _fitness, workflowInvocationId } = params
   let totalCost = 0
@@ -88,14 +88,14 @@ export async function improveNodesIterativelyImpl(
         mechanicResult = await adjustWorkflowOneNode(
           workflowForImprovement.getConfig(),
           workflowForImprovement.getFeedback() ?? "No feedback available",
-          workflowForImprovement.getFitness()!
+          workflowForImprovement.getFitness()!,
         )
       } else {
         // Adjustor applies a structural change (with internal formalization)
         mechanicResult = await adjustWorkflowStructure(
           workflowForImprovement.getConfig(),
           workflowForImprovement.getFeedback() ?? "No feedback available",
-          workflowForImprovement.getFitness()!
+          workflowForImprovement.getFitness()!,
         )
       }
 

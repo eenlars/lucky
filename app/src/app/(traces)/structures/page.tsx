@@ -2,7 +2,7 @@
 
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { StructureMiniMap, getNodeCountFromDsl } from "../trace/[wf_inv_id]/structure/StructureMiniMap"
@@ -19,12 +19,12 @@ function getComplexityScore(config: WorkflowConfig): number {
 
   // Count convergence points (nodes with multiple parents)
   const parentCounts = new Map<string, number>()
-  config.nodes.forEach((node) => {
-    node.handOffs.forEach((target) => {
+  config.nodes.forEach(node => {
+    node.handOffs.forEach(target => {
       parentCounts.set(target, (parentCounts.get(target) || 0) + 1)
     })
   })
-  const convergencePoints = Array.from(parentCounts.values()).filter((count) => count > 1).length
+  const convergencePoints = Array.from(parentCounts.values()).filter(count => count > 1).length
 
   // Calculate depth (max levels)
   const visited = new Set<string>()
@@ -32,10 +32,10 @@ function getComplexityScore(config: WorkflowConfig): number {
     if (visited.has(nodeId)) return currentDepth
     visited.add(nodeId)
 
-    const node = config.nodes.find((n) => n.nodeId === nodeId)
+    const node = config.nodes.find(n => n.nodeId === nodeId)
     if (!node || node.handOffs.length === 0) return currentDepth + 1
 
-    return Math.max(...node.handOffs.map((target) => getDepth(target, currentDepth + 1)))
+    return Math.max(...node.handOffs.map(target => getDepth(target, currentDepth + 1)))
   }
 
   const depth = getDepth(config.entryNodeId)
@@ -226,7 +226,7 @@ export default function StructuresPage() {
   }, [])
 
   const filteredVersions = allVersions
-    .filter((version) => {
+    .filter(version => {
       const config = toWorkflowConfig(version.dsl)
       if (!config) return false
       const nodeCount = getNodeCountFromDsl(config)
@@ -275,7 +275,7 @@ export default function StructuresPage() {
               <label className="text-sm font-medium">Min nodes:</label>
               <select
                 value={minNodes}
-                onChange={(e) => setMinNodes(Number(e.target.value))}
+                onChange={e => setMinNodes(Number(e.target.value))}
                 className="border border-gray-300 rounded px-3 py-1"
               >
                 <option value={2}>2+</option>
@@ -286,7 +286,7 @@ export default function StructuresPage() {
               <label className="text-sm font-medium">Sort by:</label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as "time" | "complexity" | "nodes")}
+                onChange={e => setSortBy(e.target.value as "time" | "complexity" | "nodes")}
                 className="border border-gray-300 rounded px-3 py-1"
               >
                 <option value="time">Latest</option>
@@ -325,7 +325,7 @@ export default function StructuresPage() {
                   <div className="mt-4 text-xs text-gray-600">
                     <div className="font-medium mb-1">Node Flow:</div>
                     <div className="space-y-1">
-                      {workflow.nodes.map((node) => (
+                      {workflow.nodes.map(node => (
                         <div key={node.nodeId} className="flex items-center gap-2">
                           <span className="font-mono bg-gray-100 px-1 rounded">{node.nodeId}</span>
                           {node.handOffs.length > 0 && (

@@ -6,8 +6,8 @@ import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 
 export interface UnifiedImprovementParams {
   config: WorkflowConfig
@@ -60,7 +60,7 @@ export async function improveWorkflowUnified(params: UnifiedImprovementParams): 
   if (improvedConfig) {
     // add the default tools to the config
     const defaultTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
-    improvedConfig.nodes.forEach((node) => {
+    improvedConfig.nodes.forEach(node => {
       node.codeTools = [...new Set([...node.codeTools, ...defaultTools])]
     })
   }

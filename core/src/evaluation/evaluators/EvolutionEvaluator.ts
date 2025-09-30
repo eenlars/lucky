@@ -10,6 +10,6 @@ export interface EvolutionEvaluator {
     evolutionContext?: {
       runId: string
       generationId: string
-    }
+    },
   ): Promise<RS<GenomeEvaluationResults>>
 }

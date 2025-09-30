@@ -1,5 +1,5 @@
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@examples/settings/models"
 import type { ToolSet } from "ai"
 import { zodSchema } from "ai"
 import { describe, expect, it } from "vitest"

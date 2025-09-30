@@ -1,7 +1,7 @@
 import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
 import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
-import { CONFIG } from "@runtime/settings/constants.client"
+import { CONFIG } from "@core/core-config/compat"
 import type { z } from "zod"
 
 // dynamically generate tool descriptions from active tools only
@@ -24,6 +24,6 @@ export const agentDescriptionsWithTools = {
 
 export const AgentDescriptionsWithToolsSchema = withDescriptions(
   baseWorkflowNodeConfigShape,
-  agentDescriptionsWithTools
+  agentDescriptionsWithTools,
 )
 export type AgentDescriptionsWithToolsZod = z.infer<typeof AgentDescriptionsWithToolsSchema>

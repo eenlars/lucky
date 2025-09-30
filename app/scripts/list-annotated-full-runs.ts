@@ -54,14 +54,14 @@ async function main() {
     throw new Error(`Failed to fetch EvolutionRun rows: ${runsError.message}`)
   }
 
-  const matchingRuns: EvolutionRunRow[] = (runs || []).filter((r) => configMatchesAnnotatedFull(r.config))
+  const matchingRuns: EvolutionRunRow[] = (runs || []).filter(r => configMatchesAnnotatedFull(r.config))
 
   if (matchingRuns.length === 0) {
     console.log("No EvolutionRun rows matched 'annotated-full'.")
     return
   }
 
-  const runIds = matchingRuns.map((r) => r.run_id)
+  const runIds = matchingRuns.map(r => r.run_id)
 
   console.log(`Found ${runIds.length} matching runs. Counting invocations...`)
 
@@ -82,7 +82,7 @@ async function main() {
   }
 
   const ranked = matchingRuns
-    .map((r) => ({ run_id: r.run_id, count: counts.get(r.run_id) || 0 }))
+    .map(r => ({ run_id: r.run_id, count: counts.get(r.run_id) || 0 }))
     .sort((a, b) => b.count - a.count)
 
   const now = new Date()
@@ -109,7 +109,7 @@ async function main() {
   console.log(`\nReport written to: ${outPath}`)
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("\nFailed to list annotated-full runs:\n", err)
   process.exitCode = 1
 })

@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { SWEBenchLoader } from "./SWEBenchLoader"
 
 // run in the terminal with:
@@ -56,7 +56,7 @@ async function getRandomSWEBenchInstance(): Promise<SWEBenchInstanceFull> {
 
 async function validateAISolution(
   aiSolution: string,
-  instance: SWEBenchInstanceFull
+  instance: SWEBenchInstanceFull,
 ): Promise<{
   overallScore: number
   validationResults: {
@@ -151,7 +151,7 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
     console.log("\n📊 Validation Scores:")
     console.log(`- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`)
     console.log(
-      `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`
+      `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`,
     )
     console.log(`- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`)
     console.log(`- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`)
@@ -182,7 +182,7 @@ function calculateSimilarity(text1: string, text2: string): number {
   const words1 = new Set(text1.toLowerCase().match(/\w+/g) || [])
   const words2 = new Set(text2.toLowerCase().match(/\w+/g) || [])
 
-  const intersection = new Set([...words1].filter((x) => words2.has(x)))
+  const intersection = new Set([...words1].filter(x => words2.has(x)))
   const union = new Set([...words1, ...words2])
 
   return union.size > 0 ? intersection.size / union.size : 0
@@ -375,7 +375,7 @@ async function runTests() {
     console.log("Test Awareness:", result.validation.validationResults.testAwareness ? "✅" : "❌")
     console.log(
       "Ground Truth Similarity:",
-      `${(result.validation.validationResults.groundTruthSimilarity * 10).toFixed(1)}/10`
+      `${(result.validation.validationResults.groundTruthSimilarity * 10).toFixed(1)}/10`,
     )
     console.log("Total Cost:", `$${result.cost.toFixed(4)}`)
 

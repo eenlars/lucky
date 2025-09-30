@@ -6,7 +6,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { loadSingleWorkflow, saveWorkflowConfig } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import { nanoid } from "nanoid"
 
 // Random SWE-bench IDs
@@ -64,11 +64,11 @@ async function runIterativeTest() {
   }
 
   const totalCost = results.reduce((sum, r) => sum + r.cost, 0)
-  const bestFitness = Math.max(...results.map((r) => r.fitness))
+  const bestFitness = Math.max(...results.map(r => r.fitness))
 
   lgg.log(`\n🏆 Best fitness: ${bestFitness}`)
   lgg.log(`💰 Total cost: $${totalCost.toFixed(4)}`)
-  lgg.log(`📈 Progression: ${results.map((r) => r.fitness.toFixed(1)).join(" → ")}`)
+  lgg.log(`📈 Progression: ${results.map(r => r.fitness.toFixed(1)).join(" → ")}`)
 
   return { randomId, results, totalCost, bestFitness }
 }

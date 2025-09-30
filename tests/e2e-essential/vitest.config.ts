@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@core": path.join(repoRoot, "core", "src"),
-      "@runtime": path.join(repoRoot, "runtime"),
+      "@examples": path.join(repoRoot, "examples"),
       "@shared": path.join(repoRoot, "shared", "src"),
     },
   },

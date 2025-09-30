@@ -3,6 +3,7 @@ import { ClaudeSDKService } from "../ClaudeSDKService"
 
 // Create shared mock functions
 const mockCreate = vi.fn()
+const mockList = vi.fn()
 
 // Mock the Anthropic SDK
 vi.mock("@anthropic-ai/sdk", () => {
@@ -30,6 +31,9 @@ vi.mock("@anthropic-ai/sdk", () => {
       messages: {
         create: mockCreate,
       },
+      models: {
+        list: mockList,
+      },
     })),
     Anthropic: {
       APIError,
@@ -46,11 +50,11 @@ vi.mock("@anthropic-ai/sdk", () => {
 })
 
 describe("ClaudeSDKService", () => {
-  const originalEnv = process.env.ANTHROPIC_API_KEY
+  const originalEnv = process.env.ANTH_SECRET_KEY
 
   beforeEach(() => {
     vi.clearAllMocks()
-    process.env.ANTHROPIC_API_KEY = "test-api-key"
+    process.env.ANTH_SECRET_KEY = "test-api-key"
 
     // Reset default mock behavior
     mockCreate.mockResolvedValue({
@@ -75,9 +79,9 @@ describe("ClaudeSDKService", () => {
 
   afterEach(() => {
     if (originalEnv) {
-      process.env.ANTHROPIC_API_KEY = originalEnv
+      process.env.ANTH_SECRET_KEY = originalEnv
     } else {
-      delete process.env.ANTHROPIC_API_KEY
+      delete process.env.ANTH_SECRET_KEY
     }
   })
 
@@ -96,20 +100,20 @@ describe("ClaudeSDKService", () => {
   })
 
   it("should handle API key missing error", async () => {
-    delete process.env.ANTHROPIC_API_KEY
+    delete process.env.ANTH_SECRET_KEY
 
     const result = await ClaudeSDKService.execute("test-node", "Test prompt")
 
     expect(result.response.type).toBe("error")
     if (result.response.type === "error") {
-      expect(result.response.message).toContain("ANTHROPIC_API_KEY")
+      expect(result.response.message).toContain("ANTH_SECRET_KEY")
     }
     expect(result.cost).toBe(0)
     expect(result.agentSteps[0].type).toBe("error")
   })
 
   it("should handle SDK errors gracefully", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-api-key"
+    process.env.ANTH_SECRET_KEY = "test-api-key"
 
     mockCreate.mockRejectedValue(new Error("SDK connection failed"))
 
@@ -160,7 +164,7 @@ describe("ClaudeSDKService", () => {
       }),
       expect.objectContaining({
         timeout: 30000,
-      })
+      }),
     )
   })
 
@@ -232,5 +236,52 @@ describe("ClaudeSDKService", () => {
     if (result.response.type === "error") {
       expect(result.response.message).toContain("Invalid API key")
     }
+  })
+
+  describe("listModels", () => {
+    it("should list available models successfully", async () => {
+      mockList.mockResolvedValue({
+        data: [
+          {
+            id: "claude-sonnet-4-20250514",
+            display_name: "Claude Sonnet 4",
+            created_at: "2025-02-19T00:00:00Z",
+            type: "model",
+          },
+          {
+            id: "claude-3-5-sonnet-20241022",
+            display_name: "Claude 3.5 Sonnet",
+            created_at: "2024-10-22T00:00:00Z",
+            type: "model",
+          },
+        ],
+        first_id: "claude-sonnet-4-20250514",
+        has_more: false,
+        last_id: "claude-3-5-sonnet-20241022",
+      })
+
+      const models = await ClaudeSDKService.listModels()
+
+      expect(models).toHaveLength(2)
+      expect(models[0]).toEqual({
+        id: "claude-sonnet-4-20250514",
+        display_name: "Claude Sonnet 4",
+        created_at: "2025-02-19T00:00:00Z",
+        type: "model",
+      })
+      expect(mockList).toHaveBeenCalledTimes(1)
+    })
+
+    it("should handle API errors when listing models", async () => {
+      mockList.mockRejectedValue(new Error("Failed to fetch models"))
+
+      await expect(ClaudeSDKService.listModels()).rejects.toThrow("Failed to fetch models")
+    })
+
+    it("should require API key for listing models", async () => {
+      delete process.env.ANTH_SECRET_KEY
+
+      await expect(ClaudeSDKService.listModels()).rejects.toThrow("ANTH_SECRET_KEY")
+    })
   })
 })

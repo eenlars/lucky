@@ -14,7 +14,7 @@ function transformLocationData(input) {
 
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((location) => {
+  return locations.map(location => {
     // build opening_times with defaults
     const opening_times = {
       monday: "closed",
@@ -26,7 +26,7 @@ function transformLocationData(input) {
       sunday: "closed",
     }
     if (Array.isArray(location.times)) {
-      location.times.forEach((entry) => {
+      location.times.forEach(entry => {
         const dayKey = dayMap[entry.day]
         if (dayKey) {
           if (!entry.is_open) {

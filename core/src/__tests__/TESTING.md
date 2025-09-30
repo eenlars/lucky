@@ -225,7 +225,7 @@ vi.unmock("../Population") // May not work if paths don't match
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: { info: vi.fn(), log: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }))
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     /* minimal config needed */
   },
@@ -238,7 +238,7 @@ vi.mock("@runtime/settings/constants", () => ({
 ```typescript
 // Use dynamic imports with doMock for conflicting modules
 beforeEach(async () => {
-  vi.doMock("@runtime/settings/constants", () => ({ CONFIG: mockConfig }))
+  vi.doMock("@examples/settings/constants", () => ({ CONFIG: mockConfig }))
   const { Select } = await import("@core/improvement/gp/Select")
   // Use Select in test
 })

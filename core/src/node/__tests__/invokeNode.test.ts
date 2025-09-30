@@ -33,7 +33,7 @@ vi.mock("@core/messages/api/processResponse", () => ({
     text: "Test response: I received your input.",
     handoff: "end",
   }),
-  getResponseContent: vi.fn().mockImplementation((response) => {
+  getResponseContent: vi.fn().mockImplementation(response => {
     if (response?.text) return response.text
     if (response?.type === "text" && response?.text) return response.text
     return "Test response: I received your input."
@@ -43,7 +43,7 @@ vi.mock("@core/messages/api/processResponse", () => ({
 }))
 
 // Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => {
+vi.mock("@examples/settings/constants", () => {
   // compute temp paths inside the factory to avoid hoist issues
   const tmpRoot = path.join(os.tmpdir(), "together-tests")
   const loggingDir = path.join(tmpRoot, "node", "logging")
@@ -158,7 +158,7 @@ vi.mock("@runtime/settings/constants", () => {
     PATHS: {
       root: tmpRoot,
       app: path.join(tmpRoot, "app"),
-      runtime: path.join(tmpRoot, "runtime"),
+      runtime: path.join(tmpRoot, "examples"),
       codeTools: path.join(tmpRoot, "codeTools"),
       setupFile: path.join(tmpRoot, "setup.json"),
       improver: path.join(tmpRoot, "improver"),
@@ -201,7 +201,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { StructuredRequest, TextRequest, ToolRequest, TResponse } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { invokeAgent } from "../invokeNode"
 
 describe("invokeAgent", () => {

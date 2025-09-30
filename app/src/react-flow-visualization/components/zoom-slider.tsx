@@ -14,11 +14,11 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
   const { zoomTo, zoomIn, zoomOut, fitView } = useReactFlow()
 
   const { minZoom, maxZoom } = useStore(
-    (state) => ({
+    state => ({
       minZoom: state.minZoom,
       maxZoom: state.maxZoom,
     }),
-    (a, b) => a.minZoom !== b.minZoom || a.maxZoom !== b.maxZoom
+    (a, b) => a.minZoom !== b.minZoom || a.maxZoom !== b.maxZoom,
   )
 
   return (
@@ -32,7 +32,7 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
         min={minZoom}
         max={maxZoom}
         step={0.01}
-        onValueChange={(values) => zoomTo(values[0])}
+        onValueChange={values => zoomTo(values[0])}
       />
       <Button variant="ghost" size="icon" onClick={() => zoomIn({ duration: 300 })}>
         <Plus className="h-4 w-4" />

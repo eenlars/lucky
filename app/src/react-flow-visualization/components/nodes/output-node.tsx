@@ -20,7 +20,7 @@ export function OutputNode({ id, data: _data }: WorkflowNodeProps) {
       </div>
 
       {/* Connection handle(s) remain functional */}
-      {nodesConfig["output-node"].handles.map((handle) => (
+      {nodesConfig["output-node"].handles.map(handle => (
         <AppHandle
           key={`${handle.type}-${handle.id}`}
           id={handle.id}

@@ -183,7 +183,7 @@ export default function FormatValidatePanel({
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Start Templates</h4>
             <div className="space-y-2">
-              {WORKFLOW_TEMPLATES.map((template) => (
+              {WORKFLOW_TEMPLATES.map(template => (
                 <Button
                   key={template.id}
                   onClick={() => {

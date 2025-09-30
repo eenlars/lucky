@@ -8,7 +8,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ModelName } from "@core/utils/spending/models.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /*
@@ -59,7 +59,7 @@ export function processResponseVercel({
 
   // If steps exist, decide whether it's a tool or pure text response
   if (processedSteps && processedSteps.agentSteps.length > 0) {
-    const hasAnyToolStep = processedSteps.agentSteps.some((s) => s.type === "tool")
+    const hasAnyToolStep = processedSteps.agentSteps.some(s => s.type === "tool")
 
     if (hasAnyToolStep) {
       // At least one tool call occurred → treat as tool response
@@ -73,7 +73,7 @@ export function processResponseVercel({
     }
 
     // No tool calls at all → treat as text response, keep agentSteps for downstream consumers
-    const aggregatedText = processedSteps.agentSteps.find((s) => s.type === "text")
+    const aggregatedText = processedSteps.agentSteps.find(s => s.type === "text")
     const content = isVercelTextResponse(response)
       ? response.text
       : typeof aggregatedText?.return === "string"
@@ -123,7 +123,7 @@ export const getResponseContent = (response: ProcessedResponse): string | null =
   if (isNir(response) || response.type === "error")
     return "i experienced an error: " + response.message + " details:" + truncater(JSON.stringify(response), 100)
 
-  if (CONFIG.logging.override.Tools && response.type === "tool") {
+  if (isLoggingEnabled("Tools") && response.type === "tool") {
     lgg.log("🔍 Tool response:", JSON.stringify(response))
   }
 
@@ -152,7 +152,7 @@ export const getFinalOutputNodeInvocation = (response: AgentStep[]): string | nu
   let lastContent: string | null = null
 
   const filterActionableSteps = response.filter(
-    (step) => step.type === "tool" || step.type === "text" || step.type === "terminate"
+    step => step.type === "tool" || step.type === "text" || step.type === "terminate",
   )
 
   if (isNir(filterActionableSteps)) {
@@ -236,7 +236,7 @@ export interface ResponseInformation {
 
 export const getResponseInformation = (
   response: ProcessedResponse,
-  { nodeId }: { nodeId: string }
+  { nodeId }: { nodeId: string },
 ): ResponseInformation => {
   if (!response || response.type === "error")
     return {
@@ -249,7 +249,7 @@ export const getResponseInformation = (
       },
     }
 
-  if (CONFIG.logging.override.Tools && response.type === "tool") {
+  if (isLoggingEnabled("Tools") && response.type === "tool") {
     lgg.log("🔍 Tool response in getResponseInformation:", JSON.stringify(response))
   }
 

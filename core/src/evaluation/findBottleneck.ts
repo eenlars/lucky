@@ -32,8 +32,8 @@ const baseSchema = {
       `Suggested improvement to address the bottleneck, 
         it may have to do with one specific workflow node 
         that needs to be improved or a change to the workflow 
-        that will improve the overall efficiency.`
-    )
+        that will improve the overall efficiency.`,
+    ),
   ),
   shouldRemoveNode: z.boolean().describe("if we need to remove a node, boolean"),
   shouldAddNode: z.boolean().describe("if we need to add a node, boolean"),
@@ -60,7 +60,7 @@ export interface WorkflowAnalysisParams {
  */
 export async function analyzeWorkflowBottlenecks(
   workflow: Workflow,
-  params: WorkflowAnalysisParams
+  params: WorkflowAnalysisParams,
 ): Promise<WorkflowAnalysisResult> {
   const { transcript, fitness, model, previousMemory = {} } = params
 
@@ -74,7 +74,7 @@ export async function analyzeWorkflowBottlenecks(
     schema: z.object({
       ...baseSchema,
       memories: MemorySchemaOptional.describe(
-        "Key-value pairs for workflow memory. Max 2 entries. Should be generic learnings, not specific errors."
+        "Key-value pairs for workflow memory. Max 2 entries. Should be generic learnings, not specific errors.",
       ),
     }),
   })
@@ -107,7 +107,7 @@ export async function analyzeWorkflowBottlenecks(
       memories ||
       workflow
         .getConfig()
-        .nodes.map((node) => node.memory)
+        .nodes.map(node => node.memory)
         .reduce(
           (acc, curr) => {
             if (curr && curr.nodeId && acc) {
@@ -115,7 +115,7 @@ export async function analyzeWorkflowBottlenecks(
             }
             return acc
           },
-          {} as Record<string, string>
+          {} as Record<string, string>,
         ) ||
       null,
   }

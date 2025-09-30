@@ -4,8 +4,8 @@
 import { mkdirIfMissing, writeJsonAtomic } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Json } from "@lucky/shared"
-import { PATHS } from "@runtime/settings/constants"
+import type { Json } from "@core/utils/json"
+import { PATHS } from "@core/core-config/compat"
 import path from "path"
 
 /**
@@ -17,7 +17,7 @@ import path from "path"
 export async function persistWorkflow(
   finalConfig: Json | WorkflowConfig,
   fileName: string = "setupfile.json",
-  skipBackup: boolean = false
+  skipBackup: boolean = false,
 ): Promise<void> {
   // compute directories at runtime to respect test overrides
   const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))

@@ -16,13 +16,13 @@ export default function AccuracyByToolCountChart({
   series?: SeriesDef[]
   points?: Point[]
 }) {
-  const allModels = (series?.map((s) => s.key) || Object.keys(data?.[0] || {})).filter((k) => k !== "tools")
+  const allModels = (series?.map(s => s.key) || Object.keys(data?.[0] || {})).filter(k => k !== "tools")
 
   // Sort models to put specific ones at top
   const priorityOrder = ["google/gemini-2.5-flash-lite", "openai/gpt-3.5-turbo", "openai/gpt-4.1"]
   const models = [
-    ...priorityOrder.filter((m) => allModels.includes(m)),
-    ...allModels.filter((m) => !priorityOrder.includes(m)),
+    ...priorityOrder.filter(m => allModels.includes(m)),
+    ...allModels.filter(m => !priorityOrder.includes(m)),
   ]
 
   const palette = seriesPalette
@@ -49,7 +49,7 @@ export default function AccuracyByToolCountChart({
             dataKey={m}
             stroke={palette[idx % palette.length]}
             strokeWidth={2}
-            name={series?.find((s) => s.key === m)?.label || m}
+            name={series?.find(s => s.key === m)?.label || m}
             connectNulls
             dot={false}
             activeDot={false}

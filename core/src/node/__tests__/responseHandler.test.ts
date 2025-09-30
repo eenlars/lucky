@@ -1,5 +1,5 @@
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { handleSuccess } from "../responseHandler"
@@ -42,7 +42,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     logging: { override: { Tools: false } },
     coordinationType: "sequential",
@@ -57,7 +57,7 @@ describe("responseHandler - Parallel Handoff Logic", () => {
   // fails. also doesn't test the actual message content or cost calculations.
   const createMockContext = (
     handOffType?: "conditional" | "sequential" | "parallel",
-    handOffs: string[] = ["node1", "node2"]
+    handOffs: string[] = ["node1", "node2"],
   ): NodeInvocationCallContext => ({
     startTime: new Date().toISOString(),
     workflowMessageIncoming: {

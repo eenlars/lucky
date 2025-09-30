@@ -2,7 +2,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { groupedFeedback } from "@core/prompts/evaluator/feedback/averageFeedback.p"
 import { R, type RS } from "@core/utils/types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "./fitness.types"
 
 export const calculateAverageFitness = (fitnesses: FitnessOfWorkflow[]): FitnessOfWorkflow => {

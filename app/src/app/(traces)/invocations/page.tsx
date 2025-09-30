@@ -195,7 +195,7 @@ export default function InvocationsPage() {
   // Update time differences every second and auto-refresh every 30 seconds
   useEffect(() => {
     const timeInterval = setInterval(() => {
-      setTimeUpdate((prev) => prev + 1)
+      setTimeUpdate(prev => prev + 1)
     }, 1000)
 
     // Auto-refresh every 30 seconds to catch status changes
@@ -226,7 +226,7 @@ export default function InvocationsPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(new Set(invocations.map((inv) => inv.wf_invocation_id)))
+      setSelectedRows(new Set(invocations.map(inv => inv.wf_invocation_id)))
     } else {
       setSelectedRows(new Set())
     }
@@ -283,7 +283,7 @@ export default function InvocationsPage() {
       }
 
       // Remove deleted items from the invocations list
-      setInvocations(invocations.filter((inv) => !selectedRows.has(inv.wf_invocation_id)))
+      setInvocations(invocations.filter(inv => !selectedRows.has(inv.wf_invocation_id)))
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
 
@@ -706,7 +706,7 @@ export default function InvocationsPage() {
             <select
               id="items-per-page"
               value={itemsPerPage}
-              onChange={(e) => {
+              onChange={e => {
                 setItemsPerPage(Number(e.target.value))
                 setCurrentPage(1)
               }}
@@ -748,7 +748,7 @@ export default function InvocationsPage() {
                 <select
                   id="status-filter"
                   value={filters.status}
-                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                  onChange={e => setFilters({ ...filters, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 >
                   <option value="">All statuses</option>
@@ -767,7 +767,7 @@ export default function InvocationsPage() {
                   type="number"
                   step="0.000001"
                   value={filters.minCost}
-                  onChange={(e) => setFilters({ ...filters, minCost: e.target.value })}
+                  onChange={e => setFilters({ ...filters, minCost: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000001"
                 />
@@ -781,7 +781,7 @@ export default function InvocationsPage() {
                   type="number"
                   step="0.000001"
                   value={filters.maxCost}
-                  onChange={(e) => setFilters({ ...filters, maxCost: e.target.value })}
+                  onChange={e => setFilters({ ...filters, maxCost: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000000"
                 />
@@ -797,7 +797,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.minAccuracy}
-                  onChange={(e) => setFilters({ ...filters, minAccuracy: e.target.value })}
+                  onChange={e => setFilters({ ...filters, minAccuracy: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000"
                 />
@@ -813,7 +813,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.maxAccuracy}
-                  onChange={(e) => setFilters({ ...filters, maxAccuracy: e.target.value })}
+                  onChange={e => setFilters({ ...filters, maxAccuracy: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000"
                 />
@@ -829,7 +829,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.minFitnessScore}
-                  onChange={(e) => setFilters({ ...filters, minFitnessScore: e.target.value })}
+                  onChange={e => setFilters({ ...filters, minFitnessScore: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="0.000"
                 />
@@ -845,7 +845,7 @@ export default function InvocationsPage() {
                   min="0"
                   max="1"
                   value={filters.maxFitnessScore}
-                  onChange={(e) => setFilters({ ...filters, maxFitnessScore: e.target.value })}
+                  onChange={e => setFilters({ ...filters, maxFitnessScore: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-text"
                   placeholder="1.000"
                 />
@@ -858,7 +858,7 @@ export default function InvocationsPage() {
                 <input
                   type="datetime-local"
                   value={filters.dateFrom}
-                  onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+                  onChange={e => setFilters({ ...filters, dateFrom: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 />
               </div>
@@ -870,7 +870,7 @@ export default function InvocationsPage() {
                 <input
                   type="datetime-local"
                   value={filters.dateTo}
-                  onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+                  onChange={e => setFilters({ ...filters, dateTo: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 />
               </div>
@@ -1016,7 +1016,7 @@ export default function InvocationsPage() {
                       <input
                         type="checkbox"
                         checked={selectedRows.size === invocations.length && invocations.length > 0}
-                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        onChange={e => handleSelectAll(e.target.checked)}
                         className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                       />
                     </th>
@@ -1101,7 +1101,7 @@ export default function InvocationsPage() {
                           <input
                             type="checkbox"
                             checked={isSelected}
-                            onChange={(e) => handleSelectRow(invocation.wf_invocation_id, e.target.checked)}
+                            onChange={e => handleSelectRow(invocation.wf_invocation_id, e.target.checked)}
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           />
                         </td>

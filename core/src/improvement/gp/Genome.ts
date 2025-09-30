@@ -36,7 +36,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import crypto from "crypto"
 import type { GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 import type { EvolutionContext } from "./resources/types"
@@ -54,7 +54,7 @@ export class Genome extends Workflow {
   public readonly genome: WorkflowGenome
   public genomeEvaluationResults: GenomeEvaluationResults
   private evolutionCost: number
-  static verbose = CONFIG.logging.override.GP
+  static verbose = isLoggingEnabled("GP")
   public isEvaluated = false
 
   /**
@@ -69,7 +69,7 @@ export class Genome extends Workflow {
     genome: WorkflowGenome,
     evaluationInput: EvaluationInput,
     _evolutionContext: EvolutionContext,
-    workflowVersionId: string | undefined = undefined
+    workflowVersionId: string | undefined = undefined,
   ) {
     super(Genome.toWorkflowConfig(genome), evaluationInput, _evolutionContext, undefined, workflowVersionId)
     this.genome = genome
@@ -202,11 +202,11 @@ export class Genome extends Workflow {
       lgg.onlyIf(
         Genome.verbose,
         "generatedWorkflowForGenomeFromIdea",
-        JSON.stringify(generatedWorkflowForGenomeFromIdea)
+        JSON.stringify(generatedWorkflowForGenomeFromIdea),
       )
       if (!generatedWorkflowForGenomeFromIdea.success)
         throw new Error(
-          `failed to generate workflow in Genome.createRandom: ${generatedWorkflowForGenomeFromIdea.error}`
+          `failed to generate workflow in Genome.createRandom: ${generatedWorkflowForGenomeFromIdea.error}`,
         )
       const { data: genome, usdCost } = await workflowConfigToGenome({
         workflowConfig: generatedWorkflowForGenomeFromIdea.data,
@@ -277,12 +277,12 @@ export class Genome extends Workflow {
       lgg.onlyIf(
         Genome.verbose,
         "generatedWorkflowForGenomeFromIdea (prepared)",
-        JSON.stringify(generatedWorkflowForGenomeFromIdea)
+        JSON.stringify(generatedWorkflowForGenomeFromIdea),
       )
 
       if (!generatedWorkflowForGenomeFromIdea.success)
         throw new Error(
-          `failed to generate workflow in Genome.createPrepared: ${generatedWorkflowForGenomeFromIdea.error}`
+          `failed to generate workflow in Genome.createPrepared: ${generatedWorkflowForGenomeFromIdea.error}`,
         )
 
       const { data: genome, usdCost } = await workflowConfigToGenome({

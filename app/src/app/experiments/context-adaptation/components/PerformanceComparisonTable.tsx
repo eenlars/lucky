@@ -81,7 +81,7 @@ export default function PerformanceComparisonTable() {
         ]
 
         const filteredData = result.filter(
-          (row) => !excludedModels.some((excluded) => row.model === excluded || row.model.includes(excluded))
+          row => !excludedModels.some(excluded => row.model === excluded || row.model.includes(excluded)),
         )
 
         setData(filteredData)

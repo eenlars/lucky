@@ -9,7 +9,7 @@ import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflo
 class WorkflowConfigError extends Error {
   constructor(
     message: string,
-    public cause?: Error
+    public cause?: Error,
   ) {
     super(message)
     this.name = "WorkflowConfigError"

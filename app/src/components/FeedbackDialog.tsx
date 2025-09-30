@@ -62,7 +62,7 @@ export default function FeedbackDialog({ open, onOpenChange, taskId, metrics, wo
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-2">Overall Rating</label>
             <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((rating) => (
+              {[1, 2, 3, 4, 5].map(rating => (
                 <Button
                   key={rating}
                   onClick={() => setFeedbackRating(rating)}
@@ -82,7 +82,7 @@ export default function FeedbackDialog({ open, onOpenChange, taskId, metrics, wo
             <Textarea
               placeholder="What worked well? What could be improved? Any specific issues you noticed?"
               value={feedbackText}
-              onChange={(e) => setFeedbackText(e.target.value)}
+              onChange={e => setFeedbackText(e.target.value)}
               className="min-h-[100px] resize-none"
             />
           </div>

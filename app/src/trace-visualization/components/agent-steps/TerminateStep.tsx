@@ -70,7 +70,7 @@ export const TerminateStep = ({
       onClick={
         isExpanded
           ? undefined
-          : (e) => {
+          : e => {
               if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                 onToggleCollapsed()
               }
@@ -88,7 +88,7 @@ export const TerminateStep = ({
           <div className="flex items-center gap-2">
             <button
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 copyToClipboard(typeof returnData === "string" ? returnData : JSON.stringify(returnData, null, 2))
               }}
@@ -98,7 +98,7 @@ export const TerminateStep = ({
             </button>
             <button
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 onToggleExpanded()
               }}
@@ -145,7 +145,7 @@ export const TerminateStep = ({
             <div className="mt-2">
               <button
                 className="w-full bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700 rounded-lg p-2 text-sm text-blue-700 dark:text-blue-300 font-medium transition-colors"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   onToggleExpanded()
                 }}

@@ -23,7 +23,7 @@ export const cleanupTestEvolutionRunInvocations = async () => {
     }
   }
 
-  const runIds = testRuns.map((run) => run.run_id)
+  const runIds = testRuns.map(run => run.run_id)
 
   // 2. Delete WorkflowInvocations referencing those runs
   const { error: invocationsError, count } = await supabase.from("WorkflowInvocation").delete().in("run_id", runIds)
@@ -68,7 +68,7 @@ export const cleanupTestEvolutionRunsCompletely = async () => {
     }
   }
 
-  const runIds = testRuns.map((run) => run.run_id)
+  const runIds = testRuns.map(run => run.run_id)
   console.log(`📊 Found ${runIds.length} test EvolutionRuns to delete`)
   console.log(`🔗 Run IDs: ${runIds.slice(0, 5).join(", ")}${runIds.length > 5 ? "..." : ""}`)
 
@@ -150,7 +150,7 @@ export const previewTestEvolutionRunCleanup = async () => {
     }
   }
 
-  const runIds = testRuns.map((run) => run.run_id)
+  const runIds = testRuns.map(run => run.run_id)
 
   // Count WorkflowInvocations that would be deleted
   const { data: invocations, error: invocationsError } = await supabase

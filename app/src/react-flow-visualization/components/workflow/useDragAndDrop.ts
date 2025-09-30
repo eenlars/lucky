@@ -17,7 +17,7 @@ export function useDragAndDrop() {
   const { addNode, addNodeInBetween, potentialConnection } = useAppStore(useShallow(selector))
 
   const onDrop: React.DragEventHandler = useCallback(
-    (event) => {
+    event => {
       const nodeProps = JSON.parse(event.dataTransfer.getData("application/reactflow"))
 
       if (!nodeProps) return
@@ -44,10 +44,10 @@ export function useDragAndDrop() {
         addNode(newNode)
       }
     },
-    [addNode, addNodeInBetween, screenToFlowPosition, potentialConnection]
+    [addNode, addNodeInBetween, screenToFlowPosition, potentialConnection],
   )
 
-  const onDragOver: React.DragEventHandler = useCallback((event) => event.preventDefault(), [])
+  const onDragOver: React.DragEventHandler = useCallback(event => event.preventDefault(), [])
 
   return useMemo(() => ({ onDrop, onDragOver }), [onDrop, onDragOver])
 }

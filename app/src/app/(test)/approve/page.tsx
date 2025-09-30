@@ -55,7 +55,7 @@ export default function ApprovePage() {
           <input
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={e => setText(e.target.value)}
             placeholder="Optional: Add a comment..."
             className="w-full px-4 py-4 text-lg border border-slate-300 rounded-lg focus:border-slate-900 focus:outline-none transition-colors duration-200 bg-white placeholder:text-slate-400"
           />

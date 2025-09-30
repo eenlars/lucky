@@ -6,7 +6,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 export async function calculateFeedback({
   agentSteps,

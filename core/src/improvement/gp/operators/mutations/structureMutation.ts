@@ -60,7 +60,7 @@ export class StructureMutation implements NodeMutationOperator {
         workflowConfig: mutatedConfig,
         verifyWorkflow: "normal",
         repairWorkflowAfterGeneration: true,
-      }
+      },
     )
 
     if (success) {

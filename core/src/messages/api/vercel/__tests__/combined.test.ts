@@ -1,7 +1,7 @@
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import multiOutputFixture from "../../__tests__/resources/multiOutput.json"
 import { responseToAgentSteps } from "../responseToAgentSteps"
 
@@ -32,11 +32,11 @@ describe("vercel.integration.test", () => {
 
     // Cost should equal both: (a) sum of per-step usage, and (b) top-level usage
     const perStepCost = ((multiOutputFixture as any).steps as any[])
-      .map((s) => calculateUsageCost(s.usage, testModel))
+      .map(s => calculateUsageCost(s.usage, testModel))
       .reduce((a, b) => a + b, 0)
     const topLevelCost = calculateUsageCost(
       (multiOutputFixture as any).steps[0].providerMetadata.openrouter.usage,
-      testModel
+      testModel,
     )
 
     // TODO: This assertion assumes test fixtures use same model as default

@@ -26,10 +26,10 @@ export default function JSONEditor({ workflowVersion, initialContent, onContentC
   const router = useRouter()
 
   const { workflowJSON, updateWorkflowJSON } = useAppStore(
-    useShallow((state) => ({
+    useShallow(state => ({
       workflowJSON: state.workflowJSON,
       updateWorkflowJSON: state.updateWorkflowJSON,
-    }))
+    })),
   )
   const [isDirty, setIsDirty] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -159,7 +159,7 @@ export default function JSONEditor({ workflowVersion, initialContent, onContentC
       setFeedback("")
       setVerificationResult(null)
     },
-    [updateWorkflowJSON]
+    [updateWorkflowJSON],
   )
 
   const handleOptimize = useCallback(async () => {

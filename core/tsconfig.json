@@ -27,23 +27,14 @@
       "@core/prompts/*": ["./src/prompts/*"],
       "@core/validation/*": ["./src/utils/validation/*"],
       "@core/improvement/*": ["./src/improvement/*"],
-      "@runtime/*": ["../runtime/*"],
-      "@runtime/settings/*": ["../runtime/settings/*"],
-      "@lucky/shared": ["../packages/shared/src"],
-      "@lucky/shared/*": ["../packages/shared/src/*"]
+      "@core/core-config/*": ["./src/core-config/*"],
+      "@core/utils/json": ["./src/utils/json"],
+      "@core/utils/csv": ["./src/utils/csv"],
+      "@core/utils/fs/*": ["./src/utils/fs/*"],
+      "@examples/*": ["../examples/*"]
     },
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.js",
-    "src/**/*.json",
-    "../runtime/**/*.ts",
-    "../packages/shared/**/*.ts",
-    "../runtime/**/*.json",
-    "scripts/runOnce.ts",
-    "scripts/cleanup.ts"
-  ],
-  "exclude": ["node_modules", "src/runtime/logging_folder", "src/utils/env.mjs"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "src/examples/logging_folder", "src/utils/env.mjs"]
 }

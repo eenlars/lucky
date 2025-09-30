@@ -5,11 +5,11 @@ import {
   createMockWorkflowGenome,
   createMockWorkflowScore,
 } from "@core/utils/__tests__/setup/genomeTestUtils"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -229,7 +229,7 @@ describe("Genome", () => {
           usdCost: 0,
           data: new Genome(genomeData, evaluationInput, evolutionContext),
         }
-      }
+      },
     )
 
     mockCreateDummyGenome.mockImplementation(
@@ -257,7 +257,7 @@ describe("Genome", () => {
           },
         }
         return new Genome(genomeData, evaluationInput, evolutionContext)
-      }
+      },
     )
   })
 

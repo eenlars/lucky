@@ -37,7 +37,7 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
           <span className="truncate font-semibold">Workflow Editor</span>
         </div>
         <SidebarMenu>
-          {Object.values(nodesConfig).map((item) => (
+          {Object.values(nodesConfig).map(item => (
             <DraggableItem key={item.displayName} {...item} />
           ))}
         </SidebarMenu>
@@ -88,7 +88,7 @@ function DraggableItem(props: NodeConfig) {
       e.dataTransfer.setData("application/reactflow", JSON.stringify(props))
       setIsDragging(true)
     },
-    [props]
+    [props],
   )
 
   const lastDragPos = useRef({ x: 0, y: 0 })
@@ -104,14 +104,14 @@ function DraggableItem(props: NodeConfig) {
 
       const flowPosition = screenToFlowPosition({ x: e.clientX, y: e.clientY })
 
-      const handles = nodesConfig[props.id].handles.map((handle) => handle.type)
+      const handles = nodesConfig[props.id].handles.map(handle => handle.type)
       const handleType = handles.reduce(
         (acc, type) => {
           if (acc === "none") return type
           if (acc !== "both" && acc !== type) return "both"
           return acc
         },
-        "none" as "both" | "none" | "source" | "target"
+        "none" as "both" | "none" | "source" | "target",
       )
 
       if (handleType === "none") return
@@ -120,7 +120,7 @@ function DraggableItem(props: NodeConfig) {
         type: handleType === "both" ? undefined : handleType,
       })
     },
-    [screenToFlowPosition, checkForPotentialConnection, props.id]
+    [screenToFlowPosition, checkForPotentialConnection, props.id],
   )
 
   const onDragEnd = useCallback(() => {
@@ -134,7 +134,7 @@ function DraggableItem(props: NodeConfig) {
     <SidebarMenuItem
       className={cn(
         "relative border-2 active:scale-[.99] rounded-md",
-        isDragging ? "border-green-500" : "border-gray-100"
+        isDragging ? "border-green-500" : "border-gray-100",
       )}
       onDragStart={onDragStart}
       onDrag={onDrag}

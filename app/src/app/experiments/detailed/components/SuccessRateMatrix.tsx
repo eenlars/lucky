@@ -9,7 +9,7 @@ interface SuccessRateMatrixProps {
 }
 
 export default function SuccessRateMatrix({ data }: SuccessRateMatrixProps) {
-  const matrixData = data.successRateMatrix.map((item) => ({
+  const matrixData = data.successRateMatrix.map(item => ({
     model: item.model.replace("gpt-", ""),
     "Standard Method": item.vague,
     "Our solution": item.clear,

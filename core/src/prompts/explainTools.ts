@@ -26,7 +26,7 @@ export function explainSubsetOfTools(toolNames: string[]): string {
 
   // format each valid tool with description
   return validTools
-    .map((toolName) => {
+    .map(toolName => {
       const description = ACTIVE_TOOLS_WITH_DESCRIPTION[toolName]
       return `<tool:${toolName}>
     ${toolName}: ${description}
@@ -44,7 +44,7 @@ function normalizeAndFilterTools(toolNames: string[]): AllToolNames[] {
   const activeToolsSet = new Set(ALL_ACTIVE_TOOL_NAMES)
 
   return toolNames
-    .map((name) => name?.toString().trim()) // normalize: convert to string and trim
+    .map(name => name?.toString().trim()) // normalize: convert to string and trim
     .filter((name): name is string => Boolean(name)) // remove empty/null/undefined
     .filter((name): name is AllToolNames => activeToolsSet.has(name as AllToolNames))
     .filter((name, index, arr) => arr.indexOf(name) === index) // remove duplicates

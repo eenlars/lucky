@@ -23,7 +23,7 @@ import {
   type MCPToolName,
 } from "@core/tools/tool.types"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
-import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
+// Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
 import type { AllowedModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -39,7 +39,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   const [data, setData] = useState(nodeData)
   const [isEditingId, setIsEditingId] = useState(false)
   const [nodeIdDraft, setNodeIdDraft] = useState(nodeData.nodeId || "")
-  const edges = useAppStore((s) => s.edges)
+  const edges = useAppStore(s => s.edges)
 
   // Prevent auto-save loop when props refresh local state
   const skipNextAutosaveRef = useRef(false)
@@ -51,17 +51,17 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
         ACTIVE_MCP_TOOL_NAMES.includes(toolName as MCPToolName) &&
         !data.mcpTools?.includes(toolName as MCPToolName)
       ) {
-        setData((prev) => ({
+        setData(prev => ({
           ...prev,
           mcpTools: [...(prev.mcpTools || []), toolName as MCPToolName],
         }))
       }
     },
-    [data.mcpTools]
+    [data.mcpTools],
   )
 
   const removeMcpTool = useCallback((index: number) => {
-    setData((prev) => ({
+    setData(prev => ({
       ...prev,
       mcpTools: prev.mcpTools?.filter((_, i) => i !== index) || [],
     }))
@@ -74,17 +74,17 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
         ACTIVE_CODE_TOOL_NAMES.includes(toolName as CodeToolName) &&
         !data.codeTools?.includes(toolName as CodeToolName)
       ) {
-        setData((prev) => ({
+        setData(prev => ({
           ...prev,
           codeTools: [...(prev.codeTools || []), toolName as CodeToolName],
         }))
       }
     },
-    [data.codeTools]
+    [data.codeTools],
   )
 
   const removeCodeTool = useCallback((index: number) => {
-    setData((prev) => ({
+    setData(prev => ({
       ...prev,
       codeTools: prev.codeTools?.filter((_, i) => i !== index) || [],
     }))
@@ -99,7 +99,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
         removeMcpTool(idx)
       }
     },
-    [data.mcpTools, addMcpTool, removeMcpTool]
+    [data.mcpTools, addMcpTool, removeMcpTool],
   )
 
   const toggleCodeTool = useCallback(
@@ -111,7 +111,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
         removeCodeTool(idx)
       }
     },
-    [data.codeTools, addCodeTool, removeCodeTool]
+    [data.codeTools, addCodeTool, removeCodeTool],
   )
 
   // keyboard shortcuts for tool selection
@@ -169,7 +169,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
     setIsEditingId(false)
   }, [nodeData])
 
-  const outEdgeCount = useMemo(() => edges.filter((e) => e.source === nodeData.nodeId).length, [edges, nodeData.nodeId])
+  const outEdgeCount = useMemo(() => edges.filter(e => e.source === nodeData.nodeId).length, [edges, nodeData.nodeId])
   const canSetHandOffType = (data.handOffs?.length || 0) > 1 || outEdgeCount > 1
 
   // const addHandoff = () => {
@@ -198,13 +198,13 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
     }
   }, [data?.modelName])
 
-  const activeModels: string[] = useMemo(() => getActiveModelNames().map((m) => String(m)), [])
+  const activeModels: string[] = useMemo(() => getActiveModelNames().map(m => String(m)), [])
 
   // show raw model id (e.g., openai/gpt-4.1-mini)
   const formatModelDisplayName = (modelName?: string) => modelName || ""
 
-  // provider comes from CURRENT_PROVIDER (e.g., openrouter, groq, openai)
-  const providerId = CURRENT_PROVIDER
+  // Provider is hardcoded to "openrouter" in client (see client-utils.ts)
+  const providerId = "openrouter"
 
   // Keep helpers in case we reintroduce richer display; unused for simple dropdown
   const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
@@ -220,7 +220,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   const commitNodeId = () => {
     const trimmed = nodeIdDraft.trim()
     if (trimmed && trimmed !== data.nodeId) {
-      setData((prev) => ({ ...prev, nodeId: trimmed }))
+      setData(prev => ({ ...prev, nodeId: trimmed }))
     }
     setIsEditingId(false)
   }
@@ -247,9 +247,9 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
               {isEditingId ? (
                 <Input
                   value={nodeIdDraft}
-                  onChange={(e) => setNodeIdDraft(e.target.value)}
+                  onChange={e => setNodeIdDraft(e.target.value)}
                   onBlur={commitNodeId}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === "Enter") commitNodeId()
                     if (e.key === "Escape") cancelNodeIdEdit()
                   }}
@@ -280,8 +280,8 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
               <label className="text-sm text-gray-700">Description</label>
               <Textarea
                 value={data.description || ""}
-                onChange={(e) =>
-                  setData((prev) => ({
+                onChange={e =>
+                  setData(prev => ({
                     ...prev,
                     description: e.target.value,
                   }))
@@ -295,8 +295,8 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
               <label className="text-sm text-gray-700">Instructions</label>
               <Textarea
                 value={data.systemPrompt || ""}
-                onChange={(e) =>
-                  setData((prev) => ({
+                onChange={e =>
+                  setData(prev => ({
                     ...prev,
                     systemPrompt: e.target.value,
                   }))
@@ -310,8 +310,8 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
               <label className="text-sm text-gray-700 w-20">Model</label>
               <Select
                 value={data.modelName || ""}
-                onValueChange={(value) =>
-                  setData((prev) => ({
+                onValueChange={value =>
+                  setData(prev => ({
                     ...prev,
                     modelName: value as AllowedModelName,
                   }))
@@ -321,7 +321,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent position="popper">
-                  {activeModels.map((model) => (
+                  {activeModels.map(model => (
                     <SelectItem key={model} value={model}>
                       {formatModelDisplayName(model)} + {providerId}
                     </SelectItem>
@@ -343,8 +343,8 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                   <label className="text-sm text-gray-700 w-20">Handoff</label>
                   <Select
                     value={data.handOffType || "sequential"}
-                    onValueChange={(value) =>
-                      setData((prev) => ({
+                    onValueChange={value =>
+                      setData(prev => ({
                         ...prev,
                         handOffType: value === "parallel" ? ("parallel" as const) : undefined,
                       }))

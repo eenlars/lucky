@@ -24,15 +24,33 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   }),
 }))
 
-import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
-import { getDefaultModels } from "@runtime/settings/models"
+// Mock core config to mark browserUse as inactive
+vi.mock("@core/core-config/index", async importOriginal => {
+  const original = await importOriginal<typeof import("@core/core-config/index")>()
+  const defaultConfig = original.createDefaultCoreConfig()
 
-describe("formalizeWorkflow sanitization", () => {
+  return {
+    ...original,
+    isToolInactive: (toolName: string) => toolName === "browserUse",
+    getCoreConfig: () => ({
+      ...defaultConfig,
+      tools: {
+        ...defaultConfig.tools,
+        inactive: new Set(["browserUse"]),
+      },
+    }),
+  }
+})
+
+import { getDefaultModels } from "@core/core-config/compat"
+import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
+
+describe("formalizeWorkflow sanitization (core defaults)", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it("strips inactive/unknown MCP tools from the returned config (was failing before)", async () => {
+  it("removes inactive MCP tools (browserUse marked as inactive)", async () => {
     const baseConfig: WorkflowConfig = {
       entryNodeId: "main",
       nodes: [
@@ -58,7 +76,7 @@ describe("formalizeWorkflow sanitization", () => {
     expect(success).toBe(true)
     expect(data).toBeDefined()
     if (!data) throw new Error("formalizeWorkflow returned no data")
-    // The returned nodes must not include the inactive tool anymore
+    // browserUse is inactive in the mocked config, so it should be removed by sanitization
     for (const node of data.nodes) {
       expect(node.mcpTools).not.toContain("browserUse")
     }

@@ -12,7 +12,7 @@ export const WorkflowAnalysisPrompts = {
     transcript: string,
     workflow: Workflow,
     fitness: FitnessOfWorkflow,
-    previousMemory: Record<string, string> = {}
+    previousMemory: Record<string, string> = {},
   ): ModelMessage[] => {
     return [
       {
@@ -31,7 +31,7 @@ export const WorkflowAnalysisPrompts = {
           includeAdjacencyList: true,
           includeAgents: true,
           easyModelNames: false,
-        })
+        }),
       )}
       ${SharedWorkflowPrompts.fitnessMetricsSection(fitness)}
       

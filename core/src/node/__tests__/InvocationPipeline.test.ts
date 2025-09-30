@@ -1,29 +1,14 @@
-// Mock logger first to ensure it's available for all modules
-vi.mock("@core/utils/logging/Logger", () => ({
-  lgg: {
-    log: vi.fn().mockResolvedValue(undefined),
-    info: vi.fn().mockResolvedValue(undefined),
-    warn: vi.fn().mockResolvedValue(undefined),
-    error: vi.fn().mockResolvedValue(undefined),
-    debug: vi.fn().mockResolvedValue(undefined),
-    trace: vi.fn().mockResolvedValue(undefined),
-    onlyIf: vi.fn().mockImplementation((decider: boolean, ...args: any[]) => (decider ? Promise.resolve(args) : null)),
-    logAndSave: vi.fn().mockResolvedValue(undefined),
-    finalizeWorkflowLog: vi.fn().mockResolvedValue(null),
-  },
-}))
-
 // Use standardized test setup
+import { getDefaultModels } from "@core/core-config/compat"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@runtime/settings/constants.client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { ToolManager } from "../toolManager"
 
 // Mock runtime constants using standard approach
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -146,7 +131,7 @@ vi.mock("@runtime/settings/constants", () => ({
 }))
 
 // Mock file system operations to prevent test errors
-vi.mock("../../../runtime/code_tools/file-saver/save", () => ({
+vi.mock("../../../examples/code_tools/file-saver/save", () => ({
   saveInLogging: vi.fn(),
   saveInLoc: vi.fn(),
 }))
@@ -286,7 +271,7 @@ vi.mock("@core/node/responseHandler", () => ({
         debugPrompts: string[] = [],
         extraCost = 0,
         updatedMemory: any = null,
-        agentSteps: any[] = []
+        agentSteps: any[] = [],
       ) =>
         Promise.resolve({
           nodeInvocationId: "test-invocation-id",
@@ -301,7 +286,7 @@ vi.mock("@core/node/responseHandler", () => ({
           agentSteps: agentSteps?.length ? agentSteps : (response?.agentSteps ?? [{ type: "text", return: "ok" }]),
           updatedMemory: updatedMemory ?? undefined,
           debugPrompts,
-        })
+        }),
     ),
   handleError: vi
     .fn()
@@ -319,7 +304,7 @@ vi.mock("@core/node/responseHandler", () => ({
         },
         agentSteps: [{ type: "text", return: errorMessage }],
         debugPrompts: debugPrompts ?? [],
-      })
+      }),
     ),
 }))
 
@@ -372,6 +357,28 @@ describe("InvocationPipeline", () => {
 
   beforeEach(() => {
     setupCoreTest()
+
+    // Mock ToolManager to provide at least one tool for multi-step loop
+    const mockTool = {
+      name: "jsExecutor",
+      description: "Execute JavaScript",
+      parameters: { type: "object", properties: {} },
+      execute: vi.fn().mockResolvedValue({ success: true, data: "executed" }),
+    } as any
+
+    // Return a tool only when the ToolManager instance was constructed with tools;
+    // when both code and MCP tool lists are empty, return an empty toolset so
+    // tests that expect the single-call path (and sendAI mocking) still work.
+    vi.spyOn(ToolManager.prototype, "getAllTools").mockImplementation(function (this: any) {
+      try {
+        const code = this?.codeToolNames ?? []
+        const mcp = this?.mcpToolNames ?? []
+        const hasAny = (Array.isArray(code) && code.length > 0) || (Array.isArray(mcp) && mcp.length > 0)
+        return hasAny ? ({ jsExecutor: mockTool } as any) : ({} as any)
+      } catch {
+        return { jsExecutor: mockTool } as any
+      }
+    })
   })
 
   describe("prepare()", () => {
@@ -391,7 +398,7 @@ describe("InvocationPipeline", () => {
         expect.objectContaining({
           type: "prepare",
           return: expect.stringMatching(/AI response/),
-        })
+        }),
       )
     })
 
@@ -417,7 +424,7 @@ describe("InvocationPipeline", () => {
         expect.objectContaining({
           type: "reasoning",
           return: expect.stringMatching(/test reasoning|AI response/),
-        })
+        }),
       )
     })
 
@@ -435,11 +442,11 @@ describe("InvocationPipeline", () => {
       expect(agentSteps).toContainEqual(
         expect.objectContaining({
           type: "reasoning",
-        })
+        }),
       )
       // May also have terminate output from multi-step loop
-      const hasTerminate = agentSteps.some((output) => output.type === "terminate")
-      const hasReasoning = agentSteps.some((output) => output.type === "reasoning")
+      const hasTerminate = agentSteps.some(output => output.type === "terminate")
+      const hasReasoning = agentSteps.some(output => output.type === "reasoning")
       expect(hasTerminate || hasReasoning).toBe(true)
     })
 

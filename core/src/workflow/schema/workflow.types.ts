@@ -1,5 +1,5 @@
 import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
-import type { AllowedModelName } from "@core/utils/spending/models.types"
+import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
 
 // Import SDK config type - can be removed cleanly when ejecting SDK
@@ -8,12 +8,13 @@ import type { ClaudeSDKConfig } from "@core/tools/claude-sdk/types"
 
 /**
  * Declarative configuration for a single workflow node.
+ * modelName accepts any model from any provider - validation happens at runtime
  */
 export interface WorkflowNodeConfig {
   nodeId: string
   description: string
   systemPrompt: string
-  modelName: AllowedModelName
+  modelName: AnyModelName
   mcpTools: MCPToolName[]
   codeTools: CodeToolName[]
   handOffs: string[]

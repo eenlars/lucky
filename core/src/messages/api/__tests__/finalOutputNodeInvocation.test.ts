@@ -22,7 +22,7 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     logging: { override: {} },

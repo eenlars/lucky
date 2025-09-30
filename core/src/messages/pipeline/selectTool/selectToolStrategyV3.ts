@@ -6,13 +6,13 @@ import { explainTools } from "@core/tools/any/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { createHash } from "crypto"
 import { z } from "zod"
 
-const verbose = CONFIG.logging.override.Tools
+const verbose = isLoggingEnabled("Tools")
 const verboseOverride = true
 
 // TODO-later: if we want to invoke other nodes from this node, this can be part of the strategy.
@@ -24,7 +24,7 @@ const verboseOverride = true
  * @returns {type: 'tool', toolName: keyof T, reasoning: string} or {type: 'terminate', reasoning: string}
  */
 export async function selectToolStrategyV3<T extends ToolSet>(
-  options: SelectToolStrategyOptions<T>
+  options: SelectToolStrategyOptions<T>,
 ): Promise<{
   strategyResult: StrategyResult<T> // the result of the strategy
   debugPrompt: string // debugprompt is to check what has been sent to the model.
@@ -100,7 +100,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           first show the full trace until now. 
           then do a maximum 2 observations that would aid in next tool calls to make a good decision,
           keep it as concise and dense as possible
-          `
+          `,
       )
     } else {
       agentStepsString = "no past calls"
@@ -134,7 +134,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
     // Check if previous reasoning indicated mutation expectation
     let previousToolExpectedMutation = false
     if (agentSteps && agentSteps.length > 0) {
-      const lastReasoningLog = agentSteps.findLast((log) => log.type === "reasoning")
+      const lastReasoningLog = agentSteps.findLast(log => log.type === "reasoning")
       if (lastReasoningLog?.return.includes("[EXPECTS_MUTATION]")) {
         previousToolExpectedMutation = true
       }
@@ -214,7 +214,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
       },
     ]
 
-    const debugPrompt = analysisMessages.map((m) => m.content).join("\n")
+    const debugPrompt = analysisMessages.map(m => m.content).join("\n")
     obs.event("strategy.selectTool:prompt", {
       length: debugPrompt.length,
       hash: shortHash(debugPrompt),

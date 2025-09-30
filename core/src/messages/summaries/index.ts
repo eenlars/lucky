@@ -12,9 +12,9 @@ import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { isNir } from "@core/utils/common/isNir"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { JSONN } from "@core/utils/json"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import chalk from "chalk"
 import z from "zod"
 
@@ -34,14 +34,14 @@ export interface InvocationSummary {
   nodeId: string
 }
 
-const verbose = CONFIG.logging.override.Summary
+const verbose = isLoggingEnabled("Summary")
 const BYTES_FOR_SUMMARY = 200
 
 const createAISummary = async (
   prompt: string,
   description: string,
   model = getDefaultModels().summary,
-  schema?: z.ZodSchema
+  schema?: z.ZodSchema,
 ): Promise<{ summary: string; usdCost: number } | null> => {
   try {
     const messages = buildSimpleMessage({
@@ -139,7 +139,7 @@ export const createTextSummary = async (response: TextProcessed): Promise<Summar
 
   const aiResult = await createAISummary(
     CreateSummaryPrompt.summaryPromptText(response.content),
-    "data summarizer that creates concise summaries of text content"
+    "data summarizer that creates concise summaries of text content",
   )
 
   return (
@@ -152,7 +152,7 @@ export const createTextSummary = async (response: TextProcessed): Promise<Summar
 
 export const createToolSummary = async (response: ToolProcessed): Promise<SummaryResult> => {
   const agentSteps = response.agentSteps ?? []
-  const toolNames = [...new Set(agentSteps.map((step) => step.name).filter(Boolean))]
+  const toolNames = [...new Set(agentSteps.map(step => step.name).filter(Boolean))]
   let usdCost = response.cost ?? 0
 
   if (agentSteps.length === 0) {
@@ -170,13 +170,13 @@ export const createToolSummary = async (response: ToolProcessed): Promise<Summar
   const aiResult = await createAISummary(
     CreateSummaryPrompt.summaryPromptTool(
       toolNames.filter((n): n is string => Boolean(n)),
-      JSON.stringify(agentSteps, null, 2)
+      JSON.stringify(agentSteps, null, 2),
     ),
     "data analyzer that summarizes tool execution results",
     getDefaultModels().summary,
     z.object({
       summary: z.string().describe("detailed summary of tool execution results, including success/failure status"),
-    })
+    }),
   )
 
   if (aiResult) {
@@ -201,7 +201,7 @@ export const generateSummaryFromUnknownData = async (data: unknown, outputLength
 
     const aiResult = await createAISummary(
       CreateSummaryPrompt.summaryLongPromptText(str, outputLength),
-      "data summarizer for context storage"
+      "data summarizer for context storage",
     )
 
     return aiResult || createFallbackSummary(data, size)

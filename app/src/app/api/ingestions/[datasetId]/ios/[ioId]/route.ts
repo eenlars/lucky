@@ -13,7 +13,7 @@ export async function PUT(req: NextRequest, { params }: { params: { datasetId: s
       expected: unknown
     }>
     const meta = await loadDatasetMeta(params.datasetId)
-    const idx = (meta.ios || []).findIndex((x) => x.id === params.ioId)
+    const idx = (meta.ios || []).findIndex(x => x.id === params.ioId)
     if (idx === -1) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
     const cur = meta.ios[idx]
@@ -41,7 +41,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { datasetI
   try {
     const meta = await loadDatasetMeta(params.datasetId)
     const before = (meta.ios || []).length
-    meta.ios = (meta.ios || []).filter((x) => x.id !== params.ioId)
+    meta.ios = (meta.ios || []).filter(x => x.id !== params.ioId)
     if (meta.ios.length === before) {
       return NextResponse.json({ error: "Not found" }, { status: 404 })
     }

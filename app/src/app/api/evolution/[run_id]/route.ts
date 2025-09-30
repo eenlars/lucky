@@ -1,5 +1,5 @@
 // app/api/evolution-run/[run_id]/route.ts
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 

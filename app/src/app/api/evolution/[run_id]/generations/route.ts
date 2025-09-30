@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 
@@ -41,7 +41,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
     }
 
     // Get workflow versions for these generations (WorkflowVersion has generation_id, not run_id)
-    const generationIds = generations.map((g) => g.generation_id)
+    const generationIds = generations.map(g => g.generation_id)
     const { data: versions, error: versionError } = await supabase
       .from("WorkflowVersion")
       .select("*")
@@ -66,7 +66,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
         accuracy,
         run_id,
         generation_id
-      `
+      `,
       )
       .eq("run_id", run_id)
 
@@ -75,9 +75,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
     }
 
     // Group data by generation
-    const generationsWithData = generations.map((generation) => {
-      const genVersions = versions?.filter((v) => v.generation_id === generation.generation_id) || []
-      const genInvocations = invocations?.filter((i) => i.generation_id === generation.generation_id) || []
+    const generationsWithData = generations.map(generation => {
+      const genVersions = versions?.filter(v => v.generation_id === generation.generation_id) || []
+      const genInvocations = invocations?.filter(i => i.generation_id === generation.generation_id) || []
 
       return {
         generation,
@@ -93,7 +93,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
       {
         error: error instanceof Error ? error.message : "Failed to fetch generations data",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

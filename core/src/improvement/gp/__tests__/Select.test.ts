@@ -67,7 +67,7 @@ describe("Select", () => {
       // TODO: complex CONFIG mocking could be extracted to helper function
       // this pattern is repeated multiple times across tests
       // Mock CONFIG to enable verbose mode
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       const originalVerbose = CONFIG.evolution.GP.verbose
       Object.defineProperty(CONFIG.evolution.GP, "verbose", {
         value: true,
@@ -99,7 +99,7 @@ describe("Select", () => {
 
     it("should perform elite + tournament selection in non-verbose mode", async () => {
       // Ensure verbose mode is off
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       Object.defineProperty(CONFIG.evolution.GP, "verbose", {
         value: false,
         configurable: true,
@@ -145,7 +145,7 @@ describe("Select", () => {
     })
 
     it("should throw when no evaluated genomes exist", async () => {
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       Object.defineProperty(CONFIG.evolution.GP, "verbose", {
         value: false,
         configurable: true,
@@ -166,7 +166,7 @@ describe("Select", () => {
         Select.selectParents({
           population: mockPopulation as any,
           config,
-        })
+        }),
       ).rejects.toThrow("No valid genomes with fitness scores found in population")
     })
   })
@@ -211,7 +211,7 @@ describe("Select", () => {
   describe("selectSurvivors", () => {
     it("should return dummy genomes in verbose mode", async () => {
       // Mock CONFIG to enable verbose mode
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       const originalVerbose = CONFIG.evolution.GP.verbose
       Object.defineProperty(CONFIG.evolution.GP, "verbose", {
         value: true,
@@ -241,7 +241,7 @@ describe("Select", () => {
     })
 
     it("should combine and sort parents and offspring by fitness", async () => {
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       Object.defineProperty(CONFIG.evolution.GP, "verbose", {
         value: false,
         configurable: true,
@@ -279,7 +279,7 @@ describe("Select", () => {
     })
 
     it("should handle empty parents and offspring", async () => {
-      const { CONFIG } = await import("@runtime/settings/constants")
+      const { CONFIG } = await import("@core/core-config/compat")
       Object.defineProperty(vi.mocked(CONFIG).evolution.GP, "verbose", {
         value: false,
         writable: true,

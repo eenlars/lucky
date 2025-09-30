@@ -9,7 +9,7 @@ export class SWEBenchLoader {
 
   static async fetchAsWorkflowIO(
     split: "train" | "dev" | "test" = "train",
-    limit: number = 100
+    limit: number = 100,
   ): Promise<WorkflowIO[]> {
     const url = new URL(this.BASE_URL)
     url.searchParams.set("dataset", this.DATASET)
@@ -93,7 +93,7 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
     } catch (error) {
       lgg.error("Failed to fetch SWE-bench as WorkflowIO", error)
       throw new Error(
-        `Failed to convert SWE-bench to WorkflowIO: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to convert SWE-bench to WorkflowIO: ${error instanceof Error ? error.message : String(error)}`,
       )
     }
   }

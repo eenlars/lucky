@@ -27,7 +27,7 @@ Provides real-time visualization of workflow execution graphs, evolutionary fitn
 
 - `app/` — Next.js UI, pages, API routes.
 - `core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
-- `runtime/` — Runtime settings and model utilities.
+- `examples/` — Example tools, settings, and workflows.
 - `packages/shared/` — Shared TypeScript utilities (built with tsup).
 - `tests/e2e-essential/` — Minimal smoke + gate tests with golden trace.
 - `scripts/`, `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
@@ -45,23 +45,23 @@ bun install  # This also builds required packages
 # (Optional) Create environment file(s) where needed
 # For the web app, create app/.env and set your provider/database keys
 
-# Start the web interface (from app/)
-bun -C app run dev
+# Start the web interface
+cd app && bun run dev
 ```
 
 ## Common Tasks
 
 - Build all: `bun run build` (shared → app)
 - Typecheck all: `bun run tsc`
-- Core: run once `bun -C core run once` · iterative `bun -C core run iterative`
-- App: dev `bun -C app run dev` · start `bun -C app run start`
+- Core: run once `cd core && bun run once` · iterative `cd core && bun run iterative`
+- App: dev `cd app && bun run dev` · start `cd app && bun run start`
 
 ## Testing
 
 - Smoke: `bun run test:smoke`
 - Gate: `bun run test:gate`
-- Core unit (watch): `bun -C core run dev` · one‑shot: `bun -C core run test:unit`
-- Coverage: `bun -C app run coverage` or `bun -C core run coverage`
+- Core unit (watch): `cd core && bun run dev` · one‑shot: `cd core && bun run test:unit`
+- Coverage: `cd app && bun run coverage` or `cd core && bun run coverage`
 
 Golden updates (after intentional behavior change):
 
@@ -82,8 +82,8 @@ Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + ga
 ## Configuration
 
 - App env: `app/.env` (see `app/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
-- Path aliases: prefer `@core`, `@runtime`, `@shared` in tests and code where available.
-- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `bun -C app run format` or `bun -C core run format`.
+- Path aliases: prefer `@core`, `@shared` in tests and code where available.
+- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd app && bun run format` or `cd core && bun run format`.
 
 ## How It Works
 

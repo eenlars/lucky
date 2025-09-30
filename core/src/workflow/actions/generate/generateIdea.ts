@@ -5,7 +5,7 @@ import { ALL_ACTIVE_TOOL_NAMES } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { z } from "zod"
 
 /**
@@ -32,7 +32,7 @@ export interface GenerateWorkflowIdeaData {
 
 // generate a single workflow idea
 export async function generateWorkflowIdea(
-  request: GenerateWorkflowIdeaRequest
+  request: GenerateWorkflowIdeaRequest,
 ): Promise<RS<GenerateWorkflowIdeaData>> {
   // Input validation for request object and its properties
   if (!request || typeof request.prompt !== "string" || request.prompt.trim() === "") {
@@ -132,14 +132,14 @@ export async function generateWorkflowIdea(
       tools: response.data.tools,
       amountOfNodes: response.data.amountOfNodes,
     },
-    response.usdCost
+    response.usdCost,
   )
 }
 
 // generate multiple workflow ideas
 export async function generateMultipleWorkflowIdeas(
   prompt: string,
-  count: number
+  count: number,
 ): Promise<GenerateWorkflowIdeaData[]> {
   //likely bug: no input validation for prompt and count parameters
   if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
@@ -150,7 +150,7 @@ export async function generateMultipleWorkflowIdeas(
     return []
   }
   const responses = await Promise.all(
-    Array.from({ length: count }, () => generateWorkflowIdea({ prompt, randomness: 100 }))
+    Array.from({ length: count }, () => generateWorkflowIdea({ prompt, randomness: 100 })),
   )
-  return responses.filter((response) => response.success && response.data).map((response) => response.data!)
+  return responses.filter(response => response.success && response.data).map(response => response.data!)
 }

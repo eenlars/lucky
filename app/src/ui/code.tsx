@@ -75,7 +75,7 @@ export function CodeInput({ children, block = false, className, wrap = false }: 
           block && "p-4 rounded-md bg-muted overflow-x-auto",
           wrap && "whitespace-pre-wrap break-words",
           !wrap && "whitespace-pre",
-          className
+          className,
         )}
       >
         {displayText}

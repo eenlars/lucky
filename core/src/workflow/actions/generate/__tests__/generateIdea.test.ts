@@ -4,7 +4,7 @@ import { mockRuntimeConstants } from "@core/utils/__tests__/setup/runtimeConstan
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@runtime/settings/constants", () => mockRuntimeConstants())
+vi.mock("@examples/settings/constants", () => mockRuntimeConstants())
 
 // Create typed mock instances
 const mockSendAIRequest = vi.fn<(req: Parameters<SendAI>[0]) => Promise<TResponse<unknown>>>()

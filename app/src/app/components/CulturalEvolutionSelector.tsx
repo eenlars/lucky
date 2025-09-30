@@ -41,18 +41,18 @@ export function CulturalEvolutionSelector({
 
   const culturalRuns = useMemo(
     () =>
-      runs.filter((r) => {
+      runs.filter(r => {
         const t = (r as EvolutionRun & { evolution_type?: string }).evolution_type
         if (t) return t.toLowerCase() === "iterative"
         const mode = r.config?.mode || r.config?.evolution?.mode
         return mode === "cultural" || mode === "iterative"
       }),
-    [runs]
+    [runs],
   )
 
   const selectedValue = useMemo(() => {
     if (!currentRunId) return ""
-    return culturalRuns.some((r) => r.run_id === currentRunId) ? currentRunId : ""
+    return culturalRuns.some(r => r.run_id === currentRunId) ? currentRunId : ""
   }, [currentRunId, culturalRuns])
 
   return (

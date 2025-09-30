@@ -9,7 +9,7 @@ const getActiveModels = (): ReadonlyArray<ActiveModelName> => {
 
 const getActiveModelsWithInfo = (): string => {
   return getActiveModels()
-    .map((model) => `modelName:${model},metadata:${getModelV2(model)?.info}`)
+    .map(model => `modelName:${model},metadata:${getModelV2(model)?.info}`)
     .join(";")
 }
 

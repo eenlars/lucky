@@ -93,7 +93,7 @@ The integration provides simplified model names that map to official Anthropic m
 
 ### Global SDK Settings
 
-Configure defaults in `runtime/settings/claude-sdk.ts`:
+Configure defaults in `examples/settings/claude-sdk.ts`:
 
 ```typescript
 export const CLAUDE_SDK_CONFIG = {
@@ -304,7 +304,7 @@ Node Execution
 Enable debug logging for SDK operations:
 
 ```typescript
-// In runtime/settings/claude-sdk.ts
+// In examples/settings/claude-sdk.ts
 export const CLAUDE_SDK_CONFIG = {
   debug: true  // Enables detailed SDK logging
 }
@@ -352,7 +352,7 @@ To remove SDK integration completely:
 2. Remove SDK imports from `InvocationPipeline.ts`
 3. Remove `useClaudeSDK` and `sdkConfig` from workflow types
 4. Remove `@anthropic-ai/sdk` from package.json
-5. Remove `runtime/settings/claude-sdk.ts`
+5. Remove `examples/settings/claude-sdk.ts`
 
 The integration is designed to be cleanly removable without affecting the rest of the codebase.
 

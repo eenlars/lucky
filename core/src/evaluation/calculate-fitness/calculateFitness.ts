@@ -12,8 +12,8 @@ import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 
 async function calculateFitness({
   agentSteps,
@@ -35,7 +35,7 @@ async function calculateFitness({
         totalTimeSeconds: totalTime / 1000,
         accuracy: 0,
       },
-      0
+      0,
     )
   }
 
@@ -99,7 +99,7 @@ async function calculateFitness({
       totalTimeSeconds: totalTime / 1000,
       accuracy: Math.round(accuracy),
     },
-    response.usdCost
+    response.usdCost,
   )
 }
 

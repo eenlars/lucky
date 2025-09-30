@@ -26,7 +26,7 @@ const DEFAULT_OPENING = {
 function transformSwapfietsData(input) {
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((item) => {
+  return locations.map(item => {
     // Normalize opening_times
     const opening_times = { ...DEFAULT_OPENING }
     if (item.opening_hours) {

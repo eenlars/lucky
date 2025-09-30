@@ -10,7 +10,7 @@ export default function MainContent({ children, hasAuth }: { children: React.Rea
     <main
       className={cn(
         "h-screen overflow-auto transition-all duration-300 ease-out",
-        hasAuth && !isMobile && "md:ml-[70px]"
+        hasAuth && !isMobile && "md:ml-[70px]",
       )}
       id="main-content"
     >

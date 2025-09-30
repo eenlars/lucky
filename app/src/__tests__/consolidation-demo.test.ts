@@ -14,7 +14,7 @@ describe("Before consolidation example", () => {
     getCurrentGenerationId: vi.fn(),
   }
 
-  vi.mock("@core/improvement/GP/resources/RunService", () => ({
+  vi.mock("@core/improvement/gp/resources/RunService", () => ({
     RunService: vi.fn().mockImplementation(() => mockRunService),
   }))
 

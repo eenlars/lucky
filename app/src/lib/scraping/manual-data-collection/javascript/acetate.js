@@ -3,7 +3,7 @@ import acetate from "../../../../lib/evals/all/acetate.json" assert { type: "jso
 
 function transformLocationData(input) {
   const locations = Array.isArray(input) ? input : [input]
-  return locations.map((loc) => ({
+  return locations.map(loc => ({
     name: extractName(loc),
     address: extractAddress(loc),
     city: extractCity(loc),
@@ -24,7 +24,7 @@ function extractName(loc) {
 
 function extractAddress(loc) {
   if (loc.display_address_line1) return loc.display_address_line1
-  const parts = [loc.street, loc.house_number, loc.house_number_addition].filter((p) => p !== null && p !== undefined)
+  const parts = [loc.street, loc.house_number, loc.house_number_addition].filter(p => p !== null && p !== undefined)
   return parts.length ? parts.join(" ") : null
 }
 
@@ -63,7 +63,7 @@ function transformOpeningHours(loc) {
     return acc
   }, {})
   if (Array.isArray(loc.opening_hours)) {
-    loc.opening_hours.forEach((entry) => {
+    loc.opening_hours.forEach(entry => {
       const day = dayNames[entry.day_of_the_week]
       if (!day) return
       if (entry.closed) {
@@ -81,7 +81,7 @@ function transformOpeningHours(loc) {
 
 function extractOwnerImages(loc) {
   if (!Array.isArray(loc.media)) return []
-  return loc.media.map((m) => m.url_cdn || m.cloudinary_url).filter((u) => !!u)
+  return loc.media.map(m => m.url_cdn || m.cloudinary_url).filter(u => !!u)
 }
 
 function generateMetadata(loc) {

@@ -1,6 +1,6 @@
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Verifies that a workflow follows hierarchical coordination constraints:
@@ -15,7 +15,7 @@ export const verifyHierarchicalStructure = async (config: WorkflowConfig): Promi
 
   const errors: string[] = []
   const orchestratorId = config.entryNodeId
-  const orchestrator = config.nodes.find((n) => n.nodeId === orchestratorId)
+  const orchestrator = config.nodes.find(n => n.nodeId === orchestratorId)
 
   if (!orchestrator) {
     errors.push(`Orchestrator node '${orchestratorId}' not found in workflow`)
@@ -23,7 +23,7 @@ export const verifyHierarchicalStructure = async (config: WorkflowConfig): Promi
   }
 
   // Build set of all valid node IDs for handoff validation
-  const allNodeIds = new Set(config.nodes.map((n) => n.nodeId))
+  const allNodeIds = new Set(config.nodes.map(n => n.nodeId))
 
   // Validate each node's handoffs
   for (const node of config.nodes) {

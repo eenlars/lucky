@@ -27,7 +27,18 @@ export type FlowRuntimeConfig = {
   readonly newNodeProbability: number
   readonly logging: {
     readonly level: "none" | "error" | "info" | "debug"
-    readonly override: Record<string, unknown>
+    readonly override: {
+      readonly API: boolean
+      readonly GP: boolean
+      readonly Database: boolean
+      readonly Tools: boolean
+      readonly Summary: boolean
+      readonly InvocationPipeline: boolean
+      readonly Messaging: boolean
+      readonly Improvement: boolean
+      readonly ValidationBeforeHandoff: boolean
+      readonly Setup: boolean
+    }
   }
   readonly workflow: {
     readonly parallelExecution: boolean

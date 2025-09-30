@@ -89,17 +89,17 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
   // Defensive guards: tolerate partial graphs (e.g., no explicit target node)
   const targetNode: EvolutionNode | undefined =
     (graph as any)?.targetNode ||
-    graph.allNodes.find((n) => n.status === "completed") ||
+    graph.allNodes.find(n => n.status === "completed") ||
     graph.allNodes[graph.allNodes.length - 1]
 
   const totalInvocations: number = (graph as any)?.stats?.totalInvocations ?? graph.allNodes.length ?? 0
   const successfulInvocations: number =
-    (graph as any)?.stats?.successfulInvocations ?? graph.allNodes.filter((n) => n.status === "completed").length
+    (graph as any)?.stats?.successfulInvocations ?? graph.allNodes.filter(n => n.status === "completed").length
   const successRateStr = totalInvocations > 0 ? ((successfulInvocations / totalInvocations) * 100).toFixed(1) : "0.0"
   const peakAccuracy: number =
     (graph as any)?.stats?.maxAccuracy ??
     (graph.allNodes.length > 0
-      ? Math.max(0, ...graph.allNodes.map((n) => (typeof n.accuracy === "number" ? n.accuracy : 0)))
+      ? Math.max(0, ...graph.allNodes.map(n => (typeof n.accuracy === "number" ? n.accuracy : 0)))
       : 0)
   const totalCostStr = ((graph as any)?.stats?.totalCost ?? 0).toFixed(4)
   const evolutionDurationHours = Math.round(((graph as any)?.stats?.totalDuration ?? 0) / (1000 * 60 * 60))
@@ -130,7 +130,7 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
     // group invocations by generation for visualization
     invocationsByGeneration: (() => {
       const grouped = new Map<number, typeof graph.allNodes>()
-      graph.allNodes.forEach((node) => {
+      graph.allNodes.forEach(node => {
         if (node.generationNumber !== undefined && node.accuracy !== undefined && node.status === "completed") {
           if (!grouped.has(node.generationNumber)) {
             grouped.set(node.generationNumber, [])
@@ -141,7 +141,7 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
       return Array.from(grouped.entries())
         .map(([gen, nodes]) => ({
           generation: gen,
-          invocations: nodes.map((n) => ({
+          invocations: nodes.map(n => ({
             invocationId: n.invocationId,
             accuracy: n.accuracy,
             startTime: n.startTime,
@@ -152,7 +152,7 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
     })(),
 
     // nodes for graph visualization
-    nodes: graph.allNodes.map((node) => ({
+    nodes: graph.allNodes.map(node => ({
       id: node.invocationId,
       accuracy: node.accuracy || 0,
       fitness: node.fitnessScore || 0,
@@ -174,7 +174,7 @@ export function createEvolutionVisualizationData(graph: EvolutionGraph) {
         const prevAccuracy = index > 0 ? arr[index - 1].accuracy : 0
         return point.accuracy - prevAccuracy >= 10 // 10% jump
       })
-      .map((point) => ({
+      .map(point => ({
         invocationId: point.invocationId,
         accuracy: point.accuracy,
         timestamp: point.timestamp,

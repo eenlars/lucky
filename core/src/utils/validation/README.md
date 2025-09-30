@@ -177,7 +177,7 @@ const toolValidation = {
   // Validate tool availability
   verifyAllToolsAreActive: async (nodes: NodeConfig[]) => {
     const allTools = extractAllTools(nodes)
-    const inactiveTools = allTools.filter((tool) => CONFIG.tools.inactive.includes(tool))
+    const inactiveTools = allTools.filter(tool => CONFIG.tools.inactive.includes(tool))
 
     if (inactiveTools.length > 0) {
       return {
@@ -243,7 +243,7 @@ Ensures proper workflow graph connectivity:
 ```typescript
 // Verify all nodes are reachable from start node
 const everyNodeIsConnectedToStartNode = async (nodes: NodeConfig[]) => {
-  const startNode = nodes.find((n) => n.nodeId === "start")
+  const startNode = nodes.find(n => n.nodeId === "start")
   if (!startNode) return { isValid: false, errors: ["No start node found"] }
 
   const visited = new Set<string>()
@@ -255,14 +255,14 @@ const everyNodeIsConnectedToStartNode = async (nodes: NodeConfig[]) => {
     if (visited.has(current)) continue
 
     visited.add(current)
-    const node = nodes.find((n) => n.nodeId === current)
+    const node = nodes.find(n => n.nodeId === current)
     if (node) {
       queue.push(...node.handOffs)
     }
   }
 
   // Check if all nodes are reachable
-  const unreachableNodes = nodes.map((n) => n.nodeId).filter((id) => !visited.has(id))
+  const unreachableNodes = nodes.map(n => n.nodeId).filter(id => !visited.has(id))
 
   if (unreachableNodes.length > 0) {
     return {
@@ -285,7 +285,7 @@ Intelligent error correction with iterative improvement:
 export const repairWorkflow = async (
   config: WorkflowConfig,
   verificationResult: VerificationResult,
-  maxAttempts: number = 3
+  maxAttempts: number = 3,
 ): Promise<{ nodes: NodeConfig[]; usdCost: number }> => {
   let totalCost = 0
   let currentNodes = config.nodes
@@ -413,7 +413,7 @@ const customValidation = async (config: WorkflowConfig): Promise<VerificationRes
 
   // Domain-specific validation
   const requiredTools = ["csvReader", "contextHandler"]
-  const hasRequiredTools = config.nodes.some((node) => requiredTools.every((tool) => node.codeTools.includes(tool)))
+  const hasRequiredTools = config.nodes.some(node => requiredTools.every(tool => node.codeTools.includes(tool)))
 
   if (!hasRequiredTools) {
     errors.push("Workflow must include data processing tools")
@@ -433,7 +433,7 @@ const extendedValidation = [...defaultValidationFunctions, customValidation]
 ```typescript
 // Validate multiple workflows efficiently
 const validateWorkflowBatch = async (configs: WorkflowConfig[]) => {
-  const validationPromises = configs.map((config) => verifyWorkflowConfig(config, false))
+  const validationPromises = configs.map(config => verifyWorkflowConfig(config, false))
 
   const results = await Promise.all(validationPromises)
 

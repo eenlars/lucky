@@ -1,7 +1,7 @@
 import { contextFilePrompt, type WorkflowFiles } from "@core/tools/context/contextStore.types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { ModelMessage } from "ai"
 import chalk from "chalk"
 import { llmify } from "../../utils/common/llmify"
@@ -50,7 +50,7 @@ export function buildSimpleMessage({
   // validate input
   if (!message) {
     throw new Error(
-      `Invalid message: missing required fields - message: ${!!message} ${typeof message}, nodeDescription: ${nodeDescription}, context: ${context}`
+      `Invalid message: missing required fields - message: ${!!message} ${typeof message}, nodeDescription: ${nodeDescription}, context: ${context}`,
     )
   }
 
@@ -106,11 +106,11 @@ Use this memory to inform your decisions and responses.`
   }
 
   // validate messages before sending to AI
-  if (!Array.isArray(sdkMessages) || sdkMessages.some((msg) => !msg.role || msg.content === undefined)) {
+  if (!Array.isArray(sdkMessages) || sdkMessages.some(msg => !msg.role || msg.content === undefined)) {
     throw new Error("Invalid messages format for AI model")
   }
 
-  if (CONFIG.logging.override.InvocationPipeline && debug) {
+  if (isLoggingEnabled("InvocationPipeline") && debug) {
     lgg.log(chalk.green("sdkMessages:"))
     for (const msg of sdkMessages) {
       const roleColor = msg.role === "system" ? chalk.yellow : chalk.blue
@@ -121,15 +121,15 @@ Use this memory to inform your decisions and responses.`
   // MERGE SYSTEM MESSAGES INTO ONE
 
   // merge all system messages into one
-  const systemMessages = sdkMessages.filter((msg) => msg.role === "system")
-  const systemMessage = systemMessages.map((msg) => msg.content).join("\n")
+  const systemMessages = sdkMessages.filter(msg => msg.role === "system")
+  const systemMessage = systemMessages.map(msg => msg.content).join("\n")
   sdkMessages.unshift({
     role: "system",
     content: systemMessage,
   })
 
   // remove all system messages
-  sdkMessages = sdkMessages.filter((msg) => msg.role !== "system")
+  sdkMessages = sdkMessages.filter(msg => msg.role !== "system")
 
   // add the system message back
   sdkMessages.unshift({
