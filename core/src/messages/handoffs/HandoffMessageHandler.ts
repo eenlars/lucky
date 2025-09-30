@@ -83,7 +83,7 @@ export class HandoffMessageHandler {
     }
 
     // Build payloads per target
-    const payloads = targets.map((toNodeId) => {
+    const payloads = targets.map(toNodeId => {
       // For parallel fan-out, add light per-target templating (minimal & compatible)
       const textForBerichten = useParallel ? `Branched delegation to ${toNodeId}: ${derivedPrompt}` : derivedPrompt
 
@@ -128,7 +128,7 @@ export class HandoffMessageHandler {
     if (handOffs.length === 1) {
       return handOffs[0] === "end" ? ["end"] : []
     }
-    if (handOffs.length > 1 && handOffs.every((h) => h === "end")) return ["end"]
+    if (handOffs.length > 1 && handOffs.every(h => h === "end")) return ["end"]
     // Multiple non-parallel targets present → selection should be done elsewhere (LLM/logic)
     return []
   }

@@ -263,7 +263,7 @@ describe("RunService", () => {
           // TODO: test passes undefined for stats but doesn't validate how code handles this
           stats: undefined,
           operator: "mutation",
-        })
+        }),
       ).rejects.toThrow()
     })
   })

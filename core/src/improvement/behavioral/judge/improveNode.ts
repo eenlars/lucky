@@ -20,7 +20,7 @@ export interface NodeSelfImprovementParams {
  */
 export async function improveNodesSelfImprovement(
   workflow: Workflow,
-  params: NodeSelfImprovementParams
+  params: NodeSelfImprovementParams,
 ): Promise<WorkflowNodeConfig[]> {
   if (!CONFIG.improvement.flags.selfImproveNodes) {
     return []

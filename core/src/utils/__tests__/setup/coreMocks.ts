@@ -1,4 +1,6 @@
 // core test utilities and mocks - consolidated mock file
+import type { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
@@ -14,8 +16,6 @@ import type {
 } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import type { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
 import { vi } from "vitest"
 
 // CLI and system-level mocks
@@ -190,7 +190,7 @@ export const createMockCliArgs = (overrides = {}): string[] => [
   "node",
   "main.js",
   ...Object.entries(overrides).flatMap(([key, value]) =>
-    key.startsWith("--") ? [key, String(value)] : [`--${key}`, String(value)]
+    key.startsWith("--") ? [key, String(value)] : [`--${key}`, String(value)],
   ),
 ]
 
@@ -449,7 +449,7 @@ export const createMockEvaluationInputCSV = (evaluation?: string): EvaluationCSV
 
 export const createMockEvaluationInputGeneric = <T extends "text" | "csv">(
   type: T = "csv" as T,
-  evaluation?: string
+  evaluation?: string,
 ): T extends "text" ? EvaluationText : EvaluationCSV => {
   if (type === "text") {
     return createMockEvaluationInputText(evaluation) as T extends "text" ? EvaluationText : EvaluationCSV
@@ -491,7 +491,7 @@ export const createMockWorkflowGenome = (generationNumber = 0, parentIds: string
 export const createMockGenome = async (
   generationNumber = 0,
   parentIds: string[] = [],
-  fitness?: FitnessOfWorkflow
+  fitness?: FitnessOfWorkflow,
 ): Promise<any> => {
   const genomeData = createMockWorkflowGenome(generationNumber, parentIds)
   const mockFitness = fitness || createMockWorkflowScore(0)
@@ -656,7 +656,7 @@ export const mockFailedAIResponse = <T>(error: string): RS<T> => ({
 // ====== RUNTIME CONFIGURATION FACTORIES ======
 
 export const createMockFullFlowRuntimeConfig = (
-  toolOverrides: Partial<typeof CONFIG.tools> = {}
+  toolOverrides: Partial<typeof CONFIG.tools> = {},
 ): FullFlowRuntimeConfig => ({
   CONFIG: {
     models: {
@@ -668,8 +668,16 @@ export const createMockFullFlowRuntimeConfig = (
     logging: {
       level: "info",
       override: {
-        Database: true,
+        API: false,
         GP: true,
+        Database: true,
+        Tools: false,
+        Summary: false,
+        InvocationPipeline: false,
+        Messaging: false,
+        Improvement: false,
+        ValidationBeforeHandoff: false,
+        Setup: false,
       },
     },
     workflow: {
@@ -784,7 +792,7 @@ export const mockRuntimeConstants = (
     PATHS?: Partial<FlowPathsConfig>
     MODELS?: Partial<Record<string, string>>
     [key: string]: unknown
-  } = {}
+  } = {},
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
@@ -919,7 +927,7 @@ export const mockRuntimeConstantsForGP = (
     populationSize?: number
     generations?: number
     [key: string]: unknown
-  } = {}
+  } = {},
 ) => {
   return {
     PATHS: {
@@ -982,7 +990,7 @@ export const mockRuntimeConstantsForIterative = (
   overrides: {
     iterativeIterations?: number
     [key: string]: unknown
-  } = {}
+  } = {},
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
@@ -994,7 +1002,7 @@ export const mockRuntimeConstantsForDatabase = (
     enableSpendingLimits?: boolean
     maxCostUsdPerRun?: number
     [key: string]: unknown
-  } = {}
+  } = {},
 ) => {
   // This function does nothing since vi.mock needs to be called at top level
   // Tests should mock runtime constants themselves
@@ -1004,14 +1012,14 @@ export const mockRuntimeConstantsForDatabase = (
 // ====== INDIVIDUAL MOCK HELPERS ======
 
 export const mockRunService = () => {
-  vi.mock("@core/improvement/GP/resources/RunService", () => ({
+  vi.mock("@core/improvement/gp/resources/RunService", () => ({
     RunService: vi.fn().mockImplementation(() => mockRunServiceInstance),
   }))
   return mockRunServiceInstance
 }
 
 export const mockVerificationCache = () => {
-  vi.mock("@core/improvement/GP/resources/wrappers", () => ({
+  vi.mock("@core/improvement/gp/resources/wrappers", () => ({
     VerificationCache: vi.fn().mockImplementation(() => mockVerificationCacheInstance),
     workflowConfigToGenome: vi.fn(),
   }))
@@ -1077,7 +1085,7 @@ export const mockGenomeClass = () => {
 }
 
 export const mockPopulationClass = () => {
-  vi.mock("@core/improvement/GP/Population", () => ({
+  vi.mock("@core/improvement/gp/Population", () => ({
     Population: vi.fn().mockImplementation(() => mockPopulationInstance),
   }))
   return mockPopulationInstance
@@ -1091,7 +1099,7 @@ export const mockEvaluatorClass = () => {
 }
 
 export const mockSelectClass = () => {
-  vi.mock("@core/improvement/GP/Select", () => ({
+  vi.mock("@core/improvement/gp/Select", () => ({
     Select: {
       createNextGeneration: vi.fn(),
       selectParents: vi.fn(),
@@ -1103,7 +1111,7 @@ export const mockSelectClass = () => {
 }
 
 export const mockCrossoverClass = () => {
-  vi.mock("@core/improvement/GP/operators/Crossover", () => ({
+  vi.mock("@core/improvement/gp/operators/Crossover", () => ({
     Crossover: {
       crossover: vi.fn(),
     },
@@ -1111,7 +1119,7 @@ export const mockCrossoverClass = () => {
 }
 
 export const mockMutationsClass = () => {
-  vi.mock("@core/improvement/GP/operators/Mutations", () => ({
+  vi.mock("@core/improvement/gp/operators/Mutations", () => ({
     Mutations: {
       mutateWorkflowGenome: vi.fn(),
     },
@@ -1175,7 +1183,7 @@ export const mockWorkflowGeneration = () => {
 
 export const setupGPTestMocks = (
   runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0],
-  options?: { mockGenome?: boolean }
+  options?: { mockGenome?: boolean },
 ) => {
   const runService = mockRunService()
   const verificationCache = mockVerificationCache()

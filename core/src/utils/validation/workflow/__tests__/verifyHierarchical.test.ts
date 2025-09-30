@@ -2,7 +2,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the constants module
-vi.mock("@runtime/constants", () => ({
+vi.mock("@examples/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     verification: {

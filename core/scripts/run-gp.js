@@ -6,7 +6,7 @@ import { execSync } from "child_process"
 const args = process.argv.slice(2)
 
 // Ensure --mode=GP is included if not specified
-if (!args.some((arg) => arg.startsWith("--mode="))) {
+if (!args.some(arg => arg.startsWith("--mode="))) {
   args.push("--mode=GP")
 }
 

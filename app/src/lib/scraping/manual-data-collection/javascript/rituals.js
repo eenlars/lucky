@@ -15,7 +15,7 @@ const DEFAULT_OPENING = {
 function transformRitualsData(input) {
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((item) => ({
+  return locations.map(item => ({
     name: item.brand || null,
     address: item.street || null,
     city: item.city || null,

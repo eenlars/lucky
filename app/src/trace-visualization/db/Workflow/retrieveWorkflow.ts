@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
@@ -112,7 +112,7 @@ export const retrieveWorkflowInvocations = async (
   page?: number,
   limit?: number,
   filters?: WorkflowInvocationFilters,
-  sort?: WorkflowInvocationSortOptions
+  sort?: WorkflowInvocationSortOptions,
 ): Promise<WorkflowInvocationsResponse> => {
   // First, build the base query with count
   let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
@@ -216,7 +216,7 @@ export const retrieveWorkflowInvocations = async (
 
   // For duration sorting, we need to post-process the data to calculate actual duration
   if (sort?.field === "duration" && data) {
-    const processedData = data.map((item) => ({
+    const processedData = data.map(item => ({
       ...item,
       duration: item.end_time ? new Date(item.end_time).getTime() - new Date(item.start_time).getTime() : null,
     }))
@@ -294,7 +294,7 @@ export const cleanupStaleWorkflowInvocations = async (): Promise<number> => {
   if (data && data.length > 0) {
     console.log(
       `Cleaned up ${data.length} stale workflow invocations:`,
-      data.map((d) => d.wf_invocation_id)
+      data.map(d => d.wf_invocation_id),
     )
   }
 

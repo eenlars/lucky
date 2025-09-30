@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
           dslConfig,
           evalInput,
         }),
-      }
+      },
     )
 
     if (!invokeResponse.ok) {
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         data: undefined,
         usdCost: 0,
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

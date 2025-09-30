@@ -28,7 +28,7 @@ export const NodeHeader = forwardRef<HTMLElement, NodeHeaderProps>(({ className,
         "flex items-center justify-between gap-2 px-3 py-2",
         // Remove or modify these classes if you modify the padding in the
         // `<BaseNode />` component.
-        className
+        className,
       )}
     />
   )
@@ -51,7 +51,7 @@ export const NodeHeaderTitle = forwardRef<HTMLHeadingElement, NodeHeaderTitlePro
     const Comp = asChild ? Slot : "h3"
 
     return <Comp ref={ref} {...props} className={cn(className, "user-select-none flex-1 font-semibold text-base")} />
-  }
+  },
 )
 
 NodeHeaderTitle.displayName = "NodeHeaderTitle"
@@ -69,7 +69,7 @@ export const NodeHeaderLabel = forwardRef<HTMLHeadingElement, NodeHeaderLabelPro
     return (
       <Comp ref={ref} {...props} className={cn("user-select-none text-xs text-muted-foreground mt-0.5", className)} />
     )
-  }
+  },
 )
 
 NodeHeaderLabel.displayName = "NodeHeaderLabel"
@@ -123,7 +123,7 @@ export const NodeHeaderAction = forwardRef<HTMLButtonElement, NodeHeaderActionPr
         {...props}
       />
     )
-  }
+  },
 )
 
 NodeHeaderAction.displayName = "NodeHeaderAction"
@@ -156,7 +156,7 @@ export const NodeHeaderMenuAction = forwardRef<HTMLButtonElement, NodeHeaderMenu
         <DropdownMenuContent>{children}</DropdownMenuContent>
       </DropdownMenu>
     )
-  }
+  },
 )
 
 NodeHeaderMenuAction.displayName = "NodeHeaderMenuAction"
@@ -170,9 +170,9 @@ export const NodeHeaderDeleteAction = () => {
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id))
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== id))
     },
-    [id, setNodes]
+    [id, setNodes],
   )
 
   return (

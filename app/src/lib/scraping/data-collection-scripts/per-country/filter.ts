@@ -2,8 +2,8 @@ import {
   extractCoordinates,
   transformLocationData,
   type GoogleScraperBusinessExtended,
-} from "@runtime/code_tools/googlescraper/convert"
-import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+} from "@examples/code_tools/googlescraper/convert"
+import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
 import { readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
 import { toDomain } from "../utils"
@@ -42,7 +42,7 @@ function main() {
   const data: AllData = JSON.parse(raw)
 
   // filter: keep only those where the normalized domains are equal
-  const filtered = data.businesses.filter((biz) => {
+  const filtered = data.businesses.filter(biz => {
     const bcorpDomain = toDomain(biz.bcorp.website)
     const bizDomain = toDomain(biz.bizWebsite)
     return (
@@ -53,7 +53,7 @@ function main() {
     )
   })
 
-  const transformed = filtered.map((biz) => {
+  const transformed = filtered.map(biz => {
     const mappedBusiness: GoogleScraperBusinessExtended = {
       storeName: biz.storeName || "",
       stars: biz.stars || "",

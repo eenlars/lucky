@@ -76,7 +76,7 @@ describe("MCP Integration Tests", () => {
         throw new Error(`AI request failed: ${response.error}`)
       }
     },
-    60000
+    60000,
   ) // Longer timeout for integration test
   // TODO: 60 second timeout confirms this is a slow integration test
 })

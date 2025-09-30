@@ -9,12 +9,14 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 ### Phase 1: Created Core Configuration System
 
 **New Files:**
+
 - `src/core-config/types.ts` - Complete type definitions for core configuration
 - `src/core-config/defaults.ts` - Default configuration with safe server defaults
 - `src/core-config/index.ts` - Configuration provider API
 - `src/core-config/compat.ts` - Compatibility layer for gradual migration
 
 **Configuration:**
+
 - All configuration now defaults to `./.core-data` directory
 - No absolute paths - everything relative to `process.cwd()`
 - Models, tools, evolution, paths all configurable
@@ -23,6 +25,7 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 ### Phase 2: Replaced External Dependencies
 
 **Dependencies Eliminated:**
+
 - ❌ `@runtime/settings/constants` → ✅ `@core/core-config/compat`
 - ❌ `@runtime/settings/models` → ✅ `@core/core-config`
 - ❌ `@runtime/settings/evolution` → ✅ `@core/core-config`
@@ -33,6 +36,7 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 - ❌ `@lucky/shared` (csv) → ✅ `@core/utils/csv`
 
 **New Utility Files:**
+
 - `src/utils/json/jsonParse.ts` - JSON parsing utilities (from @lucky/shared)
 - `src/utils/json/database.types.ts` - Minimal database types
 - `src/utils/json/index.ts` - Unified export
@@ -43,6 +47,7 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 ### Phase 3: Migration Statistics
 
 **Import Migration:**
+
 - Before: 146 files with @runtime imports
 - After: 0 files with @runtime imports ✅
 
@@ -52,12 +57,14 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 **Standalone Progress:** 100% ✅
 
 **Files Updated:** 174 files migrated
+
 - 143 files migrated automatically via script
 - 31 files migrated/created manually
 
 ### Phase 4: Configuration Updates
 
 **tsconfig.json:**
+
 - ❌ Removed `@runtime/*` path mappings
 - ❌ Removed `@lucky/shared` path mappings
 - ❌ Removed external includes (`../runtime/**`, `../packages/**`)
@@ -65,6 +72,7 @@ Successfully migrated `core` from a workspace-dependent module to a fully standa
 - ✅ Added `@core/utils/json`, `@core/utils/csv`, `@core/utils/fs` mappings
 
 **vitest.config.ts:**
+
 - ❌ Removed `@runtime` alias
 - ✅ Uses `tsconfigPaths()` for path resolution
 
@@ -77,6 +85,7 @@ bun run scripts/validate-standalone.ts
 ```
 
 Expected output:
+
 ```
 ✅ CORE IS STANDALONE!
 Files scanned: 379
@@ -103,7 +112,7 @@ initCoreConfig({
   models: {
     provider: "openrouter",
     // other model overrides...
-  }
+  },
 })
 ```
 
@@ -128,23 +137,27 @@ initCoreConfig({
 When running standalone, core uses these defaults:
 
 **Paths:**
+
 - Root: `./.core-data`
 - Setup: `./.core-data/setup/setupfile.json`
 - Logs: `./.core-data/logs`
 - Code tools: `./.core-data/code_tools`
 
 **Models:**
+
 - Provider: `openrouter`
 - Default: `openai/gpt-4.1-nano`
 - Medium: `openai/gpt-4.1-mini`
 - High: `openai/gpt-4.1`
 
 **Tools:**
+
 - Show parameter schemas: `true`
 - Auto-select tools: `true`
 - Max tools per agent: `3`
 
 **Evolution:**
+
 - GP generations: `3`
 - Population size: `4`
 - Method: `random`
@@ -160,6 +173,7 @@ The compatibility layer (`compat.ts`) ensures all existing code continues to wor
 ### For Standalone Usage
 
 If running core standalone (outside the monorepo):
+
 1. Must call `initCoreConfig()` before using core functionality
 2. File paths default to `./.core-data` instead of repo root
 3. SELECTED_QUESTION returns a default value instead of runtime value
@@ -167,6 +181,7 @@ If running core standalone (outside the monorepo):
 ## Type Errors
 
 Some pre-existing type errors remain (unrelated to this migration):
+
 - Database types with Supabase (TablesInsert issues)
 - Logging override properties typed as `unknown`
 - Some test utilities accessing deprecated config properties
@@ -211,6 +226,7 @@ core/
 ## Migration Approach
 
 The migration was designed to be:
+
 - **Incremental**: Each phase was safe and reversible
 - **Non-breaking**: Monorepo continues to work throughout
 - **Testable**: Validation script tracks progress

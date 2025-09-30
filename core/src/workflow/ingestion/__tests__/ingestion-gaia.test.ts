@@ -185,13 +185,13 @@ describe("IngestionLayer - GAIA", () => {
     }
 
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "failed to convert GAIA evaluation: Failed to fetch GAIA instance"
+      "failed to convert GAIA evaluation: Failed to fetch GAIA instance",
     )
   })
 
   it("should return a fallback case on authentication errors", async () => {
     vi.spyOn(GAIALoader, "fetchByLevel").mockRejectedValueOnce(
-      new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN")
+      new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN"),
     )
 
     const evaluation: EvaluationInput = {

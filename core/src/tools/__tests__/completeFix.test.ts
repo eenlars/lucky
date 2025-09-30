@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 // Mock runtime constants
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     tools: {
       showParameterSchemas: true,
@@ -65,7 +65,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
         query: "coffee shops",
         maxResultCount: 50, // This exceeds the schema limit of 20
       },
-      schema
+      schema,
     )
 
     expect(result.corrected).toBe(true)
@@ -87,7 +87,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
         query: "coffee shops",
         maxResultCount: 15, // This is within the limit
       },
-      schema
+      schema,
     )
 
     expect(result.corrected).toBe(false)
@@ -128,9 +128,9 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
         z.object({
           query: z.string().describe("Search query"),
           maxResultCount: z.number().max(20).default(10).describe("Number of results"),
-        })
+        }),
       ),
-      execute: async (params) => {
+      execute: async params => {
         // This should receive corrected parameters
         return {
           success: true,
@@ -187,7 +187,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
   it("should confirm CONFIG.tools.showParameterSchemas is enabled", async () => {
     // TODO: This test is redundant - it's testing a mocked value (line 15) that we control.
     // Testing mocked values provides no real value. Either test against real config or remove.
-    const { CONFIG } = await import("@runtime/settings/constants")
+    const { CONFIG } = await import("@examples/settings/constants")
     expect(CONFIG.tools.showParameterSchemas).toBe(true)
     console.log("✅ Parameter schema visibility enabled in config")
   })

@@ -9,7 +9,7 @@ import { codeToolRegistry } from "./index"
  */
 export const setupCodeToolsForNode = async (
   toolNames: CodeToolName[],
-  toolExecutionContext?: ToolExecutionContext
+  toolExecutionContext?: ToolExecutionContext,
 ): Promise<ToolSet> => {
   // initialize the code tool registry
   await codeToolRegistry.initialize()
@@ -32,6 +32,6 @@ export const setupCodeToolsForNode = async (
       }
       return acc
     },
-    {} as Record<string, Tool>
+    {} as Record<string, Tool>,
   )
 }

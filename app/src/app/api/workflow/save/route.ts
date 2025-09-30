@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       {
         error: error instanceof Error ? error.message : "Failed to save workflow version",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

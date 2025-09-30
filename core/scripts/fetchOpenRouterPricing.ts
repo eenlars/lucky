@@ -44,10 +44,10 @@ async function transformModels(roundDecimals = 6) {
   const transformed = models
     // keep only models with structured_outputs
     .filter(
-      (m) => Array.isArray(m.supported_parameters) //&&
+      m => Array.isArray(m.supported_parameters), //&&
       // m.supported_parameters.includes("structured_outputs")
     )
-    .map((model) => {
+    .map(model => {
       // scale pricing tiers
       const scaled: Record<string, number> = {}
       for (const [tier, priceStr] of Object.entries(model.pricing || {})) {
@@ -99,17 +99,17 @@ async function transformModels(roundDecimals = 6) {
     })
     .filter(
       //filter out anything that has more than 5 usd input
-      (m) => m.input <= 5 && providers.includes(m.id.split("/")[0])
+      m => m.input <= 5 && providers.includes(m.id.split("/")[0]),
     )
     .filter(
       // filter out anything older than 5 months
-      (m) => {
+      m => {
         if (!m.created) return true
         const createdDate = new Date(m.created * 1000)
         const fiveMonthsAgo = new Date()
         fiveMonthsAgo.setMonth(fiveMonthsAgo.getMonth() - 5)
         return createdDate >= fiveMonthsAgo
-      }
+      },
     )
     .map(({ totalCost, ...m }) => m)
 

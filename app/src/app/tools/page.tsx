@@ -136,7 +136,7 @@ export default function ToolsPage() {
     setOutput("")
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise(resolve => setTimeout(resolve, 1500))
 
     const mockOutput = {
       success: true,
@@ -206,7 +206,7 @@ export default function ToolsPage() {
         </div>
 
         <div className="p-3">
-          {tools.map((tool) => (
+          {tools.map(tool => (
             <button
               key={tool.id}
               onClick={() => handleToolSelect(tool)}
@@ -214,13 +214,13 @@ export default function ToolsPage() {
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
                 selectedTool.id === tool.id
                   ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-sidebar/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-sidebar/50",
               )}
             >
               <div
                 className={cn(
                   "p-1.5 rounded-md",
-                  selectedTool.id === tool.id ? "bg-primary/10 text-primary" : "bg-muted/50"
+                  selectedTool.id === tool.id ? "bg-primary/10 text-primary" : "bg-muted/50",
                 )}
               >
                 {tool.icon}
@@ -274,10 +274,10 @@ export default function ToolsPage() {
             <div className="flex-1 p-6">
               <textarea
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={e => setInput(e.target.value)}
                 className={cn(
                   "w-full h-full font-mono text-sm bg-transparent resize-none outline-none",
-                  !isValidJSON(input) && input.length > 0 && "text-destructive"
+                  !isValidJSON(input) && input.length > 0 && "text-destructive",
                 )}
                 placeholder="Enter JSON input..."
                 spellCheck={false}

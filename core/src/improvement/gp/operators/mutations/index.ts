@@ -141,7 +141,7 @@ export class MutationCoordinator {
     const availableMutations = getEvolutionMutations(evolutionMode)
 
     // filter mutation weights to only include available mutations
-    const validWeights = MUTATION_WEIGHTS.filter((w) => availableMutations.includes(w.type))
+    const validWeights = MUTATION_WEIGHTS.filter(w => availableMutations.includes(w.type))
 
     if (validWeights.length === 0) {
       lgg.warn(`No valid mutations for ${evolutionMode} mode, falling back to model`)
@@ -179,7 +179,7 @@ export class MutationCoordinator {
     mutationType: MutationType,
     config: WorkflowConfig,
     parent: Genome,
-    intensity: number
+    intensity: number,
   ): Promise<number> {
     switch (mutationType) {
       case "model":

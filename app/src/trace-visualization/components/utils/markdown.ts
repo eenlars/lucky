@@ -15,5 +15,5 @@ export const isMarkdownContent = (content: string): boolean => {
     /^\s*>\s+/m, // Blockquotes
     /\|.*\|/, // Tables
   ]
-  return markdownPatterns.some((pattern) => pattern.test(content))
+  return markdownPatterns.some(pattern => pattern.test(content))
 }

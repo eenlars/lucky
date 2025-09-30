@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import type { Tables } from "@lucky/shared"
 
 export interface WorkflowInvocationSubset {
@@ -120,7 +120,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
         run_id,
         generation_id
       )
-    `
+    `,
     )
     .eq("run_id", runId)
     .order("number", { ascending: true })
@@ -131,7 +131,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
 
   // Get workflow versions for this run by filtering on generation_id
   // First collect all generation IDs from this run
-  const generationIds = generations?.map((g) => g.generation_id) || []
+  const generationIds = generations?.map(g => g.generation_id) || []
 
   const { data: workflowVersions, error: wfVersionError } = await supabase
     .from("WorkflowVersion")
@@ -145,9 +145,9 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
 
   // Map the data to the expected format
   const generationsWithData =
-    generations?.map((generation) => {
+    generations?.map(generation => {
       // Find workflow versions for this generation
-      const generationVersions = workflowVersions?.filter((wv) => wv.generation_id === generation.generation_id) || []
+      const generationVersions = workflowVersions?.filter(wv => wv.generation_id === generation.generation_id) || []
 
       return {
         generation: {

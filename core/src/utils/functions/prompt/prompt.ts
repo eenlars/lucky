@@ -57,7 +57,7 @@ export function promptr<P extends string>(text: NonEmpty<P> | P, options?: Forma
             freeze({
               ...state,
               options: normalizeOptions(opts, state.options),
-            })
+            }),
           ),
       },
       content: {
@@ -179,7 +179,7 @@ function normalizeList(arg: string | ReadonlyArray<string> | undefined | null): 
 
 function mergeUnique(existing: ReadonlyArray<string>, incoming: ReadonlyArray<string>): ReadonlyArray<string> {
   if (!incoming.length) return existing
-  const seen = new Set(existing.map((k) => k.toLocaleLowerCase()))
+  const seen = new Set(existing.map(k => k.toLocaleLowerCase()))
   const out: string[] = [...existing]
   for (const item of incoming) {
     const key = item.toLocaleLowerCase()

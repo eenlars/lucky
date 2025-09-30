@@ -1,7 +1,7 @@
 // DO NOT CHANGE ANYTHING IN THIS FILE OR ANY TYPE WITHOUT CONSENT
 
 import type { providersV2 } from "@core/utils/spending/modelInfo"
-import type { CURRENT_PROVIDER, LuckyProvider } from "@core/utils/spending/provider"
+import type { LuckyProvider } from "@core/utils/spending/provider"
 
 /* ---------- PRICING TYPES ---------- */
 export type ModelPricingV2 = {
@@ -28,16 +28,17 @@ export type AnyModelName = {
   [P in LuckyProvider]: keyof (typeof providersV2)[P]
 }[LuckyProvider]
 
-type ModelNameV2<T extends LuckyProvider = typeof CURRENT_PROVIDER> = {
+type ModelNameV2<T extends LuckyProvider = LuckyProvider> = {
   [P in LuckyProvider]: keyof (typeof providersV2)[P]
 }[T]
 
 // DO NOT CHANGE THIS OR ANY TYPE WITHOUT CONSENT
 
-// Only allow ACTIVE models from the current provider
-export type AllowedModelName<T extends LuckyProvider = typeof CURRENT_PROVIDER> = ActiveKeys<(typeof providersV2)[T]>
+// Only allow ACTIVE models from a specific provider (for runtime validation)
+export type AllowedModelName<T extends LuckyProvider = LuckyProvider> = ActiveKeys<(typeof providersV2)[T]>
 
-export type ModelName = AllowedModelName<typeof CURRENT_PROVIDER>
+// ModelName now accepts any model from any provider - validation happens at runtime
+export type ModelName = AnyModelName
 
 export type OpenRouterModelName = AllowedModelName<"openrouter">
 
@@ -48,10 +49,7 @@ export interface TokenUsage {
 }
 
 // open or closed for other providers, depending on the provider
-export type StandardModels<
-  T extends LuckyProvider = typeof CURRENT_PROVIDER,
-  M extends "any" | "onlyActive" = "any",
-> = {
+export type StandardModels<T extends LuckyProvider = LuckyProvider, M extends "any" | "onlyActive" = "any"> = {
   summary: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
   nano: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
   low: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>

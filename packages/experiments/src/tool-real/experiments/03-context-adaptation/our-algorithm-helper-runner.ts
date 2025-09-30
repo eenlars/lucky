@@ -11,7 +11,7 @@ import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@examples/settings/constants"
 import type { ToolSet } from "ai"
 
 import { adaptiveTools } from "../../shared/tools/adaptive/adaptiveTools"

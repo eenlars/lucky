@@ -59,8 +59,8 @@ async function testEvolutionTracer() {
         visualization: vizData,
       },
       null,
-      2
-    )
+      2,
+    ),
   )
 
   console.log(`\nEvolution graph saved to: ${outputPath}`)
@@ -73,6 +73,6 @@ testEvolutionTracer()
   .then(() => {
     console.log("\n=== TEST COMPLETE ===")
   })
-  .catch((err) => {
+  .catch(err => {
     console.error("Test failed:", err)
   })

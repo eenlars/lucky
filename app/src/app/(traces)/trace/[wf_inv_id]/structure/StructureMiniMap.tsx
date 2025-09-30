@@ -4,7 +4,7 @@ import { useMemo, useState, type MouseEvent } from "react"
 
 import { Button } from "@/ui/button"
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig
@@ -53,7 +53,7 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
     const nodeWidth = 120
 
     // add implicit end node for nodes that don't hand off to anything
-    const hasEndNode = finalNodes.some((node) => node.nodeId === "end")
+    const hasEndNode = finalNodes.some(node => node.nodeId === "end")
     const needsEndNode = !hasEndNode
 
     if (needsEndNode) {
@@ -73,11 +73,11 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
     const parents = new Map<string, string[]>()
     const children = new Map<string, string[]>()
 
-    finalNodes.forEach((node) => {
+    finalNodes.forEach(node => {
       // for nodes without handoffs, connect them to the end node
       const handoffs = node.handOffs.length === 0 && node.nodeId !== "end" ? ["end"] : node.handOffs
 
-      handoffs.forEach((childId) => {
+      handoffs.forEach(childId => {
         if (!parents.has(childId)) parents.set(childId, [])
         parents.get(childId)!.push(node.nodeId)
 
@@ -87,18 +87,18 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
     })
 
     // find root nodes (nodes with no parents)
-    const rootNodes = finalNodes.filter((node) => !parents.has(node.nodeId))
+    const rootNodes = finalNodes.filter(node => !parents.has(node.nodeId))
 
     // assign levels using BFS
     const levels = new Map<string, number>()
-    const queue = rootNodes.map((node) => ({ nodeId: node.nodeId, level: 0 }))
+    const queue = rootNodes.map(node => ({ nodeId: node.nodeId, level: 0 }))
 
     while (queue.length > 0) {
       const { nodeId, level } = queue.shift()!
       levels.set(nodeId, level)
 
       const nodeChildren = children.get(nodeId) || []
-      nodeChildren.forEach((childId) => {
+      nodeChildren.forEach(childId => {
         if (!levels.has(childId)) {
           queue.push({ nodeId: childId, level: level + 1 })
         }
@@ -145,7 +145,7 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
     // calculate scale if content exceeds container
     const maxLevel = Math.max(...Array.from(levels.values()))
     const totalHeight = (maxLevel + 1) * verticalSpacing + 40
-    const maxNodesAtLevel = Math.max(...Array.from(levelGroups.values()).map((nodes) => nodes.length))
+    const maxNodesAtLevel = Math.max(...Array.from(levelGroups.values()).map(nodes => nodes.length))
     const totalWidth = Math.max(nodeWidth, (maxNodesAtLevel - 1) * horizontalSpacing + nodeWidth)
 
     const verticalScale = totalHeight > containerHeight ? containerHeight / totalHeight : 1
@@ -154,10 +154,10 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
 
     // calculate actual bounds of positioned nodes
     const positionValues = Array.from(positions.values())
-    const minX = Math.min(...positionValues.map((p) => p.x))
-    const maxX = Math.max(...positionValues.map((p) => p.x + nodeWidth))
-    const minY = Math.min(...positionValues.map((p) => p.y))
-    const maxY = Math.max(...positionValues.map((p) => p.y + nodeHeight))
+    const minX = Math.min(...positionValues.map(p => p.x))
+    const maxX = Math.max(...positionValues.map(p => p.x + nodeWidth))
+    const minY = Math.min(...positionValues.map(p => p.y))
+    const maxY = Math.max(...positionValues.map(p => p.y + nodeHeight))
 
     const actualWidth = maxX - minX
     const actualHeight = maxY - minY
@@ -187,7 +187,7 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
     }> = []
 
     // add entry lines for root nodes
-    rootNodes.forEach((node) => {
+    rootNodes.forEach(node => {
       const nodePos = positions.get(node.nodeId)
       if (!nodePos) return
 
@@ -201,14 +201,14 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
       })
     })
 
-    finalNodes.forEach((node) => {
+    finalNodes.forEach(node => {
       const sourcePos = positions.get(node.nodeId)
       if (!sourcePos) return
 
       // for nodes without handoffs, connect them to the end node
       const handoffs = node.handOffs.length === 0 && node.nodeId !== "end" ? ["end"] : node.handOffs
 
-      handoffs.forEach((targetId) => {
+      handoffs.forEach(targetId => {
         const targetPos = positions.get(targetId)
         if (!targetPos) return
 
@@ -277,7 +277,7 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
         }}
       >
         {/* render lines first so they appear behind nodes */}
-        {lines.map((line) => {
+        {lines.map(line => {
           const dx = line.x2 - line.x1
           const dy = line.y2 - line.y1
           const length = Math.sqrt(dx * dx + dy * dy)
@@ -300,7 +300,7 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
         })}
 
         {/* render nodes */}
-        {parsedNodes.map((node) => {
+        {parsedNodes.map(node => {
           const pos = nodePositions.get(node.nodeId)
           if (!pos) return null
 

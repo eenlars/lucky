@@ -28,7 +28,7 @@ vi.mock("@core/utils/env.mjs", () => ({
 }))
 
 // Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -168,7 +168,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-vi.mock("@core/improvement/GP/OperatorRegistry", () => ({
+vi.mock("@core/improvement/gp/OperatorRegistry", () => ({
   OperatorRegistry: {
     registerCrossover: mockRegisterCrossover,
   },
@@ -377,7 +377,7 @@ describe("Crossover", () => {
         expect.stringContaining("crossover"),
         expect.objectContaining({
           workflowConfig: expect.any(Object),
-        })
+        }),
       )
 
       expect(mockVerifyWorkflowConfigStrict).toHaveBeenCalledWith(
@@ -385,7 +385,7 @@ describe("Crossover", () => {
         expect.objectContaining({
           throwOnError: false,
           verbose: false,
-        })
+        }),
       )
 
       if (!response.success || !response.data) {
@@ -452,7 +452,7 @@ describe("Crossover", () => {
 
       expect(mockFormalizeWorkflow).toHaveBeenCalledWith(
         expect.stringContaining(`CROSSOVER OPERATION: ${strategy}`),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 

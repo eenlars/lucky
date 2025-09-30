@@ -62,7 +62,7 @@ export class Crossover {
     parent2: Genome,
     crossoverType: string,
     aggression: string,
-    instructions: string
+    instructions: string,
   ): string {
     const options = {
       includeToolExplanations: true,
@@ -170,7 +170,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
     evaluationInput: EvaluationInput
     _evolutionContext: EvolutionContext
   }): Promise<RS<Genome>> {
-    const parentWorkflowVersionIds = parents.map((p) => p.getWorkflowVersionId())
+    const parentWorkflowVersionIds = parents.map(p => p.getWorkflowVersionId())
     const [parent1, parent2] = parents
 
     if (CONFIG.evolution.GP.verbose || verbose) {
@@ -242,7 +242,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
         parent2,
         crossoverType,
         aggressiveness,
-        crossoverInstructions
+        crossoverInstructions,
       )
 
       const { data: workflowConfig, error } = await formalizeWorkflow(crossoverPrompt, {

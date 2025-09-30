@@ -25,7 +25,7 @@ export const saveNodeVersionToDB = async ({
   // nodeId and wf_version_id are the composite primary key
   if (isNir(config.nodeId) || isNir(workflowVersionId)) {
     throw new Error(
-      `nodeId (${config.nodeId}) or workflowVersionId (${workflowVersionId}) is null, undefined, or empty string`
+      `nodeId (${config.nodeId}) or workflowVersionId (${workflowVersionId}) is null, undefined, or empty string`,
     )
   }
 
@@ -67,7 +67,7 @@ export const saveNodeVersionToDB = async ({
       if (retryError || !retryData) {
         lgg.error(
           `Failed to retrieve existing NodeVersion after constraint violation for nodeId: ${config.nodeId}`,
-          JSONN.show(retryError)
+          JSONN.show(retryError),
         )
         throw new Error(`Error saving node: ${error2.message}`)
       }

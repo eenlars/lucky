@@ -14,9 +14,9 @@ const DEFAULT_OPENING = {
 
 function transformNespressoData(input) {
   // input is an array of objects each with a `stores` array
-  const allStores = Array.isArray(input) ? input.flatMap((item) => item.stores || []) : input.stores || []
+  const allStores = Array.isArray(input) ? input.flatMap(item => item.stores || []) : input.stores || []
 
-  return allStores.map((store) => ({
+  return allStores.map(store => ({
     name: store.name || null,
     address: store.address || null,
     city: store.city || null,

@@ -45,7 +45,7 @@ export const initialSetupConfig = (workflowConfig: WorkflowConfig): { edges: App
         id: node.nodeId,
         data: nodeData,
         position: { x: 0, y: 0 },
-      })
+      }),
     )
   }
 

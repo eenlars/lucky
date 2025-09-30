@@ -46,23 +46,23 @@ export default function EnvironmentKeysSettings() {
   }
 
   const updateKey = (id: string, field: keyof EnvironmentKey, value: string | boolean) => {
-    const updatedKeys = keys.map((key) => (key.id === id ? { ...key, [field]: value } : key))
+    const updatedKeys = keys.map(key => (key.id === id ? { ...key, [field]: value } : key))
     setKeys(updatedKeys)
   }
 
   const deleteKey = (id: string) => {
-    const updatedKeys = keys.filter((key) => key.id !== id)
+    const updatedKeys = keys.filter(key => key.id !== id)
     setKeys(updatedKeys)
     toast.message("Key removed", { description: "Click Save to apply changes" })
   }
 
   const toggleVisibility = (id: string) => {
-    const updatedKeys = keys.map((key) => (key.id === id ? { ...key, isVisible: !key.isVisible } : key))
+    const updatedKeys = keys.map(key => (key.id === id ? { ...key, isVisible: !key.isVisible } : key))
     setKeys(updatedKeys)
   }
 
   const handleSave = () => {
-    const emptyKeys = keys.filter((key) => !key.name.trim() || !key.value.trim())
+    const emptyKeys = keys.filter(key => !key.name.trim() || !key.value.trim())
     if (emptyKeys.length > 0) {
       toast.error("Please fill in all key names and values, or remove empty entries")
       return
@@ -78,7 +78,7 @@ export default function EnvironmentKeysSettings() {
     }
 
     // Check for duplicate key names
-    const keyNames = keys.map((k) => k.name)
+    const keyNames = keys.map(k => k.name)
     const duplicates = keyNames.filter((name, index) => keyNames.indexOf(name) !== index)
     if (duplicates.length > 0) {
       toast.error(`Duplicate key names found: ${duplicates.join(", ")}`)
@@ -96,7 +96,7 @@ export default function EnvironmentKeysSettings() {
       </div>
 
       <div className="space-y-4">
-        {keys.map((key) => (
+        {keys.map(key => (
           <div key={key.id} className="flex items-center space-x-3 p-4 border rounded-lg bg-gray-50">
             <div className="flex-1">
               <Label htmlFor={`key-name-${key.id}`} className="block mb-1">
@@ -107,7 +107,7 @@ export default function EnvironmentKeysSettings() {
                 placeholder="e.g., OPENAI_API_KEY"
                 autoComplete="off"
                 value={key.name}
-                onChange={(e) => updateKey(key.id, "name", e.target.value)}
+                onChange={e => updateKey(key.id, "name", e.target.value)}
                 className="mb-2"
               />
             </div>
@@ -122,7 +122,7 @@ export default function EnvironmentKeysSettings() {
                   placeholder="Enter your API key"
                   autoComplete="new-password"
                   value={key.value}
-                  onChange={(e) => updateKey(key.id, "value", e.target.value)}
+                  onChange={e => updateKey(key.id, "value", e.target.value)}
                   className="pr-10"
                 />
                 <Button

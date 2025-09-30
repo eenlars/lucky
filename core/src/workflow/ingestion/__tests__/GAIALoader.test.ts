@@ -45,7 +45,7 @@ describe("GAIALoader", () => {
       expect.stringContaining("https://datasets-server.huggingface.co/rows"),
       expect.objectContaining({
         headers: expect.any(Object),
-      })
+      }),
     )
 
     // check the URL contains expected parameters
@@ -125,7 +125,7 @@ describe("GAIALoader", () => {
         headers: expect.objectContaining({
           Authorization: `Bearer ${authToken}`,
         }),
-      })
+      }),
     )
   })
 
@@ -136,7 +136,7 @@ describe("GAIALoader", () => {
     } as Response)
 
     await expect(GAIALoader.fetchById("test-task")).rejects.toThrow(
-      "Authentication required. GAIA is a gated dataset - please provide HF_TOKEN"
+      "Authentication required. GAIA is a gated dataset - please provide HF_TOKEN",
     )
   })
 
@@ -179,7 +179,7 @@ describe("GAIALoader", () => {
 
     // should only return level 3 instances
     expect(result).toHaveLength(2)
-    expect(result.every((instance) => instance.Level === 3)).toBe(true)
+    expect(result.every(instance => instance.Level === 3)).toBe(true)
     expect(result[0].task_id).toBe("level3-task-1")
     expect(result[1].task_id).toBe("level3-task-2")
   })
@@ -301,7 +301,7 @@ describe("GAIALoader", () => {
     } as Response)
 
     await expect(GAIALoader.fetchById("non-existent")).rejects.toThrow(
-      "GAIA instance non-existent not found in split validation"
+      "GAIA instance non-existent not found in split validation",
     )
   })
 
@@ -317,7 +317,7 @@ describe("GAIALoader", () => {
     } as unknown as Response)
 
     await expect(GAIALoader.fetchById("test-task")).rejects.toThrow(
-      "Failed to fetch GAIA instance test-task: Error: HTTP error! status: 500"
+      "Failed to fetch GAIA instance test-task: Error: HTTP error! status: 500",
     )
   })
 
@@ -325,7 +325,7 @@ describe("GAIALoader", () => {
     vi.mocked(global.fetch).mockRejectedValueOnce(new Error("Network failure"))
 
     await expect(GAIALoader.fetchById("test-task")).rejects.toThrow(
-      "Failed to fetch GAIA instance test-task: Error: Network failure"
+      "Failed to fetch GAIA instance test-task: Error: Network failure",
     )
   })
 })

@@ -29,7 +29,7 @@ function getCliArg(name: string): string | undefined {
 }
 
 function hasFlag(name: string): boolean {
-  return process.argv.slice(2).some((a) => a === `--${name}`)
+  return process.argv.slice(2).some(a => a === `--${name}`)
 }
 
 function inferEvolutionType(run: EvolutionRunRow): EvolutionType {
@@ -95,7 +95,7 @@ async function main() {
     throw new Error(`Failed to list EvolutionRun: ${error.message}`)
   }
 
-  const runs = (data ?? []).filter((r) => (onlyRun ? r.run_id === onlyRun : true))
+  const runs = (data ?? []).filter(r => (onlyRun ? r.run_id === onlyRun : true))
   if (runs.length === 0) {
     console.log("No runs found")
     return
@@ -126,7 +126,7 @@ async function main() {
   if (skippedUnknown > 0) console.log(`Skipped (unknown): ${skippedUnknown}`)
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("\nBackfill failed:\n", err)
   process.exitCode = 1
 })

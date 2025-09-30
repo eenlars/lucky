@@ -21,7 +21,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn("fixed inset-0 z-[1000] bg-black/80", className)}
-    onContextMenu={(e) => {
+    onContextMenu={e => {
       // Allow right-click events to bubble up to parent context menu
       e.stopPropagation()
       if (onContextMenu) {
@@ -55,7 +55,7 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed left-1/2 top-1/2 z-[1000] grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
-        className
+        className,
       )}
       // Mark as a dialog content container so nested portals (e.g. popovers)
       // can target this element instead of <body> to avoid scroll locking issues.

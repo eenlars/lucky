@@ -25,10 +25,10 @@ process.argv = ["node", "main.js", "--mode=iterative"]
 // Mock chalk to avoid formatting issues
 vi.mock("chalk", () => ({
   default: {
-    green: vi.fn((text) => text),
-    red: vi.fn((text) => text),
-    blue: vi.fn((text) => text),
-    yellow: vi.fn((text) => text),
+    green: vi.fn(text => text),
+    red: vi.fn(text => text),
+    blue: vi.fn(text => text),
+    yellow: vi.fn(text => text),
   },
 }))
 
@@ -48,7 +48,7 @@ const mockEvolutionEngine = {
   }),
 }
 
-vi.mock("@core/improvement/GP/EvolutionEngine", () => {
+vi.mock("@core/improvement/gp/EvolutionEngine", () => {
   const EvolutionEngine = vi.fn().mockImplementation(() => mockEvolutionEngine)
   ;(EvolutionEngine as any).createDefaultConfig = vi.fn().mockReturnValue({
     populationSize: 4,
@@ -154,7 +154,7 @@ vi.mock("@core/evaluation/evaluators/GPEvaluatorAdapter", () => ({
   })),
 }))
 
-vi.mock("@core/improvement/GP/RunService", () => ({
+vi.mock("@core/improvement/gp/RunService", () => ({
   RunService: vi.fn().mockImplementation(() => ({
     createRun: vi.fn().mockResolvedValue(undefined),
     getRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -174,7 +174,7 @@ vi.mock("@core/workflow/setup/saveWorkflowToFile", () => ({
 }))
 
 // Mock runtime constants
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -253,7 +253,7 @@ vi.mock("@core/utils/cli/argumentParser", () => ({
 }))
 
 // Mock SELECTED_QUESTION
-vi.mock("@runtime/setup/inputs", () => ({
+vi.mock("@examples/setup/inputs", () => ({
   SELECTED_QUESTION: {
     type: "text",
     goal: "test question",

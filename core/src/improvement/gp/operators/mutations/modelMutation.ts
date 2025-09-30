@@ -20,7 +20,7 @@ export class ModelMutation implements NodeMutationOperator {
         return
       }
 
-      const modelsNotInPool = ModelMutation.MODEL_POOL.filter((model) => {
+      const modelsNotInPool = ModelMutation.MODEL_POOL.filter(model => {
         return !ModelMutation.MODEL_POOL.includes(model)
       })
 

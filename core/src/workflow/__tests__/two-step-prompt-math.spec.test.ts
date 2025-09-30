@@ -92,7 +92,7 @@ describe("prompt-only 2-step math workflow", () => {
         outputSchema: undefined,
         finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
       },
-      1
+      1,
     )
 
     expect(spy).toHaveBeenCalled()

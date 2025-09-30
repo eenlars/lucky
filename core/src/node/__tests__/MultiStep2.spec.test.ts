@@ -126,8 +126,8 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
     // also doesn't test error cases or edge conditions.
     // extract tool usage
     const agentSteps = pipeline.getAgentSteps()
-    const toolCalls = agentSteps.filter((output) => output.type === "tool")
-    const toolsUsed = toolCalls.map((call) => call.name)
+    const toolCalls = agentSteps.filter(output => output.type === "tool")
+    const toolsUsed = toolCalls.map(call => call.name)
 
     // verify both tools were called
     expect(toolsUsed).toContain("todoRead")

@@ -52,7 +52,7 @@ async function main() {
 
   if (!wfInvocationId) {
     console.log(
-      "Usage: bun scripts/export-trace.ts --id=<wf_invocation_id>\n   or: bun scripts/export-trace.ts --url=http://localhost:3000/trace/<wf_invocation_id>"
+      "Usage: bun scripts/export-trace.ts --id=<wf_invocation_id>\n   or: bun scripts/export-trace.ts --url=http://localhost:3000/trace/<wf_invocation_id>",
     )
     process.exit(1)
   }
@@ -78,7 +78,7 @@ async function main() {
           inputs:Message!Message_target_invocation_id_fkey ( * ),
           outputs:Message!Message_origin_invocation_id_fkey ( * )
         )
-      `
+      `,
     )
     .eq("wf_invocation_id", wfInvocationId)
     .order("start_time", { referencedTable: "NodeInvocation" })
@@ -153,7 +153,7 @@ async function main() {
   }
 
   const truncateToolOutputsInMessages = (messages: any[]): any[] => {
-    return (messages || []).map((m) => {
+    return (messages || []).map(m => {
       if (!m) return m
       // Case A: flattened agent step shape directly on message
       if (m.type === "tool" || m.type === "terminate") {
@@ -247,7 +247,7 @@ async function main() {
   console.log(`\nTrace JSON written to: ${outPath}`)
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("\nFailed to export trace:\n", err)
   process.exit(1)
 })

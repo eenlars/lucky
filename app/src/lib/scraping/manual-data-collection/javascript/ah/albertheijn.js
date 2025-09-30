@@ -55,7 +55,7 @@
     lgg.info(JSON.stringify(stores, null, 2))
   }
 
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(mutations => {
     let addedAny = false
     for (const m of mutations) {
       for (const node of m.addedNodes) {
@@ -66,7 +66,7 @@
         }
         // check descendants
         if (node.querySelectorAll) {
-          node.querySelectorAll(itemSelector).forEach((a) => {
+          node.querySelectorAll(itemSelector).forEach(a => {
             if (extractFromAnchor(a)) addedAny = true
           })
         }

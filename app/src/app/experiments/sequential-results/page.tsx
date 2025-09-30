@@ -66,12 +66,12 @@ function aggregateByModelAndChain(results: RawResult[]) {
 
   // Sort models by average desc for nicer presentation
   dataAvg.sort((a, b) => {
-    const aa = overall.find((o) => o.model === a.model)?.avg ?? 0
-    const bb = overall.find((o) => o.model === b.model)?.avg ?? 0
+    const aa = overall.find(o => o.model === a.model)?.avg ?? 0
+    const bb = overall.find(o => o.model === b.model)?.avg ?? 0
     return bb - aa
   })
   // Keep perfect data in the same model order as dataAvg
-  const modelOrder = dataAvg.map((r) => r.model as string)
+  const modelOrder = dataAvg.map(r => r.model as string)
   dataPerfect.sort((a, b) => modelOrder.indexOf(a.model as string) - modelOrder.indexOf(b.model as string))
 
   overall.sort((a, b) => b.avg - a.avg)
@@ -151,7 +151,7 @@ export default function SequentialResultsPage() {
             <span className="font-semibold">Top models:</span>{" "}
             {overall
               .slice(0, 5)
-              .map((o) => `${o.model} (${o.avg.toFixed(2)})`)
+              .map(o => `${o.model} (${o.avg.toFixed(2)})`)
               .join(", ")}
           </div>
         ) : null}

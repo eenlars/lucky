@@ -127,7 +127,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       "research-experiments",
       "tool-real",
       "experiments",
-      "03-context-adaptation"
+      "03-context-adaptation",
     )
 
     // Load baseline data (adaptive-results.json)
@@ -212,7 +212,7 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
 
     // Get all models that have data
     const models = Array.from(
-      new Set([...groupedBaseline.keys(), ...groupedOurAlgorithmLoop1.keys(), ...groupedOurAlgorithmLoop3.keys()])
+      new Set([...groupedBaseline.keys(), ...groupedOurAlgorithmLoop1.keys(), ...groupedOurAlgorithmLoop3.keys()]),
     ).filter(Boolean)
 
     const results: ComparisonRow[] = []
@@ -269,16 +269,16 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       const vagueAdaptationStats = calculateStats(vagueMetrics.adaptations.map((x: number) => x * 100))
       const clearAdaptationStats = calculateStats(clearMetrics.adaptations.map((x: number) => x * 100))
       const thisMethod1RunVagueAdaptationStats = calculateStats(
-        thisMethod1RunVagueMetrics.adaptations.map((x: number) => x * 100)
+        thisMethod1RunVagueMetrics.adaptations.map((x: number) => x * 100),
       )
       const thisMethod1RunClearAdaptationStats = calculateStats(
-        thisMethod1RunClearMetrics.adaptations.map((x: number) => x * 100)
+        thisMethod1RunClearMetrics.adaptations.map((x: number) => x * 100),
       )
       const thisMethod3RunsVagueAdaptationStats = calculateStats(
-        thisMethod3RunsVagueMetrics.adaptations.map((x: number) => x * 100)
+        thisMethod3RunsVagueMetrics.adaptations.map((x: number) => x * 100),
       )
       const thisMethod3RunsClearAdaptationStats = calculateStats(
-        thisMethod3RunsClearMetrics.adaptations.map((x: number) => x * 100)
+        thisMethod3RunsClearMetrics.adaptations.map((x: number) => x * 100),
       )
 
       const vagueCostStats = calculateStats(vagueMetrics.costs)
@@ -299,38 +299,38 @@ async function loadExperimentalData(): Promise<ComparisonRow[]> {
       const clearVsVagueAdaptationP = tTest(vagueMetrics.adaptations, clearMetrics.adaptations)
       const thisMethod1RunVagueVsVagueAdaptationP = tTest(
         vagueMetrics.adaptations,
-        thisMethod1RunVagueMetrics.adaptations
+        thisMethod1RunVagueMetrics.adaptations,
       )
       const thisMethod1RunClearVsVagueAdaptationP = tTest(
         vagueMetrics.adaptations,
-        thisMethod1RunClearMetrics.adaptations
+        thisMethod1RunClearMetrics.adaptations,
       )
       const thisMethod3RunsVagueVsVagueAdaptationP = tTest(
         vagueMetrics.adaptations,
-        thisMethod3RunsVagueMetrics.adaptations
+        thisMethod3RunsVagueMetrics.adaptations,
       )
       const thisMethod3RunsClearVsVagueAdaptationP = tTest(
         vagueMetrics.adaptations,
-        thisMethod3RunsClearMetrics.adaptations
+        thisMethod3RunsClearMetrics.adaptations,
       )
 
       // Effect sizes (against vague baseline)
       const clearVsVagueEffectSize = cohensD(vagueMetrics.adaptations, clearMetrics.adaptations)
       const thisMethod1RunVagueVsVagueEffectSize = cohensD(
         vagueMetrics.adaptations,
-        thisMethod1RunVagueMetrics.adaptations
+        thisMethod1RunVagueMetrics.adaptations,
       )
       const thisMethod1RunClearVsVagueEffectSize = cohensD(
         vagueMetrics.adaptations,
-        thisMethod1RunClearMetrics.adaptations
+        thisMethod1RunClearMetrics.adaptations,
       )
       const thisMethod3RunsVagueVsVagueEffectSize = cohensD(
         vagueMetrics.adaptations,
-        thisMethod3RunsVagueMetrics.adaptations
+        thisMethod3RunsVagueMetrics.adaptations,
       )
       const thisMethod3RunsClearVsVagueEffectSize = cohensD(
         vagueMetrics.adaptations,
-        thisMethod3RunsClearMetrics.adaptations
+        thisMethod3RunsClearMetrics.adaptations,
       )
 
       // Clean model name for display
@@ -450,7 +450,7 @@ export async function GET() {
         success: false,
         error: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

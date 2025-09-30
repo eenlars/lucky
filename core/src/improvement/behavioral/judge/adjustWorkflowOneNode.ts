@@ -11,7 +11,7 @@ import z from "zod"
 export async function adjustWorkflowOneNode(
   workflow: WorkflowConfig,
   feedback: string,
-  fitness: FitnessOfWorkflow
+  fitness: FitnessOfWorkflow,
 ): Promise<RS<WorkflowConfig>> {
   const prompt = WorkflowEvolutionPrompts.mechanicAdvisorOneNode(workflow, fitness, feedback)
 

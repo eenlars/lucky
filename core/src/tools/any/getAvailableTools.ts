@@ -52,7 +52,7 @@ export function getUsedMCPTools(workflow: Workflow): MCPToolName[] {
  */
 export function getAvailableCodeTools(workflow: Workflow): CodeToolName[] {
   const usedTools = new Set(getUsedCodeTools(workflow))
-  return ACTIVE_CODE_TOOL_NAMES.filter((tool) => !usedTools.has(tool))
+  return ACTIVE_CODE_TOOL_NAMES.filter(tool => !usedTools.has(tool))
 }
 
 /**
@@ -60,7 +60,7 @@ export function getAvailableCodeTools(workflow: Workflow): CodeToolName[] {
  */
 export function getAvailableMCPTools(workflow: Workflow): MCPToolName[] {
   const usedTools = new Set(getUsedMCPTools(workflow))
-  return ACTIVE_MCP_TOOL_NAMES.filter((tool) => !usedTools.has(tool))
+  return ACTIVE_MCP_TOOL_NAMES.filter(tool => !usedTools.has(tool))
 }
 
 /**

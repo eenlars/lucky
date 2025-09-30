@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import type { TablesUpdate } from "@lucky/shared"
 
 export const retrieveNodeInvocations = async (workflowInvocationId: string) => {

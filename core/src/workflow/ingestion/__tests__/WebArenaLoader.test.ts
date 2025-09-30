@@ -48,7 +48,7 @@ describe("WebArenaLoader", () => {
       expect.objectContaining({
         signal: expect.any(AbortSignal),
         cache: "force-cache",
-      })
+      }),
     )
 
     // verify result matches expected structure
@@ -214,7 +214,7 @@ describe("WebArenaLoader", () => {
     expect(result).toHaveLength(2)
     expect(result[0].task_id).toBe(10)
     expect(result[1].task_id).toBe(12)
-    expect(result.every((task) => task.sites.includes("reddit"))).toBe(true)
+    expect(result.every(task => task.sites.includes("reddit"))).toBe(true)
   })
 
   it("should handle tasks with multiple evaluation types", async () => {
@@ -291,7 +291,7 @@ describe("WebArenaLoader", () => {
     } as Response)
 
     await expect(WebArenaLoader.fetchById(1)).rejects.toThrow(
-      "Failed to fetch WebArena task 1: Error: HTTP error! status: 404"
+      "Failed to fetch WebArena task 1: Error: HTTP error! status: 404",
     )
   })
 

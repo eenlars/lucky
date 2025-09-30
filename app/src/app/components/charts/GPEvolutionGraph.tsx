@@ -41,7 +41,7 @@ export function GPEvolutionGraph({ nodes }: { nodes?: GPNode[] }) {
             </tr>
           </thead>
           <tbody>
-            {nodes.map((n) => (
+            {nodes.map(n => (
               <tr key={n.id} className="border-b last:border-0">
                 <td className="py-2 pr-4">
                   <Link href={`/trace/${n.id}`} className="hover:underline">

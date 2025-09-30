@@ -143,7 +143,7 @@ function printReport(result: ValidationResult): void {
   console.log(`\n@runtime/* imports: ${result.externalImports.runtime.length} files`)
   if (result.externalImports.runtime.length > 0) {
     console.log("Top 10 files:")
-    result.externalImports.runtime.slice(0, 10).forEach((line) => console.log(`  - ${line}`))
+    result.externalImports.runtime.slice(0, 10).forEach(line => console.log(`  - ${line}`))
     if (result.externalImports.runtime.length > 10) {
       console.log(`  ... and ${result.externalImports.runtime.length - 10} more`)
     }
@@ -151,7 +151,7 @@ function printReport(result: ValidationResult): void {
 
   console.log(`\n@lucky/shared imports: ${result.externalImports.luckyShared.length} files`)
   if (result.externalImports.luckyShared.length > 0) {
-    result.externalImports.luckyShared.forEach((line) => console.log(`  - ${line}`))
+    result.externalImports.luckyShared.forEach(line => console.log(`  - ${line}`))
   }
 
   console.log("\n📈 USAGE STATISTICS")
@@ -161,7 +161,7 @@ function printReport(result: ValidationResult): void {
 
   if (result.issues.length > 0) {
     console.log("\n⚠️  CONFIGURATION ISSUES")
-    result.issues.forEach((issue) => console.log(`  - ${issue}`))
+    result.issues.forEach(issue => console.log(`  - ${issue}`))
   }
 
   console.log("\n" + "=".repeat(60))
@@ -189,7 +189,7 @@ function printReport(result: ValidationResult): void {
 // Run validation
 scanFiles()
   .then(printReport)
-  .catch((error) => {
+  .catch(error => {
     console.error("Validation failed:", error)
     process.exit(1)
   })

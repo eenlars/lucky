@@ -70,10 +70,12 @@ agents.md
 # Custom
 /resources
 /.cursor
-/app/src/runtime/logging_folder/*
+/app/src/examples/logging_folder/*
+/core/src/examples/logging_folder/*
 /logging_folder
 **/output*/**
 **setupfile.json
+**/.core-data
 
 # Downloads folder contents (but keep the folder)
 downloads/*

@@ -27,7 +27,7 @@ export class GAIALocalLoader {
 
     if (!existsSync(filePath)) {
       throw new Error(
-        `GAIA ${split} data not found. Please run: bun tsx core/src/evaluation/benchmarks/gaia/download_gaia.ts`
+        `GAIA ${split} data not found. Please run: bun tsx core/src/evaluation/benchmarks/gaia/download_gaia.ts`,
       )
     }
 
@@ -46,7 +46,7 @@ export class GAIALocalLoader {
   static fetchById(taskId: string, split: "validation" | "test" = "validation"): GAIAInstance {
     const data = this.loadSplit(split)
 
-    const instance = data.find((item) => item.task_id === taskId)
+    const instance = data.find(item => item.task_id === taskId)
 
     if (!instance) {
       throw new Error(`GAIA instance ${taskId} not found in ${split} split`)
@@ -55,7 +55,7 @@ export class GAIALocalLoader {
     // Skip if instance has a file and we're configured to skip files
     if (this.SKIP_INSTANCES_WITH_FILES && instance.file_name) {
       throw new Error(
-        `GAIA instance ${taskId} has an associated file (${instance.file_name}) and SKIP_INSTANCES_WITH_FILES is enabled`
+        `GAIA instance ${taskId} has an associated file (${instance.file_name}) and SKIP_INSTANCES_WITH_FILES is enabled`,
       )
     }
 
@@ -68,12 +68,12 @@ export class GAIALocalLoader {
   static fetchByLevel(
     level: 1 | 2 | 3,
     split: "validation" | "test" = "validation",
-    limit: number = 10
+    limit: number = 10,
   ): GAIAInstance[] {
     const data = this.loadSplit(split)
 
     const filtered = data
-      .filter((item) => {
+      .filter(item => {
         // Filter out special task
         if (item.task_id === "0-0-0-0-0") return false
 
@@ -97,7 +97,7 @@ export class GAIALocalLoader {
     const data = this.loadSplit(split)
 
     // Filter out special task and instances with files if configured
-    const available = data.filter((item) => {
+    const available = data.filter(item => {
       if (item.task_id === "0-0-0-0-0") return false
       if (this.SKIP_INSTANCES_WITH_FILES && item.file_name) return false
       return true

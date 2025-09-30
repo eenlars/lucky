@@ -22,11 +22,11 @@ export function calculateTotalAchievedPoints(criteria: RubricCriteria[]): number
 }
 
 export function hasResults(criteria: RubricCriteria[]): boolean {
-  return criteria.some((c) => c.achievedPoints !== null)
+  return criteria.some(c => c.achievedPoints !== null)
 }
 
 export function generateFakeScores(criteria: RubricCriteria[]): RubricCriteria[] {
-  return criteria.map((c) => ({
+  return criteria.map(c => ({
     ...c,
     achievedPoints: Math.round(Math.random() * c.maxPoints),
   }))

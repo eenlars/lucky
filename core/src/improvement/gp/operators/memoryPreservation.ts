@@ -4,11 +4,11 @@
 
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { Genome } from "../Genome"
 
 export class MemoryPreservation {
-  private static verbose = CONFIG.logging.override.GP
+  private static verbose = isLoggingEnabled("GP")
 
   /**
    * preserve parent memories in crossover offspring
@@ -114,7 +114,7 @@ export class MemoryPreservation {
         // calculate similarity based on common words (simple heuristic)
         const similarity = this.calculatePromptSimilarity(
           targetNode.systemPrompt,
-          nodeId // we don't have access to the original prompt, using nodeId as proxy
+          nodeId, // we don't have access to the original prompt, using nodeId as proxy
         )
 
         if (!bestMatch || similarity > bestMatch.similarity) {
@@ -132,7 +132,7 @@ export class MemoryPreservation {
    */
   static validateMemoryPreservation(
     offspring: WorkflowConfig,
-    parents: Genome[]
+    parents: Genome[],
   ): { isValid: boolean; missingMemories: string[] } {
     const missingMemories: string[] = []
 
@@ -162,7 +162,7 @@ export class MemoryPreservation {
     // check node-level memory preservation
     for (const [nodeId, parentNodeMemory] of Object.entries(allParentMemories)) {
       if (parentNodeMemory && Object.keys(parentNodeMemory).length > 0) {
-        const offspringNode = offspring.nodes.find((n) => n.nodeId === nodeId)
+        const offspringNode = offspring.nodes.find(n => n.nodeId === nodeId)
         if (offspringNode) {
           if (!offspringNode.memory) {
             missingMemories.push(`node '${nodeId}' memory completely lost`)
@@ -190,7 +190,7 @@ export class MemoryPreservation {
   static enforceMemoryPreservation(
     offspring: WorkflowConfig,
     parents: Genome[],
-    operationType: "crossover" | "mutation"
+    operationType: "crossover" | "mutation",
   ): void {
     const validation = this.validateMemoryPreservation(offspring, parents)
 
@@ -203,7 +203,7 @@ export class MemoryPreservation {
     // logger may be partially mocked in tests
     lgg.onlyIf?.(
       MemoryPreservation.verbose,
-      `Memory preservation validated for ${operationType} - all parent memories preserved`
+      `Memory preservation validated for ${operationType} - all parent memories preserved`,
     )
   }
 
@@ -214,7 +214,7 @@ export class MemoryPreservation {
     const words1 = new Set(prompt1.toLowerCase().split(/\s+/))
     const words2 = new Set(prompt2.toLowerCase().split(/\s+/))
 
-    const intersection = new Set([...words1].filter((x) => words2.has(x)))
+    const intersection = new Set([...words1].filter(x => words2.has(x)))
     const union = new Set([...words1, ...words2])
 
     return intersection.size / union.size // jaccard similarity

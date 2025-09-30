@@ -81,7 +81,7 @@ const disabledHrefs = new Set(["/structures", "/evolution"]) // disabled in dev
 // Build items list per environment
 const sidebarItems: SidebarItem[] = isProd
   ? baseSidebarItems.filter(
-      (item) => item.href !== "/workflows" && !disabledHrefs.has(item.href) // hide in prod
+      item => item.href !== "/workflows" && !disabledHrefs.has(item.href), // hide in prod
     )
   : baseSidebarItems
 
@@ -100,14 +100,14 @@ export default function Sidebar() {
       <div
         className={cn(
           "flex h-14 items-center border-b border-sidebar-border/30 px-5 transition-all duration-300 ease-out",
-          isCollapsed && !isMobile && "px-0 justify-center"
+          isCollapsed && !isMobile && "px-0 justify-center",
         )}
       >
         <Link
           href="/"
           className={cn(
             "text-base font-semibold text-sidebar-foreground tracking-tight hover:text-sidebar-primary transition-all duration-300",
-            isCollapsed && !isMobile && "opacity-0 w-0 overflow-hidden"
+            isCollapsed && !isMobile && "opacity-0 w-0 overflow-hidden",
           )}
           onClick={() => setIsMobileOpen(false)}
         >
@@ -136,7 +136,7 @@ export default function Sidebar() {
         aria-label="Primary navigation"
       >
         <ul className="space-y-0.5">
-          {sidebarItems.map((item) => {
+          {sidebarItems.map(item => {
             const isDisabled = !isProd && disabledHrefs.has(item.href)
             const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
             const Icon = item.icon
@@ -149,7 +149,7 @@ export default function Sidebar() {
                 ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
                 : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
               isCollapsed && !isMobile && "px-2 justify-center",
-              isDisabled && "pointer-events-none opacity-50"
+              isDisabled && "pointer-events-none opacity-50",
             )
 
             const linkContent = isDisabled ? (
@@ -163,7 +163,7 @@ export default function Sidebar() {
                   <div
                     className={cn(
                       "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-300",
-                      isCollapsed && !isMobile && "h-3"
+                      isCollapsed && !isMobile && "h-3",
                     )}
                     aria-hidden="true"
                   />
@@ -172,14 +172,14 @@ export default function Sidebar() {
                   className={cn(
                     "size-4 shrink-0 transition-all duration-200",
                     isActive && "text-sidebar-primary",
-                    isCollapsed && !isMobile && "size-5"
+                    isCollapsed && !isMobile && "size-5",
                   )}
                   aria-hidden="true"
                 />
                 <span
                   className={cn(
                     "truncate transition-all duration-300 ease-out",
-                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden",
                   )}
                 >
                   {item.label}
@@ -198,7 +198,7 @@ export default function Sidebar() {
                   <div
                     className={cn(
                       "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-300",
-                      isCollapsed && !isMobile && "h-3"
+                      isCollapsed && !isMobile && "h-3",
                     )}
                     aria-hidden="true"
                   />
@@ -207,14 +207,14 @@ export default function Sidebar() {
                   className={cn(
                     "size-4 shrink-0 transition-all duration-200",
                     isActive && "text-sidebar-primary",
-                    isCollapsed && !isMobile && "size-5"
+                    isCollapsed && !isMobile && "size-5",
                   )}
                   aria-hidden="true"
                 />
                 <span
                   className={cn(
                     "truncate transition-all duration-300 ease-out",
-                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden"
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden",
                   )}
                 >
                   {item.label}
@@ -257,7 +257,7 @@ export default function Sidebar() {
             "flex items-center justify-center",
             "text-muted-foreground hover:text-foreground",
             "transition-all duration-200 ease-out hover:scale-110",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70",
           )}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           data-testid="sidebar-collapse-toggle"
@@ -270,7 +270,7 @@ export default function Sidebar() {
       <div
         className={cn(
           "mt-auto border-t border-sidebar-border/30 px-5 py-3 transition-all duration-300",
-          isCollapsed && !isMobile && "px-2"
+          isCollapsed && !isMobile && "px-2",
         )}
       >
         <UserProfile isCollapsed={isCollapsed} isMobile={isMobile} />
@@ -289,7 +289,7 @@ export default function Sidebar() {
           "text-foreground hover:bg-accent",
           "transition-all duration-200 hover:scale-105",
           "md:hidden",
-          isMobileOpen && "opacity-0 pointer-events-none"
+          isMobileOpen && "opacity-0 pointer-events-none",
         )}
         aria-label="Open sidebar"
         data-testid="mobile-menu-trigger"
@@ -310,7 +310,7 @@ export default function Sidebar() {
         className={cn(
           "fixed left-0 top-0 z-40 h-screen bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border/50",
           "transition-all duration-300 ease-out",
-          isMobile ? (isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64") : isCollapsed ? "w-16" : "w-64"
+          isMobile ? (isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64") : isCollapsed ? "w-16" : "w-64",
         )}
         aria-label="Primary sidebar"
       >

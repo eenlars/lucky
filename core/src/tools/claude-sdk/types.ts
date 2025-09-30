@@ -9,7 +9,20 @@
  */
 export interface ClaudeSDKConfig {
   /** Model to use for SDK operations */
-  model?: "opus" | "sonnet" | "haiku" | "opus-3" | "sonnet-3" | "sonnet-3.5" | "haiku-3"
+  model?:
+    | "sonnet"
+    | "opus"
+    | "haiku"
+    | "sonnet-4.5"
+    | "opus-4.1"
+    | "opus-4"
+    | "sonnet-4"
+    | "sonnet-3.7"
+    | "sonnet-3.5"
+    | "haiku-3.5"
+    | "sonnet-3.5-old"
+    | "haiku-3"
+    | "opus-3"
 
   /** Maximum tokens to generate */
   maxTokens?: number

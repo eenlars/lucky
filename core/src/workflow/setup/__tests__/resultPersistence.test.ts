@@ -1,7 +1,6 @@
+import { getDefaultModels, PATHS } from "@core/core-config/compat"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { PATHS } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
 import * as fs from "fs/promises"
 import * as path from "path"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -107,10 +106,10 @@ describe("resultPersistence", () => {
     try {
       const backupFiles = await fs.readdir(actualBackupDir)
       const testBackups = backupFiles.filter(
-        (f) =>
+        f =>
           f.startsWith(`${testFileName}_`) ||
           // DO NOT delete setupfile.json backups - only test file backups
-          f.match(/concurrent-test-\d+\.json_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z\.json/)
+          f.match(/concurrent-test-\d+\.json_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z\.json/),
       )
 
       // Only delete specific backup files, never entire directories
@@ -188,7 +187,7 @@ describe("resultPersistence", () => {
       // check that backup directory has files
       const backupFiles = await fs.readdir(actualBackupDir)
       const backupName = path.basename(testFileName, path.extname(testFileName))
-      const testBackups = backupFiles.filter((f) => f.startsWith(`${backupName}_`))
+      const testBackups = backupFiles.filter(f => f.startsWith(`${backupName}_`))
 
       expect(testBackups.length).toBeGreaterThan(0)
 

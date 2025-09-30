@@ -11,7 +11,7 @@ import {
 } from "../toolsVerification"
 
 // Mock the constants module
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     tools: {
       uniqueToolsPerAgent: true,
@@ -366,9 +366,9 @@ describe("verifyAllToolsAreActive", () => {
 
     const errors = await verifyAllToolsAreActive(unknownToolWorkflow)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors.some((error) => error.includes("unknown tools"))).toBe(true)
-    expect(errors.some((error) => error.includes("unknownMcpTool"))).toBe(true)
-    expect(errors.some((error) => error.includes("unknownCodeTool"))).toBe(true)
+    expect(errors.some(error => error.includes("unknown tools"))).toBe(true)
+    expect(errors.some(error => error.includes("unknownMcpTool"))).toBe(true)
+    expect(errors.some(error => error.includes("unknownCodeTool"))).toBe(true)
   })
 
   it("should allow default tools", async () => {
@@ -609,6 +609,9 @@ describe("verifyMaxToolsPerAgent", () => {
 
 describe("verifyModelsAreActive", () => {
   it("should detect inactive models", async () => {
+    // Add model to inactive set temporarily
+    CONFIG.models.inactive.add("inactive-model")
+
     const inactiveModelWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
       nodes: [
@@ -629,6 +632,9 @@ describe("verifyModelsAreActive", () => {
     expect(errors[0]).toContain("inactive model")
     expect(errors[0]).toContain("inactive-model")
     expect(errors[0]).toContain("node1")
+
+    // Clean up
+    CONFIG.models.inactive.delete("inactive-model")
   })
 
   it("should allow active models", async () => {

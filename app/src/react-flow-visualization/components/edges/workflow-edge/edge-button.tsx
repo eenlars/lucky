@@ -51,7 +51,7 @@ export function EdgeButton({
         position: { x, y },
       })
     },
-    [addNodeInBetween, source, sourceHandleId, targetHandleId, target, x, y]
+    [addNodeInBetween, source, sourceHandleId, targetHandleId, target, x, y],
   )
 
   const connectionId = `edge-${id}`
@@ -82,7 +82,7 @@ export function EdgeButton({
         }}
       >
         <Button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation()
             toggleDropdown()
           }}

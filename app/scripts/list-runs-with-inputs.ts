@@ -103,7 +103,7 @@ async function main() {
     return
   }
 
-  const runIds = allRuns.map((r) => r.run_id)
+  const runIds = allRuns.map(r => r.run_id)
 
   const { data: invocations, error: invError } = await supabase
     .from("WorkflowInvocation")
@@ -119,7 +119,7 @@ async function main() {
     if (id && counts.has(id)) counts.set(id, (counts.get(id) || 0) + 1)
   }
 
-  const withMeta = allRuns.map((r) => {
+  const withMeta = allRuns.map(r => {
     const cfg = safeParseConfig(r.config)
     const inputFile = findInputFile(cfg)
     const start = r.start_time ? new Date(r.start_time) : null
@@ -158,7 +158,7 @@ async function main() {
   console.log(`\nReport written to: ${outPath}`)
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("\nFailed to list all runs with inputs:\n", err)
   process.exitCode = 1
 })

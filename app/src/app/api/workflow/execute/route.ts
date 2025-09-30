@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to start workflow execution",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -66,7 +66,7 @@ async function executeWorkflowAsync(
   dslConfig: WorkflowConfig,
   workflowId: string,
   prompt: string,
-  invocationId: string
+  invocationId: string,
 ) {
   // Require authentication
   const authResult = await requireAuth()
@@ -96,7 +96,7 @@ async function executeWorkflowAsync(
           dslConfig,
           evalInput,
         }),
-      }
+      },
     )
 
     const result = await invokeResponse.json()
@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
           success: false,
           error: "Execution not found",
         },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to get execution status",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

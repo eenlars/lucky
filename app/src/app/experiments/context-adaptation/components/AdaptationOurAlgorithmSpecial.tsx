@@ -67,7 +67,7 @@ function formatModelDisplayName(modelId: string): string {
   const words = spaced
     .split(" ")
     .filter(Boolean)
-    .map((w) => {
+    .map(w => {
       const lower = w.toLowerCase()
       if (lower === "gpt") return "GPT"
       if (lower === "gemini") return "Gemini"
@@ -104,12 +104,12 @@ function formatMs(ms: number): string {
 
 // Build stable model order based on MODELS but fall back to discovered models in results
 function computeModelOrder(runs: OurAlgorithmRun[]): string[] {
-  const fromResults = Array.from(new Set(runs.map((r) => r.model))) as OpenRouterModelName[]
+  const fromResults = Array.from(new Set(runs.map(r => r.model))) as OpenRouterModelName[]
   const preferred = MODELS
   const order: OpenRouterModelName[] = []
   for (const m of preferred) if (fromResults.includes(m)) order.push(m)
   for (const m of fromResults) if (!order.includes(m)) order.push(m)
-  return order.map((m) => String(m))
+  return order.map(m => String(m))
 }
 
 function aggregateLoopMetrics(run: OurAlgorithmRun) {
@@ -155,7 +155,7 @@ function buildPoints(results: OurAlgorithmExperimentResults | null): {
 } {
   if (!results) return { modelOrder: [], byScenario: {} }
 
-  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map((s) => [s.id, s.expected])) as Record<string, number>
+  const expectedByScenario = Object.fromEntries(TEST_SCENARIOS.map(s => [s.id, s.expected])) as Record<string, number>
 
   const modelOrder = computeModelOrder(results.runs)
 
@@ -429,7 +429,7 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
       try {
         const res = await fetch(
           `/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.our-algorithm.json?t=${Date.now()}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         )
         if (!res.ok) throw new Error(`Failed to load results: ${res.status}`)
         const json = (await res.json()) as OurAlgorithmExperimentResults
@@ -447,10 +447,10 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
   }, [])
 
   const { modelOrder, byScenario } = useMemo(() => buildPoints(data), [data])
-  const allPoints = useMemo(() => Object.values(byScenario).flatMap((arr) => arr), [byScenario])
+  const allPoints = useMemo(() => Object.values(byScenario).flatMap(arr => arr), [byScenario])
   const filteredPoints = useMemo(
-    () => allPoints.filter((p) => enabledScenarios[p.scenario] && enabledConditions[p.condition]),
-    [allPoints, enabledScenarios, enabledConditions]
+    () => allPoints.filter(p => enabledScenarios[p.scenario] && enabledConditions[p.condition]),
+    [allPoints, enabledScenarios, enabledConditions],
   )
   const hasAny = filteredPoints.length > 0
   const maxPct = 100
@@ -491,7 +491,7 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
     }
     return Object.values(accum)
       .sort((a, b) => a.loop - b.loop)
-      .map((r) => ({
+      .map(r => ({
         loop: r.loop,
         successPct: r.successPct.reduce((s, v) => s + v, 0) / Math.max(1, r.successPct.length),
         adherencePct: r.adherence.reduce((s, v) => s + v, 0) / Math.max(1, r.adherence.length),
@@ -523,16 +523,16 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
         model,
         Object.values(series)
           .sort((a, b) => a.loop - b.loop)
-          .map((r) => ({
+          .map(r => ({
             loop: r.loop,
             successPct: r.successPct.reduce((s, v) => s + v, 0) / Math.max(1, r.successPct.length),
           })),
-      ])
+      ]),
     )
   }, [byScenario, enabledScenarios, enabledConditions])
 
   const hasAnyLearningByModel = useMemo(() => {
-    return Object.values(learningCurvesByModel).some((arr) => Array.isArray(arr) && arr.length > 0)
+    return Object.values(learningCurvesByModel).some(arr => Array.isArray(arr) && arr.length > 0)
   }, [learningCurvesByModel])
 
   return (
@@ -554,10 +554,10 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
         <ShapesLegend modelOrder={modelOrder} />
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="text-gray-600">filter:</span>
-          {Object.keys(scenarioColors).map((s) => (
+          {Object.keys(scenarioColors).map(s => (
             <button
               key={s}
-              onClick={() => setEnabledScenarios((prev) => ({ ...prev, [s]: !prev[s] }))}
+              onClick={() => setEnabledScenarios(prev => ({ ...prev, [s]: !prev[s] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
                 enabledScenarios[s]
                   ? "bg-white border-gray-300 text-gray-800"
@@ -568,10 +568,10 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
             </button>
           ))}
           <span className="mx-2 h-4 w-px bg-gray-300" />
-          {(["vague", "clear"] as Condition[]).map((c) => (
+          {(["vague", "clear"] as Condition[]).map(c => (
             <button
               key={c}
-              onClick={() => setEnabledConditions((prev) => ({ ...prev, [c]: !prev[c] }))}
+              onClick={() => setEnabledConditions(prev => ({ ...prev, [c]: !prev[c] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
                 enabledConditions[c]
                   ? "bg-white border-gray-300 text-gray-800"
@@ -623,7 +623,7 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
                 offset: 12,
                 fill: axes.label,
               }}
-              tickFormatter={(v) => `${v}%`}
+              tickFormatter={v => `${v}%`}
               tick={{ fontSize: 12, fill: axes.label }}
               axisLine={{ stroke: axes.axisLine }}
               tickLine={{ stroke: axes.tickLine }}
@@ -660,14 +660,14 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
               />
               <YAxis
                 yAxisId="left"
-                tickFormatter={(v) => `${v}%`}
+                tickFormatter={v => `${v}%`}
                 tick={{ fontSize: 12, fill: axes.label }}
                 domain={[0, 110]}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                tickFormatter={(v) => `${v}%`}
+                tickFormatter={v => `${v}%`}
                 tick={{ fontSize: 12, fill: axes.label }}
                 domain={[0, 110]}
               />
@@ -726,7 +726,7 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
                     fill: axes.label,
                   }}
                 />
-                <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12, fill: axes.label }} domain={[0, 100]} />
+                <YAxis tickFormatter={v => `${v}%`} tick={{ fontSize: 12, fill: axes.label }} domain={[0, 100]} />
                 <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
                 <ReferenceLine y={100} stroke={axes.referenceLine} strokeDasharray="4 4" />
                 {modelOrder.map((m, idx) => (

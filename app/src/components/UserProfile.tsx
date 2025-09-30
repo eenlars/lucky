@@ -17,7 +17,7 @@ export default function UserProfile({ isCollapsed, isMobile }: UserProfileProps)
       <div
         className={cn(
           "text-[11px] text-sidebar-foreground/50 font-medium tracking-wide transition-all duration-300",
-          isCollapsed && !isMobile && "text-center"
+          isCollapsed && !isMobile && "text-center",
         )}
       >
         {isCollapsed && !isMobile ? "AAW" : "Agentic Workflows"}

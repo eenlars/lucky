@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const _resultsDir = path.resolve(
       process.cwd(),
-      "public/research-experiments/tool-real/experiments/03-context-adaptation"
+      "public/research-experiments/tool-real/experiments/03-context-adaptation",
     )
 
     // Collect all datasets: final, baseline, our-algorithm
@@ -23,7 +23,7 @@ export async function GET() {
         ok: false,
         error: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

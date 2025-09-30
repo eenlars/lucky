@@ -14,12 +14,12 @@ export function sanitizeConfigTools(config: WorkflowConfig): WorkflowConfig {
   const mcpAllowed = new Set(ACTIVE_MCP_TOOL_NAMES)
   const codeAllowed = new Set(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)
 
-  const sanitizedNodes: WorkflowNodeConfig[] = config.nodes.map((node) => {
+  const sanitizedNodes: WorkflowNodeConfig[] = config.nodes.map(node => {
     const nextMcp = (Array.isArray(node.mcpTools) ? node.mcpTools : []).filter((t): t is MCPToolName =>
-      mcpAllowed.has(t as MCPToolName)
+      mcpAllowed.has(t as MCPToolName),
     )
     const nextCode = (Array.isArray(node.codeTools) ? node.codeTools : []).filter((t): t is CodeToolName =>
-      codeAllowed.has(t as CodeToolName)
+      codeAllowed.has(t as CodeToolName),
     )
 
     return {

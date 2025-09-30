@@ -22,7 +22,7 @@ export async function selfImproveHelper({
   setup: WorkflowConfig
   goal: string
 }): Promise<{ config: WorkflowNodeConfig; usdCost: number }> {
-  const nodeConfig = setup.nodes.find((node) => node.nodeId === n.nodeId)
+  const nodeConfig = setup.nodes.find(node => node.nodeId === n.nodeId)
   if (!nodeConfig) {
     throw new Error(`Workflow node ${n.nodeId} not found in selfImproveHelper`)
   }
@@ -92,7 +92,7 @@ export async function selfImproveHelper({
 
   saveInLoc(
     `${PATHS.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
-    JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2)
+    JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2),
   )
 
   // update the node config

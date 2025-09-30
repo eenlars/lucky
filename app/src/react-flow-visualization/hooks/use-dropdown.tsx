@@ -4,7 +4,7 @@ export function useDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const toggleDropdown = () => setIsOpen((prev) => !prev)
+  const toggleDropdown = () => setIsOpen(prev => !prev)
 
   const closeDropdown = () => setIsOpen(false)
 

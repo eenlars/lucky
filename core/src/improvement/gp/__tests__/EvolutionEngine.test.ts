@@ -25,7 +25,7 @@ vi.mock("@core/utils/env.mjs", () => ({
 }))
 
 // Mock runtime constants
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -484,7 +484,7 @@ describe("EvolutionEngine", () => {
         expect(mockRunService.completeRun).toHaveBeenCalledWith(
           "completed",
           expect.any(Number), // total cost
-          expect.any(Object) // best genome
+          expect.any(Object), // best genome
         )
       })
     })
@@ -508,7 +508,7 @@ describe("EvolutionEngine", () => {
         expect(mockRunService.completeRun).toHaveBeenCalledWith(
           expect.stringMatching(/completed|interrupted/),
           expect.any(Number),
-          expect.any(Object)
+          expect.any(Object),
         )
         vi.useRealTimers()
       })
@@ -589,7 +589,7 @@ describe("EvolutionEngine", () => {
         expect(mockRunService.completeRun).toHaveBeenCalledWith(
           expect.stringMatching(/completed|interrupted/),
           expect.any(Number),
-          expect.any(Object)
+          expect.any(Object),
         )
       })
     })
@@ -616,7 +616,7 @@ describe("EvolutionEngine", () => {
     it("should handle evaluation timeouts", async () => {
       vi.mocked(evaluator.evaluate).mockImplementation(
         () =>
-          new Promise((resolve) =>
+          new Promise(resolve =>
             setTimeout(
               () =>
                 resolve({
@@ -625,9 +625,9 @@ describe("EvolutionEngine", () => {
                   usdCost: 0,
                   data: undefined,
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       )
 
       vi.useFakeTimers()
@@ -685,7 +685,7 @@ describe("EvolutionEngine", () => {
         expect.objectContaining({
           runId: "test-run-id",
           generationId: "test-gen-id",
-        })
+        }),
       )
     })
   })
@@ -747,7 +747,7 @@ describe("EvolutionEngine", () => {
             },
             usdCost: 0.005,
             error: undefined,
-          })
+          }),
         ),
       }
 

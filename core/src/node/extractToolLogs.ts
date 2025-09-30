@@ -15,7 +15,7 @@ export const extractToolLogs = (processedResponse: ProcessedResponse): string =>
   }
 
   if (isToolProcessed(processedResponse) && processedResponse.agentSteps) {
-    return processedResponse.agentSteps.map((o) => `${o.type}: ${o.return}`).join("\n")
+    return processedResponse.agentSteps.map(o => `${o.type}: ${o.return}`).join("\n")
   }
 
   if (isErrorProcessed(processedResponse)) {

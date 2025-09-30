@@ -27,7 +27,7 @@ import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
-import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
+import { getCurrentProvider } from "@core/utils/spending/provider"
 import { generateText, GenerateTextResult, ToolSet, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback, trackTimeoutForModel } from "../fallbacks"
 import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
@@ -99,7 +99,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     const result = await retryWithBackoff(attemptOnce, {
       attempts,
       backoffMs: 300,
-      shouldRetry: (gen) => {
+      shouldRetry: gen => {
         const text = gen?.text
         const hasText = !isNir(text?.trim?.())
         if (!hasText) {
@@ -107,13 +107,13 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
             attempt: attemptsDebug.length + 1,
             reason: "empty-text",
             usage: gen?.usage,
-            provider: String(CURRENT_PROVIDER),
+            provider: String(getCurrentProvider()),
             model: String(modelName),
           })
           lgg.warn(
             `execText empty response (attempt ${attemptsDebug.length}/${attempts}) from ${String(
-              CURRENT_PROVIDER
-            )} for ${String(modelName)}`
+              getCurrentProvider(),
+            )} for ${String(modelName)}`,
           )
         }
         return !hasText
@@ -138,7 +138,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       success: false,
       data: null,
       usdCost: usd,
-      error: `Empty response from ${String(CURRENT_PROVIDER)} for model ${String(modelName)} after ${attempts} attempt(s).`,
+      error: `Empty response from ${String(getCurrentProvider())} for model ${String(modelName)} after ${attempts} attempt(s).`,
       debug_input: messages,
       debug_output: { lastGen: result, attempts: attemptsDebug },
     }

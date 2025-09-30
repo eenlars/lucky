@@ -18,7 +18,7 @@ export interface NodeInvocationSummary {
  */
 export async function retrieveNodeInvocationSummaries(
   workflowInvocationId: string,
-  nodeId?: string
+  nodeId?: string,
 ): Promise<NodeInvocationSummary[]> {
   let query = supabase
     .from("NodeInvocation")
@@ -42,7 +42,7 @@ export async function retrieveNodeInvocationSummaries(
  * @returns Map of node ID to array of summaries
  */
 export async function retrieveNodeSummariesGrouped(
-  workflowInvocationId: string
+  workflowInvocationId: string,
 ): Promise<Map<string, NodeInvocationSummary[]>> {
   const summaries = await retrieveNodeInvocationSummaries(workflowInvocationId)
 

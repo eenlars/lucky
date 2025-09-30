@@ -82,7 +82,7 @@ mockRuntimeConstantsForDatabase({
 #### Before (Crossover.test.ts - 19 lines)
 
 ```typescript
-vi.mock("@runtime/settings/constants", async (importOriginal) => {
+vi.mock("@runtime/settings/constants", async importOriginal => {
   const mod = await importOriginal<typeof import("@runtime/settings/constants")>()
   return {
     ...mod,
@@ -266,7 +266,7 @@ describe("ErrorScenarios", () => {
 // Override specific mock behaviors
 const { runService } = setupGPTestMocks()
 
-runService.createRun.mockImplementation(async (config) => {
+runService.createRun.mockImplementation(async config => {
   if (config.maxGenerations > 100) {
     throw new Error("Generation limit exceeded")
   }
@@ -321,7 +321,7 @@ bench(
 
     await verificationCache.verify(genome)
   },
-  { iterations: 1000 }
+  { iterations: 1000 },
 )
 ```
 
@@ -419,7 +419,7 @@ it(
   async () => {
     // test logic
   },
-  { timeout: 10000 }
+  { timeout: 10000 },
 )
 ```
 

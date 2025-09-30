@@ -21,7 +21,7 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
       </div>
 
       {/* Connection handle(s) remain functional */}
-      {nodesConfig["initial-node"].handles.map((handle) => (
+      {nodesConfig["initial-node"].handles.map(handle => (
         <AppHandle
           key={`${handle.type}-${handle.id}`}
           id={handle.id}

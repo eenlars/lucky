@@ -42,7 +42,7 @@ const isMarkdownContent = (content: string): boolean => {
     /^\s*```/m,
   ]
 
-  return markdownPatterns.some((pattern) => pattern.test(content))
+  return markdownPatterns.some(pattern => pattern.test(content))
 }
 
 export default function TestPage() {
@@ -77,7 +77,7 @@ export default function TestPage() {
       timestamp: new Date().toISOString(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    setMessages(prev => [...prev, userMessage])
     setMessage("")
     setLoading(true)
 
@@ -123,8 +123,8 @@ export default function TestPage() {
           timestamp: new Date().toISOString(),
         }
 
-        setCalls((prev) => [...prev, callInfo])
-        setTotalCost((prev) => prev + cost)
+        setCalls(prev => [...prev, callInfo])
+        setTotalCost(prev => prev + cost)
 
         messageData = { cost, model: data.model, tokens }
       }
@@ -138,7 +138,7 @@ export default function TestPage() {
         ...messageData,
       }
 
-      setMessages((prev) => [...prev, botMessage])
+      setMessages(prev => [...prev, botMessage])
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -146,7 +146,7 @@ export default function TestPage() {
         isUser: false,
         timestamp: new Date().toISOString(),
       }
-      setMessages((prev) => [...prev, errorMessage])
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setLoading(false)
       // Refocus input after sending
@@ -185,8 +185,8 @@ export default function TestPage() {
           timestamp: new Date().toISOString(),
         }
 
-        setCalls((prev) => [...prev, callInfo])
-        setTotalCost((prev) => prev + cost)
+        setCalls(prev => [...prev, callInfo])
+        setTotalCost(prev => prev + cost)
 
         messageData = { cost, model: data.model, tokens }
       }
@@ -200,7 +200,7 @@ export default function TestPage() {
         ...messageData,
       }
 
-      setMessages((prev) => [...prev, testMessage])
+      setMessages(prev => [...prev, testMessage])
     } catch (error) {
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -208,7 +208,7 @@ export default function TestPage() {
         isUser: false,
         timestamp: new Date().toISOString(),
       }
-      setMessages((prev) => [...prev, errorMessage])
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setLoading(false)
     }
@@ -337,8 +337,8 @@ export default function TestPage() {
               <textarea
                 ref={inputRef}
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setMessage(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !loading && message.trim()) {
                     e.preventDefault()
                     sendMessage()
@@ -467,7 +467,7 @@ export default function TestPage() {
               </div>
             ) : (
               <div className="space-y-6 pb-4">
-                {messages.map((msg) => (
+                {messages.map(msg => (
                   <div key={msg.id} className={`flex ${msg.isUser ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`flex max-w-[90%] ${msg.isUser ? "flex-row-reverse" : "flex-row"} items-start space-x-3`}

@@ -35,7 +35,7 @@ const evaluator = {
 // Run evolution
 const result = await engine.evolveSimple(
   "Create a workflow that analyzes customer feedback and extracts sentiment",
-  evaluator
+  evaluator,
 )
 
 console.log(`Best fitness: ${result.bestGenome.fitness}`)
@@ -335,7 +335,7 @@ const memoryConfig = {
 
 ```typescript
 // Evolution progress tracking
-engine.onGenerationComplete((stats) => {
+engine.onGenerationComplete(stats => {
   console.log(`Generation ${stats.generation}:`)
   console.log(`Best Fitness: ${stats.bestFitness}`)
   console.log(`Average Fitness: ${stats.averageFitness}`)
@@ -344,7 +344,7 @@ engine.onGenerationComplete((stats) => {
 })
 
 // Individual evaluation tracking
-engine.onEvaluationComplete((result) => {
+engine.onEvaluationComplete(result => {
   if (result.success) {
     console.log(`✓ Genome ${result.genomeId}: ${result.fitness}`)
   } else {
@@ -523,7 +523,7 @@ config.generations = 20
 
 ```typescript
 // Add timeout to evaluation
-const evaluateWithTimeout = async (genome) => {
+const evaluateWithTimeout = async genome => {
   return Promise.race([
     evaluator.evaluate(genome),
     new Promise((_, reject) => setTimeout(() => reject(new Error("Evaluation timeout")), 30000)),

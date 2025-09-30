@@ -1,6 +1,6 @@
 /**
  * Minimal location types for standalone core.
- * Full implementation is in @runtime/schemas/location.types
+ * Full implementation is in @examples/schemas/location.types
  */
 
 export enum DataQuality {

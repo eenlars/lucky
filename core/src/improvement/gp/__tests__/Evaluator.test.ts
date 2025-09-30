@@ -135,7 +135,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -163,7 +163,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -198,7 +198,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -240,7 +240,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -280,7 +280,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -341,7 +341,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -380,7 +380,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -419,7 +419,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -447,7 +447,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -477,7 +477,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -488,7 +488,7 @@ describe("Evaluator", () => {
           runId: "test-run-id",
           generationId: "test-generation-id",
           generationNumber: 1,
-        })
+        }),
       ).resolves.not.toThrow()
     })
 
@@ -504,7 +504,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -548,7 +548,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const evaluator = new GPEvaluatorAdapter([createMockWorkflowIO()], "test goal", "test analysis")
@@ -577,12 +577,12 @@ describe("Evaluator", () => {
         createMockGenome(0, [], createMockWorkflowScore(0.9)),
       ])
 
-      const evaluationPromises = genomes.map((genome) =>
+      const evaluationPromises = genomes.map(genome =>
         evaluator.evaluate(genome, {
           runId: "test-run-id",
           generationId: "test-generation-id",
           generationNumber: 1,
-        })
+        }),
       )
       const results = await Promise.all(evaluationPromises)
 
@@ -634,7 +634,7 @@ describe("Evaluator", () => {
         () =>
           ({
             evaluate: mockEvaluate,
-          }) as any
+          }) as any,
       )
 
       const result1 = await evaluator.evaluate(genome1, {

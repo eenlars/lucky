@@ -212,12 +212,12 @@ describe("Iterative Evolution Types", () => {
       }
 
       // check all nodes are reachable
-      const nodeIds = workflow.nodes.map((n) => n.id)
+      const nodeIds = workflow.nodes.map(n => n.id)
       const referencedNodes = workflow.nodes
-        .flatMap((n) => Object.values(n.handoffRules))
-        .filter((id) => typeof id === "string")
+        .flatMap(n => Object.values(n.handoffRules))
+        .filter(id => typeof id === "string")
 
-      const unreachableNodes = referencedNodes.filter((id) => !nodeIds.includes(id))
+      const unreachableNodes = referencedNodes.filter(id => !nodeIds.includes(id))
 
       expect(unreachableNodes).toHaveLength(0)
       expect(nodeIds.includes(workflow.entryNodeId)).toBe(true)
@@ -245,7 +245,7 @@ describe("Iterative Evolution Types", () => {
         if (visited.has(nodeId)) return false
 
         visiting.add(nodeId)
-        const node = circularWorkflow.nodes.find((n) => n.id === nodeId)
+        const node = circularWorkflow.nodes.find(n => n.id === nodeId)
         if (node) {
           for (const nextNodeId of Object.values(node.handoffRules)) {
             if (typeof nextNodeId === "string" && hasCycle(nextNodeId)) {

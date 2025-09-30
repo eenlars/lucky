@@ -13,7 +13,7 @@ import type { ZodSchema } from "zod"
 export function validateAndCorrectWithSchema<T>(
   toolName: string,
   params: Record<string, any>,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): { params: Record<string, any>; corrected: boolean; warnings: string[] } {
   const validationResult = schema.safeParse(params)
 

@@ -17,7 +17,7 @@ import path from "path"
 export async function persistWorkflow(
   finalConfig: Json | WorkflowConfig,
   fileName: string = "setupfile.json",
-  skipBackup: boolean = false
+  skipBackup: boolean = false,
 ): Promise<void> {
   // compute directories at runtime to respect test overrides
   const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))

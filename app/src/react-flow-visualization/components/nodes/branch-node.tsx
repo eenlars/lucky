@@ -5,7 +5,7 @@ import { AppHandle } from "./workflow-node/app-handle"
 export function BranchNode({ id, data }: WorkflowNodeProps) {
   return (
     <WorkflowNode id={id} data={data}>
-      {nodesConfig["branch-node"].handles.map((handle) => (
+      {nodesConfig["branch-node"].handles.map(handle => (
         <AppHandle
           key={`${handle.type}-${handle.id}`}
           id={handle.id}

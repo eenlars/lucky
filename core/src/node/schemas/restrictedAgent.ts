@@ -22,7 +22,7 @@ const restrictedAgentDescriptions = {
 
 export const RestrictedAgentDescriptionsConfigSchema = withDescriptions(
   restrictedNodeConfigShape,
-  restrictedAgentDescriptions
+  restrictedAgentDescriptions,
 )
 
 export type RestrictedAgentDescriptionsZod = z.infer<typeof RestrictedAgentDescriptionsConfigSchema>

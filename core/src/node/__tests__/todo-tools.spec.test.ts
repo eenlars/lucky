@@ -8,8 +8,8 @@ describe("Todo Tools Integration Test", () => {
   // also uses console.log for debugging output that should be removed.
   it("should execute todoWrite and todoRead workflow", async () => {
     // Import the todo tools directly
-    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
+    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     const workflowInvocationId = `todo-integration-test-${Date.now()}`
@@ -35,7 +35,7 @@ describe("Todo Tools Integration Test", () => {
           },
         ],
       },
-      mockContext
+      mockContext,
     )
 
     expect(writeResult.success).toBe(true)
@@ -87,8 +87,8 @@ describe("Todo Tools Integration Test", () => {
   }, 20000)
 
   it("should handle multiple todos in workflow", async () => {
-    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
+    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
 
     const workflowInvocationId = `todo-multi-integration-test-${Date.now()}`
 
@@ -125,7 +125,7 @@ describe("Todo Tools Integration Test", () => {
           },
         ],
       },
-      mockContext
+      mockContext,
     )
 
     expect(writeResult.success).toBe(true)
@@ -138,16 +138,16 @@ describe("Todo Tools Integration Test", () => {
     expect(readResult.data?.output?.todos.length).toBe(3)
 
     const todos = readResult.data?.output?.todos
-    expect(todos?.some((t) => t.status === "completed")).toBe(true)
-    expect(todos?.some((t) => t.status === "in_progress")).toBe(true)
-    expect(todos?.some((t) => t.status === "pending")).toBe(true)
+    expect(todos?.some((t: any) => t.status === "completed")).toBe(true)
+    expect(todos?.some((t: any) => t.status === "in_progress")).toBe(true)
+    expect(todos?.some((t: any) => t.status === "pending")).toBe(true)
 
     console.log("Multi-todo test results:")
     console.log("- Created todos:", writeResult.data?.output?.todos.length)
     console.log("- Read todos:", readResult.data?.output?.todos.length)
     console.log(
       "- Todo statuses:",
-      todos?.map((t) => t.status)
+      todos?.map((t: any) => t.status),
     )
   }, 15000)
 })

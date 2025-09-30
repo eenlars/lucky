@@ -63,22 +63,22 @@ export function processAdaptiveData(): ProcessedData {
   const results = data.results as AdaptiveResult[]
 
   // Extract unique values
-  const models = Array.from(new Set(results.map((r) => r.model)))
-  const scenarios = Array.from(new Set(results.map((r) => r.scenario)))
+  const models = Array.from(new Set(results.map(r => r.model)))
+  const scenarios = Array.from(new Set(results.map(r => r.scenario)))
   const conditions: Condition[] = ["vague", "clear"]
 
   // Calculate success rate matrix
-  const successRateMatrix = models.map((model) => {
-    const vagueResults = results.filter((r) => r.model === model && r.condition === "vague")
-    const clearResults = results.filter((r) => r.model === model && r.condition === "clear")
+  const successRateMatrix = models.map(model => {
+    const vagueResults = results.filter(r => r.model === model && r.condition === "vague")
+    const clearResults = results.filter(r => r.model === model && r.condition === "clear")
 
     const vagueSuccessRate =
       vagueResults.length > 0
-        ? vagueResults.filter((r) => r.adaptiveBehavior.successfulStrategy).length / vagueResults.length
+        ? vagueResults.filter(r => r.adaptiveBehavior.successfulStrategy).length / vagueResults.length
         : 0
     const clearSuccessRate =
       clearResults.length > 0
-        ? clearResults.filter((r) => r.adaptiveBehavior.successfulStrategy).length / clearResults.length
+        ? clearResults.filter(r => r.adaptiveBehavior.successfulStrategy).length / clearResults.length
         : 0
 
     return {
@@ -90,7 +90,7 @@ export function processAdaptiveData(): ProcessedData {
   })
 
   // Calculate behavior metrics
-  const behaviorMetrics = results.map((result) => ({
+  const behaviorMetrics = results.map(result => ({
     model: result.model,
     scenario: result.scenario,
     condition: result.condition,
@@ -101,9 +101,9 @@ export function processAdaptiveData(): ProcessedData {
   }))
 
   // Analyze tool sequences
-  const toolSequenceData = results.map((result) => {
-    const sequence = result.toolCalls.map((call) =>
-      call.success ? `${call.toolName}(${JSON.stringify(call.args)})` : `${call.toolName}_FAIL`
+  const toolSequenceData = results.map(result => {
+    const sequence = result.toolCalls.map(call =>
+      call.success ? `${call.toolName}(${JSON.stringify(call.args)})` : `${call.toolName}_FAIL`,
     )
 
     let pattern: "successful_chunking" | "repeated_failures" | "immediate_success" = "repeated_failures"

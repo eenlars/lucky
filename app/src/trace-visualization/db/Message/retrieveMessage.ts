@@ -1,6 +1,6 @@
 "use server"
 
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 
 export const retrieveMessages = async (workflowInvocationId: string) => {
   const { data, error: messagesError } = await supabase

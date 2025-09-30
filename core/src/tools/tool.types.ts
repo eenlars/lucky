@@ -8,8 +8,9 @@ export const getActiveTools = <T extends Record<string, any>>(tools: T, includeD
   if (INACTIVE_TOOLS.size === 0 && DEFAULT_TOOLS.size === 0) return tools
   return Object.fromEntries(
     Object.entries(tools).filter(
-      ([key]) => !INACTIVE_TOOLS.has(key as AllToolNames) && (includeDefault || !DEFAULT_TOOLS.has(key as AllToolNames))
-    )
+      ([key]) =>
+        !INACTIVE_TOOLS.has(key as AllToolNames) && (includeDefault || !DEFAULT_TOOLS.has(key as AllToolNames)),
+    ),
   ) as T
 }
 

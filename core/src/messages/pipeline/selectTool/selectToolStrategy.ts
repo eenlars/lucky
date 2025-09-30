@@ -1,7 +1,7 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@core/utils/common/isNir"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import type { LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import { z } from "zod"
@@ -20,7 +20,7 @@ export type ExperimentalStepFunction<TOOLS extends ToolSet> = (options: {
   | undefined
 >
 
-const verbose = CONFIG.logging.override.Tools
+const verbose = isLoggingEnabled("Tools")
 
 /**
  * Creates a prepareStep function that provides fine-grained control over each step
@@ -30,7 +30,7 @@ const verbose = CONFIG.logging.override.Tools
 export function createPrepareStepStrategy<T extends ToolSet>(
   tools: T,
   systemPrompt: string | null,
-  initialPayload: string
+  initialPayload: string,
 ): (options: {
   steps: Array<StepResult<T>>
   stepNumber: number

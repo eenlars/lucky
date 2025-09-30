@@ -87,7 +87,7 @@ describe("Workflow ContextStore Integration", () => {
     const workflow = createWorkflow(mockConfig, mockGoalEval)
 
     expect(() => workflow.getContextStore("supabase")).toThrow(
-      "Workflow invocation must be created for index 0 before creating Supabase context stores"
+      "Workflow invocation must be created for index 0 before creating Supabase context stores",
     )
   })
 

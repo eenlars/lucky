@@ -11,7 +11,7 @@ const ENABLED = CONFIG.limits.enableParallelLimit
  */
 export async function parallelLimit<T, R>(items: T[], fn: (i: T) => Promise<R>, overrideLimit?: number): Promise<R[]> {
   if (!ENABLED) {
-    return Promise.all(items.map((item) => fn(item)))
+    return Promise.all(items.map(item => fn(item)))
   }
 
   const limit = overrideLimit ?? CONFIG.limits.maxConcurrentWorkflows

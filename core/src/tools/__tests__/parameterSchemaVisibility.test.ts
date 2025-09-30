@@ -1,11 +1,8 @@
 import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import { tool, zodSchema } from "ai"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest"
 import { z } from "zod"
-
-// Use per-test overrides to avoid hoist issues and bun test incompatibilities
-// We dynamically import and doMock inside tests.
 
 describe("Parameter Schema Visibility", () => {
   const mockSearchGoogleMapsTool = tool({
@@ -14,7 +11,7 @@ describe("Parameter Schema Visibility", () => {
       z.object({
         query: z.string().describe("Search query"),
         maxResultCount: z.number().max(20).default(10).describe("Number of results to return"),
-      })
+      }),
     ),
     execute: async () => "mock result",
   })
@@ -24,34 +21,35 @@ describe("Parameter Schema Visibility", () => {
   }
 
   let originalShowParameterSchemas: boolean
+  let sendAISpy: MockInstance | undefined
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.resetModules()
+    // Keep module instance stable across imports so CONFIG toggles propagate
     originalShowParameterSchemas = CONFIG.tools.showParameterSchemas
   })
 
   afterEach(() => {
     ;(CONFIG.tools as any).showParameterSchemas = originalShowParameterSchemas
+    sendAISpy?.mockRestore()
+    sendAISpy = undefined
   })
 
   it("should include parameter schemas when enabled", async () => {
     ;(CONFIG.tools as any).showParameterSchemas = true
 
-    // Per-test mock of sendAI
-    vi.doMock("@core/messages/api/sendAI/sendAI", () => ({
-      sendAI: vi.fn().mockResolvedValue({
-        success: true,
-        data: {
-          type: "tool",
-          toolName: "searchGoogleMaps",
-          reasoning: "Test reasoning",
-          plan: "Test plan",
-        },
-        usdCost: 0.001,
-      }),
-    }))
-    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
+    const sendAIModule = await import("@core/messages/api/sendAI/sendAI")
+    sendAISpy = vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
+      success: true,
+      data: {
+        text: "searchGoogleMaps",
+        reasoning: "Test reasoning",
+      },
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    })
     const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
@@ -63,10 +61,9 @@ describe("Parameter Schema Visibility", () => {
       model: getDefaultModels().default,
     })
 
-    const mocked = vi.mocked(sendAI)
-    expect(mocked).toBeDefined()
-    expect(mocked.mock.calls.length).toBeGreaterThan(0)
-    const firstCall = mocked.mock.calls[0]?.[0] as any
+    expect(sendAISpy).toBeDefined()
+    expect(sendAISpy?.mock.calls.length ?? 0).toBeGreaterThan(0)
+    const firstCall = sendAISpy?.mock.calls[0]?.[0] as any
     expect(firstCall).toBeDefined()
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
 
@@ -80,19 +77,18 @@ describe("Parameter Schema Visibility", () => {
   it("should hide parameter schemas when disabled", async () => {
     ;(CONFIG.tools as any).showParameterSchemas = false
 
-    vi.doMock("@core/messages/api/sendAI/sendAI", () => ({
-      sendAI: vi.fn().mockResolvedValue({
-        success: true,
-        data: {
-          type: "tool",
-          toolName: "searchGoogleMaps",
-          reasoning: "Test reasoning",
-          plan: "Test plan",
-        },
-        usdCost: 0.001,
-      }),
-    }))
-    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
+    const sendAIModule = await import("@core/messages/api/sendAI/sendAI")
+    sendAISpy = vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
+      success: true,
+      data: {
+        text: "searchGoogleMaps",
+        reasoning: "Test reasoning",
+      },
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    })
     const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
@@ -104,9 +100,8 @@ describe("Parameter Schema Visibility", () => {
       model: getDefaultModels().default,
     })
 
-    const mocked = vi.mocked(sendAI)
-    expect(mocked.mock.calls.length).toBeGreaterThan(0)
-    const firstCall = mocked.mock.calls[0]?.[0] as any
+    expect(sendAISpy?.mock.calls.length ?? 0).toBeGreaterThan(0)
+    const firstCall = sendAISpy?.mock.calls[0]?.[0] as any
     expect(firstCall).toBeDefined()
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
 
@@ -131,21 +126,22 @@ describe("Parameter Schema Visibility", () => {
           }),
           mode: z.enum(["fast", "thorough"]).default("fast"),
           filters: z.union([z.string(), z.array(z.string())]).optional(),
-        })
+        }),
       ),
       execute: async () => "complex result",
     })
 
     const complexTools = { complexTool }
 
-    vi.doMock("@core/messages/api/sendAI/sendAI", () => ({
-      sendAI: vi.fn().mockResolvedValue({
-        success: true,
-        data: { type: "tool", toolName: "complexTool" },
-        usdCost: 0.001,
-      }),
-    }))
-    const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
+    const sendAIModule = await import("@core/messages/api/sendAI/sendAI")
+    sendAISpy = vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
+      success: true,
+      data: { text: "complexTool" },
+      usdCost: 0.001,
+      error: null,
+      debug_input: [],
+      debug_output: null,
+    })
     const { selectToolStrategyV2 } = await import("@core/messages/pipeline/selectTool/selectToolStrategyV2")
 
     await selectToolStrategyV2({
@@ -157,9 +153,8 @@ describe("Parameter Schema Visibility", () => {
       model: getDefaultModels().default,
     })
 
-    const mocked = vi.mocked(sendAI)
-    expect(mocked.mock.calls.length).toBeGreaterThan(0)
-    const firstCall = mocked.mock.calls[0]?.[0] as any
+    expect(sendAISpy?.mock.calls.length ?? 0).toBeGreaterThan(0)
+    const firstCall = sendAISpy?.mock.calls[0]?.[0] as any
     expect(firstCall).toBeDefined()
     const userMessage = firstCall.messages.find((m: any) => m.role === "user")
 

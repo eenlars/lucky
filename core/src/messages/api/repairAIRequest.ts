@@ -3,16 +3,16 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { JSONN } from "@core/utils/json"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import type { ModelMessage } from "ai"
 import { z } from "zod"
 
 // the response is already malformed, but we want to try to repair it
 export const repairAIRequest = async <T extends z.ZodTypeAny>(response: string, schema: T): Promise<RS<z.infer<T>>> => {
-  if (CONFIG.logging.override.API) {
+  if (isLoggingEnabled("API")) {
     lgg.log(
-      `⚠️  [repairAIRequest] we need to repair this response: ${truncater(JSON.stringify(response, null, 2), 500)}`
+      `⚠️  [repairAIRequest] we need to repair this response: ${truncater(JSON.stringify(response, null, 2), 500)}`,
     )
   }
   const messages: ModelMessage[] = [

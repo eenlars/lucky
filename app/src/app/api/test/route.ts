@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         error: errorMessage,
         details: error instanceof Error ? error.stack : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

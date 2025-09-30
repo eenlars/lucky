@@ -1,14 +1,15 @@
 // basic tests for genome class without complex mocking
 // TODO: despite title "basic tests", still has extensive mock setup
 // consider using actual test utilities instead of inline mocks
+import { CONFIG, getDefaultModels } from "@core/core-config/compat"
+import { Genome } from "@core/improvement/gp/Genome"
 import { createMockEvaluationInputGeneric, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level - comprehensive mock to prevent undefined property errors
 // TODO: "cleaner mock setup" but still 100+ lines of CONFIG mock
 // most properties aren't used in these tests
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,
@@ -211,8 +212,6 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-// Intentionally avoid static import to bypass any upstream hoisted mocks
-// We'll import the real module at runtime in each test via vi.importActual
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 
 describe("Genome Basic Tests", () => {
@@ -239,8 +238,7 @@ describe("Genome Basic Tests", () => {
   })
 
   describe("Constructor", () => {
-    it("should create genome from data", async () => {
-      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
+    it("should create genome from data", () => {
       const genomeData = createTestGenomeData()
       const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -250,8 +248,7 @@ describe("Genome Basic Tests", () => {
       expect(genome.getRawGenome()).toEqual(genomeData)
     })
 
-    it("should initialize fitness as invalid", async () => {
-      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
+    it("should initialize fitness as invalid", () => {
       const genomeData = createTestGenomeData()
       const evaluationInput = createMockEvaluationInputGeneric()
 
@@ -264,7 +261,9 @@ describe("Genome Basic Tests", () => {
 
   describe("Static Methods", () => {
     it("should create random genome", async () => {
-      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
+      // Enable verbose GP mode so createRandom takes the fast, deterministic dummy path
+      const prevVerbose = CONFIG.evolution.GP.verbose
+      ;(CONFIG.evolution.GP as any).verbose = true
       const evaluationInput = createMockEvaluationInputGeneric()
 
       const genomeResult = await Genome.createRandom({
@@ -286,10 +285,12 @@ describe("Genome Basic Tests", () => {
       // In verbose GP mode, createRandom returns createDummyGenome() directly
       // which returns a Genome instance
       expect(genomeResult.data).toBeInstanceOf(Genome)
+
+      // restore previous verbose setting
+      ;(CONFIG.evolution.GP as any).verbose = prevVerbose
     })
 
-    it("should convert genome to workflow config", async () => {
-      const { Genome } = await vi.importActual<any>("@core/improvement/gp/Genome")
+    it("should convert genome to workflow config", () => {
       const genomeData = createTestGenomeData()
 
       const config = Genome.toWorkflowConfig(genomeData as any)
@@ -301,11 +302,9 @@ describe("Genome Basic Tests", () => {
   })
 
   describe("Instance Methods", () => {
-    let Genome: any
-    let genome: any
+    let genome: InstanceType<typeof Genome>
 
-    beforeEach(async () => {
-      ;({ Genome } = await vi.importActual<any>("@core/improvement/gp/Genome"))
+    beforeEach(() => {
       const genomeData = createTestGenomeData()
       const evaluationInput = createMockEvaluationInputGeneric()
       genome = new Genome(genomeData, evaluationInput, evolutionContext)

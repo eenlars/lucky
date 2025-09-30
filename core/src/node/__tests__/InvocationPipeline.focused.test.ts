@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 // the same state across calls (write -> read)
 vi.mock("@core/utils/persistence/memory/ContextStore", async () => {
   const actual = await vi.importActual<typeof import("@core/utils/persistence/memory/ContextStore")>(
-    "@core/utils/persistence/memory/ContextStore"
+    "@core/utils/persistence/memory/ContextStore",
   )
   const { InMemoryContextStore } = await import("@core/utils/persistence/memory/MemoryStore")
 
@@ -38,8 +38,8 @@ describe("InvocationPipeline Focused Integration", () => {
     const workflowInvocationId = `focused-test-${Date.now()}`
 
     // Import todo tools directly - these should work without circular deps
-    const todoWrite = await import("@runtime/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@runtime/code_tools/todo-manager/tool-todo-read")
+    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
+    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
 
     const toolContext = {
       workflowInvocationId,
@@ -64,7 +64,7 @@ describe("InvocationPipeline Focused Integration", () => {
           },
         ],
       },
-      toolContext
+      toolContext,
     )
 
     // Outer RS envelope is success
@@ -139,7 +139,7 @@ describe("InvocationPipeline Focused Integration", () => {
 
     // Simulate what InvocationPipeline tool selection logic should do
     const availableTools = ["todoWrite", "todoRead", "saveFileLegacy"]
-    const requiredTools = requirements.toolOrder.filter((tool) => availableTools.includes(tool))
+    const requiredTools = requirements.toolOrder.filter(tool => availableTools.includes(tool))
 
     expect(requiredTools).toEqual(["todoWrite", "todoRead"])
 
@@ -208,8 +208,8 @@ describe("InvocationPipeline Focused Integration", () => {
 
     // This simulates what the experimental multi-step loop would produce
     const toolExecutionOrder = mockDecisionFlow
-      .filter((step) => step.decision.type === "tool")
-      .map((step) => step.decision.toolName)
+      .filter(step => step.decision.type === "tool")
+      .map(step => step.decision.toolName)
 
     expect(toolExecutionOrder).toEqual(["todoWrite", "todoRead"])
     console.log("  ✅ Tool execution order maintained in multi-step loop")

@@ -9,9 +9,9 @@ interface ToolSequenceFlowProps {
 export default function ToolSequenceFlow({ data }: ToolSequenceFlowProps) {
   // Group by pattern type
   const patternGroups = {
-    immediate_success: data.toolSequenceData.filter((d) => d.pattern === "immediate_success"),
-    successful_chunking: data.toolSequenceData.filter((d) => d.pattern === "successful_chunking"),
-    repeated_failures: data.toolSequenceData.filter((d) => d.pattern === "repeated_failures"),
+    immediate_success: data.toolSequenceData.filter(d => d.pattern === "immediate_success"),
+    successful_chunking: data.toolSequenceData.filter(d => d.pattern === "successful_chunking"),
+    repeated_failures: data.toolSequenceData.filter(d => d.pattern === "repeated_failures"),
   }
 
   const getPatternDescription = (pattern: string) => {
@@ -46,7 +46,7 @@ export default function ToolSequenceFlow({ data }: ToolSequenceFlowProps) {
     if (!sample) return []
 
     // Simplify sequence for display
-    return sample.sequence.slice(0, 4).map((step) => {
+    return sample.sequence.slice(0, 4).map(step => {
       if (step.includes("fetch_objects")) {
         const match = step.match(/count":(\d+)/)
         const count = match ? match[1] : "?"
@@ -91,7 +91,7 @@ export default function ToolSequenceFlow({ data }: ToolSequenceFlowProps) {
 
               <div className="mt-3 text-xs text-gray-600">
                 <div>
-                  Success Rate: {Math.round((sequences.filter((s) => s.success).length / sequences.length) * 100)}%
+                  Success Rate: {Math.round((sequences.filter(s => s.success).length / sequences.length) * 100)}%
                 </div>
                 <div>
                   Most Common in:{" "}
@@ -101,8 +101,8 @@ export default function ToolSequenceFlow({ data }: ToolSequenceFlowProps) {
                         acc[s.condition] = (acc[s.condition] || 0) + 1
                         return acc
                       },
-                      {} as Record<string, number>
-                    )
+                      {} as Record<string, number>,
+                    ),
                   )
                     .map(([k, v]) => `${k}(${v})`)
                     .join(", ")}
@@ -118,10 +118,10 @@ export default function ToolSequenceFlow({ data }: ToolSequenceFlowProps) {
         <h3 className="text-lg font-semibold mb-4">Detailed Tool Call Sequences by Model</h3>
 
         <div className="space-y-6">
-          {data.models.map((model) => {
-            const modelSequences = data.toolSequenceData.filter((d) => d.model === model)
-            const vagueSequences = modelSequences.filter((d) => d.condition === "vague")
-            const clearSequences = modelSequences.filter((d) => d.condition === "clear")
+          {data.models.map(model => {
+            const modelSequences = data.toolSequenceData.filter(d => d.model === model)
+            const vagueSequences = modelSequences.filter(d => d.condition === "vague")
+            const clearSequences = modelSequences.filter(d => d.condition === "clear")
 
             return (
               <div key={model} className="border border-gray-200 rounded-lg p-4">

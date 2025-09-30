@@ -1,6 +1,6 @@
 /**
  * File saving utilities for core (standalone version).
- * Replaces @runtime/code_tools/file-saver/save
+ * Replaces @examples/code_tools/file-saver/save
  */
 
 import type { CodeToolResult } from "@core/tools/code/output.types"
@@ -76,7 +76,7 @@ export function saveInLoc<T = any>(filePath: string, data: T): void {
 
 export async function saveFile(
   filename: string,
-  data: string
+  data: string,
 ): Promise<CodeToolResult<{ success: boolean; data: string }>> {
   save(filename, data)
   return {
@@ -92,7 +92,7 @@ export async function saveFile(
 
 export async function saveFileInLoc(
   filePath: string,
-  data: string
+  data: string,
 ): Promise<CodeToolResult<{ success: boolean; data: string }>> {
   saveInLoc(filePath, data)
   return {

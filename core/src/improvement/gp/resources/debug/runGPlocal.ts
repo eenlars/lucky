@@ -29,7 +29,7 @@ const runEvolution = async () => {
   const mockEvaluator: EvolutionEvaluator = {
     evaluate: async (
       genome: Genome,
-      evolutionContext?: { runId: string; generationId: string }
+      evolutionContext?: { runId: string; generationId: string },
     ): Promise<RS<GenomeEvaluationResults>> => {
       lgg.log(`evaluating genome: ${genome.getWorkflowVersionId()}`)
 
@@ -66,7 +66,7 @@ const runEvolution = async () => {
     })
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Evolution timed out after 60 seconds")), 60000)
+      setTimeout(() => reject(new Error("Evolution timed out after 60 seconds")), 60000),
     )
 
     const { bestGenome, stats, totalCost } = (await Promise.race([evolutionPromise, timeoutPromise])) as {

@@ -117,14 +117,14 @@ export class InMemoryContextStore implements ContextStore {
   async list(scope: "workflow" | "node"): Promise<string[]> {
     const prefix = `${this.workflowInvocationId}:${scope}:`
     return Array.from(this.data.keys())
-      .filter((key) => key.startsWith(prefix))
-      .map((key) => key.substring(prefix.length))
+      .filter(key => key.startsWith(prefix))
+      .map(key => key.substring(prefix.length))
   }
 
   async listWithInfo(scope: "workflow" | "node"): Promise<ContextFileInfo[]> {
     const keys = await this.list(scope)
     return keys
-      .map((key) => {
+      .map(key => {
         const mapKey = this.makeKey(scope, key)
         const file = this.data.get(mapKey)
         if (!file) return null

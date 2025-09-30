@@ -12,7 +12,7 @@ export { createDefaultCoreConfig, mergeConfig } from "./defaults"
 /**
  * Global configuration instance
  */
-let globalConfig: CoreConfig = createDefaultCoreConfig()
+let globalConfig: CoreConfig | null = null
 
 /**
  * Initialize or update core configuration.
@@ -31,8 +31,12 @@ export function initCoreConfig(override?: Partial<CoreConfig>): void {
 /**
  * Get the current core configuration.
  * Returns the full configuration object.
+ * Initializes with defaults if not yet initialized.
  */
 export function getCoreConfig(): CoreConfig {
+  if (!globalConfig) {
+    globalConfig = createDefaultCoreConfig()
+  }
   return globalConfig
 }
 
@@ -40,14 +44,14 @@ export function getCoreConfig(): CoreConfig {
  * Get paths configuration
  */
 export function getCorePaths(): CorePathsConfig {
-  return globalConfig.paths
+  return getCoreConfig().paths
 }
 
 /**
  * Get models configuration
  */
 export function getCoreModels(): CoreModelsConfig {
-  return globalConfig.models
+  return getCoreConfig().models
 }
 
 /**
@@ -55,26 +59,37 @@ export function getCoreModels(): CoreModelsConfig {
  * This matches the signature of getDefaultModels() from runtime.
  */
 export function getDefaultModels() {
-  return globalConfig.models.defaults
+  return getCoreConfig().models.defaults
 }
 
 /**
  * Check if a tool is inactive
  */
 export function isToolInactive(toolName: string): boolean {
-  return globalConfig.tools.inactive.has(toolName)
+  return getCoreConfig().tools.inactive.has(toolName)
 }
 
 /**
  * Check if a model is inactive
  */
 export function isModelInactive(modelName: string): boolean {
-  return globalConfig.models.inactive.has(modelName)
+  return getCoreConfig().models.inactive.has(modelName)
 }
 
 /**
  * Get the default tools set
  */
 export function getDefaultTools(): Set<string> {
-  return globalConfig.tools.defaultTools
+  return getCoreConfig().tools.defaultTools
+}
+
+/**
+ * Check if logging is enabled for a component.
+ * Returns true only if the component override is explicitly set to true.
+ * Returns false for undefined or false values.
+ */
+export function isLoggingEnabled(component: string): boolean {
+  const config = getCoreConfig()
+  const override = config.logging.override[component as keyof typeof config.logging.override]
+  return override === true
 }

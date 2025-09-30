@@ -100,8 +100,8 @@ export function WorkflowEvolutionVisualization({ graph, visualization, runInfo }
     let success = 0
     let failure = 0
 
-    effectiveInvocationsByGeneration.forEach((gen) => {
-      gen.invocations.forEach((inv) => {
+    effectiveInvocationsByGeneration.forEach(gen => {
+      gen.invocations.forEach(inv => {
         if (inv.accuracy !== undefined && inv.accuracy > 0) {
           success++
         } else {

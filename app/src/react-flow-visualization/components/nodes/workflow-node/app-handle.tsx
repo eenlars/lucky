@@ -74,11 +74,11 @@ export function AppHandle({
     handleId: id ?? undefined,
   })
 
-  const isConnectionInProgress = useConnection((c) => c.inProgress)
+  const isConnectionInProgress = useConnection(c => c.inProgress)
 
   const { isOpen, toggleDropdown } = useDropdown()
   const { draggedNodes, addNodeInBetween, connectionSites, isPotentialConnection } = useAppStore(
-    useShallow(selector(nodeId, type, id))
+    useShallow(selector(nodeId, type, id)),
   )
 
   // We get the actual position of the node
@@ -103,7 +103,7 @@ export function AppHandle({
 
       toggleDropdown()
     },
-    [nodeId, id, type, nodePosition, x, y, toggleDropdown, addNodeInBetween]
+    [nodeId, id, type, nodePosition, x, y, toggleDropdown, addNodeInBetween],
   )
 
   const displayAddButton = connections.length === 0 && !isConnectionInProgress && !draggedNodes.has(nodeId)

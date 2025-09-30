@@ -1,5 +1,5 @@
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"
 vi.mock("../../react-flow-visualization/components/nodes", () => ({
@@ -10,7 +10,7 @@ vi.mock("../../react-flow-visualization/components/nodes", () => ({
     position: args.position ?? { x: 0, y: 0 },
   }),
 }))
-vi.mock("@runtime/settings/constants.client", () => ({
+vi.mock("@examples/settings/constants.client", () => ({
   MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
@@ -43,7 +43,7 @@ describe("workflow-data normalization", () => {
     } satisfies WorkflowConfig
     const parsed = toWorkflowConfig(canonical)!
     const { edges } = initialSetupConfig(parsed)
-    const pairs = edges.map((e) => `${e.source}->${e.target}`)
+    const pairs = edges.map(e => `${e.source}->${e.target}`)
     expect(pairs).toContain("start->n1")
     expect(pairs).toContain("n1->n2")
   })
@@ -66,7 +66,7 @@ describe("workflow-data normalization", () => {
     } satisfies WorkflowConfig
     const parsed = toWorkflowConfig(canonical)!
     const { edges } = initialSetupConfig(parsed)
-    const pairs = edges.map((e) => `${e.source}->${e.target}`)
+    const pairs = edges.map(e => `${e.source}->${e.target}`)
     expect(pairs).toContain("start->x")
     expect(pairs).toContain("x->end")
   })

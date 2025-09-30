@@ -18,7 +18,7 @@ const nod_333 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return "555"
@@ -30,7 +30,7 @@ const mod_888 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return input === "555" ? "B" : "F"
@@ -42,7 +42,7 @@ const rod_999 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return input === "B" ? "9" : "F"
@@ -57,7 +57,7 @@ const rod_333 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return "F"
@@ -69,7 +69,7 @@ const mod_333 = tool({
   inputSchema: zodSchema(
     z.object({
       input: z.string(),
-    })
+    }),
   ),
   execute: async ({ input }: { input: string }) => {
     return "F"
@@ -119,9 +119,9 @@ describe("generateText with createPrepareStepStrategy", () => {
     expect(resultV2?.agentSteps).toBeDefined()
     expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "nod_333")
-    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "mod_888")
-    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "rod_999")
+    const tool1Result = resultV2?.agentSteps.find(r => r.name === "nod_333")
+    const tool2Result = resultV2?.agentSteps.find(r => r.name === "mod_888")
+    const tool3Result = resultV2?.agentSteps.find(r => r.name === "rod_999")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")
@@ -190,9 +190,9 @@ Now, let me execute the tools as requested.`,
     expect(resultV2?.agentSteps).toBeDefined()
     expect(resultV2?.agentSteps.length).toBeGreaterThan(0)
 
-    const tool1Result = resultV2?.agentSteps.find((r) => r.name === "nod_333")
-    const tool2Result = resultV2?.agentSteps.find((r) => r.name === "mod_888")
-    const tool3Result = resultV2?.agentSteps.find((r) => r.name === "rod_999")
+    const tool1Result = resultV2?.agentSteps.find(r => r.name === "nod_333")
+    const tool2Result = resultV2?.agentSteps.find(r => r.name === "mod_888")
+    const tool3Result = resultV2?.agentSteps.find(r => r.name === "rod_999")
 
     expect(tool1Result?.return).toEqual("555")
     expect(tool2Result?.return).toEqual("B")

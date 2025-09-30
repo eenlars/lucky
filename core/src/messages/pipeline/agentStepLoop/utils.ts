@@ -30,7 +30,7 @@ export const toolUsageToString = (
   truncate = 100,
   options: ToolUsageToStringOptions = {
     includeArgs: false,
-  }
+  },
 ): string => {
   if (!usage) {
     lgg.error("toolUsageToString: usage is null/undefined", usage)
@@ -38,7 +38,7 @@ export const toolUsageToString = (
   }
 
   return usage
-    .map((u) => {
+    .map(u => {
       if (!u) return ""
       const data = u.return && typeof u.return === "object" && "data" in u.return ? u.return.data : u.return
       switch (u.type) {

@@ -17,7 +17,7 @@ export function explainTools(tools: ToolSet): string {
 
   const toolKeys = Object.keys(tools) as (keyof ToolSet)[]
   const fullToolListWithArgs = toolKeys
-    .map((key) => {
+    .map(key => {
       const tool = tools[key]
       const params = tool.inputSchema
 

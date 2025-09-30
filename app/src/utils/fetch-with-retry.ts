@@ -34,7 +34,7 @@ export async function fetchWithRetry(url: string, options?: RequestInit, maxAtte
 
     // Wait before retrying (except on last attempt)
     if (attempt < maxAttempts - 1) {
-      await new Promise((resolve) => setTimeout(resolve, 100 * Math.pow(2, attempt)))
+      await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, attempt)))
     }
   }
 

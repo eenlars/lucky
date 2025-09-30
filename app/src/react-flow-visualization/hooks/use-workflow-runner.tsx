@@ -24,13 +24,13 @@ export function useWorkflowRunner() {
     exportToJSON: _exportToJSON,
     currentWorkflowId: _currentWorkflowId,
   } = useAppStore(
-    useShallow((s) => ({
+    useShallow(s => ({
       getNodes: s.getNodes,
       setNodes: s.setNodes,
       getEdges: s.getEdges,
       exportToJSON: s.exportToJSON,
       currentWorkflowId: s.currentWorkflowId,
-    }))
+    })),
   )
 
   const stopWorkflow = useCallback(() => {
@@ -42,7 +42,7 @@ export function useWorkflowRunner() {
       getNodes().map((node: AppNode) => ({
         ...node,
         data: { ...node.data, status: "initial" },
-      }))
+      })),
     )
   }, [getNodes, setNodes])
 
@@ -68,7 +68,7 @@ export function useWorkflowRunner() {
       setPromptDialogOpen(false)
       isRunning.current = false
     },
-    [getNodes, getEdges]
+    [getNodes, getEdges],
   )
 
   return {
@@ -94,12 +94,12 @@ function _collectNodesToProcess(_nodes: AppNode[], _edges: AppEdge[], _startNode
     if (_visited.has(_nodeId)) return
     _visited.add(_nodeId)
 
-    const _node = _nodes.find((n) => n.id === _nodeId)
+    const _node = _nodes.find(n => n.id === _nodeId)
     if (!_node) return
 
     _nodesToProcess.push(_node)
 
-    const _outgoingEdges = _edges.filter((e) => e.source === _nodeId)
+    const _outgoingEdges = _edges.filter(e => e.source === _nodeId)
     for (const _edge of _outgoingEdges) {
       _visit(_edge.target)
     }

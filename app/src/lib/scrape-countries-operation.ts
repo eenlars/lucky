@@ -19,7 +19,7 @@ const DEFAULT_USER_AGENT =
  */
 export async function extractCountriesOperation(
   url: string,
-  options: ScrapingOptions = {}
+  options: ScrapingOptions = {},
 ): Promise<CountriesOperationResult> {
   try {
     const { userAgent = DEFAULT_USER_AGENT, timeout = 10000 } = options

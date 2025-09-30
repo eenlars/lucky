@@ -12,7 +12,7 @@ import { getDefaultModels } from "@core/core-config/compat"
  */
 export async function repairWorkflow(
   config: WorkflowConfig,
-  verificationResult: VerificationResult
+  verificationResult: VerificationResult,
 ): Promise<
   RS<{
     nodes: WorkflowNodeConfig[]
@@ -32,7 +32,7 @@ export async function repairWorkflow(
   }
 
   // build enhancement prompt
-  const verificationSummary = [...verificationResult.errors.map((error) => `ERROR: ${error}`)].join("\n")
+  const verificationSummary = [...verificationResult.errors.map(error => `ERROR: ${error}`)].join("\n")
 
   const { data, success, error, usdCost } = await sendAI({
     messages: WorkflowRepairPrompts.repairWorkflowPrompt(config, verificationSummary),

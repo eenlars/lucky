@@ -18,7 +18,7 @@ vi.mock("@core/utils/env.mjs", () => ({
 }))
 
 // Mock runtime constants - comprehensive CONFIG
-vi.mock("@runtime/settings/constants", () => ({
+vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     coordinationType: "sequential" as const,
     newNodeProbability: 0.7,

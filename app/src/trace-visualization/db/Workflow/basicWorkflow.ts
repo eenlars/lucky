@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import type { Tables } from "@lucky/shared"
 import { cache } from "react"
 
@@ -19,7 +19,7 @@ export const basicWorkflow = cache(async (workflowInvocationId: string): Promise
           *,
           Workflow!WorkflowVersion_workflow_id_fkey ( * )
         )
-      `
+      `,
     )
     .eq("wf_invocation_id", workflowInvocationId)
     .limit(1)

@@ -122,9 +122,9 @@ if [ "$REMAINING_RUNTIME" -eq 0 ] && [ "$REMAINING_SHARED" -eq 0 ]; then
   echo "✅ All imports successfully migrated!"
   echo ""
   echo "Next steps:"
-  echo "  1. Run: bun -C core run tsc"
+  echo "  1. Run: cd core && bun run tsc"
   echo "  2. Fix any type errors"
-  echo "  3. Run: bun -C core run test:unit"
+  echo "  3. Run: cd core && bun run test:unit"
   echo "  4. Switch compat.ts to use local config"
 else
   echo "⚠️  Some imports still need manual attention"

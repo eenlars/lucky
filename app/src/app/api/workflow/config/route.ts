@@ -3,11 +3,15 @@ import { loadLiveWorkflowConfig, saveLiveWorkflowConfig } from "@core/utils/pers
 import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 
 export async function GET(req: Request) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  // Ensure core is initialized
+  ensureCoreInit()
 
   try {
     const { searchParams } = new URL(req.url)
@@ -58,6 +62,9 @@ export async function POST(req: Request) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  // Ensure core is initialized
+  ensureCoreInit()
 
   try {
     const body = await req.json()

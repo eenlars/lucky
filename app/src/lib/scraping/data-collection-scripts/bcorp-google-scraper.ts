@@ -15,10 +15,10 @@ import path from "path"
 
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { saveInLoc } from "@runtime/code_tools/file-saver/save"
-import { searchGoogleMaps } from "@runtime/code_tools/googlescraper/main"
-import type { GoogleMapsBusiness } from "@runtime/code_tools/googlescraper/main/types/GoogleMapsBusiness"
-import { PATHS } from "@runtime/settings/constants"
+import { saveInLoc } from "@examples/code_tools/file-saver/save"
+import { searchGoogleMaps } from "@examples/code_tools/googlescraper/main"
+import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import { PATHS } from "@examples/settings/constants"
 import dayjs from "dayjs"
 import { CountryInEurope, deduplicateBusinesses } from "./utils"
 
@@ -238,8 +238,8 @@ function saveAllData(all: AllDataFile) {
 
   all.metadata.lastUpdated = nowISO()
   all.metadata.totalBusinesses = all.businesses.length
-  all.metadata.totalCountries = new Set(all.businesses.map((b) => b.country.code)).size
-  all.metadata.totalBCorps = new Set(all.businesses.map((b) => b.bcorp.company_name)).size
+  all.metadata.totalCountries = new Set(all.businesses.map(b => b.country.code)).size
+  all.metadata.totalBCorps = new Set(all.businesses.map(b => b.bcorp.company_name)).size
 
   saveSafe(ALL_DATA_FILE, all)
   lgg.log(`💾 all-data updated (${all.businesses?.length} stores)`)
@@ -248,8 +248,8 @@ function saveAllData(all: AllDataFile) {
 /* ──────────────────────────────  core helpers  ──────────────────────────── */
 
 function companyOperatesInCountry(company: CompanyCountryData, country: CountryInEurope) {
-  const variants = [country.name.toLowerCase(), ...(country.aliases ?? []).map((a) => a.toLowerCase())]
-  return company.countries.some((c) => variants.some((v) => c.toLowerCase().includes(v)))
+  const variants = [country.name.toLowerCase(), ...(country.aliases ?? []).map(a => a.toLowerCase())]
+  return company.countries.some(c => variants.some(v => c.toLowerCase().includes(v)))
 }
 
 /* ───────────────────────── single-company processing  ───────────────────── */
@@ -258,7 +258,7 @@ async function handleCompany(
   company: CompanyCountryData,
   country: CountryInEurope,
   processId: string,
-  batchNo: number
+  batchNo: number,
 ): Promise<{ result: BusinessResult; stores?: BusinessWithMetadata[] }> {
   lgg.log(`🔍 ${country.code} – ${company.company_name}`)
 
@@ -297,7 +297,7 @@ async function handleCompany(
   }
 
   // attach metadata before returning stores
-  const storesWithMeta = uniq.map<BusinessWithMetadata>((b) => ({
+  const storesWithMeta = uniq.map<BusinessWithMetadata>(b => ({
     ...b,
     bcorp: {
       company_name: company.company_name,
@@ -332,7 +332,7 @@ async function processBatch(companies: CompanyCountryData[], progress: Processin
     lgg.log(`🌀  ${progress.country.code} batch ${b + 1}/${batches.length}`)
 
     // run with parallel limit
-    const results = await parallelLimit(batch, CONFIG.parallelLimit, async (company) => {
+    const results = await parallelLimit(batch, CONFIG.parallelLimit, async company => {
       // wrap each company in its own timeout
       try {
         return await Promise.race([
@@ -356,8 +356,8 @@ async function processBatch(companies: CompanyCountryData[], progress: Processin
                     timestamp: nowISO(),
                   },
                 }),
-              CONFIG.timeoutMs
-            )
+              CONFIG.timeoutMs,
+            ),
           ),
         ])
       } catch (e) {
@@ -404,7 +404,7 @@ async function processBatch(companies: CompanyCountryData[], progress: Processin
 
     saveProgress(progress)
     mem(`${progress.country.code}-batch${b + 1}`)
-    await new Promise((r) => setTimeout(r, 1_000)) // short breather
+    await new Promise(r => setTimeout(r, 1_000)) // short breather
   }
 }
 
@@ -413,7 +413,7 @@ async function processBatch(companies: CompanyCountryData[], progress: Processin
 async function processCountry(country: CountryInEurope, allCompanies: CompanyCountryData[], allData: AllDataFile) {
   lgg.log(`\n🌍  ${country.name} (${country.code})`)
 
-  const companies = allCompanies.filter((c) => companyOperatesInCountry(c, country))
+  const companies = allCompanies.filter(c => companyOperatesInCountry(c, country))
 
   if (!companies.length) {
     lgg.log("   ∅  no relevant companies – writing empty file.")
@@ -424,7 +424,7 @@ async function processCountry(country: CountryInEurope, allCompanies: CompanyCou
   const progress = loadProgress(companies.length, country)
 
   /* prune already done */
-  const todo = companies.filter((c) => !progress.processedCompanies.includes(c.company_name))
+  const todo = companies.filter(c => !progress.processedCompanies.includes(c.company_name))
   if (!todo.length && progress.results.length) {
     lgg.log("   ✔  already complete – emitting cached results.")
     saveResults(progress.results, country)
@@ -480,7 +480,7 @@ async function processCountry(country: CountryInEurope, allCompanies: CompanyCou
   mem("final")
   lgg.log("\n✅  bcorp-hunter completed successfully.")
   process.exit(0)
-})().catch((e) => {
+})().catch(e => {
   lgg.error("Fatal top-level error:", e)
   process.exit(1)
 })

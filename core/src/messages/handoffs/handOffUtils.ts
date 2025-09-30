@@ -4,7 +4,7 @@ import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { JSONN } from "@core/utils/json"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import { truncate } from "lodash"
 import z from "zod"
@@ -97,7 +97,7 @@ export function buildResultHandoff({
     }
   }
 
-  lgg.onlyIf(CONFIG.logging.override.Messaging, `handoff: ${JSONN.show(data.reason)}`)
+  lgg.onlyIf(isLoggingEnabled("Messaging"), `handoff: ${JSONN.show(data.reason)}`)
 
   // End workflow on “end”
   if (data.handoff === "end") {

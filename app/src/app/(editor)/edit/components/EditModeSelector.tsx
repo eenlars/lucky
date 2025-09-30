@@ -37,7 +37,7 @@ function GraphRunWithPromptButton({ exportToJSON }: { exportToJSON: () => string
   const [logs, setLogs] = useState<string[]>([])
 
   const addLog = (message: string) => {
-    setLogs((prev) => [...prev, message])
+    setLogs(prev => [...prev, message])
   }
 
   const handleExecuteWorkflow = async (prompt: string) => {
@@ -46,7 +46,7 @@ function GraphRunWithPromptButton({ exportToJSON }: { exportToJSON: () => string
 
     try {
       addLog("Starting workflow execution...")
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await new Promise(resolve => setTimeout(resolve, 300))
 
       addLog("Exporting workflow configuration...")
       const json = exportToJSON()
@@ -58,11 +58,11 @@ function GraphRunWithPromptButton({ exportToJSON }: { exportToJSON: () => string
         return
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 200))
       addLog("Loading workflow configuration...")
       const cfg = await loadFromDSLClient(cfgMaybe)
 
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 200))
       addLog("Sending request to workflow API...")
       const response = await fetch("/api/workflow/invoke", {
         method: "POST",
@@ -145,7 +145,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     syncJSONToGraph,
     organizeLayout,
   } = useAppStore(
-    useShallow((state) => ({
+    useShallow(state => ({
       nodes: state.nodes,
       edges: state.edges,
       workflowJSON: state.workflowJSON,
@@ -154,7 +154,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       updateWorkflowJSON: state.updateWorkflowJSON,
       syncJSONToGraph: state.syncJSONToGraph,
       organizeLayout: state.organizeLayout,
-    }))
+    })),
   )
 
   // Eval mode state (shared store)
@@ -173,7 +173,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     runAll,
     cancel: _cancel,
   } = useRunConfigStore(
-    useShallow((s) => ({
+    useShallow(s => ({
       cases: s.cases,
       busyIds: s.busyIds,
       resultsById: s.resultsById,
@@ -187,7 +187,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       runOne: s.runOne,
       runAll: s.runAll,
       cancel: s.cancel,
-    }))
+    })),
   )
 
   const [datasetLoading, setDatasetLoading] = useState(false)
@@ -196,7 +196,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     async (payload: { input: string; expected: string }) => {
       addCase({ input: payload.input, expected: payload.expected })
     },
-    [addCase]
+    [addCase],
   )
 
   const handleDatasetSelect = useCallback(
@@ -217,7 +217,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
         setDatasetLoading(false)
       }
     },
-    [loadDataset]
+    [loadDataset],
   )
 
   // Note: runner context is consumed inside a child component to avoid
@@ -228,7 +228,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     (newContent: string) => {
       updateWorkflowJSON(newContent)
     },
-    [updateWorkflowJSON]
+    [updateWorkflowJSON],
   )
 
   // Auto-organize once on initial mount for /edit (no workflowVersion)
@@ -378,7 +378,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                   className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none placeholder:text-gray-400"
                   placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
                   value={goal}
-                  onChange={(e) => setGoal(e.target.value)}
+                  onChange={e => setGoal(e.target.value)}
                   data-testid="evaluation-goal-input"
                 />
 
@@ -422,7 +422,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
             <div className="bg-white rounded border border-gray-200">
               <WorkflowIOTable
                 ios={cases}
-                onRun={async (row) => {
+                onRun={async row => {
                   const json = exportToJSON()
                   const parsed = JSON.parse(json)
                   const cfgMaybe = toWorkflowConfig(parsed)

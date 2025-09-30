@@ -15,7 +15,7 @@ const DEFAULT_OPENING = {
 function transformPartouData(input) {
   const locations = Array.isArray(input) ? input : [input]
 
-  return locations.map((item) => {
+  return locations.map(item => {
     // Build coordinates array if present
     const coords =
       item.geoLocation && item.geoLocation.longitude && item.geoLocation.latitude
@@ -23,8 +23,8 @@ function transformPartouData(input) {
         : null
 
     // Collect all venue images into one array
-    const ownerImgs = (item.venues || []).flatMap((v) =>
-      [v.headerPhoto, v.photoDesktopFirst, v.photoDesktopLast, v.photoMobileFirst, v.photoMobileLast].filter(Boolean)
+    const ownerImgs = (item.venues || []).flatMap(v =>
+      [v.headerPhoto, v.photoDesktopFirst, v.photoDesktopLast, v.photoMobileFirst, v.photoMobileLast].filter(Boolean),
     )
 
     return {

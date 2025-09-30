@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     // Extract logo
     let logo = null
     const logoElement = $(
-      "html > body > div:nth-child(1) > main > div > div:nth-child(1) > div:nth-child(2) > div > img"
+      "html > body > div:nth-child(1) > main > div > div:nth-child(1) > div:nth-child(2) > div > img",
     )
     if (logoElement.length > 0) {
       const logoSrc = logoElement.attr("src")
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     // Extract banner
     let banner = null
     const bannerElement = $(
-      "html > body > div:nth-child(1) > main > div > div:nth-child(1) > div:nth-child(1) > div > img"
+      "html > body > div:nth-child(1) > main > div > div:nth-child(1) > div:nth-child(1) > div > img",
     )
     if (bannerElement.length > 0) {
       banner = bannerElement.attr("src")

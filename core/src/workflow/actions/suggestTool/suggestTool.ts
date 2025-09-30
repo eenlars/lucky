@@ -8,7 +8,7 @@ import { getDefaultModels } from "@core/core-config/compat"
  */
 export async function suggestNewTool(
   workflow: Workflow,
-  bottleneck: string
+  bottleneck: string,
 ): Promise<{ newTool: string | null; cost: number }> {
   const {
     data: newTool,

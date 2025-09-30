@@ -61,7 +61,7 @@ function WorkflowRow({
             "inline-flex items-center rounded-lg px-2.5 py-1 text-[12px]",
             hasActiveVersion
               ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-              : "bg-muted text-muted-foreground"
+              : "bg-muted text-muted-foreground",
           )}
         >
           {hasActiveVersion ? "Active" : "Draft"}
@@ -78,7 +78,7 @@ function WorkflowRow({
             "focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2",
             hasActiveVersion && !isRunning
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
+              : "bg-muted text-muted-foreground cursor-not-allowed",
           )}
           title={!hasActiveVersion ? "No active version" : undefined}
         >
@@ -137,11 +137,11 @@ export default function WorkflowsPage() {
   const handleRun = async (workflow: any) => {
     if (!workflow.activeVersion) return
 
-    setRunningWorkflows((prev) => new Set(prev).add(workflow.wf_id))
+    setRunningWorkflows(prev => new Set(prev).add(workflow.wf_id))
 
     // TODO: Implement actual workflow execution
     setTimeout(() => {
-      setRunningWorkflows((prev) => {
+      setRunningWorkflows(prev => {
         const next = new Set(prev)
         next.delete(workflow.wf_id)
         return next

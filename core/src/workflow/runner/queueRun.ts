@@ -68,7 +68,7 @@ import type { QueueRunParams, QueueRunResult } from "./types"
  */
 
 const coordinationType = CONFIG.coordinationType
-const verbose = CONFIG.logging.override.Memory ?? false
+const verbose = false // Memory logging removed from config
 
 export async function queueRun({
   workflow,
@@ -89,7 +89,7 @@ export async function queueRun({
   lgg.onlyIf(verbose, `[queueRun] Entry node found: ${entryNodeId}`)
 
   const nodes = workflow.getNodes()
-  const nodeMap = new Map(nodes.map((node) => [node.nodeId, node]))
+  const nodeMap = new Map(nodes.map(node => [node.nodeId, node]))
   const workflowVersionId = workflow.getWorkflowVersionId()
 
   lgg.onlyIf(verbose, `[queueRun] Workflow has ${nodes.length} nodes`)
@@ -173,7 +173,7 @@ export async function queueRun({
     lgg.onlyIf(verbose, `[queueRun] Found target node ${currentMessage.toNodeId}, invoking`)
 
     // check if this node is waiting for multiple messages (fan-in pattern)
-    const nodeConfig = workflow.getConfig().nodes.find((n) => n.nodeId === currentMessage.toNodeId)
+    const nodeConfig = workflow.getConfig().nodes.find(n => n.nodeId === currentMessage.toNodeId)
     const waitingFor = nodeConfig?.waitingFor || nodeConfig?.waitFor
 
     if (waitingFor && waitingFor.length > 0) {
@@ -186,8 +186,8 @@ export async function queueRun({
 
       // check if all required messages are received
       const receivedMessages = waitingMessages.get(waitingKey)!
-      const receivedFromNodes = new Set(receivedMessages.map((m) => m.fromNodeId))
-      const allReceived = waitingFor.every((nodeId) => receivedFromNodes.has(nodeId))
+      const receivedFromNodes = new Set(receivedMessages.map(m => m.fromNodeId))
+      const allReceived = waitingFor.every(nodeId => receivedFromNodes.has(nodeId))
 
       if (!allReceived) {
         // still waiting for more messages, skip this node for now
@@ -203,7 +203,7 @@ export async function queueRun({
             text: "Just aggregating messages.",
           },
         ],
-        messages: receivedMessages.map((msg) => ({
+        messages: receivedMessages.map(msg => ({
           fromNodeId: msg.fromNodeId,
           payload: msg.payload,
         })),
@@ -236,7 +236,7 @@ export async function queueRun({
       if (fromNodeRole === "worker" && toNodeRole === "worker") {
         throw new Error(
           `Invalid hierarchical flow: Worker '${currentMessage.fromNodeId}' cannot send message to worker '${currentMessage.toNodeId}'. ` +
-            `Workers can only communicate with the orchestrator or 'end'.`
+            `Workers can only communicate with the orchestrator or 'end'.`,
         )
       }
 
@@ -248,7 +248,7 @@ export async function queueRun({
       ) {
         throw new Error(
           `Invalid hierarchical flow: Only the orchestrator can send delegation messages. ` +
-            `Node '${currentMessage.fromNodeId}' (role: ${fromNodeRole}) attempted to delegate.`
+            `Node '${currentMessage.fromNodeId}' (role: ${fromNodeRole}) attempted to delegate.`,
         )
       }
     }
@@ -277,7 +277,7 @@ export async function queueRun({
 
     lgg.onlyIf(
       verbose,
-      `[queueRun] Node invocation completed for ${targetNode.nodeId}, nodeInvocationId: ${nodeInvocationId}`
+      `[queueRun] Node invocation completed for ${targetNode.nodeId}, nodeInvocationId: ${nodeInvocationId}`,
     )
 
     if (error) {
@@ -306,13 +306,13 @@ export async function queueRun({
 
     lgg.onlyIf(
       verbose,
-      `[queueRun] Node ${targetNode.nodeId} completed, nextIds: [${nextIds.join(", ")}], isTerminal: ${isTerminalNode}`
+      `[queueRun] Node ${targetNode.nodeId} completed, nextIds: [${nextIds.join(", ")}], isTerminal: ${isTerminalNode}`,
     )
 
     // Save memory updates if provided
     if (updatedMemory) {
       // Update the node's memory in the workflow config
-      const nodeConfig = workflow.getConfig().nodes.find((n) => n.nodeId === targetNode.nodeId)
+      const nodeConfig = workflow.getConfig().nodes.find(n => n.nodeId === targetNode.nodeId)
       if (nodeConfig) {
         nodeConfig.memory = updatedMemory
       }
@@ -320,7 +320,7 @@ export async function queueRun({
       // If this is a terminal node, we should persist the memory update
       if (isTerminalNode && verbose) {
         lgg.log(
-          chalk.green(`[queueRun] Terminal node ${targetNode.nodeId} updated memory: ${JSON.stringify(updatedMemory)}`)
+          chalk.green(`[queueRun] Terminal node ${targetNode.nodeId} updated memory: ${JSON.stringify(updatedMemory)}`),
         )
       }
     }
@@ -402,7 +402,7 @@ export async function queueRun({
 
   // persist memory updates to database if any nodes updated their memory
   // this enables learning across workflow invocations
-  const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+  const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
   if (hasMemoryUpdates) {
     try {
       await updateWorkflowMemory({

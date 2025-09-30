@@ -12,16 +12,16 @@ export const everyNodeIsConnectedToStartNode = async (config: WorkflowConfig): P
     if (visited.has(nodeId)) continue
     visited.add(nodeId)
 
-    const node = config.nodes.find((n) => n.nodeId === nodeId)
+    const node = config.nodes.find(n => n.nodeId === nodeId)
     if (!node) continue
 
-    node.handOffs.filter((handOff) => handOff !== "end").forEach((handOff) => queue.push(handOff))
+    node.handOffs.filter(handOff => handOff !== "end").forEach(handOff => queue.push(handOff))
   }
 
   // Find unreachable nodes
   const unreachableNodes = config.nodes
-    .filter((node) => !visited.has(node.nodeId))
-    .map((node) => `Node '${node.nodeId}' is not reachable from start node '${config.entryNodeId}'`)
+    .filter(node => !visited.has(node.nodeId))
+    .map(node => `Node '${node.nodeId}' is not reachable from start node '${config.entryNodeId}'`)
 
   return unreachableNodes
 }
@@ -38,14 +38,14 @@ export const startNodeIsConnectedToEndNode = async (config: WorkflowConfig): Pro
     if (visited.has(nodeId)) continue
     visited.add(nodeId)
 
-    const node = config.nodes.find((n) => n.nodeId === nodeId)
+    const node = config.nodes.find(n => n.nodeId === nodeId)
     if (!node) continue
 
     if (node.handOffs.includes("end")) {
       return [] // Found path to end
     }
 
-    node.handOffs.filter((handOff) => handOff !== "end").forEach((handOff) => queue.push(handOff))
+    node.handOffs.filter(handOff => handOff !== "end").forEach(handOff => queue.push(handOff))
   }
 
   return [
@@ -56,7 +56,7 @@ export const startNodeIsConnectedToEndNode = async (config: WorkflowConfig): Pro
 // verify that all handoffs point to nodes that exist in the workflow
 export const allHandoffNodesExist = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
-  const nodeIds = new Set(config.nodes.map((node) => node.nodeId))
+  const nodeIds = new Set(config.nodes.map(node => node.nodeId))
 
   for (const node of config.nodes) {
     for (const handOff of node.handOffs) {

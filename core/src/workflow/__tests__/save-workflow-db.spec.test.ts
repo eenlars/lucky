@@ -15,7 +15,7 @@ describe("Workflow DB integration - single node persistence", () => {
       import("@core/utils/persistence/workflow/registerWorkflow"),
       import("@core/utils/persistence/node/saveNode"),
       import("@core/utils/clients/supabase/client"),
-      import("@runtime/settings/models"),
+      import("@core/core-config"),
     ])
 
     // Unique identifiers per test run to avoid collisions

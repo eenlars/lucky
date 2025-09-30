@@ -81,7 +81,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
     const callArgsByNode: Record<string, InvokeArgs[]> = {}
 
     // Stub WorkFlowNode.create to avoid real tool init/LLM calls; preserve handoffs from config
-    vi.spyOn(WorkFlowNode, "create").mockImplementation(async (config) => {
+    vi.spyOn(WorkFlowNode, "create").mockImplementation(async config => {
       const nodeId = config.nodeId
       const mkReply = (text: string) => ({
         kind: "result" as const,
@@ -108,7 +108,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
           }
 
           // Follow handOffs from config
-          const nodeCfg = recipeAggregationConfig.nodes.find((n) => n.nodeId === nodeId)!
+          const nodeCfg = recipeAggregationConfig.nodes.find(n => n.nodeId === nodeId)!
           const nextIds = nodeCfg.handOffs
 
           // Persist a NodeInvocation record to DB to match real pipeline behavior
@@ -185,7 +185,7 @@ describe("Aggregate waitFor integration (recipe config)", () => {
     const payload = incoming.payload as AggregatedPayload
     expect(payload.kind).toBe("aggregated")
     expect(payload.messages.length).toBe(3)
-    const fromIds = payload.messages.map((m) => m.fromNodeId).sort()
+    const fromIds = payload.messages.map(m => m.fromNodeId).sort()
     expect(fromIds).toEqual(["fetch-recipe-1", "fetch-recipe-2", "fetch-recipe-3"].sort())
 
     // Sanity: upstream nodes each invoked once; start invoked once

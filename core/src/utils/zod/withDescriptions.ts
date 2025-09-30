@@ -3,7 +3,7 @@ import { z, type ZodRawShape, type ZodTypeAny } from "zod"
 // helper to give each property a .describe(…) from a map
 export function withDescriptions<S extends ZodRawShape, D extends { [K in keyof S]: string }>(
   shape: S,
-  descs: D
+  descs: D,
 ): z.ZodObject<S> {
   const shaped: S = {} as S
   for (const key in shape) {

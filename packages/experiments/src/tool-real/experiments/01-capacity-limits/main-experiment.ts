@@ -11,7 +11,7 @@
  */
 import { lgg } from "@core/utils/logging/Logger"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
-import { experimentalModels } from "@runtime/settings/models"
+import { experimentalModels } from "@examples/settings/models"
 import { mkdirSync, writeFileSync } from "fs"
 import { join, resolve } from "path"
 import { fileURLToPath } from "url"

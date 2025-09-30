@@ -43,7 +43,7 @@ const spending = SpendingTracker.getInstance()
 // TODO: add schema-aware retry strategies
 // TODO: create structured output debugging tools
 export async function execStructured<S extends ZodTypeAny>(
-  req: StructuredRequest<S>
+  req: StructuredRequest<S>,
 ): Promise<TResponse<import("zod").infer<S>>> {
   const { messages, model: modelIn, retries = 2, schema, opts = {} } = req
 
@@ -70,7 +70,7 @@ export async function execStructured<S extends ZodTypeAny>(
         {
           milliseconds: 120_000,
           message: new Error(`Overall timeout (120 s) for ${model} – mode:structured`),
-        }
+        },
       )
     } catch (err) {
       // TODO: add timeout recovery strategies

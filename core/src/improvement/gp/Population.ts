@@ -33,7 +33,7 @@ import type { RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 import { RunService } from "./RunService"
@@ -47,11 +47,11 @@ export class Population {
   private evaluationInput: EvaluationInput | null = null
   private problemAnalysis: string = ""
   private _baseWorkflow: WorkflowConfig | undefined = undefined
-  static verbose = CONFIG.logging.override.GP
+  static verbose = isLoggingEnabled("GP")
 
   constructor(
     private config: EvolutionSettings,
-    runService: RunService
+    runService: RunService,
   ) {
     lgg.info(`[Population] Configuration validated successfully:`)
     lgg.info(`Population: ${config.populationSize}, Generations: ${config.generations}`)
@@ -62,7 +62,7 @@ export class Population {
   async initialize(
     evaluationInput: EvaluationInput,
     _baseWorkflow: WorkflowConfig | undefined,
-    problemAnalysis: string
+    problemAnalysis: string,
   ): Promise<void> {
     this.genomes = []
 
@@ -163,7 +163,7 @@ export class Population {
   getValidGenomes(): Genome[] {
     if (isNir(this.genomes)) throw new Error("Population is empty, could not get valid genomes.")
 
-    return this.genomes.filter((genome) => genome.isEvaluated)
+    return this.genomes.filter(genome => genome.isEvaluated)
   }
 
   /**
@@ -216,7 +216,7 @@ export class Population {
 
     return validGenomes.reduce(
       (best, current) => (current.getFitnessScore() > best.getFitnessScore() ? current : best),
-      validGenomes[0]
+      validGenomes[0],
     )
   }
 
@@ -233,7 +233,7 @@ export class Population {
     guard(this.genomes, "Population is empty")
 
     return this.genomes.reduce((worst, current) =>
-      current.getFitnessScore() < worst.getFitnessScore() ? current : worst
+      current.getFitnessScore() < worst.getFitnessScore() ? current : worst,
     )
   }
 
@@ -275,16 +275,16 @@ export class Population {
       try {
         const fitness = genome.getFitness()
         lgg.info(
-          `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: ${fitness?.score ?? "null"}`
+          `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: ${fitness?.score ?? "null"}`,
         )
       } catch (error) {
         lgg.info(
-          `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: not available`
+          `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: not available`,
         )
       }
     })
 
-    this.genomes = this.genomes?.filter((genome) => genome.isEvaluated) ?? []
+    this.genomes = this.genomes?.filter(genome => genome.isEvaluated) ?? []
     const countAfter = this.genomes?.length ?? 0
 
     // dynamic population replenishment to maintain genetic diversity
@@ -293,7 +293,7 @@ export class Population {
     if (this.genomes.length < minViablePopulation) {
       const needed = minViablePopulation - this.genomes.length
       lgg.info(
-        `[Population] Population below minimum viable size (${this.genomes.length}/${minViablePopulation}). Generating ${needed} new random genomes.`
+        `[Population] Population below minimum viable size (${this.genomes.length}/${minViablePopulation}). Generating ${needed} new random genomes.`,
       )
 
       // generate new random genomes to replenish population
@@ -305,12 +305,12 @@ export class Population {
 
     if (isNir(this.genomes))
       throw new Error(
-        `After removing unevaluated genomes, population is empty. ${countBefore} -> ${countAfter}. Consider increasing population size or adding retry logic.`
+        `After removing unevaluated genomes, population is empty. ${countBefore} -> ${countAfter}. Consider increasing population size or adding retry logic.`,
       )
 
     if (this.genomes.length < 2) {
       throw new Error(
-        `Population too small for evolution after filtering: ${this.genomes.length} genomes remaining (need at least 2 for crossover). Started with ${countBefore} genomes.`
+        `Population too small for evolution after filtering: ${this.genomes.length} genomes remaining (need at least 2 for crossover). Started with ${countBefore} genomes.`,
       )
     }
 
@@ -410,7 +410,7 @@ export class Population {
     }
 
     // Remove marked genomes
-    this.genomes = this.genomes.filter((g) => !toRemove.has(g.getWorkflowVersionId()))
+    this.genomes = this.genomes.filter(g => !toRemove.has(g.getWorkflowVersionId()))
   }
 
   /**
@@ -430,7 +430,7 @@ export class Population {
    */
   removeGenome(genomeId: string): boolean {
     const originalLength = this.genomes.length
-    this.genomes = this.genomes.filter((g) => g.getWorkflowVersionId() !== genomeId)
+    this.genomes = this.genomes.filter(g => g.getWorkflowVersionId() !== genomeId)
     return this.genomes.length < originalLength
   }
 
@@ -487,19 +487,19 @@ export class Population {
       } catch (e) {
         lgg.error(
           `Failed to create ${initialPopulationMethod === "prepared" ? "prepared" : "random"} genome for replenishment`,
-          e
+          e,
         )
       }
     }
 
     const results = await Promise.all(genomePromises)
-    const genomes = results.filter((result) => result.success).map((result) => result.data)
+    const genomes = results.filter(result => result.success).map(result => result.data)
 
-    const failures = results.filter((result) => !result.success)
+    const failures = results.filter(result => !result.success)
     if (failures.length > 0) {
       lgg.warn(
         `Failed to create ${failures.length} random genomes for replenishment:`,
-        failures.map((f) => f.error)
+        failures.map(f => f.error),
       )
     }
 
@@ -550,9 +550,9 @@ export class Population {
     const population = new Population(config, this.runService)
     const results = await Promise.all(genomePromises)
 
-    const genomes = results.filter((result) => result.success).map((result) => result.data)
+    const genomes = results.filter(result => result.success).map(result => result.data)
 
-    const failures = results.filter((result) => !result.success)
+    const failures = results.filter(result => !result.success)
 
     population.setPopulation(genomes)
 
@@ -561,7 +561,7 @@ export class Population {
     if (failures.length > 0) {
       lgg.warn(
         `Failed to create ${failures.length} genomes:`,
-        failures.map((f) => f.error)
+        failures.map(f => f.error),
       )
 
       // TODO: make minimum viable population threshold configurable
@@ -616,9 +616,9 @@ export class Population {
     const population = new Population(config, this.runService)
     const results = await Promise.all(genomePromises)
 
-    const genomes = results.filter((result) => result.success).map((result) => result.data)
+    const genomes = results.filter(result => result.success).map(result => result.data)
 
-    const failures = results.filter((result) => !result.success)
+    const failures = results.filter(result => !result.success)
 
     population.setPopulation(genomes)
 
@@ -627,12 +627,12 @@ export class Population {
     if (failures.length > 0) {
       lgg.warn(
         `Failed to create ${failures.length} prepared genomes:`,
-        failures.map((f) => f.error)
+        failures.map(f => f.error),
       )
 
       if (genomes.length < config.populationSize * 0.5) {
         lgg.error(
-          `Critical: Only ${genomes.length} out of ${config.populationSize} prepared genomes created successfully`
+          `Critical: Only ${genomes.length} out of ${config.populationSize} prepared genomes created successfully`,
         )
       }
     }

@@ -76,8 +76,8 @@ export const useRunConfigStore = create<RunConfigState>()(
       // Increase default timeout to accommodate longer runs (10 minutes)
       options: { concurrency: 2, timeoutMs: 600000 },
 
-      addCase: (row) =>
-        set((s) => ({
+      addCase: row =>
+        set(s => ({
           cases: [
             ...s.cases,
             {
@@ -89,9 +89,9 @@ export const useRunConfigStore = create<RunConfigState>()(
         })),
 
       updateCase: (id, patch) =>
-        set((s) => {
+        set(s => {
           let changed = false
-          const nextCases = s.cases.map((x) => {
+          const nextCases = s.cases.map(x => {
             if (x.id !== id) return x
             const merged = { ...x, ...patch }
             if (merged.input !== x.input || merged.expected !== x.expected) {
@@ -103,25 +103,25 @@ export const useRunConfigStore = create<RunConfigState>()(
           return { cases: nextCases }
         }),
 
-      removeCase: (id) =>
-        set((s) => {
+      removeCase: id =>
+        set(s => {
           const next: ResultsById = { ...s.resultsById }
           delete next[id]
           const busy = new Set(s.busyIds)
           busy.delete(id)
           controllers.delete(id)
           return {
-            cases: s.cases.filter((x) => x.id !== id),
+            cases: s.cases.filter(x => x.id !== id),
             resultsById: next,
             busyIds: busy,
           }
         }),
 
-      importCases: (rows) => set({ cases: rows }),
+      importCases: rows => set({ cases: rows }),
       exportCases: () => get().cases,
       clearResults: () => set({ resultsById: {} }),
 
-      loadDataset: async (datasetId) => {
+      loadDataset: async datasetId => {
         // Handle clear selection
         if (!datasetId) {
           set({
@@ -146,7 +146,7 @@ export const useRunConfigStore = create<RunConfigState>()(
                   record.workflow_input !== null &&
                   record.workflow_input !== undefined &&
                   record.ground_truth !== null &&
-                  record.ground_truth !== undefined
+                  record.ground_truth !== undefined,
               )
               .map((record: any) => ({
                 id: record.dataset_record_id || newId(),
@@ -181,15 +181,15 @@ export const useRunConfigStore = create<RunConfigState>()(
         }
       },
 
-      setGoal: (goal) => set({ goal }),
-      setPrompt: (prompt) => set({ prompt }),
-      setDatasetName: (name) => set({ datasetName: name }),
-      setDatasetId: (id) => set({ datasetId: id }),
-      setOptions: (opts) => set((s) => ({ options: { ...s.options, ...opts } })),
+      setGoal: goal => set({ goal }),
+      setPrompt: prompt => set({ prompt }),
+      setDatasetName: name => set({ datasetName: name }),
+      setDatasetId: id => set({ datasetId: id }),
+      setOptions: opts => set(s => ({ options: { ...s.options, ...opts } })),
 
       runOne: async (cfg, row, goalOverride, externalSignal) => {
         // mark busy
-        set((s) => ({ busyIds: new Set(s.busyIds).add(row.id) }))
+        set(s => ({ busyIds: new Set(s.busyIds).add(row.id) }))
         const controller = new AbortController()
         controllers.set(row.id, controller)
 
@@ -225,7 +225,7 @@ export const useRunConfigStore = create<RunConfigState>()(
 
             if (first?.success && Array.isArray(first.data) && first.data[0]) {
               const result: InvokeWorkflowResult = first.data[0]
-              set((s) => ({
+              set(s => ({
                 resultsById: {
                   ...s.resultsById,
                   [row.id]: result,
@@ -235,10 +235,10 @@ export const useRunConfigStore = create<RunConfigState>()(
               const error = first?.error || "Failed"
               if (retryCount < maxRetries) {
                 // Exponential backoff: 1s, 2s, 4s...
-                await new Promise((r) => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
+                await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
                 return attemptFetch(retryCount + 1)
               }
-              set((s) => ({
+              set(s => ({
                 resultsById: {
                   ...s.resultsById,
                   [row.id]: { error },
@@ -250,11 +250,11 @@ export const useRunConfigStore = create<RunConfigState>()(
             const error = isAbort ? "Canceled" : e?.message || "Error"
 
             if (!isAbort && retryCount < maxRetries) {
-              await new Promise((r) => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
+              await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
               return attemptFetch(retryCount + 1)
             }
 
-            set((s) => ({
+            set(s => ({
               resultsById: {
                 ...s.resultsById,
                 [row.id]: { error },
@@ -268,7 +268,7 @@ export const useRunConfigStore = create<RunConfigState>()(
         } finally {
           if (timeoutId) clearTimeout(timeoutId)
           controllers.delete(row.id)
-          set((s) => {
+          set(s => {
             const busy = new Set(s.busyIds)
             busy.delete(row.id)
             return { busyIds: busy }
@@ -276,9 +276,9 @@ export const useRunConfigStore = create<RunConfigState>()(
         }
       },
 
-      runAll: async (cfg) => {
+      runAll: async cfg => {
         const { options, cases, busyIds } = get()
-        const target = cases.filter((c) => !busyIds.has(c.id))
+        const target = cases.filter(c => !busyIds.has(c.id))
         const concurrency = Math.max(1, options.concurrency || 1)
 
         let idx = 0
@@ -294,7 +294,7 @@ export const useRunConfigStore = create<RunConfigState>()(
         await Promise.all(workers)
       },
 
-      cancel: (id) => {
+      cancel: id => {
         const c = controllers.get(id)
         if (c) c.abort()
       },
@@ -307,7 +307,7 @@ export const useRunConfigStore = create<RunConfigState>()(
     {
       name: "run-config/v1",
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({
+      partialize: s => ({
         datasetName: s.datasetName,
         goal: s.goal,
         prompt: s.prompt,
@@ -316,6 +316,6 @@ export const useRunConfigStore = create<RunConfigState>()(
         options: s.options,
         // busyIds and controllers are intentionally not persisted
       }),
-    }
-  )
+    },
+  ),
 )

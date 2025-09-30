@@ -1,5 +1,5 @@
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"
 vi.mock("../../react-flow-visualization/components/nodes", () => ({
@@ -12,7 +12,7 @@ vi.mock("../../react-flow-visualization/components/nodes", () => ({
 }))
 
 // Mock runtime-only imports that node/vitest cannot resolve in this test scope
-vi.mock("@runtime/settings/constants.client", () => ({
+vi.mock("@examples/settings/constants.client", () => ({
   MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
@@ -48,11 +48,11 @@ describe("create graph from JSON (typed)", () => {
     const { nodes, edges } = initialSetupConfig(cfg)
 
     // Assert start/end exist plus workflow nodes
-    const nodeIds = nodes.map((n) => n.id)
+    const nodeIds = nodes.map(n => n.id)
     expect(nodeIds).toEqual(expect.arrayContaining(["start", "end", "a", "b"]))
 
     // Assert entry edge and handoff edge, and leaf attaches to end
-    const pairs = edges.map((e) => `${e.source}->${e.target}`)
+    const pairs = edges.map(e => `${e.source}->${e.target}`)
     expect(pairs).toEqual(expect.arrayContaining(["start->a", "a->b", "b->end"]))
   })
 })

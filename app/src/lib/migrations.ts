@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 
 interface NewerFitnessData {
   data: {
@@ -183,7 +183,7 @@ export async function migrateFitnessToColumns() {
 if (require.main === module) {
   migrateFitnessToColumns()
     .then(() => process.exit(0))
-    .catch((error) => {
+    .catch(error => {
       console.error(error)
       process.exit(1)
     })

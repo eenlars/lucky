@@ -27,13 +27,13 @@ interface WorkflowStore {
   create: (
     description: string,
     dsl: WorkflowConfig,
-    commitMessage: string
+    commitMessage: string,
   ) => Promise<{ success: boolean; workflowId?: string }>
   saveVersion: (
     workflowId: string,
     dsl: WorkflowConfig,
     commitMessage: string,
-    parentVersionId?: string
+    parentVersionId?: string,
   ) => Promise<{ success: boolean; versionId?: string }>
   updateDescription: (workflowId: string, description: string) => Promise<boolean>
   remove: (workflowId: string) => Promise<boolean>
@@ -71,8 +71,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
           // Also update in the list if present
           if (workflow) {
-            set((state) => ({
-              workflows: state.workflows.map((w) => (w.wf_id === id ? workflow : w)),
+            set(state => ({
+              workflows: state.workflows.map(w => (w.wf_id === id ? workflow : w)),
             }))
           }
         } catch (error) {
@@ -128,9 +128,9 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
           if (success) {
             // Update locally
-            set((state) => ({
-              workflows: state.workflows.map((w) =>
-                w.wf_id === workflowId ? { ...w, description, updated_at: new Date().toISOString() } : w
+            set(state => ({
+              workflows: state.workflows.map(w =>
+                w.wf_id === workflowId ? { ...w, description, updated_at: new Date().toISOString() } : w,
               ),
               currentWorkflow:
                 state.currentWorkflow?.wf_id === workflowId
@@ -163,8 +163,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
           if (success) {
             // Remove from local state
-            set((state) => ({
-              workflows: state.workflows.filter((w) => w.wf_id !== workflowId),
+            set(state => ({
+              workflows: state.workflows.filter(w => w.wf_id !== workflowId),
               currentWorkflow: state.currentWorkflow?.wf_id === workflowId ? null : state.currentWorkflow,
               saving: false,
             }))
@@ -198,6 +198,6 @@ export const useWorkflowStore = create<WorkflowStore>()(
       partialize: () => ({
         // Don't persist server data, only UI state if needed
       }),
-    }
-  )
+    },
+  ),
 )

@@ -58,8 +58,8 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
       ? {
           hasOutputs: !!agentSteps,
           outputsLength: agentSteps?.length || 0,
-          outputsTypes: agentSteps?.map((o) => o.type) || [],
-          outputsNames: agentSteps?.map((o) => o.name) || [],
+          outputsTypes: agentSteps?.map(o => o.type) || [],
+          outputsNames: agentSteps?.map(o => o.name) || [],
           fullOutputs: agentSteps,
         }
       : null,
@@ -113,7 +113,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
   })
 
   // Filter out empty outputs
-  const relevantOutputs = normalizedOutputs.filter((output) => {
+  const relevantOutputs = normalizedOutputs.filter(output => {
     if (output.type === "learning" || output.type === "reasoning" || output.type === "text") {
       return output.return && String(output.return).trim().length > 0
     }
@@ -229,7 +229,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
             typeof output.return === "string" &&
             (output.return.toLowerCase().includes("error") ||
               output.return.toLowerCase().includes("failed") ||
-              output.return.toLowerCase().includes("exception"))
+              output.return.toLowerCase().includes("exception")),
         )
 
         // Helper function to get truncated content for collapsed state
@@ -343,7 +343,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
               onClick={
                 isExpanded
                   ? undefined
-                  : (e) => {
+                  : e => {
                       if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                         toggleCollapsed(index)
                       }
@@ -363,10 +363,10 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                   <div className="flex items-center gap-2">
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation()
                         copyToClipboard(
-                          typeof returnData === "string" ? returnData : JSON.stringify(returnData, null, 2)
+                          typeof returnData === "string" ? returnData : JSON.stringify(returnData, null, 2),
                         )
                       }}
                       title="Copy result"
@@ -375,7 +375,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                     </button>
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation()
                         toggleExpanded(index)
                       }}
@@ -403,7 +403,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                       <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
                         <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Complete Result:</div>
                         <div
-                          ref={(el) => {
+                          ref={el => {
                             resultRefs.current[index] = el
                           }}
                           className="overflow-hidden"
@@ -426,7 +426,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                     <div className="mt-2">
                       <button
                         className="w-full bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700 rounded-lg p-2 text-sm text-blue-700 dark:text-blue-300 font-medium transition-colors"
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation()
                           toggleExpanded(index)
                         }}
@@ -500,7 +500,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
               onClick={
                 isExpanded
                   ? undefined
-                  : (e) => {
+                  : e => {
                       if (e.target === e.currentTarget || !(e.target as Element).closest("button")) {
                         toggleCollapsed(index)
                       }
@@ -518,7 +518,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                   <div className="flex items-center gap-2">
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation()
                         copyToClipboard(JSON.stringify(output.args, null, 2))
                       }}
@@ -528,7 +528,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                     </button>
                     <button
                       className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation()
                         toggleExpanded(index)
                       }}
@@ -585,7 +585,7 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                       <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
                         <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Result:</div>
                         <div
-                          ref={(el) => {
+                          ref={el => {
                             resultRefs.current[index] = el
                           }}
                           className="overflow-hidden"

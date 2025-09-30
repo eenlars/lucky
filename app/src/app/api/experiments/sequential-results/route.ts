@@ -32,12 +32,12 @@ export async function GET() {
           {
             ok: false,
             error: "Invalid sequential results format",
-            details: validation.error.issues.map((i) => ({
+            details: validation.error.issues.map(i => ({
               path: i.path.join("."),
               message: i.message,
             })),
           },
-          { status: 400 }
+          { status: 400 },
         )
       }
       results = validation.data
@@ -58,7 +58,7 @@ export async function GET() {
         ok: false,
         error: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

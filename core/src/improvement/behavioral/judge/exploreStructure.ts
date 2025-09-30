@@ -16,7 +16,7 @@ export async function exploreStructure(
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow,
-  goal: string
+  goal: string,
 ): Promise<RS<StructureExplorationResult>> {
   const randomWorkflowStructure = SharedWorkflowPrompts.randomWorkflowStructure()
 
@@ -92,6 +92,6 @@ Return your analysis with a clear recommendation.`
       structuralReason: response.data.structuralReason,
       shouldImplement: response.data.shouldImplement,
     },
-    response.usdCost
+    response.usdCost,
   )
 }

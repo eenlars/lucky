@@ -1,9 +1,9 @@
 import type { Tables } from "@lucky/shared"
-import type { NodeInvocationExtended } from "./db/Workflow/fullWorkflow"
+import type { MessageMetadata, NodeInvocationExtended } from "./db/Workflow/nodeInvocations"
 
 export interface FullTraceEntry {
   invocation: NodeInvocationExtended
   nodeDefinition: Tables<"NodeVersion">
-  inputs: Tables<"Message">[]
-  output: Tables<"Message"> | null
+  inputs: MessageMetadata[]
+  output: MessageMetadata | null
 }

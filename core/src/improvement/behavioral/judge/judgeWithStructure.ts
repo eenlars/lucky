@@ -19,7 +19,7 @@ export async function adjustWorkflowStructure(
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow,
-  structureInfo?: StructureExplorationResult
+  structureInfo?: StructureExplorationResult,
 ): Promise<RS<WorkflowConfig>> {
   const messages = WorkflowEvolutionPrompts.mechanicAdvisorStructure(workflow, fitness, feedback, structureInfo)
 

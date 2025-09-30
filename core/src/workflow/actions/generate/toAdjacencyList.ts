@@ -2,7 +2,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 export function workflowToAdjacencyList(workflow: WorkflowConfig): string {
   return workflow.nodes
-    .map((node) => {
+    .map(node => {
       return `<agent:${node.nodeId}>
     ${node.nodeId}: ${node.description} (tools: ${node.codeTools.join(", ")})
     connects to: ${node.handOffs.join(", ")}

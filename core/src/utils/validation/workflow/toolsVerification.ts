@@ -136,13 +136,13 @@ export const verifyMaxToolsPerAgent = async (config: WorkflowConfig): Promise<Ve
 
     if (mcpToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
       )
     }
 
     if (codeToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`
+        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
       )
     }
   }

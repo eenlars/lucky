@@ -24,6 +24,6 @@ export const agentDescriptionsWithTools = {
 
 export const AgentDescriptionsWithToolsSchema = withDescriptions(
   baseWorkflowNodeConfigShape,
-  agentDescriptionsWithTools
+  agentDescriptionsWithTools,
 )
 export type AgentDescriptionsWithToolsZod = z.infer<typeof AgentDescriptionsWithToolsSchema>

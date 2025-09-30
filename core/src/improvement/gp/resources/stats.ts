@@ -18,7 +18,7 @@ export class StatsTracker {
   constructor(
     private config: EvolutionSettings,
     private runService: RunService,
-    private population: Population
+    private population: Population,
   ) {
     this.startTime = Date.now()
   }
@@ -117,7 +117,7 @@ export class StatsTracker {
     const elapsedMinutes = this.getElapsedMinutes()
     if (elapsedMinutes > CONFIG.evolution.GP.maximumTimeMinutes) {
       lgg.info(
-        `[StatsTracker] Reached time limit of ${CONFIG.evolution.GP.maximumTimeMinutes} minutes; stopping evolution.`
+        `[StatsTracker] Reached time limit of ${CONFIG.evolution.GP.maximumTimeMinutes} minutes; stopping evolution.`,
       )
       return true
     }
@@ -126,7 +126,7 @@ export class StatsTracker {
     if (typeof this.config.maxEvaluationsPerHour === "number" && this.config.maxEvaluationsPerHour > 0) {
       if (this.evaluationCount >= this.config.maxEvaluationsPerHour) {
         lgg.info(
-          `[StatsTracker] Reached max evaluations per hour (${this.config.maxEvaluationsPerHour}); stopping evolution.`
+          `[StatsTracker] Reached max evaluations per hour (${this.config.maxEvaluationsPerHour}); stopping evolution.`,
         )
         return true
       }
@@ -151,7 +151,7 @@ export class StatsTracker {
    */
   private logGenerationSummary(genome: Genome): void {
     lgg.log(
-      `[EvolutionEngine] Gen ${genome.genome.parentWorkflowVersionIds.length} - Best: ${genome.getFitness()?.score.toFixed(3)}, Cost: $${this.totalCost.toFixed(2)}`
+      `[EvolutionEngine] Gen ${genome.genome.parentWorkflowVersionIds.length} - Best: ${genome.getFitness()?.score.toFixed(3)}, Cost: $${this.totalCost.toFixed(2)}`,
     )
   }
 
@@ -160,7 +160,7 @@ export class StatsTracker {
    */
   logFinalSummary(genome: Genome): void {
     lgg.log(
-      `[EvolutionEngine] Evolution complete - Best: ${genome.getFitness()?.score.toFixed(3)}, id: ${genome.getWorkflowVersionId()}, Cost: $${this.totalCost.toFixed(2)}`
+      `[EvolutionEngine] Evolution complete - Best: ${genome.getFitness()?.score.toFixed(3)}, id: ${genome.getWorkflowVersionId()}, Cost: $${this.totalCost.toFixed(2)}`,
     )
   }
 

@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         evolution_type,
         config,
         notes
-      `
+      `,
       )
       .order("start_time", { ascending: false })
 
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     }
 
     // Get invocation counts for each run
-    const runIds = evolutionRuns.map((run) => run.run_id)
+    const runIds = evolutionRuns.map(run => run.run_id)
 
     const { data: invocationCounts, error: countError } = await supabase
       .from("WorkflowInvocation")
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     // Group and count invocations per run
     const runCounts = new Map()
 
-    evolutionRuns.forEach((run) => {
+    evolutionRuns.forEach(run => {
       runCounts.set(run.run_id, {
         run: { ...run },
         total: 0,
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     })
 
     if (invocationCounts) {
-      invocationCounts.forEach((inv) => {
+      invocationCounts.forEach(inv => {
         if (runCounts.has(inv.run_id)) {
           runCounts.get(inv.run_id).total++
           if (inv.status === "completed") {
@@ -178,7 +178,7 @@ export async function GET(request: Request) {
           avg_accuracy_delta: avgDelta,
         }
       })
-      .filter((run) => {
+      .filter(run => {
         // include runs even with 0 generations (e.g., just created)
 
         // hide empty runs filter

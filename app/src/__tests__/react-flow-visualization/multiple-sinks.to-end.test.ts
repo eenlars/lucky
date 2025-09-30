@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"
 
@@ -12,7 +12,7 @@ vi.mock("../../react-flow-visualization/components/nodes", () => ({
   }),
 }))
 
-vi.mock("@runtime/settings/constants.client", () => ({
+vi.mock("@examples/settings/constants.client", () => ({
   MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
@@ -60,9 +60,9 @@ describe("multiple sinks attach to a single end node", () => {
     } satisfies WorkflowConfig
 
     const { nodes, edges } = initialSetupConfig(cfg)
-    const endNodes = nodes.filter((n) => n.id === "end")
+    const endNodes = nodes.filter(n => n.id === "end")
     expect(endNodes).toHaveLength(1)
-    const pairs = edges.map((e) => `${e.source}->${e.target}`)
+    const pairs = edges.map(e => `${e.source}->${e.target}`)
     expect(pairs).toEqual(expect.arrayContaining(["start->a", "a->b", "b->end", "c->end"]))
   })
 
@@ -84,9 +84,9 @@ describe("multiple sinks attach to a single end node", () => {
     } satisfies WorkflowConfig
 
     const { nodes, edges } = initialSetupConfig(cfg)
-    const endNodes = nodes.filter((n) => n.id === "end")
+    const endNodes = nodes.filter(n => n.id === "end")
     expect(endNodes).toHaveLength(1)
-    const endPairs = edges.map((e) => `${e.source}->${e.target}`).filter((p) => p === "x->end")
+    const endPairs = edges.map(e => `${e.source}->${e.target}`).filter(p => p === "x->end")
     expect(endPairs).toHaveLength(1)
   })
 

@@ -26,7 +26,7 @@ export class GAIALoader {
   static async fetchById(
     taskId: string,
     split: "validation" | "test" = "validation",
-    authToken?: string
+    authToken?: string,
   ): Promise<GAIAInstance> {
     // Use local loader if available
     if (this.useLocalLoader) {
@@ -136,7 +136,7 @@ export class GAIALoader {
     level: 1 | 2 | 3,
     split: "validation" | "test" = "validation",
     limit: number = 10,
-    authToken?: string
+    authToken?: string,
   ): Promise<GAIAInstance[]> {
     // Use local loader if available
     if (this.useLocalLoader) {

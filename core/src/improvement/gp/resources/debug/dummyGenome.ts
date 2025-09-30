@@ -26,8 +26,8 @@ const getRandomString = (length: number) => {
 }
 
 export const createDummySurvivors = (parents: Genome[], offspring: Genome[]): Genome[] => {
-  const survivors = parents.map((parent) =>
-    createDummyGenome(parent.genome.parentWorkflowVersionIds, parent.getEvolutionContext())
+  const survivors = parents.map(parent =>
+    createDummyGenome(parent.genome.parentWorkflowVersionIds, parent.getEvolutionContext()),
   )
 
   return survivors
@@ -119,6 +119,6 @@ export const createDummyGenome = (parentWorkflowVersionIds: string[], _evolution
       goal: "dummy-goal",
       workflowId: "dummy-workflow-id",
     },
-    _evolutionContext
+    _evolutionContext,
   )
 }

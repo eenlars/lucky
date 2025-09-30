@@ -15,15 +15,15 @@ export function spliceNode(predecessors: string[], newNode: WorkflowNodeConfig, 
   // Phase 1: Discover successors that will be displaced
   const successorSet = new Set<string>()
 
-  predecessors.forEach((pId) => {
-    const p = nodes.find((n) => n.nodeId === pId)
+  predecessors.forEach(pId => {
+    const p = nodes.find(n => n.nodeId === pId)
     if (!p) {
       lgg.error(`Unknown predecessor ${pId} - skipping`)
       return
     }
 
     // Capture current outbound targets
-    p.handOffs.forEach((succ) => successorSet.add(succ))
+    p.handOffs.forEach(succ => successorSet.add(succ))
 
     // Redirect predecessor → newNode
     p.handOffs = [newNode.nodeId]
@@ -31,7 +31,7 @@ export function spliceNode(predecessors: string[], newNode: WorkflowNodeConfig, 
 
   // Phase 2: Wire newNode to the collected successors
   // Filter out self-references (shouldn't happen, but defensive)
-  newNode.handOffs = [...successorSet].filter((id) => id !== newNode.nodeId)
+  newNode.handOffs = [...successorSet].filter(id => id !== newNode.nodeId)
 
   // If after filtering no successors remain, the node is terminal → point to "end"
   if (newNode.handOffs.length === 0) {

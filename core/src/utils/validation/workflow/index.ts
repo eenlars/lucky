@@ -68,7 +68,7 @@ export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<Ver
 // main Verification Function
 export const verifyWorkflowConfig = async (
   config: WorkflowConfig,
-  options: ValidationOptions
+  options: ValidationOptions,
 ): Promise<VerificationResult> => {
   const errors: string[] = []
   try {
@@ -107,7 +107,7 @@ export const verifyWorkflowConfig = async (
 
   if (options.verbose && !isNir(errors)) {
     // do not change the console.log to lgg.log
-    errors.forEach((error) => console.log(`Error: ${error}`))
+    errors.forEach(error => console.log(`Error: ${error}`))
   }
 
   if (config.nodes.length === 1) {

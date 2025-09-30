@@ -129,7 +129,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     }
 
     if (runResults) {
-      lgg.log("Run results", JSONN.show(runResults.map((r) => r.queueRunResult.finalWorkflowOutput)))
+      lgg.log("Run results", JSONN.show(runResults.map(r => r.queueRunResult.finalWorkflowOutput)))
     }
 
     // Check if we need to evaluate (when there's something to compare against)
@@ -151,7 +151,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
       // Save workflow to file if it was loaded from file and has memory updates
       if ("filename" in input && input.filename) {
-        const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+        const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
 
         if (hasMemoryUpdates) {
           try {
@@ -176,7 +176,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
     // Save workflow to file if it was loaded from file and has memory updates
     if ("filename" in input && input.filename) {
-      const hasMemoryUpdates = workflow.getConfig().nodes.some((n) => n.memory && Object.keys(n.memory).length > 0)
+      const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
 
       if (hasMemoryUpdates) {
         try {
@@ -191,7 +191,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     // If no evaluation needed, return raw run results
     return R.success(
       runResults,
-      runResults.reduce((total, result) => total + result.queueRunResult.totalCost, 0)
+      runResults.reduce((total, result) => total + result.queueRunResult.totalCost, 0),
     )
   } catch (err) {
     lgg.error("Invocation failed", err)

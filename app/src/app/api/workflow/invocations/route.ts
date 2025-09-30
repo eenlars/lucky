@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 
@@ -195,7 +195,7 @@ export async function DELETE(request: NextRequest) {
       {
         error: error instanceof Error ? error.message : "Failed to delete invocations",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

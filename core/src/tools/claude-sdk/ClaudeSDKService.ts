@@ -27,15 +27,38 @@ export class ClaudeSDKService {
   private static initialized = false
 
   /**
+   * List all available Claude models from the API.
+   * Returns official model IDs, display names, and creation dates.
+   */
+  static async listModels(): Promise<
+    Array<{
+      id: string
+      display_name: string
+      created_at: string
+      type: string
+    }>
+  > {
+    const client = this.initializeClient()
+
+    try {
+      const response = await client.models.list()
+      return response.data
+    } catch (error) {
+      lgg.error("[ClaudeSDK] Failed to list models", { error })
+      throw error
+    }
+  }
+
+  /**
    * Initialize SDK client (singleton pattern for efficiency).
-   * Uses environment variable ANTHROPIC_API_KEY.
+   * Uses environment variable ANTH_SECRET_KEY.
    */
   private static initializeClient(): Anthropic {
     // Always check for API key, even if client exists
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey = process.env.ANTH_SECRET_KEY
 
     if (!apiKey) {
-      throw new Error("ANTHROPIC_API_KEY environment variable is required for SDK usage")
+      throw new Error("ANTH_SECRET_KEY environment variable is required for SDK usage")
     }
 
     if (!this.client) {
@@ -64,7 +87,7 @@ export class ClaudeSDKService {
     nodeId: string,
     prompt: string,
     config?: SDKRequest["config"],
-    invocationId?: string
+    invocationId?: string,
   ): Promise<{
     response: ProcessedResponse
     agentSteps: AgentStep[]
@@ -247,20 +270,40 @@ export class ClaudeSDKService {
 
   /**
    * Maps our simplified model names to official Anthropic model IDs.
+   * Use ClaudeSDKService.listModels() to fetch current available models programmatically.
+   *
+   * Model IDs retrieved from API on 2025-09-30:
+   * - claude-sonnet-4-5-20250929 (Claude Sonnet 4.5)
+   * - claude-opus-4-1-20250805 (Claude Opus 4.1)
+   * - claude-opus-4-20250514 (Claude Opus 4)
+   * - claude-sonnet-4-20250514 (Claude Sonnet 4)
+   * - claude-3-7-sonnet-20250219 (Claude Sonnet 3.7)
+   * - claude-3-5-sonnet-20241022 (Claude Sonnet 3.5 New)
+   * - claude-3-5-haiku-20241022 (Claude Haiku 3.5)
+   * - claude-3-5-sonnet-20240620 (Claude Sonnet 3.5 Old)
+   * - claude-3-haiku-20240307 (Claude Haiku 3)
+   * - claude-3-opus-20240229 (Claude Opus 3)
    */
   private getModelId(model?: ClaudeSDKConfig["model"]): string {
     const modelMap = {
-      "opus-3": "claude-3-opus-20240229",
+      // Latest versions
+      sonnet: "claude-sonnet-4-5-20250929",
+      opus: "claude-opus-4-1-20250805",
+      haiku: "claude-3-5-haiku-20241022",
+      // Specific versions
+      "sonnet-4.5": "claude-sonnet-4-5-20250929",
+      "opus-4.1": "claude-opus-4-1-20250805",
+      "opus-4": "claude-opus-4-20250514",
+      "sonnet-4": "claude-sonnet-4-20250514",
+      "sonnet-3.7": "claude-3-7-sonnet-20250219",
       "sonnet-3.5": "claude-3-5-sonnet-20241022",
-      "sonnet-3": "claude-3-sonnet-20240229",
+      "haiku-3.5": "claude-3-5-haiku-20241022",
+      "sonnet-3.5-old": "claude-3-5-sonnet-20240620",
       "haiku-3": "claude-3-haiku-20240307",
-      // Latest versions (default)
-      opus: "claude-3-opus-latest",
-      sonnet: "claude-3-5-sonnet-latest",
-      haiku: "claude-3-haiku-latest",
+      "opus-3": "claude-3-opus-20240229",
     }
 
-    return modelMap[model || "sonnet"] || "claude-3-5-sonnet-latest"
+    return modelMap[model || "sonnet"] || "claude-sonnet-4-5-20250929"
   }
 
   /**

@@ -34,7 +34,7 @@ export class NoEvaluator extends WorkflowEvaluator {
         timestamp: Date.now(),
         nodeId: `case-${caseIndex + 1}-node-${nodeIndex + 1}`,
         summary: (output?.return ? String(output.return) : String(r.queueRunResult.finalWorkflowOutput)) || "",
-      }))
+      })),
     )
 
     const totalCost = runResults.reduce((sum, r) => sum + (r.queueRunResult.totalCost || 0), 0)

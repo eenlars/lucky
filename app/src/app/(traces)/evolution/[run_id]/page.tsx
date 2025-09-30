@@ -73,8 +73,8 @@ const isStaleRun = (run: Tables<"EvolutionRun">) => {
 
 const getFitnessRange = (invocations: WorkflowInvocationSubset[]) => {
   const fitnessScores = invocations
-    .filter((inv) => inv.fitness_score !== null && inv.fitness_score !== undefined)
-    .map((inv) => inv.fitness_score!)
+    .filter(inv => inv.fitness_score !== null && inv.fitness_score !== undefined)
+    .map(inv => inv.fitness_score!)
 
   if (fitnessScores.length === 0) return null
 
@@ -99,13 +99,13 @@ const formatFitnessDisplay = (range: { min: number; max: number; count: number }
 
 const groupByWorkflowStructure = (
   generationsData: GenerationWithData[],
-  _workflowVersions: Map<string, Tables<"WorkflowVersion">>
+  _workflowVersions: Map<string, Tables<"WorkflowVersion">>,
 ): WorkflowStructureGroup[] => {
   const structureGroups = new Map<string, WorkflowStructureGroup>()
 
   // Process all generations to group by DSL structure
   generationsData.forEach(({ generation, versions, invocations }) => {
-    versions.forEach((version) => {
+    versions.forEach(version => {
       if (!isWorkflowConfig(version.dsl)) return
 
       // Simple hash using stringified DSL
@@ -125,12 +125,12 @@ const groupByWorkflowStructure = (
       const group = structureGroups.get(dslHash)!
 
       // Add version if not already present
-      if (!group.versions.find((v) => v.wf_version_id === version.wf_version_id)) {
+      if (!group.versions.find(v => v.wf_version_id === version.wf_version_id)) {
         group.versions.push(version)
       }
 
       // Add related invocations
-      const versionInvocations = invocations.filter((inv) => inv.wf_version_id === version.wf_version_id)
+      const versionInvocations = invocations.filter(inv => inv.wf_version_id === version.wf_version_id)
       group.invocations.push(...versionInvocations)
 
       // Update generation range
@@ -244,7 +244,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
         throw new Error(`Failed to fetch workflow version: ${response.statusText}`)
       }
       const version = await response.json()
-      setWorkflowVersions((prev) => {
+      setWorkflowVersions(prev => {
         const next = new Map(prev)
         next.set(versionId, version)
         return next
@@ -409,7 +409,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
             role="button"
             tabIndex={0}
             onClick={() => setShowGraph(!showGraph)}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault()
                 setShowGraph(!showGraph)
@@ -455,7 +455,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                     role="button"
                     tabIndex={0}
                     onClick={() => toggleGeneration(generation.generation_id)}
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault()
                         toggleGeneration(generation.generation_id)
@@ -471,7 +471,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded border border-blue-200 dark:border-blue-700"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={e => e.stopPropagation()}
                         title="View in Supabase Dashboard"
                       >
                         {generation.generation_id}
@@ -507,7 +507,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                         {
                           generation,
                           versions:
-                            generationsData.find((g) => g.generation.generation_id === generation.generation_id)
+                            generationsData.find(g => g.generation.generation_id === generation.generation_id)
                               ?.versions || [],
                           invocations,
                         },
@@ -619,7 +619,7 @@ function InvocationRow({ invocation, showDslModal, dslLoading }: InvocationRowPr
               {invocation.end_time && (
                 <span>
                   {Math.round(
-                    (new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()) / 1000
+                    (new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()) / 1000,
                   )}
                   s
                 </span>
@@ -683,7 +683,7 @@ function WorkflowStructuresView({
                 role="button"
                 tabIndex={0}
                 onClick={() => toggleStructure(structureId)}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault()
                     toggleStructure(structureId)
@@ -730,9 +730,9 @@ function WorkflowStructuresView({
                     Workflow Versions ({group.versions.length})
                   </h4>
                   <div className="space-y-2">
-                    {group.versions.map((version) => {
+                    {group.versions.map(version => {
                       const versionInvocations = group.invocations.filter(
-                        (inv) => inv.wf_version_id === version.wf_version_id
+                        inv => inv.wf_version_id === version.wf_version_id,
                       )
 
                       return (
@@ -781,7 +781,7 @@ function WorkflowStructuresView({
                       Invocations ({group.invocations.length})
                     </h4>
                     <div className="space-y-2">
-                      {group.invocations.map((invocation) => (
+                      {group.invocations.map(invocation => (
                         <InvocationRow
                           key={invocation.wf_invocation_id}
                           invocation={invocation}

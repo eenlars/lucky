@@ -109,7 +109,7 @@ describe("SWEBenchLoader", () => {
     } as Response)
 
     await expect(SWEBenchLoader.fetchById("non-existent")).rejects.toThrow(
-      "SWE-bench instance non-existent not found in split test"
+      "SWE-bench instance non-existent not found in split test",
     )
   })
 
@@ -120,7 +120,7 @@ describe("SWEBenchLoader", () => {
     } as Response)
 
     await expect(SWEBenchLoader.fetchById("test-instance")).rejects.toThrow(
-      "Failed to fetch SWE-bench instance test-instance: Error: HTTP error! status: 500"
+      "Failed to fetch SWE-bench instance test-instance: Error: HTTP error! status: 500",
     )
   })
 
@@ -128,7 +128,7 @@ describe("SWEBenchLoader", () => {
     vi.mocked(global.fetch).mockRejectedValueOnce(new Error("Network failure"))
 
     await expect(SWEBenchLoader.fetchById("test-instance")).rejects.toThrow(
-      "Failed to fetch SWE-bench instance test-instance: Error: Network failure"
+      "Failed to fetch SWE-bench instance test-instance: Error: Network failure",
     )
   })
 

@@ -50,8 +50,8 @@ export default function AssistantPanel({
           <div className="relative">
             <textarea
               value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setFeedback(e.target.value)}
+              onKeyDown={e => {
                 if (
                   e.key === "Enter" &&
                   (e.metaKey || e.ctrlKey) &&

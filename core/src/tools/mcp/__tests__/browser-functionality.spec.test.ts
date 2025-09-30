@@ -37,7 +37,7 @@ describe.skip("browser functionality tests", () => {
     })
 
     lgg.log("Navigation completed:", navResult.text)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, 2000))
     // TODO: Using arbitrary sleep times is unreliable. Should wait for specific page elements
     // or use proper page load detection instead of hardcoded delays.
 
@@ -131,7 +131,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Validating extracted content is news content using llmGuard...")
     const newsGuard = await llmGuard(
       allContent,
-      `The content must be news-related content from a Dutch news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be generic website navigation, advertisements, or non-news content.`
+      `The content must be news-related content from a Dutch news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be generic website navigation, advertisements, or non-news content.`,
     )
 
     lgg.log("News content validation result:", newsGuard.isValid)
@@ -190,7 +190,7 @@ describe.skip("browser functionality tests", () => {
     })
 
     lgg.log("Navigation completed")
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await new Promise(resolve => setTimeout(resolve, 3000))
     // TODO: Another hardcoded sleep - 3 seconds this time. Inconsistent with 2 seconds above.
 
     // Get page state
@@ -217,7 +217,7 @@ describe.skip("browser functionality tests", () => {
     const processedSteps = processStepsV2(stateResult.steps || [], getDefaultModels().default)
 
     const stateResults = processedSteps?.agentSteps.filter(
-      (output) => output.type === "tool" && output.name === "browser_get_state"
+      output => output.type === "tool" && output.name === "browser_get_state",
     )
 
     if (stateResults && stateResults.length > 0) {
@@ -235,7 +235,7 @@ describe.skip("browser functionality tests", () => {
         lgg.log("Validating page state contains news content using llmGuard...")
         const stateNewsGuard = await llmGuard(
           stateText,
-          `The content must be from a Dutch news website page state. It should contain news headlines, article titles, navigation elements typical of news sites, or breaking news information. The content should NOT be generic error pages, blank pages, or non-news content.`
+          `The content must be from a Dutch news website page state. It should contain news headlines, article titles, navigation elements typical of news sites, or breaking news information. The content should NOT be generic error pages, blank pages, or non-news content.`,
         )
 
         lgg.log("Page state news validation result:", stateNewsGuard.isValid)
@@ -330,7 +330,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Validating session result contains news headlines using llmGuard...")
     const sessionNewsGuard = await llmGuard(
       result.text,
-      `The result must contain extracted news headlines or article titles from a Dutch news website. It should include actual news content, headlines, or breaking news information. The content should NOT be navigation errors, technical issues, or non-news content.`
+      `The result must contain extracted news headlines or article titles from a Dutch news website. It should include actual news content, headlines, or breaking news information. The content should NOT be navigation errors, technical issues, or non-news content.`,
     )
 
     lgg.log("Session news validation result:", sessionNewsGuard.isValid)

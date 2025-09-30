@@ -3,8 +3,8 @@
  * These types define the complete configuration surface for core.
  */
 
+import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { LuckyProvider } from "@core/utils/spending/provider"
-import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Filesystem paths configuration.
@@ -44,15 +44,15 @@ export interface CoreModelsConfig {
   readonly inactive: Set<string>
   /** Default models for different tiers */
   readonly defaults: {
-    readonly summary: ModelName
-    readonly nano: ModelName
-    readonly low: ModelName
-    readonly medium: ModelName
-    readonly high: ModelName
-    readonly default: ModelName
-    readonly fitness: ModelName
-    readonly reasoning: ModelName
-    readonly fallback: ModelName
+    readonly summary: AnyModelName
+    readonly nano: AnyModelName
+    readonly low: AnyModelName
+    readonly medium: AnyModelName
+    readonly high: AnyModelName
+    readonly default: AnyModelName
+    readonly fitness: AnyModelName
+    readonly reasoning: AnyModelName
+    readonly fallback: AnyModelName
   }
 }
 
@@ -92,11 +92,16 @@ export interface CoreLoggingConfig {
   readonly level: "none" | "error" | "info" | "debug"
   /** Component-specific log level overrides */
   readonly override: {
-    readonly API?: boolean
-    readonly GP?: boolean
-    readonly Database?: boolean
-    readonly Tools?: boolean
-    readonly [key: string]: boolean | undefined
+    readonly API: boolean
+    readonly GP: boolean
+    readonly Database: boolean
+    readonly Tools: boolean
+    readonly Summary: boolean
+    readonly InvocationPipeline: boolean
+    readonly Messaging: boolean
+    readonly Improvement: boolean
+    readonly ValidationBeforeHandoff: boolean
+    readonly Setup: boolean
   }
 }
 
@@ -123,12 +128,12 @@ export interface CoreWorkflowConfig {
 }
 
 /**
- * Evolution/GP configuration
+ * Evolution Genetic Programming configuration
  */
 export interface CoreEvolutionConfig {
   /** Number of iterative improvement iterations */
   readonly iterativeIterations: number
-  /** Genetic programming configuration */
+  /** Genetic Programming configuration */
   readonly GP: {
     readonly generations: number
     readonly populationSize: number

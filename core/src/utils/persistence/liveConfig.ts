@@ -43,7 +43,7 @@ function makeDefaultConfig(): WorkflowConfig {
  */
 export async function loadLiveWorkflowConfig(
   fileName: string = PATHS.setupFile,
-  opts?: { wfVersionId?: string; workflowId?: string }
+  opts?: { wfVersionId?: string; workflowId?: string },
 ): Promise<WorkflowConfig> {
   if (!useDbForLiveConfig()) {
     return workflowConfigHandler.loadSingleWorkflow(fileName)
@@ -102,13 +102,13 @@ export async function saveLiveWorkflowConfig(
     parentVersionId?: string
     iterationBudget?: number
     timeBudgetSeconds?: number
-  }
+  },
 ): Promise<{ wfVersionId?: string; workflowId?: string }> {
   if (!useDbForLiveConfig()) {
     await workflowConfigHandler.saveWorkflowConfig(
       config,
       options?.fileName || "setupfile.json",
-      options?.skipBackup ?? false
+      options?.skipBackup ?? false,
     )
     return {}
   }

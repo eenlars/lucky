@@ -16,6 +16,43 @@ export function createDefaultCoreConfig(): CoreConfig {
   const loggingDir = path.join(coreDataRoot, "logs")
   const memoryRoot = path.join(coreDataRoot, "memory")
 
+  /**
+   * Find examples directory by walking up from cwd.
+   * Browser-safe: returns fallback path without filesystem access.
+   */
+  function findExamplesDir(): string {
+    const fallbackPath = path.resolve(cwd, "../examples")
+
+    // Browser environment check
+    if (typeof window !== "undefined") {
+      return fallbackPath
+    }
+
+    // Node.js environment - attempt filesystem lookup
+    try {
+      const fs = require("fs")
+      let currentDir = cwd
+
+      for (let i = 0; i < 5; i++) {
+        const candidate = path.join(currentDir, "examples")
+        if (fs.existsSync(candidate)) {
+          return candidate
+        }
+
+        const parentDir = path.dirname(currentDir)
+        if (parentDir === currentDir) break
+        currentDir = parentDir
+      }
+    } catch {
+      // Filesystem not available
+    }
+
+    return fallbackPath
+  }
+
+  const examplesRoot = findExamplesDir()
+  const codeToolsPath = path.join(examplesRoot, "code_tools")
+
   return {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
@@ -23,8 +60,8 @@ export function createDefaultCoreConfig(): CoreConfig {
     paths: {
       root: coreDataRoot,
       app: path.join(coreDataRoot, "app"),
-      runtime: path.join(coreDataRoot, "runtime"),
-      codeTools: path.join(coreDataRoot, "code_tools"),
+      runtime: examplesRoot,
+      codeTools: codeToolsPath,
       setupFile: path.join(coreDataRoot, "setup", "setupfile.json"),
       improver: path.join(coreDataRoot, "setup", "improve.json"),
       node: {
@@ -39,11 +76,7 @@ export function createDefaultCoreConfig(): CoreConfig {
 
     models: {
       provider: "openrouter",
-      inactive: new Set([
-        "moonshotai/kimi-k2",
-        "x-ai/grok-4",
-        "qwen/qwq-32b:free",
-      ]),
+      inactive: new Set(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
       defaults: {
         summary: "google/gemini-2.5-flash-lite",
         nano: "google/gemini-2.5-flash-lite",
@@ -78,6 +111,12 @@ export function createDefaultCoreConfig(): CoreConfig {
         GP: false,
         Database: false,
         Tools: false,
+        Summary: false,
+        InvocationPipeline: false,
+        Messaging: false,
+        Improvement: true,
+        ValidationBeforeHandoff: false,
+        Setup: false,
       },
     },
 
@@ -152,10 +191,6 @@ export function createDefaultCoreConfig(): CoreConfig {
   }
 }
 
-/**
- * Deep merge two objects, with override taking precedence.
- * Sets are replaced entirely, not merged.
- */
 /**
  * Deep merge two objects, with override taking precedence.
  * Sets are replaced entirely, not merged.

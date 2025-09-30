@@ -40,19 +40,19 @@ import { truncater } from "@core/utils/common/llmify"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { Crossover } from "./operators/crossover/Crossover"
 import type { MutationOptions } from "./operators/mutations/mutation.types"
 import { Population } from "./Population"
 
 export class Select {
-  private static verbose = CONFIG.logging.override.GP
+  private static verbose = isLoggingEnabled("GP")
 
   /**
    * Select random parents for breeding from valid genomes
    */
   static selectRandomParents(population: Population, amount: number): Genome[] {
-    const validGenomes = population.getGenomes().filter((genome) => genome.getFitnessScore() > 0)
+    const validGenomes = population.getGenomes().filter(genome => genome.getFitnessScore() > 0)
 
     if (isNir(validGenomes)) throw new Error("No valid genomes in population to select from")
 
@@ -60,7 +60,7 @@ export class Select {
       // TODO: implement smart parent reuse strategies for small populations
       throw new Error(
         `Cannot select ${amount} parents from ${validGenomes.length} valid genomes. ` +
-          `Population has only ${validGenomes.length} valid genomes, but requires at least ${amount}.`
+          `Population has only ${validGenomes.length} valid genomes, but requires at least ${amount}.`,
       )
     }
 
@@ -93,7 +93,7 @@ export class Select {
     const numParents = Math.floor(config.populationSize / 2)
 
     // Filter out invalid genomes
-    const validPopulation = population.getGenomes().filter((genome) => genome.isEvaluated)
+    const validPopulation = population.getGenomes().filter(genome => genome.isEvaluated)
 
     if (validPopulation.length === 0) {
       lgg.error("[Select] No valid genomes with fitness scores found in population")
@@ -121,7 +121,7 @@ export class Select {
   private static tournamentSelect(
     population: ReadonlyArray<Genome>,
     tournamentSize: number,
-    alreadySelected: ReadonlyArray<Genome>
+    alreadySelected: ReadonlyArray<Genome>,
   ): Genome {
     // Random tournament
     const tournament: Genome[] = []
@@ -140,7 +140,7 @@ export class Select {
 
     // Standard fitness-based selection
     const winner = tournament.reduce((best, current) =>
-      current.getFitnessScore() > best.getFitnessScore() ? current : best
+      current.getFitnessScore() > best.getFitnessScore() ? current : best,
     )
 
     return winner
@@ -151,7 +151,7 @@ export class Select {
    */
   static async tournamentSelection(
     population: ReadonlyArray<Genome>,
-    tournamentSize: number
+    tournamentSize: number,
   ): Promise<Genome | undefined> {
     if (population.length === 0) {
       return undefined
@@ -261,7 +261,7 @@ export class Select {
             children.push(kid)
           } else if (random < config.crossoverRate + config.mutationRate) {
             lgg.log(
-              `Mutation selected (random=${random.toFixed(3)} in [${config.crossoverRate}, ${config.crossoverRate + config.mutationRate}))`
+              `Mutation selected (random=${random.toFixed(3)} in [${config.crossoverRate}, ${config.crossoverRate + config.mutationRate}))`,
             )
             failureTracker.trackMutationAttempt()
             const [parent] = parents
@@ -280,13 +280,13 @@ export class Select {
             }
           } else {
             lgg.log(
-              `Immigration selected (random=${random.toFixed(3)} >= ${config.crossoverRate + config.mutationRate})`
+              `Immigration selected (random=${random.toFixed(3)} >= ${config.crossoverRate + config.mutationRate})`,
             )
             failureTracker.trackImmigrationAttempt()
             try {
               const { error, data: baby } = await Genome.createRandom({
                 evaluationInput,
-                parentWorkflowVersionIds: parents.map((p) => p.getWorkflowVersionId()),
+                parentWorkflowVersionIds: parents.map(p => p.getWorkflowVersionId()),
                 _evolutionContext,
                 problemAnalysis,
                 baseWorkflow: undefined,
@@ -304,12 +304,12 @@ export class Select {
             }
           }
         } catch (e) {
-          lgg.error(`Operation failed for parents ${parents.map((p) => p.getWorkflowVersionId()).join(", ")}`, e)
+          lgg.error(`Operation failed for parents ${parents.map(p => p.getWorkflowVersionId()).join(", ")}`, e)
         }
         return children
       })
 
-      const batchResults = await parallelLimit(offspringTasks, (task) => task())
+      const batchResults = await parallelLimit(offspringTasks, task => task())
       offspring.push(...batchResults.flat())
       attempts += currentBatchSize
 
@@ -317,7 +317,7 @@ export class Select {
         `[generateOffspring] 
         Batch complete: ${batchResults.flat().length} new offspring, 
         total: ${offspring.length}/${config.offspringCount},
-        attempts: ${attempts}/${maxAttempts}`
+        attempts: ${attempts}/${maxAttempts}`,
       )
     }
 
@@ -351,7 +351,7 @@ export class Select {
           Circuit breaker triggered: ${invalidCount} 
           invalid offspring generated (max: ${maxFailures}). 
           Stopping verification.
-          `
+          `,
         )
         break
       }
@@ -366,7 +366,7 @@ export class Select {
     }
 
     lgg.info(
-      `[Select] Offspring verification complete: ${validOffspring.length} valid, ${invalidCount} invalid out of ${offspring.length} total`
+      `[Select] Offspring verification complete: ${validOffspring.length} valid, ${invalidCount} invalid out of ${offspring.length} total`,
     )
 
     return { validOffspring, invalidCount }
@@ -409,7 +409,7 @@ export class Select {
     // Ensure we still have enough parents for crossover
     if (validGenomesArr.length < config.numberOfParentsCreatingOffspring) {
       throw new Error(
-        `Insufficient valid genomes (${validGenomesArr.length}) to select ${config.numberOfParentsCreatingOffspring} parents.`
+        `Insufficient valid genomes (${validGenomesArr.length}) to select ${config.numberOfParentsCreatingOffspring} parents.`,
       )
     }
 
@@ -432,7 +432,7 @@ export class Select {
 
     if (isNir(validOffspring)) {
       throw new Error(
-        `Failed to generate any valid offspring after ${attempts} attempts. All generated workflows are invalid.`
+        `Failed to generate any valid offspring after ${attempts} attempts. All generated workflows are invalid.`,
       )
     }
 
@@ -455,7 +455,7 @@ export class Select {
     const nextGenIndividuals = combined.slice(0, popSize)
 
     // Reset genomes for new generation to ensure re-evaluation and WorkflowInvocation creation
-    nextGenIndividuals.forEach((genome) => {
+    nextGenIndividuals.forEach(genome => {
       genome.reset({
         runId: _evolutionContext.runId,
         generationId: _evolutionContext.generationId,

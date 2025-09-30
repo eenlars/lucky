@@ -32,23 +32,23 @@ async function demonstrateGAIAUsage() {
   console.log("\n3. Fetch by difficulty level:")
   const easyTasks = await GAIALoader.fetchByLevel(1, "validation", 3)
   console.log(`Found ${easyTasks.length} easy tasks:`)
-  easyTasks.forEach((task) => {
+  easyTasks.forEach(task => {
     console.log(`- ${task.Question.substring(0, 80)}...`)
   })
 
   // 4. Get random instances for testing
   console.log("\n4. Random instances for testing:")
   const randomTasks = GAIALocalLoader.fetchRandom(3, "validation")
-  randomTasks.forEach((task) => {
+  randomTasks.forEach(task => {
     console.log(`- Level ${task.Level}: ${task.Question.substring(0, 60)}...`)
   })
 
   // 5. Check for instances with file attachments
   console.log("\n5. Instances with file attachments:")
   const withFiles = await GAIALoader.fetchByLevel(2, "validation", 50)
-  const fileInstances = withFiles.filter((t) => t.file_name)
+  const fileInstances = withFiles.filter(t => t.file_name)
   console.log(`Found ${fileInstances.length} instances with files:`)
-  fileInstances.slice(0, 3).forEach((task) => {
+  fileInstances.slice(0, 3).forEach(task => {
     console.log(`- ${task.task_id}: ${task.file_name}`)
   })
 

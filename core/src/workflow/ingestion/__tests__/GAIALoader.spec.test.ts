@@ -80,7 +80,7 @@ describe("GAIALoader Integration Tests", () => {
         throw error
       }
     },
-    30000
+    30000,
   ) // 30 second timeout for API calls
 
   it.skipIf(skipIntegration)(
@@ -93,7 +93,7 @@ describe("GAIALoader Integration Tests", () => {
 
           if (instances.length > 0) {
             // Verify all instances have the correct level
-            expect(instances.every((inst) => inst.Level === level)).toBe(true)
+            expect(instances.every(inst => inst.Level === level)).toBe(true)
             console.log(`Found ${instances.length} instances for level ${level}`)
           }
         }
@@ -105,7 +105,7 @@ describe("GAIALoader Integration Tests", () => {
         throw error
       }
     },
-    60000
+    60000,
   ) // 60 second timeout for multiple API calls
 
   it.skipIf(skipIntegration)(
@@ -153,7 +153,7 @@ describe("GAIALoader Integration Tests", () => {
         console.log("Could not verify API structure:", error)
       }
     },
-    30000
+    30000,
   )
 
   it.skipIf(skipIntegration || !hasToken)(
@@ -182,6 +182,6 @@ describe("GAIALoader Integration Tests", () => {
         console.log("Could not test fetchById:", error)
       }
     },
-    30000
+    30000,
   )
 })

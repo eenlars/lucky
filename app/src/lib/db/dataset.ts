@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@/lib/supabase"
 import type { Tables, TablesInsert } from "@lucky/shared"
 
 export type DataSet = Tables<"DataSet">

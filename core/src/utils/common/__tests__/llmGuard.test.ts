@@ -45,7 +45,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       newsContent,
-      "The content must be news-related content. It should contain news headlines, article titles, or breaking news information."
+      "The content must be news-related content. It should contain news headlines, article titles, or breaking news information.",
     )
 
     expect(result.isValid).toBe(true)
@@ -70,7 +70,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       nonNewsContent,
-      "The content must be news-related content from a news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be cooking recipes, blog posts, or non-news content."
+      "The content must be news-related content from a news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be cooking recipes, blog posts, or non-news content.",
     )
 
     expect(result.isValid).toBe(false)
@@ -93,7 +93,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       technicalContent,
-      "The content must be JavaScript code. It should contain functions, variables, or programming logic."
+      "The content must be JavaScript code. It should contain functions, variables, or programming logic.",
     )
 
     expect(result.isValid).toBe(true)
@@ -118,7 +118,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       inappropriateContent,
-      "The content must be educational or informational content. It should NOT contain advertisements, promotional material, or sales pitches."
+      "The content must be educational or informational content. It should NOT contain advertisements, promotional material, or sales pitches.",
     )
 
     expect(result.isValid).toBe(false)
@@ -144,7 +144,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       whitespaceContent,
-      "The content must contain meaningful non-whitespace text. Content with only spaces, tabs, and newlines is not allowed."
+      "The content must contain meaningful non-whitespace text. Content with only spaces, tabs, and newlines is not allowed.",
     )
 
     expect(result.isValid).toBe(false)
@@ -166,7 +166,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       dutchNewsContent,
-      "The content must be Dutch news content. It should contain Dutch news headlines, article titles, or breaking news information in Dutch language."
+      "The content must be Dutch news content. It should contain Dutch news headlines, article titles, or breaking news information in Dutch language.",
     )
 
     expect(result.isValid).toBe(true)
@@ -190,7 +190,7 @@ describe("llmGuard", () => {
 
     const result = await llmGuard(
       englishContent,
-      "The content must be in Dutch language only. English content is not allowed."
+      "The content must be in Dutch language only. English content is not allowed.",
     )
 
     expect(result.isValid).toBe(false)

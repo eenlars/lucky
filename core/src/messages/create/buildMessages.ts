@@ -77,7 +77,7 @@ export function buildMessages({
         `Unsupported payload type: ${
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (payload as any)?.kind ?? "unknown"
-        }`
+        }`,
       )
     }
   }

@@ -109,7 +109,7 @@ function IntegratedNavItem({
         className={cn(
           "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
           isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
-          isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]"
+          isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
         )}
       />
 
@@ -118,7 +118,7 @@ function IntegratedNavItem({
         <div
           className={cn(
             "transition-colors duration-200",
-            isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary"
+            isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
           )}
         >
           {item.icon}
@@ -131,7 +131,7 @@ function IntegratedNavItem({
           <span
             className={cn(
               "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden pr-2",
-              isActive ? "text-primary" : "text-[#666] group-hover:text-primary"
+              isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
             )}
           >
             {item.label}
@@ -140,7 +140,7 @@ function IntegratedNavItem({
             <button
               type="button"
               className="w-8 h-8 flex items-center justify-center transition-all duration-200 ml-auto mr-3 text-[#888] hover:text-primary pointer-events-auto"
-              onClick={(e) => onToggleSubmenu(item.href, e)}
+              onClick={e => onToggleSubmenu(item.href, e)}
             >
               <svg
                 stroke="currentColor"
@@ -184,7 +184,7 @@ export function IntegratedAside() {
   const toggleSubmenu = (href: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setOpenSubmenus((prev) => {
+    setOpenSubmenus(prev => {
       const next = new Set(prev)
       if (next.has(href)) {
         next.delete(href)
@@ -206,7 +206,7 @@ export function IntegratedAside() {
     <aside
       className={cn(
         "h-screen flex-shrink-0 flex-col justify-between fixed top-0 pb-4 items-center flex z-50 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] bg-sidebar border-r border-sidebar-border",
-        isCollapsed ? "w-[70px]" : "w-[240px]"
+        isCollapsed ? "w-[70px]" : "w-[240px]",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -215,7 +215,7 @@ export function IntegratedAside() {
       <div
         className={cn(
           "absolute top-0 left-0 h-[70px] flex items-center justify-center bg-sidebar border-b border-sidebar-border transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          isCollapsed ? "w-[69px]" : "w-full"
+          isCollapsed ? "w-[69px]" : "w-full",
         )}
       >
         <Link
@@ -234,7 +234,7 @@ export function IntegratedAside() {
         <div className="mt-6 w-full">
           <nav className="w-full">
             <div className="flex flex-col gap-2">
-              {navigationItems.map((item) => {
+              {navigationItems.map(item => {
                 const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
 
                 return (
@@ -254,7 +254,7 @@ export function IntegratedAside() {
                       <div
                         className={cn(
                           "transition-all duration-300 ease-out overflow-hidden",
-                          openSubmenus.has(item.href) ? "max-h-[500px]" : "max-h-0"
+                          openSubmenus.has(item.href) ? "max-h-[500px]" : "max-h-0",
                         )}
                       >
                         {item.submenus.map((submenu, index) => (
@@ -268,7 +268,9 @@ export function IntegratedAside() {
                               <div
                                 className={cn(
                                   "ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out",
-                                  openSubmenus.has(item.href) ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
+                                  openSubmenus.has(item.href)
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 -translate-x-2",
                                 )}
                                 style={{
                                   transitionDelay: `${index * 20}ms`,
@@ -307,7 +309,7 @@ export function IntegratedAside() {
           "text-foreground hover:bg-accent",
           "transition-all duration-200 hover:scale-105",
           "md:hidden",
-          isMobileOpen && "opacity-0 pointer-events-none"
+          isMobileOpen && "opacity-0 pointer-events-none",
         )}
         aria-label="Open sidebar"
       >
@@ -328,7 +330,7 @@ export function IntegratedAside() {
         <div
           className={cn(
             "fixed left-0 top-0 z-50 h-screen bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border/50 transition-transform duration-300 ease-out w-64",
-            isMobileOpen ? "translate-x-0" : "-translate-x-full"
+            isMobileOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex h-full flex-col">
@@ -353,7 +355,7 @@ export function IntegratedAside() {
             {/* Mobile navigation */}
             <nav className="flex-1 px-2.5 py-3">
               <ul className="space-y-0.5">
-                {navigationItems.map((item) => {
+                {navigationItems.map(item => {
                   const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
 
                   return (
@@ -372,7 +374,7 @@ export function IntegratedAside() {
                             "flex items-center gap-3 rounded-md px-2.5 py-2 text-sm font-medium transition-all duration-200",
                             isActive
                               ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
                           )}
                         >
                           {item.icon}

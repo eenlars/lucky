@@ -10,7 +10,7 @@ export class GeneticPrompts {
     parent1: string,
     parent2: string,
     crossoverInstructions: string,
-    aggression: number
+    aggression: number,
   ): string {
     return `you are an expert in genetic programming for workflow evolution.
 

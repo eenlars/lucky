@@ -39,7 +39,7 @@ function getPorts(node: AppNode) {
   const targetPorts: ElkPort[] = []
   const sourcePorts: ElkPort[] = []
 
-  handles?.forEach((handle) => {
+  handles?.forEach(handle => {
     if (handle.type === "target") {
       targetPorts.push(createTargetPort(`${node.id}-target-${handle.id ?? null}`))
     }
@@ -58,7 +58,7 @@ export async function layoutGraph(nodes: AppNode[], edges: Edge[]) {
   const graph: ElkNode = {
     id: "root",
     layoutOptions,
-    edges: edges.map((edge) => {
+    edges: edges.map(edge => {
       connectedNodes.add(edge.source)
       connectedNodes.add(edge.target)
       return {
@@ -89,9 +89,9 @@ export async function layoutGraph(nodes: AppNode[], edges: Edge[]) {
 
   const elkNodes = await elk.layout(graph)
 
-  const layoutedNodesMap = new Map(elkNodes.children?.map((n) => [n.id, n]))
+  const layoutedNodesMap = new Map(elkNodes.children?.map(n => [n.id, n]))
 
-  const layoutedNodes: AppNode[] = nodes.map((node) => {
+  const layoutedNodes: AppNode[] = nodes.map(node => {
     const layoutedNode = layoutedNodesMap.get(node.id)
 
     if (!layoutedNode) {

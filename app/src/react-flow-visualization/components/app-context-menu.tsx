@@ -15,7 +15,7 @@ import { useAppStore } from "@/react-flow-visualization/store"
 
 export default function AppContextMenu({ children }: { children: ReactNode }) {
   const [position, setPosition] = useClientPosition()
-  const addNodeByType = useAppStore((s) => s.addNodeByType)
+  const addNodeByType = useAppStore(s => s.addNodeByType)
 
   const onItemClick = (nodeType: AppNodeType) => {
     if (!position) {
@@ -30,7 +30,7 @@ export default function AppContextMenu({ children }: { children: ReactNode }) {
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {Object.values(nodesConfig).map((item) => {
+          {Object.values(nodesConfig).map(item => {
             const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
               <button key={item.displayName} onClick={() => onItemClick(item.id)} className="w-full">

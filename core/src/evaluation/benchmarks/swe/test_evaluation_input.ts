@@ -65,9 +65,7 @@ async function downloadSWEBenchDataset(): Promise<void> {
         }
 
         // Find a suitable dataset file
-        const datasetFiles = fileList.filter(
-          (f) => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet")
-        )
+        const datasetFiles = fileList.filter(f => f.endsWith(".jsonl") || f.endsWith(".json") || f.endsWith(".parquet"))
 
         if (datasetFiles.length > 0) {
           const filename = datasetFiles[0]
@@ -116,7 +114,7 @@ async function downloadSWEBenchDataset(): Promise<void> {
 async function validateAISolution(
   aiSolution: AISolutionResponse,
   instance: SWEBenchInstanceFull,
-  evaluationInput: EvaluationInput
+  evaluationInput: EvaluationInput,
 ): Promise<{
   overallScore: number
   validationResults: {
@@ -226,13 +224,13 @@ Provide scores (0-10) for each criterion and explain your reasoning. Also provid
     console.log("\n📊 Validation Scores:")
     console.log(`- Has Code Changes: ${scores.hasCodeChanges}/10 (${validationResults.hasCodeChanges ? "✅" : "❌"})`)
     console.log(
-      `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`
+      `- Addresses Problem: ${scores.addressesProblem}/10 (${validationResults.addressesProblem ? "✅" : "❌"})`,
     )
     console.log(`- Format Quality: ${scores.formatQuality}/10 (${validationResults.formatQuality ? "✅" : "❌"})`)
     console.log(`- Test Awareness: ${scores.testAwareness}/10 (${validationResults.testAwareness ? "✅" : "❌"})`)
     console.log(`- Ground Truth Similarity: ${scores.groundTruthSimilarity.toFixed(1)}/10`)
     console.log(
-      `- Meets Evaluation Goal: ${scores.meetsEvaluationGoal}/10 (${validationResults.meetsEvaluationGoal ? "✅" : "❌"})`
+      `- Meets Evaluation Goal: ${scores.meetsEvaluationGoal}/10 (${validationResults.meetsEvaluationGoal ? "✅" : "❌"})`,
     )
     console.log(`- AI Confidence: ${scores.confidence}/10`)
     console.log(`\n🎯 Overall Score: ${overallScore.toFixed(1)}/10`)
@@ -258,7 +256,7 @@ function calculateSimilarity(text1: string, text2: string): number {
   const words1 = new Set(text1.toLowerCase().match(/\w+/g) || [])
   const words2 = new Set(text2.toLowerCase().match(/\w+/g) || [])
 
-  const intersection = new Set([...words1].filter((x) => words2.has(x)))
+  const intersection = new Set([...words1].filter(x => words2.has(x)))
   const union = new Set([...words1, ...words2])
 
   return union.size > 0 ? intersection.size / union.size : 0
@@ -507,7 +505,7 @@ async function runEvaluationInputTests() {
       const validation = result.validations[0]
       if (validation) {
         console.log(
-          `Test ${index + 1} (${(result.evaluationInput as any).swebenchId}): ${validation.overallScore.toFixed(1)}/10 - $${result.totalCost.toFixed(4)}`
+          `Test ${index + 1} (${(result.evaluationInput as any).swebenchId}): ${validation.overallScore.toFixed(1)}/10 - $${result.totalCost.toFixed(4)}`,
         )
       }
     })

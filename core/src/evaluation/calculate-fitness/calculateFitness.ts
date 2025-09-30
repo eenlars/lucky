@@ -35,7 +35,7 @@ async function calculateFitness({
         totalTimeSeconds: totalTime / 1000,
         accuracy: 0,
       },
-      0
+      0,
     )
   }
 
@@ -99,7 +99,7 @@ async function calculateFitness({
       totalTimeSeconds: totalTime / 1000,
       accuracy: Math.round(accuracy),
     },
-    response.usdCost
+    response.usdCost,
   )
 }
 

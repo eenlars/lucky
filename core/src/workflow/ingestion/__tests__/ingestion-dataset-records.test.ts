@@ -204,7 +204,7 @@ describe("IngestionLayer - Dataset Records", () => {
     }
 
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "dataset-records evaluation requires at least one record ID"
+      "dataset-records evaluation requires at least one record ID",
     )
   })
 
@@ -228,7 +228,7 @@ describe("IngestionLayer - Dataset Records", () => {
     }
 
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "failed to convert dataset record evaluation: failed to fetch dataset records: Database connection failed"
+      "failed to convert dataset record evaluation: failed to fetch dataset records: Database connection failed",
     )
   })
 
@@ -252,7 +252,7 @@ describe("IngestionLayer - Dataset Records", () => {
     }
 
     await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
-      "no dataset records found for IDs: non-existent-id"
+      "no dataset records found for IDs: non-existent-id",
     )
   })
 })

@@ -47,7 +47,7 @@ console.log(task.intent) // "What is the top-1 best-selling product in 2022"
 ```typescript
 // Convert tasks to workflow format for evaluation
 const workflows = await WebArenaLoader.fetchAsWorkflowIO(5)
-workflows.forEach((workflow) => {
+workflows.forEach(workflow => {
   console.log("Input:", workflow.workflowInput)
   console.log("Expected Output:", workflow.workflowOutput)
 })

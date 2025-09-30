@@ -22,7 +22,7 @@ describe("Parallel handoff integration", () => {
     const callArgsByNode: Record<string, InvokeArgs[]> = {}
 
     // Replace WorkFlowNode.create to avoid real tool initialization and LLM calls
-    const createSpy = vi.spyOn(WorkFlowNode, "create").mockImplementation(async (config) => {
+    const createSpy = vi.spyOn(WorkFlowNode, "create").mockImplementation(async config => {
       const nodeId = config.nodeId
       const mkReply = (text: string) => ({
         kind: "result" as const,
@@ -170,11 +170,11 @@ describe("Parallel handoff integration", () => {
     const joinIncoming = joinInvocations[0].workflowMessageIncoming
     const payload = joinIncoming.payload as AggregatedPayload
     expect(payload?.kind).toBe("aggregated")
-    const fromIds = payload.messages.map((m) => m.fromNodeId)
+    const fromIds = payload.messages.map(m => m.fromNodeId)
     expect(fromIds.sort()).toEqual(["workerA", "workerB"].sort())
 
     // Also verify the aggregated payload contains the secret info from both workers
-    const aggregatedTexts = payload.messages.map((m) => extractTextFromPayload(m.payload))
+    const aggregatedTexts = payload.messages.map(m => extractTextFromPayload(m.payload))
     const combined = aggregatedTexts.join("\n")
     expect(combined).toMatch(/ALPHA/i)
     expect(combined).toMatch(/BETA/i)

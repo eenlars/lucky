@@ -36,7 +36,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     closeNodeDetails,
     updateNode,
   } = useAppStore(
-    useShallow((state) => ({
+    useShallow(state => ({
       nodes: state.nodes,
       edges: state.edges,
       colorMode: state.colorMode,
@@ -53,7 +53,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
       loadWorkflowVersion: state.loadWorkflowVersion,
       closeNodeDetails: state.closeNodeDetails,
       updateNode: state.updateNode,
-    }))
+    })),
   )
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     )
   }
 
-  const selectedNode = selectedNodeId ? nodes.find((node) => node.id === selectedNodeId) : null
+  const selectedNode = selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null
 
   return (
     <>
@@ -143,7 +143,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
       {selectedNode && (
         <NodeDetailsDialog
           open={nodeDetailsOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) closeNodeDetails()
           }}
           nodeData={selectedNode.data}

@@ -176,7 +176,7 @@ Example Corp,https://example.com,United States,Technology,2023-01-15
 
 ```typescript
 const delay = baseDelay * Math.pow(2, retryCount) + Math.random() * 1000
-await new Promise((resolve) => setTimeout(resolve, delay))
+await new Promise(resolve => setTimeout(resolve, delay))
 ```
 
 #### Issue: Incomplete Domain Matching
@@ -210,10 +210,10 @@ if (storeCount > 120) {
 const batchSize = 10
 for (let i = 0; i < companies.length; i += batchSize) {
   const batch = companies.slice(i, i + batchSize)
-  await Promise.all(batch.map((company) => scrapeCompany(company)))
+  await Promise.all(batch.map(company => scrapeCompany(company)))
 
   // Rate limiting between batches
-  await new Promise((resolve) => setTimeout(resolve, 2000))
+  await new Promise(resolve => setTimeout(resolve, 2000))
 }
 ```
 
@@ -246,7 +246,7 @@ const stream = fs
         this.push(processCompany(chunk))
         callback()
       },
-    })
+    }),
   )
 ```
 
@@ -273,12 +273,12 @@ class RateLimiter {
 
   async wait(): Promise<void> {
     const now = Date.now()
-    this.requests = this.requests.filter((time) => now - time < this.window)
+    this.requests = this.requests.filter(time => now - time < this.window)
 
     if (this.requests.length >= this.limit) {
       const oldestRequest = Math.min(...this.requests)
       const delay = this.window - (now - oldestRequest)
-      await new Promise((resolve) => setTimeout(resolve, delay))
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
 
     this.requests.push(now)
@@ -301,13 +301,13 @@ interface ValidationRule {
 const validationRules: ValidationRule[] = [
   {
     name: "domainMatch",
-    validate: (company) => company.website && company.stores.length > 0,
+    validate: company => company.website && company.stores.length > 0,
     severity: "error",
     message: "Company must have website and stores",
   },
   {
     name: "storeCount",
-    validate: (company) => company.stores.length <= 120,
+    validate: company => company.stores.length <= 120,
     severity: "warning",
     message: "Store count exceeds manual review threshold",
   },

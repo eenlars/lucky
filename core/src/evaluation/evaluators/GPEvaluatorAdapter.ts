@@ -10,7 +10,7 @@ import { R } from "@core/utils/types"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { JSONN } from "@core/utils/json"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { EvolutionEvaluator } from "./EvolutionEvaluator"
 
 /**
@@ -18,14 +18,14 @@ import type { EvolutionEvaluator } from "./EvolutionEvaluator"
  * Bridges the gap between genome-based evaluation and workflow-based evaluation.
  */
 export class GPEvaluatorAdapter implements EvolutionEvaluator {
-  static verbose = CONFIG.logging.override.GP
+  static verbose = isLoggingEnabled("GP")
   private aggregatedEvaluator: AggregatedEvaluator
   private mockEvaluator: MockGPEvaluator
 
   constructor(
     private workflowCases: WorkflowIO[],
     private newGoal: string,
-    private problemAnalysis: string
+    private problemAnalysis: string,
   ) {
     this.aggregatedEvaluator = new AggregatedEvaluator()
     this.mockEvaluator = new MockGPEvaluator()
@@ -34,7 +34,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
     if (GPEvaluatorAdapter.verbose) {
       lgg.log(`[GPEvaluatorAdapter] First case input: ${workflowCases[0]?.workflowInput.substring(0, 100)}`)
       lgg.log(
-        `[GPEvaluatorAdapter] First case output: ${JSON.stringify(workflowCases[0]?.workflowOutput).substring(0, 100)}`
+        `[GPEvaluatorAdapter] First case output: ${JSON.stringify(workflowCases[0]?.workflowOutput).substring(0, 100)}`,
       )
     }
   }
@@ -51,7 +51,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
     if (GPEvaluatorAdapter.verbose) {
       lgg.log(
-        `[GPEvaluatorAdapter] Genome details - Nodes: ${genome.nodes.length}, Genome ID: ${genome.getWorkflowVersionId()}`
+        `[GPEvaluatorAdapter] Genome details - Nodes: ${genome.nodes.length}, Genome ID: ${genome.getWorkflowVersionId()}`,
       )
     }
 
@@ -92,7 +92,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
       }
 
       lgg.log(
-        `[GPEvaluatorAdapter] Evaluating genome ${genome.getWorkflowVersionId()} on ${this.workflowCases.length} workflow cases`
+        `[GPEvaluatorAdapter] Evaluating genome ${genome.getWorkflowVersionId()} on ${this.workflowCases.length} workflow cases`,
       )
 
       // Set pre-computed workflow IO (avoids re-calling prepareProblem)
@@ -110,7 +110,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
       if (!success) {
         lgg.error(
-          `[GPEvaluatorAdapter] Aggregated evaluation failed for genome ${genome.getWorkflowVersionId()}: ${error}`
+          `[GPEvaluatorAdapter] Aggregated evaluation failed for genome ${genome.getWorkflowVersionId()}: ${error}`,
         )
         failureTracker.trackEvaluationFailure() // Track evaluation failure
         return R.error(`Aggregated evaluation failed: ${error}`, usdCost)
@@ -127,7 +127,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
       const evaluationTime = (Date.now() - startTime) / 1000
 
       lgg.log(
-        `[GPEvaluatorAdapter] Evaluation complete for ${genome.getWorkflowVersionId()} - Score: ${fitness.score.toFixed(3)}, Cost: $${cost.toFixed(4)}, Time: ${evaluationTime.toFixed(1)}s`
+        `[GPEvaluatorAdapter] Evaluation complete for ${genome.getWorkflowVersionId()} - Score: ${fitness.score.toFixed(3)}, Cost: $${cost.toFixed(4)}, Time: ${evaluationTime.toFixed(1)}s`,
       )
 
       if (GPEvaluatorAdapter.verbose) {
@@ -159,7 +159,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
       lgg.error(
         `[GPEvaluatorAdapter] Evaluation failed for genome with wf_version_id ${genome.getWorkflowVersionId()} after ${evaluationTime.toFixed(1)}s:`,
-        error
+        error,
       )
 
       failureTracker.trackEvaluationFailure() // Track evaluation failure
@@ -172,7 +172,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
             errorMessage: String(error),
             workflowNodes: genome.nodes.length,
             failureTime: evaluationTime,
-          })
+          }),
         )
       }
 

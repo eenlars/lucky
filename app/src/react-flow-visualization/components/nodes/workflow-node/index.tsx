@@ -11,15 +11,15 @@ import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mappi
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
 // Unused tool imports removed
-import { CURRENT_PROVIDER } from "@core/utils/spending/provider"
+// Provider hardcoded for client-side display
 
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
 // you can also create new components for each of your nodes for greater flexibility.
 function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeData; children?: React.ReactNode }) {
   const _setPromptDialogOpen = (_: boolean) => {}
-  const openNodeDetails = useAppStore((state) => state.openNodeDetails)
-  const _updateNode = useAppStore((state) => state.updateNode)
+  const openNodeDetails = useAppStore(state => state.openNodeDetails)
+  const _updateNode = useAppStore(state => state.updateNode)
   const [_isToolSelectorOpen, _setIsToolSelectorOpen] = useState(false)
 
   const onRunClick = useCallback((e: React.MouseEvent) => {
@@ -54,7 +54,7 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
   const displayModelName = (() => {
     const full = data?.modelName || ""
     if (!full) return null
-    return `${full} + ${CURRENT_PROVIDER}`
+    return `${full} + openrouter`
   })()
 
   const _totalTools = (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
@@ -138,7 +138,7 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
             <div className="relative group/popover">
               <button
                 className="inline-block border border-gray-300 text-gray-500 text-xs px-2 py-0.5 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
               >
                 +{hiddenTools.length} more
               </button>

@@ -84,6 +84,6 @@ In your feedback, include: critique quality justification, specific weaknesses a
       totalTimeSeconds: totalTime / 1000,
       accuracy: response.data.accuracy,
     },
-    response.usdCost
+    response.usdCost,
   )
 }

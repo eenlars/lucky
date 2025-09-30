@@ -8,7 +8,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { JSONN } from "@core/utils/json"
 import * as csv from "@core/utils/csv"
-import { CONFIG } from "@core/core-config/compat"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**
@@ -16,7 +16,7 @@ import type { WorkflowIO } from "./ingestion.types"
  * handles both text and CSV evaluation inputs
  */
 export class IngestionLayer {
-  static verbose = CONFIG.logging.override.Setup
+  static verbose = isLoggingEnabled("Setup")
 
   /**
    * converts EvaluationInput to WorkflowIO array
@@ -91,8 +91,8 @@ export class IngestionLayer {
     guard(evaluation.inputFile, "CSV evaluation type requires inputFile")
 
     try {
-      const csvLoader = new csv.CSVLoader(evaluation.inputFile)
-      const csvData = await csvLoader.loadAsJSON<Record<string, any>>()
+      // CSV utilities are simplified in standalone core - just parse the data
+      const csvData = csv.parseCsv(evaluation.inputFile).data as Record<string, any>[]
 
       lgg.onlyIf(this.verbose, "[IngestionLayer] loaded CSV data", {
         rows: csvData.length,
@@ -173,7 +173,7 @@ export class IngestionLayer {
     // check if the column exists in the row
     if (!(columnName in row)) {
       throw new Error(
-        `column '${columnName}' not found in CSV row ${rowIndex}. Available columns: ${Object.keys(row).join(", ")}`
+        `column '${columnName}' not found in CSV row ${rowIndex}. Available columns: ${Object.keys(row).join(", ")}`,
       )
     }
 
@@ -197,7 +197,7 @@ export class IngestionLayer {
    * converts SWE-bench evaluation to multiple WorkflowIO cases (configurable limit)
    */
   private static async convertSWEBenchEvaluation(
-    _evaluation: EvaluationInput & { type: "swebench" }
+    _evaluation: EvaluationInput & { type: "swebench" },
   ): Promise<WorkflowIO[]> {
     try {
       // fetch the SWE-bench instance data
@@ -220,7 +220,7 @@ export class IngestionLayer {
     } catch (error) {
       lgg.error("[IngestionLayer] failed to process SWE-bench", error)
       throw new Error(
-        `failed to convert SWE-bench evaluation: ${error instanceof Error ? error.message : String(error)}`
+        `failed to convert SWE-bench evaluation: ${error instanceof Error ? error.message : String(error)}`,
       )
     }
   }
@@ -247,7 +247,7 @@ export class IngestionLayer {
 
       if (!authToken) {
         lgg.warn(
-          "[IngestionLayer] HF_TOKEN or HUGGING_FACE_API_KEY not found in environment. GAIA is a gated dataset and may require authentication."
+          "[IngestionLayer] HF_TOKEN or HUGGING_FACE_API_KEY not found in environment. GAIA is a gated dataset and may require authentication.",
         )
       }
 
@@ -257,11 +257,11 @@ export class IngestionLayer {
         evaluation.level || 1,
         evaluation.split || "validation",
         limit,
-        authToken
+        authToken,
       )
 
       // convert each instance to WorkflowIO
-      const workflowCases: WorkflowIO[] = instances.map((instance) => {
+      const workflowCases: WorkflowIO[] = instances.map(instance => {
         // compose the workflow input
         let workflowInput = `${evaluation.goal}
 
@@ -325,7 +325,7 @@ Fallback Question: What is 2 + 2?`,
    * converts dataset record evaluation to multiple WorkflowIO cases
    */
   private static async convertDatasetRecordEvaluation(
-    evaluation: EvaluationInput & { type: "dataset-records" }
+    evaluation: EvaluationInput & { type: "dataset-records" },
   ): Promise<WorkflowIO[]> {
     const { recordIds } = evaluation
 
@@ -357,7 +357,7 @@ Fallback Question: What is 2 + 2?`,
       })
 
       // convert each record to WorkflowIO
-      const workflowCases: WorkflowIO[] = records.map((record) => ({
+      const workflowCases: WorkflowIO[] = records.map(record => ({
         workflowInput: record.workflow_input || evaluation.goal,
         workflowOutput: {
           output: record.ground_truth,
@@ -378,7 +378,7 @@ Fallback Question: What is 2 + 2?`,
     } catch (error) {
       lgg.error("[IngestionLayer] failed to process dataset records", error)
       throw new Error(
-        `failed to convert dataset record evaluation: ${error instanceof Error ? error.message : String(error)}`
+        `failed to convert dataset record evaluation: ${error instanceof Error ? error.message : String(error)}`,
       )
     }
   }

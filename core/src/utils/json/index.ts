@@ -4,4 +4,4 @@
  */
 
 export { JSONN, isJSON, show } from "./jsonParse"
-export type { Json, Database, Enums, Tables, TablesInsert, TablesUpdate } from "./database.types"
+export type { Json, Database, Enums, Tables, TablesInsert, TablesUpdate } from "@lucky/shared"

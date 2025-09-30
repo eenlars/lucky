@@ -118,8 +118,8 @@ beforeAll(async () => {
         },
       },
       null,
-      2
-    )
+      2,
+    ),
   )
 
   prevMcpSecretPath = process.env.MCP_SECRET_PATH

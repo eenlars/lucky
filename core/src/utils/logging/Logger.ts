@@ -48,7 +48,7 @@ class FileLogger {
           }
           return val
         },
-        2
+        2,
       )
     } catch {
       try {
@@ -73,9 +73,7 @@ class FileLogger {
     console.log(...args)
 
     if (this.logFile && this.isNodeEnv) {
-      const message = args
-        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
-        .join(" ")
+      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] ${message}\n`
       await this.writeToFile(logEntry)
@@ -97,9 +95,7 @@ class FileLogger {
     console.info(...args)
 
     if (this.logFile && this.isNodeEnv) {
-      const message = args
-        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
-        .join(" ")
+      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] INFO: ${message}\n`
       await this.writeToFile(logEntry)
@@ -110,9 +106,7 @@ class FileLogger {
     console.warn(chalk.yellow(...args))
 
     if (this.logFile && this.isNodeEnv) {
-      const message = args
-        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
-        .join(" ")
+      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] WARN: ${message}\n`
       await this.writeToFile(logEntry)
@@ -121,7 +115,7 @@ class FileLogger {
 
   async error(...args: any[]): Promise<void> {
     // Preserve Error objects for console so stack traces are printed
-    const consoleArgs = args.map((arg) => {
+    const consoleArgs = args.map(arg => {
       if (arg instanceof Error) return arg
       if (typeof arg === "string") return chalk.red(arg)
       return arg
@@ -129,7 +123,7 @@ class FileLogger {
     console.error(...consoleArgs)
 
     if (this.logFile && this.isNodeEnv) {
-      const logMessage = args.map((arg) => this.formatForFile(arg)).join(" ")
+      const logMessage = args.map(arg => this.formatForFile(arg)).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] ERROR: ${logMessage}\n`
       await this.writeToFile(logEntry)
@@ -140,9 +134,7 @@ class FileLogger {
     console.debug(...args)
 
     if (this.logFile && this.isNodeEnv) {
-      const message = args
-        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
-        .join(" ")
+      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] DEBUG: ${message}\n`
       await this.writeToFile(logEntry)
@@ -153,9 +145,7 @@ class FileLogger {
     console.trace(...args)
 
     if (this.logFile && this.isNodeEnv) {
-      const message = args
-        .map((arg) => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)))
-        .join(" ")
+      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
       const timestamp = new Date().toISOString()
       const logEntry = `[${timestamp}] TRACE: ${message}\n`
       await this.writeToFile(logEntry)

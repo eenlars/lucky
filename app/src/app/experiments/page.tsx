@@ -29,7 +29,7 @@ export default function ExperimentsHome() {
         <p className="text-gray-600 mb-8">Dedicated pages for each experiment.</p>
 
         <div className="space-y-4">
-          {links.map((l) => (
+          {links.map(l => (
             <div key={l.href} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">{l.title}</h2>

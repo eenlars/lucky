@@ -27,7 +27,7 @@ async function fetchBatch(
   split: "validation" | "test",
   offset: number,
   length: number,
-  authToken?: string
+  authToken?: string,
 ): Promise<any> {
   const url = new URL(BASE_URL)
   url.searchParams.set("dataset", DATASET)

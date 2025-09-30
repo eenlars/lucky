@@ -77,13 +77,13 @@ describe("parseCliArguments", () => {
 
   it("throws error for invalid boolean", () => {
     expect(() => parseCliArguments(["--self-improve-nodes=maybe"])).toThrow(
-      "Boolean value must be true/false/1/0/yes/no, got: maybe"
+      "Boolean value must be true/false/1/0/yes/no, got: maybe",
     )
   })
 
   it("throws error for invalid improvement type", () => {
     expect(() => parseCliArguments(["--improvement-type=invalid"])).toThrow(
-      "Invalid improvement type: invalid. Valid: judge, unified"
+      "Invalid improvement type: invalid. Valid: judge, unified",
     )
   })
 

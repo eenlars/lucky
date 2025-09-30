@@ -73,7 +73,7 @@ try {
   if (error instanceof ArgumentParsingError) {
     lgg.error(`❌ Argument parsing failed: ${error.message}`)
     lgg.info(
-      `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
+      `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`,
     )
     process.exit(1)
   }
@@ -88,7 +88,7 @@ const cliSetupFile = parsedArgs.setupFile
 if (!EVOLUTION_MODE) {
   lgg.error("❌ Evolution mode must be specified with --mode=iterative or --mode=GP")
   lgg.info(
-    `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`
+    `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`,
   )
   process.exit(1)
 }
@@ -233,7 +233,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             // rollback to last known good configuration
             setup = lastSuccessfulConfig
             // exponential backoff for retry attempts
-            await new Promise((resolve) => setTimeout(resolve, ROBUST_CONFIG.backoffMs * retry))
+            await new Promise(resolve => setTimeout(resolve, ROBUST_CONFIG.backoffMs * retry))
           }
 
           // Create a unique workflow version per generation/iteration to capture lineage
@@ -261,7 +261,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             lgg.error(
               `[IterativeEvolution] Evaluation failed for 
               genome ${runner.getWorkflowVersionId()}:
-              ${JSON.stringify(error, null, 2)}`
+              ${JSON.stringify(error, null, 2)}`,
             )
             continue
           }
@@ -285,7 +285,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           })
 
           lgg.log(
-            `📊 Iteration ${iteration} – Fitness: ${evaluationResult.fitness.score.toFixed(3)} · Cost: $${iterationCost.toFixed(2)}${retry > 0 ? ` (recovered)` : ""}`
+            `📊 Iteration ${iteration} – Fitness: ${evaluationResult.fitness.score.toFixed(3)} · Cost: $${iterationCost.toFixed(2)}${retry > 0 ? ` (recovered)` : ""}`,
           )
 
           // Update setup for next iteration and save to file incrementally
@@ -297,7 +297,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           await persistWorkflow(
             newConfig,
             targetFile,
-            true // Create backup for incremental saves
+            true, // Create backup for incremental saves
           )
           lgg.log(`💾 Saved evolved configuration after iteration ${iteration}: ${targetFile}`)
 
@@ -372,7 +372,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       await persistWorkflow(
         lastSuccessfulConfig,
         targetFile,
-        false // Create backup for final result
+        false, // Create backup for final result
       )
       lgg.log(`💾 Updated setupfile with evolved configuration: ${targetFile}`)
     }
@@ -409,7 +409,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
 
   const { problemAnalysis, workflowIO, newGoal } = await prepareProblem(
     SELECTED_QUESTION,
-    CONFIG.workflow.prepareProblemMethod
+    CONFIG.workflow.prepareProblemMethod,
   )
 
   // create evaluator with all workflow cases, and evaluate.
@@ -423,7 +423,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<infer T> ? T | undefined : undefined
   if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
     const requestedGPFile = cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
-    baseWorkflowForGP = await loadSingleWorkflow(requestedGPFile)
+    baseWorkflowForGP = await loadSingleWorkflow(requestedGPFile ?? undefined)
   }
 
   lgg.log("evolving workflow to handle all cases optimally", {
@@ -487,7 +487,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   lgg.log(`Total Cost:  $${totalCost.toFixed(2)}`)
   lgg.log(`Generations: ${stats.length}`)
   lgg.log(
-    `Workflow Cases Evaluated: ${SELECTED_QUESTION.type === "csv" ? SELECTED_QUESTION.evaluation?.length || 0 : 1}`
+    `Workflow Cases Evaluated: ${SELECTED_QUESTION.type === "csv" ? SELECTED_QUESTION.evaluation?.length || 0 : 1}`,
   )
 
   const overallBest = allRunResults.reduce((best, curr) => (curr.finalFitness > best.finalFitness ? curr : best))
@@ -497,7 +497,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
       entryNodeId: overallBest.bestGenome.entryNodeId,
       nodes: overallBest.bestGenome.nodes,
     },
-    "best_enhanced_gp_workflow.json"
+    "best_enhanced_gp_workflow.json",
   )
 
   return { results: allRunResults, totalCost: totalCostAllRuns, overallBest }

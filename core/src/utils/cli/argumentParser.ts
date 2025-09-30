@@ -80,7 +80,7 @@ export function parseCliArguments(args: string[]): ParsedArgs {
       case "--improvement-type":
         if (!VALID_IMPROVEMENT_TYPES.includes(value as "judge" | "unified")) {
           throw new ArgumentParsingError(
-            `Invalid improvement type: ${value}. Valid: ${VALID_IMPROVEMENT_TYPES.join(", ")}`
+            `Invalid improvement type: ${value}. Valid: ${VALID_IMPROVEMENT_TYPES.join(", ")}`,
           )
         }
         parsed.improvementType = value as "judge" | "unified"

@@ -18,7 +18,7 @@ export const processAndValidateSteps = (
   options?: {
     skipConsoleLog?: boolean
     minSteps?: number
-  }
+  },
 ): ReturnType<typeof processStepsV2> => {
   const { skipConsoleLog = false, minSteps = 1 } = options || {}
 
@@ -43,12 +43,12 @@ export const processAndValidateSteps = (
 export const validateSequentialExecution = (
   resultV2: any,
   expectedResults: Record<string, string>,
-  toolNames?: string[]
+  toolNames?: string[],
 ) => {
   const defaultNames = ["tool1", "tool2", "tool3"]
   const names = toolNames || defaultNames
 
-  const toolResults = names.map((name) => resultV2?.agentSteps.find((r: any) => r.name === name))
+  const toolResults = names.map(name => resultV2?.agentSteps.find((r: any) => r.name === name))
 
   // Validate all tools executed
   toolResults.forEach((result, index) => {
@@ -130,7 +130,7 @@ export const createTestConfig = (
     stepCount?: number
     timeout?: number
     prepareStep?: any
-  }
+  },
 ) => {
   const { stepCount = 5, timeout = TEST_TIMEOUTS.integration, prepareStep } = options || {}
 

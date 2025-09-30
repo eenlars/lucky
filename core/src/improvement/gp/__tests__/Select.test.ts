@@ -166,7 +166,7 @@ describe("Select", () => {
         Select.selectParents({
           population: mockPopulation as any,
           config,
-        })
+        }),
       ).rejects.toThrow("No valid genomes with fitness scores found in population")
     })
   })

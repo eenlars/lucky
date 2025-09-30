@@ -156,7 +156,7 @@ describe.skip("browser session persistence tests", () => {
 
     // Check if we got content extraction
     const extractResults = processedSteps?.agentSteps.filter(
-      (output) => output.type === "tool" && output.name === "browser_extract_content"
+      output => output.type === "tool" && output.name === "browser_extract_content",
     )
     lgg.log("Extract content calls:", extractResults?.length)
 

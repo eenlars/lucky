@@ -3,7 +3,7 @@ import { nanoid } from "nanoid"
 
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@runtime/settings/constants.client"
+import { MODELS } from "@examples/settings/constants.client"
 
 import { BranchNode } from "./branch-node"
 import { InitialNode } from "./initial-node"

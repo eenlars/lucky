@@ -50,6 +50,7 @@ function runDepcheck(dir: string): DepcheckResult {
     const ignorePatterns = [
       "@core/*",
       "@runtime/*",
+      "@examples/*",
       "@experiments/*",
       "@lucky/*",
       "vite",
@@ -145,7 +146,7 @@ async function main() {
   const appDepcheck = runDepcheck(appDir)
 
   // Filter out internal workspace imports from missing dependencies
-  const internalPatterns = /^@(core|runtime|experiments|lucky)\//
+  const internalPatterns = /^@(core|runtime|examples|experiments|lucky)\//
   const filterInternalDeps = (missing: Record<string, string[]>) => {
     const filtered: Record<string, string[]> = {}
     for (const [dep, files] of Object.entries(missing)) {
@@ -232,13 +233,13 @@ async function main() {
     console.log(`\n⚠️  Unused dependencies: ${unusedDepsCount}`)
     if (coreDepcheck.dependencies.length > 0 || coreDepcheck.devDependencies.length > 0) {
       console.log("  Core:")
-      coreDepcheck.dependencies.forEach((dep) => console.log(`    - ${dep}`))
-      coreDepcheck.devDependencies.forEach((dep) => console.log(`    - ${dep} (dev)`))
+      coreDepcheck.dependencies.forEach(dep => console.log(`    - ${dep}`))
+      coreDepcheck.devDependencies.forEach(dep => console.log(`    - ${dep} (dev)`))
     }
     if (appDepcheck.dependencies.length > 0 || appDepcheck.devDependencies.length > 0) {
       console.log("  App:")
-      appDepcheck.dependencies.forEach((dep) => console.log(`    - ${dep}`))
-      appDepcheck.devDependencies.forEach((dep) => console.log(`    - ${dep} (dev)`))
+      appDepcheck.dependencies.forEach(dep => console.log(`    - ${dep}`))
+      appDepcheck.devDependencies.forEach(dep => console.log(`    - ${dep} (dev)`))
     }
   } else {
     console.log("✅ No unused dependencies")
@@ -281,7 +282,7 @@ async function main() {
   }
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error("Error running dependency check:", error)
   process.exit(1)
 })

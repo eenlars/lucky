@@ -24,7 +24,7 @@ export class SupabaseContextStore implements ContextStore {
 
         if (attempt < this.maxRetries) {
           // todo-resourceleak: setTimeout not cleaned up if promise is rejected
-          await new Promise((resolve) => setTimeout(resolve, this.retryDelay * attempt))
+          await new Promise(resolve => setTimeout(resolve, this.retryDelay * attempt))
         }
       }
     }
@@ -103,10 +103,10 @@ export class SupabaseContextStore implements ContextStore {
       ] as const
 
       const results = await Promise.allSettled(uploads)
-      const errors = results.filter((r) => r.status === "rejected")
+      const errors = results.filter(r => r.status === "rejected")
 
       if (errors.length > 0) {
-        throw new Error(`Failed to create directory: ${errors.map((e) => e.reason).join(", ")}`)
+        throw new Error(`Failed to create directory: ${errors.map(e => e.reason).join(", ")}`)
       }
     }, `Creating directory ${basePath}`)
   }
@@ -234,7 +234,7 @@ export class SupabaseContextStore implements ContextStore {
 
         if (error) throw new Error(`Failed to list files: ${error.message}`)
 
-        return (data || []).map((file) => file.name).filter((name) => name && name !== ".emptyFolderPlaceholder")
+        return (data || []).map(file => file.name).filter(name => name && name !== ".emptyFolderPlaceholder")
       }, `Listing ${this.workflowInvocationId}/${scope}`)
     } catch (error) {
       lgg.warn(`Failed to list ${this.workflowInvocationId}/${scope}:`, error)
@@ -245,7 +245,7 @@ export class SupabaseContextStore implements ContextStore {
   async listWithInfo(scope: "workflow" | "node"): Promise<ContextFileInfo[]> {
     try {
       const keys = await this.list(scope)
-      const infoPromises = keys.map(async (key) => {
+      const infoPromises = keys.map(async key => {
         try {
           return await this.withRetry(async () => {
             const [summary, metadataData] = await Promise.all([

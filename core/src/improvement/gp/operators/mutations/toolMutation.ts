@@ -136,7 +136,7 @@ export class ToolMutation implements MutationOperator {
         toNodeId,
         allNodes,
         isMCPTool,
-        isCodeTool
+        isCodeTool,
       )
 
       return instructions.usdCost ?? 0
@@ -173,12 +173,12 @@ export class ToolMutation implements MutationOperator {
     toNodeId: string | undefined,
     allNodes: boolean | undefined,
     isMCPTool: boolean,
-    isCodeTool: boolean
+    isCodeTool: boolean,
   ): void {
     switch (action) {
       case "add":
         if (allNodes) {
-          mutatedConfig.nodes.forEach((node) => {
+          mutatedConfig.nodes.forEach(node => {
             if (isMCPTool && !node.mcpTools.includes(tool as MCPToolName)) {
               node.mcpTools.push(tool as MCPToolName)
             } else if (isCodeTool && !node.codeTools.includes(tool as CodeToolName)) {
@@ -187,7 +187,7 @@ export class ToolMutation implements MutationOperator {
           })
         } else {
           nodeIds?.forEach((nodeId: string) => {
-            const node = mutatedConfig.nodes.find((n) => n.nodeId === nodeId)
+            const node = mutatedConfig.nodes.find(n => n.nodeId === nodeId)
             if (node) {
               if (isMCPTool && !node.mcpTools.includes(tool as MCPToolName)) {
                 node.mcpTools.push(tool as MCPToolName)
@@ -201,21 +201,21 @@ export class ToolMutation implements MutationOperator {
 
       case "remove":
         if (allNodes) {
-          mutatedConfig.nodes.forEach((node) => {
+          mutatedConfig.nodes.forEach(node => {
             if (isMCPTool) {
-              node.mcpTools = node.mcpTools.filter((t) => t !== tool)
+              node.mcpTools = node.mcpTools.filter(t => t !== tool)
             } else if (isCodeTool) {
-              node.codeTools = node.codeTools.filter((t) => t !== tool)
+              node.codeTools = node.codeTools.filter(t => t !== tool)
             }
           })
         } else {
-          nodeIds?.forEach((nodeId) => {
-            const node = mutatedConfig.nodes.find((n) => n.nodeId === nodeId)
+          nodeIds?.forEach(nodeId => {
+            const node = mutatedConfig.nodes.find(n => n.nodeId === nodeId)
             if (node) {
               if (isMCPTool) {
-                node.mcpTools = node.mcpTools.filter((t) => t !== tool)
+                node.mcpTools = node.mcpTools.filter(t => t !== tool)
               } else if (isCodeTool) {
-                node.codeTools = node.codeTools.filter((t) => t !== tool)
+                node.codeTools = node.codeTools.filter(t => t !== tool)
               }
             }
           })
@@ -224,17 +224,17 @@ export class ToolMutation implements MutationOperator {
 
       case "move":
         if (fromNodeId && toNodeId) {
-          const fromNode = mutatedConfig.nodes.find((n) => n.nodeId === fromNodeId)
-          const toNode = mutatedConfig.nodes.find((n) => n.nodeId === toNodeId)
+          const fromNode = mutatedConfig.nodes.find(n => n.nodeId === fromNodeId)
+          const toNode = mutatedConfig.nodes.find(n => n.nodeId === toNodeId)
 
           if (fromNode && toNode) {
             if (isMCPTool) {
-              fromNode.mcpTools = fromNode.mcpTools.filter((t) => t !== tool)
+              fromNode.mcpTools = fromNode.mcpTools.filter(t => t !== tool)
               if (!toNode.mcpTools.includes(tool as MCPToolName)) {
                 toNode.mcpTools.push(tool as MCPToolName)
               }
             } else if (isCodeTool) {
-              fromNode.codeTools = fromNode.codeTools.filter((t) => t !== tool)
+              fromNode.codeTools = fromNode.codeTools.filter(t => t !== tool)
               if (!toNode.codeTools.includes(tool as CodeToolName)) {
                 toNode.codeTools.push(tool as CodeToolName)
               }

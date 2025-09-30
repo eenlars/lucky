@@ -29,7 +29,7 @@ const mockTools: ToolSet = {
             name: z.string(),
             lat: z.number(),
             lng: z.number(),
-          })
+          }),
         )
         .optional(),
     }),

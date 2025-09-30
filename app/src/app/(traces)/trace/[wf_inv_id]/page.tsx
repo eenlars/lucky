@@ -42,7 +42,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
   // Convert nodeInvocations to the format expected by Timeline component
   const createTimelineEntries = (
     nodeInvocations: NodeInvocationExtended[],
-    workflowVersion: Tables<"WorkflowVersion"> | null
+    workflowVersion: Tables<"WorkflowVersion"> | null,
   ): FullTraceEntry[] => {
     return nodeInvocations.map((inv, idx) => {
       // Find the first output message, if any
@@ -70,7 +70,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
       let systemPrompt = inv.node.system_prompt
       if (workflowVersion?.dsl) {
         const dsl = workflowVersion.dsl as unknown as WorkflowConfig
-        const nodeInDsl = dsl.nodes?.find((node) => node.nodeId === inv.node_id)
+        const nodeInDsl = dsl.nodes?.find(node => node.nodeId === inv.node_id)
         if (nodeInDsl?.systemPrompt) {
           systemPrompt = nodeInDsl.systemPrompt
         }
@@ -108,7 +108,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
     let bottleneckNode = null
     let maxDuration = 0
 
-    timeline.forEach((entry) => {
+    timeline.forEach(entry => {
       const startTime = new Date(entry.invocation.start_time).getTime()
       const endTime = entry.invocation.end_time ? new Date(entry.invocation.end_time).getTime() : Date.now()
       const duration = (endTime - startTime) / 1000

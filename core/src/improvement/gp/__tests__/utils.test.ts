@@ -217,7 +217,7 @@ describe("GP Utilities", () => {
       // basic validation
       expect(workflow.nodes).toHaveLength(1)
       expect(workflow.entryNodeId).toBeDefined()
-      expect(workflow.nodes.some((n) => n.id === workflow.entryNodeId)).toBe(true)
+      expect(workflow.nodes.some(n => n.id === workflow.entryNodeId)).toBe(true)
 
       const node = workflow.nodes[0]
       expect(node.id).toBeTruthy()
@@ -247,7 +247,7 @@ describe("GP Utilities", () => {
       let totalCost = 0
       const operations = [0.01, 0.02, 0.015, 0.008]
 
-      operations.forEach((cost) => {
+      operations.forEach(cost => {
         totalCost += cost
       })
 

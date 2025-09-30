@@ -18,7 +18,7 @@ export async function retryWithBackoff<T>(
     backoffMs?: number
     shouldRetry?: (value: T) => boolean
     onAttempt?: (info: { attempt: number; attempts: number; value?: T; error?: unknown }) => void
-  }
+  },
 ): Promise<T> {
   let lastError: unknown
   for (let attempt = 1; attempt <= Math.max(1, attempts); attempt++) {
@@ -26,7 +26,7 @@ export async function retryWithBackoff<T>(
       const value = await fn()
       onAttempt?.({ attempt, attempts, value })
       if (shouldRetry && shouldRetry(value) && attempt < attempts) {
-        await new Promise((r) => setTimeout(r, backoffMs * attempt))
+        await new Promise(r => setTimeout(r, backoffMs * attempt))
         continue
       }
       return value
@@ -34,7 +34,7 @@ export async function retryWithBackoff<T>(
       lastError = error
       onAttempt?.({ attempt, attempts, error })
       if (attempt < attempts) {
-        await new Promise((r) => setTimeout(r, backoffMs * attempt))
+        await new Promise(r => setTimeout(r, backoffMs * attempt))
         continue
       }
       throw error

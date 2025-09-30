@@ -62,7 +62,7 @@ export function PromptInputDialog({
               <Textarea
                 placeholder="Enter your prompt here..."
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={e => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="min-h-[120px] resize-none"
                 disabled={loading}

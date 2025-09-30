@@ -22,7 +22,7 @@ describe("MemoryPreservation", () => {
     const mockMemory = nodeMemories
     genome.getMemory = () => mockMemory
     genome.getWorkflowConfig = () => ({
-      nodes: Object.keys(nodeMemories).map((nodeId) => ({
+      nodes: Object.keys(nodeMemories).map(nodeId => ({
         nodeId,
         description: `Description for ${nodeId}`,
         systemPrompt: `System prompt for ${nodeId}`,

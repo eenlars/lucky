@@ -22,10 +22,10 @@ export const isLegacyToolUsage = (value: unknown): value is LegacyToolUsage => {
   if (!("outputs" in v)) return false
   const outputs = v.outputs as unknown
   if (Array.isArray(outputs)) {
-    return outputs.every((s) => typeof s === "object" && s !== null)
+    return outputs.every(s => typeof s === "object" && s !== null)
   }
   if (typeof outputs === "object" && outputs !== null) {
-    return Object.values(outputs).every((s) => typeof s === "object" && s !== null)
+    return Object.values(outputs).every(s => typeof s === "object" && s !== null)
   }
   return false
 }

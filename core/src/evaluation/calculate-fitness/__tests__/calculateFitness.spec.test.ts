@@ -221,7 +221,7 @@ describe("calculateFitness - anomalous presence summary vs structured evidence",
         finalWorkflowOutput: JSON.stringify(anomalousOutput),
       },
       1,
-      1
+      1,
     )
 
     console.log("result", result)
