@@ -207,7 +207,6 @@ describe("Mutations", () => {
     // don't explain what behavior is expected - what makes verbose mode different?
     // missing tests for specific mutation types (prompt, tool, structure mutations)
     it("should perform mutation in verbose mode", async () => {
-      // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - CONFIG.limits is undefined
       const options = createMockOptions()
 
       // Mock createDummyGenome since verbose mode uses it
@@ -216,41 +215,29 @@ describe("Mutations", () => {
 
       // Re-mock CONFIG to enable verbose mode and dynamically import the module under test
       vi.resetModules()
-      vi.doMock("@examples/settings/constants", () => ({
-        CONFIG: {
-          evolution: {
-            GP: {
-              verbose: true,
-              populationSize: 5,
-              generations: 3,
-            },
-          },
-          tools: { inactive: new Set() },
-          models: { inactive: new Set(), provider: "openai" },
-          improvement: { flags: { maxRetriesForWorkflowRepair: 3 } },
-          logging: { level: "info", override: {} },
-          limits: { rateWindowMs: 1000, maxRequestsPerWindow: 100 },
-          workflow: { parallelExecution: false },
-          verification: { allowCycles: false },
-          coordinationType: "sequential",
-        },
-        MODELS: { default: "google/gemini-2.5-flash-lite" },
-        PATHS: {
-          root: "/test",
-          setupFile: "/test/setup.txt",
-          node: { logging: "/test/logging" },
-        },
-      }))
-      const { Mutations: MutationsVerbose } = await import("@core/improvement/gp/operators/Mutations")
+      const { createMockConfigVerbose, createMockPaths, createMockModels } = await import(
+        "@core/utils/__tests__/setup/configMocks"
+      )
+      vi.doMock("@core/core-config/compat", async (importOriginal) => {
+        const original = await importOriginal<typeof import("@core/core-config/compat")>()
+        const mockModels = createMockModels()
+        return {
+          ...original,
+          CONFIG: createMockConfigVerbose(),
+          MODELS: mockModels,
+          PATHS: createMockPaths(),
+          getDefaultModels: () => mockModels,
+        }
+      })
+      const { MutationCoordinator } = await import("@core/improvement/gp/operators/mutations/index")
 
-      const result = await MutationsVerbose.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
 
-      // TODO: weak assertion - only checks if result is "defined"
-      // should verify specific mutation outcomes (e.g., prompts changed, tools modified)
       expect(result).toBeDefined()
+      expect(result.success).toBe(true)
       // In verbose mode, formalizeWorkflow should not be called
       expect(mockFormalizeWorkflow).not.toHaveBeenCalled()
     })
