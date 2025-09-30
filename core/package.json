@@ -27,6 +27,7 @@
     "@ai-sdk/openai": "^2.0.0",
     "@dagrejs/dagre": "^1.1.5",
     "@huggingface/hub": "^2.4.0",
+    "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "@mendable/firecrawl-js": "^1.29.1",
     "@modelcontextprotocol/sdk": "^1.17.2",

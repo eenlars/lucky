@@ -1,0 +1,53 @@
+{
+  "name": "@lucky/models",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-provider model configuration and registry for Vercel AI SDK",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup --silent",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fetch-pricing": "bun run scripts/fetch-pricing.ts",
+    "validate-configs": "bunx tsx scripts/validate-yaml-configs.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
+      "import": "./dist/middleware/index.js"
+    }
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.6",
+    "@ai-sdk/openai": "^1.0.13",
+    "@ai-sdk/openai-compatible": "^1.0.7",
+    "ai": "^5.0.0",
+    "zod": "^3.22.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^18.19.0",
+    "prettier": "^3.4.2",
+    "rimraf": "^5.0.10",
+    "tsup": "8.5.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "ai": ">=5.0.0"
+  }
+}
