@@ -112,7 +112,7 @@ export function validateEvolutionSettings(config: EvolutionSettings): void {
 }
 
 /**
- * Create default evolution configuration using constants from runtime/constants.ts
+ * Create default evolution configuration using constants from examples/constants.ts
  */
 export function _createDefaultEvolutionSettings(overrides?: Partial<EvolutionSettings>): EvolutionSettings {
   // Default values when no config is provided

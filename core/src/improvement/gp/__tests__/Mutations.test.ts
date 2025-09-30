@@ -218,7 +218,7 @@ describe("Mutations", () => {
       const { createMockConfigVerbose, createMockPaths, createMockModels } = await import(
         "@core/utils/__tests__/setup/configMocks"
       )
-      vi.doMock("@core/core-config/compat", async (importOriginal) => {
+      vi.doMock("@core/core-config/compat", async importOriginal => {
         const original = await importOriginal<typeof import("@core/core-config/compat")>()
         const mockModels = createMockModels()
         return {

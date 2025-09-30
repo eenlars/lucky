@@ -10,7 +10,7 @@ if (!args.some(arg => arg.startsWith("--mode="))) {
   args.push("--mode=GP")
 }
 
-const command = ["rm -rf src/runtime/logging_folder", "&&", "tsx --env-file=.env src/main.ts", ...args].join(" ")
+const command = ["rm -rf src/examples/logging_folder", "&&", "tsx --env-file=.env src/main.ts", ...args].join(" ")
 
 // Execute the command
 try {

@@ -82,7 +82,7 @@ Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + ga
 ## Configuration
 
 - App env: `app/.env` (see `app/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
-- Path aliases: prefer `@core`, `@shared` in tests and code where available. `@runtime` alias points to `examples/` for backward compatibility.
+- Path aliases: prefer `@core`, `@shared` in tests and code where available.
 - Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd app && bun run format` or `cd core && bun run format`.
 
 ## How It Works

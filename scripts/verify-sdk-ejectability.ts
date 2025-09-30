@@ -16,7 +16,7 @@ let hasErrors = false
 // Files that would be deleted when ejecting SDK
 const SDK_FILES_TO_DELETE = [
   "core/src/tools/claude-sdk/",
-  "runtime/settings/claude-sdk.ts",
+  "examples/settings/claude-sdk.ts",
   "examples/claude-sdk-workflow.json",
   "docs/SDK_INTEGRATION.md"
 ]

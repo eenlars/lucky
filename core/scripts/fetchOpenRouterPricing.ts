@@ -2,7 +2,7 @@ import fs from "fs"
 
 // run: bun scripts/fetchOpenRouterPricing.ts
 // it outputs json files to scripts/pricing-data/
-// you can replace the pricing in runtime/settings/models.ts with the new pricing
+// you can replace the pricing in examples/settings/models.ts with the new pricing
 
 interface OpenRouterModel {
   id: string

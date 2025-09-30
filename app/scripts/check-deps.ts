@@ -49,7 +49,7 @@ function runDepcheck(dir: string): DepcheckResult {
     // Ignore internal workspace imports and common dev tools
     const ignorePatterns = [
       "@core/*",
-      "@runtime/*",
+      "@examples/*",
       "@examples/*",
       "@experiments/*",
       "@lucky/*",
@@ -146,7 +146,7 @@ async function main() {
   const appDepcheck = runDepcheck(appDir)
 
   // Filter out internal workspace imports from missing dependencies
-  const internalPatterns = /^@(core|runtime|examples|experiments|lucky)\//
+  const internalPatterns = /^@(core|examples|experiments|lucky)\//
   const filterInternalDeps = (missing: Record<string, string[]>) => {
     const filtered: Record<string, string[]> = {}
     for (const [dep, files] of Object.entries(missing)) {

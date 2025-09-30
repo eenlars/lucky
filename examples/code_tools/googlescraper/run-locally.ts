@@ -1,8 +1,8 @@
-// run with: npx tsx src/runtime/code_tools/googlescraper/run-locally.ts
+// run with: npx tsx src/examples/code_tools/googlescraper/run-locally.ts
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@lucky/shared"
 import { type InputMultiple, type InputUrl, searchGoogleMaps } from "@examples/code_tools/googlescraper/main/main"
 import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import { JSONN } from "@lucky/shared"
 import * as fs from "fs"
 import * as path from "path"
 import { fileURLToPath } from "url"

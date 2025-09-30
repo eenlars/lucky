@@ -1,9 +1,9 @@
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
 import { lgg } from "@core/utils/logging/Logger"
-import { csv } from "@lucky/shared"
 import { saveInLoc } from "@examples/code_tools/file-saver/save"
 import { PATHS } from "@examples/settings/constants"
+import { csv } from "@lucky/shared"
 import crypto from "crypto"
 import fs from "fs"
 const { CSVLoader } = csv
@@ -13,7 +13,7 @@ const { CSVLoader } = csv
 
 /* ────────────────────────────────────────────────────────────────── helpers ───── */
 const B_CORP_ROOT = "https://www.bcorporation.net/en-us/find-a-b-corp/company/"
-const INPUT_CSV = PATHS.app + "/src/runtime/evaluation/input.csv"
+const INPUT_CSV = PATHS.app + "/src/examples/evaluation/input.csv"
 
 // progress tracking files
 const PROGRESS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/countries-extractor-progress.json"

@@ -1,3 +1,4 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { type AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
@@ -7,10 +8,9 @@ import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInv
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-// Copy of core/src/runtime/setup/setupfile.json placed inline for test isolation
+// Copy of core/src/examples/setup/setupfile.json placed inline for test isolation
 const recipeAggregationConfig: WorkflowConfig = {
   nodes: [
     {

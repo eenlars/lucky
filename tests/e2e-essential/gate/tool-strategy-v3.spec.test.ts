@@ -1,6 +1,6 @@
 import * as sendAIModule from "@core/messages/api/sendAI/sendAI"
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@examples/settings/models"
 import type { ToolSet } from "ai"
 import { zodSchema } from "ai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"

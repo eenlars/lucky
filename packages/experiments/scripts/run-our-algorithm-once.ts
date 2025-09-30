@@ -1,6 +1,6 @@
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { experimentalModels } from "../../../runtime/settings/models"
+import { experimentalModels } from "../../../examples/settings/models"
 import {
   TEST_SCENARIOS,
   VAGUE_SYSTEM_PROMPT,

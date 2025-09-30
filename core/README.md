@@ -7,7 +7,7 @@ Autonomous workflow system using evolutionary AI to optimize agent-based workflo
 ```typescript
 import { Workflow } from "@core/workflow/Workflow"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@examples/settings/constants"
 
 // Create workflow with setup and expected format
 const workflow = await Workflow.create(setup, expectedFormat, question)

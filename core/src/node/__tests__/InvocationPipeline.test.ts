@@ -1,7 +1,7 @@
 // Use standardized test setup
+import { getDefaultModels } from "@core/core-config/compat"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
@@ -131,7 +131,7 @@ vi.mock("@examples/settings/constants", () => ({
 }))
 
 // Mock file system operations to prevent test errors
-vi.mock("../../../runtime/code_tools/file-saver/save", () => ({
+vi.mock("../../../examples/code_tools/file-saver/save", () => ({
   saveInLogging: vi.fn(),
   saveInLoc: vi.fn(),
 }))

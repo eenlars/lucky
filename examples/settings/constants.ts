@@ -27,7 +27,7 @@ export const PATHS = {
   root: ROOT,
   app: path.join(ROOT, "app"),
   /**
-   * Points to examples/ folder (renamed from runtime/).
+   * Points to examples/ folder (renamed from examples/).
    * Name preserved for compatibility with AutoDiscovery, MCP config, and WorkflowLoader.
    */
   runtime: EXAMPLES,

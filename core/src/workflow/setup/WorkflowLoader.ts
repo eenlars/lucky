@@ -110,7 +110,7 @@ export class WorkflowConfigHandler {
   }
 
   /**
-   * Create missing setup file in runtime/setup folder
+   * Create missing setup file in examples/setup folder
    */
   private async createMissingSetupFile(originalFilePath: string): Promise<string> {
     if (typeof window !== "undefined") {
@@ -124,7 +124,7 @@ export class WorkflowConfigHandler {
     const filename = path.basename(originalFilePath)
     const targetFilePath = path.join(setupFolderPath, filename)
 
-    lgg.log(`[WorkflowConfigHandler] Creating ${filename} in runtime/setup folder`)
+    lgg.log(`[WorkflowConfigHandler] Creating ${filename} in examples/setup folder`)
 
     try {
       // Create default workflow
@@ -160,7 +160,7 @@ export class WorkflowConfigHandler {
       const fs = await import("fs")
       const { readText } = await import("@lucky/shared")
 
-      // Normalize path to absolute runtime/setup folder and build absolute file path
+      // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
       const filename = path.basename(filePath)
       const normalizedPath = path.join(setupFolderPath, filename)

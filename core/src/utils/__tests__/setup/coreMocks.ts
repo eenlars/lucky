@@ -662,12 +662,7 @@ export {
   createMockModels as createMockRuntimeModels,
 } from "./configMocks"
 
-import {
-  createMockConfigStandard,
-  createMockConfigVerbose,
-  createMockModels,
-  createMockPaths,
-} from "./configMocks"
+import { createMockConfigStandard, createMockConfigVerbose, createMockModels, createMockPaths } from "./configMocks"
 
 /**
  * @deprecated Use configMocks directly

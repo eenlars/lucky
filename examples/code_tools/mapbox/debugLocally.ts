@@ -1,4 +1,4 @@
-// use : tsx --env-file=.env src/runtime/code_tools/mapbox/debugLocally.ts
+// use : tsx --env-file=.env src/examples/code_tools/mapbox/debugLocally.ts
 
 import { lgg } from "@core/utils/logging/Logger"
 import { geocodeLocation } from "./mapboxUse"

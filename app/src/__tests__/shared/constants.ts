@@ -33,8 +33,8 @@ export const TEST_CONSTANTS = {
     ROOT: "/test",
     APP: "/test/app",
     RUNTIME: "src/runtime",
-    MEMORY: "src/runtime/logging_folder/memory",
-    LOGGING: "src/runtime/logging_folder",
+    MEMORY: "src/examples/logging_folder/memory",
+    LOGGING: "src/examples/logging_folder",
   },
 
   // common test timeouts
