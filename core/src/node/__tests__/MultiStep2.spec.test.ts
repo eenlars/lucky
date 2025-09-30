@@ -1,6 +1,6 @@
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import { ToolManager } from "../toolManager"

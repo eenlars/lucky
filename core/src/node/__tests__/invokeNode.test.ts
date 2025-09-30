@@ -201,7 +201,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { StructuredRequest, TextRequest, ToolRequest, TResponse } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { invokeAgent } from "../invokeNode"
 
 describe("invokeAgent", () => {

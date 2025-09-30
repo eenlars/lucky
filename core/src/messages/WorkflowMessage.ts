@@ -2,7 +2,7 @@ import type { Payload } from "@core/messages/MessagePayload"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { Messages } from "@core/utils/persistence/message/main"
-import type { TablesUpdate } from "@lucky/shared"
+import type { TablesUpdate } from "@core/utils/json"
 
 export class WorkflowMessage<P extends Payload = Payload> {
   readonly messageId: string = genShortId()

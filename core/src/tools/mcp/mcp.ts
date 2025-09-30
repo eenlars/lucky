@@ -1,6 +1,6 @@
 import type { MCPToolName } from "@core/tools/tool.types"
 import { envi } from "@core/utils/env.mjs"
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { experimental_createMCPClient, type ToolSet } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
 import fs from "fs"

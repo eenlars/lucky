@@ -8,7 +8,7 @@ import { isNir } from "@core/utils/common/isNir"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ModelName } from "@core/utils/spending/models.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /*

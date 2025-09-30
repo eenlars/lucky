@@ -2,7 +2,7 @@ import { isVercelAIStructure, isZodSchema } from "@core/tools/utils/schemaDetect
 import { isNir } from "@core/utils/common/isNir"
 import { llmify } from "@core/utils/common/llmify"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { ToolSet } from "ai"
 
 export function explainTools(tools: ToolSet): string {

@@ -1,7 +1,7 @@
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Genome } from "@core/improvement/gp/Genome"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Mock evaluator for debugging purposes.

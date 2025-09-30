@@ -23,8 +23,8 @@ import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDatabase, loadFromDSL, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
+import { JSONN } from "@core/utils/json"
+import { CONFIG } from "@core/core-config/compat"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**

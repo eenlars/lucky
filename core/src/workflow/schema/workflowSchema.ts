@@ -8,7 +8,7 @@ import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 export const WorkflowNodeConfigSchema = z.object({
   nodeId: z.string(),

@@ -12,7 +12,7 @@ import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/a
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { handleWorkflowCompletion, WorkflowConfigSchemaEasy } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(

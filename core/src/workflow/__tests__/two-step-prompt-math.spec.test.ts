@@ -4,7 +4,7 @@ import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitne
 import * as RandomizedFitness from "@core/evaluation/calculate-fitness/randomizedFitness"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 // Integration test: 2-step prompt-only math workflow
 // - Node 1: add 7 to input

@@ -1,6 +1,6 @@
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { IngestionLayer } from "../IngestionLayer"
 

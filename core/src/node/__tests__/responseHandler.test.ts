@@ -1,5 +1,5 @@
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { handleSuccess } from "../responseHandler"

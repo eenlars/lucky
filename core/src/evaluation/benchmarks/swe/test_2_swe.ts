@@ -1,5 +1,5 @@
 import { listFiles } from "@huggingface/hub"
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { execSync } from "child_process"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import { readParquet } from "parquet-wasm"

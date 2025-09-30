@@ -6,8 +6,8 @@ import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { saveInLoc } from "@runtime/code_tools/file-saver/save"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { saveInLoc } from "@core/utils/fs/fileSaver"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 
 export async function selfImproveHelper({
   n,

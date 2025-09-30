@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@core": resolve(__dirname, "./src"),
-      "@runtime": resolve(__dirname, "../runtime"),
+      
     },
   },
   test: {

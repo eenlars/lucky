@@ -20,7 +20,7 @@ import { R, type RS } from "@core/utils/types"
 import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { AggregateEvaluationResult, EvaluationResult, RunResult } from "./types"
 
 /**

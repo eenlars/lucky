@@ -1,7 +1,7 @@
 import { contextFilePrompt, type WorkflowFiles } from "@core/tools/context/contextStore.types"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { ModelMessage } from "ai"
 import chalk from "chalk"
 import { llmify } from "../../utils/common/llmify"

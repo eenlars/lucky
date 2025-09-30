@@ -5,7 +5,7 @@ import { R, type RS } from "@core/utils/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowNodeConfigSchema } from "@core/workflow/schema/workflowSchema"
 import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 export async function adjustWorkflowOneNode(

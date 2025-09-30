@@ -1,8 +1,8 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@core/utils/common/isNir"
-import { CONFIG } from "@runtime/settings/constants"
-import { getDefaultModels } from "@runtime/settings/models"
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import { z } from "zod"
 

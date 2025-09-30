@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 // Integration test: use a valid Tool that always throws in execute to
 // exercise our normalization path after a provider call. Use gemini lite.

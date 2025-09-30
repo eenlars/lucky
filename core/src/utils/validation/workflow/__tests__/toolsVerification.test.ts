@@ -1,6 +1,6 @@
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../index"
 import {
@@ -69,7 +69,7 @@ vi.mock("@core/tools/tool.types", () => ({
   INACTIVE_TOOLS: new Set(["readFileLegacy", "deprecatedTool"]),
 }))
 
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 const validModel = getDefaultModels().medium
 const wrongExample: WorkflowConfig = {

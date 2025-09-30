@@ -1,8 +1,8 @@
 import { Genome } from "@core/improvement/gp/Genome"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { getActiveTools, type CodeToolName, type MCPToolName } from "@core/tools/tool.types"
-import { getDefaultModels } from "@runtime/settings/models"
-import { TOOLS } from "@runtime/settings/tools"
+import { getDefaultModels } from "@core/core-config/compat"
+import { TOOLS } from "@core/core-config/compat"
 
 // function to get a random element from an array
 const getRandomElement = <T>(arr: T[]): T => {

@@ -29,7 +29,7 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null

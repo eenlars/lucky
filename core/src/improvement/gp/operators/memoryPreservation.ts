@@ -4,7 +4,7 @@
 
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { Genome } from "../Genome"
 
 export class MemoryPreservation {

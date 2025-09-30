@@ -4,8 +4,8 @@
  */
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { JSONN } from "@lucky/shared"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { JSONN } from "@core/utils/json"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /**

@@ -3,7 +3,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@core/utils/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 export interface StructureExplorationResult {

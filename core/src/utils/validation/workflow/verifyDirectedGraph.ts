@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { VerificationErrors } from "./verify.types"
 
 export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {

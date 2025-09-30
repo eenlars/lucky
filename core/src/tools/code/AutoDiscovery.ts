@@ -1,7 +1,7 @@
 import type { FlexibleToolDefinition } from "@core/tools/code/CodeToolRegistry"
 import { codeToolRegistry } from "@core/tools/code/CodeToolRegistry"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import { glob } from "glob"
 import path from "path"
 

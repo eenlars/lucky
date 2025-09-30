@@ -25,7 +25,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 describe("formalizeWorkflow sanitization", () => {
   beforeEach(() => {

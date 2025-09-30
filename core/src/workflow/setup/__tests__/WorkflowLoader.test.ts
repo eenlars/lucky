@@ -170,7 +170,7 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
   },
 }))
 
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler, loadSingleWorkflow } from "../WorkflowLoader"
 

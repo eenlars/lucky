@@ -5,7 +5,7 @@ import {
   createMockWorkflowGenome,
   createMockWorkflowScore,
 } from "@core/utils/__tests__/setup/genomeTestUtils"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level

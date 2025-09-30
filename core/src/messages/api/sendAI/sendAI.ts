@@ -24,7 +24,7 @@
 // TODO: create comprehensive audit logging for all AI interactions
 
 import { normalizeError } from "@core/messages/api/sendAI/errors"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
 import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"

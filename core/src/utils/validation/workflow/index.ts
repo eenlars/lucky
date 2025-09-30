@@ -21,7 +21,7 @@ import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/ve
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 // verify that each node has a modelname that exists
 export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {

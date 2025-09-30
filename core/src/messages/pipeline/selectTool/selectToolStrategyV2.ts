@@ -4,7 +4,7 @@ import type { SelectToolStrategyOptions, StrategyResult } from "@core/messages/p
 import { explainTools } from "@core/tools/any/explainTools"
 import { isNir } from "@core/utils/common/isNir"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { z } from "zod"

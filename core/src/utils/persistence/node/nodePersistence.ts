@@ -3,7 +3,7 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { saveNodeVersionToDB } from "@core/utils/persistence/node/saveNode"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Manages persistence operations for workflow nodes.

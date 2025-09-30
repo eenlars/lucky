@@ -1,7 +1,7 @@
 import type { FitnessFunctionInput, FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { calculateAverageFitness } from "./average"
 import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitness"
 

@@ -1,4 +1,4 @@
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 import { join } from "path"
 
 interface FailureStats {

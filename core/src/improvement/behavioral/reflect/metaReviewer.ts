@@ -4,8 +4,8 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
-import { JSONN } from "@lucky/shared"
-import { getDefaultModels } from "@runtime/settings/models"
+import { JSONN } from "@core/utils/json"
+import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * Evaluates the quality of a critique by comparing it to the meta agent's assessment

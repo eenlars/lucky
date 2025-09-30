@@ -1,6 +1,6 @@
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../InvocationPipeline"
 import type { NodeInvocationCallContext } from "../input.types"

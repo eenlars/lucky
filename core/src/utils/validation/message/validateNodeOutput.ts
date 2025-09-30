@@ -1,7 +1,7 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 const validationSchema = z.object({

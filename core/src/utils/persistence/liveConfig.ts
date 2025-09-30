@@ -5,7 +5,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { workflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
-import { getDefaultModels, PATHS } from "@runtime/settings/constants"
+import { getDefaultModels, PATHS } from "@core/core-config/compat"
 
 /**
  * Decide whether to use database-backed storage for live workflow config.

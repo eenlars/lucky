@@ -10,7 +10,7 @@
  * @module messages/api/stallGuard
  */
 
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { generateText, StepResult } from "ai"
 import pTimeout from "p-timeout"
 

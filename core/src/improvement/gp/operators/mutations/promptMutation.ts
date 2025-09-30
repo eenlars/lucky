@@ -13,7 +13,7 @@ import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { Genome } from "../../Genome"
 import type { IntensityLevel, MutationOperator } from "./mutation.types"
 

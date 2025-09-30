@@ -9,7 +9,7 @@ import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkfl
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Configuration options for the improvement process components

@@ -1,6 +1,6 @@
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import type { Genome } from "../Genome"
 import type { Population } from "../Population"
 import type { RunService } from "../RunService"

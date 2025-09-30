@@ -1,5 +1,5 @@
-import { CONFIG } from "@runtime/settings/constants.client"
-import { TOOLS } from "@runtime/settings/tools"
+import { CONFIG } from "@core/core-config/compat"
+import { TOOLS } from "@core/core-config/compat"
 
 const INACTIVE_TOOLS = CONFIG.tools.inactive
 const DEFAULT_TOOLS = CONFIG.tools.defaultTools

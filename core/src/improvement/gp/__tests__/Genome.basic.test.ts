@@ -2,7 +2,7 @@
 // TODO: despite title "basic tests", still has extensive mock setup
 // consider using actual test utilities instead of inline mocks
 import { createMockEvaluationInputGeneric, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level - comprehensive mock to prevent undefined property errors

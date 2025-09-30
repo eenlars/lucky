@@ -59,8 +59,8 @@ import { guard } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import { loadSingleWorkflow, persistWorkflow, saveWorkflowConfigToOutput } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
-import { SELECTED_QUESTION } from "@runtime/settings/inputs"
+import { CONFIG, PATHS } from "@core/core-config/compat"
+import { SELECTED_QUESTION } from "@core/core-config/compat"
 import chalk from "chalk"
 
 // Parse command line arguments

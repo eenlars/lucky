@@ -7,7 +7,7 @@ import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInv
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 // Copy of core/src/runtime/setup/setupfile.json placed inline for test isolation

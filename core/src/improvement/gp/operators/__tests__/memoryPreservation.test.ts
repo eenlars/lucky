@@ -3,7 +3,7 @@
  */
 
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { createDummyGenome } from "../../resources/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"

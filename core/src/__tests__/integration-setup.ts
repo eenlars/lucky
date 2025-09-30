@@ -13,7 +13,7 @@ import dotenv from "dotenv"
 import path from "path"
 
 // Load environment variables from repo root using PATHS
-import { PATHS } from "@runtime/settings/constants"
+import { PATHS } from "@core/core-config/compat"
 dotenv.config({ path: path.join(PATHS.root, ".env") })
 dotenv.config({ path: path.join(PATHS.root, ".env.local") })
 

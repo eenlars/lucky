@@ -6,8 +6,9 @@ import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { JSONN, csv } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
+import { JSONN } from "@core/utils/json"
+import * as csv from "@core/utils/csv"
+import { CONFIG } from "@core/core-config/compat"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**

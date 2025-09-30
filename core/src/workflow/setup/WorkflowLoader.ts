@@ -6,7 +6,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 
 class WorkflowConfigError extends Error {
   constructor(

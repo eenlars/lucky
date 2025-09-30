@@ -6,7 +6,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { loadSingleWorkflow, saveWorkflowConfig } from "@core/workflow/setup/WorkflowLoader"
 import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, PATHS } from "@runtime/settings/constants"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import { nanoid } from "nanoid"
 
 // Random SWE-bench IDs

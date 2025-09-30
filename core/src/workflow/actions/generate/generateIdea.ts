@@ -5,7 +5,7 @@ import { ALL_ACTIVE_TOOL_NAMES } from "@core/tools/tool.types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { z } from "zod"
 
 /**

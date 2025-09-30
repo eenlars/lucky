@@ -1,4 +1,4 @@
-import { MODEL_CONFIG } from "@runtime/settings/models"
+import { MODEL_CONFIG } from "@core/core-config/compat"
 
 export type LuckyProvider = "openai" | "openrouter" | "groq"
 

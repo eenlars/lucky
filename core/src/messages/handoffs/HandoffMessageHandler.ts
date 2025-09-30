@@ -2,7 +2,7 @@ import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse
 import type { DelegationPayload, Payload, SequentialPayload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Message emitted when handing off work to another node.

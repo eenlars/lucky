@@ -3,8 +3,8 @@
 
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import { lgg } from "@core/utils/logging/Logger"
-import { PATHS } from "@runtime/settings/constants"
-import { SELECTED_QUESTION } from "@runtime/settings/inputs"
+import { PATHS } from "@core/core-config/compat"
+import { SELECTED_QUESTION } from "@core/core-config/compat"
 import chalk from "chalk"
 import { resolve } from "path"
 

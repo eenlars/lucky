@@ -1,5 +1,5 @@
 import { llmify } from "@core/utils/common/llmify"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 function buildWorkflowRules(): string {
   const rules = [

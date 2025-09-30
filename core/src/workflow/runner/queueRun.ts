@@ -8,7 +8,7 @@ import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import chalk from "chalk"
 import type { QueueRunParams, QueueRunResult } from "./types"
 

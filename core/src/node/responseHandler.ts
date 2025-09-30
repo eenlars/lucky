@@ -15,7 +15,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
 import { validateAndDecide } from "@core/utils/validation/message"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Handles successful response processing.

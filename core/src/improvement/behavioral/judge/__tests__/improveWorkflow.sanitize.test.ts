@@ -26,7 +26,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 describe("improveWorkflowUnified sanitization", () => {
   beforeEach(() => vi.clearAllMocks())

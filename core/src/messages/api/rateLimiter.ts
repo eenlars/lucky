@@ -13,7 +13,7 @@
  * @module messages/api/rateLimiter
  */
 
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import Bottleneck from "bottleneck"
 
 /**

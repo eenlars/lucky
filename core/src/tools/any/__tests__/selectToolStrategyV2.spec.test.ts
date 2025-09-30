@@ -1,6 +1,6 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { tool, type ToolSet } from "ai"
 import { beforeEach, describe, expect, it } from "vitest"
 import { z } from "zod"

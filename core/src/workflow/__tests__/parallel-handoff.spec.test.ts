@@ -3,7 +3,7 @@ import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.

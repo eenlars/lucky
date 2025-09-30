@@ -1,5 +1,5 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { generateText } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"

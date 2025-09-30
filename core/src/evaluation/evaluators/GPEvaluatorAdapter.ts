@@ -9,8 +9,8 @@ import { lgg } from "@core/utils/logging/Logger"
 import { R } from "@core/utils/types"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { JSONN } from "@lucky/shared"
-import { CONFIG } from "@runtime/settings/constants"
+import { JSONN } from "@core/utils/json"
+import { CONFIG } from "@core/core-config/compat"
 import type { EvolutionEvaluator } from "./EvolutionEvaluator"
 
 /**

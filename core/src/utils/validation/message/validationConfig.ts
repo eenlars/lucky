@@ -1,4 +1,4 @@
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 export interface ValidationConfig {
   enabled: boolean

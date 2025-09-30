@@ -1,4 +1,4 @@
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 export const normalizeTime = (timeMs: number): number => {
   const { timeThresholdSeconds, baselineTimeSeconds } = CONFIG.improvement.fitness

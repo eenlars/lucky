@@ -3,7 +3,7 @@ import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitne
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 
 export const createMockWorkflowGenome = (generationNumber = 0, parentIds: string[] = []): WorkflowGenome => ({
   nodes: [

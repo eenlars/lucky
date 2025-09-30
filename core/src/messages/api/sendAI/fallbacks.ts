@@ -18,7 +18,7 @@
 // TODO: create per-operation fallback strategies (tools vs text vs structured)
 
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * Tracks timeout timestamps for each model.

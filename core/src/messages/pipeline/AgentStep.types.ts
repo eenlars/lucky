@@ -1,4 +1,4 @@
-import type { Json } from "@lucky/shared"
+import type { Json } from "@core/utils/json"
 
 /**
  * Specialized step that records a learning the agent made.

@@ -1,5 +1,5 @@
 import type { CodeToolName } from "@core/tools/tool.types"
-import { JSONN } from "@lucky/shared"
+import { JSONN } from "@core/utils/json"
 
 interface ToolError {
   location: string

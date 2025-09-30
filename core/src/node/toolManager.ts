@@ -5,7 +5,7 @@ import { setupMCPForNode } from "@core/tools/mcp/mcp"
 import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
 import type { ToolExecutionContext } from "@core/tools/toolFactory"
 import { isNir } from "@core/utils/common/isNir"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 import { Tool, type ToolSet } from "ai"
 
 /**

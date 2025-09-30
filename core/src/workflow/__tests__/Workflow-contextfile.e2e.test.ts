@@ -173,7 +173,7 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@runtime/settings/models"
+import { getDefaultModels } from "@core/core-config/compat"
 // moved vitest import to top
 import { Workflow } from "../Workflow"
 

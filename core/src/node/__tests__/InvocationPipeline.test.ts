@@ -16,7 +16,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
 // Use standardized test setup
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
-import { getDefaultModels } from "@runtime/settings/constants.client"
+import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"

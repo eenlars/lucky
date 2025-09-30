@@ -4,7 +4,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { repairWorkflow } from "@core/workflow/actions/repair/repairWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@runtime/settings/constants"
+import { CONFIG } from "@core/core-config/compat"
 
 const MAX_RETRIES = CONFIG.improvement.flags.maxRetriesForWorkflowRepair
 
