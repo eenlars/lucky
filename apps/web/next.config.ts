@@ -18,10 +18,20 @@ const nextConfig: NextConfig = {
     // Exclude scraping scripts from build (server-only scripts)
     config.module = config.module || {}
     config.module.rules = config.module.rules || []
-    config.module.rules.push({
-      test: /src\/lib\/scraping\/.*/,
-      use: "null-loader",
-    })
+    config.module.rules.push(
+      {
+        test: /src\/lib\/scraping\/.*/,
+        use: "null-loader",
+      },
+      {
+        test: /src\/app\/api\/help\/get-countries-operation\/.*/,
+        use: "null-loader",
+      },
+      {
+        test: /src\/app\/api\/url\/.*/,
+        use: "null-loader",
+      },
+    )
 
     if (!isServer) {
       // Don't resolve these Node.js modules on the client side
