@@ -1,10 +1,10 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/tools/toolManager.ts
 
-import { setupCodeToolsForNode } from "@core/tools/code/codeToolsSetup"
+import { setupCodeToolsForNode } from "@lucky/tools"
+import type { CodeToolName, MCPToolName } from "@lucky/tools/client"
+import type { ToolExecutionContext } from "@lucky/tools/client"
 import { setupMCPForNode } from "@core/tools/mcp/mcp"
-import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
-import type { ToolExecutionContext } from "@core/tools/toolFactory"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared/client"
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { Tool, type ToolSet } from "ai"
 

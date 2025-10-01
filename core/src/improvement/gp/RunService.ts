@@ -26,7 +26,7 @@ import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/re
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Tables, TablesInsert, TablesUpdate } from "@core/utils/json"
 import { JSONN } from "@core/utils/json"

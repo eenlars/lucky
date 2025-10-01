@@ -1,5 +1,5 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 
 // this is the language of how nodes interact with each other.
 

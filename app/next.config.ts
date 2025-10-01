@@ -1,9 +1,10 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lucky/shared"],
+  transpilePackages: ["@lucky/shared", "@lucky/tools"],
   serverExternalPackages: [
     "bullmq",
+    "glob",
     // Ensure puppeteer and stealth plugin resolve their internal dynamic requires at runtime
     "puppeteer",
     "puppeteer-extra",
@@ -21,6 +22,10 @@ const nextConfig: NextConfig = {
         url: false,
         module: false,
         perf_hooks: false,
+        stream: false,
+        events: false,
+        crypto: false,
+        glob: false,
       }
     }
 

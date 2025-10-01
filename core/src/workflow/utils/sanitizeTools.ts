@@ -3,7 +3,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
   type CodeToolName,
   type MCPToolName,
-} from "@core/tools/tool.types"
+} from "@lucky/tools"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
 /**

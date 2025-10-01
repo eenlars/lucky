@@ -1,5 +1,5 @@
-import { isNir } from "@core/utils/common/isNir"
-import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import { isNir } from "@lucky/shared"
+import type { GoogleMapsBusiness } from "@lucky/tools/utils"
 
 export type CountryInEurope = {
   name: string

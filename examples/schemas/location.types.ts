@@ -1,4 +1,4 @@
-import type { StandardizedLocation } from "@examples/code_tools/googlescraper/convert"
+import type { StandardizedLocation } from "@lucky/shared"
 import { z } from "zod"
 
 // quality level for location data

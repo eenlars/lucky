@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/ui/card"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared/client"
 import { CheckCircle2, ChevronDown, ChevronUp, Copy } from "lucide-react"
 import dynamic from "next/dynamic"
 import { getReactJsonTheme, getStepIcon, getStepTheme } from "./utils"

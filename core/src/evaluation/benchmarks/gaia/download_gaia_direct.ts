@@ -17,8 +17,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const OUTPUT_DIR = join(__dirname, "output")
 
-function getAuthToken(): string | undefined {
-  return envi.HF_TOKEN || envi.HUGGING_FACE_API_KEY
+function getAuthToken(): string {
+  if (!envi.HF_TOKEN) {
+    throw new Error("HF_TOKEN is not set in environment variables")
+  }
+  return envi.HF_TOKEN
 }
 
 async function fetchText(url: string, authToken?: string): Promise<string> {

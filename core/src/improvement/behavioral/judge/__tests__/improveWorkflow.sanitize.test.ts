@@ -2,7 +2,7 @@ import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitne
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock sendAI to return a config that includes an inactive tool
+// Mock sendAI to return a config that includes an active tool
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
@@ -14,8 +14,8 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
           description: "desc",
           systemPrompt: "sp",
           modelName: "openai/gpt-4.1-mini",
-          mcpTools: ["browserUse"],
-          codeTools: [],
+          mcpTools: [],
+          codeTools: ["todoWrite"],
           handOffs: ["end"],
           memory: {},
         },
@@ -31,7 +31,7 @@ import { getDefaultModels } from "@core/core-config/compat"
 describe("improveWorkflowUnified sanitization (core defaults)", () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it("keeps active tools by default (browserUse remains active in core)", async () => {
+  it("keeps active tools by default (todoWrite remains active in core)", async () => {
     const config: WorkflowConfig = {
       entryNodeId: "step-1",
       nodes: [
@@ -63,7 +63,7 @@ describe("improveWorkflowUnified sanitization (core defaults)", () => {
 
     expect(improvedConfig).not.toBeNull()
     for (const node of improvedConfig!.nodes) {
-      expect(node.mcpTools).toContain("browserUse")
+      expect(node.codeTools).toContain("todoWrite")
     }
   })
 })

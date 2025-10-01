@@ -1,5 +1,5 @@
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import type { InvocationContext } from "@core/tools/toolFactory"
+import type { InvocationContext } from "@lucky/tools"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 

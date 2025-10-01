@@ -1,20 +1,18 @@
-import type { CodeToolName } from "@core/tools/tool.types"
-import type { ToolExecutionContext } from "@core/tools/toolFactory"
+import type { CodeToolName } from "@lucky/tools"
+import type { ToolExecutionContext } from "@lucky/tools"
 import { beforeEach, describe, expect, it } from "vitest"
 import { setupCodeToolsForNode } from "../codeToolsSetup"
 import { codeToolRegistry } from "../index"
-import { CodeToolAutoDiscovery } from "../AutoDiscovery"
-import { PATHS as EXAMPLES_PATHS } from "@examples/settings/constants"
+import { registerAllTools } from "@lucky/tools"
 
 describe("codeToolsSetup bug demonstration", () => {
   // TODO: This test suite is labeled as "bug demonstration" which suggests it's testing
   // known broken behavior. Tests should verify correct behavior, not document bugs.
   // If this is a regression test, it should be named accordingly and test the fix.
   beforeEach(async () => {
-    // Reset and setup tools for testing from real example code_tools
+    // Reset and register all tools
     await codeToolRegistry.destroy()
-    const localDiscovery = new CodeToolAutoDiscovery(EXAMPLES_PATHS.codeTools)
-    await localDiscovery.setupCodeTools()
+    await registerAllTools()
   })
 
   it("shows tools are missing without context", async () => {

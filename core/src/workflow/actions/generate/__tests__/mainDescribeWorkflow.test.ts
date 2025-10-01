@@ -4,12 +4,11 @@ import { workflowToString } from "../workflowToString"
 
 // Mock the tool types to include the test tools
 vi.mock("@core/tools/tool.types", () => ({
-  ALL_ACTIVE_TOOL_NAMES: ["browserUse", "csvInfo", "searchGoogleMaps", "verifyLocation"],
+  ALL_ACTIVE_TOOL_NAMES: ["todoRead", "todoWrite", "tavily"],
   ACTIVE_TOOLS_WITH_DESCRIPTION: {
-    browserUse: "Use a browser to navigate to a URL and return the HTML",
-    csvInfo: "Get CSV file metadata: headers, column count, row count, data types, sample values",
-    searchGoogleMaps: "Search Google Maps for business information",
-    verifyLocation: "Geocode a list of addresses to get coordinates",
+    todoRead: "Read the current session's todo list",
+    todoWrite: "Create and manage structured task lists",
+    tavily: "Search the web",
   },
 }))
 
@@ -20,8 +19,8 @@ describe("describeWorkflow", () => {
         {
           id: "node1",
           systemPrompt: "Test prompt",
-          mcpTools: ["browserUse"],
-          codeTools: ["csvInfo"],
+          mcpTools: ["tavily"],
+          codeTools: ["todoRead", "todoWrite"],
           handoffs: [{ to: "node2", rules: "Always" }],
         },
         {
@@ -45,8 +44,8 @@ describe("describeWorkflow", () => {
     })
 
     console.log("Result with tool explanations:", result)
-    expect(result).toContain("browserUse")
-    expect(result).toContain("csvInfo")
+    expect(result).toContain("todoRead")
+    expect(result).toContain("todoWrite")
   })
 
   it("should not include tool explanations when includeToolExplanations is false", () => {
@@ -58,8 +57,8 @@ describe("describeWorkflow", () => {
     })
 
     console.log("Result without tool explanations:", result)
-    expect(result).not.toContain("browserUse")
-    expect(result).not.toContain("csvInfo")
+    expect(result).not.toContain("todoRead")
+    expect(result).not.toContain("todoWrite")
     expect(result).toBe("")
   })
 

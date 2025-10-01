@@ -82,7 +82,7 @@ vi.mock("@examples/settings/constants", () => ({
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set(),
+      defaultTools: new Set(["todoRead", "todoWrite"]), // Test tools: always available, simple & predictable
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
@@ -175,6 +175,31 @@ vi.mock("@examples/settings/constants", () => ({
 
 // Note: MCP tests (*.spec.test.ts in tools/mcp/__tests__/) should set up their own
 // MCP_SECRET_PATH if needed. General tests don't require MCP configuration.
+
+// Mock tool exports to provide test-friendly tools
+vi.mock("@lucky/tools/client", async importOriginal => {
+  const actual = (await importOriginal()) as any
+  return {
+    ...actual,
+    ACTIVE_CODE_TOOL_NAMES: ["todoRead", "todoWrite"],
+    ACTIVE_MCP_TOOL_NAMES: ["tavily"],
+    ALL_ACTIVE_TOOL_NAMES: ["todoRead", "todoWrite", "tavily"],
+    ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT: ["todoRead", "todoWrite"],
+    ACTIVE_TOOLS_WITH_DESCRIPTION: {
+      todoRead: "Read the current session's todo list",
+      todoWrite: "Create and manage structured task lists",
+      tavily: "Search the web",
+    },
+    ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION: {
+      todoRead: "Read the current session's todo list",
+      todoWrite: "Create and manage structured task lists",
+    },
+    ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION: {
+      tavily: "Search the web",
+    },
+    INACTIVE_TOOLS: new Set(),
+  }
+})
 
 // Mock Supabase client to prevent database connection issues
 vi.mock("@core/utils/clients/supabase/client", () => ({

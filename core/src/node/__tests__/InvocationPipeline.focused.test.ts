@@ -37,9 +37,11 @@ describe("InvocationPipeline Focused Integration", () => {
     // Create a minimal test that simulates the exact workflow you requested
     const workflowInvocationId = `focused-test-${Date.now()}`
 
-    // Import todo tools directly - these should work without circular deps
-    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
+    // Get tools from registry instead of direct imports
+    const { codeToolRegistry } = await import("@lucky/tools")
+    await codeToolRegistry.initialize()
+    const todoWrite = codeToolRegistry.getAllTools().find(t => t.name === "todoWrite")!
+    const todoRead = codeToolRegistry.getAllTools().find(t => t.name === "todoRead")!
 
     const toolContext = {
       workflowInvocationId,
@@ -53,7 +55,7 @@ describe("InvocationPipeline Focused Integration", () => {
     console.log("🎯 Testing the exact workflow: use todo write first, then return output of todo read")
 
     // Step 1: Execute todoWrite first (as per system prompt)
-    const writeResult = await todoWrite.default.execute(
+    const writeResult = await todoWrite.execute(
       {
         todos: [
           {
@@ -77,7 +79,7 @@ describe("InvocationPipeline Focused Integration", () => {
     console.log("✅ Step 1 - todoWrite executed:", writeResult.data?.output?.message)
 
     // Step 2: Execute todoRead second (to return the output as per system prompt)
-    const readResult = await todoRead.default.execute({}, toolContext)
+    const readResult = await todoRead.execute({}, toolContext)
 
     expect(readResult.success).toBe(true)
     expect(readResult.data?.success).toBe(true)

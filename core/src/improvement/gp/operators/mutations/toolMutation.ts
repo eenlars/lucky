@@ -14,7 +14,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
   type CodeToolName,
   type MCPToolName,
-} from "@core/tools/tool.types"
+} from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { CONFIG } from "@core/core-config/compat"

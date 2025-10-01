@@ -4,6 +4,7 @@ import { defineConfig } from "tsup"
 export default defineConfig({
   entry: {
     index: "src/index.ts",
+    client: "src/client.ts",
     "fs/index": "src/fs/index.ts",
     "csv/index": "src/csv/index.ts",
   },

@@ -1,5 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import { networkMonitor } from "@examples/code_tools/browser-automation/network"
+import { networkMonitor } from "@lucky/tools/utils"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {

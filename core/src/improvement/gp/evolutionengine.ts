@@ -33,7 +33,7 @@ import { evolutionSettingsToString } from "@core/improvement/gp/resources/evolut
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { validateEvolutionSettings } from "@core/improvement/gp/resources/validation"
 import type { FlowEvolutionMode } from "@core/types"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"

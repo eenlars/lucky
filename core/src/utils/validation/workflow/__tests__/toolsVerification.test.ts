@@ -381,7 +381,7 @@ describe("verifyAllToolsAreActive", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["urlToMarkdown"], // This is in defaultTools
+          codeTools: ["todoRead"], // This is in defaultTools
           handOffs: ["end"],
         },
       ],
@@ -401,7 +401,7 @@ describe("verifyAllToolsAreActive", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["saveFileLegacy"],
+          codeTools: ["todoWrite"],
           handOffs: ["end"],
         },
       ],
@@ -699,7 +699,7 @@ describe("Edge cases and comprehensive validation", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["saveFileLegacy", "verifyLocation"],
+          codeTools: ["todoWrite", "verifyLocation"],
           handOffs: ["node2"],
         },
         {
@@ -707,8 +707,8 @@ describe("Edge cases and comprehensive validation", () => {
           description: "complex node 2",
           systemPrompt: "test",
           modelName: getDefaultModels().nano,
-          mcpTools: ["firecrawl"],
-          codeTools: ["searchGoogleMaps"],
+          mcpTools: [],
+          codeTools: ["todoRead", "searchGoogleMaps"],
           handOffs: ["end"],
         },
       ],

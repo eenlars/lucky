@@ -1,7 +1,8 @@
 /**
- * Tool Registry - Type definitions and active tool filtering
+ * Tool Registry - Core components and utilities
  */
 
+// Type definitions and active tool filtering
 export {
   type MCPToolName,
   type CodeToolName,
@@ -16,3 +17,10 @@ export {
   ACTIVE_TOOLS_WITH_DESCRIPTION,
   INACTIVE_TOOLS,
 } from "./types"
+
+// CodeToolRegistry
+export { CodeToolRegistry, codeToolRegistry, type FlexibleToolDefinition } from "./CodeToolRegistry"
+
+// Setup utilities
+export { setupCodeToolsForNode } from "./codeToolsSetup"
+export { getAllCodeToolNames } from "./getAllCodeToolNames"

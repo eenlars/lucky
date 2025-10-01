@@ -3,7 +3,7 @@
  * Replaces @examples/code_tools/file-saver/save
  */
 
-import type { CodeToolResult } from "@core/tools/code/output.types"
+import type { CodeToolResult } from "@lucky/tools"
 import { JSONN } from "@core/utils/json"
 import { getCorePaths } from "@core/core-config"
 import fs from "fs"

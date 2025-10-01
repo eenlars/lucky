@@ -1,5 +1,5 @@
-import type { CodeToolName } from "@core/tools/tool.types"
-import { ACTIVE_CODE_TOOL_NAMES } from "@core/tools/tool.types"
+import type { CodeToolName } from "@lucky/tools"
+import { ACTIVE_CODE_TOOL_NAMES } from "@lucky/tools"
 
 /**
  * Get all available code tool names

@@ -1,4 +1,4 @@
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared/client"
 import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"

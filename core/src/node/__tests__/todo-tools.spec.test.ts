@@ -7,9 +7,11 @@ describe("Todo Tools Integration Test", () => {
   // InvocationPipeline, which bypasses the actual workflow execution logic.
   // also uses console.log for debugging output that should be removed.
   it("should execute todoWrite and todoRead workflow", async () => {
-    // Import the todo tools directly
-    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
+    // Get tools from registry instead of direct imports
+    const { codeToolRegistry } = await import("@lucky/tools")
+    await codeToolRegistry.initialize()
+    const todoWrite = codeToolRegistry.getAllTools().find(t => t.name === "todoWrite")!
+    const todoRead = codeToolRegistry.getAllTools().find(t => t.name === "todoRead")!
     const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
     const workflowInvocationId = `todo-integration-test-${Date.now()}`
@@ -24,7 +26,7 @@ describe("Todo Tools Integration Test", () => {
     }
 
     // Step 1: Use todoWrite to create a todo
-    const writeResult = await todoWrite.default.execute(
+    const writeResult = await todoWrite.execute(
       {
         todos: [
           {
@@ -43,7 +45,7 @@ describe("Todo Tools Integration Test", () => {
     console.log("TodoWrite result:", writeResult.data?.output?.message)
 
     // Step 2: Use todoRead to read back the todos
-    const readResult = await todoRead.default.execute({}, mockContext)
+    const readResult = await todoRead.execute({}, mockContext)
 
     expect(readResult.success).toBe(true)
     expect(readResult.data?.output?.todos).toBeDefined()
@@ -87,8 +89,10 @@ describe("Todo Tools Integration Test", () => {
   }, 20000)
 
   it("should handle multiple todos in workflow", async () => {
-    const todoWrite = await import("@examples/code_tools/todo-manager/tool-todo-write")
-    const todoRead = await import("@examples/code_tools/todo-manager/tool-todo-read")
+    const { codeToolRegistry } = await import("@lucky/tools")
+    await codeToolRegistry.initialize()
+    const todoWrite = codeToolRegistry.getAllTools().find(t => t.name === "todoWrite")!
+    const todoRead = codeToolRegistry.getAllTools().find(t => t.name === "todoRead")!
 
     const workflowInvocationId = `todo-multi-integration-test-${Date.now()}`
 
@@ -102,7 +106,7 @@ describe("Todo Tools Integration Test", () => {
     }
 
     // Create multiple todos
-    const writeResult = await todoWrite.default.execute(
+    const writeResult = await todoWrite.execute(
       {
         todos: [
           {
@@ -132,7 +136,7 @@ describe("Todo Tools Integration Test", () => {
     expect(writeResult.data?.output?.todos.length).toBe(3)
 
     // Read back the todos
-    const readResult = await todoRead.default.execute({}, mockContext)
+    const readResult = await todoRead.execute({}, mockContext)
 
     expect(readResult.success).toBe(true)
     expect(readResult.data?.output?.todos.length).toBe(3)

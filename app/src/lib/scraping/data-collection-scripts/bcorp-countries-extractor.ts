@@ -1,7 +1,7 @@
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
 import { lgg } from "@core/utils/logging/Logger"
-import { saveInLoc } from "@examples/code_tools/file-saver/save"
+import { saveInLoc } from "@lucky/tools/utils"
 import { PATHS } from "@examples/settings/constants"
 import { csv } from "@lucky/shared"
 import crypto from "crypto"

@@ -28,6 +28,7 @@
     "@dagrejs/dagre": "^1.1.5",
     "@huggingface/hub": "^2.4.0",
     "@lucky/shared": "workspace:*",
+    "@lucky/tools": "workspace:*",
     "@mendable/firecrawl-js": "^1.29.1",
     "@modelcontextprotocol/sdk": "^1.17.2",
     "@openrouter/ai-sdk-provider": "^1.2.0",

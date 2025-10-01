@@ -35,7 +35,7 @@ import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { VerificationCache } from "@core/improvement/gp/resources/wrappers"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { truncater } from "@core/utils/common/llmify"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
 import { lgg } from "@core/utils/logging/Logger"

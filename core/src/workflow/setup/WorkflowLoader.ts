@@ -1,5 +1,5 @@
 import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
-import type { CodeToolName } from "@core/tools/tool.types"
+import type { CodeToolName } from "@lucky/tools"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"

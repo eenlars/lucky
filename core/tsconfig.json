@@ -35,6 +35,6 @@
     },
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "src/**/*.d.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules", "src/examples/logging_folder", "src/utils/env.mjs"]
 }

@@ -33,7 +33,7 @@ The tools system enables AI agents to execute complex workflows by providing:
 All tools follow the **unified `defineTool()` pattern** for consistency:
 
 ```typescript
-import { defineTool, commonSchemas } from "@core/tools/toolFactory"
+import { defineTool, commonSchemas } from "@lucky/tools"
 import { z } from "zod"
 
 const myTool = defineTool({
@@ -214,7 +214,7 @@ export const getActiveTools = <T>(tools: T): T => {
 
 ```typescript
 // /src/runtime/code_tools/my-new-tool/tool.ts
-import { defineTool, commonSchemas } from "@core/tools/toolFactory"
+import { defineTool, commonSchemas } from "@lucky/tools"
 import { z } from "zod"
 
 const myNewTool = defineTool({

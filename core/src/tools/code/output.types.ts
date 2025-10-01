@@ -1,4 +1,4 @@
-import type { CodeToolName } from "@core/tools/tool.types"
+import type { CodeToolName } from "@lucky/tools"
 import { JSONN } from "@core/utils/json"
 
 interface ToolError {

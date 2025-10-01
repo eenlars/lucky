@@ -2,7 +2,7 @@ import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fi
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { singleFeedbackSystemPrompt, singleFeedbackUserPrompt } from "@core/prompts/evaluator/feedback/singleFeedback.p"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"

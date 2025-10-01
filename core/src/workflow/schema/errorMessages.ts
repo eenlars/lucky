@@ -1,4 +1,4 @@
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared/client"
 
 export const Errors = {
   workflowInvocationIdNotSet: "Workflow invocation ID is not set, probably you have never run the system.",

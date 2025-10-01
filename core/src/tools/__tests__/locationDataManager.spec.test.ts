@@ -1,5 +1,4 @@
-import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
-import { codeToolRegistry } from "@core/tools/code/CodeToolRegistry"
+import { codeToolRegistry } from "@lucky/tools"
 import { describe, expect, it } from "vitest"
 
 describe("LocationDataManager Tool Integration", () => {
@@ -7,8 +6,8 @@ describe("LocationDataManager Tool Integration", () => {
   // It should test through the actual tool discovery/registry system to ensure the tool is properly
   // integrated. Also, the absolute path import makes this test brittle and environment-specific.
   it("should reproduce the exact error we're seeing", async () => {
-    // Discover tools via registry instead of deep-importing
-    await codeToolAutoDiscovery.setupCodeTools()
+    // Initialize tools via registry
+    await codeToolRegistry.initialize()
     const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {
@@ -58,7 +57,7 @@ describe("LocationDataManager Tool Integration", () => {
   })
 
   it("should work correctly with proper array data", async () => {
-    await codeToolAutoDiscovery.setupCodeTools()
+    await codeToolRegistry.initialize()
     const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {

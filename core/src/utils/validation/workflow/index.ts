@@ -1,4 +1,4 @@
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { getModelV2 } from "@core/utils/spending/functions"
 import {
   everyNodeIsConnectedToStartNode,

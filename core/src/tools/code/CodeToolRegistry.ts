@@ -1,5 +1,5 @@
-import type { CodeToolName } from "@core/tools/tool.types"
-import { toAITool, type ToolExecutionContext } from "@core/tools/toolFactory"
+import type { CodeToolName } from "@lucky/tools"
+import { toAITool, type ToolExecutionContext } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Tool } from "ai"
 

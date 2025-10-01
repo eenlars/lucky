@@ -101,6 +101,10 @@ export interface ToolConfig {
  */
 export const DEFAULT_TOOL_CONFIG: ToolConfig = {
   inactive: new Set<AllToolNames>([
+    // NOTE: Tests use todoRead/todoWrite as stable, always-active tools for testing
+    // tool-related functionality. These tools are simple, predictable, and don't require
+    // external dependencies (no MCP, no API calls), making them ideal for unit tests.
+
     // Inactive by default - enable as needed
     "urlToMarkdown",
     "browserUse",

@@ -1,5 +1,5 @@
 import type { SendAI, TResponse } from "@core/messages/api/sendAI/types"
-import type { AllToolNames } from "@core/tools/tool.types"
+import type { AllToolNames } from "@lucky/tools"
 import { mockRuntimeConstants } from "@core/utils/__tests__/setup/runtimeConstantsMock"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
