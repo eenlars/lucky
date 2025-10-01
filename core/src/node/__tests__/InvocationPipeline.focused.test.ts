@@ -38,7 +38,8 @@ describe("InvocationPipeline Focused Integration", () => {
     const workflowInvocationId = `focused-test-${Date.now()}`
 
     // Get tools from registry instead of direct imports
-    const { codeToolRegistry } = await import("@lucky/tools")
+    const { codeToolRegistry, registerAllTools } = await import("@lucky/tools")
+    await registerAllTools()
     await codeToolRegistry.initialize()
     const todoWrite = codeToolRegistry.getAllTools().find(t => t.name === "todoWrite")!
     const todoRead = codeToolRegistry.getAllTools().find(t => t.name === "todoRead")!

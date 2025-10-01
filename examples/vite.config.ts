@@ -21,6 +21,23 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         external: id => {
+          // Keep browser automation deps external so the stealth runtime can own them
+          const externalDependencies = [
+            "puppeteer",
+            "puppeteer-extra",
+            "puppeteer-extra-plugin-stealth",
+            "puppeteer-extra-plugin-user-preferences",
+            "puppeteer-extra-plugin-adblocker",
+          ]
+
+          if (
+            externalDependencies.some(
+              dep => id === dep || id.startsWith(`${dep}/`),
+            )
+          ) {
+            return true
+          }
+
           // External node built-ins
           if (
             /^node:/.test(id) ||
