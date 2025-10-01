@@ -21,6 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@core/*": ["../../packages/core/src/*"],
+      "@examples/*": ["../../packages/examples/*"],
       "@lucky/core": ["../../packages/core/src"],
       "@lucky/core/*": ["../../packages/core/src/*"],
       "@lucky/examples": ["../../packages/examples"],

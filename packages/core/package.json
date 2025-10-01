@@ -4,6 +4,7 @@
   "private": true,
   "description": "Core workflow engine, evaluation, and evolution algorithms",
   "exports": {
+    "./package.json": "./package.json",
     "./core-config": "./src/core-config",
     "./workflow/*": "./src/workflow/*",
     "./utils/*": "./src/utils/*",
