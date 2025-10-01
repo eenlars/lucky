@@ -3,7 +3,7 @@
   "buildCommand": "(cd ../../packages/shared && bun run build) && (cd ../../packages/tools && bun run build) && (cd ../../packages/examples && bun run build) && bun run build",
   "framework": "nextjs",
   "functions": {
-    "api/**": {
+    "app/api/**/*.js": {
       "excludeFiles": "{.next/**,node_modules/@next/**}"
     }
   },
