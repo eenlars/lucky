@@ -7,7 +7,7 @@ import { normalizeCost, normalizeTime } from "@core/evaluation/calculate-fitness
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"

@@ -1,7 +1,7 @@
 "use client"
 
 import { showToast } from "@/lib/toast-utils"
-import type { Database } from "@lucky/shared"
+import type { Database } from "@lucky/shared/client"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 

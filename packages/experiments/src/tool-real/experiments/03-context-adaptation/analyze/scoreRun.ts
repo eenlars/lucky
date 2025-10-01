@@ -34,7 +34,7 @@ export interface ScoredRun {
 }
 
 function getRequestedCount(scenarioId: string): number {
-  const s = TEST_SCENARIOS.find((x) => x.id === scenarioId)
+  const s = TEST_SCENARIOS.find(x => x.id === scenarioId)
   return s?.expected ?? 0
 }
 
@@ -65,19 +65,10 @@ function aggregateLoops(loops: OurAlgorithmLoop[]): {
   const last = loops[loops.length - 1]
   const costUsd = loops.reduce((s, l) => s + (l.cost ?? 0), 0)
   const durationMs = loops.reduce((s, l) => s + (l.durationMs ?? 0), 0)
-  const totalFetchCalls = loops.reduce(
-    (s, l) => s + (l.metrics.fetchCallsCount ?? 0),
-    0
-  )
-  const totalCombineCalls = loops.reduce(
-    (s, l) => s + (l.metrics.combineCallsCount ?? 0),
-    0
-  )
-  const adherenceToLimit =
-    loops.reduce((s, l) => s + (l.metrics.adherenceToLimit ?? 0), 0) /
-    loops.length
-  const errorRate =
-    loops.reduce((s, l) => s + (l.metrics.errorRate ?? 0), 0) / loops.length
+  const totalFetchCalls = loops.reduce((s, l) => s + (l.metrics.fetchCallsCount ?? 0), 0)
+  const totalCombineCalls = loops.reduce((s, l) => s + (l.metrics.combineCallsCount ?? 0), 0)
+  const adherenceToLimit = loops.reduce((s, l) => s + (l.metrics.adherenceToLimit ?? 0), 0) / loops.length
+  const errorRate = loops.reduce((s, l) => s + (l.metrics.errorRate ?? 0), 0) / loops.length
   const firstCallFailed = !!loops[0]?.metrics.firstCallFailed
   const strategy = last.metrics.strategy
 
@@ -103,8 +94,7 @@ function aggregateLoops(loops: OurAlgorithmLoop[]): {
 export function scoreRun(run: OurAlgorithmRun, runKind: RunKind): ScoredRun {
   const requested = getRequestedCount(run.scenario)
   const loops = run.loops ?? []
-  const loopAgg =
-    runKind === "our-algorithm" ? aggregateLoops(loops) : aggregateLoops(loops.slice(0, 1))
+  const loopAgg = runKind === "our-algorithm" ? aggregateLoops(loops) : aggregateLoops(loops.slice(0, 1))
 
   const successItems = run.successItems ?? 0
   const successPct = requested ? (successItems / requested) * 100 : 0
@@ -133,17 +123,14 @@ export function scoreRun(run: OurAlgorithmRun, runKind: RunKind): ScoredRun {
  * scoreMany - convenience helper to score a list of runs
  */
 export function scoreMany(runs: OurAlgorithmRun[], runKind: RunKind): ScoredRun[] {
-  return runs.map((r) => scoreRun(r, runKind))
+  return runs.map(r => scoreRun(r, runKind))
 }
 
 /**
  * groupAndAggregate - example aggregator that groups scores by key and returns averages.
  * Useful for comparing prompt types, models, or run kinds as in the Methodology doc.
  */
-export function groupAndAggregate<T extends keyof ScoredRun>(
-  scores: ScoredRun[],
-  groupKey: T
-) {
+export function groupAndAggregate<T extends keyof ScoredRun>(scores: ScoredRun[], groupKey: T) {
   const buckets = new Map<any, ScoredRun[]>()
   for (const s of scores) {
     const k = s[groupKey]
@@ -154,19 +141,12 @@ export function groupAndAggregate<T extends keyof ScoredRun>(
   return Array.from(buckets.entries()).map(([key, arr]) => ({
     key,
     n: arr.length,
-    adaptedRatePct:
-      (arr.filter((x) => x.adapted).length / Math.max(1, arr.length)) * 100,
-    avgSuccessPct:
-      arr.reduce((sum, x) => sum + x.successPct, 0) / Math.max(1, arr.length),
-    avgCostUsd:
-      arr.reduce((sum, x) => sum + x.costUsd, 0) / Math.max(1, arr.length),
-    avgDurationMs:
-      arr.reduce((sum, x) => sum + x.durationMs, 0) / Math.max(1, arr.length),
-    avgAdherencePct:
-      arr.reduce((sum, x) => sum + x.adherenceToLimitPct, 0) /
-      Math.max(1, arr.length),
-    avgErrorPct:
-      arr.reduce((sum, x) => sum + x.errorRatePct, 0) / Math.max(1, arr.length),
+    adaptedRatePct: (arr.filter(x => x.adapted).length / Math.max(1, arr.length)) * 100,
+    avgSuccessPct: arr.reduce((sum, x) => sum + x.successPct, 0) / Math.max(1, arr.length),
+    avgCostUsd: arr.reduce((sum, x) => sum + x.costUsd, 0) / Math.max(1, arr.length),
+    avgDurationMs: arr.reduce((sum, x) => sum + x.durationMs, 0) / Math.max(1, arr.length),
+    avgAdherencePct: arr.reduce((sum, x) => sum + x.adherenceToLimitPct, 0) / Math.max(1, arr.length),
+    avgErrorPct: arr.reduce((sum, x) => sum + x.errorRatePct, 0) / Math.max(1, arr.length),
   }))
 }
 
@@ -180,14 +160,9 @@ type ToolUsageEntry = {
   [k: string]: unknown
 }
 
-export function scoreLoop(
-  execs: ToolExecution[],
-  requested: number,
-  toolUsageOutputs?: ToolUsageEntry[]
-): LoopMetrics {
+export function scoreLoop(execs: ToolExecution[], requested: number, toolUsageOutputs?: ToolUsageEntry[]): LoopMetrics {
   const isFetch = (e: ToolExecution) => (e as any).toolName === "fetch_objects"
-  const isCombine = (e: ToolExecution) =>
-    (e as any).toolName === "combine_results"
+  const isCombine = (e: ToolExecution) => (e as any).toolName === "combine_results"
   const fetches = execs.filter(isFetch)
   const combines = execs.filter(isCombine)
 
@@ -206,17 +181,11 @@ export function scoreLoop(
   const firstCallFailed =
     !!firstFetch &&
     !Array.isArray(firstFetch?.outputData) &&
-    !(
-      typeof firstFetch?.outputData === "object" &&
-      firstFetch?.outputData !== null
-    )
+    !(typeof firstFetch?.outputData === "object" && firstFetch?.outputData !== null)
 
   const totalItemsFetched = fetches
     .filter((f: any) => Array.isArray(f.outputData))
-    .reduce(
-      (n: number, f: any) => n + ((f.outputData as any[])?.length || 0),
-      0
-    )
+    .reduce((n: number, f: any) => n + ((f.outputData as any[])?.length || 0), 0)
 
   const adapted = totalItemsFetched >= requested
   const fetchCallsCount = fetches.length
@@ -225,14 +194,11 @@ export function scoreLoop(
   // error rate: prefer explicit toolUsageOutputs when available
   const errorRate =
     toolUsageOutputs && toolUsageOutputs.length
-      ? toolUsageOutputs.filter((o) => o?.type === "error").length /
-        toolUsageOutputs.length
+      ? toolUsageOutputs.filter(o => o?.type === "error").length / toolUsageOutputs.length
       : ((): number => {
           const totalToolUsages = execs.length
           const errorUsages = (execs as any[]).filter(
-            (e) =>
-              typeof (e as any).outputData === "string" &&
-              String((e as any).outputData).startsWith("ERROR:")
+            e => typeof (e as any).outputData === "string" && String((e as any).outputData).startsWith("ERROR:"),
           ).length
           return totalToolUsages ? errorUsages / totalToolUsages : 0
         })()
@@ -254,9 +220,7 @@ export function scoreLoop(
     combineCallsCount,
     firstCallFailed,
     countsUsed: counts,
-    adherenceToLimit: fetchCallsCount
-      ? (counts["1"] + counts["2"] + counts["3"]) / fetchCallsCount
-      : 0,
+    adherenceToLimit: fetchCallsCount ? (counts["1"] + counts["2"] + counts["3"]) / fetchCallsCount : 0,
     totalItemsFetched,
     requested,
     adapted,

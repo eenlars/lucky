@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { CodeInput } from "@/ui/code"
 import { extractTextFromPayload, isDelegationPayload, isSequentialPayload } from "@core/messages/MessagePayload"
-import type { Json } from "@lucky/shared"
+import type { Json } from "@lucky/shared/client"
 import { Maximize2, MessageSquare, Users } from "lucide-react"
 import { useState } from "react"
 

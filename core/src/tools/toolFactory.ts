@@ -27,10 +27,10 @@
  * @module tools/toolFactory
  */
 
-import Tools from "@core/tools/code/output.types"
+import Tools from "@lucky/tools"
 import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import type { CodeToolName } from "@core/tools/tool.types"
+import type { CodeToolName } from "@lucky/tools"
 import { R, type RS } from "@core/utils/types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { TOOLS } from "@core/core-config/compat"

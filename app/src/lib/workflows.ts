@@ -4,7 +4,7 @@
  */
 
 import { nanoid } from "nanoid"
-import type { Database, Json, TablesInsert } from "@lucky/shared"
+import type { Database, Json, TablesInsert } from "@lucky/shared/client"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { createClient } from "@/lib/supabase/client"
 

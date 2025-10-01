@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "esnext",
+    "lib": ["ES2020", "DOM"],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "@lucky/tools": ["./src/index.ts"],
+      "@lucky/tools/*": ["./src/*"],
+      "@lucky/shared": ["../shared/src/index.ts"],
+      "@lucky/shared/*": ["../shared/src/*"],
+      "@core/*": ["../../core/src/*"],
+      "@runtime/*": ["../../runtime/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+}

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 "use server"
 
 import { supabase } from "@/lib/supabase"

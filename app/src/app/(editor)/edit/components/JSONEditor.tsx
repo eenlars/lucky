@@ -4,7 +4,7 @@
 import { showToast } from "@/lib/toast-utils"
 import { useAppStore } from "@/react-flow-visualization/store"
 import { genShortId } from "@core/utils/common/utils"
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"

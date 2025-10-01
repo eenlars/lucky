@@ -1,5 +1,5 @@
 import { supabase } from "@core/utils/clients/supabase/client"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Json, TablesInsert } from "@core/utils/json"

@@ -1,6 +1,6 @@
 /**
  * Test workflow demonstrating official Anthropic SDK integration.
- * 
+ *
  * This workflow shows how to configure nodes to use either:
  * - Official Anthropic SDK (with useClaudeSDK: true)
  * - Custom pipeline (default)
@@ -25,15 +25,15 @@ export const sdkTestWorkflow: WorkflowConfig = {
         model: "sonnet",
         maxTokens: 4096,
         temperature: 0.5,
-        timeout: 60000
+        timeout: 60000,
       },
       mcpTools: [],
       codeTools: [],
       handOffs: ["custom-processor"],
       memory: {
         analysis_type: "code_review",
-        focus_areas: "security,performance,maintainability"
-      }
+        focus_areas: "security,performance,maintainability",
+      },
     },
     {
       nodeId: "custom-processor",
@@ -50,8 +50,8 @@ export const sdkTestWorkflow: WorkflowConfig = {
       handOffs: ["sdk-formatter"],
       memory: {
         output_format: "markdown",
-        include_examples: "true"
-      }
+        include_examples: "true",
+      },
     },
     {
       nodeId: "sdk-formatter",
@@ -67,20 +67,20 @@ export const sdkTestWorkflow: WorkflowConfig = {
         model: "haiku", // Using faster model for formatting
         maxTokens: 2048,
         temperature: 0.3,
-        timeout: 30000
+        timeout: 30000,
       },
       mcpTools: [],
       codeTools: [],
       handOffs: [],
-      handOffType: "sequential"
-    }
+      handOffType: "sequential",
+    },
   ],
   entryNodeId: "sdk-analyzer",
   memory: {
     workflow_purpose: "code_analysis_pipeline",
     sdk_integration_test: "true",
-    created_by: "sdk_integration"
-  }
+    created_by: "sdk_integration",
+  },
 }
 
 /**
@@ -99,7 +99,7 @@ function calculateTotal(items) {
   return total;
 }
       `,
-      expectedOutput: "Analysis with recommendations for improving the calculateTotal function"
+      expectedOutput: "Analysis with recommendations for improving the calculateTotal function",
     },
     {
       input: `
@@ -109,9 +109,9 @@ async function fetchUserData(userId) {
   return data;
 }
       `,
-      expectedOutput: "Analysis identifying missing error handling and suggestions for improvement"
-    }
-  ]
+      expectedOutput: "Analysis identifying missing error handling and suggestions for improvement",
+    },
+  ],
 }
 
 /**
@@ -129,11 +129,11 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       sdkConfig: {
         model: "sonnet",
         maxTokens: 4096,
-        temperature: 0.7
+        temperature: 0.7,
       },
       mcpTools: [],
       codeTools: [],
-      handOffs: ["conversation-continue"]
+      handOffs: ["conversation-continue"],
     },
     {
       nodeId: "conversation-continue",
@@ -144,12 +144,12 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       sdkConfig: {
         model: "sonnet",
         maxTokens: 4096,
-        temperature: 0.7
+        temperature: 0.7,
       },
       mcpTools: [],
       codeTools: [],
-      handOffs: []
-    }
+      handOffs: [],
+    },
   ],
-  entryNodeId: "conversation-start"
+  entryNodeId: "conversation-start",
 }

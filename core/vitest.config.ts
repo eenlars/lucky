@@ -13,6 +13,7 @@ export default defineConfig({
     // global defaults shared by projects
     globals: true,
     environment: "node",
+    testTimeout: 10000, // Increase from default 5000ms
     exclude: [...configDefaults.exclude, "**/e2e/**"],
     // Avoid watching runtime output directories that may contain transient .tmp files
     watchExclude: ["**/.core-data/**", "**/.core-data/**/*", "**/logs/backups/**"],

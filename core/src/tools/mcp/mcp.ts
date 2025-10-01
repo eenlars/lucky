@@ -1,4 +1,4 @@
-import type { MCPToolName } from "@core/tools/tool.types"
+import type { MCPToolName } from "@lucky/tools"
 import { envi } from "@core/utils/env.mjs"
 import { PATHS } from "@core/core-config/compat"
 import { experimental_createMCPClient, type ToolSet } from "ai"

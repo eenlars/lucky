@@ -1,5 +1,5 @@
 import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
-import type { CodeToolName } from "@core/tools/tool.types"
+import type { CodeToolName } from "@lucky/tools"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
@@ -158,7 +158,7 @@ export class WorkflowConfigHandler {
     try {
       const path = await import("path")
       const fs = await import("fs")
-      const { readText } = await import("@lucky/shared")
+      const { readText } = await import("@lucky/shared/fs")
 
       // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()

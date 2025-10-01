@@ -31,16 +31,10 @@ export interface OurAlgorithmRunResult {
 /**
  * Compose a strong system prompt that includes the experimental condition and the user task.
  */
-function buildNodeSystemPrompt(
-  baseSystemPrompt: string | undefined,
-  _userTask: string
-): string {
+function buildNodeSystemPrompt(baseSystemPrompt: string | undefined, _userTask: string): string {
   // For fair comparison with baseline, use the provided system prompt as-is.
   // Fall back to a minimal default if none provided.
-  return (
-    baseSystemPrompt?.trim() ||
-    "You are a helpful assistant with tools. Use them to complete the user's request."
-  )
+  return baseSystemPrompt?.trim() || "You are a helpful assistant with tools. Use them to complete the user's request."
 }
 
 /**
@@ -52,7 +46,7 @@ export async function runMultiToolOurAlgorithm(
   userTask: string,
   tools: ToolSet = adaptiveTools,
   baseSystemPrompt?: string,
-  initialMemory: Record<string, string> = {}
+  initialMemory: Record<string, string> = {},
 ): Promise<OurAlgorithmRunResult> {
   const nodeId = "context-adapt-our-algorithm-node"
   const workflowInvocationId = `our-algorithm-adapt-${Date.now()}`
@@ -132,10 +126,7 @@ export async function runMultiToolOurAlgorithm(
   // Extract tool executions in a format consistent with the baseline sequential runner
   const execs: ToolExecution[] = []
   let executionIndex = 0
-  if (
-    processedResponse.agentSteps &&
-    Array.isArray(processedResponse.agentSteps)
-  ) {
+  if (processedResponse.agentSteps && Array.isArray(processedResponse.agentSteps)) {
     for (const out of processedResponse.agentSteps as any[]) {
       if (out?.type === "tool") {
         execs.push({
@@ -150,10 +141,7 @@ export async function runMultiToolOurAlgorithm(
   }
 
   const finalResponse =
-    (processedResponse as any).summary ||
-    (processedResponse as any).content ||
-    (processedResponse as any).message ||
-    ""
+    (processedResponse as any).summary || (processedResponse as any).content || (processedResponse as any).message || ""
 
   const success = processedResponse.type !== "error"
 
@@ -176,24 +164,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       CONFIG.models.provider === "openrouter"
         ? ("openai/gpt-4.1-mini" as ModelName)
         : ("gpt-4.1-mini" as unknown as ModelName)
-    const userTask =
-      "Fetch 5 objects with the query 'item' and combine results."
+    const userTask = "Fetch 5 objects with the query 'item' and combine results."
     const systemPrompt =
       "You are a helpful assistant with tools. If a tool fails, retry with adjusted parameters to reach the requested item count."
 
     console.log("[our-algorithm demo] starting...")
-    const result = await runMultiToolOurAlgorithm(
-      model,
-      userTask,
-      adaptiveTools,
-      systemPrompt
-    )
+    const result = await runMultiToolOurAlgorithm(model, userTask, adaptiveTools, systemPrompt)
     console.log(
       "[our-algorithm demo] tool calls:",
-      result.toolExecutions.map((t) => ({
+      result.toolExecutions.map(t => ({
         name: t.toolName,
         args: t.inputData,
-      }))
+      })),
     )
     console.log("[our-algorithm demo] final:", {
       success: result.success,
@@ -202,7 +184,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     })
   }
 
-  demo().catch((e) => {
+  demo().catch(e => {
     console.error("[our-algorithm demo] error:", e)
     process.exit(1)
   })

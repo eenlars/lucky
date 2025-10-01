@@ -19,14 +19,14 @@ describe("Anthropic SDK Integration", () => {
             model: "sonnet",
             maxTokens: 4096,
             temperature: 0.7,
-            timeout: 30000
+            timeout: 30000,
           },
           mcpTools: [],
           codeTools: [],
-          handOffs: []
-        }
+          handOffs: [],
+        },
       ],
-      entryNodeId: "test-node"
+      entryNodeId: "test-node",
     }
 
     // Verify the config is valid
@@ -47,11 +47,11 @@ describe("Anthropic SDK Integration", () => {
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
-            maxTokens: 4096
+            maxTokens: 4096,
           },
           mcpTools: [],
           codeTools: [],
-          handOffs: ["custom-node"]
+          handOffs: ["custom-node"],
         },
         {
           nodeId: "custom-node",
@@ -61,10 +61,10 @@ describe("Anthropic SDK Integration", () => {
           useClaudeSDK: false,
           mcpTools: [],
           codeTools: ["contextGet", "contextSet"],
-          handOffs: []
-        }
+          handOffs: [],
+        },
       ],
-      entryNodeId: "sdk-node"
+      entryNodeId: "sdk-node",
     }
 
     // Verify SDK node
@@ -88,10 +88,10 @@ describe("Anthropic SDK Integration", () => {
           modelName: "gpt-4o-mini",
           mcpTools: [],
           codeTools: ["todoRead", "todoWrite"],
-          handOffs: []
-        }
+          handOffs: [],
+        },
       ],
-      entryNodeId: "default-node"
+      entryNodeId: "default-node",
     }
 
     // Should default to custom pipeline
@@ -112,11 +112,11 @@ describe("Anthropic SDK Integration", () => {
             model: "opus-3",
             maxTokens: 8192,
             temperature: 0.3,
-            topP: 0.9
+            topP: 0.9,
           },
           mcpTools: [],
           codeTools: [],
-          handOffs: []
+          handOffs: [],
         },
         {
           nodeId: "haiku-node",
@@ -127,14 +127,14 @@ describe("Anthropic SDK Integration", () => {
           sdkConfig: {
             model: "haiku",
             maxTokens: 1024,
-            temperature: 0.5
+            temperature: 0.5,
           },
           mcpTools: [],
           codeTools: [],
-          handOffs: []
-        }
+          handOffs: [],
+        },
       ],
-      entryNodeId: "opus-node"
+      entryNodeId: "opus-node",
     }
 
     // Verify Opus node config

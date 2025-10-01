@@ -1,4 +1,4 @@
-import type { MCPToolName } from "@core/tools/tool.types"
+import type { MCPToolName } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import { tool, type ToolSet } from "ai"
 import fs from "fs"

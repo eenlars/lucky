@@ -15,12 +15,7 @@ import {
   TEST_SCENARIOS as SCENARIOS,
   VAGUE_SYSTEM_PROMPT as VAGUE,
 } from "../constants"
-import type {
-  LearningEffects,
-  OurAlgorithmExperimentResults,
-  OurAlgorithmLoop,
-  OurAlgorithmRun,
-} from "../types"
+import type { LearningEffects, OurAlgorithmExperimentResults, OurAlgorithmLoop, OurAlgorithmRun } from "../types"
 import { runMultiToolOurAlgorithm } from "../our-algorithm-helper-runner"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -44,13 +39,13 @@ async function runSanityOurAlgorithm() {
         for (let loop = 1; loop <= 3; loop++) {
           const t0 = Date.now()
           const res = await withQuietLogs(() =>
-            runMultiToolOurAlgorithm(model, scenario.prompt, adaptiveTools, sys, memory)
+            runMultiToolOurAlgorithm(model, scenario.prompt, adaptiveTools, sys, memory),
           )
           const durationMs = Date.now() - t0
           const metrics = scoreLoop(
             res.toolExecutions as ToolExecution[],
             scenario.expected,
-            res.toolUsageOutputs || []
+            res.toolUsageOutputs || [],
           )
           loops.push({
             loop,
@@ -67,19 +62,10 @@ async function runSanityOurAlgorithm() {
 
         // Evaluate based on the final loop tool executions
         const finalExecs = loops[loops.length - 1].toolExecutions
-        const fetchCalls = finalExecs.filter(
-          (c) => c.toolName === "fetch_objects"
-        )
+        const fetchCalls = finalExecs.filter(c => c.toolName === "fetch_objects")
         const successItems = fetchCalls
-          .filter((c) => Array.isArray(c.outputData as any))
-          .reduce(
-            (n, c) =>
-              n +
-              (Array.isArray(c.outputData as any)
-                ? (c.outputData as any[]).length
-                : 0),
-            0
-          )
+          .filter(c => Array.isArray(c.outputData as any))
+          .reduce((n, c) => n + (Array.isArray(c.outputData as any) ? (c.outputData as any[]).length : 0), 0)
 
         const adapted = successItems >= scenario.expected
         runs.push({
@@ -96,9 +82,9 @@ async function runSanityOurAlgorithm() {
           learningEffects: computeLearningEffects(loops),
         })
         console.log(
-          `${model} ${scenario.id} ${cond}: calls=${fetchCalls.length}, items=${successItems}/${scenario.expected}, adapted=${adapted}`
+          `${model} ${scenario.id} ${cond}: calls=${fetchCalls.length}, items=${successItems}/${scenario.expected}, adapted=${adapted}`,
         )
-        await new Promise((r) => setTimeout(r, 150))
+        await new Promise(r => setTimeout(r, 150))
       }
     }
   }
@@ -116,17 +102,14 @@ async function runSanityOurAlgorithm() {
 
   // Also write a public copy with a fixed filename
   try {
-    const publicDir = join(
-      process.cwd(),
-      "public/research-experiments/tool-real/experiments/03-context-adaptation"
-    )
+    const publicDir = join(process.cwd(), "public/research-experiments/tool-real/experiments/03-context-adaptation")
     mkdirSync(publicDir, { recursive: true })
     const fixed = join(publicDir, "adaptive-results.our-algorithm.json")
     writeFileSync(fixed, JSON.stringify(payload, null, 2))
     console.log(`Public our-algorithm copy saved: ${fixed}`)
   } catch (err) {
     console.warn(
-      `Failed to write public adaptive our-algorithm copy: ${err instanceof Error ? err.message : String(err)}`
+      `Failed to write public adaptive our-algorithm copy: ${err instanceof Error ? err.message : String(err)}`,
     )
   }
 }
@@ -142,11 +125,7 @@ function withQuietLogs<T>(fn: () => Promise<T> | T): Promise<T> | T {
   try {
     console.log = (...args: any[]) => {
       const text = args.map(String).join(" ")
-      if (
-        text.includes("decision:") ||
-        text.includes("[InvocationPipeline]") ||
-        text.includes("save msg failed")
-      ) {
+      if (text.includes("decision:") || text.includes("[InvocationPipeline]") || text.includes("save msg failed")) {
         return
       }
       originalLog(...args)
@@ -175,8 +154,7 @@ function computeLearningEffects(loops: OurAlgorithmLoop[]): LearningEffects | nu
     deltaFetchCalls: (l3.fetchCallsCount ?? 0) - (l1.fetchCallsCount ?? 0),
     deltaErrorRate: (l3.errorRate ?? 0) - (l1.errorRate ?? 0),
     deltaAdherence: (l3.adherenceToLimit ?? 0) - (l1.adherenceToLimit ?? 0),
-    optimalSplitAdopted:
-      l1.strategy !== "optimal-split" && l3.strategy === "optimal-split",
+    optimalSplitAdopted: l1.strategy !== "optimal-split" && l3.strategy === "optimal-split",
     memoryGrowth:
       (Object.keys(loops[loops.length - 1]?.updatedMemory || {}).length || 0) -
       (Object.keys(loops[0]?.updatedMemory || {}).length || 0),

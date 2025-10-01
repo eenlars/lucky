@@ -12,7 +12,7 @@
  * @module workflow/runner/invokeWorkflow
  */
 
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"

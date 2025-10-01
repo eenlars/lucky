@@ -4,7 +4,7 @@ import type { AggregatedPayload, MessageType } from "@core/messages/MessagePaylo
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import type { ToolExecutionContext } from "@core/tools/toolFactory"
+import type { ToolExecutionContext } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"

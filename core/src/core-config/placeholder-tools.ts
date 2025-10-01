@@ -4,7 +4,7 @@
  * In production, these would be imported from actual tool implementations.
  */
 
-import { defineTool } from "@core/tools/toolFactory"
+import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 /**

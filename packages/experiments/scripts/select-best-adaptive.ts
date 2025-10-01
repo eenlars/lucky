@@ -62,10 +62,7 @@ function summarizeGroup(label: string, runs: Run[]) {
     const first = loops[0]
     const last = loops[loops.length - 1]
     const requested = first?.metrics?.requested ?? 0
-    if (first)
-      firstAcc.push(
-        accuracyPct(first.metrics.totalItemsFetched ?? 0, requested)
-      )
+    if (first) firstAcc.push(accuracyPct(first.metrics.totalItemsFetched ?? 0, requested))
     if (requested > 0) {
       const items =
         typeof r.successItems === "number" && isFinite(r.successItems)
@@ -73,10 +70,7 @@ function summarizeGroup(label: string, runs: Run[]) {
           : (last?.metrics?.totalItemsFetched ?? 0)
       finalAcc.push(accuracyPct(items, requested))
       const cost = typeof r.cost === "number" && isFinite(r.cost) ? r.cost : 0
-      const dur =
-        typeof r.durationMs === "number" && isFinite(r.durationMs)
-          ? r.durationMs
-          : 0
+      const dur = typeof r.durationMs === "number" && isFinite(r.durationMs) ? r.durationMs : 0
       costs.push(cost)
       times.push(dur)
     }
@@ -96,11 +90,11 @@ async function main() {
   const cwd = process.cwd()
   const ourAlgorithmPath = path.resolve(
     cwd,
-    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.our-algorithm.json"
+    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/adaptive-results.our-algorithm.json",
   )
   const g5Path = path.resolve(
     cwd,
-    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/gpt5.json"
+    "app/public/research-experiments/tool-real/experiments/03-context-adaptation/gpt5.json",
   )
 
   const ourAlgorithm = JSON.parse(await fs.readFile(ourAlgorithmPath, "utf-8")) as Results
@@ -117,9 +111,7 @@ async function main() {
   // GPT-5 group
   map.set("gpt5:openai/gpt-5", g5.runs)
 
-  const rows = [...map.entries()].map(([label, runs]) =>
-    summarizeGroup(label, runs)
-  )
+  const rows = [...map.entries()].map(([label, runs]) => summarizeGroup(label, runs))
 
   // Sort: highest finalAcc, then lowest avgCostUsd, then lowest avgDurationMs
   rows.sort((a, b) => {
@@ -136,16 +128,13 @@ async function main() {
 
   const lines: string[] = []
   lines.push(
-    `Best overall: ${system === "our-algorithm" ? "our multi-loop" : "GPT-5"} with ${model} — accuracy ${best.finalAcc}%, cost $${best.avgCostUsd}, time ${best.avgDurationMs} ms (N=${best.n}, within-limit excluded).`
+    `Best overall: ${system === "our-algorithm" ? "our multi-loop" : "GPT-5"} with ${model} — accuracy ${best.finalAcc}%, cost $${best.avgCostUsd}, time ${best.avgDurationMs} ms (N=${best.n}, within-limit excluded).`,
   )
   lines.push(
     `Next best candidates: ${rows
       .slice(1, 3)
-      .map(
-        (r) =>
-          `${r.label} (${r.finalAcc}%, $${r.avgCostUsd}, ${r.avgDurationMs} ms)`
-      )
-      .join("; ")}.`
+      .map(r => `${r.label} (${r.finalAcc}%, $${r.avgCostUsd}, ${r.avgDurationMs} ms)`)
+      .join("; ")}.`,
   )
 
   console.log("\nParagraph:\n")
@@ -153,7 +142,7 @@ async function main() {
   console.log("\n(From:\n  our-algorithm:", ourAlgorithmPath, "\n  gpt-5:", g5Path, ")\n")
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err)
   process.exit(1)
 })

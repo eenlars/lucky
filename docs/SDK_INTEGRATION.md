@@ -53,25 +53,25 @@ Add the `useClaudeSDK` flag and optional `sdkConfig` to any node:
 interface ClaudeSDKConfig {
   // Model selection - simplified names that map to official model IDs
   model?: "opus" | "sonnet" | "haiku" | "opus-3" | "sonnet-3" | "sonnet-3.5" | "haiku-3"
-  
+
   // Maximum tokens to generate (default: 4096)
   maxTokens?: number
-  
+
   // Temperature for response generation (0-1, default: 0.7)
   temperature?: number
-  
+
   // Top-p sampling parameter (optional)
   topP?: number
-  
+
   // Execution timeout in milliseconds (default: 60000)
   timeout?: number
-  
+
   // System prompt to prepend to user message (optional)
   systemPrompt?: string
-  
+
   // Enable tool/function calling support (optional)
   enableTools?: boolean
-  
+
   // Maximum number of retries for failed requests (default: 2)
   maxRetries?: number
 }
@@ -81,15 +81,15 @@ interface ClaudeSDKConfig {
 
 The integration provides simplified model names that map to official Anthropic model IDs:
 
-| Simplified Name | Official Model ID |
-|-----------------|-------------------|
-| `opus` | `claude-3-opus-latest` |
-| `sonnet` | `claude-3-5-sonnet-latest` |
-| `haiku` | `claude-3-haiku-latest` |
-| `opus-3` | `claude-3-opus-20240229` |
-| `sonnet-3` | `claude-3-sonnet-20240229` |
-| `sonnet-3.5` | `claude-3-5-sonnet-20241022` |
-| `haiku-3` | `claude-3-haiku-20240307` |
+| Simplified Name | Official Model ID            |
+| --------------- | ---------------------------- |
+| `opus`          | `claude-3-opus-latest`       |
+| `sonnet`        | `claude-3-5-sonnet-latest`   |
+| `haiku`         | `claude-3-haiku-latest`      |
+| `opus-3`        | `claude-3-opus-20240229`     |
+| `sonnet-3`      | `claude-3-sonnet-20240229`   |
+| `sonnet-3.5`    | `claude-3-5-sonnet-20241022` |
+| `haiku-3`       | `claude-3-haiku-20240307`    |
 
 ### Global SDK Settings
 
@@ -97,12 +97,12 @@ Configure defaults in `examples/settings/claude-sdk.ts`:
 
 ```typescript
 export const CLAUDE_SDK_CONFIG = {
-  enabled: false,              // Global enable/disable
-  defaultModel: "sonnet",      // Default model choice
-  defaultMaxTokens: 4096,      // Default max tokens
-  defaultTimeout: 60000,       // Default timeout (ms)
-  defaultTemperature: 0.7,     // Default temperature
-  debug: false                 // Debug logging
+  enabled: false, // Global enable/disable
+  defaultModel: "sonnet", // Default model choice
+  defaultMaxTokens: 4096, // Default max tokens
+  defaultTimeout: 60000, // Default timeout (ms)
+  defaultTemperature: 0.7, // Default temperature
+  debug: false, // Debug logging
 }
 ```
 
@@ -118,15 +118,15 @@ export const mixedWorkflow: WorkflowConfig = {
       description: "Uses official Anthropic SDK",
       systemPrompt: "You are an expert analyst",
       modelName: "claude-3-sonnet-latest",
-      useClaudeSDK: true,  // Uses SDK
+      useClaudeSDK: true, // Uses SDK
       sdkConfig: {
         model: "sonnet-3.5",
         maxTokens: 4096,
-        temperature: 0.5
+        temperature: 0.5,
       },
       mcpTools: [],
       codeTools: [],
-      handOffs: ["custom-node"]
+      handOffs: ["custom-node"],
     },
     {
       nodeId: "custom-node",
@@ -136,10 +136,10 @@ export const mixedWorkflow: WorkflowConfig = {
       useClaudeSDK: false, // Uses custom pipeline (default)
       mcpTools: ["filesystem"],
       codeTools: ["csvReader", "contextSet"],
-      handOffs: []
-    }
+      handOffs: [],
+    },
   ],
-  entryNodeId: "sdk-node"
+  entryNodeId: "sdk-node",
 }
 ```
 
@@ -161,7 +161,7 @@ nodes:
     codeTools: []
     handOffs:
       - summarizer
-      
+
   - nodeId: summarizer
     description: Summarize findings
     systemPrompt: Create a concise summary
@@ -174,7 +174,7 @@ nodes:
     mcpTools: []
     codeTools: []
     handOffs: []
-    
+
 entryNodeId: analyzer
 ```
 
@@ -206,6 +206,7 @@ entryNodeId: analyzer
 ## Key Differences from Custom Pipeline
 
 ### What SDK Nodes CAN Do:
+
 - Direct message generation using official Anthropic API
 - Tool use/function calling (when `enableTools` is set)
 - Automatic retry with exponential backoff
@@ -215,6 +216,7 @@ entryNodeId: analyzer
 - Request ID tracking for debugging
 
 ### What SDK Nodes CANNOT Do:
+
 - Use MCP tools (filesystem, memory, etc.) - these require custom pipeline
 - Use code tools (csvReader, webSearch, etc.) - these require custom pipeline
 - Multi-step tool execution loops with custom logic
@@ -238,6 +240,7 @@ Costs are calculated automatically and included in workflow spending tracking.
 The SDK service includes robust error handling with specific error types:
 
 ### Error Types (from SDK):
+
 - **BadRequestError** (400): Invalid request parameters
 - **AuthenticationError** (401): Invalid or missing API key
 - **PermissionDeniedError** (403): Insufficient permissions
@@ -249,6 +252,7 @@ The SDK service includes robust error handling with specific error types:
 - **APIConnectionTimeoutError**: Request timeout (auto-retry)
 
 ### Features:
+
 - **Automatic Retry**: Rate limits, server errors, and network issues
 - **Request ID Tracking**: All errors include request ID for debugging
 - **Configurable Timeouts**: Per-request or global timeout settings
@@ -306,11 +310,12 @@ Enable debug logging for SDK operations:
 ```typescript
 // In examples/settings/claude-sdk.ts
 export const CLAUDE_SDK_CONFIG = {
-  debug: true  // Enables detailed SDK logging
+  debug: true, // Enables detailed SDK logging
 }
 ```
 
 Check logs for:
+
 - Model selection and configuration
 - Token usage and costs
 - Retry attempts and failures

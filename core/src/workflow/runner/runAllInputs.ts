@@ -14,7 +14,7 @@
 
 import { calculateAverageFitness, calculateFeedbackGrouped } from "@core/evaluation/calculate-fitness/average"
 import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { queueRun } from "@core/workflow/runner/queueRun"

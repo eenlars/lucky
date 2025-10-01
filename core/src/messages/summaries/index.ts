@@ -9,7 +9,7 @@ import {
 } from "@core/messages/api/vercel/processResponse.types"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { JSONN } from "@core/utils/json"

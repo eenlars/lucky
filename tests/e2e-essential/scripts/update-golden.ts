@@ -9,14 +9,7 @@ function ensureDir(p: string) {
 }
 
 function main() {
-  const inputPath = resolveCoreFile(
-    "src",
-    "messages",
-    "api",
-    "__tests__",
-    "resources",
-    "toolResponseNoToolUsed.json"
-  )
+  const inputPath = resolveCoreFile("src", "messages", "api", "__tests__", "resources", "toolResponseNoToolUsed.json")
   if (!fs.existsSync(inputPath)) {
     console.error("Could not find fixture:", inputPath)
     process.exit(1)

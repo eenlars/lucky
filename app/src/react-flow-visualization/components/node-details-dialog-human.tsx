@@ -21,7 +21,7 @@ import {
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   type CodeToolName,
   type MCPToolName,
-} from "@core/tools/tool.types"
+} from "@lucky/tools/client"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
 import type { AllowedModelName, ModelPricingV2 } from "@core/utils/spending/models.types"

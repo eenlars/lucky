@@ -60,11 +60,7 @@ export const contentClassifierSpec = tool({
   },
 })
 
-export function contentClassifierFn({
-  category,
-}: {
-  category: string
-}): number {
+export function contentClassifierFn({ category }: { category: string }): number {
   // actually assigns priority: small=3, medium=2, large=1
   if (category === "small") return 3
   if (category === "medium") return 2
@@ -106,11 +102,7 @@ export const outputFormatterSpec = tool({
   },
 })
 
-export function outputFormatterFn({
-  department,
-}: {
-  department: string
-}): string {
+export function outputFormatterFn({ department }: { department: string }): string {
   // actually formats as status message
   return `Document processed: ${department} queue`
 }

@@ -1,5 +1,5 @@
-import type { MCPToolName } from "@core/tools/tool.types"
-import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@core/tools/tool.types"
+import type { MCPToolName } from "@lucky/tools"
+import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 
 interface MCPToolInfo {
   name: MCPToolName

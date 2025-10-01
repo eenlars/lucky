@@ -1,4 +1,4 @@
-import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
+import type { CodeToolName, MCPToolName } from "@lucky/tools"
 import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
 

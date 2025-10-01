@@ -27,7 +27,7 @@
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"

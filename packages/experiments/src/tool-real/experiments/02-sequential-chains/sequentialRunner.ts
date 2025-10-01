@@ -14,7 +14,7 @@ export async function runSequentialTools(
   userContent: string,
   tools: ToolSet,
   systemPrompt?: string,
-  maxSteps?: number
+  maxSteps?: number,
 ): Promise<SequentialRunResult> {
   const overallStart = Date.now()
   const messages: ModelMessage[] = [

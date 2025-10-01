@@ -1,4 +1,4 @@
-import { JSONN, Tables } from "@lucky/shared"
+import { JSONN, Tables } from "@lucky/shared/client"
 import { nanoid } from "nanoid"
 
 /**

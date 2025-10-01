@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-disable no-restricted-imports */
 
 import { writeFileSync } from "fs"
 import { join } from "path"

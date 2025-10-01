@@ -7,8 +7,7 @@ import { z } from "zod"
 
 // Helper: detect placeholder envs from tests/setup/env.ts
 const hasRealOpenRouterKey =
-  typeof process.env.OPENROUTER_API_KEY === "string" &&
-  !process.env.OPENROUTER_API_KEY.startsWith("test-")
+  typeof process.env.OPENROUTER_API_KEY === "string" && !process.env.OPENROUTER_API_KEY.startsWith("test-")
 
 // Use a cheap/fast default model via our runtime config
 const MODEL = getDefaultModels().default
@@ -21,13 +20,13 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
   const tools: ToolSet = {
     sum: {
       description: "add two numbers",
-      parameters: zodSchema(z.object({ a: z.number(), b: z.number() })),
+      inputSchema: zodSchema(z.object({ a: z.number(), b: z.number() })),
       // Not executed here; only selection is tested.
       execute: async ({ a, b }: { a: number; b: number }) => a + b,
     },
     echo: {
       description: "echo text",
-      parameters: zodSchema(z.object({ text: z.string() })),
+      inputSchema: zodSchema(z.object({ text: z.string() })),
       execute: async ({ text }: { text: string }) => text,
     },
   }
@@ -55,6 +54,6 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
         expect(typeof strategyResult.reasoning).toBe("string")
       }
     },
-    120_000
+    120_000,
   )
 })

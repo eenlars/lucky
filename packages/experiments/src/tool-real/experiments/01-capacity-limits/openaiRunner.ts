@@ -55,7 +55,7 @@ const orderedEntries: ReadonlyArray<readonly [string, Tool]> = [
 ]
 
 export const allToolSpecs: Record<string, Tool> = Object.fromEntries(
-  orderedEntries as ReadonlyArray<[string, Tool]>
+  orderedEntries as ReadonlyArray<[string, Tool]>,
 ) as Record<string, Tool>
 
 export type ToolCallTrace = {
@@ -76,7 +76,7 @@ export type RunTrace = {
 export async function chatWithTools(
   model: import("@core/utils/spending/models.types").ModelName,
   userContent: string,
-  tools: ToolSet
+  tools: ToolSet,
 ): Promise<RunTrace> {
   const messages: ModelMessage[] = [{ role: "user", content: userContent }]
 
@@ -108,8 +108,8 @@ export async function chatWithTools(
 
   const outputs: ReadonlyArray<AgentStep> = processed.agentSteps ?? []
   const toolCalls: ToolCallTrace[] = outputs
-    .filter((o) => o.type === "tool")
-    .map((o) => ({
+    .filter(o => o.type === "tool")
+    .map(o => ({
       toolName: o.name ?? "",
       args: o.args ?? {},
       result: typeof o.return === "string" ? o.return : JSON.stringify(o.return),

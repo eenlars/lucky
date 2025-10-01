@@ -1,4 +1,4 @@
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared/client"
 import { z } from "zod"
 
 /**

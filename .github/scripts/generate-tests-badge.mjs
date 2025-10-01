@@ -53,14 +53,8 @@ function aggregateFromVitestJson(result) {
       failed = 0,
       pending = 0
     for (const t of result.results.tests) {
-      if (t.result === "pass" || t.state === "pass" || t.status === "passed")
-        passed++
-      else if (
-        t.result === "fail" ||
-        t.state === "fail" ||
-        t.status === "failed"
-      )
-        failed++
+      if (t.result === "pass" || t.state === "pass" || t.status === "passed") passed++
+      else if (t.result === "fail" || t.state === "fail" || t.status === "failed") failed++
       else pending++
     }
     const total = passed + failed + pending
@@ -117,8 +111,7 @@ function main() {
       color: "#9f9f9f",
     })
     const outPath = resolve("docs/badges/tests.svg")
-    if (!existsSync(dirname(outPath)))
-      mkdirSync(dirname(outPath), { recursive: true })
+    if (!existsSync(dirname(outPath))) mkdirSync(dirname(outPath), { recursive: true })
     writeFileSync(outPath, svgUnknown)
     return
   }
@@ -129,8 +122,7 @@ function main() {
   const color = failed > 0 ? "#e05d44" : total > 0 ? "#4c1" : "#9f9f9f"
   const svg = createBadgeSvg({ label: "tests", message, color })
   const outPath = resolve("docs/badges/tests.svg")
-  if (!existsSync(dirname(outPath)))
-    mkdirSync(dirname(outPath), { recursive: true })
+  if (!existsSync(dirname(outPath))) mkdirSync(dirname(outPath), { recursive: true })
   writeFileSync(outPath, svg)
 }
 

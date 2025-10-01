@@ -4,7 +4,7 @@ import {
   ACTIVE_TOOLS_WITH_DESCRIPTION,
   ALL_ACTIVE_TOOL_NAMES,
   type AllToolNames,
-} from "@core/tools/tool.types"
+} from "@lucky/tools"
 
 /**
  * creates formatted tool descriptions for a subset of tools

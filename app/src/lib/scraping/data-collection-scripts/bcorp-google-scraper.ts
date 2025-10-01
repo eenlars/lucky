@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 /* ---------------------------------------------------------------------------
  *  bcorp-hunter
  *
@@ -13,12 +14,12 @@ import crypto from "crypto"
 import fs from "fs"
 import path from "path"
 
-import { isNir } from "@core/utils/common/isNir"
+import { saveInLoc } from "@core/utils/fs/fileSaver"
 import { lgg } from "@core/utils/logging/Logger"
-import { saveInLoc } from "@examples/code_tools/file-saver/save"
-import { searchGoogleMaps } from "@examples/code_tools/googlescraper/main"
-import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+import { searchGoogleMaps } from "@examples/definitions/googlescraper/main"
+import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { PATHS } from "@examples/settings/constants"
+import { isNir } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import { CountryInEurope, deduplicateBusinesses } from "./utils"
 

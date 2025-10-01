@@ -1,10 +1,10 @@
-import type { CodeToolName, MCPToolName } from "@core/tools/tool.types"
+import type { CodeToolName, MCPToolName } from "@lucky/tools"
 import {
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
-} from "@core/tools/tool.types"
+} from "@lucky/tools"
 import type { Workflow } from "@core/workflow/Workflow"
 
 /**

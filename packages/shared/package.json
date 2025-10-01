@@ -20,21 +20,38 @@
   },
   "exports": {
     ".": {
+      "browser": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./client": {
+      "browser": {
+        "types": "./dist/client.d.ts",
+        "import": "./dist/client.js"
+      },
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
     "./fs": {
       "types": "./dist/fs/index.d.ts",
-      "import": "./dist/fs/index.js"
+      "node": {
+        "import": "./dist/fs/index.js"
+      }
     },
     "./csv": {
       "types": "./dist/csv/index.d.ts",
-      "import": "./dist/csv/index.js"
+      "node": {
+        "import": "./dist/csv/index.js"
+      }
     }
   },
   "dependencies": {
     "json5": "^2.2.3",
-    "papaparse": "^5.5.3"
+    "papaparse": "^5.5.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.49.4",

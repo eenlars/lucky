@@ -61,7 +61,7 @@ vi.mock("@core/messages/utils/saveResult", () => ({
   saveResultOutput: vi.fn(),
 }))
 
-vi.mock("@examples/code_tools/file-saver/save", () => ({
+vi.mock("@lucky/tools/definitions/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 

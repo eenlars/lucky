@@ -1,0 +1,77 @@
+{
+  "name": "@lucky/tools",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Unified tool framework for code and MCP tool integration",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup --silent",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "tsc": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./factory": {
+      "types": "./dist/factory/index.d.ts",
+      "import": "./dist/factory/index.js"
+    },
+    "./registry": {
+      "types": "./dist/registry/index.d.ts",
+      "import": "./dist/registry/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/index.d.ts",
+      "import": "./dist/mcp/index.js"
+    },
+    "./selection": {
+      "types": "./dist/selection/index.d.ts",
+      "import": "./dist/selection/index.js"
+    },
+    "./registration": {
+      "types": "./dist/registration/index.d.ts",
+      "import": "./dist/registration/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js"
+    },
+    "./config/runtime": {
+      "types": "./dist/config/runtime.d.ts",
+      "import": "./dist/config/runtime.js"
+    },
+    "./definitions/*": "./src/definitions/*"
+  },
+  "dependencies": {
+    "@lucky/shared": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.17.2",
+    "ai": "^5.0.58",
+    "glob": "^11.0.0",
+    "zod": "^3.25.73",
+    "zod-to-json-schema": "^3.24.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "prettier": "^3.6.2",
+    "rimraf": "^5.0.10",
+    "tsup": "8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

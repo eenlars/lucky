@@ -1,5 +1,5 @@
 import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
-import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
+import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import { CONFIG } from "@core/core-config/compat"
 import type { z } from "zod"

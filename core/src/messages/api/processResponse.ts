@@ -4,7 +4,7 @@ import { isVercelTextResponse, type ProcessedResponse } from "@core/messages/api
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
-import { isNir } from "@core/utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ModelName } from "@core/utils/spending/models.types"

@@ -1,34 +1,33 @@
-import { codeToolAutoDiscovery } from "@core/tools/code/AutoDiscovery"
-import type { FlexibleToolDefinition } from "@core/tools/code/CodeToolRegistry"
-import { ALL_TOOLS } from "./registry"
-
 /**
- * Code Tools Implementation Directory
+ * Code Tools - Re-exports from @lucky/tools
  *
- * This is the implementation area where actual tools are created.
- * The auto-discovery framework is in @core/tools/code/AutoDiscovery
+ * This directory now serves as a compatibility layer,
+ * re-exporting tools from the @lucky/tools package.
  *
- * This file provides convenient re-exports for easy usage.
+ * All tool implementations live in packages/tools/src/definitions/
  */
 
+import { registerAllTools, type FlexibleToolDefinition } from "@lucky/tools"
+import { ALL_TOOLS, TOOL_GROUPS } from "./registry"
+
 /**
- * Convenience function for auto-setup
- * Uses the core framework's auto-discovery system
+ * Setup all code tools by registering them with the registry
  */
 export async function setupCodeTools(): Promise<FlexibleToolDefinition[]> {
-  return await codeToolAutoDiscovery.setupCodeTools()
+  await registerAllTools(TOOL_GROUPS)
+  return ALL_TOOLS
 }
 
 /**
- * Manual tool discovery (for testing/debugging)
- * Uses the core framework's auto-discovery system
+ * Discover all available tools
+ * @deprecated Use registerAllTools() from @lucky/tools instead
  */
 export async function discoverTools(): Promise<FlexibleToolDefinition[]> {
-  return await codeToolAutoDiscovery.discoverTools()
+  return ALL_TOOLS
 }
 
-// re-export the auto-discovery instance for advanced usage
-export { codeToolAutoDiscovery }
-
-// Export statically registered tools to ensure bundling
+// Re-export for backward compatibility
 export { ALL_TOOLS }
+
+// Re-export everything from @lucky/tools for convenience
+export * from "@lucky/tools"

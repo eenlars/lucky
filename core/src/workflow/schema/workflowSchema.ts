@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
-import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@core/tools/tool.types"
+import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"

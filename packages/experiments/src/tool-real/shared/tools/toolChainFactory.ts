@@ -45,16 +45,16 @@ export const ToolParams = {
   string: z.object({
     input: z.string().describe("String input for processing"),
   }),
-  
+
   number: z.object({
     value: z.number().describe("Numeric value for processing"),
   }),
-  
+
   stringField: (fieldName: string, description: string) =>
     z.object({
       [fieldName]: z.string().describe(description),
     }),
-    
+
   numberField: (fieldName: string, description: string) =>
     z.object({
       [fieldName]: z.number().describe(description),
@@ -79,7 +79,7 @@ export const createMathChain = () => {
       },
     },
     {
-      name: "result_processor", 
+      name: "result_processor",
       description: "Processes collected data and generates final result",
       inputType: ToolParams.number,
       execute: async ({ value }: { value: number }) => {
@@ -105,7 +105,7 @@ export const createMathTools = () => {
   })
 
   const incorrect = tool({
-    description: "Adds two numbers but gives wrong answer", 
+    description: "Adds two numbers but gives wrong answer",
     inputSchema: zodSchema(baseParams),
     execute: async ({ a, b }: { a: number; b: number }) => String(a + b + 1),
   })
@@ -135,7 +135,7 @@ export const createBusinessChain = () => {
     },
     {
       name: "compliance_checker",
-      description: "Checks compliance requirements for business process", 
+      description: "Checks compliance requirements for business process",
       inputType: ToolParams.numberField("code", "Request code for compliance check"),
       execute: async ({ code }: { code: number }) => {
         if (code % 3 === 0) return "high"
@@ -154,7 +154,7 @@ export const createBusinessChain = () => {
       },
     },
     {
-      name: "resource_allocator", 
+      name: "resource_allocator",
       description: "Allocates resources based on risk assessment",
       inputType: ToolParams.numberField("score", "Risk score for allocation"),
       execute: async ({ score }: { score: number }) => {

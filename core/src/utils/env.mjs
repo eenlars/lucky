@@ -12,7 +12,7 @@ export const envi = createEnv({
     OPENAI_API_KEY: z.string(),
     SERPAPI_API_KEY: z.string(),
     // Core runtime-only (server-side) variables
-    HF_TOKEN: z.string().nullish(),
+    HF_TOKEN: z.string().optional(),
     HUGGING_FACE_API_KEY: z.string().nullish(),
     MEM0_API_KEY: z.string().nullish(),
     SUPABASE_PROJECT_ID: z.string().nullish(),

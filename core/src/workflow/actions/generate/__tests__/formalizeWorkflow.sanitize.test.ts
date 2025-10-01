@@ -1,7 +1,7 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock the LLM call to return a config that erroneously includes an inactive MCP tool
+// Mock the LLM call to return a config that erroneously includes an inactive code tool
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
@@ -10,12 +10,12 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
       nodes: [
         {
           nodeId: "main",
-          description: "Main node",
+          description: "desc",
           systemPrompt: "Do the thing",
           modelName: "medium",
           // simulate LLM echoing the inactive tool back
-          mcpTools: ["browserUse"],
-          codeTools: [],
+          mcpTools: [],
+          codeTools: ["testInactiveTool"], // Using a fake tool we'll mark as inactive
           handOffs: ["end"],
         },
       ],
@@ -24,19 +24,19 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   }),
 }))
 
-// Mock core config to mark browserUse as inactive
+// Mock core config to mark testInactiveTool as inactive for this test
 vi.mock("@core/core-config/index", async importOriginal => {
   const original = await importOriginal<typeof import("@core/core-config/index")>()
   const defaultConfig = original.createDefaultCoreConfig()
 
   return {
     ...original,
-    isToolInactive: (toolName: string) => toolName === "browserUse",
+    isToolInactive: (toolName: string) => toolName === "testInactiveTool",
     getCoreConfig: () => ({
       ...defaultConfig,
       tools: {
         ...defaultConfig.tools,
-        inactive: new Set(["browserUse"]),
+        inactive: new Set(["testInactiveTool"]),
       },
     }),
   }
@@ -50,7 +50,7 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     vi.clearAllMocks()
   })
 
-  it("removes inactive MCP tools (browserUse marked as inactive)", async () => {
+  it("removes inactive code tools (testInactiveTool marked as inactive)", async () => {
     const baseConfig: WorkflowConfig = {
       entryNodeId: "main",
       nodes: [
@@ -60,8 +60,8 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
           systemPrompt: "Do the thing",
           modelName: getDefaultModels().default,
           // inactive tool present in base config to simulate creep
-          mcpTools: ["browserUse" as any],
-          codeTools: [],
+          mcpTools: [],
+          codeTools: ["testInactiveTool" as any],
           handOffs: ["end"],
           memory: {},
         },
@@ -76,9 +76,9 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     expect(success).toBe(true)
     expect(data).toBeDefined()
     if (!data) throw new Error("formalizeWorkflow returned no data")
-    // browserUse is inactive in the mocked config, so it should be removed by sanitization
+    // testInactiveTool is inactive in the mocked config, so it should be removed by sanitization
     for (const node of data.nodes) {
-      expect(node.mcpTools).not.toContain("browserUse")
+      expect(node.codeTools).not.toContain("testInactiveTool")
     }
   })
 })

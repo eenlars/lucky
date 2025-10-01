@@ -4,7 +4,7 @@ import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { MemoryResponseSchema, type NodeMemory } from "@core/utils/memory/memorySchema"
 import { getDefaultModels } from "@core/core-config/compat"
-import { isNir } from "../utils/common/isNir"
+import { isNir } from "@lucky/shared"
 import { GENERALIZATION_LIMITS } from "./generalizationLimits"
 
 export const MEMORY_FORMAT = `

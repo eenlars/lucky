@@ -1,17 +1,28 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lucky/shared"],
+  transpilePackages: ["@lucky/shared", "@lucky/tools"],
   serverExternalPackages: [
     "bullmq",
+    "glob",
     // Ensure puppeteer and stealth plugin resolve their internal dynamic requires at runtime
     "puppeteer",
     "puppeteer-extra",
     "puppeteer-extra-plugin",
     "puppeteer-extra-plugin-stealth",
+    // MCP stdio requires child_process (Node.js only)
+    "ai/dist/mcp-stdio",
   ],
   /* config options here */
   webpack: (config, { isServer }) => {
+    // Exclude scraping scripts from build (server-only scripts)
+    config.module = config.module || {}
+    config.module.rules = config.module.rules || []
+    config.module.rules.push({
+      test: /src\/lib\/scraping\/.*/,
+      use: "null-loader",
+    })
+
     if (!isServer) {
       // Don't resolve these Node.js modules on the client side
       config.resolve.fallback = {
@@ -21,6 +32,11 @@ const nextConfig: NextConfig = {
         url: false,
         module: false,
         perf_hooks: false,
+        stream: false,
+        events: false,
+        crypto: false,
+        glob: false,
+        child_process: false,
       }
     }
 

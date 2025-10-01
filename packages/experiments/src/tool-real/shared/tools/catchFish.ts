@@ -9,8 +9,7 @@ const Params = z.object({
 })
 
 export const spec = tool({
-  description:
-    "Fishing tool that works OK for fish species. Not so good for catching salmons.",
+  description: "Fishing tool that works OK for fish species. Not so good for catching salmons.",
   inputSchema: zodSchema(Params),
   execute: async ({ species }: { species: string }) => {
     return `caught_${species}`

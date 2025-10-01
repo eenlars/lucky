@@ -1,11 +1,12 @@
-import {
-  extractCoordinates,
-  transformLocationData,
-  type GoogleScraperBusinessExtended,
-} from "@examples/code_tools/googlescraper/convert"
-import type { GoogleMapsBusiness } from "@examples/code_tools/googlescraper/main/types/GoogleMapsBusiness"
+/* eslint-disable no-restricted-imports */
+import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import {
+  extractCoordinates,
+  GoogleScraperBusinessExtended,
+  transformLocationData,
+} from "../../../../../../examples/definitions/googlescraper/convert"
 import { toDomain } from "../utils"
 
 // use: tsx src/lib/count-bcorps/per-country/filter.ts

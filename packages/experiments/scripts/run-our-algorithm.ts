@@ -7,7 +7,7 @@ const __dirname = dirname(__filename)
 
 const target = resolve(
   __dirname,
-  "../src/tool-real/experiments/03-context-adaptation/run/runAdaptiveTest.our-algorithm.ts"
+  "../src/tool-real/experiments/03-context-adaptation/run/runAdaptiveTest.our-algorithm.ts",
 )
 
 const p = spawn("bunx", ["tsx", "--env-file=.env", target], {
@@ -15,4 +15,4 @@ const p = spawn("bunx", ["tsx", "--env-file=.env", target], {
   cwd: resolve(__dirname, ".."),
 })
 
-p.on("exit", (code) => process.exit(code ?? 0))
+p.on("exit", code => process.exit(code ?? 0))
