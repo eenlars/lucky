@@ -10,7 +10,7 @@
   - Single run:        bun scripts/backfill-evolution-type.ts --run=evo_run_xxx
 */
 
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@lucky/core/utils/clients/supabase/client"
 
 type EvolutionRunRow = {
   run_id: string

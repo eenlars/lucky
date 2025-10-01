@@ -48,10 +48,9 @@ function runDepcheck(dir: string): DepcheckResult {
   try {
     // Ignore internal workspace imports and common dev tools
     const ignorePatterns = [
-      "@core/*",
-      "@examples/*",
-      "@examples/*",
-      "@experiments/*",
+      "@lucky/core/*",
+      "@lucky/examples/*",
+      "@lucky/experiments/*",
       "@lucky/*",
       "vite",
       "date-fns",

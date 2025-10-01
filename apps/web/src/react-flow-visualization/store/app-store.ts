@@ -22,7 +22,7 @@ import nodesConfig, {
 } from "@/react-flow-visualization/components/nodes"
 import { toFrontendWorkflowConfig } from "@/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/react-flow-visualization/store/edge-validation"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
 export type AppState = {

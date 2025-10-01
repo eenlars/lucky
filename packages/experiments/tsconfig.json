@@ -14,8 +14,12 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@examples/*": ["../examples/*"],
       "@core/*": ["../core/src/*"],
+      "@examples/*": ["../examples/*"],
+      "@lucky/examples": ["../examples"],
+      "@lucky/examples/*": ["../examples/*"],
+      "@lucky/core": ["../core/src"],
+      "@lucky/core/*": ["../core/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],
@@ -23,6 +27,6 @@
     },
     "allowSyntheticDefaultImports": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "../core/src/**/*.ts", "../examples/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js"],
   "exclude": ["node_modules", "src/experiments-2"]
 }

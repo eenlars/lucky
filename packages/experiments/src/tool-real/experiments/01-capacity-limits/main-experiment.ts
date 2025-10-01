@@ -9,9 +9,9 @@
  * - 5 tasks that each require one specific tool
  * - Metrics: Selection accuracy, latency per tool call, failure type classification
  */
-import { lgg } from "@core/utils/logging/Logger"
-import type { AllowedModelName } from "@core/utils/spending/models.types"
-import { experimentalModels } from "@examples/settings/models"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
+import { experimentalModels } from "@lucky/examples/settings/models"
 import { mkdirSync, writeFileSync } from "fs"
 import { join, resolve } from "path"
 import { fileURLToPath } from "url"

@@ -1,6 +1,6 @@
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { experimentalModels } from "@examples/settings/models"
+import { experimentalModels } from "@lucky/examples/settings/models"
 import {
   CLEAR_SYSTEM_PROMPT,
   TEST_SCENARIOS,

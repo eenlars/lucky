@@ -21,8 +21,8 @@ import WorkflowIOTable from "@/components/WorkflowIOTable"
 import DatasetSelector from "@/components/DatasetSelector"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
-import { toWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { loadFromDSLClient, loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
+import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { loadFromDSLClient, loadFromDSLClientDisplay } from "@lucky/core/workflow/setup/WorkflowLoader.client"
 
 type EditMode = "graph" | "json" | "eval"
 

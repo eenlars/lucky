@@ -7,7 +7,7 @@ const mockSupabase = {
   from: vi.fn(),
 }
 
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@lucky/core/utils/clients/supabase/client", () => ({
   supabase: mockSupabase,
 }))
 

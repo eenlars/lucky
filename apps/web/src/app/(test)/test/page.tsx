@@ -1,7 +1,7 @@
 "use client"
 
-import { calculateCost } from "@core/messages/api/vercel/pricing/calculatePricing"
-import type { TokenUsage } from "@core/utils/spending/models.types"
+import { calculateCost } from "@lucky/core/messages/api/vercel/pricing/calculatePricing"
+import type { TokenUsage } from "@lucky/core/utils/spending/models.types"
 import "highlight.js/styles/github.css"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"

@@ -1,5 +1,5 @@
-import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@examples/settings/constants.client"
+import { toWorkflowConfig, type WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { MODELS } from "@lucky/examples/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
 import { initialSetupConfig } from "@/react-flow-visualization/lib/workflow-data"
 vi.mock("@/react-flow-visualization/components/nodes", () => ({
@@ -10,7 +10,7 @@ vi.mock("@/react-flow-visualization/components/nodes", () => ({
     position: args.position ?? { x: 0, y: 0 },
   }),
 }))
-vi.mock("@examples/settings/constants.client", () => ({
+vi.mock("@lucky/examples/settings/constants.client", () => ({
   MODELS: { default: "openai/gpt-4o-mini" },
 }))
 

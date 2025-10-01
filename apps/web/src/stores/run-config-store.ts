@@ -3,8 +3,8 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-import type { InvokeWorkflowResult } from "@core/workflow/runner/types"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { InvokeWorkflowResult } from "@lucky/core/workflow/runner/types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 
 export type CaseRow = {
   id: string

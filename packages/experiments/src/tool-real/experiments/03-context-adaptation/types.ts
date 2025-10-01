@@ -1,4 +1,4 @@
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import type { ToolExecution } from "../02-sequential-chains/types"
 
 export type Condition = "vague" | "clear"

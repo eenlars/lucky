@@ -6,7 +6,7 @@ import { mkdirSync, writeFileSync } from "fs"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 
-import type { AllowedModelName } from "@core/utils/spending/models.types"
+import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
 import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
 import { documentChainOrder, documentChainTools } from "../../shared/tools/sequential-chains/documentChain"
 import { mathChainOrder, mathChainTools } from "../../shared/tools/sequential-chains/mathChain"

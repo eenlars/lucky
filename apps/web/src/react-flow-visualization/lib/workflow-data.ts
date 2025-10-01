@@ -1,4 +1,4 @@
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { createEdge, type AppEdge } from "../components/edges"
 import { createNodeByType, type AppNode, type WorkflowNodeData } from "../components/nodes"
 

@@ -1,4 +1,4 @@
-import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
+import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"

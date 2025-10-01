@@ -1,4 +1,4 @@
-import type { InvokeWorkflowResult } from "@core/workflow/runner/types"
+import type { InvokeWorkflowResult } from "@lucky/core/workflow/runner/types"
 import type { Metrics, RubricCriteria } from "../types/evaluation"
 
 /**

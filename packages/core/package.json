@@ -2,6 +2,14 @@
   "name": "@lucky/core",
   "version": "0.1.0",
   "private": true,
+  "description": "Core workflow engine, evaluation, and evolution algorithms",
+  "exports": {
+    "./core-config": "./src/core-config.ts",
+    "./workflow/*": "./src/workflow/*",
+    "./utils/*": "./src/utils/*",
+    "./messages/*": "./src/messages/*",
+    "./prompts/*": "./src/prompts/*"
+  },
   "scripts": {
     "dev": "vitest --watch --project unit",
     "build": "tsc --noEmit",

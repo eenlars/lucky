@@ -1,6 +1,6 @@
 import { codeToolRegistry } from "@lucky/tools"
 import { describe, expect, it, beforeEach } from "vitest"
-import { tool as locationDataManager } from "@examples/definitions/location-data-manager/tool"
+import { tool as locationDataManager } from "@lucky/examples/definitions/location-data-manager/tool"
 
 describe("LocationDataManager Tool Integration", () => {
   // TODO: This test imports a tool from an absolute path instead of using the proper tool registry.

@@ -1,6 +1,6 @@
-import { genShortId } from "@core/utils/common/utils"
-import type { EvaluationText } from "@core/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { genShortId } from "@lucky/core/utils/common/utils"
+import type { EvaluationText } from "@lucky/core/workflow/ingestion/ingestion.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 

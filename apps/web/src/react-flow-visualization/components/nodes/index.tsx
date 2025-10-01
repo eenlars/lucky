@@ -2,8 +2,8 @@ import { Node, NodeProps, Position, XYPosition } from "@xyflow/react"
 import { nanoid } from "nanoid"
 
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
-import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@examples/settings/constants.client"
+import type { WorkflowNodeConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { MODELS } from "@lucky/examples/settings/constants.client"
 
 import { BranchNode } from "./branch-node"
 import { InitialNode } from "./initial-node"

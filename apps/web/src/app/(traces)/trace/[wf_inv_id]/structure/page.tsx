@@ -5,7 +5,7 @@ import Link from "next/link"
 import { use, useEffect, useState } from "react"
 
 import { fullWorkflow } from "@/trace-visualization/db/Workflow/fullWorkflow"
-import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { isWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 // Simple JSON formatting function
 const formatJSON = (obj: unknown, indent: number = 2): string => {
   try {

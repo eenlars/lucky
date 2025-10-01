@@ -1,8 +1,8 @@
 "use client"
 
-import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { toWorkflowConfig, type WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
-import { MODELS } from "@examples/settings/constants.client"
+import { MODELS } from "@lucky/examples/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { StructureMiniMap, getNodeCountFromDsl } from "../trace/[wf_inv_id]/structure/StructureMiniMap"

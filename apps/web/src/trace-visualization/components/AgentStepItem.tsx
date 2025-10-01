@@ -2,7 +2,7 @@
 
 import { SmartContent } from "@/components/utils/SmartContent"
 import { Card } from "@/ui/card"
-import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
+import type { AgentStep } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { ChevronDown } from "lucide-react"
 import { TerminateStep } from "./agent-steps/TerminateStep"
 import { ToolStep } from "./agent-steps/ToolStep"

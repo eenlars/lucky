@@ -1,6 +1,6 @@
 "use client"
 
-import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
+import type { AgentStep, AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { AlertCircle, BookOpen, Brain, Target, Terminal, Type, Wrench } from "lucide-react"
 
 export const getReactJsonTheme = () => {

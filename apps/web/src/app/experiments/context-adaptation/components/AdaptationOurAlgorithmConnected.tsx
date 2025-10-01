@@ -18,14 +18,14 @@ import {
 import {
   accuracyScorePct,
   costTimeBalancedScorePct,
-} from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
-import { MODELS, TEST_SCENARIOS } from "@experiments/tool-real/experiments/03-context-adaptation/constants"
+} from "@lucky/experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
+import { MODELS, TEST_SCENARIOS } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
   OurAlgorithmExperimentResults,
   OurAlgorithmRun,
-} from "@experiments/tool-real/experiments/03-context-adaptation/types"
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+} from "@lucky/experiments/tool-real/experiments/03-context-adaptation/types"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 
 type ShapeName = "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye"
 

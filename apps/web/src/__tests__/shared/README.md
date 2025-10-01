@@ -2,9 +2,9 @@
 
 Consolidated test utilities, mocks, and helpers to reduce duplication and improve test maintainability across the codebase.
 
-## @examples/constants Mocking System
+## @lucky/examples/settings/constants Mocking System
 
-**NEW**: Enhanced shared mock system for `@examples/constants` that eliminates duplicate mock code across 11+ test files.
+**NEW**: Enhanced shared mock system for `@lucky/examples/settings/constants` that eliminates duplicate mock code across 11+ test files.
 
 ### Quick Start
 
@@ -82,8 +82,8 @@ mockRuntimeConstantsForDatabase({
 #### Before (Crossover.test.ts - 19 lines)
 
 ```typescript
-vi.mock("@examples/settings/constants", async importOriginal => {
-  const mod = await importOriginal<typeof import("@examples/settings/constants")>()
+vi.mock("@lucky/examples/settings/constants", async importOriginal => {
+  const mod = await importOriginal<typeof import("@lucky/examples/settings/constants")>()
   return {
     ...mod,
     MODELS: {

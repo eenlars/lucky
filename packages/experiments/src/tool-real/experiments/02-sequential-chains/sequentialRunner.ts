@@ -2,10 +2,10 @@
  * sequentialRunner.ts - Modified runner for sequential tool execution tracking
  * Tracks execution order, timestamps, and data flow between tools
  */
-import { processResponseVercel } from "@core/messages/api/processResponse"
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { lgg } from "@core/utils/logging/Logger"
-import type { ModelName } from "@core/utils/spending/models.types"
+import { processResponseVercel } from "@lucky/core/messages/api/processResponse"
+import { sendAI } from "@lucky/core/messages/api/sendAI/sendAI"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import type { ModelName } from "@lucky/core/utils/spending/models.types"
 import type { ModelMessage, ToolSet } from "ai"
 import type { SequentialRunResult, ToolExecution } from "./types"
 

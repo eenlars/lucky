@@ -4,8 +4,8 @@
  * Focuses on key models to complete statistical validation quickly
  */
 
-// import { sendAI } from "@core/messages/api/sendAI"
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+// import { sendAI } from "@lucky/core/messages/api/sendAI"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import { mkdirSync, writeFileSync } from "fs"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"

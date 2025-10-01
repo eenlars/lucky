@@ -1,4 +1,4 @@
-import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
+import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { isNir } from "@lucky/shared/client"
 
 export type CountryInEurope = {
