@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
-import { loadDatasetMeta, saveDatasetMeta } from "../../_lib/meta"
-import type { WorkflowIO } from "../../_lib/types"
+import { loadDatasetMeta, saveDatasetMeta } from "@/app/api/ingestions/_lib/meta"
+import type { WorkflowIO } from "@/app/api/ingestions/_lib/types"
 
 function uuid(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {

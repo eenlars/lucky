@@ -34,7 +34,9 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
           <div className="flex aspect-square size-5 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
             <Command className="size-3" onClick={() => toggleSidebar()} />
           </div>
-          <span className="truncate font-semibold">Workflow Editor</span>
+          <span className="truncate font-semibold group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0">
+            Workflow Editor
+          </span>
         </div>
         <SidebarMenu>
           {Object.values(nodesConfig).map(item => (
@@ -150,8 +152,10 @@ function DraggableItem(props: NodeConfig) {
       )}
       <SidebarMenuButton className="bg-card cursor-grab active:cursor-grabbing cursor-pointer">
         {IconComponent ? <IconComponent aria-label={props?.icon} /> : null}
-        <span>{props.displayName}</span>
-        <GripVertical className="ml-auto" />
+        <span className="group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0">
+          {props.displayName}
+        </span>
+        <GripVertical className="ml-auto group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0" />
       </SidebarMenuButton>
     </SidebarMenuItem>
   )

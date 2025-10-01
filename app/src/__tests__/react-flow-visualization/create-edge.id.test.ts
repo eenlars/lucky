@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { createEdge } from "../../react-flow-visualization/components/edges"
+import { createEdge } from "@/react-flow-visualization/components/edges"
 
 describe("createEdge id format", () => {
   it("includes handles when present", () => {

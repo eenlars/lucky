@@ -39,7 +39,7 @@ export default function SidebarLayout({
           </div>
           {right ? <div className="px-3">{right}</div> : null}
         </header>
-        <main className="flex flex-1 flex-col">{children}</main>
+        <main className="flex flex-1 flex-col overflow-auto">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   )

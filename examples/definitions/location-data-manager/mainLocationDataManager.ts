@@ -2,13 +2,9 @@ import { lgg } from "@core/utils/logging/Logger" // core location data manager o
 
 import { promises as fs } from "fs"
 import { join } from "path"
-import { CONFIG, PATHS } from "../../../packages/tools/src/config/runtime"
-import type {
-  LocationData,
-  PartialLocationData,
-  WorkflowLocationData,
-} from "../../../packages/tools/src/schemas/location.types"
-import { DataQuality } from "../../../packages/tools/src/schemas/location.types"
+import { CONFIG, PATHS } from "@lucky/tools/config/runtime"
+import type { LocationData, PartialLocationData, WorkflowLocationData } from "@lucky/tools/schemas/location.types"
+import { DataQuality } from "@lucky/tools/schemas/location.types"
 import { assessDataQuality } from "./assessQuality"
 
 export class LocationDataManagerError extends Error {

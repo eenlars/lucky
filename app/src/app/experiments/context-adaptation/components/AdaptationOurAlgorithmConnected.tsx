@@ -25,7 +25,7 @@ import type {
   OurAlgorithmExperimentResults,
   OurAlgorithmRun,
 } from "@experiments/tool-real/experiments/03-context-adaptation/types"
-import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
+import type { OpenRouterModelName } from "@core/utils/spending/models.types"
 
 type ShapeName = "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye"
 

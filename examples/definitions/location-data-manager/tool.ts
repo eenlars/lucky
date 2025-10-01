@@ -1,7 +1,7 @@
 import { isNir } from "@lucky/shared"
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"
-import { locationDataSchema } from "../../../packages/tools/src/schemas/location.types"
+import { locationDataSchema } from "@lucky/tools/schemas/location.types"
 import { getLocationData, insertLocationData, removeLocationData, updateLocationData } from "./api"
 
 // Helper function to clean location data by removing null values

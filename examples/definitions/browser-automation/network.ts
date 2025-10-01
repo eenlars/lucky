@@ -5,7 +5,7 @@ import type { ProxyResponse } from "@examples/definitions/googlescraper/main"
 import type { HTTPRequest, HTTPResponse, Page } from "puppeteer"
 import puppeteer from "puppeteer"
 import { z } from "zod"
-import { PATHS } from "../../../packages/tools/src/config/runtime"
+import { PATHS } from "@lucky/tools/config/runtime"
 
 // network request summary structure
 type NetworkRequestSummary = {

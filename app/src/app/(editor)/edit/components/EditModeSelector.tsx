@@ -14,7 +14,7 @@ import Workflow from "@/react-flow-visualization/components/workflow"
 import { useAppStore } from "@/react-flow-visualization/store"
 
 import JSONEditor from "./JSONEditor"
-import ModeSwitcher from "./ModeSwitcher"
+import EditorHeader from "./EditorHeader"
 
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
@@ -289,10 +289,12 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     router.push(`?${params.toString()}`)
   }
 
+  // Common actions for all modes
+  const commonActions = <GraphRunWithPromptButton exportToJSON={exportToJSON} />
+
   if (mode === "graph") {
-    // Use a stable, top-level component to avoid remounts
-    const HeaderRight = (
-      <div className="flex items-center space-x-2">
+    const graphActions = (
+      <>
         <Button
           onClick={organizeLayout}
           variant="ghost"
@@ -305,16 +307,15 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
             Cmd+L
           </span>
         </Button>
-        <GraphRunWithPromptButton exportToJSON={exportToJSON} />
-        <ModeSwitcher mode={mode} onChange={handleModeChange} />
-      </div>
+        {commonActions}
+      </>
     )
 
     return (
       <ReactFlowProvider>
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
-          right={HeaderRight}
+          right={<EditorHeader title="" mode={mode} onModeChange={handleModeChange} actions={graphActions} />}
           showToggle={true}
         >
           <AppContextMenu>
@@ -325,19 +326,12 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     )
   }
 
-  // JSON mode
-  const JsonHeaderRight = (
-    <div className="flex items-center space-x-2">
-      <ModeSwitcher mode={mode} onChange={handleModeChange} />
-    </div>
-  )
-
   if (mode === "json") {
     return (
       <ReactFlowProvider>
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
-          right={JsonHeaderRight}
+          right={<EditorHeader title="" mode={mode} onModeChange={handleModeChange} actions={commonActions} />}
           showToggle={false}
         >
           <JSONEditor
@@ -350,53 +344,51 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     )
   }
 
-  // Eval mode
-  const EvalHeaderRight = (
-    <div className="flex items-center space-x-2">
-      <ModeSwitcher mode={mode} onChange={handleModeChange} />
-    </div>
-  )
-
   if (mode === "eval") {
     return (
       <ReactFlowProvider>
         <SidebarLayout
           title={`Workflow Editor${workflowVersion ? ` (${workflowVersion.wf_version_id})` : ""}`}
-          right={EvalHeaderRight}
+          right={<EditorHeader title="" mode={mode} onModeChange={handleModeChange} actions={commonActions} />}
           showToggle={false}
         >
           <div className="p-4">
             {/* Header Section */}
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="flex-1 flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase">Goal</label>
-                  <span className="text-xs text-gray-500 italic">(Define your evaluation objective)</span>
-                </div>
-                <input
-                  type="text"
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none placeholder:text-gray-400"
-                  placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
-                  value={goal}
-                  onChange={e => setGoal(e.target.value)}
-                  data-testid="evaluation-goal-input"
-                />
+            <div className="mb-4 space-y-4">
+              <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
+                <div className="space-y-3">
+                  {/* Goal Section */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                      Goal <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400"
+                      placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
+                      value={goal}
+                      onChange={e => setGoal(e.target.value)}
+                      data-testid="evaluation-goal-input"
+                    />
+                  </div>
 
-                {/* Dataset Selection */}
-                <div className="flex items-center gap-2 mt-2">
-                  <label className="text-sm font-semibold text-gray-700 uppercase">Dataset</label>
-                  <span className="text-xs text-gray-500 italic">(Load test cases from database)</span>
+                  {/* Dataset Section */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                      Dataset <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
+                    </label>
+                    <div className="w-full max-w-xs">
+                      <DatasetSelector
+                        selectedDatasetId={datasetId}
+                        onSelect={handleDatasetSelect}
+                        disabled={datasetLoading}
+                      />
+                      {datasetLoading && <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>}
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full max-w-xs">
-                  <DatasetSelector
-                    selectedDatasetId={datasetId}
-                    onSelect={handleDatasetSelect}
-                    disabled={datasetLoading}
-                  />
-                  {datasetLoading && <div className="text-xs text-gray-500 mt-1">Loading dataset records...</div>}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
+
+                {/* Run All Button */}
                 <Button
                   onClick={async () => {
                     const json = exportToJSON()
@@ -410,7 +402,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                     await runAll(cfg)
                   }}
                   disabled={!cases.length}
-                  className="bg-black hover:bg-gray-800"
+                  className="bg-black hover:bg-gray-800 h-10"
                   data-testid="run-all-tests-button"
                 >
                   Run All ({cases.length})

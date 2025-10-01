@@ -1,8 +1,8 @@
 import { promises as fs } from "fs"
 import { join } from "path"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import type { PartialLocationData } from "../../../../packages/tools/src/schemas/location.types"
-import { DataQuality } from "../../../../packages/tools/src/schemas/location.types"
+import type { PartialLocationData } from "@lucky/tools/schemas/location.types"
+import { DataQuality } from "@lucky/tools/schemas/location.types"
 import { LocationDataManager } from "../mainLocationDataManager"
 
 describe("LocationDataManager - Update Operations", () => {
