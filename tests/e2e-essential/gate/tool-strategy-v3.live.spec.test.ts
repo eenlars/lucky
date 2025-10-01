@@ -20,13 +20,13 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
   const tools: ToolSet = {
     sum: {
       description: "add two numbers",
-      parameters: zodSchema(z.object({ a: z.number(), b: z.number() })),
+      inputSchema: zodSchema(z.object({ a: z.number(), b: z.number() })),
       // Not executed here; only selection is tested.
       execute: async ({ a, b }: { a: number; b: number }) => a + b,
     },
     echo: {
       description: "echo text",
-      parameters: zodSchema(z.object({ text: z.string() })),
+      inputSchema: zodSchema(z.object({ text: z.string() })),
       execute: async ({ text }: { text: string }) => text,
     },
   }

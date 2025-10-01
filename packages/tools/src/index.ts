@@ -6,7 +6,7 @@
  */
 
 // Factory - Tool creation and execution
-export { defineTool, toAITool, commonSchemas, validateAndCorrectWithSchema, R, Tools } from "./factory/index.js"
+export { defineTool, toAITool, commonSchemas, validateAndCorrectWithSchema, R, Tools } from "./factory/index"
 
 export type {
   RS,
@@ -17,7 +17,7 @@ export type {
   CodeToolResult,
   CodeToolSuccess,
   CodeToolFailure,
-} from "./factory/index.js"
+} from "./factory/index"
 
 // Registry - Tool types, filtering, and management
 export {
@@ -34,17 +34,17 @@ export {
   codeToolRegistry,
   setupCodeToolsForNode,
   getAllCodeToolNames,
-} from "./registry/index.js"
+} from "./registry/index"
 
-export type { MCPToolName, CodeToolName, AllToolNames, FlexibleToolDefinition } from "./registry/index.js"
+export type { MCPToolName, CodeToolName, AllToolNames, FlexibleToolDefinition } from "./registry/index"
 
 // Config - Tool metadata and settings
-export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index.js"
-export type { ToolConfig } from "./config/index.js"
+export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index"
+export type { ToolConfig } from "./config/index"
 
 // MCP - Model Context Protocol client
-export { MCPClientManager, getMCPTools } from "./mcp/index.js"
-export type { MCPClientConfig, MCPConfig, MCPToolInfo } from "./mcp/index.js"
+export { MCPClientManager, getMCPTools } from "./mcp/index"
+export type { MCPClientConfig, MCPConfig, MCPToolInfo } from "./mcp/index"
 
 // Registration - Tool registration and startup
 export {
@@ -64,7 +64,7 @@ export {
   validateMCPToolRegistration,
   validateAllRegistrations,
   printValidationResult,
-} from "./registration/index.js"
+} from "./registration/index"
 
 export type {
   CodeToolDefinition,
@@ -74,7 +74,7 @@ export type {
   MCPToolDefinition,
   MCPToolGroup,
   ValidationResult,
-} from "./registration/index.js"
+} from "./registration/index"
 
 // Schemas - Shared type definitions
 export {
@@ -85,7 +85,7 @@ export {
   type LocationData,
   type PartialLocationData,
   type WorkflowLocationData,
-} from "./schemas/index.js"
+} from "./schemas/index"
 
 // Runtime Config - Configurable paths and settings
 export {
@@ -97,7 +97,7 @@ export {
   type ToolRuntimePaths,
   type ToolRuntimeModels,
   type ToolRuntimeConfig,
-} from "./config/runtime.js"
+} from "./config/runtime"
 
 // Default export for backward compatibility (Tools utility)
-export { default } from "./factory/output.types.js"
+export { default } from "./factory/output.types"
