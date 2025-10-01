@@ -20,7 +20,8 @@
     "tree": "tree -L 7 -I 'node_modules|.git|dist|build|public' src/core",
     "tsc": "tsc --noEmit",
     "pricing": "bun run scripts/fetchOpenRouterPricing.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@ai-sdk/groq": "^2.0.0",
