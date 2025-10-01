@@ -8,6 +8,7 @@ export const envi = createEnv({
     MAPBOX_TOKEN: z.string().nullish(),
     OPENROUTER_API_KEY: z.string().nullish(),
     GROQ_API_KEY: z.string().nullish(),
+    ANTHROPIC_API_KEY: z.string().nullish(),
     GOOGLE_API_KEY: z.string(),
     OPENAI_API_KEY: z.string(),
     SERPAPI_API_KEY: z.string(),
@@ -35,6 +36,7 @@ export const envi = createEnv({
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     SERPAPI_API_KEY: process.env.SERPAPI_API_KEY,
     // Server-only runtime env passthroughs
     HF_TOKEN: process.env.HF_TOKEN,
