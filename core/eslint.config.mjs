@@ -33,7 +33,8 @@ const eslintConfig = [
           patterns: [
             {
               group: ["**/../../*", "**/../../**"],
-              message: "Deep relative imports are not allowed. Use path aliases like @core/*, @examples/*, @lucky/tools/*, etc. instead.",
+              message:
+                "Deep relative imports are not allowed. Use path aliases like @core/*, @examples/*, @lucky/tools/*, etc. instead.",
             },
           ],
         },

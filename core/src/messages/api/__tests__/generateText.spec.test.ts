@@ -1,7 +1,7 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { JSONN } from "@core/utils/json"
-import { getDefaultModels } from "@core/core-config/compat"
 import { generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
