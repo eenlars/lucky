@@ -15,10 +15,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: [
-      "tests/e2e-essential/**/*.test.ts",
-      "tests/e2e-essential/**/*.test.tsx",
-    ],
+    include: ["tests/e2e-essential/**/*.test.ts", "tests/e2e-essential/**/*.test.tsx"],
     setupFiles: [path.join(thisDir, "setup", "env.ts")],
     environment: "node",
     passWithNoTests: false,

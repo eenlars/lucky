@@ -15,12 +15,7 @@ import { experimentalModels } from "@examples/settings/models"
 import { mkdirSync, writeFileSync } from "fs"
 import { join, resolve } from "path"
 import { fileURLToPath } from "url"
-import {
-  classifyFailure,
-  evaluate,
-  type FailureType,
-  type RunOutcome,
-} from "./evaluation"
+import { classifyFailure, evaluate, type FailureType, type RunOutcome } from "./evaluation"
 import { allToolSpecs, chatWithTools } from "./openaiRunner"
 import { prompts } from "./prompts"
 
@@ -53,9 +48,7 @@ const TEST_MODELS: AllowedModelName<"openrouter">[] = [
   experimentalModels.claude35haiku.id,
   experimentalModels.gpt41nano.id,
 ]
-const REQUIRED_TOOL_NAMES: string[] = Array.from(
-  new Set(prompts.map((p) => p.expects.tool))
-)
+const REQUIRED_TOOL_NAMES: string[] = Array.from(new Set(prompts.map(p => p.expects.tool)))
 const REQUIRED_TOOL_COUNT = REQUIRED_TOOL_NAMES.length
 const TOOL_COUNTS = [REQUIRED_TOOL_COUNT, 8, 16, 32, 64, 128]
 const RUNS_PER_CONFIG = 5 // multiple runs for statistical significance
@@ -93,62 +86,44 @@ export async function runToolCapacityExperiment() {
 
       // Always include all required tools; fill the rest with non-required tools
       const allNames = Object.keys(allToolSpecs)
-      const missingRequired = REQUIRED_TOOL_NAMES.filter(
-        (name) => !(name in allToolSpecs)
-      )
+      const missingRequired = REQUIRED_TOOL_NAMES.filter(name => !(name in allToolSpecs))
       if (missingRequired.length) {
-        lgg.warn(
-          `Missing required tool specs: ${missingRequired.join(", ")}. They will be ignored.`
-        )
+        lgg.warn(`Missing required tool specs: ${missingRequired.join(", ")}. They will be ignored.`)
       }
 
       const effectiveCount = Math.max(toolCount, REQUIRED_TOOL_COUNT)
-      const pool = allNames.filter((n) => !REQUIRED_TOOL_NAMES.includes(n))
+      const pool = allNames.filter(n => !REQUIRED_TOOL_NAMES.includes(n))
       const additionalCount = Math.max(0, effectiveCount - REQUIRED_TOOL_COUNT)
       const selectedToolNames = [
-        ...REQUIRED_TOOL_NAMES.filter((n) => n in allToolSpecs),
+        ...REQUIRED_TOOL_NAMES.filter(n => n in allToolSpecs),
         ...pool.slice(0, additionalCount),
       ]
 
       const tools = Object.fromEntries(
-        selectedToolNames.map((name) => [
-          name,
-          allToolSpecs[name as keyof typeof allToolSpecs],
-        ])
+        selectedToolNames.map(name => [name, allToolSpecs[name as keyof typeof allToolSpecs]]),
       )
 
       if (Object.keys(tools).length < toolCount) {
-        lgg.warn(
-          `Only ${Object.keys(tools).length} tools available, requested ${toolCount}`
-        )
+        lgg.warn(`Only ${Object.keys(tools).length} tools available, requested ${toolCount}`)
       }
 
       for (let promptIndex = 0; promptIndex < prompts.length; promptIndex++) {
         const prompt = prompts[promptIndex]
-        lgg.info(
-          `    Running prompt ${promptIndex + 1}/${prompts.length}: ${prompt.id}`
-        )
+        lgg.info(`    Running prompt ${promptIndex + 1}/${prompts.length}: ${prompt.id}`)
 
         for (let run = 1; run <= RUNS_PER_CONFIG; run++) {
           lgg.info(`      Run ${run}/${RUNS_PER_CONFIG} - Starting API call...`)
           const runStartTime = Date.now()
 
           try {
-            lgg.info(
-              `        Calling sendAI with ${Object.keys(tools).length} tools...`
-            )
+            lgg.info(`        Calling sendAI with ${Object.keys(tools).length} tools...`)
             const trace = await chatWithTools(model, prompt.content, tools)
             const latencyMs = Date.now() - runStartTime
-            lgg.info(
-              `        API call completed in ${latencyMs}ms, got ${trace.toolCalls.length} tool calls`
-            )
+            lgg.info(`        API call completed in ${latencyMs}ms, got ${trace.toolCalls.length} tool calls`)
 
             const evaluation = await evaluate(trace, prompt.expects.tool)
-            const selectedTool =
-              trace.toolCalls[trace.toolCalls.length - 1]?.toolName
-            lgg.info(
-              `        Evaluation complete: ${evaluation.success ? "SUCCESS" : "FAILURE"}`
-            )
+            const selectedTool = trace.toolCalls[trace.toolCalls.length - 1]?.toolName
+            lgg.info(`        Evaluation complete: ${evaluation.success ? "SUCCESS" : "FAILURE"}`)
 
             const result: ToolCapacityResult = {
               ...evaluation,
@@ -166,9 +141,7 @@ export async function runToolCapacityExperiment() {
 
             // Add failure type details
             if (!evaluation.success) {
-              result.failureType =
-                evaluation.failureType ||
-                classifyFailure(trace, prompt.expects.tool)
+              result.failureType = evaluation.failureType || classifyFailure(trace, prompt.expects.tool)
               lgg.info(`        Failure type: ${result.failureType}`)
             }
 
@@ -183,11 +156,8 @@ export async function runToolCapacityExperiment() {
             }
           } catch (error) {
             const latencyMs = Date.now() - runStartTime
-            const errorMsg =
-              error instanceof Error ? error.message : String(error)
-            lgg.error(
-              `        API call failed after ${latencyMs}ms: ${errorMsg}`
-            )
+            const errorMsg = error instanceof Error ? error.message : String(error)
+            lgg.error(`        API call failed after ${latencyMs}ms: ${errorMsg}`)
 
             results.push({
               model,
@@ -209,7 +179,7 @@ export async function runToolCapacityExperiment() {
 
           // rate limiting between calls
           lgg.info(`        Waiting ${RATE_LIMIT_MS}ms for rate limiting...`)
-          await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_MS))
+          await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_MS))
         }
       }
     }
@@ -239,24 +209,13 @@ export async function runToolCapacityExperiment() {
 
   // Also write copies into the public folder for easy static access
   try {
-    const publicDir = join(
-      process.cwd(),
-      "public/research-experiments/tool-real/experiments/01-capacity-limits"
-    )
+    const publicDir = join(process.cwd(), "public/research-experiments/tool-real/experiments/01-capacity-limits")
     mkdirSync(publicDir, { recursive: true })
-    writeFileSync(
-      join(publicDir, "tool-capacity-results.json"),
-      JSON.stringify(outputData, null, 2)
-    )
-    writeFileSync(
-      join(publicDir, "tool-capacity-analysis.json"),
-      JSON.stringify(analysis, null, 2)
-    )
+    writeFileSync(join(publicDir, "tool-capacity-results.json"), JSON.stringify(outputData, null, 2))
+    writeFileSync(join(publicDir, "tool-capacity-analysis.json"), JSON.stringify(analysis, null, 2))
     lgg.info(`Public copies saved to: ${publicDir}`)
   } catch (err) {
-    lgg.warn(
-      `Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`
-    )
+    lgg.warn(`Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`)
   }
 
   lgg.info(`\nExperiment completed!`)
@@ -268,23 +227,21 @@ export async function runToolCapacityExperiment() {
 
 function generateSummary(results: ToolCapacityResult[]) {
   const totalRuns = results.length
-  const successfulRuns = results.filter((r) => r.success).length
+  const successfulRuns = results.filter(r => r.success).length
   const overallAccuracy = (successfulRuns / totalRuns) * 100
 
   return {
     totalRuns,
     successfulRuns,
     overallAccuracy: Math.round(overallAccuracy * 100) / 100,
-    averageLatency: Math.round(
-      results.reduce((sum, r) => sum + r.latencyMs, 0) / totalRuns
-    ),
-    failureTypes: getFailureTypeDistribution(results.filter((r) => !r.success)),
+    averageLatency: Math.round(results.reduce((sum, r) => sum + r.latencyMs, 0) / totalRuns),
+    failureTypes: getFailureTypeDistribution(results.filter(r => !r.success)),
   }
 }
 
 function getFailureTypeDistribution(failures: ToolCapacityResult[]) {
   const distribution: Record<string, number> = {}
-  failures.forEach((f) => {
+  failures.forEach(f => {
     const type = f.failureType || "Unknown"
     distribution[type] = (distribution[type] || 0) + 1
   })
@@ -298,23 +255,19 @@ function analyzeResults(results: ToolCapacityResult[]) {
   return {
     modelPerformance: Object.entries(byModel).map(([model, data]) => ({
       model,
-      accuracy: (data.filter((r) => r.success).length / data.length) * 100,
-      averageLatency:
-        data.reduce((sum, r) => sum + r.latencyMs, 0) / data.length,
+      accuracy: (data.filter(r => r.success).length / data.length) * 100,
+      averageLatency: data.reduce((sum, r) => sum + r.latencyMs, 0) / data.length,
       totalRuns: data.length,
-      selectionOnlyAccuracy:
-        (data.filter((r) => r.selectionMatched).length / data.length) * 100,
+      selectionOnlyAccuracy: (data.filter(r => r.selectionMatched).length / data.length) * 100,
     })),
 
     toolCountPerformance: Object.entries(byToolCount)
       .map(([toolCount, data]) => ({
         toolCount: parseInt(toolCount),
-        accuracy: (data.filter((r) => r.success).length / data.length) * 100,
-        averageLatency:
-          data.reduce((sum, r) => sum + r.latencyMs, 0) / data.length,
+        accuracy: (data.filter(r => r.success).length / data.length) * 100,
+        averageLatency: data.reduce((sum, r) => sum + r.latencyMs, 0) / data.length,
         totalRuns: data.length,
-        selectionOnlyAccuracy:
-          (data.filter((r) => r.selectionMatched).length / data.length) * 100,
+        selectionOnlyAccuracy: (data.filter(r => r.selectionMatched).length / data.length) * 100,
       }))
       .sort((a, b) => a.toolCount - b.toolCount),
   }
@@ -328,7 +281,7 @@ function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
       groups[group].push(item)
       return groups
     },
-    {} as Record<string, T[]>
+    {} as Record<string, T[]>,
   )
 }
 

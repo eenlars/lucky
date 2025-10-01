@@ -15,7 +15,7 @@ describe("essential gate: evolution-graph fixture hash", () => {
       "api",
       "__tests__",
       "resources",
-      "toolResponseNoToolUsed.json"
+      "toolResponseNoToolUsed.json",
     )
     const content = fs.readFileSync(fixturePath, "utf8")
     const json = JSON.parse(content)
@@ -25,12 +25,7 @@ describe("essential gate: evolution-graph fixture hash", () => {
 
     const thisFile = fileURLToPath(import.meta.url)
     const thisDir = path.dirname(thisFile)
-    const goldenPath = path.join(
-      thisDir,
-      "..",
-      "golden",
-      "workflow-basics.hash"
-    )
+    const goldenPath = path.join(thisDir, "..", "golden", "workflow-basics.hash")
     const golden = fs.readFileSync(goldenPath, "utf8").trim()
     expect(hash).toBe(golden)
   })

@@ -1,13 +1,9 @@
 /**
- * Tool Registry - Re-exports from @lucky/tools
+ * Tool Registry - Re-exports from examples/definitions
  *
- * This file provides backward compatibility by re-exporting
- * tools from the @lucky/tools package.
+ * This file provides re-exports of the tool registrations
+ * for easy access.
  */
 
-import { toolGroups } from "@lucky/tools"
-
-/**
- * All tools from all groups, flattened into a single array
- */
-export const ALL_TOOLS = toolGroups.groups.flatMap(group => group.tools.map(t => t.toolFunc))
+// Re-export both flat and grouped registries
+export { ALL_TOOLS, TOOL_GROUPS } from "../definitions"

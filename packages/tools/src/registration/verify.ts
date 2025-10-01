@@ -1,21 +1,17 @@
 /**
- * Verification script to check both code and MCP tool registrations
+ * Verification script to check MCP tool registrations
  * Run with: bun run packages/tools/src/registration/verify.ts
+ *
+ * Note: Code tool registrations are in examples/definitions/registry-grouped.ts
+ * and should be verified from that location.
  */
 
-import { toolGroups } from "./codeToolsRegistration"
 import { mcpToolGroups } from "./mcpToolsRegistration"
 
-console.log("\n=== CODE TOOLS REGISTRATION ===")
-console.log(`Total groups: ${toolGroups.groups.length}`)
-console.log(`Total tools: ${toolGroups.groups.reduce((acc, g) => acc + g.tools.length, 0)}`)
-console.log("\nGroups:")
-toolGroups.groups.forEach(group => {
-  console.log(`  • ${group.groupName}: ${group.tools.length} tools - ${group.description}`)
-  group.tools.forEach(tool => {
-    console.log(`    - ${tool.toolName}: ${tool.description.substring(0, 60)}...`)
-  })
-})
+console.log("\n=== NOTE ===")
+console.log("Code tools are now registered in examples/definitions/registry-grouped.ts")
+console.log("To verify code tools, import TOOL_GROUPS from that file in your application.")
+console.log("")
 
 console.log("\n=== MCP TOOLS REGISTRATION ===")
 console.log(`Total groups: ${mcpToolGroups.groups.length}`)

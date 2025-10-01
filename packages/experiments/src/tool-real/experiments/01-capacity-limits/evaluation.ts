@@ -16,10 +16,7 @@ export type FailureType =
   | "F2" // Wrong tool selected
   | "F6" // System/API error
 
-export function classifyFailure(
-  trace: RunTrace,
-  expectedTool: string
-): FailureType {
+export function classifyFailure(trace: RunTrace, expectedTool: string): FailureType {
   const lastCall = trace.toolCalls[trace.toolCalls.length - 1]
 
   if (!lastCall) {
@@ -40,7 +37,7 @@ export function classifyFailure(
  */
 export async function evaluate(
   trace: RunTrace,
-  expectedTool: string
+  expectedTool: string,
 ): Promise<RunOutcome & { failureType?: FailureType }> {
   const lastToolMsg = trace.toolCalls[trace.toolCalls.length - 1] as any
 

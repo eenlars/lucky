@@ -3,31 +3,26 @@
  * Evaluates order, data flow, and completeness of tool chains
  */
 
-import type {
-  ToolExecution,
-  ValidationResult,
-  ExperimentResult,
-  ExperimentAnalysis,
-} from "./types"
+import type { ToolExecution, ValidationResult, ExperimentResult, ExperimentAnalysis } from "./types"
 
 export function validateSequentialExecution(
   executions: ToolExecution[],
   expectedChain: string[],
   expectedFinalOutput?: string,
-  actualFinalResponse?: string
+  actualFinalResponse?: string,
 ): ValidationResult {
   // 1. Basic completeness – all expected tools were called
-  const calledTools = executions.map((e) => e.toolName)
-  const allToolsUsed = expectedChain.every((tool) => calledTools.includes(tool))
+  const calledTools = executions.map(e => e.toolName)
+  const allToolsUsed = expectedChain.every(tool => calledTools.includes(tool))
 
   // 1a. Strictness – no extra tools and no repeats
-  const extraTools = calledTools.filter((t) => !expectedChain.includes(t))
+  const extraTools = calledTools.filter(t => !expectedChain.includes(t))
   const toolUseCounts = calledTools.reduce(
     (acc, t) => {
       acc[t] = (acc[t] || 0) + 1
       return acc
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   )
   const repeatedTools = Object.entries(toolUseCounts)
     .filter(([t, c]) => expectedChain.includes(t) && c > 1)
@@ -43,7 +38,7 @@ export function validateSequentialExecution(
       allToolsUsed: false,
       finalAnswerCorrect: false,
       executionPattern: "random",
-      details: `Missing tools: ${expectedChain.filter((tool) => !calledTools.includes(tool)).join(", ")}`,
+      details: `Missing tools: ${expectedChain.filter(tool => !calledTools.includes(tool)).join(", ")}`,
     }
   }
 
@@ -73,12 +68,11 @@ export function validateSequentialExecution(
 
   // 2. check order - tools called in expected sequence
   const toolSequence = executions
-    .filter((e) => expectedChain.includes(e.toolName))
+    .filter(e => expectedChain.includes(e.toolName))
     .sort((a, b) => a.executionIndex - b.executionIndex)
-    .map((e) => e.toolName)
+    .map(e => e.toolName)
 
-  const orderCorrect =
-    JSON.stringify(toolSequence) === JSON.stringify(expectedChain)
+  const orderCorrect = JSON.stringify(toolSequence) === JSON.stringify(expectedChain)
 
   if (!orderCorrect) {
     return {
@@ -97,8 +91,8 @@ export function validateSequentialExecution(
   let dataFlowDetails = ""
 
   for (let i = 0; i < expectedChain.length - 1; i++) {
-    const currentTool = executions.find((e) => e.toolName === expectedChain[i])
-    const nextTool = executions.find((e) => e.toolName === expectedChain[i + 1])
+    const currentTool = executions.find(e => e.toolName === expectedChain[i])
+    const nextTool = executions.find(e => e.toolName === expectedChain[i + 1])
 
     if (!currentTool || !nextTool) continue
 
@@ -108,7 +102,7 @@ export function validateSequentialExecution(
 
     // Check if the current output matches any of the next tool's input parameters
     // This handles both single and multi-parameter tools
-    const outputMatchesInput = nextInputValues.some((inputValue) => {
+    const outputMatchesInput = nextInputValues.some(inputValue => {
       // Direct equality check first
       if (inputValue === currentOutput) return true
 
@@ -119,13 +113,10 @@ export function validateSequentialExecution(
 
         try {
           // Sort object keys for consistent comparison
-          const sortedInput = JSON.stringify(
-            inputValue,
-            Object.keys(inputValue as Record<string, unknown>).sort()
-          )
+          const sortedInput = JSON.stringify(inputValue, Object.keys(inputValue as Record<string, unknown>).sort())
           const sortedOutput = JSON.stringify(
             currentOutput,
-            Object.keys(currentOutput as Record<string, unknown>).sort()
+            Object.keys(currentOutput as Record<string, unknown>).sort(),
           )
           return sortedInput === sortedOutput
         } catch {
@@ -151,7 +142,7 @@ export function validateSequentialExecution(
   if (expectedFinalOutput && actualFinalResponse) {
     // extract final result from tool execution (last tool output)
     const lastToolExecution = executions
-      .filter((e) => expectedChain.includes(e.toolName))
+      .filter(e => expectedChain.includes(e.toolName))
       .sort((a, b) => a.executionIndex - b.executionIndex)
       .pop()
 
@@ -167,9 +158,9 @@ export function validateSequentialExecution(
 
   // 5. determine execution pattern based on timestamps
   const timestamps = executions
-    .filter((e) => expectedChain.includes(e.toolName))
+    .filter(e => expectedChain.includes(e.toolName))
     .sort((a, b) => a.executionIndex - b.executionIndex)
-    .map((e) => e.timestamp)
+    .map(e => e.timestamp)
 
   let executionPattern: "sequential" | "parallel" | "random" = "sequential"
 
@@ -207,9 +198,7 @@ export function validateSequentialExecution(
   // Round to avoid floating point precision issues
   score = Math.round(score * 100) / 100
 
-  const details =
-    finalAnswerDetails ||
-    (dataFlowCorrect ? "Perfect sequential execution" : dataFlowDetails)
+  const details = finalAnswerDetails || (dataFlowCorrect ? "Perfect sequential execution" : dataFlowDetails)
 
   return {
     score,
@@ -222,16 +211,14 @@ export function validateSequentialExecution(
   }
 }
 
-export function analyzeExperimentResults(
-  results: ExperimentResult[]
-): ExperimentAnalysis {
+export function analyzeExperimentResults(results: ExperimentResult[]): ExperimentAnalysis {
   const byModel = results.reduce(
     (acc, result) => {
       if (!acc[result.model]) acc[result.model] = []
       acc[result.model].push(result.validation.score)
       return acc
     },
-    {} as Record<string, number[]>
+    {} as Record<string, number[]>,
   )
 
   const byChain = results.reduce(
@@ -240,20 +227,20 @@ export function analyzeExperimentResults(
       acc[result.chain].push(result.validation.score)
       return acc
     },
-    {} as Record<string, number[]>
+    {} as Record<string, number[]>,
   )
 
   const modelAverages = Object.entries(byModel).map(([model, scores]) => ({
     model,
     avgScore: scores.reduce((sum, s) => sum + s, 0) / scores.length,
-    perfectCount: scores.filter((s) => s === 1.0).length,
+    perfectCount: scores.filter(s => s === 1.0).length,
     totalTests: scores.length,
   }))
 
   const chainAverages = Object.entries(byChain).map(([chain, scores]) => ({
     chain,
     avgScore: scores.reduce((sum, s) => sum + s, 0) / scores.length,
-    perfectCount: scores.filter((s) => s === 1.0).length,
+    perfectCount: scores.filter(s => s === 1.0).length,
     totalTests: scores.length,
   }))
 
@@ -262,11 +249,8 @@ export function analyzeExperimentResults(
     chainComplexity: chainAverages.sort((a, b) => b.avgScore - a.avgScore),
     overallStats: {
       totalTests: results.length,
-      avgScore:
-        results.reduce((sum, r) => sum + r.validation.score, 0) /
-        results.length,
-      perfectExecutions: results.filter((r) => r.validation.score === 1.0)
-        .length,
+      avgScore: results.reduce((sum, r) => sum + r.validation.score, 0) / results.length,
+      perfectExecutions: results.filter(r => r.validation.score === 1.0).length,
     },
   }
 }

@@ -15,10 +15,7 @@ function clampToRange(value: number, min: number, max: number): number {
  * - 100 if successItems >= requested (treated as correct/finally accurate)
  * - otherwise scales linearly with completeness: 100 * (successItems / requested)
  */
-export function accuracyScorePct(
-  successItems: number,
-  requested: number
-): number {
+export function accuracyScorePct(successItems: number, requested: number): number {
   if (!requested || requested <= 0) return 0
   if (successItems >= requested) return 100
   const ratio = clampToRange(successItems / requested, 0, 1)
@@ -34,10 +31,7 @@ export function accuracyScorePct(
  * - At cost = halfLife, score = 50
  * - Smoothly decays as cost grows; never negative
  */
-export function costEfficiencyScorePct(
-  costUsd: number,
-  costHalfLifeUsd: number = 0.02
-): number {
+export function costEfficiencyScorePct(costUsd: number, costHalfLifeUsd: number = 0.02): number {
   const c = Math.max(0, Number(costUsd) || 0)
   const hl = Math.max(1e-9, Number(costHalfLifeUsd) || 0.02)
   const score = 100 * Math.exp(-Math.LN2 * (c / hl))
@@ -52,10 +46,7 @@ export function costEfficiencyScorePct(
  * - At time = 0ms, score = 100
  * - At time = halfLife, score = 50
  */
-export function timeEfficiencyScorePct(
-  durationMs: number,
-  timeHalfLifeMs: number = 2000
-): number {
+export function timeEfficiencyScorePct(durationMs: number, timeHalfLifeMs: number = 2000): number {
   const t = Math.max(0, Number(durationMs) || 0)
   const hl = Math.max(1e-6, Number(timeHalfLifeMs) || 2000)
   const score = 100 * Math.exp(-Math.LN2 * (t / hl))
@@ -70,11 +61,7 @@ export function timeEfficiencyScorePct(
  * combined = 100 * ( (costScore/100)^w_c * (timeScore/100)^w_t )
  * where w_c and w_t are normalized from options (defaults 0.5 each).
  */
-export function costTimeBalancedScorePct(
-  costUsd: number,
-  durationMs: number,
-  options: BalanceOptions = {}
-): number {
+export function costTimeBalancedScorePct(costUsd: number, durationMs: number, options: BalanceOptions = {}): number {
   const costScore = costEfficiencyScorePct(costUsd, options.costHalfLifeUsd)
   const timeScore = timeEfficiencyScorePct(durationMs, options.timeHalfLifeMs)
   const cw = Math.max(0, options.costWeight ?? 0.5)
@@ -104,7 +91,7 @@ export function finalScorePct(
   requested: number,
   costUsd: number,
   durationMs: number,
-  options: BalanceOptions = {}
+  options: BalanceOptions = {},
 ): number {
   const acc = accuracyScorePct(successItems, requested)
   if (acc <= 0) return 0

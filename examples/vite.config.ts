@@ -30,11 +30,7 @@ export default defineConfig(({ mode }) => {
             "puppeteer-extra-plugin-adblocker",
           ]
 
-          if (
-            externalDependencies.some(
-              dep => id === dep || id.startsWith(`${dep}/`),
-            )
-          ) {
+          if (externalDependencies.some(dep => id === dep || id.startsWith(`${dep}/`))) {
             return true
           }
 

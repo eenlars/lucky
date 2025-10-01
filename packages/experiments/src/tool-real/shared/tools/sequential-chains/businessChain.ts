@@ -14,9 +14,7 @@ export const requestHandlerSpec = tool({
   description: "Handles incoming business requests for processing",
   inputSchema: zodSchema(RequestHandlerParams),
   execute: async ({ request }: { request: string }) => {
-    return request
-      .split("")
-      .reduce((hash, char) => hash + char.charCodeAt(0), 0)
+    return request.split("").reduce((hash, char) => hash + char.charCodeAt(0), 0)
   },
 })
 

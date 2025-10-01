@@ -8,13 +8,13 @@
  */
 
 import { registerAllTools, type FlexibleToolDefinition } from "@lucky/tools"
-import { ALL_TOOLS } from "./registry"
+import { ALL_TOOLS, TOOL_GROUPS } from "./registry"
 
 /**
  * Setup all code tools by registering them with the registry
  */
 export async function setupCodeTools(): Promise<FlexibleToolDefinition[]> {
-  await registerAllTools()
+  await registerAllTools(TOOL_GROUPS)
   return ALL_TOOLS
 }
 

@@ -9,27 +9,11 @@ import { experimentalModels } from "../../../../../../examples/settings/models"
 
 import type { ToolSet } from "ai"
 import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
-import {
-    businessChainOrder,
-    businessChainTools,
-} from "../../shared/tools/sequential-chains/businessChain"
-import {
-    locationChainOrder,
-    locationChainTools,
-} from "../../shared/tools/sequential-chains/locationChain"
-import {
-    mathChainOrder,
-    mathChainTools,
-} from "../../shared/tools/sequential-chains/mathChain"
-import {
-    analyzeExperimentResults,
-    validateSequentialExecution,
-} from "./sequentialEvaluation"
-import {
-    businessChainPrompts,
-    locationChainPrompts,
-    mathChainPrompts,
-} from "./sequentialPrompts"
+import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
+import { locationChainOrder, locationChainTools } from "../../shared/tools/sequential-chains/locationChain"
+import { mathChainOrder, mathChainTools } from "../../shared/tools/sequential-chains/mathChain"
+import { analyzeExperimentResults, validateSequentialExecution } from "./sequentialEvaluation"
+import { businessChainPrompts, locationChainPrompts, mathChainPrompts } from "./sequentialPrompts"
 import { runSequentialTools } from "./sequentialRunner"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -79,10 +63,10 @@ async function runFullExperiment() {
   console.log("Starting Sequential Tool Execution Experiment")
   console.log("=".repeat(50))
   console.log(`Models: ${MODELS.join(", ")}`)
-  console.log(`Chains: ${CHAINS.map((c) => c.name).join(", ")}`)
+  console.log(`Chains: ${CHAINS.map(c => c.name).join(", ")}`)
   console.log(`Repetitions per scenario: ${REPETITIONS}`)
   console.log(
-    `Total scenarios: ${MODELS.length * CHAINS.length * CHAINS.reduce((sum, c) => sum + c.prompts.length, 0) * REPETITIONS}`
+    `Total scenarios: ${MODELS.length * CHAINS.length * CHAINS.reduce((sum, c) => sum + c.prompts.length, 0) * REPETITIONS}`,
   )
   console.log("")
 
@@ -100,10 +84,7 @@ async function runFullExperiment() {
 
   let scenarioCount = 0
   const totalScenarios =
-    MODELS.length *
-    CHAINS.length *
-    CHAINS.reduce((sum, c) => sum + c.prompts.length, 0) *
-    REPETITIONS
+    MODELS.length * CHAINS.length * CHAINS.reduce((sum, c) => sum + c.prompts.length, 0) * REPETITIONS
 
   // run each model × chain × prompt × repetition combination
   for (const model of MODELS) {
@@ -120,24 +101,15 @@ async function runFullExperiment() {
         for (let rep = 1; rep <= REPETITIONS; rep++) {
           tasks.push(async () => {
             const currentScenario = ++scenarioCount
-            console.log(
-              `Rep ${rep}/${REPETITIONS} (${currentScenario}/${totalScenarios})`
-            )
+            console.log(`Rep ${rep}/${REPETITIONS} (${currentScenario}/${totalScenarios})`)
 
             try {
-              const result = await runSequentialTools(
-                model,
-                prompt.prompt,
-                chain.tools
-              )
+              const result = await runSequentialTools(model, prompt.prompt, chain.tools)
 
-              const validation = validateSequentialExecution(
-                result.toolExecutions,
-                chain.order
-              )
+              const validation = validateSequentialExecution(result.toolExecutions, chain.order)
 
               console.log(
-                `Score: ${validation.score}, Order: ${validation.orderCorrect}, Flow: ${validation.dataFlowCorrect}`
+                `Score: ${validation.score}, Order: ${validation.orderCorrect}, Flow: ${validation.dataFlowCorrect}`,
               )
 
               allResults.push({
@@ -171,15 +143,12 @@ async function runFullExperiment() {
 
     // Simple concurrency pool
     let next = 0
-    const workers = Array.from(
-      { length: Math.min(MAX_CONCURRENCY, tasks.length) },
-      async () => {
-        while (next < tasks.length) {
-          const idx = next++
-          await tasks[idx]()
-        }
+    const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, tasks.length) }, async () => {
+      while (next < tasks.length) {
+        const idx = next++
+        await tasks[idx]()
       }
-    )
+    })
     await Promise.all(workers)
   }
 
@@ -191,35 +160,30 @@ async function runFullExperiment() {
   const analysis = analyzeExperimentResults(allResults)
 
   console.log("\nMODEL PERFORMANCE:")
-  analysis.modelPerformance.forEach((model) => {
+  analysis.modelPerformance.forEach(model => {
     console.log(
-      `${model.model}: ${(model.avgScore * 100).toFixed(1)}% avg, ${model.perfectCount}/${model.totalTests} perfect`
+      `${model.model}: ${(model.avgScore * 100).toFixed(1)}% avg, ${model.perfectCount}/${model.totalTests} perfect`,
     )
   })
 
   console.log("\nCHAIN COMPLEXITY:")
-  analysis.chainComplexity.forEach((chain) => {
+  analysis.chainComplexity.forEach(chain => {
     console.log(
-      `${chain.chain}: ${(chain.avgScore * 100).toFixed(1)}% avg, ${chain.perfectCount}/${chain.totalTests} perfect`
+      `${chain.chain}: ${(chain.avgScore * 100).toFixed(1)}% avg, ${chain.perfectCount}/${chain.totalTests} perfect`,
     )
   })
 
   console.log("\nOVERALL STATS:")
   console.log(`Total tests: ${analysis.overallStats.totalTests}`)
+  console.log(`Average score: ${(analysis.overallStats.avgScore * 100).toFixed(1)}%`)
   console.log(
-    `Average score: ${(analysis.overallStats.avgScore * 100).toFixed(1)}%`
-  )
-  console.log(
-    `Perfect executions: ${analysis.overallStats.perfectExecutions}/${analysis.overallStats.totalTests} (${((analysis.overallStats.perfectExecutions / analysis.overallStats.totalTests) * 100).toFixed(1)}%)`
+    `Perfect executions: ${analysis.overallStats.perfectExecutions}/${analysis.overallStats.totalTests} (${((analysis.overallStats.perfectExecutions / analysis.overallStats.totalTests) * 100).toFixed(1)}%)`,
   )
 
   // save detailed results
   const now = new Date()
   const timestamp = now.toISOString()
-  const hhmm = `${now.getHours().toString().padStart(2, "0")}${now
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`
+  const hhmm = `${now.getHours().toString().padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`
 
   // Ensure results directory exists
   const resultsDir = join(__dirname, "results")
@@ -246,31 +210,21 @@ async function runFullExperiment() {
         keyFindings: {
           bestModel: analysis.modelPerformance[0],
           easiestChain: analysis.chainComplexity[0],
-          hardestChain:
-            analysis.chainComplexity[analysis.chainComplexity.length - 1],
+          hardestChain: analysis.chainComplexity[analysis.chainComplexity.length - 1],
         },
       },
       null,
-      2
-    )
+      2,
+    ),
   )
 
   // Also write copies into the public folder for easy static access
   try {
-    const publicDir = join(
-      process.cwd(),
-      "public/research-experiments/tool-real/experiments/02-sequential-chains"
-    )
+    const publicDir = join(process.cwd(), "public/research-experiments/tool-real/experiments/02-sequential-chains")
     mkdirSync(publicDir, { recursive: true })
     // Fixed filenames for app consumption
-    writeFileSync(
-      join(publicDir, "sequential-results.json"),
-      JSON.stringify(allResults, null, 2)
-    )
-    writeFileSync(
-      join(publicDir, "sequential-analysis.json"),
-      JSON.stringify(analysis, null, 2)
-    )
+    writeFileSync(join(publicDir, "sequential-results.json"), JSON.stringify(allResults, null, 2))
+    writeFileSync(join(publicDir, "sequential-analysis.json"), JSON.stringify(analysis, null, 2))
     writeFileSync(
       join(publicDir, "sequential-summary.json"),
       JSON.stringify(
@@ -283,14 +237,12 @@ async function runFullExperiment() {
           overallStats: analysis.overallStats,
         },
         null,
-        2
-      )
+        2,
+      ),
     )
     console.log(`Public copies saved to: ${publicDir}`)
   } catch (err) {
-    console.warn(
-      `Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`
-    )
+    console.warn(`Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`)
   }
 
   console.log(`\nResults saved to:`)

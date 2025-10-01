@@ -6,11 +6,7 @@
  */
 
 // Type definitions only
-export type {
-  MCPToolName,
-  CodeToolName,
-  AllToolNames,
-} from "./registry/types"
+export type { MCPToolName, CodeToolName, AllToolNames } from "./registry/types"
 
 export type { FlexibleToolDefinition } from "./registry/CodeToolRegistry"
 

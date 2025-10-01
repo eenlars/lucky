@@ -14,13 +14,7 @@ import {
   TEST_SCENARIOS as SCENARIOS,
   VAGUE_SYSTEM_PROMPT as VAGUE,
 } from "../constants"
-import type {
-  Condition,
-  LoopMetrics,
-  OurAlgorithmExperimentResults,
-  OurAlgorithmLoop,
-  OurAlgorithmRun,
-} from "../types"
+import type { Condition, LoopMetrics, OurAlgorithmExperimentResults, OurAlgorithmLoop, OurAlgorithmRun } from "../types"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -52,14 +46,9 @@ async function runBaselineSingleLoop() {
           console.log(`Running ${model} ${scenario.id} ${cond} ${rep}`)
           taskFactories.push(async (): Promise<RepeatResult> => {
             const t0 = Date.now()
-            const res = await withQuietLogs(() =>
-              runSequentialTools(model, scenario.prompt, adaptiveTools, sys, 5)
-            )
+            const res = await withQuietLogs(() => runSequentialTools(model, scenario.prompt, adaptiveTools, sys, 5))
             const durationMs = Date.now() - t0
-            const metrics: LoopMetrics = scoreLoop(
-              res.toolExecutions,
-              scenario.expected
-            )
+            const metrics: LoopMetrics = scoreLoop(res.toolExecutions, scenario.expected)
             return {
               model,
               scenarioId: scenario.id,
@@ -76,10 +65,7 @@ async function runBaselineSingleLoop() {
   }
 
   // Concurrency pool
-  async function runPool<T>(
-    factories: Array<() => Promise<T>>,
-    limit: number
-  ): Promise<T[]> {
+  async function runPool<T>(factories: Array<() => Promise<T>>, limit: number): Promise<T[]> {
     const results: T[] = []
     let next = 0
     const worker = async () => {
@@ -89,10 +75,7 @@ async function runBaselineSingleLoop() {
         results[current] = await factories[current]()
       }
     }
-    const workers = Array.from(
-      { length: Math.min(limit, factories.length) },
-      () => worker()
-    )
+    const workers = Array.from({ length: Math.min(limit, factories.length) }, () => worker())
     await Promise.all(workers)
     return results
   }
@@ -110,23 +93,17 @@ async function runBaselineSingleLoop() {
 
   const runs: OurAlgorithmRun[] = []
   for (const [key, group] of grouped.entries()) {
-    const [modelKey, scenarioId, condition] = key.split("|") as [
-      string,
-      string,
-      Condition,
-    ]
+    const [modelKey, scenarioId, condition] = key.split("|") as [string, string, Condition]
     const model = modelKey as OurAlgorithmRun["model"]
-    const repeatMetrics = group.map((g) => g.metrics)
-    const repeatCosts = group.map((g) => g.cost)
-    const repeatDurations = group.map((g) => g.durationMs)
+    const repeatMetrics = group.map(g => g.metrics)
+    const repeatCosts = group.map(g => g.cost)
+    const repeatDurations = group.map(g => g.durationMs)
     const expected = group[0]?.expected ?? 0 // TODO: fix this
 
-    const avg = (arr: number[]) =>
-      arr.length ? arr.reduce((s, n) => s + n, 0) / arr.length : 0
+    const avg = (arr: number[]) => (arr.length ? arr.reduce((s, n) => s + n, 0) / arr.length : 0)
     const pickMajorityStrategy = (): LoopMetrics["strategy"] => {
       const counts: Record<string, number> = {}
-      for (const m of repeatMetrics)
-        counts[m.strategy] = (counts[m.strategy] || 0) + 1
+      for (const m of repeatMetrics) counts[m.strategy] = (counts[m.strategy] || 0) + 1
       const entries = Object.entries(counts).sort((a, b) => b[1] - a[1])
       return (entries[0]?.[0] as LoopMetrics["strategy"]) || "no-success"
     }
@@ -134,27 +111,27 @@ async function runBaselineSingleLoop() {
     // Build a single aggregated "repeat" as a loop for compatibility
     const aggregatedLoop: OurAlgorithmLoop = {
       loop: 1,
-      success: avg(repeatMetrics.map((m) => (m.adapted ? 1 : 0))) >= 0.5,
+      success: avg(repeatMetrics.map(m => (m.adapted ? 1 : 0))) >= 0.5,
       cost: avg(repeatCosts),
       durationMs: avg(repeatDurations),
       updatedMemory: null,
       learnings: null,
       toolExecutions: [],
       metrics: {
-        fetchCallsCount: avg(repeatMetrics.map((m) => m.fetchCallsCount)),
-        combineCallsCount: avg(repeatMetrics.map((m) => m.combineCallsCount)),
-        firstCallFailed: repeatMetrics.some((m) => m.firstCallFailed),
+        fetchCallsCount: avg(repeatMetrics.map(m => m.fetchCallsCount)),
+        combineCallsCount: avg(repeatMetrics.map(m => m.combineCallsCount)),
+        firstCallFailed: repeatMetrics.some(m => m.firstCallFailed),
         countsUsed: {
-          "1": avg(repeatMetrics.map((m) => m.countsUsed["1"])),
-          "2": avg(repeatMetrics.map((m) => m.countsUsed["2"])),
-          "3": avg(repeatMetrics.map((m) => m.countsUsed["3"])),
-          gt3: avg(repeatMetrics.map((m) => m.countsUsed.gt3)),
+          "1": avg(repeatMetrics.map(m => m.countsUsed["1"])),
+          "2": avg(repeatMetrics.map(m => m.countsUsed["2"])),
+          "3": avg(repeatMetrics.map(m => m.countsUsed["3"])),
+          gt3: avg(repeatMetrics.map(m => m.countsUsed.gt3)),
         },
-        adherenceToLimit: avg(repeatMetrics.map((m) => m.adherenceToLimit)),
-        totalItemsFetched: avg(repeatMetrics.map((m) => m.totalItemsFetched)),
+        adherenceToLimit: avg(repeatMetrics.map(m => m.adherenceToLimit)),
+        totalItemsFetched: avg(repeatMetrics.map(m => m.totalItemsFetched)),
         requested: expected,
-        adapted: avg(repeatMetrics.map((m) => (m.adapted ? 1 : 0))) >= 0.5,
-        errorRate: avg(repeatMetrics.map((m) => m.errorRate)),
+        adapted: avg(repeatMetrics.map(m => (m.adapted ? 1 : 0))) >= 0.5,
+        errorRate: avg(repeatMetrics.map(m => m.errorRate)),
         strategy: pickMajorityStrategy(),
       },
     }
@@ -178,7 +155,7 @@ async function runBaselineSingleLoop() {
     })
 
     console.log(
-      `${model} ${scenarioId} ${condition}: calls≈${totalFetchCallsAvg.toFixed(2)}, items≈${successItemsAvg.toFixed(2)}/${expected}, adapted=${adapted}, cost≈${(aggregatedLoop.cost ?? 0).toFixed(2)}`
+      `${model} ${scenarioId} ${condition}: calls≈${totalFetchCallsAvg.toFixed(2)}, items≈${successItemsAvg.toFixed(2)}/${expected}, adapted=${adapted}, cost≈${(aggregatedLoop.cost ?? 0).toFixed(2)}`,
     )
   }
 
@@ -195,18 +172,13 @@ async function runBaselineSingleLoop() {
 
   // Also write a public copy with a fixed filename
   try {
-    const publicDir = join(
-      process.cwd(),
-      "public/research-experiments/tool-real/experiments/03-context-adaptation"
-    )
+    const publicDir = join(process.cwd(), "public/research-experiments/tool-real/experiments/03-context-adaptation")
     mkdirSync(publicDir, { recursive: true })
     const fixed = join(publicDir, "adaptive-results.json")
     writeFileSync(fixed, JSON.stringify(payload, null, 2))
     console.log(`Public baseline copy saved: ${fixed}`)
   } catch (err) {
-    console.warn(
-      `Failed to write public adaptive baseline copy: ${err instanceof Error ? err.message : String(err)}`
-    )
+    console.warn(`Failed to write public adaptive baseline copy: ${err instanceof Error ? err.message : String(err)}`)
   }
 }
 
@@ -217,11 +189,7 @@ function withQuietLogs<T>(fn: () => Promise<T> | T): Promise<T> | T {
   try {
     console.log = (...args: any[]) => {
       const text = args.map(String).join(" ")
-      if (
-        text.includes("decision:") ||
-        text.includes("[InvocationPipeline]") ||
-        text.includes("save msg failed")
-      ) {
+      if (text.includes("decision:") || text.includes("[InvocationPipeline]") || text.includes("save msg failed")) {
         return
       }
       originalLog(...args)

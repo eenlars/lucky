@@ -28,10 +28,7 @@ export async function quickValidationSuite() {
     const fillerToolNames = toolNames.slice(4, toolCount)
     const selectedToolNames = [...realToolNames, ...fillerToolNames]
     const tools: Record<string, unknown> = Object.fromEntries(
-      selectedToolNames.map((name) => [
-        name,
-        allToolSpecs[name as keyof typeof allToolSpecs],
-      ])
+      selectedToolNames.map(name => [name, allToolSpecs[name as keyof typeof allToolSpecs]]),
     )
 
     for (const prompt of testPrompts) {
@@ -41,26 +38,22 @@ export async function quickValidationSuite() {
         const trace = await chatWithTools(model, prompt.content, tools as any)
         const latencyMs = Date.now() - startTime
         const evaluation = await evaluate(trace as any, prompt.expects.tool)
-        const selectedTool =
-          trace.toolCalls[trace.toolCalls.length - 1]?.toolName
+        const selectedTool = trace.toolCalls[trace.toolCalls.length - 1]?.toolName
 
         const status = evaluation.success ? "✓" : "✗"
         const base = `${prompt.id}: ${status} (${latencyMs}ms, selected: ${selectedTool || "none"})`
         if (!evaluation.success) {
           lgg.info(`${base} -> ${evaluation.details}`)
-          if (evaluation.failureType)
-            lgg.info(`Type: ${evaluation.failureType}`)
+          if (evaluation.failureType) lgg.info(`Type: ${evaluation.failureType}`)
         } else {
           lgg.info(base)
         }
       } catch (error) {
-        lgg.error(
-          `${prompt.id}: ERROR - ${error instanceof Error ? error.message : String(error)}`
-        )
+        lgg.error(`${prompt.id}: ERROR - ${error instanceof Error ? error.message : String(error)}`)
       }
 
       // Small delay between calls
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 500))
     }
   }
 

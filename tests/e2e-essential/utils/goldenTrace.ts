@@ -9,10 +9,7 @@ export type CanonicalizeOptions = {
  * Normalize a trace object by removing volatile fields like timestamps and ids,
  * then return a stable sha256 hash for snapshot comparison.
  */
-export function hashGoldenTrace(
-  input: unknown,
-  options: CanonicalizeOptions = {}
-): string {
+export function hashGoldenTrace(input: unknown, options: CanonicalizeOptions = {}): string {
   const normalized = normalizeDeep(input, options)
   const serialized = canonicalStringify(normalized)
   const hash = crypto.createHash("sha256").update(serialized).digest("hex")
@@ -20,18 +17,10 @@ export function hashGoldenTrace(
 }
 
 function normalizeDeep(value: unknown, options: CanonicalizeOptions): unknown {
-  const redact = new Set([
-    "timestamp",
-    "time",
-    "createdAt",
-    "updatedAt",
-    "id",
-    "_id",
-    ...(options.redactKeys ?? []),
-  ])
+  const redact = new Set(["timestamp", "time", "createdAt", "updatedAt", "id", "_id", ...(options.redactKeys ?? [])])
 
   if (Array.isArray(value)) {
-    return value.map((v) => normalizeDeep(v, options))
+    return value.map(v => normalizeDeep(v, options))
   }
   if (value && typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>)

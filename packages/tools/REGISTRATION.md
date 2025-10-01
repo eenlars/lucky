@@ -29,7 +29,7 @@ Code tools are TypeScript functions that run in-process.
 ```typescript
 type CodeToolDefinition = {
   toolName: string
-  toolFunc: any              // The actual tool function
+  toolFunc: any // The actual tool function
   description: string
 }
 ```
@@ -40,7 +40,7 @@ type CodeToolDefinition = {
 import { registerAllTools } from "@examples/tools/registerAllTools"
 
 // At startup
-await registerAllTools()  // Registers 24 tools across 10 groups
+await registerAllTools() // Registers 24 tools across 10 groups
 ```
 
 ### Groups (10 total)
@@ -67,7 +67,7 @@ MCP tools are external server processes that communicate via the Model Context P
 ```typescript
 type MCPToolDefinition = {
   toolName: string
-  serverName: string         // Reference to mcp-secret.json
+  serverName: string // Reference to mcp-secret.json
   description: string
 }
 ```
@@ -116,7 +116,7 @@ const tools = await setupCodeToolsForNode(["csvReader", "todoWrite"], context)
 // 2. Instantiate MCP client manager
 import { MCPClientManager } from "@lucky/tools"
 const mcpManager = new MCPClientManager({
-  configPath: "./mcp-secret.json"
+  configPath: "./mcp-secret.json",
 })
 
 // 3. Setup MCP tools for a workflow

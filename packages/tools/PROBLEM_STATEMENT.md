@@ -3,6 +3,7 @@
 ## The Real Goal
 
 Build a **developer experience layer on top of AI SDK's tool system** that makes it trivial to:
+
 1. Create tools with proper structure
 2. Test tools in isolation (unit tests)
 3. Test tools without calling LLMs (simulation)
@@ -15,29 +16,30 @@ This is **not** about building a marketplace or app store - that's far future. T
 The AI SDK provides a tool system:
 
 ```javascript
-import { tool } from 'ai'
-import { z } from 'zod'
+import { tool } from "ai"
+import { z } from "zod"
 
 const weatherTool = tool({
-  description: 'Get weather for a location',
+  description: "Get weather for a location",
   parameters: z.object({
     location: z.string(),
   }),
   execute: async ({ location }) => {
     // actual implementation
-    return { temperature: 72, conditions: 'sunny' }
-  }
+    return { temperature: 72, conditions: "sunny" }
+  },
 })
 
 // Use with AI SDK
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: openai("gpt-4"),
   tools: { weather: weatherTool },
-  prompt: "What's the weather in NYC?"
+  prompt: "What's the weather in NYC?",
 })
 ```
 
 **What's missing:**
+
 - ❌ No clear pattern for testing tools
 - ❌ No way to simulate tool responses without LLM calls
 - ❌ No template/framework for creating tools consistently
@@ -53,21 +55,22 @@ const result = await generateText({
 ```javascript
 // What we want developers to write
 const weatherTool = defineTool({
-  name: 'get-weather',
-  description: 'Get weather for a location',
+  name: "get-weather",
+  description: "Get weather for a location",
   parameters: z.object({
-    location: z.string().describe('City name'),
+    location: z.string().describe("City name"),
   }),
   execute: async (params, context) => {
     // Implementation with context
     const { location } = params
     const weather = await fetchWeather(location)
     return weather
-  }
+  },
 })
 ```
 
 **Questions:**
+
 - What helpers/utilities should `defineTool()` provide?
 - What context should be injected? (logging, tracing, etc.)
 - How do we handle errors consistently?
@@ -79,30 +82,33 @@ const weatherTool = defineTool({
 
 ```javascript
 // What we want
-import { testTool } from '@lucky/tools/testing'
+import { testTool } from "@lucky/tools/testing"
 
-describe('weather tool', () => {
-  it('returns weather for valid location', async () => {
+describe("weather tool", () => {
+  it("returns weather for valid location", async () => {
     const result = await testTool(weatherTool, {
-      params: { location: 'NYC' },
-      context: { /* mock context */ }
+      params: { location: "NYC" },
+      context: {
+        /* mock context */
+      },
     })
 
     expect(result.temperature).toBeDefined()
     expect(result.conditions).toBeDefined()
   })
 
-  it('handles invalid location', async () => {
+  it("handles invalid location", async () => {
     await expect(
       testTool(weatherTool, {
-        params: { location: 'InvalidCity' }
-      })
-    ).rejects.toThrow('Invalid location')
+        params: { location: "InvalidCity" },
+      }),
+    ).rejects.toThrow("Invalid location")
   })
 })
 ```
 
 **Questions:**
+
 - What testing utilities do we provide?
 - How do we mock external dependencies?
 - How do we assert on tool outputs?
@@ -117,23 +123,24 @@ describe('weather tool', () => {
 ```javascript
 // Scenario 1: Mock the entire tool
 const mockWeather = simulateTool(weatherTool, {
-  returns: { temperature: 72, conditions: 'sunny' }
+  returns: { temperature: 72, conditions: "sunny" },
 })
 
 // Scenario 2: Mock only external calls
 const weatherWithMock = withMocks(weatherTool, {
-  fetchWeather: async (location) => ({ temperature: 72 })
+  fetchWeather: async location => ({ temperature: 72 }),
 })
 
 // Scenario 3: Record and replay
 const recording = await recordTool(weatherTool, {
-  params: { location: 'NYC' }
+  params: { location: "NYC" },
 })
 // Later...
 const replay = replayTool(recording)
 ```
 
 **Questions:**
+
 - How do we intercept tool execution?
 - How do we mock specific function calls?
 - Should we support recording real executions?
@@ -146,6 +153,7 @@ const replay = replayTool(recording)
 **Need:** Runtime system to connect workflows to tools
 
 **This is NOT a marketplace** - it's just the connection layer between:
+
 - Workflow says: "I need tools X, Y, Z"
 - Registry says: "Here are instances of X, Y, Z for you"
 
@@ -162,19 +170,20 @@ await registry.initialize() // validate, connect MCP, etc.
 
 // Runtime phase (workflow execution)
 const workflowTools = registry.getTools(
-  ['get-weather', 'send-email'], // tool names the workflow needs
-  { workflowId, userId, /* execution context */ }
+  ["get-weather", "send-email"], // tool names the workflow needs
+  { workflowId, userId /* execution context */ },
 )
 
 // workflowTools is AI SDK compatible
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: openai("gpt-4"),
   tools: workflowTools,
-  prompt: "..."
+  prompt: "...",
 })
 ```
 
 **Questions:**
+
 - How should tools be stored internally? (not Map - but what?)
 - How do we look up tools by name efficiently?
 - How do we handle tool not found?
@@ -199,17 +208,20 @@ These are explicitly out of scope for now but we should keep in mind:
 ### Registry Data Structure
 
 **Current approach (Map):**
+
 ```javascript
 this.tools = new Map() // toolName -> toolDefinition
 ```
 
 **Problems you identified:**
+
 - What if we need external service invocation (sandbox)?
 - What if different agents need different tool subsets?
 - What if we want hierarchical search with embeddings later?
 - Doesn't support future expansion
 
 **Options to consider:**
+
 ```javascript
 // Option 1: Separate storage from lookup
 class ToolRegistry {

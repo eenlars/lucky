@@ -4,9 +4,15 @@
  * Exports all registration-related functionality for code and MCP tools
  */
 
-// Code tools registration
-export { toolGroups, getAllTools, getToolsByGroup, getToolByName } from "./codeToolsRegistration"
-export type { CodeToolDefinition, CodeToolGroup } from "./codeToolsRegistration"
+// Code tools registration framework
+export {
+  createToolDefinition,
+  createToolGroup,
+  getAllTools,
+  getToolsByGroup,
+  getToolByName,
+} from "./codeToolsRegistration"
+export type { CodeToolDefinition, CodeToolGroup, CodeToolGroups } from "./codeToolsRegistration"
 
 // MCP tools registration
 export {

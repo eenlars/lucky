@@ -10,13 +10,7 @@ const ObjectFetcherParams = z.object({
   count: z.coerce.number().int().min(1).describe("Number of objects to fetch"),
 })
 
-export function objectFetcherFn({
-  query,
-  count,
-}: {
-  query: string
-  count: number
-}): Promise<string[]> {
+export function objectFetcherFn({ query, count }: { query: string; count: number }): Promise<string[]> {
   // Input validation
   if (typeof query !== "string" || query.trim().length === 0) {
     return Promise.resolve([
@@ -41,13 +35,12 @@ export function objectFetcherFn({
   return Promise.resolve(
     Array(count)
       .fill(0)
-      .map((_, i) => `${query.trim()}_object_${i + 1}`)
+      .map((_, i) => `${query.trim()}_object_${i + 1}`),
   )
 }
 
 export const objectFetcherSpec = tool({
-  description:
-    "Fetches objects based on query and count. Returns array of objects.",
+  description: "Fetches objects based on query and count. Returns array of objects.",
   inputSchema: zodSchema(ObjectFetcherParams),
   execute: objectFetcherFn,
 })
@@ -55,22 +48,19 @@ export const objectFetcherSpec = tool({
 // Tool 2: Result aggregator (permissive at schema, strict at runtime)
 
 export const resultAggregatorSpec = tool({
-  description:
-    "Combines multiple result arrays into a single aggregated result",
+  description: "Combines multiple result arrays into a single aggregated result",
   // Make argument schema permissive so bad calls don't abort the whole run
   inputSchema: zodSchema(z.object({ results: z.unknown().optional() })),
   execute: async (
     { results }: { results?: unknown } = {},
-    _options?: unknown
-  ): Promise<
-    string | { total_count: number; combined_items: string[]; summary: string }
-  > => {
+    _options?: unknown,
+  ): Promise<string | { total_count: number; combined_items: string[]; summary: string }> => {
     // Normalize different shapes to a string[] or return an error string
     const normalizeToStrings = (val: unknown): string[] | string => {
       if (!Array.isArray(val)) return "ERROR: Results must be an array"
       // Flatten one level (Node>=12 supports Array.prototype.flat)
       const flat = (val as unknown[]).flat(1) as unknown[]
-      if (!flat.every((item) => typeof item === "string")) {
+      if (!flat.every(item => typeof item === "string")) {
         return "ERROR: All result items must be strings"
       }
       return flat as string[]
@@ -98,7 +88,7 @@ export function resultAggregatorFn({ results }: { results: string[] }): object {
   }
 
   // Validate all items are strings
-  if (!results.every((item) => typeof item === "string")) {
+  if (!results.every(item => typeof item === "string")) {
     throw new Error("All result items must be strings")
   }
 

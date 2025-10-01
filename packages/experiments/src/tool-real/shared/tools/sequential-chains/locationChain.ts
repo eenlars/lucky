@@ -27,14 +27,7 @@ function randomBetween(min: number, max: number): number {
 }
 
 function generateLocations(count: number, bounds: z.infer<typeof Bounds>) {
-  const categories = [
-    "grocery",
-    "pharmacy",
-    "cafe",
-    "restaurant",
-    "gym",
-    "bank",
-  ]
+  const categories = ["grocery", "pharmacy", "cafe", "restaurant", "gym", "bank"]
   const results: Array<z.infer<typeof Location>> = []
   for (let i = 0; i < count; i++) {
     results.push({
@@ -57,8 +50,7 @@ const SearchParams = z.object({
 })
 
 export const searchGoogleMapsSpec = tool({
-  description:
-    "Searches for locations and returns a large JSON payload of results",
+  description: "Searches for locations and returns a large JSON payload of results",
   inputSchema: zodSchema(SearchParams),
   execute: async ({ query: _query, area }: z.infer<typeof SearchParams>) => {
     // Ignore query semantics; just generate data within bounds
@@ -93,20 +85,11 @@ const VerifyParams = z.object({
 export const verifyLocationSpec = tool({
   description: "Verifies which locations fall within the given area bounds",
   inputSchema: zodSchema(VerifyParams),
-  execute: async ({
-    datasetId,
-    locations,
-    area,
-  }: z.infer<typeof VerifyParams>) => {
+  execute: async ({ datasetId, locations, area }: z.infer<typeof VerifyParams>) => {
     const within = [] as Array<z.infer<typeof Location>>
     const outside = [] as Array<z.infer<typeof Location>>
     for (const loc of locations) {
-      if (
-        loc.lat <= area.north &&
-        loc.lat >= area.south &&
-        loc.lng <= area.east &&
-        loc.lng >= area.west
-      ) {
+      if (loc.lat <= area.north && loc.lat >= area.south && loc.lng <= area.east && loc.lng >= area.west) {
         within.push(loc)
       } else {
         outside.push(loc)
@@ -132,11 +115,7 @@ const InfoParams = z.object({
 export const locationDataInfoSpec = tool({
   description: "Summarizes the verification results for reporting",
   inputSchema: zodSchema(InfoParams),
-  execute: async ({
-    datasetId,
-    verifiedCount,
-    rejectedCount,
-  }: z.infer<typeof InfoParams>) => {
+  execute: async ({ datasetId, verifiedCount, rejectedCount }: z.infer<typeof InfoParams>) => {
     return `Dataset ${datasetId}: ${verifiedCount} locations verified, ${rejectedCount} rejected`
   },
 })

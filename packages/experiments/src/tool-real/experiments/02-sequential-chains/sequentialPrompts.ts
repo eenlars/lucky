@@ -26,8 +26,7 @@ export const mathChainPrompts: SequentialPrompt[] = [
   {
     id: "number-transformation",
     description: "Transform number through processing steps",
-    prompt:
-      "Input: '5'\nGoal: Produce the correct final value using the tools. Do not narrate.",
+    prompt: "Input: '5'\nGoal: Produce the correct final value using the tools. Do not narrate.",
     expectedChain: ["data_collector", "result_processor"],
     testInput: "5",
     expectedFinalOutput: "10",
@@ -35,8 +34,7 @@ export const mathChainPrompts: SequentialPrompt[] = [
   {
     id: "pipeline-execution",
     description: "Execute full pipeline on input",
-    prompt:
-      "Input: '3'\nGoal: Use tools as needed to generate the correct final answer only.",
+    prompt: "Input: '3'\nGoal: Use tools as needed to generate the correct final answer only.",
     expectedChain: ["data_collector", "result_processor"],
     testInput: "3",
     expectedFinalOutput: "6",
@@ -78,8 +76,7 @@ export const documentChainPrompts: SequentialPrompt[] = [
   {
     id: "workflow-execution",
     description: "Execute document workflow end-to-end",
-    prompt:
-      "Content: 'Short'\nTask: Use tools to produce the final formatted output. Output only the result.",
+    prompt: "Content: 'Short'\nTask: Use tools to produce the final formatted output. Output only the result.",
     expectedChain: [
       "input_validator",
       "metadata_extractor",
@@ -117,8 +114,7 @@ export const businessChainPrompts: SequentialPrompt[] = [
   {
     id: "enterprise-workflow",
     description: "Enterprise-level request processing",
-    prompt:
-      "Request: 'Beta Initiative'\nObjective: Return the final status based on tool outcomes only.",
+    prompt: "Request: 'Beta Initiative'\nObjective: Return the final status based on tool outcomes only.",
     expectedChain: [
       "request_handler",
       "compliance_checker",
@@ -137,8 +133,7 @@ export const businessChainPrompts: SequentialPrompt[] = [
   {
     id: "complex-approval",
     description: "Complex approval process execution",
-    prompt:
-      "Request: 'Gamma Launch'\nObjective: Use the tools to derive and return the final status only.",
+    prompt: "Request: 'Gamma Launch'\nObjective: Use the tools to derive and return the final status only.",
     expectedChain: [
       "request_handler",
       "compliance_checker",
@@ -163,12 +158,7 @@ export const locationChainPrompts: SequentialPrompt[] = [
     description: "Find, save, verify, and summarize store locations",
     prompt:
       "You are a location data specialist. Return the final summary only using the available tools.\nQuery: 'grocery stores'\nArea: north=52.5, south=52.0, east=5.5, west=4.5",
-    expectedChain: [
-      "search_google_maps",
-      "location_data_manager",
-      "verify_location",
-      "location_data_info",
-    ],
+    expectedChain: ["search_google_maps", "location_data_manager", "verify_location", "location_data_info"],
     testInput: "grocery stores",
     expectedFinalOutput: "", // dynamic counts
   },

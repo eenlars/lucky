@@ -12,11 +12,7 @@ import { fileURLToPath } from "url"
 // models imported via constants; keep local import removed to avoid unused var
 import { adaptiveTools } from "../../../shared/tools/adaptive/adaptiveTools"
 import { runSequentialTools } from "../../02-sequential-chains/sequentialRunner"
-import {
-  CLEAR_SYSTEM_PROMPT as CLEAR,
-  MODELS,
-  VAGUE_SYSTEM_PROMPT as VAGUE,
-} from "../constants"
+import { CLEAR_SYSTEM_PROMPT as CLEAR, MODELS, VAGUE_SYSTEM_PROMPT as VAGUE } from "../constants"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -42,7 +38,7 @@ interface QuickTestRun {
 async function runQuickTest(
   model: OpenRouterModelName,
   condition: "vague" | "clear",
-  runNumber: number
+  runNumber: number,
 ): Promise<QuickTestRun> {
   const systemPrompts = {
     vague: VAGUE,
@@ -53,43 +49,27 @@ async function runQuickTest(
 
   console.log(`    ${model} (${condition}) - Run ${runNumber}`)
 
-  const runResult = await runSequentialTools(
-    model,
-    userRequest,
-    tools,
-    systemPrompts[condition]
-  )
+  const runResult = await runSequentialTools(model, userRequest, tools, systemPrompts[condition])
 
-  const fetchCalls = runResult.toolExecutions.filter(
-    (t) => t.toolName === "fetch_objects"
-  )
-  const successfulFetches = fetchCalls.filter((t) => {
-    const isErrorString =
-      typeof t.outputData === "string" && t.outputData.startsWith("ERROR:")
-    return (
-      Array.isArray(t.outputData) ||
-      (!isErrorString && typeof t.outputData === "object")
-    )
+  const fetchCalls = runResult.toolExecutions.filter(t => t.toolName === "fetch_objects")
+  const successfulFetches = fetchCalls.filter(t => {
+    const isErrorString = typeof t.outputData === "string" && t.outputData.startsWith("ERROR:")
+    return Array.isArray(t.outputData) || (!isErrorString && typeof t.outputData === "object")
   })
   const totalItemsRetrieved = successfulFetches.reduce((sum, t) => {
-    return (
-      sum + (Array.isArray(t.outputData) ? (t.outputData as any[]).length : 0)
-    )
+    return sum + (Array.isArray(t.outputData) ? (t.outputData as any[]).length : 0)
   }, 0)
 
-  const counts = successfulFetches.map((t) => (t.inputData as any)?.count)
+  const counts = successfulFetches.map(t => (t.inputData as any)?.count)
   let strategy = "no-success"
   if (successfulFetches.length === 1) strategy = "single-call"
   else if (successfulFetches.length >= 2)
-    strategy =
-      counts.includes(3) && counts.includes(2) ? "optimal-split" : "multi-call"
+    strategy = counts.includes(3) && counts.includes(2) ? "optimal-split" : "multi-call"
 
   const adapted = totalItemsRetrieved >= 5
   const attempts = fetchCalls.length
 
-  console.log(
-    `      → ${totalItemsRetrieved}/5 items, ${strategy}, ${adapted ? "SUCCESS" : "FAIL"}`
-  )
+  console.log(`      → ${totalItemsRetrieved}/5 items, ${strategy}, ${adapted ? "SUCCESS" : "FAIL"}`)
 
   return {
     model,
@@ -122,7 +102,7 @@ async function runFinalValidation() {
     for (let run = 1; run <= RUNS_PER_CONDITION; run++) {
       const result = await runQuickTest(model, "vague", run)
       allRuns.push(result)
-      await new Promise((resolve) => setTimeout(resolve, 500)) // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500)) // Rate limiting
     }
 
     // Test clear condition
@@ -130,7 +110,7 @@ async function runFinalValidation() {
     for (let run = 1; run <= RUNS_PER_CONDITION; run++) {
       const result = await runQuickTest(model, "clear", run)
       allRuns.push(result)
-      await new Promise((resolve) => setTimeout(resolve, 500)) // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500)) // Rate limiting
     }
 
     console.log("")
@@ -142,91 +122,69 @@ async function runFinalValidation() {
   console.log("=".repeat(50))
 
   // Group by model and condition
-  const analysis = MODELS.map((model) => {
-    const modelRuns = allRuns.filter((r) => r.model === model)
-    const vagueRuns = modelRuns.filter((r) => r.condition === "vague")
-    const clearRuns = modelRuns.filter((r) => r.condition === "clear")
+  const analysis = MODELS.map(model => {
+    const modelRuns = allRuns.filter(r => r.model === model)
+    const vagueRuns = modelRuns.filter(r => r.condition === "vague")
+    const clearRuns = modelRuns.filter(r => r.condition === "clear")
 
-    const vagueSuccess = vagueRuns.filter((r) => r.adapted).length
-    const clearSuccess = clearRuns.filter((r) => r.adapted).length
+    const vagueSuccess = vagueRuns.filter(r => r.adapted).length
+    const clearSuccess = clearRuns.filter(r => r.adapted).length
 
     return {
       model,
       vagueSuccessRate: ((vagueSuccess / vagueRuns.length) * 100).toFixed(1),
       clearSuccessRate: ((clearSuccess / clearRuns.length) * 100).toFixed(1),
-      improvement: (
-        (clearSuccess / clearRuns.length - vagueSuccess / vagueRuns.length) *
-        100
-      ).toFixed(1),
+      improvement: ((clearSuccess / clearRuns.length - vagueSuccess / vagueRuns.length) * 100).toFixed(1),
       vagueSuccess,
       clearSuccess,
       totalRuns: vagueRuns.length,
       avgDurationMs: Math.round(
-        (modelRuns.reduce((s, r) => s + (r.totalDurationMs || 0), 0) || 0) /
-          (modelRuns.length || 1)
+        (modelRuns.reduce((s, r) => s + (r.totalDurationMs || 0), 0) || 0) / (modelRuns.length || 1),
       ),
-      avgCostUsd:
-        (modelRuns.reduce((s, r) => s + (r.totalCostUsd || 0), 0) || 0) /
-        (modelRuns.length || 1),
+      avgCostUsd: (modelRuns.reduce((s, r) => s + (r.totalCostUsd || 0), 0) || 0) / (modelRuns.length || 1),
     }
   })
 
   console.log("MODEL PERFORMANCE:")
   console.log("Model         | Vague Success | Clear Success | Improvement")
   console.log("-".repeat(60))
-  analysis.forEach((a) => {
+  analysis.forEach(a => {
     console.log(
-      `${a.model.padEnd(13)} | ${a.vagueSuccess}/${a.totalRuns} (${a.vagueSuccessRate}%) | ${a.clearSuccess}/${a.totalRuns} (${a.clearSuccessRate}%) | +${a.improvement}%`
+      `${a.model.padEnd(13)} | ${a.vagueSuccess}/${a.totalRuns} (${a.vagueSuccessRate}%) | ${a.clearSuccess}/${a.totalRuns} (${a.clearSuccessRate}%) | +${a.improvement}%`,
     )
   })
 
   // Overall statistics
-  const overallVagueSuccess = allRuns.filter(
-    (r) => r.condition === "vague" && r.adapted
-  ).length
-  const overallClearSuccess = allRuns.filter(
-    (r) => r.condition === "clear" && r.adapted
-  ).length
-  const totalVague = allRuns.filter((r) => r.condition === "vague").length
-  const totalClear = allRuns.filter((r) => r.condition === "clear").length
+  const overallVagueSuccess = allRuns.filter(r => r.condition === "vague" && r.adapted).length
+  const overallClearSuccess = allRuns.filter(r => r.condition === "clear" && r.adapted).length
+  const totalVague = allRuns.filter(r => r.condition === "vague").length
+  const totalClear = allRuns.filter(r => r.condition === "clear").length
 
-  const overallImprovement =
-    (overallClearSuccess / totalClear - overallVagueSuccess / totalVague) * 100
+  const overallImprovement = (overallClearSuccess / totalClear - overallVagueSuccess / totalVague) * 100
 
   const overallAvgDurationMs = Math.round(
-    (allRuns.reduce((s, r) => s + (r.totalDurationMs || 0), 0) || 0) /
-      (allRuns.length || 1)
+    (allRuns.reduce((s, r) => s + (r.totalDurationMs || 0), 0) || 0) / (allRuns.length || 1),
   )
-  const overallAvgCostUsd =
-    (allRuns.reduce((s, r) => s + (r.totalCostUsd || 0), 0) || 0) /
-    (allRuns.length || 1)
+  const overallAvgCostUsd = (allRuns.reduce((s, r) => s + (r.totalCostUsd || 0), 0) || 0) / (allRuns.length || 1)
 
   console.log("\nOVERALL RESULTS:")
   console.log(
-    `Vague prompts: ${overallVagueSuccess}/${totalVague} success (${((overallVagueSuccess / totalVague) * 100).toFixed(1)}%)`
+    `Vague prompts: ${overallVagueSuccess}/${totalVague} success (${((overallVagueSuccess / totalVague) * 100).toFixed(1)}%)`,
   )
   console.log(
-    `Clear prompts: ${overallClearSuccess}/${totalClear} success (${((overallClearSuccess / totalClear) * 100).toFixed(1)}%)`
+    `Clear prompts: ${overallClearSuccess}/${totalClear} success (${((overallClearSuccess / totalClear) * 100).toFixed(1)}%)`,
   )
-  console.log(
-    `Overall improvement: ${overallImprovement.toFixed(1)} percentage points`
-  )
+  console.log(`Overall improvement: ${overallImprovement.toFixed(1)} percentage points`)
 
   // Statistical conclusion
   const isSignificant = Math.abs(overallImprovement) > 15 // 15% threshold
 
   console.log("\nSTATISTICAL CONCLUSION:")
   if (isSignificant) {
-    console.log(
-      `✅ STATISTICALLY SIGNIFICANT: ${overallImprovement.toFixed(1)}% improvement`
-    )
-    console.log(
-      "🎯 HYPOTHESIS CONFIRMED: Vague prompts significantly impair adaptive behavior"
-    )
+    console.log(`✅ STATISTICALLY SIGNIFICANT: ${overallImprovement.toFixed(1)}% improvement`)
+    console.log("🎯 HYPOTHESIS CONFIRMED: Vague prompts significantly impair adaptive behavior")
   } else {
-    console.log(
-      `❌ NOT STATISTICALLY SIGNIFICANT: Only ${overallImprovement.toFixed(1)}% difference`
-    )
+    console.log(`❌ NOT STATISTICALLY SIGNIFICANT: Only ${overallImprovement.toFixed(1)}% difference`)
   }
 
   // Save results
@@ -235,10 +193,7 @@ async function runFinalValidation() {
   const now = new Date()
   const hh = String(now.getHours()).padStart(2, "0")
   const mm = String(now.getMinutes()).padStart(2, "0")
-  const outputPath = join(
-    resultsDir,
-    `final-adaptive-validation-results-${hh}${mm}.json`
-  )
+  const outputPath = join(resultsDir, `final-adaptive-validation-results-${hh}${mm}.json`)
   writeFileSync(
     outputPath,
     JSON.stringify(
@@ -253,24 +208,18 @@ async function runFinalValidation() {
         runs: allRuns,
         analysis,
         overallStats: {
-          vagueSuccessRate: ((overallVagueSuccess / totalVague) * 100).toFixed(
-            1
-          ),
-          clearSuccessRate: ((overallClearSuccess / totalClear) * 100).toFixed(
-            1
-          ),
+          vagueSuccessRate: ((overallVagueSuccess / totalVague) * 100).toFixed(1),
+          clearSuccessRate: ((overallClearSuccess / totalClear) * 100).toFixed(1),
           improvement: overallImprovement.toFixed(1),
           statisticallySignificant: isSignificant,
           avgDurationMs: overallAvgDurationMs,
           avgCostUsd: overallAvgCostUsd,
         },
-        conclusion: isSignificant
-          ? "HYPOTHESIS CONFIRMED"
-          : "HYPOTHESIS REJECTED",
+        conclusion: isSignificant ? "HYPOTHESIS CONFIRMED" : "HYPOTHESIS REJECTED",
       },
       null,
-      2
-    )
+      2,
+    ),
   )
 
   console.log(`\nResults saved to: ${outputPath}`)

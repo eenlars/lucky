@@ -3,11 +3,7 @@ import type { ToolExecution } from "../02-sequential-chains/types"
 
 export type Condition = "vague" | "clear"
 
-export type LoopStrategy =
-  | "single-call"
-  | "optimal-split"
-  | "multi-call"
-  | "no-success"
+export type LoopStrategy = "single-call" | "optimal-split" | "multi-call" | "no-success"
 
 export interface LoopCountsUsed {
   "1": number

@@ -16,9 +16,9 @@ const toolSystemConfig = {
 
   // Adapter selection for different tool sources
   adapters: {
-    custom: "manual",      // manual registration for custom tools
-    mcp: "config-file",    // MCP tools from config file
-    remote: null,          // Could be "api", "grpc", etc.
+    custom: "manual", // manual registration for custom tools
+    mcp: "config-file", // MCP tools from config file
+    remote: null, // Could be "api", "grpc", etc.
   },
 
   // MCP server configurations
@@ -28,7 +28,7 @@ const toolSystemConfig = {
       args: ["-y", "@playwright/mcp@latest"],
       enabled: true,
     },
-    "filesystem": {
+    filesystem: {
       command: "npx",
       args: ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"],
       enabled: false, // disabled in this environment
@@ -391,10 +391,7 @@ async function exampleUsage() {
     sessionId: "session-456",
   }
 
-  const consumerATools = registry.getAISDKTools(
-    ["get-weather", "send-email"],
-    consumerAContext
-  )
+  const consumerATools = registry.getAISDKTools(["get-weather", "send-email"], consumerAContext)
 
   console.log("\n--- Consumer A Tools ---")
   console.log("Tool names:", Object.keys(consumerATools))
@@ -422,7 +419,7 @@ async function exampleUsage() {
 
   const consumerBTools = registry.getAISDKTools(
     ["get-weather"], // Only weather
-    consumerBContext
+    consumerBContext,
   )
 
   console.log("\n--- Consumer B Tools ---")

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { TOOL_GROUPS } from "../../../../examples/definitions/registry-grouped"
 
 // Force all ContextStore usage to in-memory during this focused test and
 // ensure a single shared instance per workflowInvocationId so tools see
@@ -39,7 +40,7 @@ describe("InvocationPipeline Focused Integration", () => {
 
     // Get tools from registry instead of direct imports
     const { codeToolRegistry, registerAllTools } = await import("@lucky/tools")
-    await registerAllTools()
+    await registerAllTools(TOOL_GROUPS)
     await codeToolRegistry.initialize()
     const todoWrite = codeToolRegistry.getAllTools().find(t => t.name === "todoWrite")!
     const todoRead = codeToolRegistry.getAllTools().find(t => t.name === "todoRead")!

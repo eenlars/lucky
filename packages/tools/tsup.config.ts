@@ -4,7 +4,6 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     client: "src/client.ts",
-    utils: "src/utils.ts",
     "factory/index": "src/factory/index.ts",
     "registry/index": "src/registry/index.ts",
     "config/index": "src/config/index.ts",

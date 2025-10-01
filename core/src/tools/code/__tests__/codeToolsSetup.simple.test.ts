@@ -1,9 +1,9 @@
-import type { CodeToolName } from "@lucky/tools"
-import type { ToolExecutionContext } from "@lucky/tools"
+import { TOOL_GROUPS } from "@examples/definitions/registry-grouped"
+import type { CodeToolName, ToolExecutionContext } from "@lucky/tools"
+import { registerAllTools } from "@lucky/tools"
 import { beforeEach, describe, expect, it } from "vitest"
 import { setupCodeToolsForNode } from "../codeToolsSetup"
 import { codeToolRegistry } from "../index"
-import { registerAllTools } from "@lucky/tools"
 
 describe("codeToolsSetup bug demonstration", () => {
   // TODO: This test suite is labeled as "bug demonstration" which suggests it's testing
@@ -12,7 +12,7 @@ describe("codeToolsSetup bug demonstration", () => {
   beforeEach(async () => {
     // Reset and register all tools
     await codeToolRegistry.destroy()
-    await registerAllTools()
+    await registerAllTools(TOOL_GROUPS)
   })
 
   it("shows tools are missing without context", async () => {

@@ -6,14 +6,7 @@
  */
 
 // Factory - Tool creation and execution
-export {
-  defineTool,
-  toAITool,
-  commonSchemas,
-  validateAndCorrectWithSchema,
-  R,
-  Tools,
-} from "./factory/index.js"
+export { defineTool, toAITool, commonSchemas, validateAndCorrectWithSchema, R, Tools } from "./factory/index.js"
 
 export type {
   RS,
@@ -43,12 +36,7 @@ export {
   getAllCodeToolNames,
 } from "./registry/index.js"
 
-export type {
-  MCPToolName,
-  CodeToolName,
-  AllToolNames,
-  FlexibleToolDefinition,
-} from "./registry/index.js"
+export type { MCPToolName, CodeToolName, AllToolNames, FlexibleToolDefinition } from "./registry/index.js"
 
 // Config - Tool metadata and settings
 export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index.js"
@@ -60,7 +48,8 @@ export type { MCPClientConfig, MCPConfig, MCPToolInfo } from "./mcp/index.js"
 
 // Registration - Tool registration and startup
 export {
-  toolGroups,
+  createToolDefinition,
+  createToolGroup,
   getAllTools,
   getToolsByGroup,
   getToolByName,
@@ -80,6 +69,7 @@ export {
 export type {
   CodeToolDefinition,
   CodeToolGroup,
+  CodeToolGroups,
   MCPServerConfig,
   MCPToolDefinition,
   MCPToolGroup,

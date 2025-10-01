@@ -62,19 +62,13 @@ function testFileWriting() {
     // Verify file was created and can be read
     if (existsSync(resultsPath)) {
       const readData = JSON.parse(readFileSync(resultsPath, "utf-8"))
-      lgg.info(
-        `✓ File exists and contains ${readData.results.length} test results`
-      )
+      lgg.info(`✓ File exists and contains ${readData.results.length} test results`)
 
       // Test writing analysis
       const analysis = {
         totalRuns: mockResults.length,
-        successRate:
-          (mockResults.filter((r) => r.success).length / mockResults.length) *
-          100,
-        averageLatency:
-          mockResults.reduce((sum, r) => sum + r.latencyMs, 0) /
-          mockResults.length,
+        successRate: (mockResults.filter(r => r.success).length / mockResults.length) * 100,
+        averageLatency: mockResults.reduce((sum, r) => sum + r.latencyMs, 0) / mockResults.length,
       }
 
       const analysisPath = join(__dirname, "test-analysis.json")
@@ -83,13 +77,9 @@ function testFileWriting() {
 
       if (existsSync(analysisPath)) {
         const readAnalysis = JSON.parse(readFileSync(analysisPath, "utf-8"))
-        lgg.info(
-          `✓ Analysis file exists with success rate: ${readAnalysis.successRate}%`
-        )
+        lgg.info(`✓ Analysis file exists with success rate: ${readAnalysis.successRate}%`)
 
-        lgg.info(
-          "\n🎉 File writing test PASSED - both results and analysis files created successfully"
-        )
+        lgg.info("\n🎉 File writing test PASSED - both results and analysis files created successfully")
         return true
       }
     }

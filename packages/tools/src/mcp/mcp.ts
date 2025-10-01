@@ -54,9 +54,7 @@ function loadExternalMCPConfig(config: MCPClientConfig): MCPConfig["mcpServers"]
     const configPath = path.resolve(config.configPath)
     if (!fs.existsSync(configPath)) {
       if (config.enableLogging) {
-        console.warn(
-          `MCP config file does not exist at ${configPath}. MCP tools will not be available.`,
-        )
+        console.warn(`MCP config file does not exist at ${configPath}. MCP tools will not be available.`)
       }
       return {}
     }
@@ -87,10 +85,7 @@ function loadExternalMCPConfig(config: MCPClientConfig): MCPConfig["mcpServers"]
         args: serverConfig.args.map(arg => substituteEnvVars(arg, config.envVars)),
         env: serverConfig.env
           ? Object.fromEntries(
-              Object.entries(serverConfig.env).map(([key, value]) => [
-                key,
-                substituteEnvVars(value, config.envVars),
-              ]),
+              Object.entries(serverConfig.env).map(([key, value]) => [key, substituteEnvVars(value, config.envVars)]),
             )
           : undefined,
       }
@@ -136,10 +131,7 @@ export class MCPClientManager {
    * `tools` object suitable for `generateText({ tools })` or `streamText({ tools })`.
    * Clients are cached per workflow to maintain persistent sessions (e.g., browser state).
    */
-  async setupMCPForNode(
-    toolNames: MCPToolName[] | null | undefined,
-    workflowId: string,
-  ): Promise<ToolSet> {
+  async setupMCPForNode(toolNames: MCPToolName[] | null | undefined, workflowId: string): Promise<ToolSet> {
     const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
     if (safeToolNames.length === 0) {
       return {}

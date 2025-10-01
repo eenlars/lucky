@@ -35,16 +35,13 @@ await registerAllTools()
 ```typescript
 import { setupCodeToolsForNode } from "@lucky/tools"
 
-const tools = await setupCodeToolsForNode(
-  ["csvReader", "todoWrite", "searchGoogleMaps"],
-  {
-    workflowInvocationId: "workflow-123",
-    workflowVersionId: "v1",
-    workflowFiles: [],
-    workflowId: "wf-123",
-    mainWorkflowGoal: "Process data",
-  }
-)
+const tools = await setupCodeToolsForNode(["csvReader", "todoWrite", "searchGoogleMaps"], {
+  workflowInvocationId: "workflow-123",
+  workflowVersionId: "v1",
+  workflowFiles: [],
+  workflowId: "wf-123",
+  mainWorkflowGoal: "Process data",
+})
 
 // Use with AI SDK
 import { generateText } from "ai"
@@ -78,65 +75,79 @@ packages/tools/
 ## 🔧 Code Tools (24 total)
 
 ### CSV Tools (4)
+
 - `csvWriter` - Create and write CSV files
 - `csvReader` - Read and extract CSV data with pagination
 - `csvFilter` - Filter CSV data based on conditions
 - `csvInfo` - Get CSV metadata and statistics
 
 ### Context Tools (4)
+
 - `contextGet` - Retrieve data from context store
 - `contextSet` - Store data in context store
 - `contextList` - List all context store keys
 - `contextManage` - Manage context store entries
 
 ### Todo Tools (2)
+
 - `todoRead` - Read session todo list
 - `todoWrite` - Create and manage todo items
 
 ### Location Tools (2)
+
 - `locationDataInfo` - Get location data information
 - `locationDataManager` - Manage location data (CRUD)
 
 ### Human Tools (2)
+
 - `humanApproval` - Request human approval
 - `humanHelp` - Request human assistance
 
 ### Web Tools (4)
+
 - `firecrawlAPI` - Scrape websites with Firecrawl
 - `searchGoogleMaps` - Search Google Maps for businesses
 - `urlToMarkdown` - Convert web pages to markdown
 - `browserAutomation` - Automate browser with Playwright
 
 ### File Tools (1)
+
 - `saveFileLegacy` - Save data to files
 
 ### Development Tools (3)
+
 - `runInspector` - Inspect workflow execution
 - `jsExecutor` - Execute JavaScript in sandbox
 - `expectedOutputHandler` - Validate workflow outputs
 
 ### Mapping Tools (1)
+
 - `verifyLocation` - Geocode locations with Mapbox
 
 ### Memory Tools (1)
+
 - `memoryManager` - Manage long-term agent memories
 
 ## 🌐 MCP Tools (8 total)
 
 ### Web Search (3)
+
 - `tavily` - Tavily AI search
 - `serpAPI` - SerpAPI search
 - `googleScholar` - Google Scholar search
 
 ### Web Scraping (3)
+
 - `firecrawl` - Firecrawl server
 - `browserUse` - Browser automation
 - `playwright` - Playwright server
 
 ### File System (1)
+
 - `filesystem` - File operations
 
 ### Proxy (1)
+
 - `proxy` - HTTP proxy
 
 ## 🎓 Usage Guide
@@ -159,7 +170,7 @@ import { validateAllRegistrations, toolGroups, mcpToolGroups } from "@lucky/tool
 const valid = validateAllRegistrations(
   toolGroups.groups,
   mcpToolGroups.groups,
-  true // throw on error
+  true, // throw on error
 )
 ```
 
@@ -228,7 +239,7 @@ All tool registrations are automatically validated for:
 - ✅ Non-empty descriptions
 - ✅ Valid tool functions with `execute` method
 - ✅ Matching tool names between registration and definition
-- ⚠️  Warnings for missing metadata
+- ⚠️ Warnings for missing metadata
 
 Run validation manually:
 
@@ -252,24 +263,26 @@ The package exports strict types for everything:
 
 ```typescript
 import type {
-  CodeToolName,        // Union of all code tool names
-  MCPToolName,         // Union of all MCP tool names
+  CodeToolName, // Union of all code tool names
+  MCPToolName, // Union of all MCP tool names
   ToolExecutionContext, // Execution context for tools
-  CodeToolDefinition,   // Tool definition structure
-  CodeToolGroup,        // Tool group structure
-  ValidationResult,     // Validation result type
+  CodeToolDefinition, // Tool definition structure
+  CodeToolGroup, // Tool group structure
+  ValidationResult, // Validation result type
 } from "@lucky/tools"
 ```
 
 ## 🔄 Migration from Old System
 
 **Before:**
+
 ```typescript
 // Auto-discovery (removed)
 await codeToolAutoDiscovery.setupCodeTools()
 ```
 
 **After:**
+
 ```typescript
 // Explicit registration (current)
 import { registerAllTools } from "@lucky/tools"

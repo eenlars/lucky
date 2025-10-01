@@ -7,8 +7,7 @@ import { z } from "zod"
 
 // Helper: detect placeholder envs from tests/setup/env.ts
 const hasRealOpenRouterKey =
-  typeof process.env.OPENROUTER_API_KEY === "string" &&
-  !process.env.OPENROUTER_API_KEY.startsWith("test-")
+  typeof process.env.OPENROUTER_API_KEY === "string" && !process.env.OPENROUTER_API_KEY.startsWith("test-")
 
 // Use a cheap/fast default model via our runtime config
 const MODEL = getDefaultModels().default
@@ -55,6 +54,6 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
         expect(typeof strategyResult.reasoning).toBe("string")
       }
     },
-    120_000
+    120_000,
   )
 })

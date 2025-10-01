@@ -1,8 +1,7 @@
 import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
 import { experimentalModels } from "../../../../../../examples/settings/models"
 
-export const VAGUE_SYSTEM_PROMPT =
-  "You are a helpful assistant with tools. Use them to complete the user's request."
+export const VAGUE_SYSTEM_PROMPT = "You are a helpful assistant with tools. Use them to complete the user's request."
 
 export const CLEAR_SYSTEM_PROMPT =
   "You are a helpful assistant with tools. Note: fetch_objects has a limit of 3 items per call. If you need more than 3 items, split across multiple calls and then combine_results."
@@ -16,14 +15,12 @@ export interface TestScenario {
 export const TEST_SCENARIOS: TestScenario[] = [
   {
     id: "basic-failure",
-    prompt:
-      "Please fetch 5 objects with the query 'item' and return the combined results.",
+    prompt: "Please fetch 5 objects with the query 'item' and return the combined results.",
     expected: 5,
   },
   {
     id: "larger-request",
-    prompt:
-      "I need 8 objects with the query 'product'. Please get them and combine the results.",
+    prompt: "I need 8 objects with the query 'product'. Please get them and combine the results.",
     expected: 8,
   },
   {

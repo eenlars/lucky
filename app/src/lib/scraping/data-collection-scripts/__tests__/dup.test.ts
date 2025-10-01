@@ -1,4 +1,4 @@
-import type { GoogleMapsBusiness } from "@lucky/tools/utils"
+import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { beforeEach, describe, expect, it } from "vitest"
 import { deduplicateBusinesses } from "../utils"
 

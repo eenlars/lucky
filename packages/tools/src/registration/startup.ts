@@ -1,18 +1,21 @@
 /**
  * Tool Registration - Startup initialization
  *
- * This file registers all available tools with the code tool registry.
+ * This file provides helper functions to register tools with the code tool registry.
  * Call this once at application startup before using any tools.
  */
 
+import type { CodeToolGroups } from "./codeToolsRegistration"
 import { codeToolRegistry } from "../registry/CodeToolRegistry"
-import { toolGroups } from "./codeToolsRegistration"
 import { validateCodeToolRegistration, printValidationResult } from "./validation"
 
 /**
  * Register all tools from the tool groups with validation
  */
-export async function registerAllTools(options?: { validate?: boolean; throwOnError?: boolean }): Promise<void> {
+export async function registerAllTools(
+  toolGroups: CodeToolGroups,
+  options?: { validate?: boolean; throwOnError?: boolean },
+): Promise<void> {
   const { validate = true, throwOnError = true } = options ?? {}
 
   // Validate registration before registering
@@ -40,7 +43,7 @@ export async function registerAllTools(options?: { validate?: boolean; throwOnEr
 /**
  * Register tools from specific groups only
  */
-export async function registerToolGroups(...groupNames: string[]): Promise<void> {
+export async function registerToolGroups(toolGroups: CodeToolGroups, ...groupNames: string[]): Promise<void> {
   const selectedGroups = toolGroups.groups.filter(g => groupNames.includes(g.groupName))
   const tools = selectedGroups.flatMap(group => group.tools.map(t => t.toolFunc))
 

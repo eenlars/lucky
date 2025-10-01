@@ -37,16 +37,14 @@ export const prompts: Prompt[] = [
   },
   {
     id: "find-albert-heijn-nl",
-    content:
-      "Find Albert Heijn stores in the Netherlands within given bounds; use the search tool for places.",
+    content: "Find Albert Heijn stores in the Netherlands within given bounds; use the search tool for places.",
     expects: {
       tool: "search_google_maps",
     },
   },
   {
     id: "find-salmon-in-the-world-with-high-success-rate",
-    content:
-      "Get a tool that will get you a salmon. it must be extremely good at getting salmons.",
+    content: "Get a tool that will get you a salmon. it must be extremely good at getting salmons.",
     expects: {
       tool: "unclear_getter",
     },

@@ -13,7 +13,7 @@ function analyze() {
 
   const latestByPrefix = (prefix: string) => {
     const files = readdirSync(basePath)
-      .filter((f) => f.startsWith(prefix) && f.endsWith(".json"))
+      .filter(f => f.startsWith(prefix) && f.endsWith(".json"))
       .sort()
     if (files.length === 0) throw new Error(`No files with prefix ${prefix}`)
     const latest = files[files.length - 1]
@@ -38,9 +38,7 @@ function analyze() {
   const keyMS = (r: any) => `${r.model}::${r.scenario}`
   const baselineKeys = new Set(baselineRuns.map(keyMS))
   const ourAlgorithmKeys = new Set(ourAlgorithmRuns.map(keyMS))
-  const intersect = new Set(
-    Array.from(baselineKeys).filter((k) => ourAlgorithmKeys.has(k))
-  )
+  const intersect = new Set(Array.from(baselineKeys).filter(k => ourAlgorithmKeys.has(k)))
   const bFiltered = baselineRuns.filter((r: any) => intersect.has(keyMS(r)))
   const vFiltered = ourAlgorithmRuns.filter((r: any) => intersect.has(keyMS(r)))
 
@@ -49,39 +47,27 @@ function analyze() {
   const allScores: ScoredRun[] = [...baselineScores, ...ourAlgorithmScores]
 
   // Helper to compare aggregates for a key across run kinds
-  const compareBy = <K extends keyof ScoredRun>(
-    key: K,
-    excludeWithinLimitForAdaptation = false
-  ) => {
-    const filt = (s: ScoredRun) =>
-      excludeWithinLimitForAdaptation ? s.scenario !== "within-limit" : true
+  const compareBy = <K extends keyof ScoredRun>(key: K, excludeWithinLimitForAdaptation = false) => {
+    const filt = (s: ScoredRun) => (excludeWithinLimitForAdaptation ? s.scenario !== "within-limit" : true)
     const bAgg = groupAndAggregate(baselineScores.filter(filt), key)
     const vAgg = groupAndAggregate(ourAlgorithmScores.filter(filt), key)
-    const toMap = (arr: any[]) => new Map(arr.map((r) => [r.key, r]))
+    const toMap = (arr: any[]) => new Map(arr.map(r => [r.key, r]))
     const bm = toMap(bAgg)
     const vm = toMap(vAgg)
     const keys = Array.from(new Set([...bm.keys(), ...vm.keys()]))
-    return keys.map((k) => ({
+    return keys.map(k => ({
       key: k,
       baseline: bm.get(k) || null,
       ourAlgorithm: vm.get(k) || null,
       deltas:
         bm.get(k) && vm.get(k)
           ? {
-              adaptedRatePct:
-                (vm.get(k).adaptedRatePct ?? 0) -
-                (bm.get(k).adaptedRatePct ?? 0),
-              avgSuccessPct:
-                (vm.get(k).avgSuccessPct ?? 0) - (bm.get(k).avgSuccessPct ?? 0),
-              avgCostUsd:
-                (vm.get(k).avgCostUsd ?? 0) - (bm.get(k).avgCostUsd ?? 0),
-              avgDurationMs:
-                (vm.get(k).avgDurationMs ?? 0) - (bm.get(k).avgDurationMs ?? 0),
-              avgAdherencePct:
-                (vm.get(k).avgAdherencePct ?? 0) -
-                (bm.get(k).avgAdherencePct ?? 0),
-              avgErrorPct:
-                (vm.get(k).avgErrorPct ?? 0) - (bm.get(k).avgErrorPct ?? 0),
+              adaptedRatePct: (vm.get(k).adaptedRatePct ?? 0) - (bm.get(k).adaptedRatePct ?? 0),
+              avgSuccessPct: (vm.get(k).avgSuccessPct ?? 0) - (bm.get(k).avgSuccessPct ?? 0),
+              avgCostUsd: (vm.get(k).avgCostUsd ?? 0) - (bm.get(k).avgCostUsd ?? 0),
+              avgDurationMs: (vm.get(k).avgDurationMs ?? 0) - (bm.get(k).avgDurationMs ?? 0),
+              avgAdherencePct: (vm.get(k).avgAdherencePct ?? 0) - (bm.get(k).avgAdherencePct ?? 0),
+              avgErrorPct: (vm.get(k).avgErrorPct ?? 0) - (bm.get(k).avgErrorPct ?? 0),
             }
           : null,
     }))

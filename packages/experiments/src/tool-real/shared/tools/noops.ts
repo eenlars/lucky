@@ -12,9 +12,7 @@ export const noopSpecs = Array.from({ length: 100 }, (_, i) =>
     description: `Does nothing useful #${i}`,
     inputSchema: zodSchema(NoopParams),
     execute: async () => "noop",
-  })
+  }),
 )
 
-export const noopFns = Object.fromEntries(
-  Array.from({ length: 100 }, (_, i) => [`noop_${i}`, () => "noop"])
-)
+export const noopFns = Object.fromEntries(Array.from({ length: 100 }, (_, i) => [`noop_${i}`, () => "noop"]))
