@@ -1,7 +1,6 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   transpilePackages: ["@lucky/shared", "@lucky/tools"],
   serverExternalPackages: [
     "bullmq",
