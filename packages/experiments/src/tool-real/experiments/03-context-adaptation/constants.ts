@@ -1,5 +1,5 @@
-import type { OpenRouterModelName } from "../../../../../../core/src/utils/spending/models.types"
-import { experimentalModels } from "../../../../../../examples/settings/models"
+import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+import { experimentalModels } from "@examples/settings/models"
 
 export const VAGUE_SYSTEM_PROMPT = "You are a helpful assistant with tools. Use them to complete the user's request."
 

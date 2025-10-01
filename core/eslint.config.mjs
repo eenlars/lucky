@@ -26,6 +26,18 @@ const eslintConfig = [
         },
       ],
       "@typescript-eslint/no-explicit-any": "off",
+      // Disallow deep relative imports - use path aliases instead (@core/*, @examples/*, etc.)
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/../../*", "**/../../**"],
+              message: "Deep relative imports are not allowed. Use path aliases like @core/*, @examples/*, @lucky/tools/*, etc. instead.",
+            },
+          ],
+        },
+      ],
     },
   },
 ]

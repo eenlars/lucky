@@ -1,7 +1,7 @@
 import * as fs from "fs/promises"
 import * as path from "path"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import { PATHS } from "../../../../packages/tools/src/config/runtime"
+import { PATHS } from "@lucky/tools/config/runtime"
 import { tool as humanApproval } from "../tool"
 
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")

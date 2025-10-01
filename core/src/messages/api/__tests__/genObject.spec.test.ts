@@ -1,7 +1,7 @@
 import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
-import { zodToJson } from "../../../utils/zod/zodToJson"
+import { zodToJson } from "@core/utils/zod/zodToJson"
 import { genObject } from "../genObject"
 
 // TODO: These are integration tests making real API calls - exclude from main suite

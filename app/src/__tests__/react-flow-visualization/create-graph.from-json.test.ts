@@ -1,8 +1,8 @@
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { MODELS } from "@examples/settings/constants.client"
 import { describe, expect, it, vi } from "vitest"
-import { initialSetupConfig } from "../../react-flow-visualization/lib/workflow-data"
-vi.mock("../../react-flow-visualization/components/nodes", () => ({
+import { initialSetupConfig } from "@/react-flow-visualization/lib/workflow-data"
+vi.mock("@/react-flow-visualization/components/nodes", () => ({
   createNodeByType: (args: any) => ({
     id: args.id,
     type: args.type,

@@ -58,11 +58,15 @@ This document defines the design system for the application, establishing consis
 
 ```css
 /* Sidebar-specific colors */
---sidebar-background: /* Main sidebar background */ --sidebar-foreground: /* Primary text color */
-  --sidebar-primary: /* Brand/accent color */ --sidebar-primary-foreground: /* Text on primary background */
-  --sidebar-accent: /* Active state background */ --sidebar-accent-foreground: /* Text on accent background */
-  --sidebar-border: /* Border color */ --sidebar-muted: /* Secondary text (#666) */
-  --sidebar-muted-foreground: /* Muted text variants */;
+--sidebar-background: /* Main sidebar background */;
+--sidebar-foreground: /* Primary text color */;
+--sidebar-primary: /* Brand/accent color */;
+--sidebar-primary-foreground: /* Text on primary background */;
+--sidebar-accent: /* Active state background */;
+--sidebar-accent-foreground: /* Text on accent background */;
+--sidebar-border: /* Border color */;
+--sidebar-muted: /* Secondary text (#666) */;
+--sidebar-muted-foreground: /* Muted text variants */;
 ```
 
 #### State-Based Color Applications

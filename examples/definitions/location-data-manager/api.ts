@@ -1,7 +1,7 @@
 // api wrapper functions for tool integration
 
 import type { CodeToolName, CodeToolResult } from "@lucky/tools"
-import type { PartialLocationData } from "../../../packages/tools/src/schemas/location.types"
+import type { PartialLocationData } from "@lucky/tools/schemas/location.types"
 import { locationDataManager } from "./mainLocationDataManager"
 
 export function wrapResult<T>(fn: () => Promise<T>, toolName: CodeToolName): Promise<CodeToolResult<T>> {

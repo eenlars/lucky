@@ -1,6 +1,6 @@
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { experimentalModels } from "../../../examples/settings/models"
+import { experimentalModels } from "@examples/settings/models"
 import { TEST_SCENARIOS, VAGUE_SYSTEM_PROMPT } from "../src/tool-real/experiments/03-context-adaptation/constants"
 import { runMultiToolOurAlgorithm } from "../src/tool-real/experiments/03-context-adaptation/our-algorithm-helper-runner"
 import { adaptiveTools } from "../src/tool-real/shared/tools/adaptive/adaptiveTools"

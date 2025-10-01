@@ -6,7 +6,7 @@ import {
   extractCoordinates,
   GoogleScraperBusinessExtended,
   transformLocationData,
-} from "../../../../../../examples/definitions/googlescraper/convert"
+} from "@examples/definitions/googlescraper/convert"
 import { toDomain } from "../utils"
 
 // use: tsx src/lib/count-bcorps/per-country/filter.ts

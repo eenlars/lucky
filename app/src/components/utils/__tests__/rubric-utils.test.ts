@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { parseRubricString, createRubricString } from "../rubric-utils"
-import type { RubricCriteria } from "../../types/evaluation"
+import type { RubricCriteria } from "@/components/types/evaluation"
 
 describe("rubric-utils", () => {
   describe("createRubricString and parseRubricString", () => {

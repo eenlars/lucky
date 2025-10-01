@@ -105,3 +105,6 @@ resilience/
 # Ignore any directory named "private" anywhere in the repo
 **/private/
 **/private/**
+
+# Runtime file (created by mistake in conductor.json setup script)
+/runtime

@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 // Use relative import within the same package to avoid path alias issues when running with Bun/Node
-import { sendAI } from "../../../../core/src/messages/api/sendAI/sendAI"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 // how to run: bun core/scripts/vendor-bias-experiment.ts
 

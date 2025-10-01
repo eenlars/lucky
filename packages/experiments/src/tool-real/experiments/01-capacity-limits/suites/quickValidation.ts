@@ -3,7 +3,7 @@
  */
 import { lgg } from "@core/utils/logging/Logger"
 import type { OpenRouterModelName } from "@core/utils/spending/models.types"
-import { experimentalModels } from "../../../../../../../examples/settings/models"
+import { experimentalModels } from "@examples/settings/models"
 import { evaluate } from "../evaluation"
 import { allToolSpecs, chatWithTools } from "../openaiRunner"
 import { prompts } from "../prompts"

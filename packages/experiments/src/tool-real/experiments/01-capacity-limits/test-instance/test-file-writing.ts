@@ -7,7 +7,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { OpenRouterModelName } from "@core/utils/spending/models.types"
 import { existsSync, readFileSync, writeFileSync } from "fs"
 import { join } from "path"
-import { experimentalModels } from "../../../../../../../examples/settings/models"
+import { experimentalModels } from "@examples/settings/models"
 
 const __dirname = process.cwd()
 

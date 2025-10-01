@@ -6,7 +6,7 @@ import { zodToJson } from "@core/utils/zod/zodToJson"
 import { JSONN } from "@lucky/shared"
 import Tools, { CodeToolResult, defineTool } from "@lucky/tools"
 import { z } from "zod"
-import { MODELS } from "../../../packages/tools/src/config/runtime"
+import { MODELS } from "@lucky/tools/config/runtime"
 /**
  * Simple tool for handling LLM requests with expected output validation
  * Takes a prompt and expected output schema, validates the LLM response against it

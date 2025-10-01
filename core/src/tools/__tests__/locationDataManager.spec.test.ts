@@ -1,14 +1,21 @@
 import { codeToolRegistry } from "@lucky/tools"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, beforeEach } from "vitest"
+import { tool as locationDataManager } from "@examples/definitions/location-data-manager/tool"
 
 describe("LocationDataManager Tool Integration", () => {
   // TODO: This test imports a tool from an absolute path instead of using the proper tool registry.
   // It should test through the actual tool discovery/registry system to ensure the tool is properly
   // integrated. Also, the absolute path import makes this test brittle and environment-specific.
-  it("should reproduce the exact error we're seeing", async () => {
-    // Initialize tools via registry
+
+  beforeEach(async () => {
+    await codeToolRegistry.destroy()
+    codeToolRegistry.register(locationDataManager)
     await codeToolRegistry.initialize()
-    const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
+  })
+
+  it("should reproduce the exact error we're seeing", async () => {
+    // Get the registered tool
+    const tool = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation",
@@ -26,7 +33,7 @@ describe("LocationDataManager Tool Integration", () => {
     } as any
 
     try {
-      const result = await locationDataManager.execute(invalidParams, mockContext)
+      const result = await tool.execute(invalidParams, mockContext)
 
       // Log the actual result to understand what's happening
       console.log("Tool result:", result)
@@ -57,8 +64,8 @@ describe("LocationDataManager Tool Integration", () => {
   })
 
   it("should work correctly with proper array data", async () => {
-    await codeToolRegistry.initialize()
-    const locationDataManager = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
+    // Get the registered tool
+    const tool = codeToolRegistry.getAllTools().find(t => t.name === "locationDataManager")!
 
     const mockContext = {
       workflowInvocationId: "test-invocation-2",
@@ -98,7 +105,7 @@ describe("LocationDataManager Tool Integration", () => {
       ],
     }
 
-    const result = await locationDataManager.execute(validParams, mockContext)
+    const result = await tool.execute(validParams, mockContext)
 
     // Log the result to debug
     console.log("Valid tool result:", result)

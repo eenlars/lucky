@@ -5,7 +5,7 @@ import fs from "fs"
 import { nanoid } from "nanoid"
 import path from "path"
 import { fileURLToPath } from "url"
-import { PATHS } from "../../../packages/tools/src/config/runtime"
+import { PATHS } from "@lucky/tools/config/runtime"
 
 function getCallerDir(): string {
   if (typeof window !== "undefined") {
