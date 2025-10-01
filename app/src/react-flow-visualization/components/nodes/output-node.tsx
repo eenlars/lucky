@@ -13,10 +13,11 @@ export function OutputNode({ id, data: _data }: WorkflowNodeProps) {
       aria-label="End"
       role="img"
     >
-      {/* Minimal, non-interactive visual */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div className="w-9 h-9 rounded-full bg-slate-700/90 shadow-sm ring-4 ring-slate-300/40" />
-        <div className="mt-2 text-[11px] font-medium tracking-wide text-slate-500 uppercase">End</div>
+      {/* Jony Ive inspired minimal square */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="w-full h-full rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 shadow-sm border border-slate-500/50 flex items-center justify-center">
+          <div className="text-[9px] font-semibold tracking-wider text-white/90 uppercase">End</div>
+        </div>
       </div>
 
       {/* Connection handle(s) remain functional */}

@@ -32,7 +32,7 @@ export function useLayout(shouldFitView: boolean = false) {
     setEdges(updatedEdges)
 
     if (shouldFitView) {
-      setTimeout(() => fitView({ padding: 0.4 }), 2)
+      setTimeout(() => fitView({ padding: 0.15 }), 2)
     }
   }, [fitView, getEdges, getNodes, setEdges, setNodes, shouldFitView])
 }
