@@ -1,8 +1,16 @@
 /**
- * Using YAML Configurations Example
+ * Using TypeScript Configurations Example
  *
- * Demonstrates how to load and use YAML configuration files
+ * Demonstrates how to load and use TypeScript configuration files
  * with the models registry.
+ *
+ * TypeScript configs provide:
+ * - Type safety at authoring time
+ * - IDE autocomplete and validation
+ * - Runtime Zod validation
+ * - Immediate feedback on errors
+ *
+ * YAML configs are still supported for backwards compatibility.
  */
 
 import { createModels } from "@lucky/@lucky/models"
@@ -45,13 +53,13 @@ const models = createModels({
 })
 
 async function main() {
-  console.log("🎯 Using YAML Configurations\n")
+  console.log("🎯 Using TypeScript Configurations\n")
 
   // ========================================================================
   // Example 1: Load Researcher Config
   // ========================================================================
   console.log("1️⃣ Loading researcher config...")
-  const researcherConfigPath = join(configDir, "researcher-example.yaml")
+  const researcherConfigPath = join(configDir, "researcher-example.config.ts")
 
   try {
     await models.loadUserConfig("researcher-1", researcherConfigPath)
@@ -93,7 +101,7 @@ async function main() {
   // Example 2: Load Production Config
   // ========================================================================
   console.log("2️⃣ Loading production config...")
-  const prodConfigPath = join(configDir, "production-example.yaml")
+  const prodConfigPath = join(configDir, "production-example.config.ts")
 
   try {
     await models.loadUserConfig("prod-user", prodConfigPath)
@@ -122,7 +130,7 @@ async function main() {
   // ========================================================================
   console.log("3️⃣ Using default experiment from config...")
 
-  // When not specifying experiment, uses defaults.experiment from YAML
+  // When not specifying experiment, uses defaults.experiment from config
   const defaultModel = await models.model("user:researcher-1", {
     userId: "researcher-1",
     requestId: crypto.randomUUID(),
@@ -139,7 +147,7 @@ async function main() {
   // Example 4: Load Complete Example Config
   // ========================================================================
   console.log("4️⃣ Loading complete example config (all features)...")
-  const completeConfigPath = join(configDir, "complete-example.yaml")
+  const completeConfigPath = join(configDir, "complete-example.config.ts")
 
   try {
     await models.loadUserConfig("demo-user", completeConfigPath)

@@ -6,6 +6,7 @@
 export { Models } from "./models"
 export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
+export { defineConfig, defineConfigUnsafe } from "./config/define"
 
 // Export types
 export type {

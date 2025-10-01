@@ -1,0 +1,67 @@
+/**
+ * Local Development Configuration Example
+ *
+ * Optimized for local development with Ollama.
+ * Free to use, no API costs, privacy-friendly.
+ *
+ * Setup:
+ *   1. Install Ollama: https://ollama.ai
+ *   2. Pull models: ollama pull llama3.3:70b
+ *   3. Enable local provider in models-instance.ts
+ *   4. Use this config
+ */
+
+import { defineConfig } from "../src/config/define"
+
+export default defineConfig({
+  name: "Local Development Config",
+
+  experiments: {
+    // Primary local development
+    dev: {
+      strategy: "first",
+      providers: ["local/llama-3.3-70b-instruct"],
+      timeout: 30000,
+    },
+
+    // Fast iterations with smaller model
+    fast: {
+      strategy: "first",
+      providers: ["local/llama-3.3-8b-instruct"],
+      timeout: 10000,
+    },
+
+    // Coding tasks with code-specialized model
+    code: {
+      strategy: "first",
+      providers: ["local/qwen-2.5-coder-32b"],
+      timeout: 45000,
+    },
+
+    // Multiple local models racing for speed
+    race: {
+      strategy: "race",
+      providers: ["local/llama-3.3-70b-instruct", "local/mistral-nemo-12b"],
+      timeout: 30000,
+    },
+
+    // Fallback to cloud when local fails
+    hybrid: {
+      strategy: "fallback",
+      providers: [
+        "local/llama-3.3-70b-instruct",
+        "openrouter/google/gemini-2.5-flash-lite",
+      ],
+      timeout: 45000,
+      maxCost: 0.05,
+    },
+  },
+
+  defaults: {
+    experiment: "dev",
+    maxConcurrent: 5, // Lower for local hardware
+    timeout: 30000,
+  },
+
+  performanceTracking: true,
+})

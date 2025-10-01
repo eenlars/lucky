@@ -1,10 +1,18 @@
 # Models Registry Configuration Examples
 
-This directory contains example YAML configurations for the models registry. Each file demonstrates different use cases and strategies.
+This directory contains example TypeScript configurations for the models registry. Each file demonstrates different use cases and strategies.
+
+**TypeScript configs provide:**
+- Type safety at authoring time (IDE autocomplete, validation)
+- Runtime Zod validation with detailed error messages
+- Immediate feedback on configuration errors
+- Better refactoring support
+
+**YAML configs** (`.yaml`, `.yml`) are still supported for backwards compatibility.
 
 ## Available Examples
 
-### 1. `complete-example.yaml` - Comprehensive Reference
+### 1. `complete-example.config.ts` - Comprehensive Reference
 
 **Use this for:** Learning all available features
 
@@ -17,7 +25,7 @@ This directory contains example YAML configurations for the models registry. Eac
 
 **Usage:**
 ```typescript
-await models.loadUserConfig('user-id', './configs/complete-example.yaml')
+await models.loadUserConfig('user-id', './configs/complete-example.config.ts')
 const model = await getModel({
   model: 'user:user-id:fast',  // Use 'fast' experiment
   userId: 'user-id'
@@ -26,7 +34,7 @@ const model = await getModel({
 
 ---
 
-### 2. `researcher-example.yaml` - ML Research
+### 2. `researcher-example.config.ts` - ML Research
 
 **Use this for:** Machine learning research and experimentation
 
@@ -43,7 +51,7 @@ const model = await getModel({
 
 ---
 
-### 3. `production-example.yaml` - Production Deployment
+### 3. `production-example.config.ts` - Production Deployment
 
 **Use this for:** Production applications with high reliability
 
@@ -61,7 +69,7 @@ const model = await getModel({
 
 ---
 
-### 4. `local-dev-example.yaml` - Local Development
+### 4. `local-dev-example.config.ts` - Local Development
 
 **Use this for:** Development with Ollama (no API costs)
 
@@ -93,27 +101,44 @@ local: {
 
 ## Configuration Schema
 
-All YAML files follow this schema (validated with Zod):
+All config files follow this schema (validated with Zod):
 
+```typescript
+import { defineConfig } from '@lucky/models/config'
+
+export default defineConfig({
+  name: "Config Name",
+
+  experiments: {
+    experiment_name: {
+      strategy: "first" | "race" | "fallback" | "consensus",
+      providers: [
+        "provider/model-name",
+        "provider/model-name",
+      ],
+      timeout: 30000,    // Optional: milliseconds
+      maxCost: 0.10,     // Optional: USD per request
+    },
+  },
+
+  defaults: {
+    experiment: "experiment_name",  // Optional: default experiment
+    maxConcurrent: 50,              // Optional: concurrent requests
+    timeout: 30000,                 // Optional: default timeout
+    costLimit: 100.00,              // Optional: daily cost limit USD
+  },
+
+  performanceTracking: true,        // Optional: track metrics
+})
+```
+
+**Legacy YAML format** is still supported:
 ```yaml
 name: "Config Name"
-
 experiments:
   experiment_name:
-    strategy: "first" | "race" | "fallback" | "consensus"
-    providers:
-      - "provider/model-name"
-      - "provider/model-name"
-    timeout: 30000        # Optional: milliseconds
-    maxCost: 0.10         # Optional: USD per request
-
-defaults:
-  experiment: "experiment_name"  # Optional: default experiment
-  maxConcurrent: 50              # Optional: concurrent requests
-  timeout: 30000                 # Optional: default timeout
-  costLimit: 100.00              # Optional: daily cost limit USD
-
-performanceTracking: true        # Optional: track metrics
+    strategy: first
+    providers: [provider/model-name]
 ```
 
 ## Execution Strategies
@@ -122,45 +147,55 @@ performanceTracking: true        # Optional: track metrics
 - **Best for:** Single reliable provider
 - **Use case:** Standard production requests
 - **Behavior:** Uses first provider in list
-```yaml
-strategy: first
-providers:
-  - openrouter/openai/gpt-4.1-mini
+```typescript
+{
+  strategy: "first",
+  providers: ["openrouter/openai/gpt-4.1-mini"],
+}
 ```
 
 ### `race` - Race Multiple Providers
 - **Best for:** Speed optimization
 - **Use case:** Fast responses, multiple fast models
 - **Behavior:** Starts all providers, returns fastest
-```yaml
-strategy: race
-providers:
-  - openrouter/google/gemini-2.5-flash-lite
-  - groq/llama-3.3-70b-versatile
+```typescript
+{
+  strategy: "race",
+  providers: [
+    "openrouter/google/gemini-2.5-flash-lite",
+    "groq/llama-3.3-70b-versatile",
+  ],
+}
 ```
 
 ### `fallback` - Sequential Fallback
 - **Best for:** Reliability and uptime
 - **Use case:** Production with backup providers
 - **Behavior:** Tries providers in order until one succeeds
-```yaml
-strategy: fallback
-providers:
-  - openrouter/openai/gpt-4.1-mini
-  - openrouter/anthropic/claude-3-5-haiku
-  - openrouter/google/gemini-2.5-flash-lite
+```typescript
+{
+  strategy: "fallback",
+  providers: [
+    "openrouter/openai/gpt-4.1-mini",
+    "openrouter/anthropic/claude-3-5-haiku",
+    "openrouter/google/gemini-2.5-flash-lite",
+  ],
+}
 ```
 
 ### `consensus` - Multi-Provider Consensus
 - **Best for:** Quality and verification
 - **Use case:** Critical decisions, research validation
 - **Behavior:** Calls all providers, compares results
-```yaml
-strategy: consensus
-providers:
-  - openrouter/openai/gpt-4.1
-  - anthropic/claude-sonnet-4
-  - openrouter/google/gemini-2.5-pro-preview
+```typescript
+{
+  strategy: "consensus",
+  providers: [
+    "openrouter/openai/gpt-4.1",
+    "anthropic/claude-sonnet-4",
+    "openrouter/google/gemini-2.5-pro-preview",
+  ],
+}
 ```
 
 ## Provider Format
@@ -175,23 +210,24 @@ Providers use the format: `provider/model-name`
 - `local/` - Local Ollama models
 
 **Examples:**
-```yaml
-providers:
-  # OpenRouter (most providers route through here)
-  - openrouter/openai/gpt-4.1-mini
-  - openrouter/anthropic/claude-sonnet-4
-  - openrouter/google/gemini-2.5-flash-lite
-  - openrouter/deepseek/deepseek-chat
+```typescript
+providers: [
+  // OpenRouter (most providers route through here)
+  "openrouter/openai/gpt-4.1-mini",
+  "openrouter/anthropic/claude-sonnet-4",
+  "openrouter/google/gemini-2.5-flash-lite",
+  "openrouter/deepseek/deepseek-chat",
 
-  # Direct APIs
-  - openai/gpt-4o-mini
-  - anthropic/claude-3-5-haiku
-  - groq/llama-3.3-70b-versatile
+  // Direct APIs
+  "openai/gpt-4o-mini",
+  "anthropic/claude-3-5-haiku",
+  "groq/llama-3.3-70b-versatile",
 
-  # Local Ollama
-  - local/llama-3.3-70b-instruct
-  - local/mistral-nemo-12b
-  - local/qwen-2.5-coder-32b
+  // Local Ollama
+  "local/llama-3.3-70b-instruct",
+  "local/mistral-nemo-12b",
+  "local/qwen-2.5-coder-32b",
+]
 ```
 
 ## Loading Configs
@@ -202,8 +238,8 @@ providers:
 import { models } from '@core/vendor/models-instance'
 import { getModel } from '@core/vendor/model-wrapper'
 
-// Load config for user
-await models.loadUserConfig('researcher-1', './configs/researcher-example.yaml')
+// Load TypeScript config for user
+await models.loadUserConfig('researcher-1', './configs/researcher-example.config.ts')
 
 // Use experiment from config
 const model = await getModel({
@@ -220,8 +256,8 @@ import { enableModels, addTestUser, getModel } from '@core/vendor/model-wrapper'
 // Enable models registry for test user
 addTestUser('researcher-1')
 
-// Load their config
-await models.loadUserConfig('researcher-1', './configs/researcher-example.yaml')
+// Load their TypeScript config
+await models.loadUserConfig('researcher-1', './configs/researcher-example.config.ts')
 
 // User gets their custom experiment
 const model = await getModel({
@@ -243,31 +279,38 @@ const model = await getModel({
 ## Cost Controls
 
 ### Per-Request Limits
-```yaml
-experiments:
-  cheap:
-    maxCost: 0.001  # Max $0.001 per request
+```typescript
+experiments: {
+  cheap: {
+    maxCost: 0.001,  // Max $0.001 per request
+  },
+}
 ```
 
 ### Daily Limits
-```yaml
-defaults:
-  costLimit: 100.00  # Max $100 per day
+```typescript
+defaults: {
+  costLimit: 100.00,  // Max $100 per day
+}
 ```
 
 ### Timeout Limits
-```yaml
-experiments:
-  quick:
-    timeout: 10000  # 10 seconds max
+```typescript
+experiments: {
+  quick: {
+    timeout: 10000,  // 10 seconds max
+  },
+}
 ```
 
 ## Performance Tracking
 
 Enable to track latency, costs, and success rates:
 
-```yaml
-performanceTracking: true
+```typescript
+{
+  performanceTracking: true,
+}
 ```
 
 Metrics tracked:
@@ -280,16 +323,19 @@ Metrics tracked:
 
 ## Validation
 
-All YAML files are validated with Zod schemas on load. Invalid configs throw detailed errors:
+All config files are validated with Zod schemas on load. Invalid configs throw detailed errors:
 
 ```typescript
 try {
-  await models.loadUserConfig('user', './config.yaml')
+  await models.loadUserConfig('user', './config.config.ts')
 } catch (error) {
   console.error('Invalid config:', error)
   // Detailed validation errors with field names and expected types
 }
 ```
+
+**TypeScript configs** validate at authoring time (with `defineConfig()`) and at load time.
+**YAML configs** validate only at load time.
 
 ## Best Practices
 
@@ -313,10 +359,10 @@ try {
 ### "Experiment not found"
 - Check experiment name matches config
 - Verify config was loaded for user
-- Check YAML syntax is valid
+- Check config syntax is valid (TypeScript or YAML)
 
 ### "Provider not found"
-- Verify provider is enabled in orchestrator-instance.ts
+- Verify provider is enabled in models-instance.ts
 - Check provider name format is correct
 - Ensure API keys are set in environment
 
