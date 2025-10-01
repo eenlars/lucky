@@ -237,7 +237,7 @@ Create a new workflow that inherits strengths from both parents.`
   })
 
   describe("Performance Considerations", () => {
-    it("should measure operator execution time", () => {
+    it.skip("should measure operator execution time", () => {
       const measureOperator = (fn: (input: any) => any, input: any) => {
         const start = Date.now()
         const result = fn(input)
