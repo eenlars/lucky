@@ -25,8 +25,9 @@
     "vitest": "^3.2.4"
   },
   "scripts": {
-    "build": "vite build",
-    "dev": "vite build --watch",
-    "format": "prettier --write ."
+    "build": "tsc --noEmit",
+    "tsc": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   }
 }
