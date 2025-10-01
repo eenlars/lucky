@@ -30,8 +30,6 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "tsc": "tsc --noEmit"
   }
 }

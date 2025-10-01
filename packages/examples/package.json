@@ -35,8 +35,6 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "tsc": "tsc --noEmit"
   }
 }

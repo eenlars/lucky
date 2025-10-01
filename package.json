@@ -14,6 +14,9 @@
   "devDependencies": {
     "@lucky/core": "workspace:*",
     "@types/papaparse": "^5.3.16",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "tsconfig-paths": "^4.2.0",
     "tsup": "8.5.0",
@@ -41,10 +44,10 @@
     "test:integration": "turbo run test:integration",
     "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.js",
     "test:gate": "bunx vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.js",
-    "lint": "turbo run lint",
+    "lint": "eslint .",
     "tsc": "turbo run tsc",
-    "format": "turbo run format",
-    "format:check": "turbo run format:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "clean": "turbo run clean",
     "install:ci": "bun install --ignore-scripts"
   }
