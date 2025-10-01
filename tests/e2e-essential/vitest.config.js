@@ -9,9 +9,9 @@ const repoRoot = path.join(thisDir, "..", "..")
 export default defineConfig({
   resolve: {
     alias: {
-      "@core": path.join(repoRoot, "core", "src"),
-      "@examples": path.join(repoRoot, "examples"),
-      "@shared": path.join(repoRoot, "shared", "src"),
+      "@core": path.join(repoRoot, "packages", "core", "src"),
+      "@examples": path.join(repoRoot, "packages", "examples"),
+      "@shared": path.join(repoRoot, "packages", "shared", "src"),
     },
   },
   test: {

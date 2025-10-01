@@ -17,8 +17,8 @@
       "@lucky/tools/*": ["./src/*"],
       "@lucky/shared": ["../shared/src/index.ts"],
       "@lucky/shared/*": ["../shared/src/*"],
-      "@core/*": ["../../core/src/*"],
-      "@runtime/*": ["../../runtime/*"]
+      "@core/*": ["../core/src/*"],
+      "@examples/*": ["../examples/*"]
     }
   },
   "include": ["src/**/*.ts"],

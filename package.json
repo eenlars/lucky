@@ -1,11 +1,6 @@
 {
   "type": "module",
-  "workspaces": [
-    "app",
-    "core",
-    "examples",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.1",
     "@mendable/firecrawl-js": "^1.29.3",
@@ -23,7 +18,6 @@
     "vitest": "^3.2.4"
   },
   "overrides": {
-    "esbuild": "0.25.9",
     "tsup": "8.5.0"
   },
   "engines": {
@@ -31,15 +25,15 @@
   },
   "scripts": {
     "prepare": "husky",
-    "web": "cd app && bun run dev",
+    "web": "cd apps/web && bun run dev",
     "build:shared": "cd packages/shared && bun run build",
     "build:tools": "cd packages/tools && bun run build",
-    "build:app": "cd app && bun run build",
+    "build:app": "cd apps/web && bun run build",
     "build:packages": "cd packages/shared && bun run build && cd ../tools && bun run build",
     "build": "bun run build:shared && bun run build:tools && bun run build:app",
-    "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.ts",
-    "test:gate": "bunx vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.ts",
-    "tsc": "cd app && tsc --noEmit && cd ../core && tsc --noEmit && cd ../examples && tsc --noEmit && cd ../packages/shared && tsc --noEmit && cd ../tools && tsc --noEmit",
+    "test:smoke": "bunx vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.js",
+    "test:gate": "bunx vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.js",
+    "tsc": "cd apps/web && tsc --noEmit && cd ../../packages/core && tsc --noEmit && cd ../examples && tsc --noEmit && cd ../shared && tsc --noEmit && cd ../tools && tsc --noEmit",
     "format": "prettier --write .",
     "install:ci": "bun install --ignore-scripts"
   }

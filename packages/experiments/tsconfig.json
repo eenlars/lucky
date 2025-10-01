@@ -14,8 +14,8 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@examples/*": ["../../examples/*"],
-      "@core/*": ["../../core/src/*"],
+      "@examples/*": ["../examples/*"],
+      "@core/*": ["../core/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],

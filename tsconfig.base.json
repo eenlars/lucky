@@ -4,13 +4,13 @@
       "path": "./packages/shared/tsconfig.json"
     },
     {
-      "path": "./core/tsconfig.json"
+      "path": "./packages/core/tsconfig.json"
     },
     {
-      "path": "./runtime/tsconfig.json"
+      "path": "./packages/examples/tsconfig.json"
     },
     {
-      "path": "./app/tsconfig.json"
+      "path": "./apps/web/tsconfig.json"
     }
   ],
   "compilerOptions": {},
