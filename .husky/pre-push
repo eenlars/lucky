@@ -2,7 +2,7 @@ echo "[husky] checking TypeScript types..."
 bun run tsc || exit 1
 
 echo "[husky] running core unit tests (quiet)..."
-cd core && CI=1 bun run test:unit -- --reporter=dot --silent > ../.husky/.prepush_core.log 2>&1 || { echo "[husky] core unit tests failed. See .husky/.prepush_core.log"; tail -n 120 ../.husky/.prepush_core.log; exit 1; }
+cd packages/core && CI=1 bun run test:unit -- --reporter=dot --silent > ../../.husky/.prepush_core.log 2>&1 || { echo "[husky] core unit tests failed. See .husky/.prepush_core.log"; tail -n 120 ../../.husky/.prepush_core.log; exit 1; }
 cd - >/dev/null 2>&1 || exit 1
 
 echo "[husky] running gate tests (quiet)..."

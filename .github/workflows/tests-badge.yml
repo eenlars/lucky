@@ -25,8 +25,8 @@ jobs:
         run: bun install
 
       - name: Run core unit tests (JSON)
-        working-directory: core
-        run: bun test --reporter=json > ../vitest-results.json || true
+        working-directory: packages/core
+        run: bun test --reporter=json > ../../vitest-results.json || true
 
       - name: Generate tests badge
         run: node .github/scripts/generate-tests-badge.mjs

@@ -21,13 +21,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@core/*": ["../core/src/*"],
-      "@examples/*": ["../examples/*"],
-      "@experiments/*": ["../packages/experiments/src/*"],
-      "@lucky/shared": ["../packages/shared/src"],
-      "@lucky/shared/*": ["../packages/shared/src/*"],
-      "@lucky/tools": ["../packages/tools/src"],
-      "@lucky/tools/*": ["../packages/tools/src/*"]
+      "@core/*": ["../../packages/core/src/*"],
+      "@examples/*": ["../../packages/examples/*"],
+      "@experiments/*": ["../../packages/experiments/src/*"],
+      "@lucky/shared": ["../../packages/shared/src"],
+      "@lucky/shared/*": ["../../packages/shared/src/*"],
+      "@lucky/tools": ["../../packages/tools/src"],
+      "@lucky/tools/*": ["../../packages/tools/src/*"]
     },
     "allowSyntheticDefaultImports": true
   },
@@ -41,8 +41,8 @@
   ],
   "exclude": [
     "node_modules",
-    "../examples/logging_folder",
-    "../packages/experiments/src/experiments-2/**",
+    "../../packages/examples/logging_folder",
+    "../../packages/experiments/src/experiments-2/**",
     ".next/**",
     "src/lib/scraping/**",
     "src/results/**"

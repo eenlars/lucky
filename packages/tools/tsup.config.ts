@@ -22,7 +22,7 @@ export default defineConfig({
   external: [
     "@lucky/shared",
     /^@core\/.*/,
-    /^@runtime\/.*/,
+    /^@examples\/.*/,
     "ai",
     "zod",
     "@modelcontextprotocol/sdk",

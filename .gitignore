@@ -70,8 +70,8 @@ agents.md
 # Custom
 /resources
 /.cursor
-/app/src/examples/logging_folder/*
-/core/src/examples/logging_folder/*
+/apps/web/src/examples/logging_folder/*
+/packages/core/src/examples/logging_folder/*
 /logging_folder
 **/output*/**
 **setupfile.json

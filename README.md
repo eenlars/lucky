@@ -25,12 +25,12 @@ Provides real-time visualization of workflow execution graphs, evolutionary fitn
 
 ## Monorepo Layout
 
-- `app/` — Next.js UI, pages, API routes.
-- `core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
-- `examples/` — Example tools, settings, and workflows.
+- `apps/web/` — Next.js UI, pages, API routes.
+- `packages/core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
+- `packages/examples/` — Example tools, settings, and workflows.
 - `packages/shared/` — Shared TypeScript utilities (built with tsup).
 - `tests/e2e-essential/` — Minimal smoke + gate tests with golden trace.
-- `scripts/`, `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
+- `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
 
 ## Installation
 
@@ -43,25 +43,25 @@ cd together
 bun install  # This also builds required packages
 
 # (Optional) Create environment file(s) where needed
-# For the web app, create app/.env and set your provider/database keys
+# For the web app, create apps/web/.env and set your provider/database keys
 
 # Start the web interface
-cd app && bun run dev
+cd apps/web && bun run dev
 ```
 
 ## Common Tasks
 
 - Build all: `bun run build` (shared → app)
 - Typecheck all: `bun run tsc`
-- Core: run once `cd core && bun run once` · iterative `cd core && bun run iterative`
-- App: dev `cd app && bun run dev` · start `cd app && bun run start`
+- Core: run once `cd packages/core && bun run once` · iterative `cd packages/core && bun run iterative`
+- App: dev `cd apps/web && bun run dev` · start `cd apps/web && bun run start`
 
 ## Testing
 
 - Smoke: `bun run test:smoke`
 - Gate: `bun run test:gate`
-- Core unit (watch): `cd core && bun run dev` · one‑shot: `cd core && bun run test:unit`
-- Coverage: `cd app && bun run coverage` or `cd core && bun run coverage`
+- Core unit (watch): `cd packages/core && bun run dev` · one‑shot: `cd packages/core && bun run test:unit`
+- Coverage: `cd apps/web && bun run coverage` or `cd packages/core && bun run coverage`
 
 Golden updates (after intentional behavior change):
 
@@ -81,9 +81,9 @@ Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + ga
 
 ## Configuration
 
-- App env: `app/.env` (see `app/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
+- App env: `apps/web/.env` (see `apps/web/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
 - Path aliases: prefer `@core`, `@shared` in tests and code where available.
-- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd app && bun run format` or `cd core && bun run format`.
+- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd apps/web && bun run format` or `cd packages/core && bun run format`.
 
 ## How It Works
 
@@ -139,13 +139,13 @@ const addresses = await workflow.ask("Find all Tony Chocolonely stores")
 bun install
 
 # App environment
-cp app/.env.example app/.env
+cp apps/web/.env.example apps/web/.env
 
 # Run your first workflow:
-cd core && bun once
+cd packages/core && bun once
 
 # Or train your first workflow (iteratively):
-cd core && bun iterative
+cd packages/core && bun iterative
 ```
 
 ## Optimization Algorithms
