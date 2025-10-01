@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import { ApproveData } from "@/app/(test)/approve/page"
 import { NextRequest, NextResponse } from "next/server"
 import * as fs from "fs/promises"

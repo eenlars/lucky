@@ -5,7 +5,7 @@ interface UserProfileProps {
   className?: string
 }
 
-export function UserProfile({ initials = "LA", className = "" }: UserProfileProps) {
+export function UserProfile({ initials = "LA", className: _className = "" }: UserProfileProps) {
   return (
     <div className="relative h-[32px]">
       <div className="fixed left-[19px] bottom-4 w-[32px] h-[32px]">

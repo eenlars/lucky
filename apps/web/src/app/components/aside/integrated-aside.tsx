@@ -94,7 +94,7 @@ function IntegratedNavItem({
   item,
   isActive,
   isCollapsed,
-  isMobile,
+  isMobile: _isMobile,
   onClick,
   openSubmenus,
   onToggleSubmenu,
