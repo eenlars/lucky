@@ -9,7 +9,7 @@ import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/n
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { fetchWithRetry } from "@/utils/fetch-with-retry"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 import PerformanceOverview from "./components/PerformanceOverview"
 
 const SUPABASE_TABLES = {

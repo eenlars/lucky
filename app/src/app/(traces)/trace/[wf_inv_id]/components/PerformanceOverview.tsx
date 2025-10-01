@@ -1,7 +1,7 @@
 "use client"
 
 import { SmartContent } from "@/components/utils/SmartContent"
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 // Simple JSON extraction function
 const extractJSON = (input: unknown): any => {
   if (typeof input === "object" && input !== null) {

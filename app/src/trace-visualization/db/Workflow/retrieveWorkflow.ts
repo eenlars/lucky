@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
-import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
+import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared/client"
 
 export const retrieveWorkflowInvocation = async (invocationId: string): Promise<Tables<"WorkflowInvocation">> => {
   const { data, error: WFInvocationError } = await supabase

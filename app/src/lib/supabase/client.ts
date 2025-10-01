@@ -1,4 +1,4 @@
-import { type Database } from "@lucky/shared"
+import { type Database } from "@lucky/shared/client"
 import { createBrowserClient } from "@supabase/ssr"
 import { envi } from "@/env.mjs"
 

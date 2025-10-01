@@ -10,9 +10,19 @@ const nextConfig: NextConfig = {
     "puppeteer-extra",
     "puppeteer-extra-plugin",
     "puppeteer-extra-plugin-stealth",
+    // MCP stdio requires child_process (Node.js only)
+    "ai/dist/mcp-stdio",
   ],
   /* config options here */
   webpack: (config, { isServer }) => {
+    // Exclude scraping scripts from build (server-only scripts)
+    config.module = config.module || {}
+    config.module.rules = config.module.rules || []
+    config.module.rules.push({
+      test: /src\/lib\/scraping\/.*/,
+      use: "null-loader",
+    })
+
     if (!isServer) {
       // Don't resolve these Node.js modules on the client side
       config.resolve.fallback = {
@@ -26,6 +36,7 @@ const nextConfig: NextConfig = {
         events: false,
         crypto: false,
         glob: false,
+        child_process: false,
       }
     }
 

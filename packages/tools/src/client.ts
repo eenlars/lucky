@@ -26,6 +26,5 @@ export {
 export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index"
 export type { ToolConfig } from "./config/index"
 
-// Tool factory (browser-safe utilities)
-export { defineTool, commonSchemas } from "./factory/index"
+// Tool factory types only (no runtime code - defineTool/commonSchemas pulled in @lucky/shared main bundle with Node.js deps)
 export type { ToolExecutionContext, InvocationContext } from "./factory/index"

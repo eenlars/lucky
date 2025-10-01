@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import fs from "fs"
 import acetate from "../../../../lib/evals/all/acetate.json" assert { type: "json" }
 

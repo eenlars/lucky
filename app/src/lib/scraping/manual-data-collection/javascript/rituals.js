@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import fs from "fs"
 import json from "../../../../lib/evals/all/rituals.json" assert { type: "json" }
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 import { MODELS } from "@examples/settings/constants.client"
 import Link from "next/link"
 import { useEffect, useState } from "react"

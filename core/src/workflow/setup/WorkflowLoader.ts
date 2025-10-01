@@ -158,7 +158,7 @@ export class WorkflowConfigHandler {
     try {
       const path = await import("path")
       const fs = await import("fs")
-      const { readText } = await import("@lucky/shared")
+      const { readText } = await import("@lucky/shared/fs")
 
       // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()

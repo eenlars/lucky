@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 /* ---------------------------------------------------------------------------
  *  bcorp-hunter
  *
@@ -18,7 +19,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { searchGoogleMaps } from "@examples/definitions/googlescraper/main"
 import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { PATHS } from "@examples/settings/constants"
-import { isNir } from "@lucky/shared"
+import { isNir } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import { CountryInEurope, deduplicateBusinesses } from "./utils"
 

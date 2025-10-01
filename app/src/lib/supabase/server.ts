@@ -1,4 +1,4 @@
-import { type Database } from "@lucky/shared"
+import { type Database } from "@lucky/shared/client"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { envi } from "@/env.mjs"

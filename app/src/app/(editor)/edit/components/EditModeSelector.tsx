@@ -1,6 +1,6 @@
 "use client"
 
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"

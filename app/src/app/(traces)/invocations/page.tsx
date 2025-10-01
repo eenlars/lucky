@@ -1,7 +1,7 @@
 "use client"
 
 import { showToast } from "@/lib/toast-utils"
-import type { Database } from "@lucky/shared"
+import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"

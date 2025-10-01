@@ -1,4 +1,4 @@
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 import Link from "next/link"
 import { Button } from "@/ui/button"
 

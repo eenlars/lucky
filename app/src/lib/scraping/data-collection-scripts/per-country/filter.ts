@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"

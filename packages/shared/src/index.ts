@@ -1,9 +1,9 @@
-// Public API surface
-export * as csv from "./csv/index"
-export * as fs from "./fs/index"
+// Public API surface (browser-safe only)
+// Node.js-only exports (csv, fs) are available via subpath exports:
+//   - @lucky/shared/fs
+//   - @lucky/shared/csv
 
-// Back-compat named exports
-export * from "./fs/index"
+// Browser-safe utilities
 export * from "./utils/files/json/jsonParse"
 export * from "./utils/common/isNir"
 

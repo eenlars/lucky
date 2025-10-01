@@ -2,7 +2,7 @@
 
 import { useEvolutionRunsStore, type EvolutionRunWithStats } from "@/stores/evolution-runs-store"
 import { Button } from "@/ui/button"
-import type { Database } from "@lucky/shared"
+import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"

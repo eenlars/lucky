@@ -1,7 +1,8 @@
+/* eslint-disable no-restricted-imports */
 "use server"
 
 import { supabase } from "@/lib/supabase"
-import type { Tables } from "@lucky/shared"
+import type { Tables } from "@lucky/shared/client"
 
 import type { EvolutionGraph, EvolutionNode } from "@/lib/evolution-utils"
 
