@@ -4,7 +4,7 @@
   "private": true,
   "description": "Core workflow engine, evaluation, and evolution algorithms",
   "exports": {
-    "./core-config": "./src/core-config.ts",
+    "./core-config": "./src/core-config",
     "./workflow/*": "./src/workflow/*",
     "./utils/*": "./src/utils/*",
     "./messages/*": "./src/messages/*",
