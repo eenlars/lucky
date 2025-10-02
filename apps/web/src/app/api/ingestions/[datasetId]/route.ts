@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
-import { loadDatasetMeta } from "../_lib/meta"
 import { getDataSet, getDatasetRecords } from "@/lib/db/dataset"
+import { type NextRequest, NextResponse } from "next/server"
+import { loadDatasetMeta } from "../_lib/meta"
 
 export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication

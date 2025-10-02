@@ -1,11 +1,11 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
-import { ALL_ACTIVE_TOOL_NAMES } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@core/core-config/compat"
+import { ALL_ACTIVE_TOOL_NAMES } from "@lucky/tools"
 import { z } from "zod"
 
 /**

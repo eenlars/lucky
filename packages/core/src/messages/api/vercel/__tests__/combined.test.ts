@@ -1,7 +1,7 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import multiOutputFixture from "../../__tests__/resources/multiOutput.json"
 import { responseToAgentSteps } from "../responseToAgentSteps"
 

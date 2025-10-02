@@ -56,8 +56,8 @@ const parseProxyString = (proxyString: string): ProxyResponse => {
   }
 
   // validate port is a number and in valid range
-  const portNum = parseInt(port)
-  if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+  const portNum = Number.parseInt(port)
+  if (Number.isNaN(portNum) || portNum < 1 || portNum > 65535) {
     throw new Error(`Invalid port number: ${port}`)
   }
 

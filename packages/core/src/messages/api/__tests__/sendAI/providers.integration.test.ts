@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import path from "node:path"
 import dotenv from "dotenv"
-import path from "path"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Load env from repo root to support local runs without global integration setup
 const repoRoot = path.resolve(__dirname, "../../../../..")
@@ -19,10 +19,10 @@ const providerKey: Record<Provider, string> = {
 // Only treat keys as available if they look real (not placeholders)
 const isRealKey = (key: string) => Boolean(key && !key.trim().toLowerCase().startsWith("test-"))
 
-const availableProviders = (Object.keys(providerKey) as Provider[]).filter(p => isRealKey(providerKey[p]))
+const _availableProviders = (Object.keys(providerKey) as Provider[]).filter(p => isRealKey(providerKey[p]))
 
 // Minimal prompts
-const prompts = ["Reply with one short sentence about testing.", "Respond with the word: ok", "State the number 42"]
+const _prompts = ["Reply with one short sentence about testing.", "Respond with the word: ok", "State the number 42"]
 
 // NOTE: The codebase now uses a single active provider from configuration (getCurrentProvider()).
 // The legacy per-request provider parameter is no longer supported.

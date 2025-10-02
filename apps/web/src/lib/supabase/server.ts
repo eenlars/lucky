@@ -1,7 +1,7 @@
-import { type Database } from "@lucky/shared/client"
+import { envi } from "@/env.mjs"
+import type { Database } from "@lucky/shared/client"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
-import { envi } from "@/env.mjs"
 
 export async function createClient() {
   const cookieStore = await cookies()

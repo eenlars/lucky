@@ -1,7 +1,7 @@
-import { promises as fs } from "fs"
-import { NextResponse } from "next/server"
+import { promises as fs } from "node:fs"
+import path from "node:path"
 import { requireAuth } from "@/lib/api-auth"
-import path from "path"
+import { NextResponse } from "next/server"
 
 interface _RunResult {
   model: string
@@ -74,8 +74,8 @@ function tTest(group1: number[], group2: number[]): number | null {
   const mean1 = group1.reduce((sum, val) => sum + val, 0) / group1.length
   const mean2 = group2.reduce((sum, val) => sum + val, 0) / group2.length
 
-  const variance1 = group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) / (group1.length - 1)
-  const variance2 = group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) / (group2.length - 1)
+  const variance1 = group1.reduce((sum, val) => sum + (val - mean1) ** 2, 0) / (group1.length - 1)
+  const variance2 = group2.reduce((sum, val) => sum + (val - mean2) ** 2, 0) / (group2.length - 1)
 
   if (variance1 === 0 && variance2 === 0) return null
 
@@ -97,8 +97,8 @@ function cohensD(group1: number[], group2: number[]): number | null {
   const mean1 = group1.reduce((sum, val) => sum + val, 0) / group1.length
   const mean2 = group2.reduce((sum, val) => sum + val, 0) / group2.length
 
-  const variance1 = group1.reduce((sum, val) => sum + Math.pow(val - mean1, 2), 0) / (group1.length - 1)
-  const variance2 = group2.reduce((sum, val) => sum + Math.pow(val - mean2, 2), 0) / (group2.length - 1)
+  const variance1 = group1.reduce((sum, val) => sum + (val - mean1) ** 2, 0) / (group1.length - 1)
+  const variance2 = group2.reduce((sum, val) => sum + (val - mean2) ** 2, 0) / (group2.length - 1)
 
   const pooledStd = Math.sqrt((variance1 + variance2) / 2)
   if (pooledStd === 0) return null
@@ -112,7 +112,7 @@ function calculateStats(values: number[]): StatisticalResult {
   }
 
   const mean = values.reduce((sum, val) => sum + val, 0) / values.length
-  const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (values.length - 1)
+  const variance = values.reduce((sum, val) => sum + (val - mean) ** 2, 0) / (values.length - 1)
   const std = Math.sqrt(variance)
   const ci = bootstrap(values)
 

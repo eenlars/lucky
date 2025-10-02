@@ -1,5 +1,5 @@
 import type { AllToolNames } from "@lucky/tools"
-import { Node } from "reactflow"
+import type { Node } from "reactflow"
 
 export type NodeData = {
   label: string

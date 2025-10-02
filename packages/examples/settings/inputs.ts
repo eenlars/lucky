@@ -13,28 +13,31 @@ const QUESTIONS = {
   },
   hard: {
     type: "text",
-    question: `Give me the title of the scientific paper published in EMNLP 2018-2023 where the first author did their undergrad at Dartmouth and the fourth author at UPenn.`,
+    question:
+      "Give me the title of the scientific paper published in EMNLP 2018-2023 where the first author did their undergrad at Dartmouth and the fourth author at UPenn.",
     answer: "Frequency Effects on Syntactic Rule Learning in Transformers, EMNLP 2021",
     goal: "find the title of the scientific paper",
     workflowId: "wf-scientific-paper",
   },
   rituals: {
     type: "text",
-    question: `Find the city name of the Rituals store located at Binnenweg.`,
+    question: "Find the city name of the Rituals store located at Binnenweg.",
     answer: "Heemstede",
     goal: "find the city name of the Rituals store",
     workflowId: "wf-rituals-store",
   },
   ritualsHard: {
     type: "text",
-    question: `Find how many stores rituals has in the Netherlands. it is a very precise number, and it is more than 50.`,
+    question:
+      "Find how many stores rituals has in the Netherlands. it is a very precise number, and it is more than 50.",
     answer: "109",
     goal: "find the number of rituals stores in the Netherlands",
     workflowId: "wf-rituals-store-hard",
   },
   differentStores: {
     type: "text",
-    question: `Find the city name of the Rituals store located at Binnenweg, the albert heijn closest to the oosterpark in amsterdam, and i want to know how many jumbo supermarkets are in Nieuw vennep. Then find out which one of the previous mentioned stores also have stores in belgium.`,
+    question:
+      "Find the city name of the Rituals store located at Binnenweg, the albert heijn closest to the oosterpark in amsterdam, and i want to know how many jumbo supermarkets are in Nieuw vennep. Then find out which one of the previous mentioned stores also have stores in belgium.",
     answer:
       "The city name of the rituals store is Heemstede, the city name of the albert heijn closest to the oosterpark in amsterdam is AH sarphatistraat, we have 1 jumbo supermarket in Nieuw vennep, and all of the previous stores are located in the Netherlands and also have stores in belgium.",
     goal: "create a workflow that answers the question as accurately as possible. it is not an easy task, but it is possible with the tools available.",
@@ -42,7 +45,8 @@ const QUESTIONS = {
   },
   differentStoresNoAnswer: {
     type: "text",
-    question: `Find the city name of the Rituals store located at Binnenweg, the albert heijn closest to the oosterpark in amsterdam, and i want to know how many jumbo supermarkets are in Nieuw vennep. Then find out which one of the previous mentioned stores also have stores in belgium.`,
+    question:
+      "Find the city name of the Rituals store located at Binnenweg, the albert heijn closest to the oosterpark in amsterdam, and i want to know how many jumbo supermarkets are in Nieuw vennep. Then find out which one of the previous mentioned stores also have stores in belgium.",
     answer: "the answer is not provided.",
     goal: "create a workflow that answers the question as accurately as possible. it is not an easy task, but it is possible with the tools available.",
     workflowId: "wf-rituals-store",

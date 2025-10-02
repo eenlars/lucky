@@ -1,9 +1,9 @@
-import { TOOLS, DEFAULT_TOOL_CONFIG, type AllToolNames, type MCPToolName, type CodeToolName } from "../config/tools"
+import { type AllToolNames, type CodeToolName, DEFAULT_TOOL_CONFIG, type MCPToolName, TOOLS } from "../config/tools"
 
 const INACTIVE_TOOLS = DEFAULT_TOOL_CONFIG.inactive
 const DEFAULT_TOOLS = DEFAULT_TOOL_CONFIG.defaultTools
 
-export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault: boolean = false): T => {
+export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault = false): T => {
   if (INACTIVE_TOOLS.size === 0 && DEFAULT_TOOLS.size === 0) return tools
   return Object.fromEntries(
     Object.entries(tools).filter(

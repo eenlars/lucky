@@ -31,7 +31,7 @@ export interface EvolutionNode {
   duration?: number
 
   // workflow structure
-  dsl?: any
+  dsl?: Record<string, unknown>
 
   // costs
   usdCost?: number
@@ -60,7 +60,7 @@ export interface EvolutionGraph {
     status: string
     startTime: string
     endTime: string
-    config: any
+    config: Record<string, unknown>
   }
 
   // generation info
@@ -88,28 +88,26 @@ export interface EvolutionGraph {
 export function createEvolutionVisualizationData(graph: EvolutionGraph) {
   // Defensive guards: tolerate partial graphs (e.g., no explicit target node)
   const targetNode: EvolutionNode | undefined =
-    (graph as any)?.targetNode ||
-    graph.allNodes.find(n => n.status === "completed") ||
-    graph.allNodes[graph.allNodes.length - 1]
+    graph.targetNode || graph.allNodes.find(n => n.status === "completed") || graph.allNodes[graph.allNodes.length - 1]
 
-  const totalInvocations: number = (graph as any)?.stats?.totalInvocations ?? graph.allNodes.length ?? 0
+  const totalInvocations: number = graph.stats?.totalInvocations ?? graph.allNodes.length ?? 0
   const successfulInvocations: number =
-    (graph as any)?.stats?.successfulInvocations ?? graph.allNodes.filter(n => n.status === "completed").length
+    graph.stats?.successfulInvocations ?? graph.allNodes.filter(n => n.status === "completed").length
   const successRateStr = totalInvocations > 0 ? ((successfulInvocations / totalInvocations) * 100).toFixed(1) : "0.0"
   const peakAccuracy: number =
-    (graph as any)?.stats?.maxAccuracy ??
+    graph.stats?.maxAccuracy ??
     (graph.allNodes.length > 0
       ? Math.max(0, ...graph.allNodes.map(n => (typeof n.accuracy === "number" ? n.accuracy : 0)))
       : 0)
-  const totalCostStr = ((graph as any)?.stats?.totalCost ?? 0).toFixed(4)
-  const evolutionDurationHours = Math.round(((graph as any)?.stats?.totalDuration ?? 0) / (1000 * 60 * 60))
+  const totalCostStr = (graph.stats?.totalCost ?? 0).toFixed(4)
+  const evolutionDurationHours = Math.round((graph.stats?.totalDuration ?? 0) / (1000 * 60 * 60))
 
   return {
     // summary info
     summary: {
       targetAccuracy: targetNode?.accuracy ?? peakAccuracy ?? 0,
-      targetFitness: targetNode?.fitnessScore ?? (graph as any)?.stats?.peakFitnessScore ?? 0,
-      evolutionGoal: (graph as any)?.evolutionRun?.goalText ?? "",
+      targetFitness: targetNode?.fitnessScore ?? graph.stats?.peakFitnessScore ?? 0,
+      evolutionGoal: graph.evolutionRun?.goalText ?? "",
       totalIterations: totalInvocations,
       successRate: successRateStr,
       peakAccuracy: peakAccuracy,

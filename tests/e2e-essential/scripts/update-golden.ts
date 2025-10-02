@@ -25,7 +25,7 @@ function main() {
   const outDir = path.join(thisDir, "..", "golden")
   ensureDir(outDir)
   const outPath = path.join(outDir, "workflow-basics.hash")
-  fs.writeFileSync(outPath, hash + "\n", "utf8")
+  fs.writeFileSync(outPath, `${hash}\n`, "utf8")
   console.log("Updated:", outPath, "=>", hash)
 }
 

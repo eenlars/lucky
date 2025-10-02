@@ -42,7 +42,7 @@ export function responseToAgentSteps({
       return: processed.content,
     })
   } else if (isErrorProcessed(processed)) {
-    const details = processed.details ? " details:" + truncater(JSON.stringify(processed.details), 200) : ""
+    const details = processed.details ? ` details:${truncater(JSON.stringify(processed.details), 200)}` : ""
     agentSteps.push({
       type: "error",
       return: processed.message + details,
@@ -51,7 +51,7 @@ export function responseToAgentSteps({
   } else {
     agentSteps.push({
       type: "text",
-      return: "unknown type of output: " + JSON.stringify(processed),
+      return: `unknown type of output: ${JSON.stringify(processed)}`,
     })
   }
 

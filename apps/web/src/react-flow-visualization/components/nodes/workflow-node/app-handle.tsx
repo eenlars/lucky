@@ -1,15 +1,22 @@
 "use client"
 
-import { Position, useConnection, useInternalNode, useNodeConnections, useNodeId, XYPosition } from "@xyflow/react"
+import {
+  type Position,
+  type XYPosition,
+  useConnection,
+  useInternalNode,
+  useNodeConnections,
+  useNodeId,
+} from "@xyflow/react"
 import clsx from "clsx"
 import { useCallback, useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-import { type AppStore } from "@/react-flow-visualization/store/app-store"
+import type { AppStore } from "@/react-flow-visualization/store/app-store"
 
 import { AppDropdownMenu } from "@/react-flow-visualization/components/app-dropdown-menu"
 import { ButtonHandle } from "@/react-flow-visualization/components/button-handle"
-import { type AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
+import type { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 
 import { useDropdown } from "@/react-flow-visualization/hooks/use-dropdown"

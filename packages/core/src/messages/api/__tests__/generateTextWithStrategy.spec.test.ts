@@ -3,7 +3,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { createPrepareStepStrategy } from "@core/messages/pipeline/selectTool/selectToolStrategy"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { JSONN } from "@core/utils/json"
-import { generateText, stepCountIs, tool, zodSchema, type ToolSet } from "ai"
+import { type ToolSet, generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 

@@ -23,16 +23,16 @@
 // TODO: add request deduplication to prevent duplicate API calls
 // TODO: create comprehensive audit logging for all AI interactions
 
-import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { getDefaultModels } from "@core/core-config/compat"
+import { normalizeError } from "@core/messages/api/sendAI/errors"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
 import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
 import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
+import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -150,7 +150,7 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
       if (line.includes(".ts") && !line.includes("sendAI.ts") && !line.includes("/sendAI/index.ts")) {
         // try to extract the file path
         const match = line.match(/(?:\()?(.*?\.ts):\d+:\d+\)?/)
-        if (match && match[1]) {
+        if (match?.[1]) {
           callerFile = match[1]
           break
         }

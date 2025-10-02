@@ -1,7 +1,7 @@
-import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow"
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Workflow configuration is required" }, { status: 400 })
     }
 
-    const result = await verifyWorkflowConfig(workflow, { throwOnError: false })
+    const result = await verifyWorkflowConfig(workflow, {
+      throwOnError: false,
+    })
 
     return NextResponse.json(result)
   } catch (error) {

@@ -1,8 +1,8 @@
-import { ALL_ACTIVE_TOOL_NAMES, INACTIVE_TOOLS } from "@lucky/tools"
-import { isNir } from "@lucky/shared"
+import { CONFIG } from "@core/core-config/compat"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
+import { ALL_ACTIVE_TOOL_NAMES, INACTIVE_TOOLS } from "@lucky/tools"
 
 // check that each tool is used by only one workflow node
 export const verifyToolsUnique = async (config: WorkflowConfig): Promise<VerificationErrors> => {

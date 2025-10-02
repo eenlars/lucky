@@ -1,9 +1,9 @@
 /**
  * runAdaptiveTest.ts - Baseline single-loop quick test (debug) outputting V3-compatible type
  */
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { adaptiveTools } from "../../../shared/tools/adaptive/adaptiveTools"
 import { runSequentialTools } from "../../02-sequential-chains/sequentialRunner"

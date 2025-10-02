@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/partou.json" assert { type: "json" }
 
 // template for days with no data
@@ -19,8 +19,8 @@ function transformPartouData(input) {
   return locations.map(item => {
     // Build coordinates array if present
     const coords =
-      item.geoLocation && item.geoLocation.longitude && item.geoLocation.latitude
-        ? [parseFloat(item.geoLocation.longitude), parseFloat(item.geoLocation.latitude)]
+      item.geoLocation?.longitude && item.geoLocation.latitude
+        ? [Number.parseFloat(item.geoLocation.longitude), Number.parseFloat(item.geoLocation.latitude)]
         : null
 
     // Collect all venue images into one array

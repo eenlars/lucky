@@ -7,9 +7,9 @@ declare global {
 }
 global.vi = vi
 
+import path from "node:path"
 // Load real environment variables from .env files
 import dotenv from "dotenv"
-import path from "path"
 
 // Load environment variables from repo root using PATHS
 import { PATHS } from "@core/core-config/compat"

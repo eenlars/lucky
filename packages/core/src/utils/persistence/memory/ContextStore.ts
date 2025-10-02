@@ -1,5 +1,5 @@
 // todo-hierarchyviolation: utils (level 0) importing from tools (level 1) violates hierarchy
-import { ContextFileInfo } from "@core/tools/context/contextStore.types"
+import type { ContextFileInfo } from "@core/tools/context/contextStore.types"
 import { InMemoryContextStore } from "@core/utils/persistence/memory/MemoryStore"
 import { SupabaseContextStore } from "@core/utils/persistence/memory/SupabaseStore"
 

@@ -1,13 +1,13 @@
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { getSelfImprovePrompt } from "@core/improvement/behavioral/self-improve/node/selfImprovement.p"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
 import type { WorkFlowNode } from "@core/node/WorkFlowNode"
+import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
+import { saveInLoc } from "@core/utils/fs/fileSaver"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { saveInLoc } from "@core/utils/fs/fileSaver"
-import { CONFIG, PATHS } from "@core/core-config/compat"
 
 export async function selfImproveHelper({
   n,

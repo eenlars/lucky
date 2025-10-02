@@ -1,6 +1,7 @@
 "use client"
 
-import { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
+import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
+import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
 // Button no longer used for model chooser
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { Input } from "@/react-flow-visualization/components/ui/input"
@@ -14,6 +15,8 @@ import {
 } from "@/react-flow-visualization/components/ui/select"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
 import { useAppStore } from "@/react-flow-visualization/store"
+// Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
+import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
 import {
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
@@ -22,9 +25,6 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@lucky/tools/client"
-import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
-// Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
-import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
@@ -126,7 +126,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
       e.preventDefault()
 
       // number keys 1-9 for quick tool toggle
-      const num = parseInt(e.key)
+      const num = Number.parseInt(e.key)
       if (num >= 1 && num <= 9) {
         // tools in order: first mcp, then code
         const allTools = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES]

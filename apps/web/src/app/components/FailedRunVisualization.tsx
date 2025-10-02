@@ -82,7 +82,7 @@ export function FailedRunVisualization({
         <h3 className="text-lg font-semibold mb-4 text-red-700">⚠️ Analysis</h3>
         <div className="space-y-3">
           <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+            <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2" />
             <div>
               <div className="font-medium">High Failure Rate</div>
               <div className="text-sm text-gray-600">
@@ -99,7 +99,7 @@ export function FailedRunVisualization({
 
           {successfulInvocations === 0 && (
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+              <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2" />
               <div>
                 <div className="font-medium">Zero Successful Completions</div>
                 <div className="text-sm text-gray-600">
@@ -110,7 +110,7 @@ export function FailedRunVisualization({
           )}
 
           <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2" />
             <div>
               <div className="font-medium">Limited Visualization</div>
               <div className="text-sm text-gray-600">

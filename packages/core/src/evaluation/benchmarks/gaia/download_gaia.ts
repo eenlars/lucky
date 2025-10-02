@@ -1,7 +1,7 @@
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 import { envi } from "@core/utils/env.mjs"
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
 
 type GaiaRow = {
   task_id: string
@@ -40,7 +40,7 @@ async function fetchBatch(
   url.searchParams.set("length", String(length))
 
   const headers: HeadersInit = {}
-  if (authToken) headers["Authorization"] = `Bearer ${authToken}`
+  if (authToken) headers.Authorization = `Bearer ${authToken}`
 
   const res = await fetch(url.toString(), { headers })
   if (!res.ok) {

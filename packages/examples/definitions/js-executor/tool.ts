@@ -1,6 +1,6 @@
+import vm from "node:vm"
 import Tools from "@lucky/tools"
 import { defineTool } from "@lucky/tools"
-import vm from "node:vm"
 import { z } from "zod"
 
 /**
@@ -9,7 +9,7 @@ import { z } from "zod"
  * @param timeoutMs - Maximum execution time in milliseconds (default: 1000)
  * @returns Result of the last expression or throws error
  */
-export function executeJavaScript(code: string, timeoutMs: number = 1000): unknown {
+export function executeJavaScript(code: string, timeoutMs = 1000): unknown {
   // Try to treat as expression first
   try {
     const expressionCode = `(() => { return (${code}) })()`

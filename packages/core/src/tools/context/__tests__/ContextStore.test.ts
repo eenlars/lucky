@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { InMemoryContextStore } from "@core/utils/persistence/memory/MemoryStore"
 import { SupabaseContextStore } from "@core/utils/persistence/memory/SupabaseStore"
+import { beforeEach, describe, expect, it } from "vitest"
 
 describe("ContextStore", () => {
   // TODO: This test file is testing ContextStore from utils/persistence/memory, not from tools/context.

@@ -1,8 +1,8 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@lucky/shared"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
 import type { LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import { z } from "zod"
 
@@ -128,7 +128,8 @@ Consider:
         // Validate and return the response
         if (result.toolChoice === "auto" || result.toolChoice === "required" || result.toolChoice === "none") {
           return { toolChoice: result.toolChoice }
-        } else if (
+        }
+        if (
           typeof result.toolChoice === "object" &&
           result.toolChoice.type === "tool" &&
           result.toolChoice.name &&

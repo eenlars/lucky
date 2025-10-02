@@ -1,7 +1,7 @@
+import type { Payload } from "@core/messages/MessagePayload"
 import type { HandoffResult } from "@core/messages/handoffs/handOffUtils"
 import { buildResultHandoff, callModelHandoff, handoffPrompts } from "@core/messages/handoffs/handOffUtils"
 import type { ChooseHandoffOpts } from "@core/messages/handoffs/main"
-import type { Payload } from "@core/messages/MessagePayload"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 
 /**
@@ -52,7 +52,8 @@ export async function chooseHandoffSequential({
       content,
       workflowMessage,
     })
-  } else if (handOffs.length === 1 && handOffs.includes("end")) {
+  }
+  if (handOffs.length === 1 && handOffs.includes("end")) {
     return buildResultHandoff({
       data: {
         handoff: "end",

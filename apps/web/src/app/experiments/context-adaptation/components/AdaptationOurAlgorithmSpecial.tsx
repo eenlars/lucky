@@ -447,7 +447,7 @@ export default function AdaptationOurAlgorithmSpecial({ className = "" }: { clas
   }, [])
 
   const { modelOrder, byScenario } = useMemo(() => buildPoints(data), [data])
-  const allPoints = useMemo(() => Object.values(byScenario).flatMap(arr => arr), [byScenario])
+  const allPoints = useMemo(() => Object.values(byScenario).flat(), [byScenario])
   const filteredPoints = useMemo(
     () => allPoints.filter(p => enabledScenarios[p.scenario] && enabledConditions[p.condition]),
     [allPoints, enabledScenarios, enabledConditions],

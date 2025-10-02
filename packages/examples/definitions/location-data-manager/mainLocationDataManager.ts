@@ -1,7 +1,7 @@
 import { lgg } from "@core/utils/logging/Logger" // core location data manager operations
 
-import { promises as fs } from "fs"
-import { join } from "path"
+import { promises as fs } from "node:fs"
+import { join } from "node:path"
 import { CONFIG, PATHS } from "@lucky/tools/config/runtime"
 import type { LocationData, PartialLocationData, WorkflowLocationData } from "@lucky/tools/schemas/location.types"
 import { DataQuality } from "@lucky/tools/schemas/location.types"
@@ -60,7 +60,7 @@ function normalizeLocation(data: PartialLocationData): LocationData {
 }
 
 export class LocationDataManager {
-  private readonly dataDir = PATHS.node.memory.workfiles + "/location-data"
+  private readonly dataDir = `${PATHS.node.memory.workfiles}/location-data`
 
   async insertLocations(
     fileName: string,
@@ -170,7 +170,7 @@ export class LocationDataManager {
         errors: errors.length ? errors : undefined,
       }
     } catch (error) {
-      lgg.error(`[locationDataManager] critical error in insertLocations:`, error)
+      lgg.error("[locationDataManager] critical error in insertLocations:", error)
       throw error
     }
   }
@@ -219,7 +219,7 @@ export class LocationDataManager {
       await this.saveWorkflowData(workflowData)
       return { success: true, locations: workflowData.locations }
     } catch (error) {
-      lgg.error(`[locationDataManager] failed to remove locations:`, error)
+      lgg.error("[locationDataManager] failed to remove locations:", error)
       return { success: false, locations: [] }
     }
   }
@@ -368,7 +368,7 @@ export class LocationDataManager {
         errors: errors.length ? errors : undefined,
       }
     } catch (error) {
-      lgg.error(`[locationDataManager] critical error in updateLocations:`, error)
+      lgg.error("[locationDataManager] critical error in updateLocations:", error)
       throw error
     }
   }

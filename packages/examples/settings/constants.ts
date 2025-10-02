@@ -4,9 +4,9 @@
  * For client-side code, use constants.client.ts
  */
 
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
-import path from "path"
-import { fileURLToPath } from "url"
 
 // Import client-safe constants
 import { CONFIG as CLIENT_CONFIG, MODELS, getDefaultModels } from "./constants.client"

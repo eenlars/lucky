@@ -1,6 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { MapboxFeature } from "./resources/exampleFeature"
+import type { MapboxFeature } from "./resources/exampleFeature"
 
 interface LocationData {
   lat: number
@@ -35,7 +35,7 @@ export async function geocodeLocation(options: MapboxGeocodeOptions): Promise<RS
   const { query, country = DEFAULTS.country, limit = DEFAULTS.limit, types = DEFAULTS.types, place } = options
 
   if (!query) {
-    return R.error("search_string is null: " + query, 0)
+    return R.error(`search_string is null: ${query}`, 0)
   }
 
   if (!process.env.MAPBOX_TOKEN) {
@@ -62,14 +62,14 @@ export async function geocodeLocation(options: MapboxGeocodeOptions): Promise<RS
   const res = await fetch(url)
 
   if (!res.ok) {
-    return R.error("cant get features for " + query, 0)
+    return R.error(`cant get features for ${query}`, 0)
   }
 
   const resData = await res.json()
   const { features } = resData
 
   if (!features[0]) {
-    return R.error("cant get features for " + query, 0)
+    return R.error(`cant get features for ${query}`, 0)
   }
 
   const feature = features as MapboxFeature[]

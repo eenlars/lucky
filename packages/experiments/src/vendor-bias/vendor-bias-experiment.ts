@@ -1,4 +1,4 @@
-import fs from "fs"
+import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 // Use relative import within the same package to avoid path alias issues when running with Bun/Node
@@ -292,7 +292,7 @@ async function runTrials(
   const logs: TrialLog[] = new Array(trials)
   let providerRunningUsd = 0
 
-  const indices = Array.from({ length: trials }, (_, i) => i)
+  const _indices = Array.from({ length: trials }, (_, i) => i)
 
   let next = 0
   async function worker() {
@@ -579,7 +579,7 @@ async function main() {
 
   function csvEscape(val: string | number | boolean | null | undefined): string {
     const s = val == null ? "" : String(val)
-    if (/[",\n]/.test(s)) return '"' + s.replaceAll('"', '""') + '"'
+    if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`
     return s
   }
 

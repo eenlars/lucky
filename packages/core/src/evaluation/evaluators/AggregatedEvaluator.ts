@@ -3,8 +3,8 @@
 import type { WorkflowEvaluationResult } from "@core/evaluation/evaluators/WorkflowEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
+import type { Workflow } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { Workflow } from "@core/workflow/Workflow"
 import { WorkflowEvaluator } from "./WorkflowEvaluator"
 
 /**

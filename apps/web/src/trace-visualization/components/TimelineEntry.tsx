@@ -14,8 +14,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@lucky/core/messages/MessagePayload"
 import type { AgentSteps, AgentStepsLegacy } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { isLegacyToolUsage, normalizeLegacyToolUsage } from "@lucky/core/messages/pipeline/LegacyToolUsage.types"
-import { isNir } from "@lucky/shared/client"
 import { TOOLS } from "@lucky/examples/settings/tools"
+import { isNir } from "@lucky/shared/client"
 import { format } from "date-fns"
 import { ChevronDown, Database, Maximize2, Minimize2 } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -214,103 +214,103 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
         </div>
 
         {/* Incoming message box */}
-        {inputs.length > 0 && inputSummary && inputSummary !== "Input data object" && inputSummary !== "No input" && (
-          <>
-            {inputSummary.startsWith("Aggregated input from") ? (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                    <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                      Incoming message from previous node
-                    </div>
-                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
-                      <span>{inputSummary}</span>
-                      <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to view)</span>
-                    </div>
+        {inputs.length > 0 &&
+          inputSummary &&
+          inputSummary !== "Input data object" &&
+          inputSummary !== "No input" &&
+          (inputSummary.startsWith("Aggregated input from") ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                  <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                    Incoming message from previous node
                   </div>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Aggregated Inputs</DialogTitle>
-                    <DialogDescription>{inputSummary}</DialogDescription>
-                  </DialogHeader>
-                  <div className="mt-4 space-y-4">
-                    {(() => {
-                      const payload = inputs[0]?.payload
-                      if (typeof payload === "object" && payload) {
-                        const anyPayload: any = payload
-                        const msgs = anyPayload.messages ?? anyPayload.berichten
-                        if (Array.isArray(msgs)) {
-                          return msgs.map((msg: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
-                            >
-                              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Input {idx + 1} {msg.from_node_id ? `from ${msg.from_node_id}` : ""}
-                              </div>
-                              <SmartContent value={msg} collapsed={2} enableClipboard showExpanders />
-                            </div>
-                          ))
-                        }
-                      }
-                      return <div className="text-sm text-gray-500 dark:text-gray-400">No messages found</div>
-                    })()}
+                  <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
+                    <span>{inputSummary}</span>
+                    <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to view)</span>
                   </div>
-                </DialogContent>
-              </Dialog>
-            ) : inputSummaryResult.isTruncated ? (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                    <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                      Incoming message from previous node
-                    </div>
-                    <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
-                      <span>{inputSummary}</span>
-                      <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to expand)</span>
-                    </div>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Full Incoming Message</DialogTitle>
-                    <DialogDescription>Complete message from previous node</DialogDescription>
-                  </DialogHeader>
-                  <div className="mt-4">
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                      <SmartContent
-                        value={inputs[0]?.payload}
-                        collapsed={false}
-                        enableClipboard
-                        showExpanders
-                        stringifySpacing={2}
-                      />
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                  Incoming message from previous node
                 </div>
-                <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Aggregated Inputs</DialogTitle>
+                  <DialogDescription>{inputSummary}</DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 space-y-4">
                   {(() => {
-                    // Prefer canonical text extraction for preview; fall back to summary
-                    try {
-                      const text = extractTextFromPayload(inputs[0]?.payload as any)
-                      if (text && typeof text === "string") {
-                        return text.length > 300 ? text.substring(0, 300) + "..." : text
+                    const payload = inputs[0]?.payload
+                    if (typeof payload === "object" && payload) {
+                      const anyPayload: any = payload
+                      const msgs = anyPayload.messages ?? anyPayload.berichten
+                      if (Array.isArray(msgs)) {
+                        return msgs.map((msg: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
+                          >
+                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              Input {idx + 1} {msg.from_node_id ? `from ${msg.from_node_id}` : ""}
+                            </div>
+                            <SmartContent value={msg} collapsed={2} enableClipboard showExpanders />
+                          </div>
+                        ))
                       }
-                    } catch {}
-                    return inputSummary
+                    }
+                    return <div className="text-sm text-gray-500 dark:text-gray-400">No messages found</div>
                   })()}
                 </div>
+              </DialogContent>
+            </Dialog>
+          ) : inputSummaryResult.isTruncated ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                  <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                    Incoming message from previous node
+                  </div>
+                  <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed flex items-center justify-between">
+                    <span>{inputSummary}</span>
+                    <span className="text-xs text-blue-700 dark:text-blue-400 ml-2">(Click to expand)</span>
+                  </div>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Full Incoming Message</DialogTitle>
+                  <DialogDescription>Complete message from previous node</DialogDescription>
+                </DialogHeader>
+                <div className="mt-4">
+                  <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                    <SmartContent
+                      value={inputs[0]?.payload}
+                      collapsed={false}
+                      enableClipboard
+                      showExpanders
+                      stringifySpacing={2}
+                    />
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <div className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                Incoming message from previous node
               </div>
-            )}
-          </>
-        )}
+              <div className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
+                {(() => {
+                  // Prefer canonical text extraction for preview; fall back to summary
+                  try {
+                    const text = extractTextFromPayload(inputs[0]?.payload as any)
+                    if (text && typeof text === "string") {
+                      return text.length > 300 ? `${text.substring(0, 300)}...` : text
+                    }
+                  } catch {}
+                  return inputSummary
+                })()}
+              </div>
+            </div>
+          ))}
 
         {/* Metadata footer bar */}
         <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
@@ -636,15 +636,15 @@ function extractInputSummary(payload: any): {
     if (payload.trim().length === 0) return { summary: "", original: null, isTruncated: false }
     // extract first sentence or first 60 chars
     const firstSentence = payload.split(/[.!?]/)
-    if (firstSentence[0] && firstSentence[0].trim()) {
-      const summary = firstSentence[0].length > 60 ? firstSentence[0].substring(0, 60) + "..." : firstSentence[0].trim()
+    if (firstSentence[0]?.trim()) {
+      const summary = firstSentence[0].length > 60 ? `${firstSentence[0].substring(0, 60)}...` : firstSentence[0].trim()
       return {
         summary,
         original: payload,
         isTruncated: firstSentence[0].length > 60 || payload.length > firstSentence[0].length,
       }
     }
-    const summary = payload.length > 60 ? payload.substring(0, 60) + "..." : payload
+    const summary = payload.length > 60 ? `${payload.substring(0, 60)}...` : payload
     return {
       summary,
       original: payload,
@@ -663,9 +663,9 @@ function extractInputSummary(payload: any): {
         const first = msgs[0]
         const text: string | undefined =
           typeof first?.text === "string" ? first.text : typeof first?.message === "string" ? first.message : undefined
-        if (text && text.trim()) {
+        if (text?.trim()) {
           const original = text
-          const summary = text.length > 80 ? text.substring(0, 80) + "..." : text
+          const summary = text.length > 80 ? `${text.substring(0, 80)}...` : text
           return { summary, original, isTruncated: text.length > 80 }
         }
         return {
@@ -690,7 +690,7 @@ function extractInputSummary(payload: any): {
     const extractField = (field: string) => {
       if (payload[field] && typeof payload[field] === "string" && payload[field].trim()) {
         const original = payload[field]
-        const summary = original.length > 80 ? original.substring(0, 80) + "..." : original
+        const summary = original.length > 80 ? `${original.substring(0, 80)}...` : original
         return {
           summary,
           original,

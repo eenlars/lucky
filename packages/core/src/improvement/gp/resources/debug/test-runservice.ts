@@ -3,8 +3,8 @@
  * This demonstrates the write-time protocol implementation
  */
 
-import { lgg } from "@core/utils/logging/Logger"
 import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
+import { lgg } from "@core/utils/logging/Logger"
 import { RunService } from "../../RunService"
 
 async function testRunService() {

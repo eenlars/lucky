@@ -23,9 +23,7 @@ export async function fetchWithRetry(url: string, options?: RequestInit, maxAtte
       lastError = new Error(`HTTP ${response.status}`)
     } catch (error) {
       // AbortError should not be retried; surface immediately
-      const isAbortError =
-        (typeof error === "object" && error !== null && "name" in error && (error as any).name === "AbortError") ||
-        options?.signal?.aborted
+      const isAbortError = (error instanceof Error && error.name === "AbortError") || options?.signal?.aborted
       if (isAbortError) {
         throw error instanceof Error ? error : new Error("The operation was aborted")
       }
@@ -34,7 +32,7 @@ export async function fetchWithRetry(url: string, options?: RequestInit, maxAtte
 
     // Wait before retrying (except on last attempt)
     if (attempt < maxAttempts - 1) {
-      await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, attempt)))
+      await new Promise(resolve => setTimeout(resolve, 100 * 2 ** attempt))
     }
   }
 

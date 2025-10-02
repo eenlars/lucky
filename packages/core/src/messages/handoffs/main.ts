@@ -1,6 +1,6 @@
+import { CONFIG } from "@core/core-config/compat"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
 
 import type { HandoffResult } from "@core/messages/handoffs/handOffUtils"
 import { chooseHandoffHierarchical } from "@core/messages/handoffs/types/hierarchical"

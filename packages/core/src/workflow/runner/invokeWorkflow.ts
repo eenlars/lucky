@@ -12,19 +12,19 @@
  * @module workflow/runner/invokeWorkflow
  */
 
-import { isNir } from "@lucky/shared"
+import { CONFIG } from "@core/core-config/compat"
 import { genShortId } from "@core/utils/common/utils"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
+import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { loadFromDatabase, loadFromDSL, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
-import { Workflow } from "@core/workflow/Workflow"
-import { JSONN } from "@core/utils/json"
-import { CONFIG } from "@core/core-config/compat"
+import { loadFromDSL, loadFromDatabase, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
+import { isNir } from "@lucky/shared"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
@@ -74,7 +74,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     }
 
     // Set defaults
-    evalInput.workflowId ??= "wf_id_" + genShortId()
+    evalInput.workflowId ??= `wf_id_${genShortId()}`
     if (evalInput.type === "text" && !evalInput.answer) {
       evalInput.answer = ""
     }

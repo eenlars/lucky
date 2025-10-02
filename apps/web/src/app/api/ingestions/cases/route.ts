@@ -1,12 +1,12 @@
-import { supabase } from "@/lib/supabase"
-import { IngestionLayer } from "@lucky/core/workflow/ingestion/IngestionLayer"
-import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
-import { NextRequest, NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
-import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
+import { requireAuth } from "@/lib/api-auth"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { supabase } from "@/lib/supabase"
+import { IngestionLayer } from "@lucky/core/workflow/ingestion/IngestionLayer"
+import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     const cases = await IngestionLayer.convert(evaluation)
     return NextResponse.json({ success: true, cases })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -1,6 +1,6 @@
+import { supabase } from "@/lib/supabase"
 import { NodeInvocation } from "@/trace-visualization/components"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 
 interface PageProps {

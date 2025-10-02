@@ -1,10 +1,10 @@
 "use client"
 
-import CodeMirror from "@uiw/react-codemirror"
 import { json } from "@codemirror/lang-json"
+import { type Diagnostic, linter } from "@codemirror/lint"
 import { EditorView } from "@codemirror/view"
-import { useState, useCallback } from "react"
-import { linter, Diagnostic } from "@codemirror/lint"
+import CodeMirror from "@uiw/react-codemirror"
+import { useCallback, useState } from "react"
 
 interface ImprovedJSONEditorProps {
   content: string
@@ -57,7 +57,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
 
       // try to find the position of the error
       const match = errorMessage.match(/position (\d+)/)
-      const position = match ? parseInt(match[1]) : 0
+      const position = match ? Number.parseInt(match[1]) : 0
 
       diagnostics.push({
         from: position,
@@ -76,7 +76,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
       const parsed = JSON.parse(content)
       const formatted = JSON.stringify(parsed, null, 2)
       onChange(formatted)
-    } catch (e) {
+    } catch (_e) {
       // if invalid json, do nothing
     }
   }, [content, onChange])
@@ -90,7 +90,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
       await navigator.clipboard.writeText(validJson)
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
-    } catch (e) {
+    } catch (_e) {
       // if invalid json, copy as is
       await navigator.clipboard.writeText(content)
       setIsCopied(true)
@@ -150,6 +150,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
         <span className="text-sm text-gray-600 font-medium">JSON Editor</span>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={handleFormat}
             className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
             title="Format JSON (Cmd/Ctrl+Shift+F)"
@@ -157,6 +158,7 @@ export default function ImprovedJSONEditor({ content, onChange, isLoading }: Imp
             Format
           </button>
           <button
+            type="button"
             onClick={handleCopy}
             className="text-xs px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5 cursor-pointer"
             title="Copy JSON"

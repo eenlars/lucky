@@ -1,16 +1,15 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 // src/core/workflow/Workflow.ts
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
-import { prepareProblem, type PrepareProblemMethod } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
+import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import { INACTIVE_TOOLS } from "@lucky/tools"
-import type { ToolExecutionContext } from "@lucky/tools"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
-import { createContextStore, type ContextStore } from "@core/utils/persistence/memory/ContextStore"
+import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import {
   createWorkflowInvocation,
   createWorkflowVersion,
@@ -22,14 +21,15 @@ import { R } from "@core/utils/types"
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { zodToJson } from "@core/utils/zod/zodToJson"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
-import { workflowToString, type SimplifyOptions } from "@core/workflow/actions/generate/workflowToString"
+import { type SimplifyOptions, workflowToString } from "@core/workflow/actions/generate/workflowToString"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { aggregateResults, evaluateRuns, runAllIO } from "@core/workflow/runner/runAllInputs"
 import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner/types"
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { INACTIVE_TOOLS } from "@lucky/tools"
+import type { ToolExecutionContext } from "@lucky/tools"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -56,8 +56,8 @@ export class Workflow {
   protected feedback: GenomeFeedback = null
   protected fitness?: FitnessOfWorkflow
   private runResults?: RunResult[]
-  private evaluated: boolean = false
-  private hasRun: boolean = false
+  private evaluated = false
+  private hasRun = false
   private problemAnalysis: string | undefined
 
   protected constructor(
@@ -74,7 +74,7 @@ export class Workflow {
       this.workflowVersionId = workflowVersionId
     } else {
       const fullHash = hashWorkflow(config)
-      this.workflowVersionId = "wf_ver_" + fullHash.substring(0, 8)
+      this.workflowVersionId = `wf_ver_${fullHash.substring(0, 8)}`
     }
     this.mainGoal = evaluationInput.goal
     this.verifyCriticalIssues(config)
@@ -274,7 +274,7 @@ export class Workflow {
     const evals = await evaluateRuns(this, this.runResults)
     const { data, usdCost, error } = await aggregateResults(evals)
     this.evaluated = true
-    guard(data, "evaluate failed: " + JSON.stringify(error))
+    guard(data, `evaluate failed: ${JSON.stringify(error)}`)
     this.fitness = data.averageFitness
     this.totalCost += usdCost ?? 0
     this.feedback = data.averageFeedback
@@ -285,7 +285,7 @@ export class Workflow {
   /**
    * Verifies workflow, registers in DB, instantiates nodes.
    */
-  protected async setup(strict: boolean = false): Promise<void> {
+  protected async setup(strict = false): Promise<void> {
     // check if io is set
     guard(this.workflowIO, "Workflow IO is not set")
 

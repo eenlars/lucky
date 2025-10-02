@@ -1,8 +1,8 @@
-import { promises as fs } from "fs"
-import { tmpdir } from "os"
-import { join } from "path"
-import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import { promises as fs } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { DataQuality, type PartialLocationData } from "@lucky/tools/schemas/location.types"
+import { afterEach, beforeEach, describe, expect, test } from "vitest"
 import { LocationDataManager } from "../mainLocationDataManager"
 // create a test-specific location data manager that uses a temp directory
 class TestLocationDataManager extends LocationDataManager {

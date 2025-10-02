@@ -1,9 +1,9 @@
-import { listFiles } from "@huggingface/hub"
+import { execSync } from "node:child_process"
+import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { join } from "node:path"
 import { PATHS } from "@core/core-config/compat"
-import { execSync } from "child_process"
-import { mkdir, readFile, writeFile } from "fs/promises"
+import { listFiles } from "@huggingface/hub"
 import { readParquet } from "parquet-wasm"
-import { join } from "path"
 
 // run in the terminal with:
 // bun run src/core/workflow/ingestion/benchmarks/swe/test_2_swe.ts
@@ -122,7 +122,6 @@ async function testSWEBenchLoader() {
       }
     } catch (error) {
       console.log(`Failed to access ${repoId}:`, error instanceof Error ? error.message : String(error))
-      continue
     }
   }
 
@@ -218,11 +217,11 @@ async function processDataset(tempPath: string) {
 
     // Display sample instances
     for (const instance of instances) {
-      console.log("\n" + "=".repeat(50))
+      console.log(`\n${"=".repeat(50)}`)
       console.log("Instance ID:", instance.instance_id)
       console.log("Repository:", instance.repo)
       console.log("Base commit:", instance.base_commit)
-      console.log("Problem statement:", instance.problem_statement.substring(0, 200) + "...")
+      console.log("Problem statement:", `${instance.problem_statement.substring(0, 200)}...`)
       console.log("Has patch:", !!instance.patch)
       console.log("Patch length:", instance.patch?.length || 0)
       console.log("Has test patch:", !!instance.test_patch)
@@ -237,7 +236,7 @@ async function processDataset(tempPath: string) {
     }
 
     // Test finding specific instance
-    console.log("\n" + "=".repeat(50))
+    console.log(`\n${"=".repeat(50)}`)
     console.log("Testing specific instance lookup...")
 
     const targetId = "django__django-11099"
@@ -246,12 +245,12 @@ async function processDataset(tempPath: string) {
     if (targetInstance) {
       console.log("Found target instance:", targetInstance.instance_id)
       console.log("Repository:", targetInstance.repo)
-      console.log("Problem:", targetInstance.problem_statement.substring(0, 100) + "...")
+      console.log("Problem:", `${targetInstance.problem_statement.substring(0, 100)}...`)
     } else {
       console.log("Target instance not found in dev set")
     }
 
-    console.log("\n" + "=".repeat(50))
+    console.log(`\n${"=".repeat(50)}`)
     console.log("🎉 SWE-bench loader test completed successfully!")
     console.log("✅ Successfully connected to Hugging Face dataset repository")
     console.log("✅ Downloaded parquet file from datasets/princeton-nlp/SWE-bench to downloads directory")

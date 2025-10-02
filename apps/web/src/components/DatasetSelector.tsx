@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/ui/button"
+import { useEffect, useState } from "react"
 
 interface Dataset {
   datasetId: string
@@ -81,7 +81,7 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
       {error && (
         <div className="mt-1 text-xs text-red-600">
           {error}
-          <button onClick={loadDatasets} className="ml-2 underline hover:no-underline">
+          <button type="button" onClick={loadDatasets} className="ml-2 underline hover:no-underline">
             Retry
           </button>
         </div>

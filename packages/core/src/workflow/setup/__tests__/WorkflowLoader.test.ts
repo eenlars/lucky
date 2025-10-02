@@ -17,9 +17,9 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
+import os from "node:os"
+import path from "node:path"
 import type { FlowPathsConfig, FlowRuntimeConfig, FullFlowRuntimeConfig } from "@core/types"
-import os from "os"
-import path from "path"
 
 // Mock runtime constants - typed and safe temp paths
 vi.mock("@examples/settings/constants", () => {

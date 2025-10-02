@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { execSync } from "child_process"
-import { existsSync, mkdirSync, writeFileSync } from "fs"
-import { join } from "path"
+import { execSync } from "node:child_process"
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
 
 interface DepcheckResult {
   dependencies: string[]
@@ -94,7 +94,7 @@ function runTsPrune(dir: string): TsPruneResult[] {
       if (match) {
         exports.push({
           file: match[1],
-          line: parseInt(match[2], 10),
+          line: Number.parseInt(match[2], 10),
           name: match[3],
         })
       }
@@ -112,7 +112,7 @@ function runTsPrune(dir: string): TsPruneResult[] {
         if (match) {
           exports.push({
             file: match[1],
-            line: parseInt(match[2], 10),
+            line: Number.parseInt(match[2], 10),
             name: match[3],
           })
         }

@@ -1,7 +1,7 @@
 "use client"
 
-import { WORKFLOW_TEMPLATES } from "../workflow-templates"
 import { Button } from "@/ui/button"
+import { WORKFLOW_TEMPLATES } from "../workflow-templates"
 
 type VerificationResult = {
   isValid: boolean

@@ -32,7 +32,7 @@ const extractJSON = (input: unknown): any => {
   }
 }
 
-const showJSON = (obj: unknown, indent: number = 2): string => {
+const showJSON = (obj: unknown, indent = 2): string => {
   try {
     return JSON.stringify(obj, null, indent)
   } catch {

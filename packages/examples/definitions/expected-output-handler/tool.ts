@@ -4,9 +4,9 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
 import { JSONN } from "@lucky/shared"
-import Tools, { CodeToolResult, defineTool } from "@lucky/tools"
-import { z } from "zod"
+import Tools, { type CodeToolResult, defineTool } from "@lucky/tools"
 import { MODELS } from "@lucky/tools/config/runtime"
+import { z } from "zod"
 /**
  * Simple tool for handling LLM requests with expected output validation
  * Takes a prompt and expected output schema, validates the LLM response against it
@@ -34,7 +34,7 @@ const expectedOutputHandler = defineTool({
     const systemPrompt =
       strictness === "strict"
         ? `You are an expert at transforming data to the right format. You must transform the data to EXACTLY match the expected schema. If the data cannot be transformed to perfectly match the schema, you must return an object with "success": false and "reason": "<explanation of why transformation failed>". Do not attempt partial transformations in strict mode.`
-        : `You are an expert at transforming data to the right format. Transform the data to match the expected format. Optional fields can be omitted if data is not available.`
+        : "You are an expert at transforming data to the right format. Transform the data to match the expected format. Optional fields can be omitted if data is not available."
 
     try {
       // make the AI request with structured output validation
@@ -44,13 +44,7 @@ const expectedOutputHandler = defineTool({
         messages: [
           {
             role: "system",
-            content:
-              systemPrompt +
-              "\n\n" +
-              llmify(JSONN.show(zodToJson(expectedOutput))) +
-              "\n\n" +
-              "The data to transform is: " +
-              dataToTransform,
+            content: `${systemPrompt}\n\n${llmify(JSONN.show(zodToJson(expectedOutput)))}\n\nThe data to transform is: ${dataToTransform}`,
           },
           {
             role: "user",

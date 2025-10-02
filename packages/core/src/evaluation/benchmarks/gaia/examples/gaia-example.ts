@@ -67,7 +67,7 @@ async function runGAIAExample() {
 
   // example 4: get random tasks for testing
   const randomTasks = GAIALocalLoader.fetchRandom(2, "validation")
-  console.log(`Random tasks for testing:`)
+  console.log("Random tasks for testing:")
   for (const task of randomTasks) {
     console.log(`- ${task.task_id} (Level ${task.Level}): ${task.Question.substring(0, 60)}...`)
   }

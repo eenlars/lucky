@@ -10,8 +10,8 @@ const toolName: CodeToolName = "searchGoogleMaps"
 
 export async function searchMultipleBusinesses(
   html: string,
-  resultCount: number = 10,
-  enableLogging: boolean = false,
+  resultCount = 10,
+  enableLogging = false,
 ): Promise<CodeToolResult<GoogleMapsResult>> {
   try {
     const businesses: GoogleMapsBusiness[] = []
@@ -21,7 +21,7 @@ export async function searchMultipleBusinesses(
     const aTags = $("a")
     const parents: any[] = []
 
-    aTags.each((i, el) => {
+    aTags.each((_i, el) => {
       const href = $(el).attr("href")
       if (!href) {
         return
@@ -86,7 +86,7 @@ export async function searchMultipleBusinesses(
       })
     })
 
-    if (enableLogging) lgg.info(`parsed businesses:`, JSON.stringify(businesses, null, 2))
+    if (enableLogging) lgg.info("parsed businesses:", JSON.stringify(businesses, null, 2))
 
     // limit results to the requested count
     const limitedBusinesses = businesses.slice(0, resultCount)

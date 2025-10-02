@@ -1,10 +1,10 @@
-import type { MCPToolName } from "@lucky/tools"
-import { envi } from "@core/utils/env.mjs"
+import fs from "node:fs"
+import path from "node:path"
 import { PATHS } from "@core/core-config/compat"
-import { experimental_createMCPClient, type ToolSet } from "ai"
+import { envi } from "@core/utils/env.mjs"
+import type { MCPToolName } from "@lucky/tools"
+import { type ToolSet, experimental_createMCPClient } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
-import fs from "fs"
-import path from "path"
 
 // Environment variable substitution utility
 function substituteEnvVars(str: string): string {

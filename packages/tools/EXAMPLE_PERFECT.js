@@ -261,7 +261,7 @@ function createMCPAdapter(type) {
   throw new Error(`Unknown MCP adapter type: ${type}`)
 }
 
-function createRemoteAdapter(type) {
+function createRemoteAdapter(_type) {
   // Future: API-based, gRPC-based, etc.
   throw new Error("Remote adapters not yet implemented")
 }
@@ -347,7 +347,7 @@ async function exampleUsage() {
     },
     async execute(params, context) {
       console.log(`Getting weather for ${params.location}`)
-      console.log(`Execution context:`, context)
+      console.log("Execution context:", context)
       return {
         location: params.location,
         temperature: 72,
@@ -370,7 +370,7 @@ async function exampleUsage() {
     },
     async execute(params, context) {
       console.log(`Sending email to ${params.to}`)
-      console.log(`Execution context:`, context)
+      console.log("Execution context:", context)
       return { sent: true, messageId: "abc123" }
     },
   })
@@ -404,7 +404,9 @@ async function exampleUsage() {
   // })
 
   // Direct execution for demonstration
-  const weatherA = await consumerATools["get-weather"].execute({ location: "NYC" })
+  const weatherA = await consumerATools["get-weather"].execute({
+    location: "NYC",
+  })
   console.log("Consumer A weather result:", weatherA)
 
   // ========================================================================
@@ -426,7 +428,9 @@ async function exampleUsage() {
   console.log("Tool names:", Object.keys(consumerBTools))
 
   // This is a SEPARATE INSTANCE from Consumer A's weather tool
-  const weatherB = await consumerBTools["get-weather"].execute({ location: "LA" })
+  const weatherB = await consumerBTools["get-weather"].execute({
+    location: "LA",
+  })
   console.log("Consumer B weather result:", weatherB)
 
   // Consumer B doesn't have send-email
@@ -491,7 +495,10 @@ async function connectToMCPServer(config) {
     },
     async executeTool({ name, parameters, context }) {
       console.log(`Executing MCP tool ${name} with context:`, context)
-      return { success: true, result: `Executed ${name} with ${JSON.stringify(parameters)}` }
+      return {
+        success: true,
+        result: `Executed ${name} with ${JSON.stringify(parameters)}`,
+      }
     },
   }
 }

@@ -57,10 +57,10 @@ type RunConfigState = {
 const controllers = new Map<string, AbortController>()
 
 function newId() {
-  if (typeof crypto !== "undefined" && (crypto as any).randomUUID) {
-    return (crypto as any).randomUUID()
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
   }
-  return "case_" + Math.random().toString(36).slice(2)
+  return `case_${Math.random().toString(36).slice(2)}`
 }
 
 export const useRunConfigStore = create<RunConfigState>()(
@@ -142,13 +142,23 @@ export const useRunConfigStore = create<RunConfigState>()(
           if (data.records && Array.isArray(data.records)) {
             const cases: CaseRow[] = data.records
               .filter(
-                (record: any) =>
+                (
+                  record: unknown,
+                ): record is {
+                  dataset_record_id?: string
+                  workflow_input: unknown
+                  ground_truth: unknown
+                } =>
+                  typeof record === "object" &&
+                  record !== null &&
+                  "workflow_input" in record &&
+                  "ground_truth" in record &&
                   record.workflow_input !== null &&
                   record.workflow_input !== undefined &&
                   record.ground_truth !== null &&
                   record.ground_truth !== undefined,
               )
-              .map((record: any) => ({
+              .map((record: { dataset_record_id?: string; workflow_input: unknown; ground_truth: unknown }) => ({
                 id: record.dataset_record_id || newId(),
                 input: String(record.workflow_input || ""),
                 expected: String(record.ground_truth || ""),
@@ -235,7 +245,7 @@ export const useRunConfigStore = create<RunConfigState>()(
               const error = first?.error || "Failed"
               if (retryCount < maxRetries) {
                 // Exponential backoff: 1s, 2s, 4s...
-                await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
+                await new Promise(r => setTimeout(r, Math.min(1000 * 2 ** retryCount, 10000)))
                 return attemptFetch(retryCount + 1)
               }
               set(s => ({
@@ -245,12 +255,12 @@ export const useRunConfigStore = create<RunConfigState>()(
                 },
               }))
             }
-          } catch (e: any) {
-            const isAbort = e?.name === "AbortError"
-            const error = isAbort ? "Canceled" : e?.message || "Error"
+          } catch (e: unknown) {
+            const isAbort = e instanceof Error && e.name === "AbortError"
+            const error = isAbort ? "Canceled" : e instanceof Error ? e.message : "Error"
 
             if (!isAbort && retryCount < maxRetries) {
-              await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 10000)))
+              await new Promise(r => setTimeout(r, Math.min(1000 * 2 ** retryCount, 10000)))
               return attemptFetch(retryCount + 1)
             }
 

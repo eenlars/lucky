@@ -1,5 +1,5 @@
-import { lgg } from "@core/utils/logging/Logger"
 import type { Json, TablesInsert, TablesUpdate } from "@core/utils/json"
+import { lgg } from "@core/utils/logging/Logger"
 
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { supabase } from "@core/utils/clients/supabase/client"
@@ -21,7 +21,13 @@ export const Messages = {
     const { error } = await supabase.from("Message").insert(insertable)
     if (error) lgg.error("save msg failed", JSONN.show(error))
   },
-  update: async ({ message, updates }: { message: WorkflowMessage; updates: Partial<TablesUpdate<"Message">> }) => {
+  update: async ({
+    message,
+    updates,
+  }: {
+    message: WorkflowMessage
+    updates: Partial<TablesUpdate<"Message">>
+  }) => {
     const { error } = await supabase.from("Message").update(updates).eq("msg_id", message.messageId)
 
     if (error) {

@@ -1,10 +1,10 @@
 /**
  * analyzeOurAlgorithmVsBaseline.ts - Score baseline vs our-algorithm using scoreRun and emit structured JSON
  */
-import { readdirSync, readFileSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
-import { groupAndAggregate, scoreMany, type ScoredRun } from "./scoreRun"
+import { readFileSync, readdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
+import { type ScoredRun, groupAndAggregate, scoreMany } from "./scoreRun"
 
 function analyze() {
   const __filename = fileURLToPath(import.meta.url)
@@ -86,7 +86,10 @@ function analyze() {
   const payload = {
     timestamp: new Date().toISOString(),
     files: { baseline: baseline.path, ourAlgorithm: ourAlgorithm.path },
-    counts: { baseline: baselineScores.length, ourAlgorithm: ourAlgorithmScores.length },
+    counts: {
+      baseline: baselineScores.length,
+      ourAlgorithm: ourAlgorithmScores.length,
+    },
     intersection: {
       models: Array.from(new Set(bFiltered.map((r: any) => r.model))),
       scenarios: Array.from(new Set(bFiltered.map((r: any) => r.scenario))),

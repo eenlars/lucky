@@ -7,7 +7,7 @@ import { use, useEffect, useState } from "react"
 import { fullWorkflow } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import { isWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 // Simple JSON formatting function
-const formatJSON = (obj: unknown, indent: number = 2): string => {
+const formatJSON = (obj: unknown, indent = 2): string => {
   try {
     return JSON.stringify(obj, null, indent)
   } catch {
@@ -49,7 +49,7 @@ export default function WorkflowStructurePage({ params }: { params: Promise<{ wf
     return (
       <div className="p-6 flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-xl">Loading workflow structure…</p>
         </div>
       </div>

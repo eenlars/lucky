@@ -1,6 +1,6 @@
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import * as cheerio from "cheerio"
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 

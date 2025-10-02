@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /* eslint-disable no-restricted-imports */
 
-import { writeFileSync } from "fs"
-import { join } from "path"
+import { writeFileSync } from "node:fs"
+import { join } from "node:path"
 import { createEvolutionVisualizationData } from "../lib/evolution-utils"
 import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
 

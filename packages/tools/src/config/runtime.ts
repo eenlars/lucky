@@ -5,8 +5,8 @@
  * These can be overridden by the consuming application.
  */
 
-import path from "path"
-import { fileURLToPath } from "url"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 
 // Default paths based on typical project structure
 const __filename = fileURLToPath(import.meta.url)

@@ -3,7 +3,7 @@
  * All paths are relative to process.cwd() by default.
  */
 
-import path from "path"
+import path from "node:path"
 import type { CoreConfig } from "./types"
 
 /**
@@ -30,7 +30,7 @@ export function createDefaultCoreConfig(): CoreConfig {
 
     // Node.js environment - attempt filesystem lookup
     try {
-      const fs = require("fs")
+      const fs = require("node:fs")
       let currentDir = cwd
 
       for (let i = 0; i < 5; i++) {

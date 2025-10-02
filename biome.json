@@ -1,0 +1,77 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "files": {
+    "ignore": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/.turbo/**",
+      "**/mcp/**",
+      "apps/web/src/results/**",
+      "packages/examples/logging_folder/**",
+      "packages/core/logging_folder/**",
+      "packages/experiments/src/experiments-2/**"
+    ]
+  },
+  "overrides": [
+    {
+      "include": ["**/test-setup.ts", "**/integration-setup.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noRedeclare": "off"
+          }
+        }
+      }
+    }
+  ],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useKeyWithClickEvents": "off",
+        "useButtonType": "warn",
+        "noLabelWithoutControl": "warn",
+        "useSemanticElements": "warn",
+        "useFocusableInteractive": "warn"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noStaticOnlyClass": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "noUnusedVariables": "warn"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
+      }
+    }
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "quoteStyle": "double",
+      "trailingCommas": "all",
+      "arrowParentheses": "asNeeded",
+      "bracketSpacing": true
+    }
+  }
+}

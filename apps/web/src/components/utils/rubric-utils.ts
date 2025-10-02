@@ -50,7 +50,7 @@ export function parseRubricString(rubricString: string): RubricCriteria[] {
       criteria.push({
         id: id,
         name: name.trim(),
-        maxPoints: parseInt(points, 10),
+        maxPoints: Number.parseInt(points, 10),
         achievedPoints: null,
       })
     }

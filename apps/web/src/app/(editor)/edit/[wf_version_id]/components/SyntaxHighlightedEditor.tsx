@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
+import { useEffect, useState } from "react"
 
 // Dynamically import the JSON editor to avoid SSR issues
 const JSONInput = dynamic(() => import("react-json-editor-ajrm"), {
@@ -28,7 +28,7 @@ export default function SyntaxHighlightedEditor({ content, onChange, isLoading }
       } else {
         setDisplayContent({})
       }
-    } catch (err) {
+    } catch (_err) {
       setDisplayContent({})
     }
   }, [content])

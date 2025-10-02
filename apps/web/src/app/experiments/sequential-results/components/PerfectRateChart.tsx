@@ -6,11 +6,11 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  type LegendPayload,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  type LegendPayload,
 } from "recharts"
 
 type Row = Record<string, number | string>

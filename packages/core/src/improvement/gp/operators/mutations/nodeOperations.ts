@@ -8,8 +8,8 @@
 
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
-import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Genome } from "../../Genome"
 import type { NodeMutationOperator } from "./mutation.types"
 
@@ -110,7 +110,7 @@ export class NodeOperations {
               ...mutatedConfig.memory,
               [`deleted_${victim.nodeId}`]: JSON.stringify(victimMemory),
             }
-            lgg.log(`Preserved deleted node memory at workflow level`)
+            lgg.log("Preserved deleted node memory at workflow level")
           }
         }
 

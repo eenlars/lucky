@@ -1,14 +1,14 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
-import { isVercelTextResponse, type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
+import { type ProcessedResponse, isVercelTextResponse } from "@core/messages/api/vercel/processResponse.types"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { formatSummary, type InvocationSummary } from "@core/messages/summaries"
-import { isNir } from "@lucky/shared"
+import { type InvocationSummary, formatSummary } from "@core/messages/summaries"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { type ModelName } from "@core/utils/spending/models.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import type { ModelName } from "@core/utils/spending/models.types"
+import { isNir } from "@lucky/shared"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /*
@@ -121,7 +121,7 @@ export function processResponseVercel({
  */
 export const getResponseContent = (response: ProcessedResponse): string | null => {
   if (isNir(response) || response.type === "error")
-    return "i experienced an error: " + response.message + " details:" + truncater(JSON.stringify(response), 100)
+    return `i experienced an error: ${response.message} details:${truncater(JSON.stringify(response), 100)}`
 
   if (isLoggingEnabled("Tools") && response.type === "tool") {
     lgg.log("🔍 Tool response:", JSON.stringify(response))

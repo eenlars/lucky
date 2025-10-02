@@ -4,7 +4,8 @@ import { Badge } from "@/react-flow-visualization/components/ui/badge"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Plus, Trash2 } from "lucide-react"
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 
 interface ToolManagerProps {
   tools: string[]
@@ -51,7 +52,11 @@ export function ToolManager({
         {tools.map((tool, index) => (
           <Badge key={index} variant="outline" className={`${badgeClassName} pr-1`}>
             {tool}
-            <button onClick={() => removeTool(index)} className="ml-2 hover:text-destructive cursor-pointer">
+            <button
+              type="button"
+              onClick={() => removeTool(index)}
+              className="ml-2 hover:text-destructive cursor-pointer"
+            >
               <Trash2 className="h-3 w-3" />
             </button>
           </Badge>

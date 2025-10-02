@@ -227,7 +227,7 @@ describe("Evaluator", () => {
         success: true,
         data: {
           fitness: {
-            score: NaN,
+            score: Number.NaN,
             totalCostUsd: 0.05,
             totalTimeSeconds: 1.5,
             accuracy: -1,

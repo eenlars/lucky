@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from "child_process"
+import { execSync } from "node:child_process"
 
 // Build the command with all arguments passed through
 const args = process.argv.slice(2)
@@ -15,6 +15,6 @@ const command = ["rm -rf src/examples/logging_folder", "&&", "tsx --env-file=.en
 // Execute the command
 try {
   execSync(command, { stdio: "inherit" })
-} catch (error) {
+} catch (_error) {
   process.exit(1)
 }

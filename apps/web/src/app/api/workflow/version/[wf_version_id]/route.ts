@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase"
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { supabase } from "@/lib/supabase"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 

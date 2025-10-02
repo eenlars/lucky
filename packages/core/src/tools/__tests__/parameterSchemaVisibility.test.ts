@@ -1,7 +1,7 @@
 import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import { tool, zodSchema } from "ai"
-import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest"
+import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 describe("Parameter Schema Visibility", () => {

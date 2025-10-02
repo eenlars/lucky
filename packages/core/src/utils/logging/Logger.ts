@@ -4,7 +4,7 @@ import chalk from "chalk"
 class FileLogger {
   private logFile: string | null = null
   private logBuffer: string[] = []
-  private isNodeEnv: boolean = false
+  private isNodeEnv = false
   private fs: any = null
   private path: any = null
 
@@ -15,9 +15,9 @@ class FileLogger {
     if (this.isNodeEnv) {
       try {
         // dynamic imports to avoid bundler issues
-        this.fs = await import("fs/promises")
-        this.path = await import("path")
-      } catch (error) {
+        this.fs = await import("node:fs/promises")
+        this.path = await import("node:path")
+      } catch (_error) {
         console.warn("failed to load fs modules, file logging disabled")
         this.isNodeEnv = false
       }
@@ -38,7 +38,7 @@ class FileLogger {
       const seen = new WeakSet<object>()
       return JSON.stringify(
         value,
-        (key, val) => {
+        (_key, val) => {
           if (val instanceof Error) {
             return { name: val.name, message: val.message, stack: val.stack }
           }
@@ -85,10 +85,9 @@ class FileLogger {
 
     if (typeof window !== "undefined") {
       return
-    } else {
-      const { saveInLoc } = await import("@core/utils/fs/fileSaver")
-      saveInLoc(fileName, args)
     }
+    const { saveInLoc } = await import("@core/utils/fs/fileSaver")
+    saveInLoc(fileName, args)
   }
 
   async info(...args: any[]): Promise<void> {

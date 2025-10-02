@@ -460,7 +460,7 @@ describe("InvocationPipeline", () => {
       await pipeline.prepare()
       await pipeline.execute()
 
-      const agentSteps = pipeline.getAgentSteps()
+      const _agentSteps = pipeline.getAgentSteps()
     })
 
     it("handles execution errors gracefully", async () => {
@@ -527,7 +527,7 @@ describe("InvocationPipeline", () => {
       await pipeline.execute()
       await pipeline.process()
 
-      const agentSteps = pipeline.getAgentSteps()
+      const _agentSteps = pipeline.getAgentSteps()
 
       const updatedMemory = pipeline.getUpdatedMemory()
       expect(updatedMemory).toBeDefined()

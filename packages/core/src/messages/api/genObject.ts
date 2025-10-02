@@ -1,16 +1,16 @@
-import { type ModelMessage } from "ai"
+import type { ModelMessage } from "ai"
 import { z } from "zod"
 
 import { getDefaultModels, isLoggingEnabled } from "@core/core-config/compat"
 import { repairAIRequest } from "@core/messages/api/repairAIRequest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { isNir } from "@lucky/shared"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
+import { isNir } from "@lucky/shared"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
   return z.object({

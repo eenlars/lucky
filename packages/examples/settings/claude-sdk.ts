@@ -26,5 +26,5 @@ export const CLAUDE_SDK_CONFIG = {
   // Debug mode for SDK operations
   debug: false,
 
-  // Note: The official SDK requires ANTHROPIC_API_KEY environment variable
+  // Note: The official SDK requires ANTH_API_KEY environment variable
 } as const

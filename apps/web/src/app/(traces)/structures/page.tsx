@@ -1,12 +1,12 @@
 "use client"
 
-import { toWorkflowConfig, type WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import type { Tables } from "@lucky/shared/client"
+import { Button } from "@/ui/button"
+import { type WorkflowConfig, toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { MODELS } from "@lucky/examples/settings/constants.client"
+import type { Tables } from "@lucky/shared/client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { StructureMiniMap, getNodeCountFromDsl } from "../trace/[wf_inv_id]/structure/StructureMiniMap"
-import { Button } from "@/ui/button"
 
 // Calculate workflow complexity based on structure
 function getComplexityScore(config: WorkflowConfig): number {
@@ -243,7 +243,6 @@ export default function StructuresPage() {
           return getComplexityScore(configB) - getComplexityScore(configA)
         case "nodes":
           return getNodeCountFromDsl(configB) - getNodeCountFromDsl(configA)
-        case "time":
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }
@@ -254,7 +253,7 @@ export default function StructuresPage() {
     return (
       <div className="p-8">
         <div className="flex justify-center items-center min-h-[50vh]">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     )

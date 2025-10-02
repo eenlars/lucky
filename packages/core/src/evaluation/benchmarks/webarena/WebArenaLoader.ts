@@ -7,11 +7,11 @@ export class WebArenaLoader {
     "https://raw.githubusercontent.com/web-arena-x/webarena/main/config_files/test.raw.json"
   private static readonly TIMEOUT_MS = 10000 // 10 second timeout
 
-  static async fetchAsWorkflowIO(limit: number = 100, sites?: string[]): Promise<WorkflowIO[]> {
+  static async fetchAsWorkflowIO(limit = 100, sites?: string[]): Promise<WorkflowIO[]> {
     lgg.info(`Fetching ${limit} WebArena tasks as WorkflowIO[]`)
 
     try {
-      const response = await this.fetchWithTimeout(this.CONFIG_FILE_URL)
+      const response = await WebArenaLoader.fetchWithTimeout(WebArenaLoader.CONFIG_FILE_URL)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -79,7 +79,7 @@ Please complete this task by interacting with the specified websites.`
     lgg.info(`Fetching WebArena task ${taskId}`)
 
     try {
-      const response = await this.fetchWithTimeout(this.CONFIG_FILE_URL)
+      const response = await WebArenaLoader.fetchWithTimeout(WebArenaLoader.CONFIG_FILE_URL)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -108,20 +108,20 @@ Please complete this task by interacting with the specified websites.`
       lgg.error(`Failed to fetch WebArena task ${taskId}:`, error)
 
       // check if this is a network connectivity issue
-      if (this.isNetworkError(error)) {
+      if (WebArenaLoader.isNetworkError(error)) {
         lgg.warn("Network connectivity issue detected, falling back to mock data")
-        return this.getMockInstance(taskId)
+        return WebArenaLoader.getMockInstance(taskId)
       }
 
       throw new Error(`Failed to fetch WebArena task ${taskId}: ${error}`)
     }
   }
 
-  static async fetchBySites(sites: string[], limit: number = 10): Promise<WebArenaInstance[]> {
+  static async fetchBySites(sites: string[], limit = 10): Promise<WebArenaInstance[]> {
     lgg.info(`Fetching WebArena tasks for sites: ${sites.join(", ")}`)
 
     try {
-      const response = await this.fetchWithTimeout(this.CONFIG_FILE_URL)
+      const response = await WebArenaLoader.fetchWithTimeout(WebArenaLoader.CONFIG_FILE_URL)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -146,7 +146,7 @@ Please complete this task by interacting with the specified websites.`
 
   private static async fetchWithTimeout(url: string): Promise<Response> {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT_MS)
+    const timeoutId = setTimeout(() => controller.abort(), WebArenaLoader.TIMEOUT_MS)
 
     try {
       const response = await fetch(url, {

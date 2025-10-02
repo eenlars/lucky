@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { WorkflowEvolutionVisualization } from "./WorkflowEvolutionVisualization"
 import { FailedRunVisualization } from "./FailedRunVisualization"
+import { WorkflowEvolutionVisualization } from "./WorkflowEvolutionVisualization"
 
 interface EvolutionData {
   graph: any
@@ -72,7 +72,7 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
                 return
               }
             }
-          } catch (e) {
+          } catch (_e) {
             console.log("Could not fetch run info for failed run")
           }
         }
@@ -98,7 +98,7 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
     return (
       <div className={`flex items-center justify-center py-12 ${className}`}>
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
           <p className="text-gray-600">Loading evolution graph...</p>
         </div>
       </div>

@@ -1,8 +1,8 @@
+import { existsSync } from "node:fs"
+import { resolve } from "node:path"
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
-import { getDefaultModels } from "@core/core-config/compat"
-import { existsSync } from "fs"
-import { resolve } from "path"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
 
@@ -49,7 +49,7 @@ describe("MCP Integration Tests", () => {
         expect(response.data.text).toBeDefined()
         expect(response.data.text.length).toBeGreaterThan(0)
 
-        lgg.log("AI response received:", response.data.text.substring(0, 200) + "...")
+        lgg.log("AI response received:", `${response.data.text.substring(0, 200)}...`)
         // TODO: More logging for debugging
 
         // Check if tools were actually used

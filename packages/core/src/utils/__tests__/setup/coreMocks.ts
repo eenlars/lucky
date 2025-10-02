@@ -7,6 +7,7 @@ import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
 import type { RS } from "@core/utils/types"
+import { Workflow } from "@core/workflow/Workflow"
 import type {
   EvaluationCSV,
   EvaluationInput,
@@ -14,7 +15,6 @@ import type {
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { Workflow } from "@core/workflow/Workflow"
 import { vi } from "vitest"
 
 // CLI and system-level mocks
@@ -408,18 +408,16 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
 })
 
 export const createMockWorkflow = (options?: Parameters<typeof Workflow.create>[0]): Workflow => {
-  if (!options) {
-    options = {
-      config: createMockWorkflowConfig(),
-      evaluationInput: createMockEvaluationInput(),
-      toolContext: createMockEvaluationInput().outputSchema
-        ? {
-            expectedOutputType: createMockEvaluationInput().outputSchema,
-          }
-        : undefined,
-    }
+  const workflowOptions = options ?? {
+    config: createMockWorkflowConfig(),
+    evaluationInput: createMockEvaluationInput(),
+    toolContext: createMockEvaluationInput().outputSchema
+      ? {
+          expectedOutputType: createMockEvaluationInput().outputSchema,
+        }
+      : undefined,
   }
-  return Workflow.create(options)
+  return Workflow.create(workflowOptions)
 }
 
 export const createMockWorkflowScore = (score = 0.8): FitnessOfWorkflow => ({
@@ -697,7 +695,10 @@ export const createMockFullFlowRuntimeConfig = (toolOverrides: Partial<FlowRunti
  * @deprecated No-op function - mock at test level
  * Placeholder for GP-specific runtime constants
  */
-export const mockRuntimeConstantsForGP = (overrides?: { verbose?: boolean; [key: string]: unknown }) => {
+export const mockRuntimeConstantsForGP = (_overrides?: {
+  verbose?: boolean
+  [key: string]: unknown
+}) => {
   // No-op: vi.mock needs to be at top level
   // Tests should use vi.mock("@core/core-config/compat") directly
 }
@@ -705,21 +706,27 @@ export const mockRuntimeConstantsForGP = (overrides?: { verbose?: boolean; [key:
 /**
  * @deprecated No-op function - mock at test level
  */
-export const mockRuntimeConstantsForIterative = (overrides?: { [key: string]: unknown }) => {
+export const mockRuntimeConstantsForIterative = (_overrides?: {
+  [key: string]: unknown
+}) => {
   // No-op: vi.mock needs to be at top level
 }
 
 /**
  * @deprecated No-op function - mock at test level
  */
-export const mockRuntimeConstantsForDatabase = (overrides?: { [key: string]: unknown }) => {
+export const mockRuntimeConstantsForDatabase = (_overrides?: {
+  [key: string]: unknown
+}) => {
   // No-op: vi.mock needs to be at top level
 }
 
 /**
  * @deprecated No-op function - mock at test level
  */
-export const mockRuntimeConstants = (overrides?: { [key: string]: unknown }) => {
+export const mockRuntimeConstants = (_overrides?: {
+  [key: string]: unknown
+}) => {
   // No-op: vi.mock needs to be at top level
 }
 

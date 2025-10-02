@@ -17,8 +17,8 @@
 // TODO: add guard metrics and monitoring dashboards
 // TODO: create guard rule templates for different environments
 
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { CONFIG } from "@core/core-config/compat"
+import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
 const spending = SpendingTracker.getInstance()
 const RATE_WINDOW_MS = CONFIG.limits.rateWindowMs

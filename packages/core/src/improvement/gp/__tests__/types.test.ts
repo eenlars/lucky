@@ -1,5 +1,5 @@
 // tests for GP types and utility functions
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 describe("GP Types and Utilities", () => {
   describe("WorkflowGenome Interface", () => {

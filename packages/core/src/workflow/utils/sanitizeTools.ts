@@ -1,10 +1,10 @@
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
   ACTIVE_MCP_TOOL_NAMES,
   type CodeToolName,
   type MCPToolName,
 } from "@lucky/tools"
-import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
 /**
  * Remove any inactive or unknown tools from the workflow config.

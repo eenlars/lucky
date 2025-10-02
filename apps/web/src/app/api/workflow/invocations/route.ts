@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase"
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { supabase } from "@/lib/supabase"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
   if (authResult instanceof NextResponse) return authResult
 
   const searchParams = request.nextUrl.searchParams
-  const page = parseInt(searchParams.get("page") || "1", 10)
-  const pageSize = parseInt(searchParams.get("pageSize") || "20", 10)
+  const page = Number.parseInt(searchParams.get("page") || "1", 10)
+  const pageSize = Number.parseInt(searchParams.get("pageSize") || "20", 10)
 
   let filters: WorkflowInvocationFilters = {}
   let sort: WorkflowInvocationSortOptions = {

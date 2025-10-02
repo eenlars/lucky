@@ -1,7 +1,6 @@
-import { type Edge } from "@xyflow/react"
+import type { Edge } from "@xyflow/react"
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type AppEdge = Edge<{}, "workflow">
+export type AppEdge = Edge<Record<string, never>, "workflow">
 
 export function buildEdgeId(
   source: string,

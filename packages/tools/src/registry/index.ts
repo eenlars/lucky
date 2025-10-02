@@ -19,7 +19,11 @@ export {
 } from "./types"
 
 // CodeToolRegistry
-export { CodeToolRegistry, codeToolRegistry, type FlexibleToolDefinition } from "./CodeToolRegistry"
+export {
+  CodeToolRegistry,
+  codeToolRegistry,
+  type FlexibleToolDefinition,
+} from "./CodeToolRegistry"
 
 // Setup utilities
 export { setupCodeToolsForNode } from "./codeToolsSetup"

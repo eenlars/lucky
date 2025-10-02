@@ -1,10 +1,10 @@
 // /core/node/generate/from-text.ts
 
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { AgentDescriptionsWithToolsSchema } from "@core/node/schemas/agentWithTools"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 
 // this generates a workflow node from a text prompt
 export async function generateAgentFromText(text: string): Promise<{ config: WorkflowNodeConfig; usdCost: number }> {

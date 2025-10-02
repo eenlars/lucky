@@ -71,7 +71,7 @@ export function RunSelect({
           </>
         )}
       </select>
-      {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>}
+      {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />}
     </div>
   )
 }

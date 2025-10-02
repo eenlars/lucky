@@ -14,8 +14,8 @@ import type { FullTraceEntry } from "@/trace-visualization/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@lucky/core/messages/MessagePayload"
 import type { AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
-import { isNir } from "@lucky/shared/client"
 import { TOOLS } from "@lucky/examples/settings/tools"
+import { isNir } from "@lucky/shared/client"
 import { format } from "date-fns"
 import { ChevronDown, Database, Eye } from "lucide-react"
 import dynamic from "next/dynamic"
@@ -275,7 +275,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       try {
                         const text = extractTextFromPayload(inputs[0]?.payload as any)
                         if (text) {
-                          return text.length > 300 ? text.substring(0, 300) + "..." : text
+                          return text.length > 300 ? `${text.substring(0, 300)}...` : text
                         }
                       } catch {}
                       return inputSummaryResult.summary
@@ -387,7 +387,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                 <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button className="text-xs text-blue-700 dark:text-blue-300 hover:underline">
+                      <button type="button" className="text-xs text-blue-700 dark:text-blue-300 hover:underline">
                         View all {inputs.length} messages
                       </button>
                     </DialogTrigger>
@@ -509,13 +509,13 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                           const shouldTruncate = stringContent.length > 100
 
                           if (shouldTruncate && !isExpanded) {
-                            return stringContent.substring(0, 100) + "..."
+                            return `${stringContent.substring(0, 100)}...`
                           }
                           return stringContent
                         }
 
                         // Other step types - keep original logic
-                        return stringContent.length > 200 ? stringContent.substring(0, 200) + "..." : stringContent
+                        return stringContent.length > 200 ? `${stringContent.substring(0, 200)}...` : stringContent
                       })()}
                     </div>
                   )}
@@ -650,7 +650,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     <ReactJson
                       src={(() => {
                         if (selectedTool.startsWith("terminate-")) {
-                          const stepIndex = parseInt(selectedTool.replace("terminate-", ""))
+                          const stepIndex = Number.parseInt(selectedTool.replace("terminate-", ""))
                           const terminateStep = agentSteps?.[stepIndex]
                           return terminateStep || {}
                         }
@@ -688,15 +688,15 @@ function extractInputSummary(payload: any): {
   if (typeof payload === "string") {
     if (payload.trim().length === 0) return { summary: "", original: null, isTruncated: false }
     const firstSentence = payload.split(/[.!?]/)
-    if (firstSentence[0] && firstSentence[0].trim()) {
-      const summary = firstSentence[0].length > 60 ? firstSentence[0].substring(0, 60) + "..." : firstSentence[0].trim()
+    if (firstSentence[0]?.trim()) {
+      const summary = firstSentence[0].length > 60 ? `${firstSentence[0].substring(0, 60)}...` : firstSentence[0].trim()
       return {
         summary,
         original: payload,
         isTruncated: firstSentence[0].length > 60 || payload.length > firstSentence[0].length,
       }
     }
-    const summary = payload.length > 60 ? payload.substring(0, 60) + "..." : payload
+    const summary = payload.length > 60 ? `${payload.substring(0, 60)}...` : payload
     return {
       summary,
       original: payload,
@@ -715,7 +715,7 @@ function extractInputSummary(payload: any): {
           typeof first?.text === "string" ? first.text : typeof first?.message === "string" ? first.message : undefined
         if (text && text.trim().length > 0) {
           const original = text
-          const _summary = text.length > 80 ? text.substring(0, 80) + "..." : text
+          const _summary = text.length > 80 ? `${text.substring(0, 80)}...` : text
           return { summary: _summary, original, isTruncated: text.length > 80 }
         }
         return {
@@ -737,7 +737,7 @@ function extractInputSummary(payload: any): {
     const extractField = (field: string) => {
       if (payload[field] && typeof payload[field] === "string" && payload[field].trim()) {
         const original = payload[field]
-        const summary = original.length > 80 ? original.substring(0, 80) + "..." : original
+        const summary = original.length > 80 ? `${original.substring(0, 80)}...` : original
         return {
           summary,
           original,

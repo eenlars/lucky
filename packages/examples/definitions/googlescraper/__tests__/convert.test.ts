@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { transformLocationData, type GoogleScraperBusinessExtended } from "../convert"
+import { type GoogleScraperBusinessExtended, transformLocationData } from "../convert"
 
 describe("Google Scraper Data Conversion", () => {
   it("should transform Albert Heijn Google Maps data to standardized format", () => {

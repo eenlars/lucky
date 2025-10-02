@@ -107,9 +107,9 @@ export async function runSequentialTools(
     lgg.error("Error in runSequentialTools:", errorMessage)
     if (error instanceof Error) {
       if (error.message.includes("rate limit")) {
-        finalResponse = `Rate limit exceeded. Please try again later.`
+        finalResponse = "Rate limit exceeded. Please try again later."
       } else if (error.message.includes("API key")) {
-        finalResponse = `API authentication error. Please check your API key.`
+        finalResponse = "API authentication error. Please check your API key."
       } else {
         finalResponse = `Execution error: ${errorMessage}`
       }

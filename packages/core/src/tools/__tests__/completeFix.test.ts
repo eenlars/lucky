@@ -122,7 +122,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     // 1) Test the real workflow with actual tool execution, or
     // 2) Remove unused mocks and focus on what it's actually testing (validateAndCorrectWithSchema)
     // Create a mock tool that simulates searchGoogleMaps
-    const mockTool = tool({
+    const _mockTool = tool({
       description: "Search Google Maps for business information",
       inputSchema: zodSchema(
         z.object({
@@ -140,8 +140,8 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     })
 
     // Mock sendAI to return a tool call with invalid parameters
-    const originalSendAI = sendAI
-    const mockSendAI = vi.fn().mockResolvedValue({
+    const _originalSendAI = sendAI
+    const _mockSendAI = vi.fn().mockResolvedValue({
       success: true,
       data: {
         text: "",

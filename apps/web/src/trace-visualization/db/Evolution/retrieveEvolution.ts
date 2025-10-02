@@ -180,9 +180,8 @@ export const retrieveAllInvocationsForRunGroupedByGeneration = async (runId: str
     if (cached && isCacheValid(cached) && cached.runStatus === run.status) {
       console.log(`[Evolution Cache] Using cached data for run ${runId}`)
       return cached.data
-    } else {
-      console.log(`[Evolution Cache] Cache miss or status change for run ${runId}`)
     }
+    console.log(`[Evolution Cache] Cache miss or status change for run ${runId}`)
   }
 
   // Execute the expensive query

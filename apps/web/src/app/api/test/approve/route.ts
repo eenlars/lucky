@@ -1,8 +1,8 @@
-import { ApproveData } from "@/app/(test)/approve/page"
-import { NextRequest, NextResponse } from "next/server"
-import * as fs from "fs/promises"
-import * as path from "path"
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
+import type { ApproveData } from "@/app/(test)/approve/page"
 import { PATHS } from "@lucky/examples/settings/constants"
+import { type NextRequest, NextResponse } from "next/server"
 
 // Use shared runtime path so writers and readers agree
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")

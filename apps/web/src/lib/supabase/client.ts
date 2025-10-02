@@ -1,6 +1,6 @@
-import { type Database } from "@lucky/shared/client"
-import { createBrowserClient } from "@supabase/ssr"
 import { envi } from "@/env.mjs"
+import type { Database } from "@lucky/shared/client"
+import { createBrowserClient } from "@supabase/ssr"
 
 export function createClient() {
   // Use standard SUPABASE_URL env var, fallback to constructed URL

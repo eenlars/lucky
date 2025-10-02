@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 // TODO: significant duplication with Population.basic.test.ts
 // unclear why tests are split into two files - consider merging
 // missing tests for population evolution cycles and selection pressure
@@ -93,7 +93,7 @@ const createMockEvolutionSettings = (overrides = {}) => ({
   ...overrides,
 })
 
-const createMockEvaluationInputGeneric = () => ({
+const _createMockEvaluationInputGeneric = () => ({
   type: "text" as const,
   goal: "test evolution goal",
   question: "test question",
@@ -101,7 +101,7 @@ const createMockEvaluationInputGeneric = () => ({
   workflowId: "test-workflow-id",
 })
 
-const createMockWorkflowConfig = () => ({
+const _createMockWorkflowConfig = () => ({
   nodes: [
     {
       nodeId: "node1",

@@ -1,5 +1,4 @@
-import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
-import type { CodeToolName } from "@lucky/tools"
+import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
@@ -7,6 +6,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
+import type { CodeToolName } from "@lucky/tools"
 
 class WorkflowConfigError extends Error {
   constructor(
@@ -57,8 +57,8 @@ export class WorkflowConfigHandler {
       throw new Error("File operations not available in browser environment")
     }
 
-    const path = await import("path")
-    const fs = await import("fs")
+    const path = await import("node:path")
+    const fs = await import("node:fs")
 
     const setupFolderPath = path.dirname(path.resolve(PATHS.setupFile))
     try {
@@ -117,8 +117,8 @@ export class WorkflowConfigHandler {
       throw new Error("File operations not available in browser environment")
     }
 
-    const path = await import("path")
-    const fs = await import("fs")
+    const path = await import("node:path")
+    const fs = await import("node:fs")
 
     const setupFolderPath = await this.ensureSetupFolder()
     const filename = path.basename(originalFilePath)
@@ -156,8 +156,8 @@ export class WorkflowConfigHandler {
     }
 
     try {
-      const path = await import("path")
-      const fs = await import("fs")
+      const path = await import("node:path")
+      const fs = await import("node:fs")
       const { readText } = await import("@lucky/shared/fs")
 
       // Normalize path to absolute examples/setup folder and build absolute file path
@@ -262,10 +262,9 @@ export class WorkflowConfigHandler {
       if (error instanceof WorkflowConfigError) {
         lgg.error(`[WorkflowConfigHandler] ${error.name}: ${error.message}`)
         throw error
-      } else {
-        lgg.error("[WorkflowConfigHandler] Unexpected error:", error)
-        throw new WorkflowConfigError(`Unexpected error loading workflow: ${error}`, error as Error)
       }
+      lgg.error("[WorkflowConfigHandler] Unexpected error:", error)
+      throw new WorkflowConfigError(`Unexpected error loading workflow: ${error}`, error as Error)
     }
   }
 
@@ -336,8 +335,8 @@ export class WorkflowConfigHandler {
     try {
       lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from file:", { filename })
 
-      const path = await import("path")
-      const fs = await import("fs")
+      const path = await import("node:path")
+      const fs = await import("node:fs")
 
       const filePath = path.isAbsolute(filename) ? filename : path.join(PATHS.runtime, filename)
 
@@ -388,8 +387,8 @@ export class WorkflowConfigHandler {
       throw new Error("File operations not available in browser environment")
     }
 
-    const fs = await import("fs")
-    const tmp = filePath + ".tmp"
+    const fs = await import("node:fs")
+    const tmp = `${filePath}.tmp`
     fs.writeFileSync(tmp, JSON.stringify(data, null, 2))
     fs.renameSync(tmp, filePath) // atomic on POSIX filesystems
   }
@@ -397,16 +396,12 @@ export class WorkflowConfigHandler {
   /**
    * Save workflow config to setup folder with atomic writes and optional backup
    */
-  async saveWorkflowConfig(
-    config: WorkflowConfig,
-    filename: string = "setupfile.json",
-    skipBackup: boolean = false,
-  ): Promise<void> {
+  async saveWorkflowConfig(config: WorkflowConfig, filename = "setupfile.json", skipBackup = false): Promise<void> {
     if (typeof window !== "undefined") {
       throw new Error("File operations not available in browser environment")
     }
 
-    const path = await import("path")
+    const path = await import("node:path")
     const setupFolderPath = await this.ensureSetupFolder()
     const backupDir = path.join(PATHS.node.logging, "backups")
     mkdirIfMissing(backupDir)
@@ -433,8 +428,8 @@ export class WorkflowConfigHandler {
    * Legacy method: Save workflow config to output folder (for backward compatibility)
    */
   async saveWorkflowConfigToOutput(config: WorkflowConfig, filename: string): Promise<void> {
-    const fs = await import("fs/promises")
-    const path = await import("path")
+    const fs = await import("node:fs/promises")
+    const path = await import("node:path")
 
     const filepath = path.join(PATHS.node.logging, "output", filename)
     await fs.mkdir(path.dirname(filepath), { recursive: true })
@@ -461,8 +456,8 @@ export const saveWorkflowConfigToOutput = (config: WorkflowConfig, filename: str
 // Alias for backward compatibility with resultPersistence.ts
 export const persistWorkflow = (
   finalConfig: WorkflowConfig,
-  fileName: string = "setupfile.json",
-  skipBackup: boolean = false,
+  fileName = "setupfile.json",
+  skipBackup = false,
 ): Promise<void> => {
   return workflowConfigHandler.saveWorkflowConfig(finalConfig, fileName, skipBackup)
 }

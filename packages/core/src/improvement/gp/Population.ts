@@ -24,19 +24,19 @@
  * @see EvolutionEngine - Orchestrates population evolution across generations
  */
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
-import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 import { Genome } from "./Genome"
+import type { RunService } from "./RunService"
 import type { PopulationStats } from "./resources/gp.types"
-import { RunService } from "./RunService"
 
 const initialPopulationMethod = CONFIG.evolution.GP.initialPopulationMethod
 
@@ -45,7 +45,7 @@ export class Population {
   private generationNumber = 0
   private runService: RunService
   private evaluationInput: EvaluationInput | null = null
-  private problemAnalysis: string = ""
+  private problemAnalysis = ""
   private _baseWorkflow: WorkflowConfig | undefined = undefined
   static verbose = isLoggingEnabled("GP")
 
@@ -53,7 +53,7 @@ export class Population {
     private config: EvolutionSettings,
     runService: RunService,
   ) {
-    lgg.info(`[Population] Configuration validated successfully:`)
+    lgg.info("[Population] Configuration validated successfully:")
     lgg.info(`Population: ${config.populationSize}, Generations: ${config.generations}`)
     this.runService = runService
   }
@@ -74,7 +74,7 @@ export class Population {
     // TODO: refactor to eliminate code duplication between initialization methods
     // TODO: consider using factory pattern for population initialization strategies
     switch (initialPopulationMethod as "random" | "baseWorkflow" | "prepared") {
-      case "random":
+      case "random": {
         const population1 = await this.initializePopulationHelper({
           config: this.config,
           evaluationInput,
@@ -88,7 +88,8 @@ export class Population {
         })
         this.genomes = population1.getGenomes()
         break
-      case "baseWorkflow":
+      }
+      case "baseWorkflow": {
         const population2 = await this.initializePopulationHelper({
           config: this.config,
           evaluationInput,
@@ -102,7 +103,8 @@ export class Population {
         })
         this.genomes = population2.getGenomes()
         break
-      case "prepared":
+      }
+      case "prepared": {
         const population3 = await this.initializePreparedPopulation({
           config: this.config,
           evaluationInput,
@@ -116,6 +118,7 @@ export class Population {
         })
         this.genomes = population3.getGenomes()
         break
+      }
     }
   }
 
@@ -277,7 +280,7 @@ export class Population {
         lgg.info(
           `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: ${fitness?.score ?? "null"}`,
         )
-      } catch (error) {
+      } catch (_error) {
         lgg.info(
           `[Population] Genome ${index}: ${genome.getWorkflowVersionId()} - Evaluated: ${genome.isEvaluated} - Fitness: not available`,
         )

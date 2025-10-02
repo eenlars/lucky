@@ -1,19 +1,19 @@
 import {
+  type ColorMode,
+  type OnConnect,
+  type OnEdgesChange,
+  type OnNodeDrag,
+  type OnNodesChange,
+  type XYPosition,
   applyEdgeChanges,
   applyNodeChanges,
-  ColorMode,
-  OnConnect,
-  OnEdgesChange,
-  OnNodeDrag,
-  OnNodesChange,
   addEdge as rfAddEdge,
-  XYPosition,
 } from "@xyflow/react"
 import { create } from "zustand"
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware"
 
 import { setColorModeCookie } from "@/react-flow-visualization/components/actions/cookies"
-import { createEdge, type AppEdge } from "@/react-flow-visualization/components/edges"
+import { type AppEdge, createEdge } from "@/react-flow-visualization/components/edges"
 import nodesConfig, {
   createNodeByType,
   type AppNode,
@@ -96,7 +96,7 @@ export type AppActions = {
   resetPotentialConnection: () => void
   loadWorkflowConfig: (mode?: "cultural" | "genetic") => Promise<void>
   loadWorkflowVersion: (workflowVersionId: string) => Promise<void>
-  loadWorkflowFromData: (workflowData: any) => Promise<void>
+  loadWorkflowFromData: (workflowData: WorkflowConfig) => Promise<void>
   exportToJSON: () => string
   updateWorkflowJSON: (json: string) => void
   syncJSONToGraph: () => Promise<void>
@@ -135,7 +135,11 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const dragged = get().draggedNodes
           const filteredChanges =
             dragged && dragged.size > 0
-              ? changes.filter(change => change.type !== "position" || dragged.has((change as any).id))
+              ? changes.filter(change => {
+                  if (change.type !== "position") return true
+                  const nodeId = "id" in change ? (change as { id: string }).id : ""
+                  return dragged.has(nodeId)
+                })
               : changes
 
           const nextNodes = applyNodeChanges(filteredChanges, get().nodes)
@@ -282,7 +286,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             distance: number
             potentialConnection?: PotentialConnection
           } = {
-            distance: Infinity,
+            distance: Number.POSITIVE_INFINITY,
             potentialConnection: undefined,
           }
 
@@ -402,7 +406,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
         },
 
-        loadWorkflowFromData: async (workflowData: any) => {
+        loadWorkflowFromData: async (workflowData: WorkflowConfig) => {
           set({ workflowLoading: true, workflowError: undefined })
 
           try {
@@ -497,7 +501,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const targetNode = currentNodes.find(n => n.id === nodeId)
           if (!targetNode) return
 
-          const requestedNewId = updates.nodeId && updates.nodeId.trim()
+          const requestedNewId = updates.nodeId?.trim()
           const isRename = !!requestedNewId && requestedNewId !== nodeId
 
           if (isRename) {

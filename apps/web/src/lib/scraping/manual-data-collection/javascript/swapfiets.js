@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/swapfiets.json" assert { type: "json" }
 
 // map Dutch day names to our standard English keys

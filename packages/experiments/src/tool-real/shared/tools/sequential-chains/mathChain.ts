@@ -14,8 +14,8 @@ export const dataCollectorSpec = tool({
   description: "Collects and processes initial data input for the pipeline",
   inputSchema: zodSchema(DataCollectorParams),
   execute: async ({ input }: { input: string }) => {
-    const parsed = parseInt(input.trim(), 10)
-    if (isNaN(parsed)) {
+    const parsed = Number.parseInt(input.trim(), 10)
+    if (Number.isNaN(parsed)) {
       throw new Error(`Invalid input: ${input}`)
     }
     return parsed

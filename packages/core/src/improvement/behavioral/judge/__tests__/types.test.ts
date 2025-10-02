@@ -1,5 +1,5 @@
 // tests for iterative evolution types and interfaces
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 describe("Iterative Evolution Types", () => {
   describe("NodeSelfImprovementParams Interface", () => {
@@ -60,7 +60,7 @@ describe("Iterative Evolution Types", () => {
       expect(Array.isArray(analysisData.bottlenecks)).toBe(true)
       expect(Array.isArray(analysisData.improvementSuggestions)).toBe(true)
 
-      const node1Perf = analysisData.nodePerformance["node1"]
+      const node1Perf = analysisData.nodePerformance.node1
       expect(node1Perf.accuracy).toBeGreaterThan(0)
       expect(node1Perf.accuracy).toBeLessThanOrEqual(1)
       expect(node1Perf.cost).toBeGreaterThanOrEqual(0)

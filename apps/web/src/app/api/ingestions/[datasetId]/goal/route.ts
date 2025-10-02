@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "@/app/api/ingestions/_lib/meta"
+import { requireAuth } from "@/lib/api-auth"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function PUT(req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication

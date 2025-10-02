@@ -1,6 +1,6 @@
+import { Button } from "@/ui/button"
 import type { Tables } from "@lucky/shared/client"
 import Link from "next/link"
-import { Button } from "@/ui/button"
 
 type EditorHeaderProps = {
   workflowVersion?: Tables<"WorkflowVersion">
@@ -36,7 +36,7 @@ export default function EditorHeader({
                 <span>{workflowVersion?.wf_version_id || "Not saved yet"}</span>
                 {isDirty && (
                   <span className="text-amber-600 font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
                     Modified
                   </span>
                 )}
@@ -69,7 +69,7 @@ export default function EditorHeader({
         <div className="flex items-center gap-3">
           {workflowVersion && (
             <Link
-              href={`/`}
+              href={"/"}
               className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-sm cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

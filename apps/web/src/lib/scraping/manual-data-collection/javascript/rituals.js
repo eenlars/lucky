@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/rituals.json" assert { type: "json" }
 
 // template for days with no data

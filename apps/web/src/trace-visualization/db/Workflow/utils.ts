@@ -1,4 +1,4 @@
-import { JSONN, Tables } from "@lucky/shared/client"
+import { JSONN, type Tables } from "@lucky/shared/client"
 import { nanoid } from "nanoid"
 
 /**
@@ -55,7 +55,14 @@ export const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): N
   return Array.from(map.values()).sort((a, b) => a.invocations[0].start_time.localeCompare(b.invocations[0].start_time))
 }
 
-export const normalizeNodeInvocation = (raw: any): NodeInvocationExtended => {
+export const normalizeNodeInvocation = (
+  raw: Record<string, unknown> & {
+    NodeVersion: Tables<"NodeVersion">
+    inputs?: MessageMetadata[]
+    outputs?: MessageMetadata[]
+    output?: unknown
+  },
+): NodeInvocationExtended => {
   const { NodeVersion: nodeDef, inputs = [], outputs = [], output: legacyOutput, ...rest } = raw
 
   const normalisedOutputs =
@@ -82,6 +89,12 @@ export const normalizeNodeInvocation = (raw: any): NodeInvocationExtended => {
     node: nodeDef,
     inputs,
     outputs: normalisedOutputs,
-    output: legacyOutput,
-  }
+    output:
+      legacyOutput !== undefined &&
+      legacyOutput !== null &&
+      typeof legacyOutput !== "function" &&
+      typeof legacyOutput !== "symbol"
+        ? (legacyOutput as Tables<"NodeInvocation">["output"])
+        : null,
+  } as NodeInvocationExtended
 }

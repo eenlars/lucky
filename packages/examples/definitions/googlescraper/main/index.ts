@@ -7,11 +7,21 @@ export { BatchProcessor } from "./batch/batch_processor"
 export { BatchScraper } from "./batch/batch_scraper"
 export { DataManager } from "./data_manager"
 
-export type { BatchScraperConfig, BatchScraperStats } from "./batch/batch_scraper"
+export type {
+  BatchScraperConfig,
+  BatchScraperStats,
+} from "./batch/batch_scraper"
 
-export type { BatchProcessorConfig, ProcessResult } from "./batch/batch_processor"
+export type {
+  BatchProcessorConfig,
+  ProcessResult,
+} from "./batch/batch_processor"
 
-export type { DataManagerConfig, LocationMapLink, ProcessFailure } from "./data_manager"
+export type {
+  DataManagerConfig,
+  LocationMapLink,
+  ProcessFailure,
+} from "./data_manager"
 
 // proxy management
 export {

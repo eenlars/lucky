@@ -15,9 +15,10 @@ export function findFromTags(text: string, tag: string): string | null {
     // 1. Try strict validation first (original behavior)
     const ANY_TAG = /<\s*(\/?)\s*([^\s/>]+)(?:\s[^>]*)?>/g
     const stack: string[] = []
-    for (let m: RegExpExecArray | null; (m = ANY_TAG.exec(text)); ) {
-      const closing = !!m[1]
-      const name = m[2]
+    let match = ANY_TAG.exec(text)
+    while (match) {
+      const closing = !!match[1]
+      const name = match[2]
       if (closing) {
         if (stack.pop() !== name) {
           // Document is malformed, try lenient parsing
@@ -26,6 +27,7 @@ export function findFromTags(text: string, tag: string): string | null {
       } else {
         stack.push(name) // new opener
       }
+      match = ANY_TAG.exec(text)
     }
     if (stack.length) {
       // Document is malformed, try lenient parsing
@@ -38,20 +40,22 @@ export function findFromTags(text: string, tag: string): string | null {
     const TOKEN = new RegExp(`<\\s*(/?)\\s*${esc}(?:\\s[^>]*)?>`, "gsi")
 
     // find genuine opener (skip leading stray </tag>)
-    let opener: RegExpExecArray | null
-    while ((opener = TOKEN.exec(text)) && opener[1]) {
-      /* skip */
+    let opener = TOKEN.exec(text)
+    while (opener?.[1]) {
+      opener = TOKEN.exec(text)
     }
     if (!opener) return null
 
     const start = opener.index + opener[0].length
     let depth = 1
 
-    for (let m: RegExpExecArray | null; (m = TOKEN.exec(text)); ) {
+    let m = TOKEN.exec(text)
+    while (m) {
       depth += m[1] ? -1 : 1 // /?  → closing (-1)  or  opening (+1)
       if (depth === 0) {
         return text.slice(start, m.index) // balanced pair found 🎉
       }
+      m = TOKEN.exec(text)
     }
     return null // opener with no closer
   } catch {
@@ -66,16 +70,17 @@ function findFromTagsLenient(text: string, tag: string): string | null {
     const TOKEN = new RegExp(`<\\s*(/?)\\s*${esc}(?:\\s[^>]*)?>`, "gsi")
 
     // find genuine opener (skip leading stray </tag>)
-    let opener: RegExpExecArray | null
-    while ((opener = TOKEN.exec(text)) && opener[1]) {
-      /* skip */
+    let opener = TOKEN.exec(text)
+    while (opener?.[1]) {
+      opener = TOKEN.exec(text)
     }
     if (!opener) return null
 
     const start = opener.index + opener[0].length
     let depth = 1
 
-    for (let m: RegExpExecArray | null; (m = TOKEN.exec(text)); ) {
+    let m = TOKEN.exec(text)
+    while (m) {
       depth += m[1] ? -1 : 1 // /?  → closing (-1)  or  opening (+1)
       if (depth === 0) {
         // Found a balanced pair for this specific tag
@@ -93,10 +98,10 @@ function findFromTagsLenient(text: string, tag: string): string | null {
         // Verify that the extracted content itself is well-formed
         const ANY_TAG = /<\s*(\/?)\s*([^\s/>]+)(?:\s[^>]*)?>/g
         const stack: string[] = []
-        let tagMatch: RegExpExecArray | null
         ANY_TAG.lastIndex = 0 // reset regex state
 
-        while ((tagMatch = ANY_TAG.exec(content))) {
+        let tagMatch = ANY_TAG.exec(content)
+        while (tagMatch) {
           const closing = !!tagMatch[1]
           const name = tagMatch[2]
           if (closing) {
@@ -104,11 +109,13 @@ function findFromTagsLenient(text: string, tag: string): string | null {
           } else {
             stack.push(name) // new opener in content
           }
+          tagMatch = ANY_TAG.exec(content)
         }
         if (stack.length) return null // something never closed in content
 
         return content // balanced pair found 🎉
       }
+      m = TOKEN.exec(text)
     }
     return null // opener with no closer
   } catch {

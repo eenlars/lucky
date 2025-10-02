@@ -261,7 +261,7 @@ export function WorkflowEvolutionVisualization({ graph, visualization, runInfo }
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-green-500 h-3 rounded-full" style={{ width: `${successRate}%` }}></div>
+              <div className="bg-green-500 h-3 rounded-full" style={{ width: `${successRate}%` }} />
             </div>
           </div>
         </div>

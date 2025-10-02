@@ -152,7 +152,7 @@ export async function processHtmlToMarkdown(
     // ensure absolute urls for images when keeping them
     turndownService.addRule("absoluteImages", {
       filter: "img",
-      replacement: (content: string, node: any) => {
+      replacement: (_content: string, node: any) => {
         const src = node.getAttribute("src")
         const alt = node.getAttribute("alt") || ""
 

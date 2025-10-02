@@ -1,20 +1,20 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/WorkFlowNode.ts
 
+import { createHash } from "node:crypto"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/node/selfImproveHelper"
 import type { Payload } from "@core/messages/MessagePayload"
+import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
-import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import type { ToolExecutionContext } from "@lucky/tools"
 import { genShortId } from "@core/utils/common/utils"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { ToolExecutionContext } from "@lucky/tools"
 import chalk from "chalk"
-import { createHash } from "crypto"
-import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
 import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
+import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
 import { ToolManager } from "./toolManager"
 
 export interface NodeInvocationResult {
@@ -49,7 +49,7 @@ export class WorkFlowNode {
   /**
    * Private constructor: no async work, no runtime‐only wiring.
    */
-  private constructor(config: WorkflowNodeConfig, workflowVersionId: string, skipDatabasePersistence: boolean = false) {
+  private constructor(config: WorkflowNodeConfig, workflowVersionId: string, skipDatabasePersistence = false) {
     this.nodeId = config.nodeId
     this.nodeVersionId = genShortId()
     this.config = config
@@ -74,7 +74,7 @@ export class WorkFlowNode {
   public static async create(
     config: WorkflowNodeConfig,
     workflowVersionId: string,
-    skipDatabasePersistence: boolean = false,
+    skipDatabasePersistence = false,
   ): Promise<WorkFlowNode> {
     const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence)
     await node.toolManager.initializeTools()
@@ -197,7 +197,7 @@ export class WorkFlowNode {
       const result = await pipeline.process()
 
       if (!result.summaryWithInfo) {
-        throw new Error(`[WorkFlowNode] no summary with info`)
+        throw new Error("[WorkFlowNode] no summary with info")
       }
 
       this.agentSteps = result.agentSteps ?? null

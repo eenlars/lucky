@@ -1,15 +1,15 @@
+import { createHash } from "node:crypto"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { askLLM } from "@core/messages/api/genObject"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import type { SelectToolStrategyOptions, StrategyResult } from "@core/messages/pipeline/selectTool/toolstrategy.types"
 import { explainTools } from "@core/tools/any/explainTools"
-import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
-import { createHash } from "crypto"
 import { z } from "zod"
 
 const verbose = isLoggingEnabled("Tools")
@@ -285,7 +285,7 @@ export async function selectToolStrategyV3<T extends ToolSet>(
         // Invalid toolName
         const result: StrategyResult<T> = {
           type: "terminate",
-          reasoning: "Invalid tool selected: " + decision.toolName,
+          reasoning: `Invalid tool selected: ${decision.toolName}`,
           usdCost: usdCost ?? 0,
         }
         obs.event("strategy.selectTool:decision", {

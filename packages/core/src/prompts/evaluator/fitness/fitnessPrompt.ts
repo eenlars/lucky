@@ -1,6 +1,6 @@
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
-import { isNir } from "@lucky/shared"
 import { promptr } from "@core/utils/functions/prompt/prompt"
+import { isNir } from "@lucky/shared"
 
 type RubricItem = {
   evaluationCriterion: string

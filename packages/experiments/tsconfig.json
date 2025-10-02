@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@core/*": ["../core/src/*"],
       "@examples/*": ["../examples/*"],

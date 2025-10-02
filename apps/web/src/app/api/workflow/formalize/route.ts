@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 import type { RS } from "@lucky/core/utils/types"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication

@@ -6,8 +6,8 @@ export class SpendingTracker {
   private sdkSpend = 0 // Track SDK costs separately for reporting
 
   static getInstance(): SpendingTracker {
-    if (!this.instance) this.instance = new SpendingTracker()
-    return this.instance
+    if (!SpendingTracker.instance) SpendingTracker.instance = new SpendingTracker()
+    return SpendingTracker.instance
   }
 
   initialize(limit: number): void {
@@ -33,7 +33,7 @@ export class SpendingTracker {
    * @param cost Cost in USD from SDK usage
    * @param invocationId Optional workflow invocation ID for tracking
    */
-  addSDKCost(cost: number, invocationId?: string): void {
+  addSDKCost(cost: number, _invocationId?: string): void {
     // Validate cost to prevent negative or non-finite values
     if (!Number.isFinite(cost) || cost < 0) {
       console.warn(`[SpendingTracker] Invalid SDK cost value ignored: ${cost}`)

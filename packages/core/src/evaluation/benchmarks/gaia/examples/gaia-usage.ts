@@ -57,7 +57,7 @@ async function demonstrateGAIAUsage() {
   const testInstance = await GAIALoader.fetchById("5d0080cb-90d7-4712-bc33-848150e917d3")
   console.log(`Question: "${testInstance.Question}"`)
   console.log(`Expected answer: "${testInstance["Final answer"]}"`)
-  console.log(`This would be passed to an AI agent for solving...`)
+  console.log("This would be passed to an AI agent for solving...")
 }
 
 // Run the demonstration

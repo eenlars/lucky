@@ -1,8 +1,8 @@
-import { getDefaultModels, PATHS } from "@core/core-config/compat"
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
+import { PATHS, getDefaultModels } from "@core/core-config/compat"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import * as fs from "fs/promises"
-import * as path from "path"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 describe("resultPersistence", () => {
@@ -213,7 +213,10 @@ describe("resultPersistence", () => {
 
     it("should overwrite existing files", async () => {
       const firstConfig = { ...testWorkflowConfig, entryNodeId: "first-node" }
-      const secondConfig = { ...testWorkflowConfig, entryNodeId: "second-node" }
+      const secondConfig = {
+        ...testWorkflowConfig,
+        entryNodeId: "second-node",
+      }
 
       // save first config
       await persistWorkflow(firstConfig, testFileName)
@@ -315,7 +318,7 @@ describe("resultPersistence", () => {
         try {
           const filePath = path.join(actualOutDir, `concurrent-test-${i}.json`)
           await fs.unlink(filePath)
-        } catch (error) {
+        } catch (_error) {
           // ignore if file doesn't exist or can't be deleted
         }
       }

@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-;(function () {
+;(() => {
   // --- CONFIGURE SELECTORS ---
   const containerSelector = ".search_list__C45Tu"
   const itemSelector = "a.store-details_store__MUQZs"

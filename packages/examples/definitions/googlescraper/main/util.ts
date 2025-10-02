@@ -1,7 +1,7 @@
 import { lgg } from "@core/utils/logging/Logger"
 import type { LocationMapLink } from "@examples/definitions/googlescraper/main/data_manager"
 import type { ProxyResponse } from "@examples/definitions/googlescraper/utils/proxies"
-import { type Browser, type CookieData, type Page } from "puppeteer"
+import type { Browser, CookieData, Page } from "puppeteer"
 import puppeteerExtra from "puppeteer-extra"
 import stealthPlugin from "puppeteer-extra-plugin-stealth"
 
@@ -35,14 +35,13 @@ export async function autoScroll(page: Page) {
             // More content loaded, keep scrolling
             noChangeCount = 0 // reset counter
             return
-          } else {
-            // No more content loaded, but give it a few more tries
-            noChangeCount++
-            if (noChangeCount >= 3) {
-              // stop after 3 consecutive scroll attempts with no new content
-              clearInterval(timer)
-              resolve(void 0)
-            }
+          }
+          // No more content loaded, but give it a few more tries
+          noChangeCount++
+          if (noChangeCount >= 3) {
+            // stop after 3 consecutive scroll attempts with no new content
+            clearInterval(timer)
+            resolve(void 0)
           }
         }
       }, 200)

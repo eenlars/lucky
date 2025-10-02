@@ -17,14 +17,14 @@
 import { quickSummaryNull } from "@core/messages/api/genObject"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
+import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { responseToAgentSteps } from "@core/messages/api/vercel/responseToAgentSteps"
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
 import { generateSummaryFromUnknownData } from "@core/messages/summaries"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { toolUsageToString, type MultiStepLoopContext } from "./utils"
+import { type MultiStepLoopContext, toolUsageToString } from "./utils"
 
 /**
  * Executes a multi-step agent loop with tool orchestration and memory updates.
@@ -105,7 +105,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
         // ensures downstream consumers always receive some output
         agentSteps.push({
           type: "text",
-          return: "No action taken based on analysis: " + strategy.reasoning,
+          return: `No action taken based on analysis: ${strategy.reasoning}`,
         })
       }
 
@@ -186,7 +186,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
     const mutationMarker = strategy.expectsMutation ? " [EXPECTS_MUTATION]" : ""
     agentSteps.push({
       type: "reasoning",
-      return: strategy.reasoning + " " + strategy.plan + " " + strategy.check + mutationMarker,
+      return: `${strategy.reasoning} ${strategy.plan} ${strategy.check}${mutationMarker}`,
     })
 
     const selected = strategy.toolName

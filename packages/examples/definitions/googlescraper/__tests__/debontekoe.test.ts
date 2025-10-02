@@ -28,9 +28,7 @@ describe("De Bonte Koe Integration Test", () => {
     const standardizedData = transformLocationData(result.output?.businesses || [])
 
     // find the De Bonte Koe entry
-    const bonteKoeEntry = standardizedData.find(
-      business => business.name && business.name.toLowerCase().includes("bonte koe"),
-    )
+    const bonteKoeEntry = standardizedData.find(business => business.name?.toLowerCase().includes("bonte koe"))
 
     expect(bonteKoeEntry).toBeDefined()
     expect(bonteKoeEntry?.name).toContain("Bonte Koe")

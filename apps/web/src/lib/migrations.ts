@@ -39,42 +39,36 @@ interface MiddleFitnessData {
 type _FitnessData = NewerFitnessData | MiddleFitnessData | OlderFitnessData
 
 function isNewerFormat(data: unknown): data is NewerFitnessData {
+  if (!(data !== null && typeof data === "object" && "data" in data)) return false
+  const record = data as Record<string, unknown>
+  if (!(record.data !== null && typeof record.data === "object")) return false
+  const innerData = record.data as Record<string, unknown>
   return (
-    data !== null &&
-    typeof data === "object" &&
-    "data" in data &&
-    data.data !== null &&
-    typeof data.data === "object" &&
-    "score" in data.data &&
-    "accuracy" in data.data &&
-    typeof (data.data as any).score === "number" &&
-    typeof (data.data as any).accuracy === "number"
+    "score" in innerData &&
+    "accuracy" in innerData &&
+    typeof innerData.score === "number" &&
+    typeof innerData.accuracy === "number"
   )
 }
 
 function isMiddleFormat(data: unknown): data is MiddleFitnessData {
+  if (!(data !== null && typeof data === "object" && "data" in data)) return false
+  const record = data as Record<string, unknown>
+  if (!(record.data !== null && typeof record.data === "object")) return false
+  const innerData = record.data as Record<string, unknown>
   return (
-    data !== null &&
-    typeof data === "object" &&
-    "data" in data &&
-    data.data !== null &&
-    typeof data.data === "object" &&
-    "score" in data.data &&
-    "dataAccuracy" in data.data &&
-    !("accuracy" in data.data) &&
-    typeof (data.data as any).score === "number" &&
-    typeof (data.data as any).dataAccuracy === "number"
+    "score" in innerData &&
+    "dataAccuracy" in innerData &&
+    !("accuracy" in innerData) &&
+    typeof innerData.score === "number" &&
+    typeof innerData.dataAccuracy === "number"
   )
 }
 
 function isOlderFormat(data: unknown): data is OlderFitnessData {
-  return (
-    data !== null &&
-    typeof data === "object" &&
-    "score" in data &&
-    !("data" in data) &&
-    typeof (data as any).score === "number"
-  )
+  if (!(data !== null && typeof data === "object")) return false
+  const record = data as Record<string, unknown>
+  return "score" in record && !("data" in record) && typeof record.score === "number"
 }
 
 function extractFitnessValues(fitnessData: unknown): {
@@ -86,21 +80,22 @@ function extractFitnessValues(fitnessData: unknown): {
       accuracy: Math.round(fitnessData.data.accuracy),
       fitness_score: Math.round(fitnessData.data.score),
     }
-  } else if (isMiddleFormat(fitnessData)) {
+  }
+  if (isMiddleFormat(fitnessData)) {
     return {
       accuracy: Math.round(fitnessData.data.dataAccuracy),
       fitness_score: Math.round(fitnessData.data.score),
     }
-  } else if (isOlderFormat(fitnessData)) {
+  }
+  if (isOlderFormat(fitnessData)) {
     return {
       accuracy: fitnessData.extendedFitness?.dataAccuracy ? Math.round(fitnessData.extendedFitness.dataAccuracy) : null,
       fitness_score: Math.round(fitnessData.score),
     }
-  } else {
-    return {
-      accuracy: null,
-      fitness_score: null,
-    }
+  }
+  return {
+    accuracy: null,
+    fitness_score: null,
   }
 }
 
@@ -142,7 +137,7 @@ export async function migrateFitnessToColumns() {
         const { accuracy, fitness_score } = extractFitnessValues(fitnessData)
 
         // Only update if we have at least one value to update and it's currently null
-        const updates: any = {}
+        const updates: { accuracy?: number; fitness_score?: number } = {}
         if (accuracy !== null && row.accuracy === null) {
           updates.accuracy = accuracy
         }

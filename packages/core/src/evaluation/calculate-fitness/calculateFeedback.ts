@@ -1,12 +1,12 @@
-import { type FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
+import { getDefaultModels } from "@core/core-config/compat"
+import type { FitnessFunctionInput } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { singleFeedbackSystemPrompt, singleFeedbackUserPrompt } from "@core/prompts/evaluator/feedback/singleFeedback.p"
-import { isNir } from "@lucky/shared"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 
 export async function calculateFeedback({
   agentSteps,

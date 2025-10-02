@@ -15,6 +15,7 @@ import {
   ZAxis,
 } from "recharts"
 
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import {
   accuracyScorePct,
   costTimeBalancedScorePct,
@@ -25,7 +26,6 @@ import type {
   OurAlgorithmExperimentResults,
   OurAlgorithmRun,
 } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/types"
-import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 
 type ShapeName = "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye"
 
@@ -278,17 +278,20 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
     const acc: Record<string, Acc> = {}
     for (const p of allPoints) {
       const key = `${p.model}|${p.condition}`
-      const a = (acc[key] = acc[key] ?? {
-        model: p.model,
-        condition: p.condition,
-        count: 0,
-        sumX: 0,
-        sumY: 0,
-        sumFinal: 0,
-        sumCostTime: 0,
-        sumCost: 0,
-        sumDuration: 0,
-      })
+      if (!acc[key]) {
+        acc[key] = {
+          model: p.model,
+          condition: p.condition,
+          count: 0,
+          sumX: 0,
+          sumY: 0,
+          sumFinal: 0,
+          sumCostTime: 0,
+          sumCost: 0,
+          sumDuration: 0,
+        }
+      }
+      const a = acc[key]
       a.count += 1
       a.sumX += p.xEfficiencyPct
       a.sumY += p.yAccuracyPct
@@ -326,7 +329,10 @@ export default function AdaptationOurAlgorithmConnected({ className = "" }: { cl
   const connections = useMemo<Connection[]>(() => {
     const byModel: Record<string, { vague?: PointDatum; clear?: PointDatum }> = {}
     for (const p of aggregatedPoints) {
-      const bucket = (byModel[p.model] = byModel[p.model] ?? {})
+      if (!byModel[p.model]) {
+        byModel[p.model] = {}
+      }
+      const bucket = byModel[p.model]
       if (p.condition === "vague") bucket.vague = p
       else bucket.clear = p
     }

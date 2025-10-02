@@ -1,6 +1,6 @@
-import { buildSimpleMessage, type BuildSimpleMessageContext } from "@core/messages/create/buildSimpleMessage"
-import { extractTextFromPayload, type AggregatedPayload } from "@core/messages/MessagePayload"
+import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
+import { type BuildSimpleMessageContext, buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { agentSystemPrompt } from "@core/prompts/standardPrompt"
 import type { WorkflowFiles } from "@core/tools/context/contextStore.types"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
@@ -49,7 +49,7 @@ export function buildMessages({
     outputType,
   }
 
-  let context: string = ""
+  let context = ""
   const systemPrompt: string = nodeSystemPrompt + agentSystemPrompt
 
   let message = extractTextFromPayload(payload)
@@ -66,11 +66,12 @@ export function buildMessages({
       message = `Hey you just asked me to do this work: ${message}`
       break
 
-    case "aggregated":
+    case "aggregated": {
       const aggregatedPayload = payload as AggregatedPayload
       message = `You are receiving aggregated results from ${aggregatedPayload.messages.length} workers. Process and combine these results:\n\n${aggregatedPayload.messages.map((msg, i) => `Worker ${i + 1} (${msg.fromNodeId}):\n${JSON.stringify(msg.payload, null, 2)}`).join("\n\n")}`
-      context = `Aggregated results from multiple workers`
+      context = "Aggregated results from multiple workers"
       break
+    }
 
     default: {
       throw new Error(

@@ -1,23 +1,23 @@
 import { z } from "zod"
 
+import { getDefaultModels } from "@core/core-config/compat"
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
-import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
+import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 
 export const WorkflowNodeConfigSchema = z.object({
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
   // Accept any model string - validation happens at runtime via validateAndResolveModel()
-  modelName: z
-    .string()
-    .refine(name => typeof name === "string" && name.length > 0, { message: "Model name must be a non-empty string" }),
+  modelName: z.string().refine(name => typeof name === "string" && name.length > 0, {
+    message: "Model name must be a non-empty string",
+  }),
   mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES)),
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)),
   handOffs: z.array(z.string()),

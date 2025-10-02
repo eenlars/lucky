@@ -1,19 +1,19 @@
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import {
-  FitnessOfWorkflowSchema,
   type FitnessFunctionInput,
   type FitnessOfWorkflow,
+  FitnessOfWorkflowSchema,
 } from "@core/evaluation/calculate-fitness/fitness.types"
 import { normalizeCost, normalizeTime } from "@core/evaluation/calculate-fitness/fitnessNormalize"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
-import { isNir } from "@lucky/shared"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 
 async function calculateFitness({
   agentSteps,
@@ -41,7 +41,7 @@ async function calculateFitness({
 
   const outputSchemaStr: string | undefined = outputSchema ? zodToJson(outputSchema) : undefined
 
-  const outputStr = toolUsageToString(agentSteps) + "\n\n" + finalWorkflowOutput
+  const outputStr = `${toolUsageToString(agentSteps)}\n\n${finalWorkflowOutput}`
 
   const systemPrompt = fitnessSystemPrompt({
     groundTruth: evaluation,

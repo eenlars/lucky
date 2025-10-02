@@ -26,6 +26,8 @@
  * @see EvolutionEvaluator - External genome evaluation interface
  */
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Population } from "@core/improvement/gp/Population"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
@@ -33,20 +35,18 @@ import { evolutionSettingsToString } from "@core/improvement/gp/resources/evolut
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { validateEvolutionSettings } from "@core/improvement/gp/resources/validation"
 import type { FlowEvolutionMode } from "@core/types"
-import { isNir } from "@lucky/shared"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
-import { Genome } from "./Genome"
+import { isNir } from "@lucky/shared"
+import type { Genome } from "./Genome"
+import { RunService } from "./RunService"
+import { Select } from "./Select"
 import type { GenomeEvaluationResults, PopulationStats } from "./resources/gp.types"
 import { StatsTracker } from "./resources/stats"
 import { VerificationCache } from "./resources/wrappers"
-import { RunService } from "./RunService"
-import { Select } from "./Select"
 
 export class EvolutionEngine {
   private verificationCache: VerificationCache
@@ -181,7 +181,7 @@ export class EvolutionEngine {
       lgg.error(`[EvolutionEngine] Evolution failed: ${errorMsg}`)
 
       if (errorStack) {
-        lgg.error(`[EvolutionEngine] Stack trace:`, errorStack)
+        lgg.error("[EvolutionEngine] Stack trace:", errorStack)
       }
 
       lgg.error(`[EvolutionEngine] Population state: ${this.population.size()} genomes`)
@@ -189,7 +189,7 @@ export class EvolutionEngine {
       lgg.error(`[EvolutionEngine] Run ID: ${this.runService.getRunId()}`)
 
       if (error instanceof Error && error.cause) {
-        lgg.error(`[EvolutionEngine] Error cause:`, error.cause)
+        lgg.error("[EvolutionEngine] Error cause:", error.cause)
       }
 
       await this.runService.completeRun("failed", this.statsTracker.getTotalCost(), undefined)
@@ -322,7 +322,7 @@ export class EvolutionEngine {
             genome.reset(this.runService.getEvolutionContext())
 
             // Wait before retry (exponential backoff)
-            const delay = Math.pow(2, attempt) * 1000
+            const delay = 2 ** attempt * 1000
             lgg.info(`[EvolutionEngine] Retrying in ${delay}ms...`)
             await new Promise(resolve => setTimeout(resolve, delay))
             continue
@@ -369,7 +369,7 @@ export class EvolutionEngine {
           genome.reset(this.runService.getEvolutionContext())
 
           // Wait before retry (exponential backoff)
-          const delay = Math.pow(2, attempt) * 1000
+          const delay = 2 ** attempt * 1000
           lgg.info(`[EvolutionEngine] Retrying after exception in ${delay}ms...`)
           await new Promise(resolve => setTimeout(resolve, delay))
           continue

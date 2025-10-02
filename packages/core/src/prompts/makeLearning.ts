@@ -1,9 +1,9 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { MemoryResponseSchema, type NodeMemory } from "@core/utils/memory/memorySchema"
-import { getDefaultModels } from "@core/core-config/compat"
 import { isNir } from "@lucky/shared"
 import { GENERALIZATION_LIMITS } from "./generalizationLimits"
 
@@ -115,7 +115,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
     return {
       agentStep: {
         type: "error",
-        return: "error when making learning" + JSON.stringify(memoryResponse.error),
+        return: `error when making learning${JSON.stringify(memoryResponse.error)}`,
       },
       updatedMemory: currentMemory,
     }
@@ -124,7 +124,7 @@ Remember: Only save durable, non-obvious insights that will improve future runs.
     return {
       agentStep: {
         type: "error",
-        return: "error when making learning" + JSON.stringify(error),
+        return: `error when making learning${JSON.stringify(error)}`,
       },
       updatedMemory: currentMemory,
     }

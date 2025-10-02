@@ -1,22 +1,22 @@
-import { isNir } from "@lucky/shared"
 import { getModelV2 } from "@core/utils/spending/functions"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { isNir } from "@lucky/shared"
 import type { VercelUsage } from "./calculatePricing"
 
 /**
  * Calculate the USD cost of a completion given token usage and per-million-token pricing.
  */
-export function calculateUsageCost(usage: Partial<VercelUsage> = {}, modelName: ModelName): number {
+export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: ModelName): number {
   if (usage === null || usage === undefined || isNir(modelName)) {
     console.error(`Invalid usage or model name: ${JSON.stringify(usage)} ${JSON.stringify(modelName)}`)
     return 0
   }
   const { promptTokens = 0, completionTokens = 0 } = usage
 
-  let modelPricing
+  let modelPricing: any
   try {
     modelPricing = getModelV2(modelName)
-  } catch (err) {
+  } catch (_err) {
     console.error(`Model pricing not found for: ${modelName}`)
     return 0
   }

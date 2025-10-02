@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase"
-import { DatasetMeta, WorkflowIO } from "./types"
+import type { DatasetMeta, WorkflowIO } from "./types"
 
 const BUCKET = "input"
 

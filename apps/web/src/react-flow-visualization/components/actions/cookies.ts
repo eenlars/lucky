@@ -1,6 +1,6 @@
 "use server"
 
-import { ColorMode } from "@xyflow/react"
+import type { ColorMode } from "@xyflow/react"
 import { cookies } from "next/headers"
 
 export async function setColorModeCookie(colorMode: ColorMode) {

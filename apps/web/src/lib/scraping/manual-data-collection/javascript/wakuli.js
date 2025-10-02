@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/wakuli.json" assert { type: "json" }
 
 // map two-letter codes to English weekdays
@@ -29,7 +29,8 @@ function transformWakuliData(input) {
 
   return items.map(item => {
     // Build coordinates array
-    const coords = item.longitude && item.latitude ? [parseFloat(item.longitude), parseFloat(item.latitude)] : null
+    const coords =
+      item.longitude && item.latitude ? [Number.parseFloat(item.longitude), Number.parseFloat(item.latitude)] : null
 
     // Combine address lines
     const addressParts = []
@@ -50,13 +51,13 @@ function transformWakuliData(input) {
 
     // Find "Opening times" custom field and parse it
     const cf = (item.custom_fields || []).find(f => f.name.toLowerCase().includes("opening"))
-    if (cf && cf.value) {
+    if (cf?.value) {
       cf.value.split("\n").forEach(line => {
         // e.g. "mo - fr 07:00-18:00" or "sa - su 08:00-18:00"
         const parts = line.trim().split(/\s+/, 3)
         // parts[0] = start code, parts[1] = '-' or end code, parts[2] = times OR parts[1] = times
-        let dayCodes = [],
-          times
+        let dayCodes = []
+        let times
         if (parts.length === 3 && parts[1] === "-") {
           // range form: [start, '-', endTimes]? Actually split yields ["mo","-","fr"] but our split is wrong.
           // Better to match with regex:

@@ -21,10 +21,7 @@ export interface TodoWriteParams {
   todos: TodoItem[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface TodoReadParams {
-  // no parameters needed for read
-}
+export type TodoReadParams = Record<string, never>
 
 export interface TodoWriteResult {
   success: boolean

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
 import { supabase } from "@lucky/core/utils/clients/supabase/client"
-import { existsSync, mkdirSync, writeFileSync } from "fs"
-import { join } from "path"
 
 type WorkflowInvocationRow = any
 type WorkflowVersionRow = any
@@ -111,7 +111,7 @@ async function main() {
     if (typeof value !== "string") return value as unknown as string
     if (value.length <= MAX_TOOL_OUTPUT_STRING_LENGTH) return value
     const omitted = value.length - MAX_TOOL_OUTPUT_STRING_LENGTH
-    return value.slice(0, MAX_TOOL_OUTPUT_STRING_LENGTH) + `… [${omitted} chars truncated]`
+    return `${value.slice(0, MAX_TOOL_OUTPUT_STRING_LENGTH)}… [${omitted} chars truncated]`
   }
 
   const truncateArray = (arr: unknown[]): unknown[] => {

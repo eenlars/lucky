@@ -7,7 +7,7 @@ import JSON5 from "json5"
  * @returns      The first successfully parsed JSON object.
  * @throws       If no valid JSON or JSON5 could be extracted or if the result is an array.
  */
-function extractJSON(input: unknown, throwIfError: boolean = false): Record<string, unknown> | string {
+function extractJSON(input: unknown, throwIfError = false): Record<string, unknown> | string {
   // if it's already an object or array, return it directly
   if (typeof input === "object" && input !== null) {
     if (Array.isArray(input)) {
@@ -125,7 +125,7 @@ export const isJSON = (str: unknown): boolean => {
     return false
   }
 }
-export const show = (obj: unknown, indent: number = 2, depth: number = 0): string => {
+export const show = (obj: unknown, indent = 2, depth = 0): string => {
   // prevent infinite recursion
   if (depth > 10) {
     return JSON.stringify(obj, null, indent)

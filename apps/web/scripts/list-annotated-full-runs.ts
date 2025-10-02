@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
 import { supabase } from "@lucky/core/utils/clients/supabase/client"
-import { existsSync, mkdirSync, writeFileSync } from "fs"
-import { join } from "path"
 
 type EvolutionRunRow = {
   run_id: string

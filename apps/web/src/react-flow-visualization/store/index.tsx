@@ -3,7 +3,7 @@
 import { type ReactNode, createContext, useContext, useRef } from "react"
 import { useStore } from "zustand"
 
-import { AppState, type AppStore, createAppStore } from "@/react-flow-visualization/store/app-store"
+import { type AppState, type AppStore, createAppStore } from "@/react-flow-visualization/store/app-store"
 
 export type AppStoreApi = ReturnType<typeof createAppStore>
 
@@ -27,7 +27,7 @@ export const useAppStore = <T,>(selector: (store: AppStore) => T): T => {
   const appStoreContext = useContext(AppStoreContext)
 
   if (!appStoreContext) {
-    throw new Error(`useAppStore must be used within AppStoreProvider`)
+    throw new Error("useAppStore must be used within AppStoreProvider")
   }
 
   return useStore(appStoreContext, selector)

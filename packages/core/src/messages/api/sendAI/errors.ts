@@ -13,10 +13,10 @@ export function normalizeError(error: unknown): NormalizedError {
   const isAPICallErrorLike = (err: unknown): boolean => {
     if (!err || typeof err !== "object") return false
     const rec = err as Record<string, unknown>
-    const nameVal = rec["name"]
-    const statusCodeVal = rec["statusCode"]
-    const responseBodyVal = rec["responseBody"]
-    const responseHeadersVal = rec["responseHeaders"]
+    const nameVal = rec.name
+    const statusCodeVal = rec.statusCode
+    const responseBodyVal = rec.responseBody
+    const responseHeadersVal = rec.responseHeaders
     return (
       (typeof nameVal === "string" && nameVal === "APICallError") ||
       typeof statusCodeVal === "number" ||
@@ -27,15 +27,15 @@ export function normalizeError(error: unknown): NormalizedError {
 
   if (isAPICallErrorLike(error)) {
     const rec = error as Record<string, unknown>
-    const name = typeof rec["name"] === "string" ? (rec["name"] as string) : undefined
-    const messageIn = typeof rec["message"] === "string" ? (rec["message"] as string) : undefined
-    const statusCode = typeof rec["statusCode"] === "number" ? (rec["statusCode"] as number) : undefined
-    const responseBody = typeof rec["responseBody"] === "string" ? (rec["responseBody"] as string) : undefined
+    const name = typeof rec.name === "string" ? (rec.name as string) : undefined
+    const messageIn = typeof rec.message === "string" ? (rec.message as string) : undefined
+    const statusCode = typeof rec.statusCode === "number" ? (rec.statusCode as number) : undefined
+    const responseBody = typeof rec.responseBody === "string" ? (rec.responseBody as string) : undefined
     const responseHeaders =
-      typeof rec["responseHeaders"] === "object" && rec["responseHeaders"] !== null
-        ? (rec["responseHeaders"] as Record<string, string>)
+      typeof rec.responseHeaders === "object" && rec.responseHeaders !== null
+        ? (rec.responseHeaders as Record<string, string>)
         : undefined
-    const url = typeof rec["url"] === "string" ? (rec["url"] as string) : undefined
+    const url = typeof rec.url === "string" ? (rec.url as string) : undefined
 
     const body = typeof responseBody === "string" ? responseBody : ""
     const isEmptyBody200 = statusCode === 200 && body.length === 0
@@ -82,28 +82,28 @@ export function normalizeError(error: unknown): NormalizedError {
     let friendly: string | undefined
     switch (statusCode) {
       case 401:
-        friendly = `${provider ? provider + ": " : ""}Authentication failed. Check your API key/credentials.`
+        friendly = `${provider ? `${provider}: ` : ""}Authentication failed. Check your API key/credentials.`
         break
       case 402:
-        friendly = `${provider ? provider + ": " : ""}Insufficient credits or requested max tokens too high. Reduce max_tokens/maxTokens or add credits.`
+        friendly = `${provider ? `${provider}: ` : ""}Insufficient credits or requested max tokens too high. Reduce max_tokens/maxTokens or add credits.`
         break
       case 403:
-        friendly = `${provider ? provider + ": " : ""}Access denied. The model or endpoint may be unavailable for your account.`
+        friendly = `${provider ? `${provider}: ` : ""}Access denied. The model or endpoint may be unavailable for your account.`
         break
       case 404:
-        friendly = `${provider ? provider + ": " : ""}Endpoint or model not found.`
+        friendly = `${provider ? `${provider}: ` : ""}Endpoint or model not found.`
         break
       case 408:
-        friendly = `${provider ? provider + ": " : ""}Request timed out. Please retry with a smaller prompt or later.`
+        friendly = `${provider ? `${provider}: ` : ""}Request timed out. Please retry with a smaller prompt or later.`
         break
       case 429:
-        friendly = `${provider ? provider + ": " : ""}Rate limit exceeded. Slow down requests or upgrade your plan.`
+        friendly = `${provider ? `${provider}: ` : ""}Rate limit exceeded. Slow down requests or upgrade your plan.`
         break
       case 500:
       case 502:
       case 503:
       case 504:
-        friendly = `${provider ? provider + ": " : ""}Service is temporarily unavailable. Please retry.`
+        friendly = `${provider ? `${provider}: ` : ""}Service is temporarily unavailable. Please retry.`
         break
       default:
         friendly = undefined

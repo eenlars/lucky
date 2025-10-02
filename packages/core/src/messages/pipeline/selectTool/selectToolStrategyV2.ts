@@ -1,10 +1,10 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import type { SelectToolStrategyOptions, StrategyResult } from "@core/messages/pipeline/selectTool/toolstrategy.types"
 import { explainTools } from "@core/tools/any/explainTools"
-import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 import type { ModelMessage, ToolSet } from "ai"
 import chalk from "chalk"
 import { z } from "zod"
@@ -164,7 +164,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       // Invalid toolName
       return {
         type: "terminate",
-        reasoning: "Invalid tool selected: " + decision.toolName,
+        reasoning: `Invalid tool selected: ${decision.toolName}`,
         usdCost: usdCost ?? 0,
       }
     }

@@ -2,7 +2,7 @@ import { feedbackPrompt } from "@core/prompts/evaluator/feedback/feedback.p"
 import { rcaPrompt } from "@core/prompts/evaluator/root-cause/rca"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 
-export const singleFeedbackSystemPrompt = (evaluation: string, outputStr: string, hasReasoning: boolean) => `
+export const singleFeedbackSystemPrompt = (evaluation: string, _outputStr: string, hasReasoning: boolean) => `
     ${rcaPrompt}
 
     # ground truth

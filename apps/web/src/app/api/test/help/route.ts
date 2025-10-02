@@ -1,6 +1,6 @@
-import * as fs from "fs/promises"
-import { NextRequest, NextResponse } from "next/server"
-import * as path from "path"
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
+import { type NextRequest, NextResponse } from "next/server"
 
 const HELP_STORAGE_PATH = path.join(process.cwd(), "logging_folder", "help")
 

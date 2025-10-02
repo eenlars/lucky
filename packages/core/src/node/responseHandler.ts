@@ -1,21 +1,21 @@
 // src/core/node/response/responseHandler.ts
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { getResponseContent } from "@core/messages/api/processResponse"
-import { type ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
-import { chooseHandoff } from "@core/messages/handoffs/main"
-import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import { formatSummary } from "@core/messages/summaries"
+import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 // todo-circulardep: responseHandler imports from InvocationPipeline which imports back from responseHandler
 import { HandoffMessageHandler } from "@core/messages/handoffs/HandoffMessageHandler"
-import { extractTextFromPayload } from "@core/messages/MessagePayload"
+import { chooseHandoff } from "@core/messages/handoffs/main"
+import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
+import { formatSummary } from "@core/messages/summaries"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
 import { validateAndDecide } from "@core/utils/validation/message"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 
 /**
  * Handles successful response processing.

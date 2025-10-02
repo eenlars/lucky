@@ -1,6 +1,6 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { parseHours } from "@examples/definitions/googlescraper/utils/extractHours"
-import { readFileSync } from "fs"
-import { join } from "path"
 import { beforeAll, describe, expect, it } from "vitest"
 
 describe("parseHours", () => {

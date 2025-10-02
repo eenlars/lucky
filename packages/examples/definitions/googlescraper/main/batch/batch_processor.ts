@@ -1,6 +1,6 @@
 import type { ProxyResponse } from "../../utils/proxies"
 import type { LocationMapLink, ProcessFailure } from "../data_manager"
-import { searchGoogleMaps, type SearchInput } from "../main"
+import { type SearchInput, searchGoogleMaps } from "../main"
 
 export type ProcessResult = {
   skipped: boolean
@@ -28,7 +28,7 @@ export class BatchProcessor {
 
   async processLocation(
     location: LocationMapLink,
-    proxy: ProxyResponse,
+    _proxy: ProxyResponse,
     processedLocationIds: Set<number>,
   ): Promise<ProcessResult> {
     // skip if already processed

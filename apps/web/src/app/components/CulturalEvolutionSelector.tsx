@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { EvolutionRun, RunSelect } from "./RunSelect"
+import { type EvolutionRun, RunSelect } from "./RunSelect"
 
 export function CulturalEvolutionSelector({
   currentRunId,

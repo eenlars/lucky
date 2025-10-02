@@ -2,9 +2,9 @@
  * memory preservation utilities for genetic operations
  */
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { Genome } from "../Genome"
 
 export class MemoryPreservation {
@@ -46,7 +46,7 @@ export class MemoryPreservation {
     // for new nodes that don't exist in parents, try to find similar nodes
     for (const node of offspring.nodes) {
       if (!parent1Memory[node.nodeId] && !parent2Memory[node.nodeId]) {
-        const similarNodeMemory = this.findSimilarNodeMemory(node, parent1Memory, parent2Memory)
+        const similarNodeMemory = MemoryPreservation.findSimilarNodeMemory(node, parent1Memory, parent2Memory)
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
           // logger may be partially mocked in tests
@@ -83,7 +83,7 @@ export class MemoryPreservation {
     // for newly added nodes, try to inherit from similar nodes
     for (const node of offspring.nodes) {
       if (!parentMemory[node.nodeId]) {
-        const similarNodeMemory = this.findSimilarNodeMemory(node, parentMemory)
+        const similarNodeMemory = MemoryPreservation.findSimilarNodeMemory(node, parentMemory)
         if (similarNodeMemory) {
           node.memory = { ...similarNodeMemory }
           // logger may be partially mocked in tests
@@ -100,7 +100,13 @@ export class MemoryPreservation {
     targetNode: { nodeId: string; systemPrompt: string },
     ...memorySources: Record<string, Record<string, string>>[]
   ): Record<string, string> | null {
-    const allMemories = memorySources.reduce((acc, source) => ({ ...acc, ...source }), {})
+    const allMemories = memorySources.reduce(
+      (acc, source) => {
+        Object.assign(acc, source)
+        return acc
+      },
+      {} as Record<string, Record<string, string>>,
+    )
 
     // simple heuristic: find node with most similar system prompt
     let bestMatch: {
@@ -112,7 +118,7 @@ export class MemoryPreservation {
     for (const [nodeId, memory] of Object.entries(allMemories)) {
       if (memory && Object.keys(memory).length > 0) {
         // calculate similarity based on common words (simple heuristic)
-        const similarity = this.calculatePromptSimilarity(
+        const similarity = MemoryPreservation.calculatePromptSimilarity(
           targetNode.systemPrompt,
           nodeId, // we don't have access to the original prompt, using nodeId as proxy
         )
@@ -150,7 +156,7 @@ export class MemoryPreservation {
         if (!offspring.memory) {
           missingMemories.push("workflow-level memory completely missing")
         } else {
-          for (const [key, value] of Object.entries(parentWorkflowMemory)) {
+          for (const [key, _value] of Object.entries(parentWorkflowMemory)) {
             if (!(key in offspring.memory)) {
               missingMemories.push(`workflow memory key '${key}' lost`)
             }
@@ -167,7 +173,7 @@ export class MemoryPreservation {
           if (!offspringNode.memory) {
             missingMemories.push(`node '${nodeId}' memory completely lost`)
           } else {
-            for (const [key, value] of Object.entries(parentNodeMemory)) {
+            for (const [key, _value] of Object.entries(parentNodeMemory)) {
               if (!(key in offspringNode.memory)) {
                 missingMemories.push(`node '${nodeId}' memory key '${key}' lost`)
               }
@@ -192,7 +198,7 @@ export class MemoryPreservation {
     parents: Genome[],
     operationType: "crossover" | "mutation",
   ): void {
-    const validation = this.validateMemoryPreservation(offspring, parents)
+    const validation = MemoryPreservation.validateMemoryPreservation(offspring, parents)
 
     if (!validation.isValid) {
       const errorMsg = `Memory preservation violation in ${operationType}: ${validation.missingMemories.join(", ")}`

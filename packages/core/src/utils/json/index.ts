@@ -3,4 +3,11 @@
  */
 
 export { JSONN, isJSON, show } from "@lucky/shared"
-export type { Json, Database, Enums, Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
+export type {
+  Json,
+  Database,
+  Enums,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "@lucky/shared"

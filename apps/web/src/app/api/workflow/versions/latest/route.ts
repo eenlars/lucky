@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase"
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { supabase } from "@/lib/supabase"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   if (authResult instanceof NextResponse) return authResult
 
   const searchParams = request.nextUrl.searchParams
-  const limit = parseInt(searchParams.get("limit") || "200", 10)
+  const limit = Number.parseInt(searchParams.get("limit") || "200", 10)
 
   try {
     const { data, error } = await supabase

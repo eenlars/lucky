@@ -1,9 +1,9 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
+import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Workflow } from "@core/workflow/Workflow"
 
 /**
  * Parameters for a basic in-memory queue-based workflow run.

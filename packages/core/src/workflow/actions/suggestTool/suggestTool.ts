@@ -1,7 +1,7 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { SuggestToolPrompts } from "@core/workflow/actions/suggestTool/suggestTool.p"
-import type { Workflow } from "@core/workflow/Workflow"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import type { Workflow } from "@core/workflow/Workflow"
+import { SuggestToolPrompts } from "@core/workflow/actions/suggestTool/suggestTool.p"
 
 /**
  * this function suggests a new tool after receiving a bottleneck.

@@ -1,9 +1,9 @@
-import { isNir } from "@lucky/shared/client"
+import { MODEL_CONFIG } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
-import { getCurrentProvider, type LuckyProvider } from "@core/utils/spending/provider"
-import { MODEL_CONFIG } from "@core/core-config/compat"
+import { type LuckyProvider, getCurrentProvider } from "@core/utils/spending/provider"
+import { isNir } from "@lucky/shared/client"
 
 // Get all active models from provider structure
 export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T): AllowedModelName<T>[] => {

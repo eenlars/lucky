@@ -1,6 +1,6 @@
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"
-import { geocodeLocation, type LocationData } from "./mapboxUse"
+import { type LocationData, geocodeLocation } from "./mapboxUse"
 
 /**
  * Mapbox geocoding tool for location verification

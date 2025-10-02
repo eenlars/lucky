@@ -26,8 +26,8 @@ function aggregateByModelAndChain(results: RawResult[]) {
 
   const chains = Array.from(chainSet).sort((a, b) => {
     // Extract numeric part from strings like "2-step", "10-step"
-    const na = parseInt(a.replace(/[^0-9]/g, ""))
-    const nb = parseInt(b.replace(/[^0-9]/g, ""))
+    const na = Number.parseInt(a.replace(/[^0-9]/g, ""))
+    const nb = Number.parseInt(b.replace(/[^0-9]/g, ""))
     if (Number.isNaN(na) || Number.isNaN(nb)) return a.localeCompare(b)
     return na - nb
   })
@@ -87,7 +87,7 @@ export default function SequentialResultsPage() {
   useEffect(() => {
     async function loadResults() {
       try {
-        const res = await fetch(`/api/experiments/sequential-results`, {
+        const res = await fetch("/api/experiments/sequential-results", {
           cache: "no-store",
         })
         if (!res.ok) {

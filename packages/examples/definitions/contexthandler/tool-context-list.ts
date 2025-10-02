@@ -1,8 +1,8 @@
-import Tools, { type CodeToolResult } from "@lucky/tools"
-import { defineTool } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { JSONN } from "@lucky/shared"
+import Tools, { type CodeToolResult } from "@lucky/tools"
+import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 type KeyMetadata = {
@@ -130,7 +130,7 @@ const contextList = defineTool({
               preview,
               size: JSON.stringify(value).length,
             }
-          } catch (error) {
+          } catch (_error) {
             return {
               scope: keyScope,
               key,

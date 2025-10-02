@@ -1,6 +1,6 @@
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import { networkMonitor } from "@lucky/examples/definitions/browser-automation/network"
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

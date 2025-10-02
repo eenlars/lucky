@@ -1,6 +1,6 @@
 "use client"
 
-import { Panel, PanelProps, useReactFlow, useStore, useViewport } from "@xyflow/react"
+import { Panel, type PanelProps, useReactFlow, useStore, useViewport } from "@xyflow/react"
 import { Maximize, Minus, Plus } from "lucide-react"
 
 import { Button } from "@/react-flow-visualization/components/ui/button"

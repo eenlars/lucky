@@ -14,7 +14,7 @@ const toolName: CodeToolName = "searchGoogleMaps"
 export async function searchSingleBusiness(
   html: string,
   pageUrl: string,
-  enableLogging: boolean = false,
+  enableLogging = false,
 ): Promise<CodeToolResult<GoogleMapsResult>> {
   try {
     if (enableLogging) {

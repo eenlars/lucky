@@ -192,16 +192,15 @@ export function scoreLoop(execs: ToolExecution[], requested: number, toolUsageOu
   const combineCallsCount = combines.length
 
   // error rate: prefer explicit toolUsageOutputs when available
-  const errorRate =
-    toolUsageOutputs && toolUsageOutputs.length
-      ? toolUsageOutputs.filter(o => o?.type === "error").length / toolUsageOutputs.length
-      : ((): number => {
-          const totalToolUsages = execs.length
-          const errorUsages = (execs as any[]).filter(
-            e => typeof (e as any).outputData === "string" && String((e as any).outputData).startsWith("ERROR:"),
-          ).length
-          return totalToolUsages ? errorUsages / totalToolUsages : 0
-        })()
+  const errorRate = toolUsageOutputs?.length
+    ? toolUsageOutputs.filter(o => o?.type === "error").length / toolUsageOutputs.length
+    : ((): number => {
+        const totalToolUsages = execs.length
+        const errorUsages = (execs as any[]).filter(
+          e => typeof (e as any).outputData === "string" && String((e as any).outputData).startsWith("ERROR:"),
+        ).length
+        return totalToolUsages ? errorUsages / totalToolUsages : 0
+      })()
 
   // strategy classification
   const minimalCalls = Math.ceil(requested / 3)

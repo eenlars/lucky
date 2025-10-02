@@ -1,8 +1,8 @@
+import { promises as fs } from "node:fs"
+import { requireAuth } from "@/lib/api-auth"
 import { getLatestFileByPrefix, publicExperimentDir } from "@/lib/experiments/file-utils"
 import type { ToolCapacityResponse } from "@lucky/experiments/tool-real/experiments/01-capacity-limits/main-experiment"
-import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
 
 type ToolCountPerf = {
   toolCount: number

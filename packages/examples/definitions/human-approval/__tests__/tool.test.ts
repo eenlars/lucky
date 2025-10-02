@@ -1,7 +1,7 @@
-import * as fs from "fs/promises"
-import * as path from "path"
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
 import { PATHS } from "@lucky/tools/config/runtime"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { tool as humanApproval } from "../tool"
 
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
@@ -21,7 +21,7 @@ describe("humanApproval tool", () => {
           await fs.unlink(path.join(APPROVAL_STORAGE_PATH, file))
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // ignore cleanup errors
     }
   })

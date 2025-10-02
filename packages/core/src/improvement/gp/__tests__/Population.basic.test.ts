@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 // TODO: despite being "basic" tests, still has issues:
 // - genome mock returns random IDs causing test flakiness
 // - missing tests for async population initialization

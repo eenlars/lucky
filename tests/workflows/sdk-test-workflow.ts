@@ -19,7 +19,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
         1. Main functionality
         2. Potential issues
         3. Suggestions for improvement`,
-      modelName: "claude-3-sonnet-latest",
+      modelName: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",
@@ -61,7 +61,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
         - Executive summary
         - Detailed findings
         - Implementation roadmap`,
-      modelName: "claude-3-haiku-latest",
+      modelName: "anthropic/claude-3-5-haiku",
       useClaudeSDK: true,
       sdkConfig: {
         model: "haiku", // Using faster model for formatting
@@ -124,7 +124,7 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       nodeId: "conversation-start",
       description: "Start a conversation with official Anthropic SDK",
       systemPrompt: "You are a helpful assistant providing detailed technical explanations.",
-      modelName: "claude-3-sonnet-latest",
+      modelName: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",
@@ -139,7 +139,7 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       nodeId: "conversation-continue",
       description: "Continue the conversation (context passed via workflow)",
       systemPrompt: "Continue helping with technical explanations, building on previous context.",
-      modelName: "claude-3-sonnet-latest",
+      modelName: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
         model: "sonnet",

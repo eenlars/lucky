@@ -3,13 +3,13 @@
  * Replaces @examples/code_tools/file-saver/save
  */
 
-import type { CodeToolResult } from "@lucky/tools"
-import { JSONN } from "@core/utils/json"
+import fs from "node:fs"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 import { getCorePaths } from "@core/core-config"
-import fs from "fs"
+import { JSONN } from "@core/utils/json"
+import type { CodeToolResult } from "@lucky/tools"
 import { nanoid } from "nanoid"
-import path from "path"
-import { fileURLToPath } from "url"
 
 function getCallerDir(): string {
   if (typeof window !== "undefined") {
@@ -107,20 +107,16 @@ export async function saveFileInLoc(
 }
 
 export async function saveInLogging(data: any, filename?: string, fileExtension?: string): Promise<string> {
-  if (!filename) {
-    filename = nanoid()
-  } else {
-    filename = filename + "-" + nanoid()
-  }
+  const baseFilename = !filename ? nanoid() : `${filename}-${nanoid()}`
 
   // make sure the filename only contains alphanumeric characters
-  filename = filename.replace(/[^a-zA-Z0-9-]/g, "-")
+  const sanitizedFilename = baseFilename.replace(/[^a-zA-Z0-9-]/g, "-")
 
   // save in the logging folder - use core config paths
   const paths = getCorePaths()
   const folder = path.join(paths.node.logging, "saveInLogging")
   fs.mkdirSync(folder, { recursive: true })
-  const fullPath = path.join(folder, `${filename + (fileExtension ?? ".json")}`)
+  const fullPath = path.join(folder, `${sanitizedFilename + (fileExtension ?? ".json")}`)
   fs.writeFileSync(fullPath, JSON.stringify(data, null, 2))
   return fullPath
 }

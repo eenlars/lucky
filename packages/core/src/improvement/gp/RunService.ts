@@ -26,10 +26,10 @@ import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/re
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
 import { supabase } from "@core/utils/clients/supabase/client"
-import { isNir } from "@lucky/shared"
-import { lgg } from "@core/utils/logging/Logger"
 import type { Tables, TablesInsert, TablesUpdate } from "@core/utils/json"
 import { JSONN } from "@core/utils/json"
+import { lgg } from "@core/utils/logging/Logger"
+import { isNir } from "@lucky/shared"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 
@@ -123,9 +123,8 @@ export class RunService {
         this.currentGenerationId = lastCompletedGeneration.generationId
         this.currentGenerationNumber = lastCompletedGeneration.generationNumber
         return
-      } else {
-        throw new Error(`[RunService] No last completed generation found for run: ${continueRunId}`)
       }
+      throw new Error(`[RunService] No last completed generation found for run: ${continueRunId}`)
     }
     return RunService.withRetry(async () => {
       let notes = ""
@@ -379,8 +378,7 @@ export class RunService {
 
     try {
       const notes = bestGenome
-        ? `Completed with best genome: ${bestGenome.getWorkflowVersionId()}, fitness: ${bestGenome.getFitness()?.score.toFixed(3)}` +
-          (totalCost ? `, total cost: $${totalCost.toFixed(2)}` : "")
+        ? `Completed with best genome: ${bestGenome.getWorkflowVersionId()}, fitness: ${bestGenome.getFitness()?.score.toFixed(3)}${totalCost ? `, total cost: $${totalCost.toFixed(2)}` : ""}`
         : totalCost
           ? `Total cost: $${totalCost.toFixed(2)}`
           : "Evolution run completed"

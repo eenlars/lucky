@@ -28,6 +28,7 @@
  * TODO: implement multi-objective selection for complex fitness landscapes
  */
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome, createDummySurvivors } from "@core/improvement/gp/resources/debug/dummyGenome"
@@ -35,15 +36,14 @@ import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { VerificationCache } from "@core/improvement/gp/resources/wrappers"
-import { isNir } from "@lucky/shared"
 import { truncater } from "@core/utils/common/llmify"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
+import type { Population } from "./Population"
 import { Crossover } from "./operators/crossover/Crossover"
 import type { MutationOptions } from "./operators/mutations/mutation.types"
-import { Population } from "./Population"
 
 export class Select {
   private static verbose = isLoggingEnabled("GP")
@@ -108,7 +108,7 @@ export class Select {
 
     // Tournament selection for the rest
     while (parents.length < numParents) {
-      const parent = this.tournamentSelect(validPopulation, config.tournamentSize, parents)
+      const parent = Select.tournamentSelect(validPopulation, config.tournamentSize, parents)
       parents.push(parent)
     }
 
@@ -121,7 +121,7 @@ export class Select {
   private static tournamentSelect(
     population: ReadonlyArray<Genome>,
     tournamentSize: number,
-    alreadySelected: ReadonlyArray<Genome>,
+    _alreadySelected: ReadonlyArray<Genome>,
   ): Genome {
     // Random tournament
     const tournament: Genome[] = []
@@ -157,7 +157,7 @@ export class Select {
       return undefined
     }
 
-    return this.tournamentSelect(population, tournamentSize, [])
+    return Select.tournamentSelect(population, tournamentSize, [])
   }
 
   /**
@@ -414,7 +414,7 @@ export class Select {
     }
 
     // generate unverified offspring
-    const { offspring: rawOffspring, attempts } = await this.generateOffspring({
+    const { offspring: rawOffspring, attempts } = await Select.generateOffspring({
       population,
       config,
       nextGen: _evolutionContext.generationNumber,
@@ -424,7 +424,7 @@ export class Select {
     })
 
     // verify offspring and filter out invalid ones
-    const { validOffspring } = await this.verifyOffspring({
+    const { validOffspring } = await Select.verifyOffspring({
       offspring: rawOffspring,
       verificationCache,
       config,
@@ -441,8 +441,8 @@ export class Select {
 
     // sort by descending fitness
     combined.sort((a, b) => {
-      const aFitness = a.isEvaluated ? a.getFitnessScore() : -Infinity
-      const bFitness = b.isEvaluated ? b.getFitnessScore() : -Infinity
+      const aFitness = a.isEvaluated ? a.getFitnessScore() : Number.NEGATIVE_INFINITY
+      const bFitness = b.isEvaluated ? b.getFitnessScore() : Number.NEGATIVE_INFINITY
       return bFitness - aFitness
     })
 

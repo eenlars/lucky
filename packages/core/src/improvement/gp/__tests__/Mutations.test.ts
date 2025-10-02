@@ -3,7 +3,7 @@
 // CONFIG mock contains many properties not needed for mutation tests
 // consider extracting minimal mocks to test utilities
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest"
+import { type Mock, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
 vi.mock("@examples/settings/constants", () => ({
@@ -91,12 +91,12 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi.fn(),
 }))
 
+// isNir is used from real implementation; no mocking
+import { getDefaultModels } from "@core/core-config/compat"
 import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
-// isNir is used from real implementation; no mocking
-import { getDefaultModels } from "@core/core-config/compat"
 import type { RS } from "@core/utils/types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -109,10 +109,6 @@ const mockWorkflowConfigToGenome = workflowConfigToGenome as unknown as Mock
 const mockCreateDummyGenome = createDummyGenome as unknown as Mock
 
 describe("Mutations", () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   const createMockGenome = (id: string): Genome => {
     const genomeData: WorkflowGenome = {
       nodes: [
@@ -186,7 +182,7 @@ describe("Mutations", () => {
         workflowConfig: _workflowConfig,
         parentWorkflowVersionIds,
         evaluationInput: _evaluationInput,
-        _evolutionContext: _evolutionContext,
+        _evolutionContext,
       }: {
         workflowConfig: WorkflowConfig
         parentWorkflowVersionIds: string[]

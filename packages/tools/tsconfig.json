@@ -12,6 +12,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "outDir": "./dist",
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@lucky/tools": ["./src/index.ts"],
       "@lucky/tools/*": ["./src/*"],

@@ -102,9 +102,8 @@ export async function fetcher(url: string, options: FetcherOptions = {}): Promis
 
       // if this isn't the last attempt, wait and retry
       if (attempt < config.retries) {
-        const delay = config.retryDelay * Math.pow(2, attempt) // exponential backoff
+        const delay = config.retryDelay * 2 ** attempt // exponential backoff
         await sleep(delay)
-        continue
       }
     }
   }

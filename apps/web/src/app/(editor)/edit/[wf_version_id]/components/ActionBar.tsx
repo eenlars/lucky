@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/ui/button"
+import { useState } from "react"
 
 interface ActionBarProps {
   onSave: (commitMessage: string) => Promise<void>
@@ -37,7 +37,7 @@ export default function ActionBar({ onSave, onRun, isDirty, isLoading }: ActionB
         <Button onClick={handleSaveClick} disabled={!isDirty || isLoading} data-save-button>
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Saving...
             </>
           ) : (
@@ -48,7 +48,7 @@ export default function ActionBar({ onSave, onRun, isDirty, isLoading }: ActionB
         <Button onClick={onRun} disabled={isLoading} className="bg-green-600 hover:bg-green-700">
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Running...
             </>
           ) : (

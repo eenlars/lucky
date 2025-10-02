@@ -65,7 +65,7 @@ export const toolUsageToString = (
         case "learning":
           return `<learning_step>${u.return}</learning_step>`
         case "debug":
-          return `` // nothing!
+          return "" // nothing!
         default: {
           const _exhaustiveCheck: never = u
           void _exhaustiveCheck

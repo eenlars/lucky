@@ -8,8 +8,8 @@
  *   bun app/scripts/select-best-adaptive.ts
  */
 
-import { promises as fs } from "fs"
-import path from "path"
+import { promises as fs } from "node:fs"
+import path from "node:path"
 
 type Condition = "vague" | "clear"
 
@@ -34,7 +34,7 @@ type Run = {
 type Results = { runs: Run[] }
 
 function accuracyPct(items: number, requested: number): number {
-  if (!requested || !isFinite(requested)) return 0
+  if (!requested || !Number.isFinite(requested)) return 0
   return items >= requested ? 100 : (items / requested) * 100
 }
 
@@ -65,12 +65,12 @@ function summarizeGroup(label: string, runs: Run[]) {
     if (first) firstAcc.push(accuracyPct(first.metrics.totalItemsFetched ?? 0, requested))
     if (requested > 0) {
       const items =
-        typeof r.successItems === "number" && isFinite(r.successItems)
+        typeof r.successItems === "number" && Number.isFinite(r.successItems)
           ? r.successItems
           : (last?.metrics?.totalItemsFetched ?? 0)
       finalAcc.push(accuracyPct(items, requested))
-      const cost = typeof r.cost === "number" && isFinite(r.cost) ? r.cost : 0
-      const dur = typeof r.durationMs === "number" && isFinite(r.durationMs) ? r.durationMs : 0
+      const cost = typeof r.cost === "number" && Number.isFinite(r.cost) ? r.cost : 0
+      const dur = typeof r.durationMs === "number" && Number.isFinite(r.durationMs) ? r.durationMs : 0
       costs.push(cost)
       times.push(dur)
     }

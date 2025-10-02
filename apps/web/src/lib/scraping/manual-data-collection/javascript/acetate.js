@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import acetate from "../../../../lib/evals/all/acetate.json" assert { type: "json" }
 
 function transformLocationData(input) {
@@ -20,7 +20,7 @@ function transformLocationData(input) {
 }
 
 function extractName(loc) {
-  return loc.name || loc.title || loc.business_name || loc.display_name || (loc.meta && loc.meta.title) || null
+  return loc.name || loc.title || loc.business_name || loc.display_name || loc.meta?.title || null
 }
 
 function extractAddress(loc) {
@@ -51,7 +51,7 @@ function extractEmail(loc) {
 
 function extractCoordinates(loc) {
   if (loc.longitude != null && loc.latitude != null) {
-    return [parseFloat(loc.longitude), parseFloat(loc.latitude)]
+    return [Number.parseFloat(loc.longitude), Number.parseFloat(loc.latitude)]
   }
   return null
 }

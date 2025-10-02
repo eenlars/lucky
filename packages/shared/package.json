@@ -6,9 +6,7 @@
   "description": "Shared utilities and types",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup --silent",
     "dev": "tsup --watch",

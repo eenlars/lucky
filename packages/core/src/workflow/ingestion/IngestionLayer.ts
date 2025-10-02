@@ -1,14 +1,14 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { truncater } from "@core/utils/common/llmify"
+import * as csv from "@core/utils/csv"
 import { envi } from "@core/utils/env.mjs"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { JSONN } from "@core/utils/json"
-import * as csv from "@core/utils/csv"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**
@@ -24,33 +24,33 @@ export class IngestionLayer {
    */
   static async convert(evaluation: EvaluationInput): Promise<WorkflowIO[]> {
     // needs work: validation should happen first before processing
-    lgg.onlyIf(this.verbose, "[IngestionLayer] converting evaluation input", {
+    lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] converting evaluation input", {
       type: evaluation.type,
       goal: evaluation.goal,
     })
 
     if (evaluation.type === "text") {
-      return this.convertTextEvaluation(evaluation)
+      return IngestionLayer.convertTextEvaluation(evaluation)
     }
 
     if (evaluation.type === "csv") {
-      return await this.convertCSVEvaluation(evaluation)
+      return await IngestionLayer.convertCSVEvaluation(evaluation)
     }
 
     if (evaluation.type === "prompt-only") {
-      return this.convertPromptOnlyEvaluation(evaluation)
+      return IngestionLayer.convertPromptOnlyEvaluation(evaluation)
     }
 
     if (evaluation.type === "swebench") {
-      return await this.convertSWEBenchEvaluation(evaluation)
+      return await IngestionLayer.convertSWEBenchEvaluation(evaluation)
     }
 
     if (evaluation.type === "gaia") {
-      return await this.convertGAIAEvaluation(evaluation)
+      return await IngestionLayer.convertGAIAEvaluation(evaluation)
     }
 
     if (evaluation.type === "dataset-records") {
-      return await this.convertDatasetRecordEvaluation(evaluation)
+      return await IngestionLayer.convertDatasetRecordEvaluation(evaluation)
     }
 
     // needs work: error message should include the actual type for debugging
@@ -69,7 +69,7 @@ export class IngestionLayer {
       },
     }
 
-    lgg.onlyIf(this.verbose, "[IngestionLayer] created single workflow case from text")
+    lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] created single workflow case from text")
     return [workflowCase]
   }
 
@@ -94,13 +94,13 @@ export class IngestionLayer {
       // CSV utilities are simplified in standalone core - just parse the data
       const csvData = csv.parseCsv(evaluation.inputFile).data as Record<string, any>[]
 
-      lgg.onlyIf(this.verbose, "[IngestionLayer] loaded CSV data", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] loaded CSV data", {
         rows: csvData.length,
         columns: csvData.length > 0 ? Object.keys(csvData[0]) : [],
       })
 
       // parse evaluation to extract column name for expected output
-      const expectedOutputColumnName = this.parseEvaluation(evaluation.evaluation)
+      const expectedOutputColumnName = IngestionLayer.parseEvaluation(evaluation.evaluation)
 
       // create workflow cases from CSV rows
       const workflowCases: WorkflowIO[] = csvData.map((row: Record<string, any>, index: number) => {
@@ -117,7 +117,7 @@ export class IngestionLayer {
         const workflowInput = `${evaluation.goal}\n\nCurrent data:\n${rowContext}`
 
         // determine expected output for this row
-        const workflowOutput = this.determineExpectedOutput(row, expectedOutputColumnName, index)
+        const workflowOutput = IngestionLayer.determineExpectedOutput(row, expectedOutputColumnName, index)
 
         return {
           workflowInput,
@@ -125,7 +125,7 @@ export class IngestionLayer {
         }
       })
 
-      lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] generated workflow cases", {
         count: workflowCases.length,
         first: truncater(JSONN.show(workflowCases[0], 2), 100),
       })
@@ -188,7 +188,7 @@ export class IngestionLayer {
     // try to parse the column value as JSON
     try {
       return JSON.parse(columnValue)
-    } catch (error) {
+    } catch (_error) {
       return String(truncater(columnValue, 1000))
     }
   }
@@ -211,7 +211,7 @@ export class IngestionLayer {
       const limit = Math.min(CONFIG.ingestion.taskLimit, 100)
       const casesToReturn = workflowCases.slice(0, limit)
 
-      lgg.onlyIf(this.verbose, "[IngestionLayer] loaded SWE-bench cases", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] loaded SWE-bench cases", {
         totalAvailable: workflowCases.length,
         returned: casesToReturn.length,
       })
@@ -229,7 +229,7 @@ export class IngestionLayer {
    */
   private static async convertGAIAEvaluation(evaluation: EvaluationInput & { type: "gaia" }): Promise<WorkflowIO[]> {
     try {
-      lgg.onlyIf(this.verbose, "[IngestionLayer] fetching GAIA instances", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] fetching GAIA instances", {
         level: evaluation.level,
         split: evaluation.split,
       })
@@ -292,7 +292,7 @@ The file content should be processed as part of solving this task.`
         }
       })
 
-      lgg.onlyIf(this.verbose, "[IngestionLayer] created workflow cases from GAIA", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] created workflow cases from GAIA", {
         level: evaluation.level,
         totalInstances: instances.length,
         casesGenerated: workflowCases.length,
@@ -332,7 +332,7 @@ Fallback Question: What is 2 + 2?`,
     guard(recordIds, "dataset-records evaluation requires at least one record ID")
 
     try {
-      lgg.onlyIf(this.verbose, "[IngestionLayer] fetching dataset records", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] fetching dataset records", {
         recordIds: recordIds,
         count: recordIds.length,
       })
@@ -351,7 +351,7 @@ Fallback Question: What is 2 + 2?`,
         throw new Error(`no dataset records found for IDs: ${recordIds.join(", ")}`)
       }
 
-      lgg.onlyIf(this.verbose, "[IngestionLayer] loaded dataset records", {
+      lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] loaded dataset records", {
         requested: recordIds.length,
         found: records.length,
       })
@@ -366,13 +366,17 @@ Fallback Question: What is 2 + 2?`,
       }))
 
       const randomIndex = Math.floor(Math.random() * workflowCases.length)
-      lgg.onlyIf(this.verbose, "[IngestionLayer] generated workflow cases from dataset records. this is one example:", {
-        count: workflowCases.length,
-        firstInput: workflowCases[randomIndex]?.workflowInput,
-        firstInputLength: workflowCases[randomIndex]?.workflowInput?.length || 0,
-        firstOutput: workflowCases[randomIndex]?.workflowOutput?.output,
-        firstOutputLength: workflowCases[randomIndex]?.workflowOutput?.output?.toString()?.length || 0,
-      })
+      lgg.onlyIf(
+        IngestionLayer.verbose,
+        "[IngestionLayer] generated workflow cases from dataset records. this is one example:",
+        {
+          count: workflowCases.length,
+          firstInput: workflowCases[randomIndex]?.workflowInput,
+          firstInputLength: workflowCases[randomIndex]?.workflowInput?.length || 0,
+          firstOutput: workflowCases[randomIndex]?.workflowOutput?.output,
+          firstOutputLength: workflowCases[randomIndex]?.workflowOutput?.output?.toString()?.length || 0,
+        },
+      )
 
       return workflowCases
     } catch (error) {
