@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import * as fs from "fs/promises"
 import { NextRequest, NextResponse } from "next/server"
 import * as path from "path"

@@ -6,6 +6,6 @@ interface NavIconProps {
   className?: string
 }
 
-export function NavIcon({ children, isActive = false, className = "" }: NavIconProps) {
+export function NavIcon({ children, isActive: _isActive = false, className = "" }: NavIconProps) {
   return <div className={`${className}`}>{children}</div>
 }
