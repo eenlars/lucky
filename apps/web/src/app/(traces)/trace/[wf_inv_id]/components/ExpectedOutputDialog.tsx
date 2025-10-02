@@ -35,7 +35,7 @@ export function ExpectedOutputDialog({ expectedOutputType }: ExpectedOutputDialo
 
   // Create a preview - first 5 lines for better context
   const lines = jsonString.split("\n")
-  const preview = lines.length > 5 ? lines.slice(0, 5).join("\n") + "\n..." : jsonString
+  const preview = lines.length > 5 ? `${lines.slice(0, 5).join("\n")}\n...` : jsonString
 
   return (
     <div className="space-y-2">

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
+import path from "node:path"
 import { requireAuth } from "@/lib/api-auth"
-import path from "path"
+import { NextResponse } from "next/server"
 
 export async function GET() {
   // Require authentication

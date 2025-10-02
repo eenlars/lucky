@@ -16,7 +16,7 @@ export class GAIALoader {
   static {
     try {
       // Try to import and check if local data exists
-      this.useLocalLoader = GAIALocalLoader.isDataAvailable()
+      GAIALoader.useLocalLoader = GAIALocalLoader.isDataAvailable()
       // Only log when GAIA is actually being used, not on import
     } catch {
       // Local loader not available
@@ -29,13 +29,13 @@ export class GAIALoader {
     authToken?: string,
   ): Promise<GAIAInstance> {
     // Use local loader if available
-    if (this.useLocalLoader) {
+    if (GAIALoader.useLocalLoader) {
       return GAIALocalLoader.fetchById(taskId, split)
     }
-    const url = new URL(this.BASE_URL)
-    url.searchParams.set("dataset", this.DATASET)
-    if (this.CONFIG) {
-      url.searchParams.set("config", this.CONFIG)
+    const url = new URL(GAIALoader.BASE_URL)
+    url.searchParams.set("dataset", GAIALoader.DATASET)
+    if (GAIALoader.CONFIG) {
+      url.searchParams.set("config", GAIALoader.CONFIG)
     }
     url.searchParams.set("split", split)
     url.searchParams.set("offset", "0")
@@ -54,14 +54,14 @@ export class GAIALoader {
 
         const headers: HeadersInit = {}
         if (authToken) {
-          headers["Authorization"] = `Bearer ${authToken}`
+          headers.Authorization = `Bearer ${authToken}`
         }
 
         const response = await fetch(url.toString(), { headers })
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error(`Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`)
+            throw new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN")
           }
 
           // Log more details about the error
@@ -89,7 +89,7 @@ export class GAIALoader {
           const row = found.row
 
           // Skip if instance has a file and we're configured to skip files
-          if (this.SKIP_INSTANCES_WITH_FILES && row.file_name) {
+          if (GAIALoader.SKIP_INSTANCES_WITH_FILES && row.file_name) {
             // Continue searching without logging
             offset += batchSize
             continue
@@ -135,17 +135,17 @@ export class GAIALoader {
   static async fetchByLevel(
     level: 1 | 2 | 3,
     split: "validation" | "test" = "validation",
-    limit: number = 10,
+    limit = 10,
     authToken?: string,
   ): Promise<GAIAInstance[]> {
     // Use local loader if available
-    if (this.useLocalLoader) {
+    if (GAIALoader.useLocalLoader) {
       return GAIALocalLoader.fetchByLevel(level, split, limit)
     }
-    const url = new URL(this.BASE_URL)
-    url.searchParams.set("dataset", this.DATASET)
-    if (this.CONFIG) {
-      url.searchParams.set("config", this.CONFIG)
+    const url = new URL(GAIALoader.BASE_URL)
+    url.searchParams.set("dataset", GAIALoader.DATASET)
+    if (GAIALoader.CONFIG) {
+      url.searchParams.set("config", GAIALoader.CONFIG)
     }
     url.searchParams.set("split", split)
     url.searchParams.set("offset", "0")
@@ -165,14 +165,14 @@ export class GAIALoader {
 
         const headers: HeadersInit = {}
         if (authToken) {
-          headers["Authorization"] = `Bearer ${authToken}`
+          headers.Authorization = `Bearer ${authToken}`
         }
 
         const response = await fetch(url.toString(), { headers })
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error(`Authentication required. GAIA is a gated dataset - please provide HF_TOKEN`)
+            throw new Error("Authentication required. GAIA is a gated dataset - please provide HF_TOKEN")
           }
 
           // Log more details about the error
@@ -198,7 +198,7 @@ export class GAIALoader {
           const row = item.row
           if (row.Level === level && row.task_id !== "0-0-0-0-0") {
             // Skip if instance has a file and we're configured to skip files
-            if (this.SKIP_INSTANCES_WITH_FILES && row.file_name) {
+            if (GAIALoader.SKIP_INSTANCES_WITH_FILES && row.file_name) {
               continue
             }
 

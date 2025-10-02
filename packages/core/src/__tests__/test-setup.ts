@@ -1,7 +1,6 @@
+import os from "node:os"
 // vitest setup file
-import fs from "fs"
-import os from "os"
-import path from "path"
+import path from "node:path"
 import { beforeEach, vi } from "vitest"
 
 // Make vi globally available

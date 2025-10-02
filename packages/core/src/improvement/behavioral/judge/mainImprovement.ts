@@ -1,3 +1,4 @@
+import { CONFIG } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { adjustWorkflowOneNode } from "@core/improvement/behavioral/judge/adjustWorkflowOneNode"
 import { improveNodesSelfImprovement } from "@core/improvement/behavioral/judge/improveNode"
@@ -6,10 +7,9 @@ import { adjustWorkflowStructure } from "@core/improvement/behavioral/judge/judg
 import { parseCliArguments } from "@core/utils/cli/argumentParser"
 import { lgg } from "@core/utils/logging/Logger"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
+import { Workflow, type WorkflowImprovementResult } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { Workflow, WorkflowImprovementResult } from "@core/workflow/Workflow"
-import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Configuration options for the improvement process components
@@ -82,7 +82,7 @@ export async function improveNodesIterativelyImpl(
     case "judge": {
       const mechanicChangesNode = Math.random() < 0.5
 
-      let mechanicResult
+      let mechanicResult: any
       if (mechanicChangesNode) {
         // Adjustor applies a single-node change (with internal formalization)
         mechanicResult = await adjustWorkflowOneNode(

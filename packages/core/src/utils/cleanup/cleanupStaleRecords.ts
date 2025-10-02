@@ -1,6 +1,6 @@
 import { supabase } from "@core/utils/clients/supabase/client"
-import { lgg } from "@core/utils/logging/Logger"
 import type { Tables } from "@core/utils/json"
+import { lgg } from "@core/utils/logging/Logger"
 
 interface CleanupStats {
   workflowInvocations: number

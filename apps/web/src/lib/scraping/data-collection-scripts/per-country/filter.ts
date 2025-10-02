@@ -1,12 +1,12 @@
-/* eslint-disable no-restricted-imports */
-import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
-import { readFileSync, writeFileSync } from "fs"
-import { resolve } from "path"
+import { readFileSync, writeFileSync } from "node:fs"
+import { resolve } from "node:path"
 import {
+  type GoogleScraperBusinessExtended,
   extractCoordinates,
-  GoogleScraperBusinessExtended,
   transformLocationData,
 } from "@lucky/examples/definitions/googlescraper/convert"
+/* eslint-disable no-restricted-imports */
+import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { toDomain } from "../utils"
 
 // use: tsx src/lib/count-bcorps/per-country/filter.ts
@@ -80,7 +80,7 @@ function main() {
   // output the filtered result
   const output = transformed
   //save to file
-  writeFileSync(fullPath + ".filtered.json", JSON.stringify(output, null, 2))
+  writeFileSync(`${fullPath}.filtered.json`, JSON.stringify(output, null, 2))
 }
 
 main()

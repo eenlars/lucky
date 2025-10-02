@@ -1,8 +1,8 @@
 "use client"
 
+import { Button } from "@/ui/button"
 import { createWorkflowPrompt } from "@lucky/core/prompts/createWorkflow"
 import { useState } from "react"
-import { Button } from "@/ui/button"
 
 export default function SystemPromptPanel() {
   const [showSystemPrompt, setShowSystemPrompt] = useState(false)

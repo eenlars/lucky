@@ -1,15 +1,15 @@
+import {
+  type WorkflowWithVersions,
+  createWorkflow,
+  deleteWorkflow,
+  getWorkflow,
+  listWorkflows,
+  saveWorkflowVersion,
+  updateWorkflowDescription,
+} from "@/lib/workflows"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import {
-  listWorkflows,
-  getWorkflow,
-  createWorkflow,
-  saveWorkflowVersion,
-  deleteWorkflow,
-  updateWorkflowDescription,
-  type WorkflowWithVersions,
-} from "@/lib/workflows"
 
 interface WorkflowStore {
   // Data

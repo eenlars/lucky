@@ -1,7 +1,7 @@
 export class ContextFileStorage {
   protected bucket: string
 
-  constructor(bucket: string = "context") {
+  constructor(bucket = "context") {
     this.bucket = bucket
   }
 

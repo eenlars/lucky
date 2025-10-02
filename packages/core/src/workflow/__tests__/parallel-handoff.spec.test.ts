@@ -1,9 +1,9 @@
-import { extractTextFromPayload, type AggregatedPayload } from "@core/messages/MessagePayload"
+import { getDefaultModels } from "@core/core-config/compat"
+import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.
@@ -22,7 +22,7 @@ describe("Parallel handoff integration", () => {
     const callArgsByNode: Record<string, InvokeArgs[]> = {}
 
     // Replace WorkFlowNode.create to avoid real tool initialization and LLM calls
-    const createSpy = vi.spyOn(WorkFlowNode, "create").mockImplementation(async config => {
+    const _createSpy = vi.spyOn(WorkFlowNode, "create").mockImplementation(async config => {
       const nodeId = config.nodeId
       const mkReply = (text: string) => ({
         kind: "result" as const,
@@ -165,7 +165,7 @@ describe("Parallel handoff integration", () => {
     expect(typeof first.finalWorkflowOutput).toBe("string")
 
     // Verify that the join node received an aggregated payload from both workers
-    const joinInvocations = callArgsByNode["join"] ?? []
+    const joinInvocations = callArgsByNode.join ?? []
     expect(joinInvocations.length).toBeGreaterThan(0)
     const joinIncoming = joinInvocations[0].workflowMessageIncoming
     const payload = joinIncoming.payload as AggregatedPayload
@@ -183,8 +183,8 @@ describe("Parallel handoff integration", () => {
     expect(joinInvocations.length).toBe(1)
 
     // Sanity: upstream nodes should each invoke exactly once
-    expect((callArgsByNode["start"] ?? []).length).toBe(1)
-    expect((callArgsByNode["workerA"] ?? []).length).toBe(1)
-    expect((callArgsByNode["workerB"] ?? []).length).toBe(1)
+    expect((callArgsByNode.start ?? []).length).toBe(1)
+    expect((callArgsByNode.workerA ?? []).length).toBe(1)
+    expect((callArgsByNode.workerB ?? []).length).toBe(1)
   }, 5_000)
 })

@@ -61,7 +61,8 @@ export function slugifyBCorp(raw: string): string {
     .replace(/\./g, "") //replace all dots
     .replace(/([a-z])([A-Z])/g, "$1-$2")
     .toLowerCase()
-    .replace(/[\u0300-\u036f]/g, "") // remove combining diacritical marks
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "") // remove combining diacritical marks
     .replace(/[àáâãäåæ]/g, "")
     .replace(/[çć]/g, "")
     .replace(/[èéêë]/g, "")

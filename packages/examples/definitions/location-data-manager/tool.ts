@@ -1,7 +1,7 @@
 import { isNir } from "@lucky/shared"
 import { defineTool } from "@lucky/tools"
-import { z } from "zod"
 import { locationDataSchema } from "@lucky/tools/schemas/location.types"
+import { z } from "zod"
 import { getLocationData, insertLocationData, removeLocationData, updateLocationData } from "./api"
 
 // Helper function to clean location data by removing null values
@@ -62,17 +62,20 @@ const locationDataManager = defineTool({
       const cleanedData = (params.locationData || []).map(cleanLocationData)
       const response = await insertLocationData(workflowInvocationId, cleanedData)
       return response.output || { success: false }
-    } else if (params.operation === "getLocations") {
+    }
+    if (params.operation === "getLocations") {
       const response = await getLocationData(workflowInvocationId)
       return response.output || { success: false, locations: [] }
-    } else if (params.operation === "removeLocations") {
+    }
+    if (params.operation === "removeLocations") {
       if (isNir(params.locationIdsToRemove)) {
         return { success: false, locations: [] }
       }
 
       const response = await removeLocationData(workflowInvocationId, params.locationIdsToRemove)
       return response.output || { success: false, locations: [] }
-    } else if (params.operation === "updateLocations") {
+    }
+    if (params.operation === "updateLocations") {
       if (isNir(params.updateData) || params.updateData.length === 0) {
         throw new Error("updateData is required for updateLocations operation")
       }
@@ -84,9 +87,8 @@ const locationDataManager = defineTool({
       }))
       const response = await updateLocationData(workflowInvocationId, cleanedData)
       return response.output || { success: false }
-    } else {
-      throw new Error(`unknown operation: ${params.operation}`)
     }
+    throw new Error(`unknown operation: ${params.operation}`)
   },
 })
 

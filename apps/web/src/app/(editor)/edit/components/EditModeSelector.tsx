@@ -1,28 +1,55 @@
 "use client"
 
+import { Button } from "@/ui/button"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
 import { ReactFlowProvider } from "@xyflow/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
-import { Button } from "@/ui/button"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"
 import Workflow from "@/react-flow-visualization/components/workflow"
 import { useAppStore } from "@/react-flow-visualization/store"
 
-import JSONEditor from "./JSONEditor"
 import EditorHeader from "./EditorHeader"
+import JSONEditor from "./JSONEditor"
 
+import DatasetSelector from "@/components/DatasetSelector"
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
-import DatasetSelector from "@/components/DatasetSelector"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { loadFromDSLClient, loadFromDSLClientDisplay } from "@lucky/core/workflow/setup/WorkflowLoader.client"
+
+// Client-side wrapper for server-side DSL validation
+async function loadFromDSLClient(dslConfig: any) {
+  const response = await fetch("/api/workflow/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflow: dslConfig, mode: "dsl" }),
+  })
+  const result = await response.json()
+  if (!result.isValid) {
+    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  }
+  return result.config
+}
+
+async function loadFromDSLClientDisplay(dslConfig: any) {
+  const response = await fetch("/api/workflow/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflow: dslConfig, mode: "dsl-display" }),
+  })
+  const result = await response.json()
+  if (!result.isValid) {
+    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  }
+  return result.config
+}
 
 type EditMode = "graph" | "json" | "eval"
 
@@ -263,10 +290,15 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
   // Load initial data into graph when component mounts
   useEffect(() => {
-    if (workflowVersion && workflowVersion.dsl) {
+    if (
+      workflowVersion?.dsl &&
+      typeof workflowVersion.dsl === "object" &&
+      workflowVersion.dsl !== null &&
+      !Array.isArray(workflowVersion.dsl)
+    ) {
       const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
       updateWorkflowJSON(jsonString)
-      loadWorkflowFromData(workflowVersion.dsl).then(() => {
+      loadWorkflowFromData(workflowVersion.dsl as unknown as WorkflowConfig).then(() => {
         // Auto-organize layout once data is loaded
         organizeLayout()
       })
@@ -360,7 +392,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                   {/* Goal Section */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Goal <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
+                      Goal{" "}
+                      <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
                     </label>
                     <input
                       type="text"
@@ -375,7 +408,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                   {/* Dataset Section */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Dataset <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
+                      Dataset{" "}
+                      <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
                     </label>
                     <div className="w-full max-w-xs">
                       <DatasetSelector

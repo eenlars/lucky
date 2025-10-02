@@ -1,16 +1,16 @@
 // adapter to use AggregatedEvaluator in genetic programming
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
-import { Genome } from "@core/improvement/gp/Genome"
+import type { Genome } from "@core/improvement/gp/Genome"
 import { MockGPEvaluator } from "@core/improvement/gp/resources/debug/MockGPEvaluator"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import { R } from "@core/utils/types"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { JSONN } from "@core/utils/json"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { EvolutionEvaluator } from "./EvolutionEvaluator"
 
 /**
@@ -88,7 +88,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
     try {
       if (GPEvaluatorAdapter.verbose) {
-        lgg.log(`[GPEvaluatorAdapter] Creating workflow instance for evaluation`)
+        lgg.log("[GPEvaluatorAdapter] Creating workflow instance for evaluation")
       }
 
       lgg.log(
@@ -131,7 +131,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
       )
 
       if (GPEvaluatorAdapter.verbose) {
-        lgg.log(`[GPEvaluatorAdapter] Detailed results:`, {
+        lgg.log("[GPEvaluatorAdapter] Detailed results:", {
           workflowVersionId: genome.getWorkflowVersionId(),
           fitnessScore: fitness.score,
           evaluationCost: cost,
@@ -166,7 +166,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
       if (GPEvaluatorAdapter.verbose) {
         lgg.error(
-          `[GPEvaluatorAdapter] Error details:`,
+          "[GPEvaluatorAdapter] Error details:",
           JSONN.show({
             workflowVersionId: genome.getWorkflowVersionId(),
             errorMessage: String(error),

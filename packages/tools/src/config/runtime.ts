@@ -3,15 +3,11 @@
  *
  * Provides default paths and settings that tools need at runtime.
  * These can be overridden by the consuming application.
+ * SERVER-ONLY - do not import from client code.
  */
 
-import path from "path"
-import { fileURLToPath } from "url"
-
-// Default paths based on typical project structure
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const DEFAULT_ROOT = path.resolve(__dirname, "..", "..", "..", "..")
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 
 /**
  * Runtime paths configuration
@@ -48,6 +44,11 @@ export interface ToolRuntimeConfig {
     }
   }
 }
+
+// Default paths based on typical project structure
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const DEFAULT_ROOT = path.resolve(__dirname, "..", "..", "..", "..")
 
 // Default configuration
 let runtimeConfig: ToolRuntimeConfig = {

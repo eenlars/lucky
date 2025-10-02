@@ -65,7 +65,8 @@ export function getPricingLevelV2(model: ModelName): PricingLevel {
 
   if (inputPrice < ranges.low) {
     return "low"
-  } else if (inputPrice < ranges.medium) {
+  }
+  if (inputPrice < ranges.medium) {
     return "medium"
   }
 

@@ -1,11 +1,10 @@
+import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { join } from "node:path"
+import { PATHS, getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
+import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { listFiles } from "@huggingface/hub"
-import { PATHS } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
-import { mkdir, readFile, writeFile } from "fs/promises"
-import { join } from "path"
 import { z } from "zod"
 import { SWEBenchLoader } from "./SWEBenchLoader"
 
@@ -101,7 +100,6 @@ async function downloadSWEBenchDataset(): Promise<void> {
         }
       } catch (error) {
         console.log(`Failed to access ${repoId}:`, error instanceof Error ? error.message : String(error))
-        continue
       }
     }
 
@@ -272,7 +270,7 @@ interface AISolutionResponse {
   implementationSteps: string[]
 }
 
-async function solveWithAI(workflowInput: string, expectedOutput: string): Promise<any> {
+async function solveWithAI(workflowInput: string, _expectedOutput: string): Promise<any> {
   console.log("\n🤖 Solving with AI...")
   console.log("=".repeat(40))
 
@@ -412,12 +410,12 @@ async function testSWEBenchEvaluationInput(evaluationInput: EvaluationInput): Pr
         // Step 5: Show ground truth comparison
         console.log("\n🎯 Ground Truth Solution:")
         console.log("-".repeat(50))
-        console.log(workflowCase.workflowOutput.output.substring(0, 500) + "...")
+        console.log(`${workflowCase.workflowOutput.output.substring(0, 500)}...`)
 
         if (instance.test_patch) {
           console.log("\n🧪 Ground Truth Test Patch:")
           console.log("-".repeat(50))
-          console.log(instance.test_patch.substring(0, 300) + "...")
+          console.log(`${instance.test_patch.substring(0, 300)}...`)
         }
       }
     }
@@ -497,7 +495,7 @@ async function runEvaluationInputTests() {
     }
 
     // Final summary
-    console.log("\n" + "=".repeat(70))
+    console.log(`\n${"=".repeat(70)}`)
     console.log("🎯 FINAL RESULTS SUMMARY")
     console.log("=".repeat(70))
 
@@ -513,7 +511,7 @@ async function runEvaluationInputTests() {
     const avgScore = results.reduce((sum, r) => sum + (r.validations[0]?.overallScore || 0), 0) / results.length
     console.log(`\nAverage Score: ${avgScore.toFixed(1)}/10`)
     console.log(`Total Cost: $${totalCost.toFixed(4)}`)
-    console.log(`\n✅ All evaluation input tests completed successfully!`)
+    console.log("\n✅ All evaluation input tests completed successfully!")
   } catch (error) {
     console.error("❌ Tests failed:", error)
     process.exit(1)

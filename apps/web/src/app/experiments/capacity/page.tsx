@@ -1,4 +1,4 @@
-import { type ToolCapacityExperimentResponse } from "@/app/api/experiments/capacity/route"
+import type { ToolCapacityExperimentResponse } from "@/app/api/experiments/capacity/route"
 import type { ToolCapacityResult } from "@lucky/experiments/tool-real/experiments/01-capacity-limits/main-experiment"
 import AccuracyByModelChart from "./components/AccuracyByModelChart"
 import AccuracyByToolCountChart from "./components/AccuracyByToolCountChart"
@@ -13,7 +13,7 @@ function sanitizeKey(input: string): string {
 
 async function fetchCapacityData(): Promise<ToolCapacityExperimentResponse | null> {
   try {
-    const res = await fetch(`/api/experiments/capacity`, {
+    const res = await fetch("/api/experiments/capacity", {
       cache: "no-store",
     })
     if (!res.ok) return null

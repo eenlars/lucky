@@ -28,8 +28,8 @@ function parseArgument(arg: string): [string, string] {
 }
 
 function parseInteger(value: string, name: string): number {
-  const num = parseInt(value, 10)
-  if (isNaN(num) || num <= 0) {
+  const num = Number.parseInt(value, 10)
+  if (Number.isNaN(num) || num <= 0) {
     throw new ArgumentParsingError(`${name} must be a positive integer, got: ${value}`)
   }
   return num

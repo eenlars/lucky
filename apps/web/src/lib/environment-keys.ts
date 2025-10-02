@@ -10,7 +10,7 @@ const STORAGE_KEY = "environment-keys"
 export class EnvironmentKeysManager {
   // Prefer a robust UUID when available; fall back in SSR/tests
   private static newId(): string {
-    const g: any = globalThis as any
+    const g = globalThis as typeof globalThis & { crypto?: Crypto }
     if (typeof g.crypto !== "undefined" && g.crypto !== null && typeof g.crypto.randomUUID === "function") {
       return g.crypto.randomUUID()
     }
@@ -20,17 +20,7 @@ export class EnvironmentKeysManager {
     bytes[6] = (bytes[6] & 0x0f) | 0x40
     bytes[8] = (bytes[8] & 0x3f) | 0x80
     const hex = [...bytes].map(b => b.toString(16).padStart(2, "0"))
-    return (
-      hex.slice(0, 4).join("") +
-      "-" +
-      hex.slice(4, 6).join("") +
-      "-" +
-      hex.slice(6, 8).join("") +
-      "-" +
-      hex.slice(8, 10).join("") +
-      "-" +
-      hex.slice(10, 16).join("")
-    )
+    return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10, 16).join("")}`
   }
 
   static getKeys(): EnvironmentKey[] {
@@ -58,14 +48,14 @@ export class EnvironmentKeysManager {
   }
 
   static getKeyValue(name: string): string | undefined {
-    const keys = this.getKeys()
+    const keys = EnvironmentKeysManager.getKeys()
     const trimmed = name.trim()
     const key = keys.find(k => k.name === trimmed)
     return key?.value
   }
 
   static getAllKeysAsEnv(): Record<string, string> {
-    const keys = this.getKeys()
+    const keys = EnvironmentKeysManager.getKeys()
     const env: Record<string, string> = {}
 
     keys.forEach(key => {
@@ -92,7 +82,7 @@ export class EnvironmentKeysManager {
 
   static createKey(name: string, value: string): EnvironmentKey {
     return {
-      id: this.newId(),
+      id: EnvironmentKeysManager.newId(),
       name: name.trim(),
       value: value.trim(),
       isVisible: false,

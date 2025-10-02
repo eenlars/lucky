@@ -7,13 +7,10 @@ export class SWEBenchLoader {
   private static readonly BASE_URL = "https://datasets-server.huggingface.co/rows"
   private static readonly TIMEOUT_MS = 10000 // 10 second timeout
 
-  static async fetchAsWorkflowIO(
-    split: "train" | "dev" | "test" = "train",
-    limit: number = 100,
-  ): Promise<WorkflowIO[]> {
-    const url = new URL(this.BASE_URL)
-    url.searchParams.set("dataset", this.DATASET)
-    url.searchParams.set("config", this.CONFIG)
+  static async fetchAsWorkflowIO(split: "train" | "dev" | "test" = "train", limit = 100): Promise<WorkflowIO[]> {
+    const url = new URL(SWEBenchLoader.BASE_URL)
+    url.searchParams.set("dataset", SWEBenchLoader.DATASET)
+    url.searchParams.set("config", SWEBenchLoader.CONFIG)
     url.searchParams.set("split", split)
     url.searchParams.set("offset", "0")
     url.searchParams.set("length", limit.toString())
@@ -21,7 +18,7 @@ export class SWEBenchLoader {
     lgg.info(`Fetching ${limit} SWE-bench questions as WorkflowIO[]`)
 
     try {
-      const response = await this.fetchWithTimeout(url.toString())
+      const response = await SWEBenchLoader.fetchWithTimeout(url.toString())
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -99,9 +96,9 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
   }
 
   static async fetchById(id: string, split: "train" | "dev" | "test" = "test"): Promise<SWEBenchInstance> {
-    const url = new URL(this.BASE_URL)
-    url.searchParams.set("dataset", this.DATASET)
-    url.searchParams.set("config", this.CONFIG)
+    const url = new URL(SWEBenchLoader.BASE_URL)
+    url.searchParams.set("dataset", SWEBenchLoader.DATASET)
+    url.searchParams.set("config", SWEBenchLoader.CONFIG)
     url.searchParams.set("split", split)
     url.searchParams.set("offset", "0")
     url.searchParams.set("length", "100") // fetch in batches
@@ -117,7 +114,7 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
         url.searchParams.set("offset", offset.toString())
         url.searchParams.set("length", batchSize.toString())
 
-        const response = await this.fetchWithTimeout(url.toString())
+        const response = await SWEBenchLoader.fetchWithTimeout(url.toString())
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
@@ -163,9 +160,9 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
       lgg.error(`Failed to fetch SWE-bench instance ${id}:`, error)
 
       // check if this is a network connectivity issue
-      if (this.isNetworkError(error)) {
+      if (SWEBenchLoader.isNetworkError(error)) {
         lgg.warn("Network connectivity issue detected, falling back to mock data")
-        return this.getMockInstance(id)
+        return SWEBenchLoader.getMockInstance(id)
       }
 
       throw new Error(`Failed to fetch SWE-bench instance ${id}: ${error}`)
@@ -174,7 +171,7 @@ ${JSON.stringify(instance.PASS_TO_PASS, null, 2)}`
 
   private static async fetchWithTimeout(url: string): Promise<Response> {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT_MS)
+    const timeoutId = setTimeout(() => controller.abort(), SWEBenchLoader.TIMEOUT_MS)
 
     try {
       const response = await fetch(url, {

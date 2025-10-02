@@ -6,6 +6,7 @@
  * prompting strategies and styles to improve node performance.
  */
 
+import { getDefaultModels } from "@core/core-config/compat"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
@@ -13,7 +14,6 @@ import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import type { Genome } from "../../Genome"
 import type { IntensityLevel, MutationOperator } from "./mutation.types"
 

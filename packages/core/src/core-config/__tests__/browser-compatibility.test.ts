@@ -15,7 +15,7 @@ describe("Browser Compatibility", () => {
   afterEach(() => {
     // Restore original window state
     if (originalWindow === undefined) {
-      delete (globalThis as any).window
+      ;(globalThis as any).window = undefined
     } else {
       ;(globalThis as any).window = originalWindow
     }
@@ -36,7 +36,7 @@ describe("Browser Compatibility", () => {
 
   it("should work in Node.js environment (without window)", () => {
     // Ensure we're in Node.js environment
-    delete (globalThis as any).window
+    ;(globalThis as any).window = undefined
 
     // This should not throw
     expect(() => getCoreConfig()).not.toThrow()

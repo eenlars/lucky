@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 // Integration test that attempts to break tool handling and exercises
 // AI SDK error normalization. We intentionally construct invalid tools

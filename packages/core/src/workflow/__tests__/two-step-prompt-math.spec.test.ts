@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import * as RandomizedFitness from "@core/evaluation/calculate-fitness/randomizedFitness"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@core/core-config/compat"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 // Integration test: 2-step prompt-only math workflow
 // - Node 1: add 7 to input
@@ -85,10 +85,7 @@ describe("prompt-only 2-step math workflow", () => {
         totalTime: queueRunResult.totalTime,
         totalCost: queueRunResult.totalCost,
         // Provide strict expected answer in the evaluation text for the judge
-        evaluation:
-          `The correct final numeric answer is ${expected}. ` +
-          `Award accuracy 100 ONLY if the final output equals ${expected} as a bare integer (ignoring whitespace). ` +
-          `If incorrect, award 0.`,
+        evaluation: `The correct final numeric answer is ${expected}. Award accuracy 100 ONLY if the final output equals ${expected} as a bare integer (ignoring whitespace). If incorrect, award 0.`,
         outputSchema: undefined,
         finalWorkflowOutput: queueRunResult.finalWorkflowOutput,
       },

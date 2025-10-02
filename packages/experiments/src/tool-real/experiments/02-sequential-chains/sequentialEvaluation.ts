@@ -3,7 +3,7 @@
  * Evaluates order, data flow, and completeness of tool chains
  */
 
-import type { ToolExecution, ValidationResult, ExperimentResult, ExperimentAnalysis } from "./types"
+import type { ExperimentAnalysis, ExperimentResult, ToolExecution, ValidationResult } from "./types"
 
 export function validateSequentialExecution(
   executions: ToolExecution[],

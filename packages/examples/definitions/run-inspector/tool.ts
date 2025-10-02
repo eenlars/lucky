@@ -1,6 +1,6 @@
-import { defineTool } from "@lucky/tools"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
+import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 const runInspector = defineTool({
@@ -189,7 +189,7 @@ const runInspector = defineTool({
                   output_preview:
                     typeof node.output === "string"
                       ? node.output.substring(0, 200) + (node.output.length > 200 ? "..." : "")
-                      : JSON.stringify(node.output).substring(0, 200) + "...",
+                      : `${JSON.stringify(node.output).substring(0, 200)}...`,
                 })) || [],
               total_nodes: nodeInvocations?.length || 0,
               total_cost: nodeInvocations?.reduce((sum, node) => sum + (node.usd_cost || 0), 0) || 0,
@@ -210,7 +210,7 @@ const runInspector = defineTool({
                   sequence: msg.seq,
                   created_at: msg.created_at,
                   payload_type: (msg.payload as any)?.kind || "unknown",
-                  payload_preview: JSON.stringify(msg.payload).substring(0, 200) + "...",
+                  payload_preview: `${JSON.stringify(msg.payload).substring(0, 200)}...`,
                   origin_invocation_id: msg.origin_invocation_id,
                   target_invocation_id: msg.target_invocation_id,
                 })) || [],
@@ -221,7 +221,7 @@ const runInspector = defineTool({
             error: null,
           }
 
-        case "costs":
+        case "costs": {
           const nodeCosts =
             nodeInvocations?.map(node => ({
               node_id: node.node_id,
@@ -251,8 +251,9 @@ const runInspector = defineTool({
             },
             error: null,
           }
+        }
 
-        case "errors":
+        case "errors": {
           const failedNodes = nodeInvocations?.filter(node => node.status === "failed") || []
           const errorMessages =
             messages?.filter(msg => {
@@ -285,6 +286,7 @@ const runInspector = defineTool({
             },
             error: null,
           }
+        }
 
         default: {
           const _exhaustiveCheck: never = action

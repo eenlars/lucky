@@ -1,13 +1,13 @@
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
-import { type CodeToolName } from "@lucky/tools"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import type { CodeToolName } from "@lucky/tools"
 
 export interface UnifiedImprovementParams {
   config: WorkflowConfig

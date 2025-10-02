@@ -1,7 +1,7 @@
-import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
-import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
-import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import { CONFIG } from "@core/core-config/compat"
+import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
+import { withDescriptions } from "@core/utils/zod/withDescriptions"
+import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 import type { z } from "zod"
 
 // dynamically generate tool descriptions from active tools only

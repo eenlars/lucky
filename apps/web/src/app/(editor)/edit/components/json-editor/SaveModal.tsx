@@ -79,7 +79,6 @@ export default function SaveModal({
               className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={3}
               placeholder="e.g., Added error handling to data processor node"
-              autoFocus
             />
             <p className="mt-2 text-xs text-gray-500">
               {commitMessage.length > 0

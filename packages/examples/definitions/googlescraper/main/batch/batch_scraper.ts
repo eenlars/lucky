@@ -84,7 +84,7 @@ export class BatchScraper {
     } = await this.batchProcessor.processAllBatches(
       locationsToProcess,
       proxies,
-      (batchIndex, batchSize, totalBusinesses, stats) => {
+      (batchIndex, batchSize, _totalBusinesses, stats) => {
         // save data after each batch
         const updatedBusinesses = [...allBusinesses, ...newBusinesses]
         const updatedFailures = [...failures, ...newFailures]
@@ -137,7 +137,7 @@ export class BatchScraper {
 
     // final summary
     const filePaths = this.dataManager.getFilePaths()
-    lgg.log(`final summary:`)
+    lgg.log("final summary:")
     lgg.log(`- total businesses: ${finalStats.totalBusinesses}`)
     lgg.log(`- total failures: ${finalStats.totalFailures}`)
     lgg.log(`- locations processed this run: ${finalStats.processedThisRun}`)

@@ -1,5 +1,5 @@
 declare module "react-json-editor-ajrm" {
-  import { ComponentType } from "react"
+  import type { ComponentType } from "react"
 
   interface JSONInputProps {
     id?: string

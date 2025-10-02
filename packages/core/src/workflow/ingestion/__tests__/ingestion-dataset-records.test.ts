@@ -1,6 +1,6 @@
+import { CONFIG } from "@core/core-config/compat"
 import { supabase } from "@core/utils/clients/supabase/client"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { IngestionLayer } from "../IngestionLayer"
 

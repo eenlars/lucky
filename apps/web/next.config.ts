@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
         crypto: false,
         glob: false,
         child_process: false,
+        // Handle node: protocol imports
+        "node:fs": false,
+        "node:fs/promises": false,
+        "node:path": false,
+        "node:url": false,
       }
     }
 

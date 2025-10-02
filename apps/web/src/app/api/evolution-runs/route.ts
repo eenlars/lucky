@@ -1,6 +1,6 @@
+import { requireAuth } from "@/lib/api-auth"
 import { supabase } from "@/lib/supabase"
 import { NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
 
 export const dynamic = "force-dynamic"
 
@@ -10,8 +10,8 @@ export async function GET(request: Request) {
   if (authResult instanceof NextResponse) return authResult
 
   const { searchParams } = new URL(request.url)
-  const limit = parseInt(searchParams.get("limit") || "1000")
-  const offset = parseInt(searchParams.get("offset") || "0")
+  const limit = Number.parseInt(searchParams.get("limit") || "1000")
+  const offset = Number.parseInt(searchParams.get("offset") || "0")
 
   // filter parameters
   const statusFilter = searchParams.get("status") || "all"

@@ -1,7 +1,7 @@
+import path from "node:path"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
 import Papa from "papaparse"
-import path from "path"
 import type {
   CsvColumn,
   CsvCreationOptions,
@@ -174,7 +174,7 @@ export class CsvHandler {
     return this.data!.rows.filter(row => {
       return searchColumns.some(column => {
         const value = row[column]
-        return value && value.toLowerCase().includes(searchTermLower)
+        return value?.toLowerCase().includes(searchTermLower)
       })
     })
   }
@@ -240,7 +240,7 @@ export class CsvHandler {
     })
 
     // append to existing content
-    const updatedCsv = existingCsv + "\n" + newContent
+    const updatedCsv = `${existingCsv}\n${newContent}`
     await this.contextStore.set("workflow", key, updatedCsv)
 
     // update parsed data if it exists
@@ -279,10 +279,9 @@ export class CsvHandler {
       // combine results based on logic
       if (filterOptions.logic === "OR") {
         return conditionResults.some(result => result)
-      } else {
-        // default to AND logic
-        return conditionResults.every(result => result)
       }
+      // default to AND logic
+      return conditionResults.every(result => result)
     })
 
     // apply limit if specified
@@ -339,29 +338,33 @@ export class CsvHandler {
         }
         return stringValue.endsWith(String(condition.value))
 
-      case "greaterThan":
-        const numValue1 = parseFloat(stringValue)
+      case "greaterThan": {
+        const numValue1 = Number.parseFloat(stringValue)
         const compareValue1 =
-          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
-        return !isNaN(numValue1) && !isNaN(compareValue1) && numValue1 > compareValue1
+          typeof condition.value === "number" ? condition.value : Number.parseFloat(String(condition.value))
+        return !Number.isNaN(numValue1) && !Number.isNaN(compareValue1) && numValue1 > compareValue1
+      }
 
-      case "lessThan":
-        const numValue2 = parseFloat(stringValue)
+      case "lessThan": {
+        const numValue2 = Number.parseFloat(stringValue)
         const compareValue2 =
-          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
-        return !isNaN(numValue2) && !isNaN(compareValue2) && numValue2 < compareValue2
+          typeof condition.value === "number" ? condition.value : Number.parseFloat(String(condition.value))
+        return !Number.isNaN(numValue2) && !Number.isNaN(compareValue2) && numValue2 < compareValue2
+      }
 
-      case "greaterThanOrEqual":
-        const numValue3 = parseFloat(stringValue)
+      case "greaterThanOrEqual": {
+        const numValue3 = Number.parseFloat(stringValue)
         const compareValue3 =
-          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
-        return !isNaN(numValue3) && !isNaN(compareValue3) && numValue3 >= compareValue3
+          typeof condition.value === "number" ? condition.value : Number.parseFloat(String(condition.value))
+        return !Number.isNaN(numValue3) && !Number.isNaN(compareValue3) && numValue3 >= compareValue3
+      }
 
-      case "lessThanOrEqual":
-        const numValue4 = parseFloat(stringValue)
+      case "lessThanOrEqual": {
+        const numValue4 = Number.parseFloat(stringValue)
         const compareValue4 =
-          typeof condition.value === "number" ? condition.value : parseFloat(String(condition.value))
-        return !isNaN(numValue4) && !isNaN(compareValue4) && numValue4 <= compareValue4
+          typeof condition.value === "number" ? condition.value : Number.parseFloat(String(condition.value))
+        return !Number.isNaN(numValue4) && !Number.isNaN(compareValue4) && numValue4 <= compareValue4
+      }
 
       default: {
         const _exhaustiveCheck: never = condition.operator

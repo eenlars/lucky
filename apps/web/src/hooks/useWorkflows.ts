@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
 import { useWorkflowStore } from "@/stores/workflow-store"
+import { useEffect } from "react"
 
 /**
  * Hook to manage workflows with optimized selector pattern

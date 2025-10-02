@@ -3,7 +3,7 @@ import { useCallback } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { useAppStore } from "@/react-flow-visualization/store"
-import { AppStore } from "@/react-flow-visualization/store/app-store"
+import type { AppStore } from "@/react-flow-visualization/store/app-store"
 import { layoutGraph } from "@/react-flow-visualization/store/layout"
 
 const selector = (state: AppStore) => ({
@@ -13,7 +13,7 @@ const selector = (state: AppStore) => ({
   setEdges: state.setEdges,
 })
 
-export function useLayout(shouldFitView: boolean = false) {
+export function useLayout(shouldFitView = false) {
   const { fitView } = useReactFlow()
   const { getNodes, getEdges, setNodes, setEdges } = useAppStore(useShallow(selector))
 

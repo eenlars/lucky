@@ -1,9 +1,9 @@
-import type { MCPToolName } from "@lucky/tools"
+import fs from "node:fs"
+import os from "node:os"
+import path from "node:path"
 import { lgg } from "@core/utils/logging/Logger"
-import { tool, type ToolSet } from "ai"
-import fs from "fs"
-import os from "os"
-import path from "path"
+import type { MCPToolName } from "@lucky/tools"
+import { type ToolSet, tool } from "ai"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -139,7 +139,7 @@ afterAll(() => {
     if (prevMcpSecretPath !== undefined) {
       process.env.MCP_SECRET_PATH = prevMcpSecretPath
     } else {
-      delete process.env.MCP_SECRET_PATH
+      process.env.MCP_SECRET_PATH = undefined
     }
   } catch {}
 })

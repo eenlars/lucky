@@ -231,7 +231,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
     return (
       <div className="p-6 flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-xl text-gray-900 dark:text-gray-100">Loading trace data…</p>
         </div>
       </div>
@@ -319,7 +319,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
       {timelineLoading ? (
         <div className="p-6 flex justify-center items-center min-h-[30vh]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-lg text-gray-900 dark:text-gray-100">Loading timeline data…</p>
           </div>
         </div>

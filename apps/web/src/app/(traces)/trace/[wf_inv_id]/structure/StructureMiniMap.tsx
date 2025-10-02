@@ -1,9 +1,9 @@
 "use client"
 
-import { useMemo, useState, type MouseEvent } from "react"
+import { type MouseEvent, useMemo, useState } from "react"
 
 import { Button } from "@/ui/button"
-import { toWorkflowConfig, type WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { type WorkflowConfig, toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { MODELS } from "@lucky/examples/settings/constants.client"
 
 interface StructureMiniMapProps {

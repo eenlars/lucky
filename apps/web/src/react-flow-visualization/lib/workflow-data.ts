@@ -1,6 +1,6 @@
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { createEdge, type AppEdge } from "../components/edges"
-import { createNodeByType, type AppNode, type WorkflowNodeData } from "../components/nodes"
+import { type AppEdge, createEdge } from "../components/edges"
+import { type AppNode, type WorkflowNodeData, createNodeByType } from "../components/nodes"
 
 /**
  * transform the nodes from the setup config to the nodes for the visualizer.

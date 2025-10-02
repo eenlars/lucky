@@ -11,7 +11,7 @@
  */
 
 import { CONFIG } from "@core/core-config/compat"
-import { generateText, StepResult } from "ai"
+import { type StepResult, generateText } from "ai"
 import pTimeout from "p-timeout"
 
 /**

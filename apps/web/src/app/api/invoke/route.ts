@@ -1,8 +1,8 @@
 // app/src/app/api/invoke/route.ts
 
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { genShortId } from "@lucky/core/utils/common/utils"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   try {

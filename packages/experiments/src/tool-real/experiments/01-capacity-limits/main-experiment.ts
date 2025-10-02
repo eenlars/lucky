@@ -1,3 +1,6 @@
+import { mkdirSync, writeFileSync } from "node:fs"
+import { join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 /**
  * Tool Capacity Experiment - Tests whether adding too many tools inflicts errors
  *
@@ -12,10 +15,7 @@
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
 import { experimentalModels } from "@lucky/examples/settings/models"
-import { mkdirSync, writeFileSync } from "fs"
-import { join, resolve } from "path"
-import { fileURLToPath } from "url"
-import { classifyFailure, evaluate, type FailureType, type RunOutcome } from "./evaluation"
+import { type FailureType, type RunOutcome, classifyFailure, evaluate } from "./evaluation"
 import { allToolSpecs, chatWithTools } from "./openaiRunner"
 import { prompts } from "./prompts"
 
@@ -218,9 +218,9 @@ export async function runToolCapacityExperiment() {
     lgg.warn(`Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`)
   }
 
-  lgg.info(`\nExperiment completed!`)
-  lgg.info(`Results saved to: tool-capacity-results.json`)
-  lgg.info(`Analysis saved to: tool-capacity-analysis.json`)
+  lgg.info("\nExperiment completed!")
+  lgg.info("Results saved to: tool-capacity-results.json")
+  lgg.info("Analysis saved to: tool-capacity-analysis.json")
 
   return { results, analysis }
 }
@@ -263,7 +263,7 @@ function analyzeResults(results: ToolCapacityResult[]) {
 
     toolCountPerformance: Object.entries(byToolCount)
       .map(([toolCount, data]) => ({
-        toolCount: parseInt(toolCount),
+        toolCount: Number.parseInt(toolCount),
         accuracy: (data.filter(r => r.success).length / data.length) * 100,
         averageLatency: data.reduce((sum, r) => sum + r.latencyMs, 0) / data.length,
         totalRuns: data.length,

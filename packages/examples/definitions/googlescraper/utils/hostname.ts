@@ -4,7 +4,7 @@ export const normalizeHostname = (url: string) => {
     const hostname = new URL(url).hostname.toLowerCase()
     const parts = hostname.split(".")
     return parts.length >= 2 ? parts.slice(-2).join(".") : hostname
-  } catch (error) {
+  } catch (_error) {
     const cleanedUrl = url
       .toLowerCase()
       .replace(/^https?:\/\//, "")

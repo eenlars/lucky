@@ -17,9 +17,9 @@
 // TODO: create schema-specific timeout configurations
 // TODO: implement structured output streaming for real-time updates
 
+import { getDefaultModels } from "@core/core-config/compat"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { getDefaultModels } from "@core/core-config/compat"
 import pTimeout, { TimeoutError } from "p-timeout"
 import type { ZodTypeAny } from "zod"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"

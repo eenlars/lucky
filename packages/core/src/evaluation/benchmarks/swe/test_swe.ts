@@ -1,5 +1,5 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SWEBenchLoader } from "./SWEBenchLoader"
 
 // run in the terminal with:
@@ -46,7 +46,7 @@ async function getRandomSWEBenchInstance(): Promise<SWEBenchInstanceFull> {
 
   try {
     return (await SWEBenchLoader.fetchById(randomId)) as SWEBenchInstanceFull
-  } catch (error) {
+  } catch (_error) {
     console.log(`⚠️  Could not fetch ${randomId}, trying another...`)
     // Try a different random ID
     const fallbackId = SAMPLE_INSTANCE_IDS[Math.floor(Math.random() * SAMPLE_INSTANCE_IDS.length)]
@@ -289,7 +289,7 @@ async function testSWEBenchAISolver() {
     console.log("ID:", instance.instance_id)
     console.log("Repository:", instance.repo)
     console.log("Base commit:", instance.base_commit)
-    console.log("Problem statement preview:", instance.problem_statement.substring(0, 150) + "...")
+    console.log("Problem statement preview:", `${instance.problem_statement.substring(0, 150)}...`)
     console.log("Has patch:", !!instance.patch)
     console.log("Patch length:", instance.patch?.length || 0)
     console.log("Has test patch:", !!instance.test_patch)
@@ -309,12 +309,12 @@ async function testSWEBenchAISolver() {
     if (instance.patch) {
       console.log("\n🎯 Ground Truth Solution:")
       console.log("-".repeat(50))
-      console.log(instance.patch.substring(0, 500) + "...")
+      console.log(`${instance.patch.substring(0, 500)}...`)
 
       if (instance.test_patch) {
         console.log("\n🧪 Ground Truth Test Patch:")
         console.log("-".repeat(50))
-        console.log(instance.test_patch.substring(0, 300) + "...")
+        console.log(`${instance.test_patch.substring(0, 300)}...`)
       }
     }
 

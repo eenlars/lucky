@@ -1,7 +1,7 @@
-import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
-import { supabase } from "@/lib/supabase"
-import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { supabase } from "@/lib/supabase"
+import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
+import { NextResponse } from "next/server"
 
 export async function GET(_request: Request, { params }: { params: Promise<{ wf_inv_id: string }> }) {
   // Require authentication

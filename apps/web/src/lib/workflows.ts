@@ -3,10 +3,10 @@
  * Provides a clean interface for the app to interact with workflows
  */
 
-import { nanoid } from "nanoid"
-import type { Database, Json, TablesInsert } from "@lucky/shared/client"
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { createClient } from "@/lib/supabase/client"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { Database, Json, TablesInsert } from "@lucky/shared/client"
+import { nanoid } from "nanoid"
 
 // Type aliases for clarity
 export type Workflow = Database["public"]["Tables"]["Workflow"]["Row"]

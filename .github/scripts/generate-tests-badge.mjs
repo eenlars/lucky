@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path"
 function safeParseJson(jsonText) {
   try {
     return JSON.parse(jsonText)
-  } catch (err) {
+  } catch (_err) {
     // Try to extract last JSON object if reporter printed extra logs
     const start = jsonText.lastIndexOf("{")
     const end = jsonText.lastIndexOf("}")
@@ -32,9 +32,9 @@ function aggregateFromVitestJson(result) {
 
   // Shape B (Jest-like): { testResults: [ { assertionResults: [{ status: 'passed'|'failed'|'pending' }] } ] }
   if (result && Array.isArray(result.testResults)) {
-    let passed = 0,
-      failed = 0,
-      pending = 0
+    let passed = 0
+    let failed = 0
+    let pending = 0
     for (const file of result.testResults) {
       const assertions = file.assertionResults || []
       for (const a of assertions) {
@@ -48,10 +48,10 @@ function aggregateFromVitestJson(result) {
   }
 
   // Shape C (Vitest summary): { results: { tests: [...] } }
-  if (result && result.results && Array.isArray(result.results.tests)) {
-    let passed = 0,
-      failed = 0,
-      pending = 0
+  if (result?.results && Array.isArray(result.results.tests)) {
+    let passed = 0
+    let failed = 0
+    let pending = 0
     for (const t of result.results.tests) {
       if (t.result === "pass" || t.state === "pass" || t.status === "passed") passed++
       else if (t.result === "fail" || t.state === "fail" || t.status === "failed") failed++

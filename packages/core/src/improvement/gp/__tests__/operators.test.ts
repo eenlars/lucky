@@ -43,7 +43,7 @@ describe("GP Operators", () => {
       registry.set("mutation1", { type: "mutation" })
 
       const crossoverOps = Array.from(registry.entries())
-        .filter(([name, op]) => op.type === "crossover")
+        .filter(([_name, op]) => op.type === "crossover")
         .map(([name]) => name)
 
       expect(crossoverOps).toContain("crossover1")
@@ -166,7 +166,7 @@ Create a new workflow that inherits strengths from both parents.`
         },
       }
 
-      Object.entries(examples).forEach(([opType, example]) => {
+      Object.entries(examples).forEach(([_opType, example]) => {
         expect(example.input).toBeDefined()
         expect(example.output).toBeDefined()
         expect(typeof example.input).toBe("object")

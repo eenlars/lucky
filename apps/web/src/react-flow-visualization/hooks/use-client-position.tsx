@@ -1,5 +1,5 @@
-import { useState, MouseEvent } from "react"
-import { useReactFlow, XYPosition } from "@xyflow/react"
+import { type XYPosition, useReactFlow } from "@xyflow/react"
+import { type MouseEvent, useState } from "react"
 
 export function useClientPosition(): [XYPosition | null, (e: MouseEvent) => void] {
   const [position, _setPosition] = useState<XYPosition | null>(null)

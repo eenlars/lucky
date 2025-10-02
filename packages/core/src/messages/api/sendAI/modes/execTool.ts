@@ -17,6 +17,8 @@
 // TODO: implement tool execution retry strategies with backoff
 // TODO: add tool execution workflow orchestration
 
+import { CONFIG } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
@@ -24,11 +26,9 @@ import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsag
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
-import { generateText, GenerateTextResult, ToolSet, stepCountIs } from "ai"
+import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
-import type { ToolRequest, TResponse } from "../types"
+import type { TResponse, ToolRequest } from "../types"
 
 const spending = SpendingTracker.getInstance()
 

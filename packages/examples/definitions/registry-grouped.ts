@@ -8,7 +8,7 @@
  * better organization for discovery and documentation.
  */
 
-import { createToolGroup, type CodeToolGroups } from "@lucky/tools/registration"
+import { type CodeToolGroups, createToolGroup } from "@lucky/tools/registration"
 
 // CSV Tools
 import { tool as csvWriter } from "./csv-handler/tool-create-csv"

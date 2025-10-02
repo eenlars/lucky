@@ -1,12 +1,12 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { truncater } from "@core/utils/common/llmify"
-import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
-import { JSONN } from "@core/utils/json"
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { truncater } from "@core/utils/common/llmify"
+import { JSONN } from "@core/utils/json"
+import { lgg } from "@core/utils/logging/Logger"
+import { R, type RS } from "@core/utils/types"
 import type { ModelMessage } from "ai"
-import { z } from "zod"
+import type { z } from "zod"
 
 // the response is already malformed, but we want to try to repair it
 export const repairAIRequest = async <T extends z.ZodTypeAny>(response: string, schema: T): Promise<RS<z.infer<T>>> => {

@@ -1,17 +1,17 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
+// @sdk-import - marker for easy removal when ejecting SDK
+import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
+  type ProcessedResponse,
   isErrorProcessed,
   isTextProcessed,
   isToolProcessed,
-  type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
-// @sdk-import - marker for easy removal when ejecting SDK
-import { CONFIG, isLoggingEnabled, PATHS } from "@core/core-config/compat"
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
@@ -23,9 +23,9 @@ import { handleError, handleSuccess } from "@core/node/responseHandler"
 import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
-import { isNir } from "@lucky/shared"
 import { saveInLoc, saveInLogging } from "@core/utils/fs/fileSaver"
 import { JSONN } from "@core/utils/json"
+import { isNir } from "@lucky/shared"
 import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
@@ -175,18 +175,18 @@ export class InvocationPipeline {
         }
 
         // sync the agentSteps and cost from multi-step loop result
-        if (this.processedResponse && this.processedResponse.agentSteps) {
+        if (this.processedResponse?.agentSteps) {
           // sync both the agentSteps outputs and cost from the multi-step loop
           this.agentSteps = this.processedResponse.agentSteps
           this.usdCost = this.processedResponse.cost || this.usdCost
         } else {
-          lgg.error(`[InvocationPipeline_runMultiStepLoop]:`, this.processedResponse)
+          lgg.error("[InvocationPipeline_runMultiStepLoop]:", this.processedResponse)
         }
       } else {
         this.processedResponse = await this.runSingleCall()
 
         // add node logs for single call path BEFORE finalizeSummary
-        if (this.processedResponse && this.processedResponse.agentSteps) {
+        if (this.processedResponse?.agentSteps) {
           this.agentSteps.push(...this.processedResponse.agentSteps)
         }
 
@@ -196,7 +196,7 @@ export class InvocationPipeline {
         }
 
         if (!this.processedResponse.type) {
-          lgg.error(`[InvocationPipeline] processedResponse missing type property:`, this.processedResponse)
+          lgg.error("[InvocationPipeline] processedResponse missing type property:", this.processedResponse)
           throw new Error("processedResponse missing required 'type' property")
         }
 
@@ -213,11 +213,11 @@ export class InvocationPipeline {
       lgg.error(`[InvocationPipeline] Tools available: ${Object.keys(this.tools).join(", ")}`)
 
       if (stack) {
-        lgg.error(`[InvocationPipeline] Stack trace:`, stack)
+        lgg.error("[InvocationPipeline] Stack trace:", stack)
       }
 
       if (err instanceof Error && err.cause) {
-        lgg.error(`[InvocationPipeline] Error cause:`, err.cause)
+        lgg.error("[InvocationPipeline] Error cause:", err.cause)
       }
 
       // Reset state to prevent inconsistencies
@@ -367,7 +367,7 @@ export class InvocationPipeline {
     this.addCost(res.usdCost ?? 0)
 
     // Graceful handling: if sendAI failed, create a proper error ProcessedResponse
-    let processed: ProcessedResponse = res.success
+    const processed: ProcessedResponse = res.success
       ? processResponseVercel({
           response: res.data as GenerateTextResult<ToolSet, any>,
           modelUsed: this.ctx.nodeConfig.modelName,

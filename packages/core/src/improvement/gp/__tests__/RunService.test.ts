@@ -251,7 +251,6 @@ describe("RunService", () => {
           }),
         }),
       }
-
       ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "Generation") return mockGenerationChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
@@ -324,7 +323,6 @@ describe("RunService", () => {
           }),
         }),
       }
-
       ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "EvolutionRun") return mockEvolutionRunChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }
@@ -344,7 +342,6 @@ describe("RunService", () => {
           throw new Error("network error")
         }),
       }
-
       ;(supabase.from as any).mockImplementation((table: string) => {
         if (table === "EvolutionRun") return mockEvolutionRunChain
         return { upsert: vi.fn().mockResolvedValue({ error: null }) }

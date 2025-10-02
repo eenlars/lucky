@@ -4,13 +4,13 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { describe, expect, test } from "vitest"
 
+import { getDefaultModels } from "@core/core-config/compat"
 // Import the parent setup files
 import parentSetup1 from "@core/improvement/gp/__tests__/setup/setupfile-parent-1.json"
 import parentSetup2 from "@core/improvement/gp/__tests__/setup/setupfile-parent-2.json"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 
 describe("Crossover Integration Test", () => {
   test("crossover between real parent genomes produces valid offspring evaluated by LLM", async () => {

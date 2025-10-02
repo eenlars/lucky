@@ -1,4 +1,8 @@
-export function buildWorkerPrompt(params: { content: string; handOffs: string[]; usageContext?: string }): string {
+export function buildWorkerPrompt(params: {
+  content: string
+  handOffs: string[]
+  usageContext?: string
+}): string {
   const { content, handOffs, usageContext = "" } = params
   const options = handOffs.join(", ")
   const instruction = handOffs.includes("end")

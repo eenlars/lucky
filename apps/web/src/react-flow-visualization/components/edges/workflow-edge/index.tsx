@@ -1,6 +1,6 @@
-import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react"
+import { BaseEdge, type EdgeProps, getSmoothStepPath } from "@xyflow/react"
 
-import { AppEdge } from ".."
+import type { AppEdge } from ".."
 import { EdgeButton } from "./edge-button"
 
 export function WorkflowEdge({

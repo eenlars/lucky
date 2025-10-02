@@ -70,7 +70,7 @@ describe("GAIALoader Integration Tests", () => {
           task_id: firstInstance.task_id,
           level: firstInstance.Level,
           hasFile: !!firstInstance.file_name,
-          questionPreview: firstInstance.Question.substring(0, 50) + "...",
+          questionPreview: `${firstInstance.Question.substring(0, 50)}...`,
         })
       } catch (error) {
         if (error instanceof Error && error.message.includes("Authentication required")) {
@@ -122,7 +122,7 @@ describe("GAIALoader Integration Tests", () => {
 
         const headers: HeadersInit = {}
         if (process.env.HF_TOKEN) {
-          headers["Authorization"] = `Bearer ${process.env.HF_TOKEN}`
+          headers.Authorization = `Bearer ${process.env.HF_TOKEN}`
         }
 
         const response = await fetch(url.toString(), { headers })

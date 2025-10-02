@@ -1,9 +1,9 @@
-import { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitness.types"
+import type { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitness.types"
 import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { TResponse } from "@core/messages/api/sendAI/types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { z } from "zod"
+import type { z } from "zod"
 
 // Mock sendAI at module level (correct module path)
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({

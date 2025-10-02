@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 // Simple iterative evolution test on random SWE-bench evaluation
 
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
+import { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { loadSingleWorkflow, saveWorkflowConfig } from "@core/workflow/setup/WorkflowLoader"
-import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, PATHS } from "@core/core-config/compat"
 import { nanoid } from "nanoid"
 
 // Random SWE-bench IDs

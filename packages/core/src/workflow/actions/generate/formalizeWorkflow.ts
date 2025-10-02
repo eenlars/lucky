@@ -1,18 +1,18 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
-import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import { llmify } from "@core/utils/common/llmify"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
 import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { handleWorkflowCompletion, WorkflowConfigSchemaEasy } from "@core/workflow/schema/workflowSchema"
+import { WorkflowConfigSchemaEasy, handleWorkflowCompletion } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { getDefaultModels } from "@core/core-config/compat"
+import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(

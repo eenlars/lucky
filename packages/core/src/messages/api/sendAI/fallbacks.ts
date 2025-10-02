@@ -17,8 +17,8 @@
 // TODO: add model recovery detection to restore primary models
 // TODO: create per-operation fallback strategies (tools vs text vs structured)
 
-import type { ModelName } from "@core/utils/spending/models.types"
 import { getDefaultModels } from "@core/core-config/compat"
+import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Tracks timeout timestamps for each model.
@@ -82,7 +82,7 @@ export function shouldUseModelFallback(model: ModelName): boolean {
 // TODO: implement intelligent fallback selection based on capabilities
 // TODO: add fallback model rotation to distribute load
 // TODO: consider cost and performance trade-offs in fallback selection
-export function getFallbackModel(model: ModelName): ModelName {
+export function getFallbackModel(_model: ModelName): ModelName {
   return getDefaultModels().fallback
 }
 

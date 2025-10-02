@@ -1,7 +1,7 @@
-import { supabase } from "@/lib/supabase"
-import { NextRequest, NextResponse } from "next/server"
-import { listDataSets } from "@/lib/db/dataset"
 import { requireAuth } from "@/lib/api-auth"
+import { listDataSets } from "@/lib/db/dataset"
+import { supabase } from "@/lib/supabase"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(_req: NextRequest) {
   // Require authentication

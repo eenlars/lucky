@@ -1,6 +1,6 @@
-import { defineTool } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 /**
@@ -24,7 +24,9 @@ const contextGet = defineTool({
   async execute(params) {
     const { scope, key, workflowInvocationId, defaultValue } = params
 
-    lgg.info(`contextGet: retrieving ${scope}:${key}`, { workflowInvocationId })
+    lgg.info(`contextGet: retrieving ${scope}:${key}`, {
+      workflowInvocationId,
+    })
 
     try {
       const store = createContextStore("supabase", workflowInvocationId)

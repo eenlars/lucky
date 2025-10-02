@@ -1,11 +1,11 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"
+import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowNodeConfigSchema } from "@core/workflow/schema/workflowSchema"
-import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 export async function adjustWorkflowOneNode(
@@ -94,7 +94,7 @@ export async function adjustWorkflowOneNode(
       break
     }
     case "doNothing": {
-      instruction = `No changes should be made. Keep the workflow configuration identical to the base.`
+      instruction = "No changes should be made. Keep the workflow configuration identical to the base."
       break
     }
     default: {

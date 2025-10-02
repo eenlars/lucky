@@ -2,8 +2,8 @@ import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEv
 import { createMockEvaluationInputGeneric } from "@core/utils/__tests__/setup/coreMocks"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
+import type { Genome } from "../../Genome"
 import { EvolutionEngine } from "../../evolutionengine"
-import { Genome } from "../../Genome"
 import type { GenomeEvaluationResults, PopulationStats } from "../gp.types"
 
 // run with tsx --env-file=.env src/core/improvement/gp/resources/runGPlocal.ts
@@ -29,7 +29,7 @@ const runEvolution = async () => {
   const mockEvaluator: EvolutionEvaluator = {
     evaluate: async (
       genome: Genome,
-      evolutionContext?: { runId: string; generationId: string },
+      _evolutionContext?: { runId: string; generationId: string },
     ): Promise<RS<GenomeEvaluationResults>> => {
       lgg.log(`evaluating genome: ${genome.getWorkflowVersionId()}`)
 

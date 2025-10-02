@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
-import { HelpRequest } from "@/app/api/test/help/route"
+import type { HelpRequest } from "@/app/api/test/help/route"
 
 export default function HelpPage() {
   const searchParams = useSearchParams()
@@ -73,7 +73,7 @@ export default function HelpPage() {
       setHelpData(newHelpData)
       setAnswer("")
     } catch (err) {
-      console.error(`[Help Page] Error submitting response:`, err)
+      console.error("[Help Page] Error submitting response:", err)
       setError(`Error: ${(err as Error).message}`)
     } finally {
       setLoading(false)
@@ -84,7 +84,7 @@ export default function HelpPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex justify-center">
-          <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     )
@@ -140,7 +140,7 @@ export default function HelpPage() {
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Submitting...</span>
                 </div>
               ) : (

@@ -2,7 +2,7 @@ import { getDefaultModels } from "@core/core-config/compat"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { describe, expect, it } from "vitest"
-import { InvocationPipeline } from "../InvocationPipeline"
+import type { InvocationPipeline } from "../InvocationPipeline"
 import type { NodeInvocationCallContext } from "../input.types"
 
 // TODO: These integration tests make real LLM calls and should be in a separate test suite

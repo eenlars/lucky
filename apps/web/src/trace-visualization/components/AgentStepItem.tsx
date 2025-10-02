@@ -22,7 +22,7 @@ export interface AgentStepItemProps {
 
 const truncate = (content: any, length = 80): string => {
   const text = typeof content === "string" ? content : JSON.stringify(content)
-  return text.length > length ? text.substring(0, length) + "..." : text
+  return text.length > length ? `${text.substring(0, length)}...` : text
 }
 
 export const AgentStepItem = ({

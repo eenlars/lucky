@@ -1,11 +1,11 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
+import { JSONN } from "@core/utils/json"
 import { R, type RS } from "@core/utils/types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
-import { JSONN } from "@core/utils/json"
-import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * Evaluates the quality of a critique by comparing it to the meta agent's assessment

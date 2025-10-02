@@ -1,6 +1,6 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../index"
 import {
@@ -71,7 +71,7 @@ vi.mock("@core/tools/tool.types", () => ({
 
 import { CONFIG } from "@core/core-config/compat"
 
-const validModel = getDefaultModels().medium
+const _validModel = getDefaultModels().medium
 const wrongExample: WorkflowConfig = {
   entryNodeId: "planning-node",
   nodes: [

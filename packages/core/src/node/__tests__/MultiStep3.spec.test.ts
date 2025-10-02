@@ -1,5 +1,5 @@
-import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { getDefaultModels } from "@core/core-config/compat"
+import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"

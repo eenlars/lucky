@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest"
-import { parseCliArguments, ArgumentParsingError } from "../argumentParser"
+import { describe, expect, it } from "vitest"
+import { ArgumentParsingError, parseCliArguments } from "../argumentParser"
 
 describe("parseCliArguments", () => {
   // TODO: additional test coverage improvements:

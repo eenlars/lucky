@@ -13,6 +13,7 @@
  * and preserve memory from parent genomes.
  */
 
+import { CONFIG } from "@core/core-config/compat"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
@@ -22,7 +23,6 @@ import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
 import type { Genome } from "../../Genome"
 import { workflowConfigToGenome } from "../../resources/wrappers"
 import { ModelMutation } from "./modelMutation"
@@ -70,10 +70,10 @@ export class MutationCoordinator {
       let totalMutationCost = 0
 
       // weighted random selection of mutation type
-      const selectedMutation = this.selectMutationType(evolutionMode)
+      const selectedMutation = MutationCoordinator.selectMutationType(evolutionMode)
 
       // execute the selected mutation
-      totalMutationCost += await this.executeMutation(selectedMutation, mutatedConfig, parent, intensity)
+      totalMutationCost += await MutationCoordinator.executeMutation(selectedMutation, mutatedConfig, parent, intensity)
 
       // preserve memory from parent - ensures knowledge transfer across generations
       const { MemoryPreservation } = await import("../memoryPreservation")
@@ -86,7 +86,7 @@ export class MutationCoordinator {
       // apply additional tweaks based on intensity level
       // high intensity mutations (>0.6) have a chance to also mutate models
       if (intensity > 0.6 && Math.random() < intensity) {
-        await this.modelMutation.execute(mutatedConfig)
+        await MutationCoordinator.modelMutation.execute(mutatedConfig)
       }
 
       const { finalConfig } = await validateAndRepairWorkflow(mutatedConfig, {
@@ -123,7 +123,7 @@ export class MutationCoordinator {
     } catch (error) {
       lgg.error("Mutation failed generating genome:", error)
       failureTracker.trackMutationFailure()
-      return R.error("Mutation failed generating genome" + truncater(JSON.stringify(error), 1000), 0)
+      return R.error(`Mutation failed generating genome${truncater(JSON.stringify(error), 1000)}`, 0)
     }
   }
 
@@ -183,17 +183,17 @@ export class MutationCoordinator {
   ): Promise<number> {
     switch (mutationType) {
       case "model":
-        await this.modelMutation.execute(config)
+        await MutationCoordinator.modelMutation.execute(config)
         return 0
 
       case "prompt":
-        return await this.promptMutation.execute(config, parent, intensity)
+        return await MutationCoordinator.promptMutation.execute(config, parent, intensity)
 
       case "tool":
-        return await this.toolMutation.execute(config, parent, intensity)
+        return await MutationCoordinator.toolMutation.execute(config, parent, intensity)
 
       case "structure":
-        await this.structureMutation.execute(config)
+        await MutationCoordinator.structureMutation.execute(config)
         return 0
 
       case "addNode":

@@ -1,8 +1,8 @@
 "use client"
 
-import { useUser } from "@clerk/nextjs"
-import { Avatar, AvatarImage, AvatarFallback } from "@/ui/avatar"
 import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar"
+import { useUser } from "@clerk/nextjs"
 
 interface UserProfileProps {
   isCollapsed?: boolean

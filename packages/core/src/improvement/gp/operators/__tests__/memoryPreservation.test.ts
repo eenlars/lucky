@@ -2,8 +2,8 @@
  * tests for memory preservation in genetic operations
  */
 
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@core/core-config/compat"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
 import { createDummyGenome } from "../../resources/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"

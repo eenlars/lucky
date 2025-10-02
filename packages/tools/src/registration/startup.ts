@@ -5,9 +5,9 @@
  * Call this once at application startup before using any tools.
  */
 
-import type { CodeToolGroups } from "./codeToolsRegistration"
 import { codeToolRegistry } from "../registry/CodeToolRegistry"
-import { validateCodeToolRegistration, printValidationResult } from "./validation"
+import type { CodeToolGroups } from "./codeToolsRegistration"
+import { printValidationResult, validateCodeToolRegistration } from "./validation"
 
 /**
  * Register all tools from the tool groups with validation

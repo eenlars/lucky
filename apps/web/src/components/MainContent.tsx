@@ -1,7 +1,7 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import { useSidebar } from "@/contexts/SidebarContext"
+import { cn } from "@/lib/utils"
 
 export default function MainContent({ children, hasAuth }: { children: React.ReactNode; hasAuth: boolean }) {
   const { isMobile } = useSidebar()

@@ -1,6 +1,6 @@
+import { requireAuth } from "@/lib/api-auth"
 import { publicExperimentDir, readJsonLocal } from "@/lib/experiments/file-utils"
 import { NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
 import { z } from "zod"
 
 const RawResultSchema = z.object({

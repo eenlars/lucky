@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export type ApproveData = {
   text: string
@@ -62,13 +62,14 @@ export default function ApprovePage() {
 
           <div className="flex gap-4">
             <button
+              type="button"
               onClick={() => handleSubmit("approve")}
               disabled={loading || !approvalId}
               className="flex-1 py-4 px-6 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Processing...</span>
                 </div>
               ) : (
@@ -77,6 +78,7 @@ export default function ApprovePage() {
             </button>
 
             <button
+              type="button"
               onClick={() => handleSubmit("reject")}
               disabled={loading || !approvalId}
               className="flex-1 py-4 px-6 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed"

@@ -170,7 +170,7 @@ export function printValidationResult(type: "Code" | "MCP", result: ValidationRe
 export function validateAllRegistrations(
   codeGroups: CodeToolGroup[],
   mcpGroups: MCPToolGroup[],
-  throwOnError: boolean = true,
+  throwOnError = true,
 ): boolean {
   const codeResult = validateCodeToolRegistration(codeGroups)
   const mcpResult = validateMCPToolRegistration(mcpGroups)

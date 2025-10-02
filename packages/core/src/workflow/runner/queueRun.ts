@@ -1,14 +1,14 @@
 // src/core/workflow/queueRun.ts
 
+import { CONFIG } from "@core/core-config/compat"
 import type { AggregatedPayload, MessageType } from "@core/messages/MessagePayload"
+import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries"
-import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import type { ToolExecutionContext } from "@lucky/tools"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import { CONFIG } from "@core/core-config/compat"
+import type { ToolExecutionContext } from "@lucky/tools"
 import chalk from "chalk"
 import type { QueueRunParams, QueueRunResult } from "./types"
 
@@ -90,7 +90,7 @@ export async function queueRun({
 
   const nodes = workflow.getNodes()
   const nodeMap = new Map(nodes.map(node => [node.nodeId, node]))
-  const workflowVersionId = workflow.getWorkflowVersionId()
+  const _workflowVersionId = workflow.getWorkflowVersionId()
 
   lgg.onlyIf(verbose, `[queueRun] Workflow has ${nodes.length} nodes`)
 
@@ -134,7 +134,7 @@ export async function queueRun({
   })
 
   messageQueue.push(initialMessage)
-  lgg.onlyIf(verbose, `[queueRun] Initial message queued, starting processing loop`)
+  lgg.onlyIf(verbose, "[queueRun] Initial message queued, starting processing loop")
 
   // Process messages until queue is empty
   while (messageQueue.length > 0) {
@@ -158,7 +158,7 @@ export async function queueRun({
 
     // Handle 'end' node as a special case - don't skip processing
     if (currentMessage.toNodeId === "end") {
-      lgg.onlyIf(verbose, `[queueRun] Reached end node, continuing`)
+      lgg.onlyIf(verbose, "[queueRun] Reached end node, continuing")
       continue
     }
 
@@ -235,8 +235,7 @@ export async function queueRun({
       // Validate hierarchical constraints
       if (fromNodeRole === "worker" && toNodeRole === "worker") {
         throw new Error(
-          `Invalid hierarchical flow: Worker '${currentMessage.fromNodeId}' cannot send message to worker '${currentMessage.toNodeId}'. ` +
-            `Workers can only communicate with the orchestrator or 'end'.`,
+          `Invalid hierarchical flow: Worker '${currentMessage.fromNodeId}' cannot send message to worker '${currentMessage.toNodeId}'. Workers can only communicate with the orchestrator or 'end'.`,
         )
       }
 
@@ -247,8 +246,7 @@ export async function queueRun({
         currentMessage.fromNodeId !== "start"
       ) {
         throw new Error(
-          `Invalid hierarchical flow: Only the orchestrator can send delegation messages. ` +
-            `Node '${currentMessage.fromNodeId}' (role: ${fromNodeRole}) attempted to delegate.`,
+          `Invalid hierarchical flow: Only the orchestrator can send delegation messages. Node '${currentMessage.fromNodeId}' (role: ${fromNodeRole}) attempted to delegate.`,
         )
       }
     }
@@ -390,10 +388,10 @@ export async function queueRun({
     }
   }
 
-  lgg.onlyIf(verbose, `[queueRun] Message processing loop completed`)
+  lgg.onlyIf(verbose, "[queueRun] Message processing loop completed")
 
   if (!summaries.length) {
-    const error = `[queueRun] no summaries`
+    const error = "[queueRun] no summaries"
     lgg.error(error)
     throw new Error(error)
   }

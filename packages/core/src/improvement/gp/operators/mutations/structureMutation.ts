@@ -9,8 +9,8 @@
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { NodeMutationOperator } from "./mutation.types"
 
 /**

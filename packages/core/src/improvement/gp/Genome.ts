@@ -18,6 +18,8 @@
  * @see WorkflowGenome - Raw genome representation structure
  */
 
+import crypto from "node:crypto"
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
@@ -25,19 +27,17 @@ import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import type { FlowEvolutionMode } from "@core/types"
-import { isNir } from "@lucky/shared"
 import { truncater } from "@core/utils/common/llmify"
 import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import { getActiveModelNames } from "@core/utils/spending/functions"
 import { R, type RS } from "@core/utils/types"
+import { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import crypto from "crypto"
+import { isNir } from "@lucky/shared"
 import type { GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 import type { EvolutionContext } from "./resources/types"
 
@@ -108,7 +108,7 @@ export class Genome extends Workflow {
     operation?: "init" | "crossover" | "mutation" | "immigrant"
     parentWorkflowVersionIds?: string[]
   }): Promise<string> {
-    const workflowVersionId = "wf_ver_" + genShortId()
+    const workflowVersionId = `wf_ver_${genShortId()}`
 
     const parentIds = parentWorkflowVersionIds || []
 
@@ -224,7 +224,7 @@ export class Genome extends Workflow {
       // TODO: implement proper error handling with lgg.error throughout
       // TODO: add metrics tracking for random genome generation failures
       lgg.error("failed to create random genome", e, truncater(JSON.stringify(e), 1000))
-      return R.error("Failed to create random genome " + truncater(JSON.stringify(e), 200), 0)
+      return R.error(`Failed to create random genome ${truncater(JSON.stringify(e), 200)}`, 0)
     }
   }
 
@@ -301,7 +301,7 @@ export class Genome extends Workflow {
       return R.success(genome, usdCost)
     } catch (e) {
       lgg.error("failed to create prepared genome", e, truncater(JSON.stringify(e), 1000))
-      return R.error("Failed to create prepared genome " + truncater(JSON.stringify(e), 200), 0)
+      return R.error(`Failed to create prepared genome ${truncater(JSON.stringify(e), 200)}`, 0)
     }
   }
 

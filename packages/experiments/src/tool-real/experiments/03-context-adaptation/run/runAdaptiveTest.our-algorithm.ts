@@ -1,9 +1,9 @@
 /**
  * runAdaptiveTest.our-algorithm.ts - Sanity test using MultiStep our-algorithm on the hidden-constraint scenarios
  */
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 // OpenRouterModelName is re-exported via constants consumers; keep import removed to avoid unused var
 
 import { adaptiveTools } from "../../../shared/tools/adaptive/adaptiveTools"
@@ -15,8 +15,8 @@ import {
   TEST_SCENARIOS as SCENARIOS,
   VAGUE_SYSTEM_PROMPT as VAGUE,
 } from "../constants"
-import type { LearningEffects, OurAlgorithmExperimentResults, OurAlgorithmLoop, OurAlgorithmRun } from "../types"
 import { runMultiToolOurAlgorithm } from "../our-algorithm-helper-runner"
+import type { LearningEffects, OurAlgorithmExperimentResults, OurAlgorithmLoop, OurAlgorithmRun } from "../types"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

@@ -12,15 +12,15 @@
  * @module workflow/runner/runAllInputs
  */
 
+import { CONFIG } from "@core/core-config/compat"
 import { calculateAverageFitness, calculateFeedbackGrouped } from "@core/evaluation/calculate-fitness/average"
 import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
-import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
+import type { Workflow } from "@core/workflow/Workflow"
 import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
-import type { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@core/core-config/compat"
+import { isNir } from "@lucky/shared"
 import type { AggregateEvaluationResult, EvaluationResult, RunResult } from "./types"
 
 /**

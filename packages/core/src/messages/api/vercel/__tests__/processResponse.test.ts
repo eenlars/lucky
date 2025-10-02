@@ -1,9 +1,9 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { describe, expect, it, vi } from "vitest"
-import { processResponseVercel } from "../../processResponse"
 import toolResponseMultipleSteps from "../../__tests__/resources/toolResponseMultipleSteps.json"
 import toolResponseNoToolUsed from "../../__tests__/resources/toolResponseNoToolUsed.json"
+import { processResponseVercel } from "../../processResponse"
 
 // TODO: Mock is incomplete - missing many required environment variables
 // Should use a complete mock or test helper

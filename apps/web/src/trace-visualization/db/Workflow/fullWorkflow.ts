@@ -1,7 +1,7 @@
 "use server"
+import { supabase } from "@/lib/supabase"
 import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type { AgentStep, AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
-import { supabase } from "@/lib/supabase"
 import type { NodeMemory } from "@lucky/core/utils/memory/memorySchema"
 import type { Tables } from "@lucky/shared/client"
 import { JSONN } from "@lucky/shared/client"

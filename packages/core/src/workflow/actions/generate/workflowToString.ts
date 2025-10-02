@@ -1,8 +1,8 @@
 import { explainAgents } from "@core/prompts/explainAgents"
 import { explainSubsetOfTools } from "@core/prompts/explainTools"
+import type { Workflow } from "@core/workflow/Workflow"
 import { workflowToAdjacencyList } from "@core/workflow/actions/generate/toAdjacencyList"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Workflow } from "@core/workflow/Workflow"
 
 /**
  * Options for converting a `Workflow` to a readable string.

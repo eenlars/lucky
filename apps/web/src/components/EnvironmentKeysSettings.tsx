@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { type EnvironmentKey, EnvironmentKeysManager } from "@/lib/environment-keys"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
-import { Trash2, Plus, Eye, EyeOff, Save } from "lucide-react"
+import { Eye, EyeOff, Plus, Save, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { EnvironmentKeysManager, type EnvironmentKey } from "@/lib/environment-keys"
 
 export default function EnvironmentKeysSettings() {
   const [keys, setKeys] = useState<EnvironmentKey[]>([])
@@ -53,7 +53,9 @@ export default function EnvironmentKeysSettings() {
   const deleteKey = (id: string) => {
     const updatedKeys = keys.filter(key => key.id !== id)
     setKeys(updatedKeys)
-    toast.message("Key removed", { description: "Click Save to apply changes" })
+    toast.message("Key removed", {
+      description: "Click Save to apply changes",
+    })
   }
 
   const toggleVisibility = (id: string) => {

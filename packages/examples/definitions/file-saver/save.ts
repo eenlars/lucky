@@ -1,11 +1,11 @@
+import fs from "node:fs"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 // save.ts
 import { JSONN } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
-import fs from "fs"
-import { nanoid } from "nanoid"
-import path from "path"
-import { fileURLToPath } from "url"
 import { PATHS } from "@lucky/tools/config/runtime"
+import { nanoid } from "nanoid"
 
 function getCallerDir(): string {
   if (typeof window !== "undefined") {
@@ -103,19 +103,15 @@ export async function saveFileInLoc(
 }
 
 export async function saveInLogging(data: any, filename?: string, fileExtension?: string): Promise<string> {
-  if (!filename) {
-    filename = nanoid()
-  } else {
-    filename = filename + "-" + nanoid()
-  }
+  const baseFilename = !filename ? nanoid() : `${filename}-${nanoid()}`
 
   // make sure the filename only contains alphanumeric characters
-  filename = filename.replace(/[^a-zA-Z0-9-]/g, "-")
+  const sanitizedFilename = baseFilename.replace(/[^a-zA-Z0-9-]/g, "-")
 
   // save in the logging folder
   const folder = path.join(PATHS.node.logging, "saveInLogging")
   fs.mkdirSync(folder, { recursive: true })
-  const fullPath = path.join(folder, `${filename + (fileExtension ?? ".json")}`)
+  const fullPath = path.join(folder, `${sanitizedFilename + (fileExtension ?? ".json")}`)
   fs.writeFileSync(fullPath, JSON.stringify(data, null, 2))
   return fullPath
 }

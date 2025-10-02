@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../../lib/evals/all/albertheijn.json" assert { type: "json" }
 function transformLocationData(input) {
   const locations = Array.isArray(input) ? input : [input]
@@ -99,7 +99,7 @@ function transformOpeningHours(loc) {
       if (e.closed) {
         days[dayName] = "closed"
       } else if (e.opening_time && e.closing_time) {
-        days[dayName] = e.opening_time.slice(0, 5) + "-" + e.closing_time.slice(0, 5)
+        days[dayName] = `${e.opening_time.slice(0, 5)}-${e.closing_time.slice(0, 5)}`
       }
     })
   }

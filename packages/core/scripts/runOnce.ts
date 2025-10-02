@@ -1,12 +1,11 @@
 #!/usr/bin/env bun
 // core/scripts/runOnce.ts
 
-import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
+import { resolve } from "node:path"
+import { PATHS, SELECTED_QUESTION } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
-import { PATHS } from "@core/core-config/compat"
-import { SELECTED_QUESTION } from "@core/core-config/compat"
+import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import chalk from "chalk"
-import { resolve } from "path"
 
 async function runOnce(setupFilePath?: string) {
   try {

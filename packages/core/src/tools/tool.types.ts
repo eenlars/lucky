@@ -4,7 +4,7 @@ import { TOOLS } from "@core/core-config/compat"
 const INACTIVE_TOOLS = CONFIG.tools.inactive
 const DEFAULT_TOOLS = CONFIG.tools.defaultTools
 
-export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault: boolean = false): T => {
+export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault = false): T => {
   if (INACTIVE_TOOLS.size === 0 && DEFAULT_TOOLS.size === 0) return tools
   return Object.fromEntries(
     Object.entries(tools).filter(

@@ -1,11 +1,11 @@
+import * as fs from "node:fs"
+import * as path from "node:path"
+import { fileURLToPath } from "node:url"
 // run with: npx tsx src/examples/code_tools/googlescraper/run-locally.ts
 import { lgg } from "@core/utils/logging/Logger"
 import { type InputMultiple, type InputUrl, searchGoogleMaps } from "@examples/definitions/googlescraper/main/main"
 import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { JSONN } from "@lucky/shared"
-import * as fs from "fs"
-import * as path from "path"
-import { fileURLToPath } from "url"
 
 const TYPE_OF_SEARCH = "multiple" as "multiple" | "locationMapLinks"
 const onlyIncludeWithWebsite = "debontekoe.nl"

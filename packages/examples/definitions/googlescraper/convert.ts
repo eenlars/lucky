@@ -1,9 +1,9 @@
+import fs from "node:fs"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 import { lgg } from "@core/utils/logging/Logger"
 import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { normalizeHostname } from "@examples/definitions/googlescraper/utils/hostname"
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
 
 // get directory path for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -86,10 +86,10 @@ export function extractCoordinates(
   const match = location.googleUrl.match(/!3d([-0-9\.]+)!4d([-0-9\.]+)/)
   if (!match) return null
 
-  const latitude = parseFloat(match[1])
-  const longitude = parseFloat(match[2])
+  const latitude = Number.parseFloat(match[1])
+  const longitude = Number.parseFloat(match[2])
 
-  if (isNaN(latitude) || isNaN(longitude)) return null
+  if (Number.isNaN(latitude) || Number.isNaN(longitude)) return null
 
   return { latitude, longitude }
 }

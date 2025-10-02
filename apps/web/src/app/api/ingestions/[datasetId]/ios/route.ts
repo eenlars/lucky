@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
 import { loadDatasetMeta, saveDatasetMeta } from "@/app/api/ingestions/_lib/meta"
 import type { WorkflowIO } from "@/app/api/ingestions/_lib/types"
+import { requireAuth } from "@/lib/api-auth"
+import { type NextRequest, NextResponse } from "next/server"
 
 function uuid(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID()
   }
-  return "io_" + Math.random().toString(36).slice(2)
+  return `io_${Math.random().toString(36).slice(2)}`
 }
 
 export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {

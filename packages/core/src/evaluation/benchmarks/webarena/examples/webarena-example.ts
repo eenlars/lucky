@@ -33,9 +33,9 @@ async function main() {
     workflowTasks.forEach((workflow, index) => {
       lgg.info(`\n--- WorkflowIO ${index + 1} ---`)
       lgg.info("Input:")
-      lgg.info(workflow.workflowInput.substring(0, 200) + "...")
+      lgg.info(`${workflow.workflowInput.substring(0, 200)}...`)
       lgg.info("Expected Output:")
-      lgg.info(workflow.workflowOutput.output.substring(0, 200) + "...")
+      lgg.info(`${workflow.workflowOutput.output.substring(0, 200)}...`)
     })
 
     // fetch tasks filtered by specific sites
@@ -45,7 +45,7 @@ async function main() {
 
     filteredTasks.forEach((workflow, index) => {
       lgg.info(`\n--- Reddit/Gitlab Task ${index + 1} ---`)
-      lgg.info(workflow.workflowInput.substring(0, 150) + "...")
+      lgg.info(`${workflow.workflowInput.substring(0, 150)}...`)
     })
   } catch (error) {
     lgg.error("❌ Error in WebArena example:", error)

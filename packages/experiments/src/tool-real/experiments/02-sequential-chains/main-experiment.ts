@@ -1,14 +1,14 @@
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 /**
  * runFullSequentialExperiment.ts - Full sequential execution experiment
  * Scale: models × chains × prompts × repetitions (current REPETITIONS = 2)
  */
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
 import { experimentalModels } from "@lucky/examples/settings/models"
 
-import type { ToolSet } from "ai"
 import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
+import type { ToolSet } from "ai"
 import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
 import { locationChainOrder, locationChainTools } from "../../shared/tools/sequential-chains/locationChain"
 import { mathChainOrder, mathChainTools } from "../../shared/tools/sequential-chains/mathChain"
@@ -153,7 +153,7 @@ async function runFullExperiment() {
   }
 
   // analyze results
-  console.log("\n" + "=".repeat(50))
+  console.log(`\n${"=".repeat(50)}`)
   console.log("EXPERIMENT COMPLETE - ANALYZING RESULTS")
   console.log("=".repeat(50))
 
@@ -245,7 +245,7 @@ async function runFullExperiment() {
     console.warn(`Failed to write public copies: ${err instanceof Error ? err.message : String(err)}`)
   }
 
-  console.log(`\nResults saved to:`)
+  console.log("\nResults saved to:")
   console.log(`Detailed: ${outputFiles.results}`)
   console.log(`Analysis: ${outputFiles.analysis}`)
   console.log(`Summary: ${outputFiles.summary}`)

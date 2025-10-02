@@ -1,4 +1,4 @@
-import { forwardRef, HTMLAttributes } from "react"
+import { type HTMLAttributes, forwardRef } from "react"
 
 import { cn } from "@/react-flow-visualization/lib/utils"
 
@@ -12,7 +12,6 @@ export const BaseNode = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement
         selected ? "border-primary shadow-xl scale-105" : "border-border",
         "hover:shadow-lg hover:border-primary/50 hover:scale-[1.02]",
       )}
-      tabIndex={0}
       {...props}
     />
   ),

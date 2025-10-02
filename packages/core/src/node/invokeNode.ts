@@ -16,10 +16,10 @@ import { lgg } from "@core/utils/logging/Logger"
 
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import type { ToolExecutionContext } from "@lucky/tools"
 import { genShortId } from "@core/utils/common/utils"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { ToolExecutionContext } from "@lucky/tools"
 import { type NodeInvocationResult, WorkFlowNode } from "./WorkFlowNode"
 
 /**
@@ -134,8 +134,8 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
 
     const outputPreview =
       typeof result.nodeInvocationFinalOutput === "string"
-        ? result.nodeInvocationFinalOutput.slice(0, 200) + "..."
-        : JSON.stringify(result.nodeInvocationFinalOutput).slice(0, 200) + "..."
+        ? `${result.nodeInvocationFinalOutput.slice(0, 200)}...`
+        : `${JSON.stringify(result.nodeInvocationFinalOutput).slice(0, 200)}...`
 
     lgg.log(`[invokeNode] Node invocation completed. Output: ${outputPreview}`)
 

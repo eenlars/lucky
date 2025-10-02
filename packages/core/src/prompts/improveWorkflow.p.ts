@@ -215,7 +215,7 @@ ${
     : "NOTE: The structural analysis suggests this pattern may not be beneficial for this workflow."
 }`
 
-    const generalizationDirective = "\n\n" + GENERALIZATION_LIMITS
+    const generalizationDirective = `\n\n${GENERALIZATION_LIMITS}`
 
     const userPrompt = `Analyze this workflow and generate an improved WorkflowConfig that implements better structural patterns, or return null if no structural improvements are needed.
 
@@ -260,7 +260,7 @@ Focus on structural transformation that would have the biggest positive impact. 
 
 Explain how the new structure addresses identified performance issues and implements the structural recommendations.`
 
-    return systemPrompt + generalizationDirective + "\n\n" + userPrompt
+    return `${systemPrompt + generalizationDirective}\n\n${userPrompt}`
   }
 
   static mechanicAdvisorStructure(

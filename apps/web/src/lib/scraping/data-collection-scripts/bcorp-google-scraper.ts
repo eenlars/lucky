@@ -10,9 +10,9 @@
  *  run: tsx src/lib/count-bcorps/bcorp-hunter.ts
  * ------------------------------------------------------------------------ */
 
-import crypto from "crypto"
-import fs from "fs"
-import path from "path"
+import crypto from "node:crypto"
+import fs from "node:fs"
+import path from "node:path"
 
 import { saveInLoc } from "@lucky/core/utils/fs/fileSaver"
 import { lgg } from "@lucky/core/utils/logging/Logger"
@@ -21,7 +21,7 @@ import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescrap
 import { PATHS } from "@lucky/examples/settings/constants"
 import { isNir } from "@lucky/shared/client"
 import dayjs from "dayjs"
-import { CountryInEurope, deduplicateBusinesses } from "./utils"
+import { type CountryInEurope, deduplicateBusinesses } from "./utils"
 
 /* ──────────────────────────────  configuration  ─────────────────────────── */
 
@@ -45,13 +45,13 @@ const CONFIG: HunterConfig = {
 
 const month_day = dayjs().format("YYYY-MM-DD")
 
-const COUNTRIES_DATA_FILE = PATHS.node.logging + `/exports/${month_day}/input/bcorp-countries-data.json`
+const COUNTRIES_DATA_FILE = `${PATHS.node.logging}/exports/${month_day}/input/bcorp-countries-data.json`
 
-const PER_COUNTRY_DIR = PATHS.node.logging + `/exports/${month_day}/output/per-country`
+const PER_COUNTRY_DIR = `${PATHS.node.logging}/exports/${month_day}/output/per-country`
 
-const ALL_DATA_FILE = PATHS.node.logging + `/exports/${month_day}/output/all-data.json`
+const ALL_DATA_FILE = `${PATHS.node.logging}/exports/${month_day}/output/all-data.json`
 
-const BACKUP_DIR = PATHS.node.logging + `/exports/${month_day}/backup`
+const BACKUP_DIR = `${PATHS.node.logging}/exports/${month_day}/backup`
 
 /* ────────────────────────────────  helpers  ─────────────────────────────── */
 
@@ -444,7 +444,6 @@ async function processCountry(country: CountryInEurope, allCompanies: CompanyCou
   saveResults([...final.values()], country)
   lgg.log(`🎯 done: ${final.size}/${companies.length} companies`)
 }
-
 /* ────────────────────────────────  main  ────────────────────────────────── */
 
 ;(async () => {

@@ -1,4 +1,4 @@
-import { z, type ZodRawShape, type ZodTypeAny } from "zod"
+import { type ZodRawShape, type ZodTypeAny, z } from "zod"
 
 // helper to give each property a .describe(…) from a map
 export function withDescriptions<S extends ZodRawShape, D extends { [K in keyof S]: string }>(

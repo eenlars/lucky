@@ -106,14 +106,14 @@ describe.skip("browser functionality tests", () => {
           lgg.log("Extracted content length:", extractedText.length)
           lgg.log("First 200 chars:", extractedText.substring(0, 200))
           return extractedText
-        } else if (typeof content === "string") {
+        }
+        if (typeof content === "string") {
           lgg.log("Content is string:", content)
           return content
-        } else {
-          lgg.log("Content type:", typeof content)
-          lgg.log("Content value:", content)
-          return ""
         }
+        lgg.log("Content type:", typeof content)
+        lgg.log("Content value:", content)
+        return ""
       }
       return ""
     }
@@ -131,7 +131,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Validating extracted content is news content using llmGuard...")
     const newsGuard = await llmGuard(
       allContent,
-      `The content must be news-related content from a Dutch news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be generic website navigation, advertisements, or non-news content.`,
+      "The content must be news-related content from a Dutch news website. It should contain news headlines, article titles, or breaking news information. The content should NOT be generic website navigation, advertisements, or non-news content.",
     )
 
     lgg.log("News content validation result:", newsGuard.isValid)
@@ -235,7 +235,7 @@ describe.skip("browser functionality tests", () => {
         lgg.log("Validating page state contains news content using llmGuard...")
         const stateNewsGuard = await llmGuard(
           stateText,
-          `The content must be from a Dutch news website page state. It should contain news headlines, article titles, navigation elements typical of news sites, or breaking news information. The content should NOT be generic error pages, blank pages, or non-news content.`,
+          "The content must be from a Dutch news website page state. It should contain news headlines, article titles, navigation elements typical of news sites, or breaking news information. The content should NOT be generic error pages, blank pages, or non-news content.",
         )
 
         lgg.log("Page state news validation result:", stateNewsGuard.isValid)
@@ -330,7 +330,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Validating session result contains news headlines using llmGuard...")
     const sessionNewsGuard = await llmGuard(
       result.text,
-      `The result must contain extracted news headlines or article titles from a Dutch news website. It should include actual news content, headlines, or breaking news information. The content should NOT be navigation errors, technical issues, or non-news content.`,
+      "The result must contain extracted news headlines or article titles from a Dutch news website. It should include actual news content, headlines, or breaking news information. The content should NOT be navigation errors, technical issues, or non-news content.",
     )
 
     lgg.log("Session news validation result:", sessionNewsGuard.isValid)

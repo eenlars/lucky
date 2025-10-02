@@ -1,6 +1,6 @@
+import { CONFIG } from "@core/core-config/compat"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@core/core-config/compat"
 
 /**
  * Verifies that a workflow follows hierarchical coordination constraints:

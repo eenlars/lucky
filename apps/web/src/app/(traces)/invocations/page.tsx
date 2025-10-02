@@ -1,13 +1,13 @@
 "use client"
 
 import { showToast } from "@/lib/toast-utils"
+import { Button } from "@/ui/button"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Button } from "@/ui/button"
 
 // Temporary type extension for new scoring fields
 type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
@@ -124,10 +124,10 @@ export default function InvocationsPage() {
 
       // Cost filters
       if (filters.minCost) {
-        filterParams.minCost = parseFloat(filters.minCost)
+        filterParams.minCost = Number.parseFloat(filters.minCost)
       }
       if (filters.maxCost) {
-        filterParams.maxCost = parseFloat(filters.maxCost)
+        filterParams.maxCost = Number.parseFloat(filters.maxCost)
       }
 
       // Date filters
@@ -140,18 +140,18 @@ export default function InvocationsPage() {
 
       // Accuracy filters
       if (filters.minAccuracy) {
-        filterParams.minAccuracy = parseFloat(filters.minAccuracy)
+        filterParams.minAccuracy = Number.parseFloat(filters.minAccuracy)
       }
       if (filters.maxAccuracy) {
-        filterParams.maxAccuracy = parseFloat(filters.maxAccuracy)
+        filterParams.maxAccuracy = Number.parseFloat(filters.maxAccuracy)
       }
 
       // Fitness score filters
       if (filters.minFitnessScore) {
-        filterParams.minFitnessScore = parseFloat(filters.minFitnessScore)
+        filterParams.minFitnessScore = Number.parseFloat(filters.minFitnessScore)
       }
       if (filters.maxFitnessScore) {
-        filterParams.maxFitnessScore = parseFloat(filters.maxFitnessScore)
+        filterParams.maxFitnessScore = Number.parseFloat(filters.maxFitnessScore)
       }
 
       // Override with completed only filter if active
@@ -679,7 +679,7 @@ export default function InvocationsPage() {
         <div className="flex flex-wrap gap-3 items-center">
           <Button onClick={fetchWorkflowInvocations} disabled={loading}>
             {loading && (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
             )}
             {loading ? "Loading..." : "Refresh Invocations"}
           </Button>
@@ -1263,7 +1263,7 @@ export default function InvocationsPage() {
           <div className="text-center">
             {loading ? (
               <div className="flex flex-col items-center space-y-4">
-                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
                 <p className="text-gray-500 dark:text-gray-400">Loading invocations...</p>
               </div>
             ) : invocations.length === 0 ? (
@@ -1306,7 +1306,7 @@ export default function InvocationsPage() {
               </Button>
               <Button onClick={handleDeleteSelected} disabled={deleteLoading} variant="destructive">
                 {deleteLoading && (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 )}
                 {deleteLoading ? "Deleting..." : "Delete"}
               </Button>

@@ -2,7 +2,7 @@ import { llmify } from "@core/utils/common/llmify"
 import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
-export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames: boolean = false): string {
+export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames = false): string {
   return llmify(`
     ${nodes
       .map(

@@ -4,11 +4,11 @@
  * Focuses on key models to complete statistical validation quickly
  */
 
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 // import { sendAI } from "@lucky/core/messages/api/sendAI"
 import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
 // models imported via constants; keep local import removed to avoid unused var
 import { adaptiveTools } from "../../../shared/tools/adaptive/adaptiveTools"
 import { runSequentialTools } from "../../02-sequential-chains/sequentialRunner"
@@ -98,7 +98,7 @@ async function runFinalValidation() {
     console.log(`Testing ${model}:`)
 
     // Test vague condition
-    console.log(`  VAGUE prompts:`)
+    console.log("  VAGUE prompts:")
     for (let run = 1; run <= RUNS_PER_CONDITION; run++) {
       const result = await runQuickTest(model, "vague", run)
       allRuns.push(result)
@@ -106,7 +106,7 @@ async function runFinalValidation() {
     }
 
     // Test clear condition
-    console.log(`  CLEAR prompts:`)
+    console.log("  CLEAR prompts:")
     for (let run = 1; run <= RUNS_PER_CONDITION; run++) {
       const result = await runQuickTest(model, "clear", run)
       allRuns.push(result)

@@ -17,8 +17,8 @@ vi.mock("@core/utils/env.mjs", () => ({
   },
 }))
 
-import os from "os"
-import path from "path"
+import os from "node:os"
+import path from "node:path"
 import { z } from "zod"
 
 // Mock sendAI to avoid real API calls
@@ -198,10 +198,10 @@ vi.mock("@core/utils/clients/supabase/client", () => ({
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import type { StructuredRequest, TextRequest, ToolRequest, TResponse } from "@core/messages/api/sendAI/types"
-import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import type { StructuredRequest, TResponse, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
+import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { invokeAgent } from "../invokeNode"
 
 describe("invokeAgent", () => {
@@ -240,7 +240,6 @@ describe("invokeAgent", () => {
         debug_output: {},
       })
     }
-
     ;(
       sendAI as unknown as {
         mockImplementation: (fn: typeof sendAIMockImpl) => void

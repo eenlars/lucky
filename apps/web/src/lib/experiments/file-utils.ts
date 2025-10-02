@@ -1,5 +1,5 @@
-import { promises as fs } from "fs"
-import path from "path"
+import { promises as fs } from "node:fs"
+import path from "node:path"
 
 export const ADAPTIVE_RESULTS_URL =
   "https://qnvprftdorualkdyogka.supabase.co/storage/v1/object/public/experiments/adaptive-results.json"
@@ -93,7 +93,7 @@ export async function loadJsonProdOrLocal<T>(
     try {
       const json = await readJsonRemote<T>(prodUrl)
       return { json, source: "remote", file: prodUrl }
-    } catch (e: any) {
+    } catch (_e: any) {
       // fall through to local
       // include error for observability
     }

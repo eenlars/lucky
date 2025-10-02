@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { searchGoogleMaps } from "../main"
 
-const expectedAlbertHeijnStructure = {
+const _expectedAlbertHeijnStructure = {
   storeName: expect.stringContaining("Albert Heijn"),
   stars: expect.any(String),
   numberOfReviews: expect.anything(), // can be null or number
@@ -69,7 +69,7 @@ describe("Albert Heijn Den Bosch Netherlands - Multiple Results Test", () => {
       // verify rating information is reasonable
       albertHeijnStores.forEach(store => {
         if (store.stars && store.stars !== "0") {
-          const rating = parseFloat(store.stars)
+          const rating = Number.parseFloat(store.stars)
           expect(rating).toBeGreaterThanOrEqual(1)
           expect(rating).toBeLessThanOrEqual(5)
         }

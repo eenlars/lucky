@@ -1,8 +1,8 @@
-import Tools, { type CodeToolResult } from "@lucky/tools"
-import { defineTool } from "@lucky/tools"
-import { isNir } from "@lucky/shared"
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import { isNir } from "@lucky/shared"
+import Tools, { type CodeToolResult } from "@lucky/tools"
+import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 import type { TodoItem, TodoReadResult } from "./types"
 
@@ -22,7 +22,7 @@ const todoRead = defineTool({
       'No input is required, leave this field blank. NOTE that we do not require a dummy object, placeholder string or a key like "input" or "empty". LEAVE IT BLANK.',
     ),
 
-  async execute(params, externalContext): Promise<CodeToolResult<TodoReadResult>> {
+  async execute(_params, externalContext): Promise<CodeToolResult<TodoReadResult>> {
     try {
       const workflowInvocationId = externalContext.workflowInvocationId
 

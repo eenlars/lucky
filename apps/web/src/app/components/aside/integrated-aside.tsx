@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils"
 import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Settings, Wrench, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import { UserProfile } from "./user-profile"
 
 // Navigation items with submenu information

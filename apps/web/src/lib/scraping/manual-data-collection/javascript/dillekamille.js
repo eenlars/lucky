@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/dillekamille.json" assert { type: "json" }
 
 function transformLocationData(input) {
@@ -41,8 +41,8 @@ function transformLocationData(input) {
 
     // pull coords if available
     let coords = null
-    if (location.marker && location.marker.latitude && location.marker.longitude) {
-      coords = [parseFloat(location.marker.longitude), parseFloat(location.marker.latitude)]
+    if (location.marker?.latitude && location.marker.longitude) {
+      coords = [Number.parseFloat(location.marker.longitude), Number.parseFloat(location.marker.latitude)]
     }
 
     return {

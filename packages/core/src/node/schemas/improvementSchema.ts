@@ -1,9 +1,9 @@
 import { memoryInstructions } from "@core/node/schemas/memoryInstructions.p"
-import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 import { llmify } from "@core/utils/common/llmify"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import { ACTIVE_MODEL_NAMES, ACTIVE_MODEL_NAMES_WITH_INFO } from "@core/utils/spending/pricing"
-import { z, ZodRawShape } from "zod"
+import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
+import { type ZodRawShape, z } from "zod"
 
 // define the raw shape
 export const baseWorkflowNodeConfigShape = {

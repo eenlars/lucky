@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import fs from "fs"
+import fs from "node:fs"
 import json from "../../../../lib/evals/all/nespresso.json" assert { type: "json" }
 
 // default “closed”/null opening‐times template

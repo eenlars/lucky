@@ -31,7 +31,7 @@ export const getStepIcon = (type: string) => {
   }
 }
 
-export const getStepTheme = (type: string, isError?: boolean) => {
+export const getStepTheme = (_type: string, isError?: boolean) => {
   if (isError) {
     return {
       cardClass:
@@ -51,13 +51,14 @@ export const getStepTheme = (type: string, isError?: boolean) => {
   }
 }
 
-export const formatArgsSummary = (args: any): string => {
+export const formatArgsSummary = (args: unknown): string => {
   if (!args || typeof args !== "object") return String(args || "{}")
-  const keys = Object.keys(args)
+  const record = args as Record<string, unknown>
+  const keys = Object.keys(record)
   if (keys.length === 0) return "{}"
   if (keys.length === 1) {
     const key = keys[0]
-    const value = (args as any)[key]
+    const value = record[key]
     if (typeof value === "string" && value.length < 30) {
       return `${key}: "${value}"`
     }
@@ -66,10 +67,11 @@ export const formatArgsSummary = (args: any): string => {
   return `{${keys.length} keys: ${keys.slice(0, 3).join(", ")}${keys.length > 3 ? "..." : ""}}`
 }
 
-export const getResultSummary = (toolResponse: any): any => {
+export const getResultSummary = (toolResponse: unknown): unknown => {
   if (!toolResponse || typeof toolResponse !== "object") return toolResponse
-  if ((toolResponse as any).result !== undefined) {
-    return (toolResponse as any).result
+  const record = toolResponse as Record<string, unknown>
+  if (record.result !== undefined) {
+    return record.result
   }
   return toolResponse
 }
@@ -77,14 +79,15 @@ export const getResultSummary = (toolResponse: any): any => {
 export const filterRelevantSteps = (steps?: AgentSteps): AgentSteps => {
   if (!steps) return []
   return steps.filter((output: AgentStep) => {
+    const record = output as Record<string, unknown>
     if (output.type === "learning" || output.type === "reasoning" || output.type === "text") {
-      return (output as any).return && String((output as any).return).trim().length > 0
+      return record.return && String(record.return).trim().length > 0
     }
     if (output.type === "terminate") {
-      return (output as any).return && String((output as any).return).trim().length > 0
+      return record.return && String(record.return).trim().length > 0
     }
     if (output.type === "tool") {
-      return (output as any).name && String((output as any).name).trim().length > 0
+      return record.name && String(record.name).trim().length > 0
     }
     return true
   })
@@ -93,13 +96,14 @@ export const filterRelevantSteps = (steps?: AgentSteps): AgentSteps => {
 // Generate a resilient React key for a step item
 export const generateStepKey = (prefix: string, index: number, step: AgentStep): string => {
   const base = `${prefix}-${step.type}-${index}`
+  const record = step as Record<string, unknown>
   if (step.type === "tool") {
-    const name = (step as any).name || ""
+    const name = record.name || ""
     return `${base}-${name}`
   }
-  if ((step as any).return) {
+  if (record.return) {
     try {
-      const str = typeof (step as any).return === "string" ? (step as any).return : JSON.stringify((step as any).return)
+      const str = typeof record.return === "string" ? record.return : JSON.stringify(record.return)
       const snippet = str.slice(0, 24).replace(/\s+/g, "_")
       return `${base}-${snippet}`
     } catch {

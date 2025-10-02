@@ -1,11 +1,11 @@
+import { getDefaultModels } from "@core/core-config/compat"
 /**
  * Shared test helper functions for API integration tests
  * Consolidates duplicate test patterns and eliminates verbose boilerplate
  */
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { JSONN } from "@core/utils/json"
-import { getDefaultModels } from "@core/core-config/compat"
+import type { ModelName } from "@core/utils/spending/models.types"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /**
@@ -76,7 +76,7 @@ export const TEST_TIMEOUTS = {
  * Standard test messages with context variations
  * Reduces duplication of large context blocks in tests
  */
-export const createTestMessages = (systemPrompt: string, userMessage: string, includeContext: boolean = false) => {
+export const createTestMessages = (systemPrompt: string, userMessage: string, includeContext = false) => {
   const messages = [
     {
       role: "system" as const,

@@ -1,10 +1,10 @@
-import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
-import { traceWorkflowEvolution } from "@/results/workflow-evolution-tracer"
-import { supabase } from "@/lib/supabase"
-import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
+import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
+import { supabase } from "@/lib/supabase"
+import { traceWorkflowEvolution } from "@/results/workflow-evolution-tracer"
+import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: Promise<{ run_id: string }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
@@ -26,7 +26,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ run_
       return NextResponse.json({ error: "Failed to fetch workflow invocations" }, { status: 500 })
     }
 
-    let bestInvocation
+    let bestInvocation: any
     if (successfulInvocations && successfulInvocations.length > 0) {
       // Use the best successful invocation
       bestInvocation = successfulInvocations[0]

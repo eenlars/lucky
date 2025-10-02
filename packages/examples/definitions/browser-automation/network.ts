@@ -2,10 +2,10 @@ import { lgg } from "@core/utils/logging/Logger"
 import { randomUserAgents } from "@examples/definitions/browser-automation/constants"
 import { saveInLoc } from "@examples/definitions/file-saver/save"
 import type { ProxyResponse } from "@examples/definitions/googlescraper/main"
+import { PATHS } from "@lucky/tools/config/runtime"
 import type { HTTPRequest, HTTPResponse, Page } from "puppeteer"
 import puppeteer from "puppeteer"
 import { z } from "zod"
-import { PATHS } from "@lucky/tools/config/runtime"
 
 // network request summary structure
 type NetworkRequestSummary = {
@@ -275,7 +275,7 @@ function setupNetworkListeners(
           let bodyContent: string
           try {
             bodyContent = buffer.toString("utf-8")
-          } catch (error) {
+          } catch (_error) {
             // if utf-8 decode fails, use base64
             bodyContent = buffer.toString("base64")
           }
@@ -302,7 +302,7 @@ function setupNetworkListeners(
               const preview = buffer.slice(0, previewLength).toString("utf-8")
               const truncationNote = `... [truncated: showing first ${previewLength} chars of ${buffer.length} total bytes]`
               existingRequest.responseBody = `${previewHeader}${preview}${truncationNote}`
-            } catch (error) {
+            } catch (_error) {
               // fallback to base64 preview if utf-8 fails
               const preview = buffer.slice(0, previewLength).toString("base64")
               const truncationNote = `... [truncated base64: showing first ${previewLength} chars of ${buffer.length} total bytes]`
@@ -406,7 +406,7 @@ function urlToFolderName(url: string): string {
       .replace(/\./g, "-") // replace dots with dashes
       .replace(/[^a-zA-Z0-9\-]/g, "") // remove any other special chars
       .toLowerCase()
-  } catch (error) {
+  } catch (_error) {
     // fallback if url parsing fails
     return url
       .replace(/https?:\/\//, "")

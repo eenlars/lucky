@@ -15,6 +15,7 @@ export default function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
   return (
     <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg" data-testid="mode-switcher">
       <button
+        type="button"
         onClick={() => onChange("graph")}
         className={`${baseClass} ${mode === "graph" ? activeClass : inactiveClass}`}
         data-testid="mode-switcher-graph"
@@ -22,6 +23,7 @@ export default function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
         Graph Mode
       </button>
       <button
+        type="button"
         onClick={() => onChange("json")}
         className={`${baseClass} ${mode === "json" ? activeClass : inactiveClass}`}
         data-testid="mode-switcher-json"
@@ -29,6 +31,7 @@ export default function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
         JSON Mode
       </button>
       <button
+        type="button"
         onClick={() => onChange("eval")}
         className={`${baseClass} ${mode === "eval" ? activeClass : inactiveClass}`}
         data-testid="mode-switcher-eval"

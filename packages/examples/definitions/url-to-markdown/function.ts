@@ -1,6 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { fetcher } from "@examples/definitions/url-to-markdown/fetcher"
-import { processHtmlToMarkdown, type ProcessHtmlToMarkdownResult } from "@examples/definitions/url-to-markdown/process"
+import { type ProcessHtmlToMarkdownResult, processHtmlToMarkdown } from "@examples/definitions/url-to-markdown/process"
 
 type HtmlToMarkdownOptions = {
   url: string
@@ -72,7 +72,7 @@ export async function htmlToMarkdown({
         extractedFrom: url,
       }
     } catch (jinaError) {
-      lgg.error(`jina fallback also failed:`, String(jinaError).substring(0, 200))
+      lgg.error("jina fallback also failed:", String(jinaError).substring(0, 200))
     }
 
     if (error instanceof Error) {

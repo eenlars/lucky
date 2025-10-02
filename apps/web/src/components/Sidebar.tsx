@@ -1,26 +1,26 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import UserProfile from "@/components/UserProfile"
+import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import {
-  Home,
-  Wrench,
   BarChart2,
   Boxes,
-  Dna,
-  Settings,
-  Menu,
-  X,
   ChevronLeft,
   ChevronRight,
+  Dna,
+  Home,
+  Menu,
   Network,
+  Settings,
+  Wrench,
+  X,
 } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useState } from "react"
 import type { ComponentType, SVGProps } from "react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
-import { useSidebar } from "@/contexts/SidebarContext"
-import UserProfile from "@/components/UserProfile"
 
 interface SidebarItem {
   href: string

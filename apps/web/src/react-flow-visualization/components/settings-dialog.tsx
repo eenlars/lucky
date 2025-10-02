@@ -40,7 +40,10 @@ export function SettingsDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 w-full rounded-md p-2 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+        <button
+          type="button"
+          className="flex items-center gap-2 w-full rounded-md p-2 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
           <Settings2 className="w-4 h-4 shrink-0" />
           <span>Settings</span>
         </button>

@@ -31,7 +31,7 @@ export function accuracyScorePct(successItems: number, requested: number): numbe
  * - At cost = halfLife, score = 50
  * - Smoothly decays as cost grows; never negative
  */
-export function costEfficiencyScorePct(costUsd: number, costHalfLifeUsd: number = 0.02): number {
+export function costEfficiencyScorePct(costUsd: number, costHalfLifeUsd = 0.02): number {
   const c = Math.max(0, Number(costUsd) || 0)
   const hl = Math.max(1e-9, Number(costHalfLifeUsd) || 0.02)
   const score = 100 * Math.exp(-Math.LN2 * (c / hl))
@@ -46,7 +46,7 @@ export function costEfficiencyScorePct(costUsd: number, costHalfLifeUsd: number 
  * - At time = 0ms, score = 100
  * - At time = halfLife, score = 50
  */
-export function timeEfficiencyScorePct(durationMs: number, timeHalfLifeMs: number = 2000): number {
+export function timeEfficiencyScorePct(durationMs: number, timeHalfLifeMs = 2000): number {
   const t = Math.max(0, Number(durationMs) || 0)
   const hl = Math.max(1e-6, Number(timeHalfLifeMs) || 2000)
   const score = 100 * Math.exp(-Math.LN2 * (t / hl))

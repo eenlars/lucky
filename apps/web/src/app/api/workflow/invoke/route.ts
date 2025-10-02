@@ -1,8 +1,8 @@
-import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
-import type { InvocationInput } from "@lucky/core/workflow/runner/types"
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
+import type { InvocationInput } from "@lucky/core/workflow/runner/types"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication

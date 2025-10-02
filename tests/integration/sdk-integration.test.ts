@@ -2,8 +2,8 @@
  * Integration test to verify official Anthropic SDK integration works correctly
  */
 
-import { describe, it, expect } from "vitest"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { describe, expect, it } from "vitest"
 
 describe("Anthropic SDK Integration", () => {
   it("should parse workflow config with SDK settings", () => {
@@ -13,7 +13,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "test-node",
           description: "Test node with official SDK",
           systemPrompt: "You are a test assistant",
-          modelName: "claude-3-sonnet-latest",
+          modelName: "anthropic/claude-sonnet-4",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
@@ -43,7 +43,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "sdk-node",
           description: "SDK-enabled node",
           systemPrompt: "SDK prompt",
-          modelName: "claude-3-sonnet-latest",
+          modelName: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
@@ -106,10 +106,10 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "opus-node",
           description: "Opus model node",
           systemPrompt: "Using Opus",
-          modelName: "claude-3-opus-latest",
+          modelName: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
-            model: "opus-3",
+            model: "sonnet-3.5-old",
             maxTokens: 8192,
             temperature: 0.3,
             topP: 0.9,
@@ -122,7 +122,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "haiku-node",
           description: "Haiku model node",
           systemPrompt: "Using Haiku",
-          modelName: "claude-3-haiku-latest",
+          modelName: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
             model: "haiku",

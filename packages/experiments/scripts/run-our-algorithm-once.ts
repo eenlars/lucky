@@ -14,7 +14,7 @@ async function main() {
 
   console.log(`[our-algorithm-once] Model: ${model}`)
   console.log(`[our-algorithm-once] Scenario: ${scenario.id}`)
-  console.log(`[our-algorithm-once] Condition: VAGUE`)
+  console.log("[our-algorithm-once] Condition: VAGUE")
 
   const res = await runMultiToolOurAlgorithm(model as any, scenario.prompt, adaptiveTools, VAGUE_SYSTEM_PROMPT, {})
 
@@ -27,7 +27,7 @@ async function main() {
   console.log(`[our-algorithm-once] fetch calls: ${fetchCalls.length}`)
   console.log(`[our-algorithm-once] items: ${successItems}/${scenario.expected}`)
   console.log(`[our-algorithm-once] adapted: ${successItems >= scenario.expected}`)
-  console.log(`[our-algorithm-once] tool calls:`)
+  console.log("[our-algorithm-once] tool calls:")
   for (const e of toolExecs) {
     console.log(
       `- ${e.toolName} args=${JSON.stringify(e.inputData)} retType=${Array.isArray(e.outputData) ? "array" : typeof e.outputData}`,

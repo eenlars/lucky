@@ -1,8 +1,8 @@
-import { promises as fs } from "fs"
-import { join } from "path"
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import { promises as fs } from "node:fs"
+import { join } from "node:path"
 import type { PartialLocationData } from "@lucky/tools/schemas/location.types"
 import { DataQuality } from "@lucky/tools/schemas/location.types"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { LocationDataManager } from "../mainLocationDataManager"
 
 describe("LocationDataManager - Update Operations", () => {
@@ -22,7 +22,7 @@ describe("LocationDataManager - Update Operations", () => {
   afterEach(async () => {
     try {
       await fs.rm(testDir, { recursive: true, force: true })
-    } catch (error) {
+    } catch (_error) {
       // ignore cleanup errors
     }
   })

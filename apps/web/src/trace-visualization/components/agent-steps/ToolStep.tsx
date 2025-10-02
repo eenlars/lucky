@@ -141,7 +141,7 @@ export const ToolStep = ({
 
         {isExpanded && (
           <div className="space-y-2">
-            <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent"></div>
+            <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-600 to-transparent" />
 
             <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
               <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Arguments:</div>

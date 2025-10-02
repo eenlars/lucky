@@ -3,10 +3,10 @@
 import { supabase } from "@/lib/supabase"
 import { cache } from "react"
 import {
+  type MessageMetadata,
+  type NodeGroup,
+  type NodeInvocationExtended,
   groupInvocationsByNode,
-  MessageMetadata,
-  NodeGroup,
-  NodeInvocationExtended,
   normalizeNodeInvocation,
 } from "./utils"
 

@@ -2,9 +2,13 @@
 
 import { useReactFlow } from "@xyflow/react"
 import { Command, GripVertical, Plus } from "lucide-react"
-import { ComponentProps, useCallback, useRef, useState } from "react"
+import { type ComponentProps, useCallback, useRef, useState } from "react"
 
-import nodesConfig, { AppNode, createNodeByType, type NodeConfig } from "@/react-flow-visualization/components/nodes"
+import nodesConfig, {
+  type AppNode,
+  createNodeByType,
+  type NodeConfig,
+} from "@/react-flow-visualization/components/nodes"
 import { SettingsDialog } from "@/react-flow-visualization/components/settings-dialog"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import {
@@ -21,7 +25,7 @@ import {
 } from "@/react-flow-visualization/components/ui/sidebar"
 import { cn } from "@/react-flow-visualization/lib/utils"
 import { useAppStore } from "@/react-flow-visualization/store"
-import { type AppStore } from "@/react-flow-visualization/store/app-store"
+import type { AppStore } from "@/react-flow-visualization/store/app-store"
 import { useShallow } from "zustand/react/shallow"
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {

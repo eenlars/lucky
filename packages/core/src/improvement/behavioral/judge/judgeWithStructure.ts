@@ -1,10 +1,10 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
 import { R, type RS } from "@core/utils/types"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { Workflow } from "@core/workflow/Workflow"
-import { getDefaultModels } from "@core/core-config/compat"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import z from "zod"
 import type { StructureExplorationResult } from "./exploreStructure"
 

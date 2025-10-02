@@ -2,8 +2,8 @@ import { openai } from "@ai-sdk/openai"
 import { groqProvider } from "@core/utils/clients/groq/groqClient"
 import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getCurrentProvider, type LuckyProvider } from "@core/utils/spending/provider"
-import { LanguageModel } from "ai"
+import { type LuckyProvider, getCurrentProvider } from "@core/utils/spending/provider"
+import type { LanguageModel } from "ai"
 
 /**
  * Base: map `ModelName` to a provider-bound `LanguageModelV1` without extras.

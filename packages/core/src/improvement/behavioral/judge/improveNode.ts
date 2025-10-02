@@ -1,8 +1,8 @@
+import { CONFIG } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
-import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { Workflow } from "@core/workflow/Workflow"
-import { CONFIG } from "@core/core-config/compat"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
 /**
  * Parameters for node self-improvement

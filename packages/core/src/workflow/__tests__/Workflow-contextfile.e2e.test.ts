@@ -168,12 +168,12 @@ if (typeof (vi as any).mock === "function")
     },
   }))
 
-import { buildMessages } from "@core/messages/create/buildMessages"
+import { getDefaultModels } from "@core/core-config/compat"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
+import { buildMessages } from "@core/messages/create/buildMessages"
 import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 // moved vitest import to top
 import { Workflow } from "../Workflow"
 

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureWorkflowExists, saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   // Require authentication

@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { type ReactNode, createContext, useContext, useEffect, useState } from "react"
 
 interface SidebarContextType {
   isCollapsed: boolean

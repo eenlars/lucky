@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react"
 import { WorkflowEvolutionVisualization } from "../app/components/WorkflowEvolutionVisualization"
-import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
 import { createEvolutionVisualizationData } from "../lib/evolution-utils"
+import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
 
 export default function EvolutionVisualizationPage() {
   const [evolutionData, setEvolutionData] = useState<any>(null)
@@ -24,7 +24,7 @@ export default function EvolutionVisualizationPage() {
             setLoading(false)
             return
           }
-        } catch (e) {
+        } catch {
           console.log("No saved data found, generating fresh data...")
         }
 
@@ -52,7 +52,7 @@ export default function EvolutionVisualizationPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
           <p className="text-gray-600">Loading evolution data...</p>
         </div>
       </div>

@@ -12,5 +12,4 @@ export declare const JSONN: {
   isJSON: (str: unknown) => boolean
   show: (obj: unknown, indent?: number, depth?: number) => string
 }
-export {}
 //# sourceMappingURL=jsonParse.d.ts.map

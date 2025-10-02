@@ -1,8 +1,8 @@
 import {
+  type ProcessedResponse,
   isErrorProcessed,
   isTextProcessed,
   isToolProcessed,
-  type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
 
 /**

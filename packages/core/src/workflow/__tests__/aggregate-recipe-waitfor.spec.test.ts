@@ -1,5 +1,5 @@
 import { getDefaultModels } from "@core/core-config/compat"
-import { type AggregatedPayload } from "@core/messages/MessagePayload"
+import type { AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Messages } from "@core/utils/persistence/message/main"
 import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"

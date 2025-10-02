@@ -44,23 +44,23 @@
  * - Database tracking of evolution runs
  */
 
+import { CONFIG, PATHS } from "@core/core-config/compat"
+import { SELECTED_QUESTION } from "@core/core-config/compat"
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { GPEvaluatorAdapter } from "@core/evaluation/evaluators/GPEvaluatorAdapter"
 import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
+import { RunService } from "@core/improvement/gp/RunService"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
 import type { IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
-import { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import { RunService } from "@core/improvement/gp/RunService"
+import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import { ArgumentParsingError, parseCliArguments } from "@core/utils/cli/argumentParser"
-import { displayResults } from "@core/utils/logging/displayResults"
 import { lgg } from "@core/utils/logging/Logger"
+import { displayResults } from "@core/utils/logging/displayResults"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import { Workflow } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import { loadSingleWorkflow, persistWorkflow, saveWorkflowConfigToOutput } from "@core/workflow/setup/WorkflowLoader"
-import { Workflow } from "@core/workflow/Workflow"
-import { CONFIG, PATHS } from "@core/core-config/compat"
-import { SELECTED_QUESTION } from "@core/core-config/compat"
 import chalk from "chalk"
 
 // Parse command line arguments
@@ -73,7 +73,7 @@ try {
   if (error instanceof ArgumentParsingError) {
     lgg.error(`❌ Argument parsing failed: ${error.message}`)
     lgg.info(
-      `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`,
+      "Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]",
     )
     process.exit(1)
   }
@@ -88,7 +88,7 @@ const cliSetupFile = parsedArgs.setupFile
 if (!EVOLUTION_MODE) {
   lgg.error("❌ Evolution mode must be specified with --mode=iterative or --mode=GP")
   lgg.info(
-    `Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]`,
+    "Usage: tsx src/core/main.ts --mode=<iterative|GP> [--generations=<num>] [--population=<num>] [--setup-file=<path>]",
   )
   process.exit(1)
 }
@@ -285,7 +285,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           })
 
           lgg.log(
-            `📊 Iteration ${iteration} – Fitness: ${evaluationResult.fitness.score.toFixed(3)} · Cost: $${iterationCost.toFixed(2)}${retry > 0 ? ` (recovered)` : ""}`,
+            `📊 Iteration ${iteration} – Fitness: ${evaluationResult.fitness.score.toFixed(3)} · Cost: $${iterationCost.toFixed(2)}${retry > 0 ? " (recovered)" : ""}`,
           )
 
           // Update setup for next iteration and save to file incrementally
@@ -432,7 +432,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     generations: GP_GENERATIONS,
   })
 
-  let evolutionResult
+  let evolutionResult: any
   try {
     evolutionResult = await evolutionEngine.evolve({
       evaluationInput: SELECTED_QUESTION,
@@ -445,14 +445,14 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     lgg.error(`[main] Evolution failed: ${errorMsg}`)
 
     if (error instanceof Error) {
-      lgg.error(`[main] Stack trace:`, error.stack)
+      lgg.error("[main] Stack trace:", error.stack)
       lgg.error(`[main] Error name: ${error.name}`)
       if (error.cause) {
-        lgg.error(`[main] Error cause:`, error.cause)
+        lgg.error("[main] Error cause:", error.cause)
       }
     }
 
-    lgg.error(`[main] Evolution context:`)
+    lgg.error("[main] Evolution context:")
     lgg.error(`[main] - Population size: ${GP_POPULATION_SIZE}`)
     lgg.error(`[main] - Generations: ${GP_GENERATIONS}`)
     lgg.error(`[main] - Question type: ${SELECTED_QUESTION.type}`)
@@ -482,7 +482,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     generations: stats.length,
   })
 
-  lgg.log(`\n📊 GP evolution complete:`)
+  lgg.log("\n📊 GP evolution complete:")
   lgg.log(`Best Aggregated Fitness: ${bestGenome.getFitness()?.score.toFixed(3)}`)
   lgg.log(`Total Cost:  $${totalCost.toFixed(2)}`)
   lgg.log(`Generations: ${stats.length}`)

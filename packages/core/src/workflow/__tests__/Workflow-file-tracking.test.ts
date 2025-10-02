@@ -1,7 +1,7 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { createMockEvaluationInput, createMockWorkflow } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import { describe, expect, it } from "vitest"
 
 describe("Workflow File Tracking", () => {

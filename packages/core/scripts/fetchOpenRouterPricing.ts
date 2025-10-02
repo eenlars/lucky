@@ -1,4 +1,4 @@
-import fs from "fs"
+import fs from "node:fs"
 
 // run: bun scripts/fetchOpenRouterPricing.ts
 // it outputs json files to scripts/pricing-data/
@@ -51,7 +51,7 @@ async function transformModels(roundDecimals = 6) {
       // scale pricing tiers
       const scaled: Record<string, number> = {}
       for (const [tier, priceStr] of Object.entries(model.pricing || {})) {
-        const num = parseFloat(priceStr) || 0
+        const num = Number.parseFloat(priceStr) || 0
         scaled[tier] = round(num * 1e6, roundDecimals)
       }
 
@@ -122,16 +122,16 @@ async function transformModels(roundDecimals = 6) {
 const { sortedPricingSummary, transformed } = await transformModels()
 
 const scriptDir = new URL(".", import.meta.url).pathname
-const dataDir = scriptDir + "pricing-data/"
+const dataDir = `${scriptDir}pricing-data/`
 
 // ensure directory exists
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true })
 }
 
-fs.writeFileSync(dataDir + "pricingSummary.json", JSON.stringify(sortedPricingSummary, null, 2))
+fs.writeFileSync(`${dataDir}pricingSummary.json`, JSON.stringify(sortedPricingSummary, null, 2))
 
-fs.writeFileSync(dataDir + "transformed.json", JSON.stringify(transformed, null, 2))
+fs.writeFileSync(`${dataDir}transformed.json`, JSON.stringify(transformed, null, 2))
 
 console.log(`✅ Updated pricing data in ${dataDir}`)
 console.log(`📊 Found ${sortedPricingSummary.length} models matching criteria`)

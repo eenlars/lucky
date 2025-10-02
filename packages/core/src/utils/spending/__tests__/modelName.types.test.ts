@@ -3,11 +3,11 @@
  * These tests verify compile-time type safety and runtime behavior alignment.
  */
 
-import { describe, expect, it } from "vitest"
+import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
+import { getActiveModelNames, getModelV2, isActiveModel } from "@core/utils/spending/functions"
 import type { AllowedModelName, AnyModelName, ModelName, OpenRouterModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
-import { isActiveModel, getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
-import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
+import { describe, expect, it } from "vitest"
 
 describe("ModelName Type System", () => {
   describe("Type Unification", () => {

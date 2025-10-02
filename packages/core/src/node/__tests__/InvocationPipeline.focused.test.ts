@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TOOL_GROUPS } from "@lucky/examples/definitions/registry-grouped"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Force all ContextStore usage to in-memory during this focused test and
 // ensure a single shared instance per workflowInvocationId so tools see

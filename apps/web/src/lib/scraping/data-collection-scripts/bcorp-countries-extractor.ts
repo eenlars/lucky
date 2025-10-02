@@ -1,3 +1,5 @@
+import crypto from "node:crypto"
+import fs from "node:fs"
 /* eslint-disable no-restricted-imports */
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
@@ -5,8 +7,6 @@ import { saveInLoc } from "@lucky/core/utils/fs/fileSaver"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import { PATHS } from "@lucky/examples/settings/constants"
 import { csv } from "@lucky/shared/csv"
-import crypto from "crypto"
-import fs from "fs"
 const { CSVLoader } = csv
 
 // how to run:
@@ -14,13 +14,13 @@ const { CSVLoader } = csv
 
 /* ────────────────────────────────────────────────────────────────── helpers ───── */
 const B_CORP_ROOT = "https://www.bcorporation.net/en-us/find-a-b-corp/company/"
-const INPUT_CSV = PATHS.app + "/src/examples/evaluation/input.csv"
+const INPUT_CSV = `${PATHS.app}/src/examples/evaluation/input.csv`
 
 // progress tracking files
-const PROGRESS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/countries-extractor-progress.json"
-const RESULTS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/bcorp-countries-data.json"
-const ERRORS_FILE = PATHS.node.logging + "/backup/bcorp-countries-extractor/bcorp-countries-errors.json"
-const BACKUP_DIR = PATHS.node.logging + "/backup/bcorp-countries-extractor"
+const PROGRESS_FILE = `${PATHS.node.logging}/backup/bcorp-countries-extractor/countries-extractor-progress.json`
+const RESULTS_FILE = `${PATHS.node.logging}/backup/bcorp-countries-extractor/bcorp-countries-data.json`
+const ERRORS_FILE = `${PATHS.node.logging}/backup/bcorp-countries-extractor/bcorp-countries-errors.json`
+const BACKUP_DIR = `${PATHS.node.logging}/backup/bcorp-countries-extractor`
 
 interface CountryExtractionProgress {
   timestamp: string
@@ -135,7 +135,7 @@ function loadProgress(totalCompanies: number): CountryExtractionProgress {
       )
       return data
     }
-  } catch (error) {
+  } catch (_error) {
     lgg.log("⚠️ could not load progress file, starting fresh")
   }
 
@@ -183,7 +183,6 @@ async function processBatch<T, R>(
 
   return results
 }
-
 ;(async () => {
   /* 1️⃣  load the CSV ---------------------------------------------------------- */
   lgg.log("countries-extractor: starting sustainable company countries extraction script.")
@@ -229,7 +228,13 @@ async function processBatch<T, R>(
   const companyData = await processBatch<{ company_name: string; website: string }, CompanyCountryData>(
     uniqueRows, // use uniqueRows instead of rows
     BATCH_SIZE,
-    async ({ company_name, website }: { company_name: string; website: string }): Promise<CompanyCountryData> => {
+    async ({
+      company_name,
+      website,
+    }: {
+      company_name: string
+      website: string
+    }): Promise<CompanyCountryData> => {
       lgg.log(`countries-extractor: processing company: ${company_name}`)
       const slug = slugifyBCorp(company_name)
       const bCorpUrl = `${B_CORP_ROOT}${slug}/`

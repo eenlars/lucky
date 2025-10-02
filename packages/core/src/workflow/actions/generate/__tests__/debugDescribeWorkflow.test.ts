@@ -1,6 +1,6 @@
+import { explainSubsetOfTools } from "@core/prompts/explainTools"
 import type { Workflow } from "@core/workflow/Workflow"
 import { describe, expect, it, vi } from "vitest"
-import { explainSubsetOfTools } from "@core/prompts/explainTools"
 import { workflowToString } from "../workflowToString"
 
 // Mock the tool types to include the test tools

@@ -22,7 +22,7 @@ export function verifyPersistence() {
     datasetName: state.datasetName || "(unnamed)",
     testCases: state.cases?.length || 0,
     savedResults: Object.keys(state.resultsById || {}).length,
-    storageSize: (stored.length / 1024).toFixed(2) + " KB",
+    storageSize: `${(stored.length / 1024).toFixed(2)} KB`,
     exampleResult: Object.values(state.resultsById || {})[0] || null,
   }
 }

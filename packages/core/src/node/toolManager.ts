@@ -1,12 +1,12 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/tools/toolManager.ts
 
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { setupMCPForNode } from "@core/tools/mcp/mcp"
+import { isNir } from "@lucky/shared/client"
 import { setupCodeToolsForNode } from "@lucky/tools"
 import type { CodeToolName, MCPToolName } from "@lucky/tools/client"
 import type { ToolExecutionContext } from "@lucky/tools/client"
-import { setupMCPForNode } from "@core/tools/mcp/mcp"
-import { isNir } from "@lucky/shared/client"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { Tool, type ToolSet } from "ai"
+import type { Tool, ToolSet } from "ai"
 
 /**
  * Manages tool initialization and runtime access for workflow nodes.
@@ -132,7 +132,7 @@ export class ToolManager {
         const contextualCodeTools = await setupCodeToolsForNode(this.codeToolNames, toolExecutionContext)
         codeTools = contextualCodeTools
       } catch (error) {
-        lgg.error(`Failed to setup code tools with context:`, error)
+        lgg.error("Failed to setup code tools with context:", error)
         // fallback to cached tools
         codeTools = this.codeTools
       }

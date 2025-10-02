@@ -1,5 +1,5 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { getDefaultModels } from "@core/core-config/compat"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 

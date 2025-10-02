@@ -1,13 +1,13 @@
+import { createHash } from "node:crypto"
+import fs from "node:fs/promises"
+import path, { dirname } from "node:path"
+import { fileURLToPath } from "node:url"
 import { DenBoschAlbertHeijn } from "@examples/definitions/googlescraper/cache/bosch"
 import { DenBoschAlbertHeijnNoDomain } from "@examples/definitions/googlescraper/cache/bosch-no-domain"
-import { transformLocationData, type StandardizedLocation } from "@examples/definitions/googlescraper/convert"
+import { type StandardizedLocation, transformLocationData } from "@examples/definitions/googlescraper/convert"
 import { searchGoogleMaps } from "@examples/definitions/googlescraper/main/main"
 import { normalizeHostname } from "@examples/definitions/googlescraper/utils/hostname"
 import Tools, { commonSchemas, defineTool, type CodeToolResult } from "@lucky/tools"
-import { createHash } from "crypto"
-import fs from "fs/promises"
-import path, { dirname } from "path"
-import { fileURLToPath } from "url"
 import { z } from "zod"
 
 const paramsSchema = z.object({
@@ -42,7 +42,7 @@ const getCacheKey = (params: Params) => {
 const googleMaps = defineTool({
   name: "searchGoogleMaps",
   params: paramsSchema,
-  async execute(params, externalContext): Promise<CodeToolResult<StandardizedLocation[]>> {
+  async execute(params, _externalContext): Promise<CodeToolResult<StandardizedLocation[]>> {
     const { query, maxResultCount, domainFilter } = params
 
     // used cached responses.
@@ -54,7 +54,8 @@ const googleMaps = defineTool({
     ) {
       console.log("🔍 Using cached response for Den Bosch Albert Heijn No Domain")
       return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijnNoDomain)
-    } else if (mustHaveSearchTerms.every(term => query.toLowerCase().includes(term))) {
+    }
+    if (mustHaveSearchTerms.every(term => query.toLowerCase().includes(term))) {
       console.log("🔍 Using cached response for Den Bosch Albert Heijn")
       return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijn)
     }
@@ -68,7 +69,7 @@ const googleMaps = defineTool({
       const cachedData = await fs.readFile(cacheFilePath, "utf-8")
       console.log(`🔍 Using file-cached response for query: ${query}`)
       return Tools.createSuccess("searchGoogleMaps", JSON.parse(cachedData))
-    } catch (error) {
+    } catch (_error) {
       // Cache miss, proceed to fetch data
     }
 

@@ -1,3 +1,4 @@
+import { getDefaultModels } from "@core/core-config/compat"
 // comprehensive tests for genome class
 import {
   createMockEvaluationInputGeneric,
@@ -5,7 +6,6 @@ import {
   createMockWorkflowGenome,
   createMockWorkflowScore,
 } from "@core/utils/__tests__/setup/genomeTestUtils"
-import { getDefaultModels } from "@core/core-config/compat"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level

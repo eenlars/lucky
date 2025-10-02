@@ -1,10 +1,10 @@
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
 import { lgg } from "@core/utils/logging/Logger"
 import { defineTool } from "@lucky/tools"
-import * as fs from "fs/promises"
-import { nanoid } from "nanoid"
-import * as path from "path"
-import { z } from "zod"
 import { PATHS } from "@lucky/tools/config/runtime"
+import { nanoid } from "nanoid"
+import { z } from "zod"
 
 // Centralize path with runtime constants to avoid CWD mismatches
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
@@ -100,20 +100,19 @@ const humanApproval = defineTool({
               },
               error: null,
             }
-          } else {
-            lgg.info(`❌ Approval rejected: ${currentRequest.response || "Rejected"}`)
-            return {
-              success: true,
-              data: {
-                approved: false,
-                response: currentRequest.response || "Rejected",
-                approvalId,
-              },
-              error: null,
-            }
+          }
+          lgg.info(`❌ Approval rejected: ${currentRequest.response || "Rejected"}`)
+          return {
+            success: true,
+            data: {
+              approved: false,
+              response: currentRequest.response || "Rejected",
+              approvalId,
+            },
+            error: null,
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // file might have been deleted or corrupted, continue polling
       }
 

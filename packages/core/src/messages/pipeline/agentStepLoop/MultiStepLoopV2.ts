@@ -1,18 +1,18 @@
+import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { quickSummaryNull } from "@core/messages/api/genObject"
 import { getFinalOutputNodeInvocation, processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
+  type ProcessedResponse,
   isErrorProcessed,
   isTextProcessed,
   isToolProcessed,
-  type ProcessedResponse,
 } from "@core/messages/api/vercel/processResponse.types"
-import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { toolUsageToString, type MultiStepLoopContext } from "./utils"
+import { type MultiStepLoopContext, toolUsageToString } from "./utils"
 
 export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): Promise<ProcessedResponse> {
   const { ctx, tools, agentSteps, maxRounds, verbose, addCost, setUpdatedMemory, getTotalCost } = context
@@ -58,7 +58,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
         // Agent reasoned but produced no output - create explicit "no action" result
         agentSteps.push({
           type: "text",
-          return: "No action taken based on analysis: " + strategy.reasoning,
+          return: `No action taken based on analysis: ${strategy.reasoning}`,
         })
       }
 
@@ -129,7 +129,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
     // strategy must be to use a tool now.
     agentSteps.push({
       type: "reasoning",
-      return: strategy.reasoning + " " + strategy.plan,
+      return: `${strategy.reasoning} ${strategy.plan}`,
     })
 
     const selected = strategy.toolName
@@ -202,7 +202,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
         return: processed.content,
       })
     } else if (isErrorProcessed(processed)) {
-      const details = processed.details ? " details:" + truncater(JSON.stringify(processed.details), 100) : ""
+      const details = processed.details ? ` details:${truncater(JSON.stringify(processed.details), 100)}` : ""
       agentSteps.push({
         type: "error",
         return: processed.message + details,
@@ -210,7 +210,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
     } else {
       agentSteps.push({
         type: "text",
-        return: "unknown type of output: " + JSON.stringify(processed),
+        return: `unknown type of output: ${JSON.stringify(processed)}`,
       })
     }
   }

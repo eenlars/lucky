@@ -8,7 +8,7 @@ import type { Message, Tool } from "@anthropic-ai/sdk/resources"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { lgg } from "@core/utils/logging/Logger"
-import { type ClaudeSDKConfig, SDK_VERSION, MODEL_PRICING } from "./types"
+import { type ClaudeSDKConfig, MODEL_PRICING, SDK_VERSION } from "./types"
 
 export interface SDKRequest {
   prompt: string
@@ -38,7 +38,7 @@ export class ClaudeSDKService {
       type: string
     }>
   > {
-    const client = this.initializeClient()
+    const client = ClaudeSDKService.initializeClient()
 
     try {
       const response = await client.models.list()
@@ -61,22 +61,22 @@ export class ClaudeSDKService {
       throw new Error("ANTH_SECRET_KEY environment variable is required for SDK usage")
     }
 
-    if (!this.client) {
-      this.client = new Anthropic({
+    if (!ClaudeSDKService.client) {
+      ClaudeSDKService.client = new Anthropic({
         apiKey,
         maxRetries: 2, // SDK's built-in retry mechanism
         // Optional: Add custom headers or other config
       })
 
-      if (!this.initialized) {
-        this.initialized = true
+      if (!ClaudeSDKService.initialized) {
+        ClaudeSDKService.initialized = true
         lgg.info("[ClaudeSDK] Anthropic SDK client initialized", {
           integrationVersion: SDK_VERSION.integrationVersion,
         })
       }
     }
 
-    return this.client
+    return ClaudeSDKService.client
   }
 
   /**
@@ -141,7 +141,9 @@ export class ClaudeSDKService {
         messages,
         max_tokens: maxTokens,
         // Add any additional parameters from config
-        ...(request.config?.temperature && { temperature: request.config.temperature }),
+        ...(request.config?.temperature && {
+          temperature: request.config.temperature,
+        }),
         ...(request.config?.topP && { top_p: request.config.topP }),
         ...(request.config?.systemPrompt && {
           system: request.config.systemPrompt,

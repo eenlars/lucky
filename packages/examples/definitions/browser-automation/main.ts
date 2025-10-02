@@ -2,7 +2,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import Tools, { type CodeToolResult } from "@lucky/tools"
 
 import type { ProxyResponse } from "@examples/definitions/googlescraper/main"
-import { inputSchemaNetworkMonitor, networkMonitor, type NetworkMonitorInput } from "./network"
+import { type NetworkMonitorInput, inputSchemaNetworkMonitor, networkMonitor } from "./network"
 
 type OutputType = {
   url: string

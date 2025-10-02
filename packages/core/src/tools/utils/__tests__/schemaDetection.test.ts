@@ -1,6 +1,6 @@
-import { isVercelAIStructure, isZodSchema } from "../schemaDetection"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
+import { isVercelAIStructure, isZodSchema } from "../schemaDetection"
 
 describe("Schema Detection", () => {
   // TODO: This test suite is actually well-written! It has good coverage of edge cases,

@@ -36,13 +36,13 @@ export async function exploreWorkflowInvocation(invocationId: string) {
 
 // explore the workflow version and evolution data
 export async function exploreEvolutionChain(invocationId: string) {
-  console.log(`\n=== EXPLORING EVOLUTION CHAIN ===`)
+  console.log("\n=== EXPLORING EVOLUTION CHAIN ===")
 
   // start with the invocation
   const invocation = await exploreWorkflowInvocation(invocationId)
   if (!invocation) return null
 
-  console.log(`\n--- WORKFLOW VERSION ---`)
+  console.log("\n--- WORKFLOW VERSION ---")
   // get the workflow version
   const { data: workflowVersion, error: versionError } = await supabase
     .from("WorkflowVersion")
@@ -66,7 +66,7 @@ export async function exploreEvolutionChain(invocationId: string) {
     created_at: workflowVersion.created_at,
   })
 
-  console.log(`\n--- GENERATION ---`)
+  console.log("\n--- GENERATION ---")
   // get the generation info
   if (workflowVersion.generation_id) {
     const { data: generation, error: genError } = await supabase
@@ -88,7 +88,7 @@ export async function exploreEvolutionChain(invocationId: string) {
     }
   }
 
-  console.log(`\n--- EVOLUTION RUN ---`)
+  console.log("\n--- EVOLUTION RUN ---")
   // get the evolution run
   if (invocation.run_id) {
     const { data: evolutionRun, error: runError } = await supabase
@@ -164,7 +164,7 @@ export async function exploreGenerationVersions(generationId: string) {
     console.log(`${index + 1}. ${version.wf_version_id}:`, {
       operation: version.operation,
       parent_id: version.parent_id,
-      commit_message: version.commit_message?.substring(0, 80) + "...",
+      commit_message: `${version.commit_message?.substring(0, 80)}...`,
       created_at: version.created_at,
     })
   })

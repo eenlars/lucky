@@ -22,6 +22,7 @@
  * TODO: implement multi-parent crossover for complex trait combinations
  */
 
+import { CONFIG } from "@core/core-config/compat"
 import type { Genome } from "@core/improvement/gp/Genome"
 import {
   getCrossoverVariability,
@@ -36,7 +37,6 @@ import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { CONFIG } from "@core/core-config/compat"
 import type { EvolutionContext } from "../../resources/types"
 
 const operatorsWithFeedback = CONFIG.improvement.flags.operatorsWithFeedback
@@ -237,7 +237,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
 
     // Use formalizeWorkflow approach like in Mutations.ts to avoid schema issues
     try {
-      const crossoverPrompt = this.buildCrossoverPrompt(
+      const crossoverPrompt = Crossover.buildCrossoverPrompt(
         parent1,
         parent2,
         crossoverType,
@@ -302,12 +302,11 @@ Focus on creating a functional workflow rather than exact JSON structure.`
           return R.error("Crossover failed: no data", 0)
         }
         return R.success(data, crossoverCost)
-      } else {
-        lgg.error("formalizeWorkflow returned no valid workflow", error)
-        console.log("[Crossover DEBUG] formalizeWorkflow returned no valid workflow", error)
-        failureTracker.trackCrossoverFailure() // Track workflow formalization failure
-        return R.error("formalizeWorkflow returned no valid workflow" + (error ? `: ${error}` : ""), 0)
       }
+      lgg.error("formalizeWorkflow returned no valid workflow", error)
+      console.log("[Crossover DEBUG] formalizeWorkflow returned no valid workflow", error)
+      failureTracker.trackCrossoverFailure() // Track workflow formalization failure
+      return R.error(`formalizeWorkflow returned no valid workflow${error ? `: ${error}` : ""}`, 0)
     } catch (error) {
       lgg.error("llm crossover failed for parents", parentWorkflowVersionIds, error)
       console.log("[Crossover DEBUG] exception:", error)

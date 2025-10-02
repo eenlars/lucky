@@ -33,7 +33,7 @@ export const setupVitest = () => {
 export const createTimeoutPromise = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 // helper to expect async functions to complete within timeout
-export const expectWithinTimeout = async (asyncFn: () => Promise<any>, timeoutMs: number = 5000) => {
+export const expectWithinTimeout = async (asyncFn: () => Promise<any>, timeoutMs = 5000) => {
   const startTime = Date.now()
   const result = await asyncFn()
   const endTime = Date.now()

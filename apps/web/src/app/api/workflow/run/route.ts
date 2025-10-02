@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import type { EvaluationText } from "@lucky/core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication

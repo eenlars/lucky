@@ -1,12 +1,12 @@
 // persist.ts
 // Drop this anywhere; call persist(finalConfig, analysisResult?)
 
+import path from "node:path"
+import { PATHS } from "@core/core-config/compat"
 import { mkdirIfMissing, writeJsonAtomic } from "@core/utils/common/files"
+import type { Json } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Json } from "@core/utils/json"
-import { PATHS } from "@core/core-config/compat"
-import path from "path"
 
 /**
  * Persist finalConfig and (optionally) analysisResult.
@@ -16,8 +16,8 @@ import path from "path"
 //todo-leak :: Persistence function accessed by both evaluation and improvement without access controls
 export async function persistWorkflow(
   finalConfig: Json | WorkflowConfig,
-  fileName: string = "setupfile.json",
-  skipBackup: boolean = false,
+  fileName = "setupfile.json",
+  skipBackup = false,
 ): Promise<void> {
   // compute directories at runtime to respect test overrides
   const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))

@@ -1,20 +1,20 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import {
-  isErrorProcessed,
-  isTextProcessed,
-  isToolProcessed,
   type ProcessedResponse,
   type TextProcessed,
   type ToolProcessed,
+  isErrorProcessed,
+  isTextProcessed,
+  isToolProcessed,
 } from "@core/messages/api/vercel/processResponse.types"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
-import { isNir } from "@lucky/shared"
 import { llmify, truncater } from "@core/utils/common/llmify"
-import { lgg } from "@core/utils/logging/Logger"
 import { JSONN } from "@core/utils/json"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { lgg } from "@core/utils/logging/Logger"
+import { isNir } from "@lucky/shared"
 import chalk from "chalk"
 import z from "zod"
 
@@ -111,7 +111,7 @@ const createFallbackSummary = (data: unknown, size: number): SummaryResult => {
 
 export const createSummary = async (response: ProcessedResponse): Promise<SummaryResult> => {
   if (isNir(response)) {
-    if (verbose) lgg.error(`[createSummary] response is nir`)
+    if (verbose) lgg.error("[createSummary] response is nir")
     return { summary: "no response received", usdCost: 0 }
   }
 
@@ -129,7 +129,7 @@ export const createSummary = async (response: ProcessedResponse): Promise<Summar
   if (isToolProcessed(response)) return createToolSummary(response)
   if (isTextProcessed(response)) return createTextSummary(response)
 
-  lgg.log(chalk.red(`[createSummary] unknown response type`))
+  lgg.log(chalk.red("[createSummary] unknown response type"))
   return { summary: "unknown response type", usdCost: 0 }
 }
 
@@ -207,7 +207,10 @@ export const generateSummaryFromUnknownData = async (data: unknown, outputLength
     return aiResult || createFallbackSummary(data, size)
   } catch (error) {
     lgg.warn("Error generating summary:", error)
-    return { summary: `data: ${String(data).substring(0, 100)}...`, usdCost: 0 }
+    return {
+      summary: `data: ${String(data).substring(0, 100)}...`,
+      usdCost: 0,
+    }
   }
 }
 

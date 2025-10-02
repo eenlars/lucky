@@ -1,9 +1,9 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { R, type RS } from "@core/utils/types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 import z from "zod"
 
 export interface StructureExplorationResult {
@@ -16,7 +16,7 @@ export async function exploreStructure(
   workflow: WorkflowConfig,
   feedback: string,
   fitness: FitnessOfWorkflow,
-  goal: string,
+  _goal: string,
 ): Promise<RS<StructureExplorationResult>> {
   const randomWorkflowStructure = SharedWorkflowPrompts.randomWorkflowStructure()
 

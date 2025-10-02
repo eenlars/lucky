@@ -110,7 +110,7 @@ export async function analyzeWorkflowBottlenecks(
         .nodes.map(node => node.memory)
         .reduce(
           (acc, curr) => {
-            if (curr && curr.nodeId && acc) {
+            if (curr?.nodeId && acc) {
               acc[curr.nodeId] = curr.memory || ""
             }
             return acc

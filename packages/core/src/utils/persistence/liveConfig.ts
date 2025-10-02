@@ -1,3 +1,4 @@
+import { PATHS, getDefaultModels } from "@core/core-config/compat"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { genShortId } from "@core/utils/common/utils"
 import { envi } from "@core/utils/env.mjs"
@@ -5,7 +6,6 @@ import { lgg } from "@core/utils/logging/Logger"
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { workflowConfigHandler } from "@core/workflow/setup/WorkflowLoader"
-import { getDefaultModels, PATHS } from "@core/core-config/compat"
 
 /**
  * Decide whether to use database-backed storage for live workflow config.
@@ -117,8 +117,8 @@ export async function saveLiveWorkflowConfig(
   const workflowId = options?.workflowId || `wf_${genShortId()}`
   const commitMessage = options?.commitMessage || "Updated via API"
   const parentId = options?.parentVersionId
-  const iterationBudget = options?.iterationBudget ?? 50
-  const timeBudgetSeconds = options?.timeBudgetSeconds ?? 3600
+  const _iterationBudget = options?.iterationBudget ?? 50
+  const _timeBudgetSeconds = options?.timeBudgetSeconds ?? 3600
 
   await ensureWorkflowExists(commitMessage, workflowId)
 

@@ -2159,10 +2159,7 @@
               "toolName": "combine_results",
               "timestamp": 1754665512780,
               "inputData": {
-                "results": [
-                  ["item_object_1", "item_object_2", "item_object_3"],
-                  ["item_object_1", "item_object_2"]
-                ]
+                "results": [["item_object_1", "item_object_2", "item_object_3"], ["item_object_1", "item_object_2"]]
               },
               "outputData": {
                 "total_count": 5,
@@ -2175,10 +2172,7 @@
               "toolName": "combine_results",
               "timestamp": 1754665512780,
               "inputData": {
-                "results": [
-                  ["item1", "item2", "item3"],
-                  ["item4", "item5"]
-                ]
+                "results": [["item1", "item2", "item3"], ["item4", "item5"]]
               },
               "outputData": {
                 "total_count": 5,

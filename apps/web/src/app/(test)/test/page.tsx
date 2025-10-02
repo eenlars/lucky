@@ -1,6 +1,5 @@
 "use client"
 
-import { calculateCost } from "@lucky/core/messages/api/vercel/pricing/calculatePricing"
 import type { TokenUsage } from "@lucky/core/utils/spending/models.types"
 import "highlight.js/styles/github.css"
 import { useEffect, useRef, useState } from "react"
@@ -104,13 +103,21 @@ export default function TestPage() {
       let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
 
       if (data.usage && data.model) {
-        const cost = calculateCost(data.model, {
-          inputTokens: data.usage.prompt_tokens || 0,
-          outputTokens: data.usage.completion_tokens || 0,
-          cachedInputTokens: data.usage.cached_tokens || 0,
+        // Calculate cost via API route
+        const costResponse = await fetch("/api/test/calculate-cost", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: data.model,
+            usage: data.usage,
+          }),
         })
 
-        const tokens: TokenUsage = {
+        const costData = await costResponse.json()
+        const cost = costData.cost || 0
+        const tokens = costData.tokens || {
           inputTokens: data.usage.prompt_tokens || 0,
           outputTokens: data.usage.completion_tokens || 0,
           cachedInputTokens: data.usage.cached_tokens || 0,
@@ -139,7 +146,7 @@ export default function TestPage() {
       }
 
       setMessages(prev => [...prev, botMessage])
-    } catch (error) {
+    } catch (_error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: "Error: Failed to send message",
@@ -166,13 +173,21 @@ export default function TestPage() {
       let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
 
       if (data.usage && data.model) {
-        const cost = calculateCost(data.model, {
-          inputTokens: data.usage.prompt_tokens || 0,
-          outputTokens: data.usage.completion_tokens || 0,
-          cachedInputTokens: data.usage.cached_tokens || 0,
+        // Calculate cost via API route
+        const costResponse = await fetch("/api/test/calculate-cost", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: data.model,
+            usage: data.usage,
+          }),
         })
 
-        const tokens: TokenUsage = {
+        const costData = await costResponse.json()
+        const cost = costData.cost || 0
+        const tokens = costData.tokens || {
           inputTokens: data.usage.prompt_tokens || 0,
           outputTokens: data.usage.completion_tokens || 0,
           cachedInputTokens: data.usage.cached_tokens || 0,
@@ -201,7 +216,7 @@ export default function TestPage() {
       }
 
       setMessages(prev => [...prev, testMessage])
-    } catch (error) {
+    } catch (_error) {
       const errorMessage: Message = {
         id: Date.now().toString(),
         content: "Error: Failed to test connection",
@@ -256,9 +271,7 @@ export default function TestPage() {
             <div className="flex items-center justify-between sm:justify-end space-x-3">
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <div
-                    className={`w-2 h-2 rounded-full ${loading ? "bg-amber-400 animate-pulse" : "bg-green-400"}`}
-                  ></div>
+                  <div className={`w-2 h-2 rounded-full ${loading ? "bg-amber-400 animate-pulse" : "bg-green-400"}`} />
                   <span className="hidden sm:inline">{loading ? "Processing..." : "Ready"}</span>
                   <span className="sm:hidden">{loading ? "..." : "Ready"}</span>
                 </div>
@@ -383,7 +396,7 @@ export default function TestPage() {
               >
                 {loading ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Sending...</span>
                   </>
                 ) : (
@@ -585,15 +598,15 @@ export default function TestPage() {
                       <div className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-200">
                         <div className="flex items-center space-x-3">
                           <div className="flex space-x-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
                             <div
                               className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
                               style={{ animationDelay: "0.1s" }}
-                            ></div>
+                            />
                             <div
                               className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
                               style={{ animationDelay: "0.2s" }}
-                            ></div>
+                            />
                           </div>
                           <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
                         </div>

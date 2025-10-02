@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-imports */
 "use server"
 
-import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
+import { writeFileSync } from "node:fs"
+import { join } from "node:path"
 import { createEvolutionVisualizationData } from "../lib/evolution-utils"
-import { writeFileSync } from "fs"
-import { join } from "path"
+import { traceWorkflowEvolution } from "./workflow-evolution-tracer"
 
 async function testEvolutionTracer() {
   console.log("Testing evolution tracer with b463376e...")
@@ -27,7 +27,7 @@ async function testEvolutionTracer() {
   console.log("\nEvolution Run:", {
     runId: graph.evolutionRun.runId,
     status: graph.evolutionRun.status,
-    goal: graph.evolutionRun.goalText.substring(0, 100) + "...",
+    goal: `${graph.evolutionRun.goalText.substring(0, 100)}...`,
   })
 
   console.log("\nStatistics:", graph.stats)

@@ -1,7 +1,7 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import type { FitnessFunctionInput, FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@core/utils/types"
-import { getDefaultModels } from "@core/core-config/compat"
 import { calculateAverageFitness } from "./average"
 import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitness"
 
@@ -15,8 +15,8 @@ import { privateCalculateFitness as baseCalculateFitness } from "./calculateFitn
  */
 export async function calculateFitness(
   input: FitnessFunctionInput,
-  numRounds: number = 1,
-  numModels: number = 2,
+  numRounds = 1,
+  numModels = 2,
 ): Promise<RS<FitnessOfWorkflow>> {
   const models = [getDefaultModels().fitness, getDefaultModels().nano, getDefaultModels().reasoning]
     // de-duplicate in case multiple keys map to same underlying model id

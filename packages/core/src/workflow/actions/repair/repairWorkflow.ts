@@ -1,10 +1,10 @@
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import type { RS } from "@core/utils/types"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { WorkflowRepairPrompts } from "@core/workflow/actions/repair/repairWorkflow.p"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 
 /**
  * when a workflow contains errors,

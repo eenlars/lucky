@@ -1,6 +1,6 @@
+import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { cleanupStaleRecords } from "@lucky/core/utils/cleanup/cleanupStaleRecords"
 import { NextResponse } from "next/server"
-import { ensureCoreInit } from "@/lib/ensure-core-init"
 
 export async function GET() {
   // Ensure core is initialized

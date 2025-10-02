@@ -1,3 +1,6 @@
+echo "[husky] running lint-staged..."
+bunx lint-staged || exit 1
+
 echo "[husky] checking TypeScript types..."
 bun run tsc || exit 1
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
+import { getDefaultModels } from "@core/core-config/compat"
 import { hashWorkflow, hashWorkflowNode } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@core/core-config/compat"
 
 function makeNode(overrides: Partial<WorkflowNodeConfig> = {}): WorkflowNodeConfig {
   const base: WorkflowNodeConfig = {

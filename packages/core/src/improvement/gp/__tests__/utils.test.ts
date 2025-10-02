@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest"
 describe("GP Utilities", () => {
   describe("Math and Statistics", () => {
     it("should calculate euclidean distance", () => {
-      const point1 = [1, 2, 3]
-      const point2 = [4, 5, 6]
+      const _point1 = [1, 2, 3]
+      const _point2 = [4, 5, 6]
 
       // euclidean distance formula: sqrt((x2-x1)² + (y2-y1)² + (z2-z1)²)
-      const expectedDistance = Math.sqrt(Math.pow(4 - 1, 2) + Math.pow(5 - 2, 2) + Math.pow(6 - 3, 2))
+      const expectedDistance = Math.sqrt((4 - 1) ** 2 + (5 - 2) ** 2 + (6 - 3) ** 2)
 
       expect(expectedDistance).toBeCloseTo(5.196, 3)
     })
@@ -16,16 +16,16 @@ describe("GP Utilities", () => {
     it("should calculate standard deviation", () => {
       const values = [1, 2, 3, 4, 5]
       const mean = values.reduce((sum, val) => sum + val, 0) / values.length
-      const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length
+      const variance = values.reduce((sum, val) => sum + (val - mean) ** 2, 0) / values.length
       const stdDev = Math.sqrt(variance)
 
       expect(mean).toBe(3)
-      expect(stdDev).toBeCloseTo(1.414, 3)
+      expect(stdDev).toBeCloseTo(Math.SQRT2, 3)
     })
 
     it("should handle edge cases in distance calculation", () => {
-      const samePoint = [1, 2, 3]
-      const distance = Math.sqrt(Math.pow(1 - 1, 2) + Math.pow(2 - 2, 2) + Math.pow(3 - 3, 2))
+      const _samePoint = [1, 2, 3]
+      const distance = Math.sqrt((1 - 1) ** 2 + (2 - 2) ** 2 + (3 - 3) ** 2)
 
       expect(distance).toBe(0)
     })
@@ -76,7 +76,7 @@ describe("GP Utilities", () => {
   describe("Evolution Strategy Logic", () => {
     it("should implement mu+lambda selection", () => {
       const mu = 3 // parents to keep
-      const lambda = 2 // offspring produced
+      const _lambda = 2 // offspring produced
 
       const parents = [
         { fitness: 0.8, id: "p1" },
@@ -272,8 +272,14 @@ describe("GP Utilities", () => {
       }
 
       const filtered = Object.entries(data)
-        .filter(([key, value]) => value != null)
-        .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+        .filter(([_key, value]) => value != null)
+        .reduce(
+          (obj, [key, value]) => {
+            obj[key] = value
+            return obj
+          },
+          {} as Record<string, any>,
+        )
 
       expect(filtered).toEqual({ valid: "test" })
       expect(Object.keys(filtered)).toHaveLength(1)

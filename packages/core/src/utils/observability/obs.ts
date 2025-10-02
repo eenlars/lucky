@@ -1,5 +1,5 @@
 // obs.ts
-import { AsyncLocalStorage } from "async_hooks"
+import { AsyncLocalStorage } from "node:async_hooks"
 
 type Attr = string | number | boolean | undefined
 export type Attrs = Record<string, Attr>

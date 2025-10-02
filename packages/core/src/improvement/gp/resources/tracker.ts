@@ -1,5 +1,5 @@
+import { join } from "node:path"
 import { PATHS } from "@core/core-config/compat"
-import { join } from "path"
 
 interface FailureStats {
   mutationFailures: number
@@ -117,7 +117,7 @@ class FailureTracker {
 
   private saveToFile() {
     try {
-      const data = {
+      const _data = {
         ...this.stats,
         timestamp: new Date().toISOString(),
         failureRates: this.getFailureRates(),

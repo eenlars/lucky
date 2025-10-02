@@ -1,12 +1,12 @@
+import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
-import { JSONN } from "@core/utils/json"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
 import { z } from "zod"
 
 export type PrepareProblemMethod = "workflow" | "ai" | "none"
@@ -15,12 +15,12 @@ const ProblemAnalysisSchema = z.object({
   problemAnalysis: z
     .string()
     .describe(
-      `Analysis of workflow input including boundaries, edge cases, difficulty level, assumptions, reasoning, and expected output.`,
+      "Analysis of workflow input including boundaries, edge cases, difficulty level, assumptions, reasoning, and expected output.",
     ),
   instructionsToNodes: z
     .string()
     .describe(
-      `to keep it more simple and concise, you need to think about the main goal of the workflow and the instructions to the nodes. make it concise and to the point. it needs to be clear.`,
+      "to keep it more simple and concise, you need to think about the main goal of the workflow and the instructions to the nodes. make it concise and to the point. it needs to be clear.",
     ),
 })
 
@@ -77,7 +77,7 @@ export const prepareProblem = async (
 
         lgg.info("[prepareProblem] Workflow invocation successful", {
           cost: workflowResult.usdCost,
-          outputMessage: workflowResult.outputMessage?.slice(0, 100) + "...",
+          outputMessage: `${workflowResult.outputMessage?.slice(0, 100)}...`,
         })
 
         return {
@@ -85,12 +85,10 @@ export const prepareProblem = async (
           workflowIO: basicWorkflowIO, // Return basicWorkflowIO as requested
           problemAnalysis: workflowResult.outputMessage || "No analysis provided", // Return new problem analysis
         }
-      } else {
-        lgg.warn("[prepareProblem] Workflow invocation failed, falling back to AI method", {
-          error: result.error,
-        })
-        // Fall through to AI method
       }
+      lgg.warn("[prepareProblem] Workflow invocation failed, falling back to AI method", {
+        error: result.error,
+      })
     } catch (error) {
       lgg.error("[prepareProblem] Workflow invocation error, falling back to AI method", {
         error: error instanceof Error ? error.message : String(error),

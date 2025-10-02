@@ -1,8 +1,8 @@
 import { useNodeId, useReactFlow } from "@xyflow/react"
 import { EllipsisVertical, Trash } from "lucide-react"
-import { forwardRef, HTMLAttributes, ReactNode, useCallback } from "react"
+import { type HTMLAttributes, type ReactNode, forwardRef, useCallback } from "react"
 
-import { Button, ButtonProps } from "@/react-flow-visualization/components/ui/button"
+import { Button, type ButtonProps } from "@/react-flow-visualization/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,

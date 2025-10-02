@@ -2,9 +2,9 @@
  * runFocusedSequentialExperiment.ts - Focused experiment for model comparison
  * Tests 3 models × 3 chains × 1 prompt each = 9 scenarios total
  */
-import { mkdirSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
 import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
@@ -133,7 +133,7 @@ async function runFocusedExperiment() {
   }
 
   // analyze results
-  console.log("\n" + "=".repeat(45))
+  console.log(`\n${"=".repeat(45)}`)
   console.log("EXPERIMENT COMPLETE - RESULTS ANALYSIS")
   console.log("=".repeat(45))
 
@@ -230,7 +230,7 @@ async function runFocusedExperiment() {
     ),
   )
 
-  console.log(`\nResults saved to:`)
+  console.log("\nResults saved to:")
   console.log(`Detailed: ${outputFiles.results}`)
   console.log(`Summary: ${outputFiles.summary}`)
 

@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
-import { EvolutionSelector } from "./EvolutionSelector"
 import { EvolutionGraph } from "./EvolutionGraph"
+import { EvolutionSelector } from "./EvolutionSelector"
 
 export function DynamicEvolutionVisualization() {
   const [selectedRunId, setSelectedRunId] = useState<string>("evo_run_b1c971") // Default to the one we know

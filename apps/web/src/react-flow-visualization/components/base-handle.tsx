@@ -1,4 +1,4 @@
-import { Handle, HandleProps } from "@xyflow/react"
+import { Handle, type HandleProps } from "@xyflow/react"
 import { forwardRef } from "react"
 
 import { cn } from "@/react-flow-visualization/lib/utils"

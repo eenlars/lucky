@@ -3,8 +3,8 @@
 import { useCallback, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-import { AppEdge } from "@/react-flow-visualization/components/edges"
-import { AppNode } from "@/react-flow-visualization/components/nodes"
+import type { AppEdge } from "@/react-flow-visualization/components/edges"
+import type { AppNode } from "@/react-flow-visualization/components/nodes"
 import { useAppStore } from "@/react-flow-visualization/store"
 /**
  * This is a demo workflow runner that runs a simplified version of a workflow.

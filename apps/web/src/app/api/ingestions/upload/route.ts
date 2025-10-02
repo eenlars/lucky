@@ -1,8 +1,8 @@
+import { requireAuth } from "@/lib/api-auth"
+import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
 import { supabase } from "@/lib/supabase"
 import { genShortId } from "@lucky/core/utils/common/utils"
-import { NextRequest, NextResponse } from "next/server"
-import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
-import { requireAuth } from "@/lib/api-auth"
+import { type NextRequest, NextResponse } from "next/server"
 
 type IngestionType = "csv" | "text"
 
@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
     const bucket = "input" // user provided bucket name
     const folder = `ingestions/${datasetId}`
 
-    let uploadPath: string = ""
-    let fileName: string = ""
+    let uploadPath = ""
+    let fileName = ""
 
     if (type === "csv" && file) {
       // Upload CSV file
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
             )
 
             // If evaluation column is specified, use that
-            if (evaluation && evaluation.startsWith("column:")) {
+            if (evaluation?.startsWith("column:")) {
               const evalColName = evaluation.slice(7)
               outputCol = headers.findIndex(h => h === evalColName)
             }

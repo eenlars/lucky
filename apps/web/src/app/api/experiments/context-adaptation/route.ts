@@ -1,9 +1,9 @@
+import { promises as fs } from "node:fs"
+import path from "node:path"
+import { requireAuth } from "@/lib/api-auth"
 import { ADAPTIVE_RESULTS_URL, getLatestFileByPrefixes, loadJsonProdOrLocal } from "@/lib/experiments/file-utils"
 import type { Condition } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/types"
-import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
-import { requireAuth } from "@/lib/api-auth"
-import path from "path"
 
 type BaselineResult = {
   model: string
@@ -168,9 +168,8 @@ function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
   > = {}
 
   for (const r of runs) {
-    const modelBucket =
-      byModel[r.model] ??
-      (byModel[r.model] = {
+    if (!byModel[r.model]) {
+      byModel[r.model] = {
         vague: {
           msTotal: 0,
           costTotal: 0,
@@ -185,18 +184,20 @@ function aggregateTimeAndCostFromRuns(runs: OurAlgorithmRun[]): MetricsRow[] {
           itemsTotal: 0,
           count: 0,
         },
-      })
+      }
+    }
+    const modelBucket = byModel[r.model]
     const target = r.condition === "vague" ? modelBucket.vague : modelBucket.clear
-    if (typeof r.durationMs === "number" && isFinite(r.durationMs)) {
+    if (typeof r.durationMs === "number" && Number.isFinite(r.durationMs)) {
       target.msTotal += r.durationMs
     }
-    if (typeof r.cost === "number" && isFinite(r.cost)) {
+    if (typeof r.cost === "number" && Number.isFinite(r.cost)) {
       target.costTotal += r.cost
     }
-    if (typeof r.totalFetchCalls === "number" && isFinite(r.totalFetchCalls)) {
+    if (typeof r.totalFetchCalls === "number" && Number.isFinite(r.totalFetchCalls)) {
       target.callsTotal += r.totalFetchCalls
     }
-    if (typeof r.successItems === "number" && isFinite(r.successItems)) {
+    if (typeof r.successItems === "number" && Number.isFinite(r.successItems)) {
       target.itemsTotal += r.successItems
     }
     target.count += 1

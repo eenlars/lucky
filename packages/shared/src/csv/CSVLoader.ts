@@ -1,7 +1,7 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 import Papa from "papaparse"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
 
 export interface CSVLoaderOptions {
   hasHeaders?: boolean
@@ -52,8 +52,8 @@ export class CSVLoader {
 
         if (this.options.onlyIncludeInputColumns && Array.isArray(data[0])) {
           const columnIndices = this.options.onlyIncludeInputColumns
-            .map(col => parseInt(col))
-            .filter(index => !isNaN(index))
+            .map(col => Number.parseInt(col))
+            .filter(index => !Number.isNaN(index))
 
           if (columnIndices.length > 0) {
             data = data.map(row => columnIndices.map(index => (row as any[])[index])) as T[]
@@ -126,9 +126,8 @@ export class CSVLoader {
         throw new Error(`failed to fetch csv from ${this.filePath}: ${response.status} ${response.statusText}`)
       }
       return await response.text()
-    } else {
-      return readFileSync(this.filePath, "utf-8")
     }
+    return readFileSync(this.filePath, "utf-8")
   }
 
   static fromRelativePath(relativePath: string, options?: CSVLoaderOptions): CSVLoader {

@@ -1,15 +1,15 @@
-import { EdgeLabelRenderer, EdgeProps } from "@xyflow/react"
-import { CSSProperties, useCallback, useEffect } from "react"
+import { EdgeLabelRenderer, type EdgeProps } from "@xyflow/react"
+import { type CSSProperties, useCallback, useEffect } from "react"
 
 import { AppDropdownMenu } from "@/react-flow-visualization/components/app-dropdown-menu"
-import { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
+import type { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import { useDropdown } from "@/react-flow-visualization/hooks/use-dropdown"
 import { useAppStore } from "@/react-flow-visualization/store"
-import { AppStore } from "@/react-flow-visualization/store/app-store"
+import type { AppStore } from "@/react-flow-visualization/store/app-store"
 import clsx from "clsx"
 import { useShallow } from "zustand/react/shallow"
-import { AppEdge } from ".."
+import type { AppEdge } from ".."
 
 const selector = (id: string) => {
   return (state: AppStore) => ({

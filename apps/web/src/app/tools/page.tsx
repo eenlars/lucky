@@ -1,21 +1,21 @@
 "use client"
 
-import { useState } from "react"
-import {
-  Play,
-  Copy,
-  Check,
-  Terminal,
-  Braces,
-  ArrowRight,
-  Mail,
-  Github,
-  Database,
-  Search,
-  HardDrive,
-} from "lucide-react"
-import { Button } from "@/ui/button"
 import { cn } from "@/lib/utils"
+import { Button } from "@/ui/button"
+import {
+  ArrowRight,
+  Braces,
+  Check,
+  Copy,
+  Database,
+  Github,
+  HardDrive,
+  Mail,
+  Play,
+  Search,
+  Terminal,
+} from "lucide-react"
+import { useState } from "react"
 
 interface MCPTool {
   id: string
@@ -56,7 +56,10 @@ const tools: MCPTool[] = [
     schema: {
       type: "object",
       properties: {
-        action: { type: "string", enum: ["list_repos", "create_issue", "get_pr"] },
+        action: {
+          type: "string",
+          enum: ["list_repos", "create_issue", "get_pr"],
+        },
         owner: { type: "string" },
         repo: { type: "string" },
         title: { type: "string" },

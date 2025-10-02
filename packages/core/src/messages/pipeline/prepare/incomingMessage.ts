@@ -1,10 +1,10 @@
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { explainSubsetOfTools } from "@core/prompts/explainTools"
-import { isNir } from "@lucky/shared"
 import { llmify } from "@core/utils/common/llmify"
-import { getMemoryExplanation, type NodeMemory } from "@core/utils/memory/memorySchema"
+import { type NodeMemory, getMemoryExplanation } from "@core/utils/memory/memorySchema"
+import { isNir } from "@lucky/shared"
 import type { ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../input.types"
 
@@ -67,7 +67,7 @@ export async function prepareIncomingMessage(
     ],
   })
 
-  if (prepareThinking && prepareThinking.text) {
+  if (prepareThinking?.text) {
     const reasoning = llmify(prepareThinking.text)
     agentSteps.push({
       type: "prepare",

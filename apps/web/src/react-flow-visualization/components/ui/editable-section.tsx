@@ -3,7 +3,7 @@
 import { Button } from "@/react-flow-visualization/components/ui/button"
 import { Separator } from "@/react-flow-visualization/components/ui/separator"
 import { Edit2, Plus, Save, X } from "lucide-react"
-import React from "react"
+import type React from "react"
 
 interface EditableSectionProps {
   title: string

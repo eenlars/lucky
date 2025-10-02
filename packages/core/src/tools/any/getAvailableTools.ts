@@ -1,3 +1,4 @@
+import type { Workflow } from "@core/workflow/Workflow"
 import type { CodeToolName, MCPToolName } from "@lucky/tools"
 import {
   ACTIVE_CODE_TOOL_NAMES,
@@ -5,7 +6,6 @@ import {
   ACTIVE_MCP_TOOL_NAMES,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
 } from "@lucky/tools"
-import type { Workflow } from "@core/workflow/Workflow"
 
 /**
  * Get all code tools that are currently used in the workflow

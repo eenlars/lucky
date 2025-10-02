@@ -20,7 +20,7 @@ export default function WorkflowIOTable({ ios, onRun }: Props) {
           <th className="text-left py-2 px-3">Expected Output</th>
           <th className="text-left py-2 px-3">Output</th>
           <th className="text-left py-2 px-3 w-20">Score</th>
-          <th className="py-2 px-3 w-28"></th>
+          <th className="py-2 px-3 w-28" />
         </tr>
       </thead>
       <tbody>
