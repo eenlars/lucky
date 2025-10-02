@@ -37,6 +37,7 @@ export type AppState = {
   workflowError?: string
   selectedNodeId?: string
   nodeDetailsOpen: boolean
+  detailPanelExpanded: boolean
   // JSON editor state
   workflowJSON: string
   currentWorkflowId?: string
@@ -104,6 +105,7 @@ export type AppActions = {
 
   openNodeDetails: (nodeId: string) => void
   closeNodeDetails: () => void
+  toggleDetailPanelExpanded: () => void
   updateNode: (nodeId: string, updates: Partial<WorkflowNodeData>) => void
 }
 
@@ -121,6 +123,7 @@ export const defaultState: AppState = {
   workflowError: undefined,
   selectedNodeId: undefined,
   nodeDetailsOpen: false,
+  detailPanelExpanded: false,
   workflowJSON: JSON.stringify({ nodes: [], entryNodeId: "" }, null, 2),
   currentWorkflowId: undefined,
 }
@@ -489,6 +492,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
         closeNodeDetails: () => {
           set({ selectedNodeId: undefined, nodeDetailsOpen: false })
+        },
+
+        toggleDetailPanelExpanded: () => {
+          set(state => ({ detailPanelExpanded: !state.detailPanelExpanded }))
         },
 
         updateNode: (nodeId, updates) => {

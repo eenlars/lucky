@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
-import { NodeDetailsDialog } from "@/react-flow-visualization/components/node-details-dialog-human"
+import { AgentDetailPanel } from "@/app/components/agent-detail"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
 // runner context removed
@@ -113,8 +113,6 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     )
   }
 
-  const selectedNode = selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null
-
   return (
     <>
       <ReactFlow
@@ -140,18 +138,8 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
         <WorkflowControls />
       </ReactFlow>
 
-      {selectedNode && (
-        <NodeDetailsDialog
-          open={nodeDetailsOpen}
-          onOpenChange={open => {
-            if (!open) closeNodeDetails()
-          }}
-          nodeData={selectedNode.data}
-          onSave={updateNode}
-        />
-      )}
-
-      {/* Runner removed */}
+      {/* Steve Jobs-inspired Inspector Panel */}
+      <AgentDetailPanel />
     </>
   )
 }
