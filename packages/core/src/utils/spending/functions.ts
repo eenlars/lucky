@@ -1,5 +1,4 @@
 import { MODEL_CONFIG } from "@core/core-config/compat"
-import { lgg } from "@core/utils/logging/Logger"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
 import { type LuckyProvider, getCurrentProvider } from "@core/utils/spending/provider"
@@ -39,7 +38,7 @@ export function getModelV2(model: string, customProvider?: LuckyProvider): Model
 
   if (!modelConfig) {
     const available = getActiveModelNames().join(", ")
-    lgg.warn(`getModelV2: Model ${model} not found. Available models: ${available}`)
+    console.warn(`getModelV2: Model ${model} not found. Available models: ${available}`)
     throw new Error(`getModelV2: Model ${model} not found. Available models: ${available}`)
   }
 
