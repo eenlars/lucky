@@ -3,7 +3,7 @@ import type { NextConfig } from "next"
 const nextConfig: NextConfig = {
   transpilePackages: ["@lucky/shared", "@lucky/tools"],
   outputFileTracingExcludes: {
-    "*": [".next/**", "node_modules/@next/**"],
+    "/api/*": [".next/**"],
   },
   serverExternalPackages: [
     "bullmq",
