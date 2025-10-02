@@ -21,10 +21,11 @@ let globalConfig: CoreConfig | null = null
  * @param override - Partial configuration to override defaults
  */
 export function initCoreConfig(override?: Partial<CoreConfig>): void {
+  const defaults = createDefaultCoreConfig()
   if (override) {
-    globalConfig = mergeConfig(createDefaultCoreConfig(), override)
+    globalConfig = mergeConfig(defaults, override)
   } else {
-    globalConfig = createDefaultCoreConfig()
+    globalConfig = defaults
   }
 }
 

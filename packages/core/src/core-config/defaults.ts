@@ -1,6 +1,7 @@
 /**
  * Default configuration for standalone core module.
  * All paths are relative to process.cwd() by default.
+ * SERVER-ONLY - do not import from client code.
  */
 
 import path from "node:path"
@@ -18,35 +19,12 @@ export function createDefaultCoreConfig(): CoreConfig {
 
   /**
    * Find examples directory by walking up from cwd.
-   * Browser-safe: returns fallback path without filesystem access.
    */
   function findExamplesDir(): string {
     const fallbackPath = path.resolve(cwd, "../examples")
 
-    // Browser environment check
-    if (typeof window !== "undefined") {
-      return fallbackPath
-    }
-
-    // Node.js environment - attempt filesystem lookup
-    try {
-      const fs = require("node:fs")
-      let currentDir = cwd
-
-      for (let i = 0; i < 5; i++) {
-        const candidate = path.join(currentDir, "examples")
-        if (fs.existsSync(candidate)) {
-          return candidate
-        }
-
-        const parentDir = path.dirname(currentDir)
-        if (parentDir === currentDir) break
-        currentDir = parentDir
-      }
-    } catch {
-      // Filesystem not available
-    }
-
+    // Always use fallback in this simplified version
+    // Actual filesystem lookup not needed for default config
     return fallbackPath
   }
 

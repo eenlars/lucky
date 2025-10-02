@@ -18,7 +18,6 @@
     "paths": {
       "@core/*": ["./src/*"],
       "@core/types/*": ["./src/types/*"],
-      "@core/logger": ["./src/utils/logging/Logger.ts"],
       "@core/benchmarks/*": ["./src/workflow/ingestion/benchmarks/*"],
       "@core/workflow/*": ["./src/workflow/*"],
       "@core/node/*": ["./src/node/*"],

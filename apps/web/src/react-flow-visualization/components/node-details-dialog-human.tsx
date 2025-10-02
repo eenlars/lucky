@@ -1,6 +1,6 @@
 "use client"
 
-import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
+import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
 import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
 // Button no longer used for model chooser
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
@@ -189,16 +189,24 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   //   }))
   // }
 
-  const selectedModelPricing: ModelPricingV2 | null = useMemo(() => {
-    if (!data?.modelName) return null
-    try {
-      return getModelV2(data.modelName)
-    } catch {
-      return null
-    }
-  }, [data?.modelName])
+  const [selectedModelPricing, setSelectedModelPricing] = useState<ModelPricingV2 | null>(null)
+  const [activeModels, setActiveModels] = useState<string[]>([])
 
-  const activeModels: string[] = useMemo(() => getActiveModelNames().map(m => String(m)), [])
+  // Fetch active models on mount
+  useEffect(() => {
+    fetchActiveModelNames().then(models => setActiveModels(models.map(m => String(m))))
+  }, [])
+
+  // Fetch model pricing when model changes
+  useEffect(() => {
+    if (!data?.modelName) {
+      setSelectedModelPricing(null)
+      return
+    }
+    fetchModelV2(data.modelName)
+      .then(pricing => setSelectedModelPricing(pricing))
+      .catch(() => setSelectedModelPricing(null))
+  }, [data?.modelName])
 
   // show raw model id (e.g., openai/gpt-4.1-mini)
   const formatModelDisplayName = (modelName?: string) => modelName || ""

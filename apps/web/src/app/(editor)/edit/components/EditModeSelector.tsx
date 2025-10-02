@@ -23,7 +23,33 @@ import WorkflowIOTable from "@/components/WorkflowIOTable"
 import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { loadFromDSLClient, loadFromDSLClientDisplay } from "@lucky/core/workflow/setup/WorkflowLoader.client"
+
+// Client-side wrapper for server-side DSL validation
+async function loadFromDSLClient(dslConfig: any) {
+  const response = await fetch("/api/workflow/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflow: dslConfig, mode: "dsl" }),
+  })
+  const result = await response.json()
+  if (!result.isValid) {
+    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  }
+  return result.config
+}
+
+async function loadFromDSLClientDisplay(dslConfig: any) {
+  const response = await fetch("/api/workflow/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflow: dslConfig, mode: "dsl-display" }),
+  })
+  const result = await response.json()
+  if (!result.isValid) {
+    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  }
+  return result.config
+}
 
 type EditMode = "graph" | "json" | "eval"
 

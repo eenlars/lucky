@@ -1,3 +1,8 @@
+/**
+ * MCP (Model Context Protocol) client setup
+ * SERVER-ONLY - do not import from client code.
+ */
+
 import fs from "node:fs"
 import path from "node:path"
 import { type ToolSet, experimental_createMCPClient } from "ai"

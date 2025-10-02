@@ -1,176 +1,33 @@
-// simple logger wrapper around console methods
-import chalk from "chalk"
+// browser-safe logger facade
+// no node:* imports here so this file can be bundled for client
+// for server-side file logging, import Logger.node.ts directly where needed
 
-class FileLogger {
-  private logFile: string | null = null
-  private logBuffer: string[] = []
-  private isNodeEnv = false
-  private fs: any = null
-  private path: any = null
-
-  async FileLogger() {
-    // check if we're in node.js environment and not in browser
-    this.isNodeEnv = typeof process !== "undefined" && !!process.versions?.node && typeof window === "undefined"
-
-    if (this.isNodeEnv) {
-      try {
-        // dynamic imports to avoid bundler issues
-        this.fs = await import("node:fs/promises")
-        this.path = await import("node:path")
-      } catch (_error) {
-        console.warn("failed to load fs modules, file logging disabled")
-        this.isNodeEnv = false
-      }
-    }
-  }
-
-  private async writeToFile(message: string): Promise<void> {
-    if (!this.logFile || !this.isNodeEnv || !this.fs) return
-    try {
-      await this.fs.appendFile(this.logFile, message)
-    } catch (error) {
-      console.error("failed to write to log file:", error)
-    }
-  }
-
-  private safeStringify(value: unknown): string {
-    try {
-      const seen = new WeakSet<object>()
-      return JSON.stringify(
-        value,
-        (_key, val) => {
-          if (val instanceof Error) {
-            return { name: val.name, message: val.message, stack: val.stack }
-          }
-          if (typeof val === "object" && val !== null) {
-            if (seen.has(val)) return "[Circular]"
-            seen.add(val)
-          }
-          return val
-        },
-        2,
-      )
-    } catch {
-      try {
-        return String(value)
-      } catch {
-        return "[Unserializable]"
-      }
-    }
-  }
-
-  private formatForFile(arg: unknown): string {
-    if (arg instanceof Error) {
-      return arg.stack ?? `${arg.name}: ${arg.message}`
-    }
-    if (typeof arg === "object") {
-      return this.safeStringify(arg)
-    }
-    return String(arg)
-  }
-
-  async log(...args: any[]): Promise<void> {
-    console.log(...args)
-
-    if (this.logFile && this.isNodeEnv) {
-      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] ${message}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async logAndSave(fileName: string, ...args: any[]): Promise<void> {
-    console.log(...args)
-
-    if (typeof window !== "undefined") {
-      return
-    }
-    const { saveInLoc } = await import("@core/utils/fs/fileSaver")
-    saveInLoc(fileName, args)
-  }
-
-  async info(...args: any[]): Promise<void> {
-    console.info(...args)
-
-    if (this.logFile && this.isNodeEnv) {
-      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] INFO: ${message}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async warn(...args: any[]): Promise<void> {
-    console.warn(chalk.yellow(...args))
-
-    if (this.logFile && this.isNodeEnv) {
-      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] WARN: ${message}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async error(...args: any[]): Promise<void> {
-    // Preserve Error objects for console so stack traces are printed
-    const consoleArgs = args.map(arg => {
-      if (arg instanceof Error) return arg
-      if (typeof arg === "string") return chalk.red(arg)
-      return arg
-    })
-    console.error(...consoleArgs)
-
-    if (this.logFile && this.isNodeEnv) {
-      const logMessage = args.map(arg => this.formatForFile(arg)).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] ERROR: ${logMessage}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async debug(...args: any[]): Promise<void> {
-    console.debug(...args)
-
-    if (this.logFile && this.isNodeEnv) {
-      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] DEBUG: ${message}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async trace(...args: any[]): Promise<void> {
-    console.trace(...args)
-
-    if (this.logFile && this.isNodeEnv) {
-      const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg))).join(" ")
-      const timestamp = new Date().toISOString()
-      const logEntry = `[${timestamp}] TRACE: ${message}\n`
-      await this.writeToFile(logEntry)
-    }
-  }
-
-  async finalizeWorkflowLog(): Promise<string | null> {
-    if (!this.logFile || !this.isNodeEnv) return null
-
-    await this.writeToFile(`=== Iterative Evolution Workflow Completed: ${new Date().toISOString()} ===\n`)
-    const logPath = this.logFile
-    this.logFile = null
-    return logPath
-  }
+export interface Logger {
+  log: (...args: any[]) => Promise<void>
+  onlyIf: (decider: boolean, ...args: any[]) => Promise<undefined | null>
+  info: (...args: any[]) => Promise<void>
+  warn: (...args: any[]) => Promise<void>
+  error: (...args: any[]) => Promise<void>
+  debug: (...args: any[]) => Promise<void>
+  trace: (...args: any[]) => Promise<void>
+  logAndSave: (fileName: string, ...args: any[]) => Promise<void>
+  finalizeWorkflowLog: () => Promise<string | null>
 }
 
-const fileLogger = new FileLogger()
-
-export const lgg = {
-  log: (...args: any[]) => fileLogger.log(...args),
-  onlyIf: (decider: boolean, ...args: any[]) => (decider ? fileLogger.log(...args) : null),
-  info: (...args: any[]) => fileLogger.info(...args),
-  warn: (...args: any[]) => fileLogger.warn(...args),
-  error: (...args: any[]) => fileLogger.error(...args),
-  debug: (...args: any[]) => fileLogger.debug(...args),
-  trace: (...args: any[]) => fileLogger.trace(...args),
-  logAndSave: (fileName: string, ...args: any[]) => fileLogger.logAndSave(fileName, ...args),
-  finalizeWorkflowLog: () => fileLogger.finalizeWorkflowLog(),
+export const lgg: Logger = {
+  log: async (...args: any[]) => console.log(...args),
+  onlyIf: async (decider: boolean, ...args: any[]) => {
+    if (decider) {
+      console.log(...args)
+      return undefined
+    }
+    return null
+  },
+  info: async (...args: any[]) => console.info(...args),
+  warn: async (...args: any[]) => console.warn(...args),
+  error: async (...args: any[]) => console.error(...args),
+  debug: async (...args: any[]) => console.debug(...args),
+  trace: async (...args: any[]) => console.trace(...args),
+  logAndSave: async (_fileName: string, ...args: any[]) => console.log(...args),
+  finalizeWorkflowLog: async () => null,
 }

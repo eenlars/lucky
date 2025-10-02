@@ -1,6 +1,5 @@
 "use client"
 
-import { calculateCost } from "@lucky/core/messages/api/vercel/pricing/calculatePricing"
 import type { TokenUsage } from "@lucky/core/utils/spending/models.types"
 import "highlight.js/styles/github.css"
 import { useEffect, useRef, useState } from "react"
@@ -104,13 +103,21 @@ export default function TestPage() {
       let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
 
       if (data.usage && data.model) {
-        const cost = calculateCost(data.model, {
-          inputTokens: data.usage.prompt_tokens || 0,
-          outputTokens: data.usage.completion_tokens || 0,
-          cachedInputTokens: data.usage.cached_tokens || 0,
+        // Calculate cost via API route
+        const costResponse = await fetch("/api/test/calculate-cost", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: data.model,
+            usage: data.usage,
+          }),
         })
 
-        const tokens: TokenUsage = {
+        const costData = await costResponse.json()
+        const cost = costData.cost || 0
+        const tokens = costData.tokens || {
           inputTokens: data.usage.prompt_tokens || 0,
           outputTokens: data.usage.completion_tokens || 0,
           cachedInputTokens: data.usage.cached_tokens || 0,
@@ -166,13 +173,21 @@ export default function TestPage() {
       let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
 
       if (data.usage && data.model) {
-        const cost = calculateCost(data.model, {
-          inputTokens: data.usage.prompt_tokens || 0,
-          outputTokens: data.usage.completion_tokens || 0,
-          cachedInputTokens: data.usage.cached_tokens || 0,
+        // Calculate cost via API route
+        const costResponse = await fetch("/api/test/calculate-cost", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: data.model,
+            usage: data.usage,
+          }),
         })
 
-        const tokens: TokenUsage = {
+        const costData = await costResponse.json()
+        const cost = costData.cost || 0
+        const tokens = costData.tokens || {
           inputTokens: data.usage.prompt_tokens || 0,
           outputTokens: data.usage.completion_tokens || 0,
           cachedInputTokens: data.usage.cached_tokens || 0,

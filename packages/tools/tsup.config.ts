@@ -32,7 +32,7 @@ export default defineConfig({
     "node:events",
     "node:stream",
     "fs",
-    "node:path",
+    "path",
     "events",
     "stream",
     "crypto",
