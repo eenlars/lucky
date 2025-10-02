@@ -23,11 +23,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@core/*": ["../../packages/core/src/*"],
-      "@examples/*": ["../../packages/examples/*"],
+      "@examples/*": ["../examples/*"],
       "@lucky/core": ["../../packages/core/src"],
       "@lucky/core/*": ["../../packages/core/src/*"],
-      "@lucky/examples": ["../../packages/examples"],
-      "@lucky/examples/*": ["../../packages/examples/*"],
+      "@lucky/examples": ["../examples"],
+      "@lucky/examples/*": ["../examples/*"],
       "@lucky/experiments": ["../../packages/experiments/src"],
       "@lucky/experiments/*": ["../../packages/experiments/src/*"],
       "@lucky/shared": ["../../packages/shared/src"],
@@ -47,7 +47,7 @@
   ],
   "exclude": [
     "node_modules",
-    "../../packages/examples/logging_folder",
+    "../examples/logging_folder",
     "../../packages/experiments/src/experiments-2/**",
     ".next/**",
     "src/lib/scraping/**",
