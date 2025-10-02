@@ -117,7 +117,7 @@ const tools: MCPTool[] = [
         action: { type: "string", enum: ["read", "write", "list"] },
         path: { type: "string" },
       },
-      required: ["action", "node:path"],
+      required: ["action", "path"],
     },
     example: {
       action: "list",
