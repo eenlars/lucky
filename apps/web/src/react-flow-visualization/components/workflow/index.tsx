@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
-import { AgentDetailPanel } from "@/app/components/agent-detail"
+import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
 // runner context removed
@@ -139,7 +139,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
       </ReactFlow>
 
       {/* Steve Jobs-inspired Inspector Panel */}
-      <AgentDetailPanel />
+      <AgentDialogInspect />
     </>
   )
 }

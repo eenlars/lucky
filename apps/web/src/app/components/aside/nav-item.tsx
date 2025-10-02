@@ -10,7 +10,14 @@ interface NavItemProps {
   className?: string
 }
 
-export function NavItem({ href, icon, isActive = false, hasSubmenu = false, children, className: _className = "" }: NavItemProps) {
+export function NavItem({
+  href,
+  icon,
+  isActive = false,
+  hasSubmenu = false,
+  children,
+  className: _className = "",
+}: NavItemProps) {
   return (
     <div className="group">
       <a className="group" href={href}>

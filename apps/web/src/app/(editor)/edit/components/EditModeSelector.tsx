@@ -360,7 +360,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                   {/* Goal Section */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Goal <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
+                      Goal{" "}
+                      <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
                     </label>
                     <input
                       type="text"
@@ -375,7 +376,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                   {/* Dataset Section */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Dataset <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
+                      Dataset{" "}
+                      <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
                     </label>
                     <div className="w-full max-w-xs">
                       <DatasetSelector
