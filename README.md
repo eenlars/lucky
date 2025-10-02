@@ -27,7 +27,7 @@ Provides real-time visualization of workflow execution graphs, evolutionary fitn
 
 - `apps/web/` — Next.js UI, pages, API routes.
 - `packages/core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
-- `packages/examples/` — Example tools, settings, and workflows.
+- `apps/examples/` — Example tools, settings, and workflows.
 - `packages/shared/` — Shared TypeScript utilities (built with tsup).
 - `tests/e2e-essential/` — Minimal smoke + gate tests with golden trace.
 - `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
