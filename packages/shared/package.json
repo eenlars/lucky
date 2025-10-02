@@ -15,9 +15,7 @@
     "clean": "rimraf dist",
     "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
     "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "tsc": "tsc --noEmit"
   },
   "exports": {
     ".": {

@@ -5,10 +5,10 @@
 import { mkdirSync, writeFileSync } from "fs"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import { experimentalModels } from "@examples/settings/models"
+import { experimentalModels } from "@lucky/examples/settings/models"
 
 import type { ToolSet } from "ai"
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
 import { locationChainOrder, locationChainTools } from "../../shared/tools/sequential-chains/locationChain"
 import { mathChainOrder, mathChainTools } from "../../shared/tools/sequential-chains/mathChain"

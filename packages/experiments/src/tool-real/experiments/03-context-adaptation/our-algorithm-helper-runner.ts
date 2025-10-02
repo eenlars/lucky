@@ -6,12 +6,12 @@
  * MultiStep3.integration.test while remaining self-contained for this experiment.
  */
 
-import { WorkflowMessage } from "@core/messages/WorkflowMessage"
-import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
-import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
-import type { ModelName } from "@core/utils/spending/models.types"
-import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { CONFIG } from "@examples/settings/constants"
+import { WorkflowMessage } from "@lucky/core/messages/WorkflowMessage"
+import { runMultiStepLoopV3Helper } from "@lucky/core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
+import type { NodeInvocationCallContext } from "@lucky/core/messages/pipeline/input.types"
+import type { ModelName } from "@lucky/core/utils/spending/models.types"
+import type { WorkflowNodeConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { CONFIG } from "@lucky/examples/settings/constants"
 import type { ToolSet } from "ai"
 
 import { adaptiveTools } from "../../shared/tools/adaptive/adaptiveTools"

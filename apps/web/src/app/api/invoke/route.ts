@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
-import { genShortId } from "@core/utils/common/utils"
+import { genShortId } from "@lucky/core/utils/common/utils"
 
 export async function POST(req: NextRequest) {
   try {

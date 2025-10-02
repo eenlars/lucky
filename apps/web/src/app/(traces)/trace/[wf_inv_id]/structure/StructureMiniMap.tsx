@@ -3,8 +3,8 @@
 import { useMemo, useState, type MouseEvent } from "react"
 
 import { Button } from "@/ui/button"
-import { toWorkflowConfig, type WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODELS } from "@examples/settings/constants.client"
+import { toWorkflowConfig, type WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { MODELS } from "@lucky/examples/settings/constants.client"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig

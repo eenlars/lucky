@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import {
   listWorkflows,
   getWorkflow,

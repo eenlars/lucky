@@ -1,4 +1,4 @@
-import { lgg } from "@core/utils/logging/Logger"
+import { lgg } from "@lucky/core/utils/logging/Logger"
 import * as cheerio from "cheerio"
 
 export interface CountriesOperationResult {

@@ -32,6 +32,8 @@
       "@core/utils/csv": ["./src/utils/csv"],
       "@core/utils/fs/*": ["./src/utils/fs/*"],
       "@examples/*": ["../examples/*"],
+      "@lucky/examples": ["../examples"],
+      "@lucky/examples/*": ["../examples/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],

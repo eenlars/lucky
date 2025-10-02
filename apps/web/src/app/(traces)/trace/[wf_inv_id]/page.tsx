@@ -8,7 +8,7 @@ import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
 import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { fetchWithRetry } from "@/utils/fetch-with-retry"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
 import PerformanceOverview from "./components/PerformanceOverview"
 

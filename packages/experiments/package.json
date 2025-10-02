@@ -2,7 +2,11 @@
   "name": "@lucky/experiments",
   "version": "0.1.0",
   "private": true,
+  "description": "Research experiments (not stable API - experimental features)",
   "type": "module",
+  "exports": {
+    "./tool-real/*": "./src/tool-real/*"
+  },
   "dependencies": {
     "@lucky/shared": "workspace:*",
     "axios": "^1.11.0",
@@ -26,8 +30,6 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "tsc": "tsc --noEmit"
   }
 }

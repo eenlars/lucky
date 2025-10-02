@@ -1,4 +1,4 @@
-import { cleanupStaleRecords } from "@core/utils/cleanup/cleanupStaleRecords"
+import { cleanupStaleRecords } from "@lucky/core/utils/cleanup/cleanupStaleRecords"
 import { NextResponse } from "next/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 

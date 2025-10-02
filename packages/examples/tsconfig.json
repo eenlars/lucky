@@ -15,8 +15,10 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@examples/*": ["./*"],
       "@core/*": ["../core/src/*"],
+      "@examples/*": ["./*"],
+      "@lucky/core": ["../core/src"],
+      "@lucky/core/*": ["../core/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],

@@ -4,8 +4,8 @@
  * This file initializes the core module with the monorepo's runtime configuration.
  * Must be called before any core functionality is used.
  */
-import { initCoreConfig } from "@core/core-config"
-import { CONFIG, MODELS, PATHS } from "@examples/settings/constants"
+import { initCoreConfig } from "@lucky/core/core-config"
+import { CONFIG, MODELS, PATHS } from "@lucky/examples/settings/constants"
 
 let initialized = false
 

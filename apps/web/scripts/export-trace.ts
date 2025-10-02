@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@lucky/core/utils/clients/supabase/client"
 import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
 

@@ -1,6 +1,6 @@
 import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
-import { loadLiveWorkflowConfig, saveLiveWorkflowConfig } from "@core/utils/persistence/liveConfig"
-import { loadFromDatabaseForDisplay } from "@core/workflow/setup/WorkflowLoader"
+import { loadLiveWorkflowConfig, saveLiveWorkflowConfig } from "@lucky/core/utils/persistence/liveConfig"
+import { loadFromDatabaseForDisplay } from "@lucky/core/workflow/setup/WorkflowLoader"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"

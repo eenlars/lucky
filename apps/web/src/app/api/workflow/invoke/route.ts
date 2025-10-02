@@ -1,5 +1,5 @@
-import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
-import type { InvocationInput } from "@core/workflow/runner/types"
+import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
+import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"

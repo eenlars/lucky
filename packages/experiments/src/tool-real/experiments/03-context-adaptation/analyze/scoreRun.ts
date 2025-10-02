@@ -1,4 +1,4 @@
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import type { ToolExecution } from "../../02-sequential-chains/types"
 import { TEST_SCENARIOS } from "../constants"
 import type { Condition, LoopMetrics, OurAlgorithmLoop, OurAlgorithmRun } from "../types"

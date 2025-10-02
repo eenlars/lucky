@@ -16,15 +16,15 @@ import {
   ZAxis,
 } from "recharts"
 
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
-import { accuracyScorePct } from "@experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
-import { MODELS, TEST_SCENARIOS } from "@experiments/tool-real/experiments/03-context-adaptation/constants"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
+import { accuracyScorePct } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/analyze/metrics"
+import { MODELS, TEST_SCENARIOS } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/constants"
 import type {
   Condition,
   LoopMetrics,
   OurAlgorithmExperimentResults,
   OurAlgorithmRun,
-} from "@experiments/tool-real/experiments/03-context-adaptation/types"
+} from "@lucky/experiments/tool-real/experiments/03-context-adaptation/types"
 
 // Condition type comes from shared experiment types
 

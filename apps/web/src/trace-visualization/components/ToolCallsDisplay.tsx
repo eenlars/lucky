@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/ui/card"
-import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
+import type { AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { isNir } from "@lucky/shared/client"
 import {
   AlertCircle,

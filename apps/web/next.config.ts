@@ -2,6 +2,9 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lucky/shared", "@lucky/tools"],
+  outputFileTracingExcludes: {
+    "/api/*": [".next/**"],
+  },
   serverExternalPackages: [
     "bullmq",
     "glob",
@@ -15,14 +18,6 @@ const nextConfig: NextConfig = {
   ],
   /* config options here */
   webpack: (config, { isServer }) => {
-    // Exclude scraping scripts from build (server-only scripts)
-    config.module = config.module || {}
-    config.module.rules = config.module.rules || []
-    config.module.rules.push({
-      test: /src\/lib\/scraping\/.*/,
-      use: "null-loader",
-    })
-
     if (!isServer) {
       // Don't resolve these Node.js modules on the client side
       config.resolve.fallback = {

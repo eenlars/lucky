@@ -1,5 +1,5 @@
-import { lgg } from "@core/utils/logging/Logger"
-import { networkMonitor } from "@examples/definitions/browser-automation/network"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import { networkMonitor } from "@lucky/examples/definitions/browser-automation/network"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {

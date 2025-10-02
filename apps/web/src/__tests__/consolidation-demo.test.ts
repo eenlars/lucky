@@ -1,5 +1,5 @@
 // demonstration of mock consolidation - before and after comparison
-import { mockRuntimeConstantsForGP, setupCoreTest, setupGPTestMocks } from "@core/utils/__tests__/setup/coreMocks"
+import { mockRuntimeConstantsForGP, setupCoreTest, setupGPTestMocks } from "@lucky/core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // BEFORE: Duplicate mock setup that would appear in multiple files
@@ -14,7 +14,7 @@ describe("Before consolidation example", () => {
     getCurrentGenerationId: vi.fn(),
   }
 
-  vi.mock("@core/improvement/gp/resources/RunService", () => ({
+  vi.mock("@lucky/core/improvement/gp/resources/RunService", () => ({
     RunService: vi.fn().mockImplementation(() => mockRunService),
   }))
 
@@ -26,7 +26,7 @@ describe("Before consolidation example", () => {
     debug: vi.fn(),
   }
 
-  vi.mock("@core/utils/logging/Logger", () => ({
+  vi.mock("@lucky/core/utils/logging/Logger", () => ({
     lgg: mockLogger,
   }))
 

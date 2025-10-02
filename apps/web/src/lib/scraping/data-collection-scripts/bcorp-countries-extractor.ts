@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-imports */
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
-import { saveInLoc } from "@core/utils/fs/fileSaver"
-import { lgg } from "@core/utils/logging/Logger"
-import { PATHS } from "@examples/settings/constants"
+import { saveInLoc } from "@lucky/core/utils/fs/fileSaver"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import { PATHS } from "@lucky/examples/settings/constants"
 import { csv } from "@lucky/shared/csv"
 import crypto from "crypto"
 import fs from "fs"

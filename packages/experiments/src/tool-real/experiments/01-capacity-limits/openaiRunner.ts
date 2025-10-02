@@ -5,9 +5,9 @@
  *  - chatWithTools: thin wrapper over sendAI(mode:"tool") that returns a RunTrace-like shape
  */
 
-import { processResponseVercel } from "@core/messages/api/processResponse"
-import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
+import { processResponseVercel } from "@lucky/core/messages/api/processResponse"
+import { sendAI } from "@lucky/core/messages/api/sendAI/sendAI"
+import type { AgentStep } from "@lucky/core/messages/pipeline/AgentStep.types"
 import type { ModelMessage, Tool, ToolSet } from "ai"
 
 // Basic tools

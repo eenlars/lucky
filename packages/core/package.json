@@ -2,11 +2,19 @@
   "name": "@lucky/core",
   "version": "0.1.0",
   "private": true,
+  "description": "Core workflow engine, evaluation, and evolution algorithms",
+  "exports": {
+    "./package.json": "./package.json",
+    "./core-config": "./src/core-config",
+    "./workflow/*": "./src/workflow/*",
+    "./utils/*": "./src/utils/*",
+    "./messages/*": "./src/messages/*",
+    "./prompts/*": "./src/prompts/*"
+  },
   "scripts": {
     "dev": "vitest --watch --project unit",
     "build": "tsc --noEmit",
     "start": "bun run src/main.ts",
-    "lint": "eslint src/",
     "list": "node scripts/dev.js list",
     "once": "bun run scripts/runOnce.ts",
     "gp": "node scripts/run-gp.js",
@@ -19,9 +27,7 @@
     "coverage": "bunx vitest run --coverage",
     "tree": "tree -L 7 -I 'node_modules|.git|dist|build|public' src/core",
     "tsc": "tsc --noEmit",
-    "pricing": "bun run scripts/fetchOpenRouterPricing.ts",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "pricing": "bun run scripts/fetchOpenRouterPricing.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^2.0.0",

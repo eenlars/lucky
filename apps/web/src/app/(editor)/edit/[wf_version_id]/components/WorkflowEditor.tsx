@@ -1,8 +1,8 @@
 "use client"
 
 import { showToast } from "@/lib/toast-utils"
-import { loadFromDSL } from "@core/workflow/setup/WorkflowLoader"
-import { loadFromDSLClientDisplay } from "@core/workflow/setup/WorkflowLoader.client"
+import { loadFromDSL } from "@lucky/core/workflow/setup/WorkflowLoader"
+import { loadFromDSLClientDisplay } from "@lucky/core/workflow/setup/WorkflowLoader.client"
 import type { Tables } from "@lucky/shared/client"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"

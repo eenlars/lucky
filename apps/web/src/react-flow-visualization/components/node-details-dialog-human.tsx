@@ -24,7 +24,7 @@ import {
 } from "@lucky/tools/client"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
-import type { AllowedModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
+import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 

@@ -3,11 +3,11 @@
  * from the main capacity limits experiment
  */
 
-import { lgg } from "@core/utils/logging/Logger"
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
 import { existsSync, readFileSync, writeFileSync } from "fs"
 import { join } from "path"
-import { experimentalModels } from "@examples/settings/models"
+import { experimentalModels } from "@lucky/examples/settings/models"
 
 const __dirname = process.cwd()
 

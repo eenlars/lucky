@@ -5,13 +5,13 @@
 import {
   getActiveModelNames as coreGetActiveModelNames,
   getModelV2 as coreGetModelV2,
-} from "@core/utils/spending/functions"
-import type { AllowedModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
-import type { LuckyProvider } from "@core/utils/spending/provider"
+} from "@lucky/core/utils/spending/functions"
+import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
+import type { LuckyProvider } from "@lucky/core/utils/spending/provider"
 
 /**
  * Browser default provider (hardcoded since runtime config requires Node.js).
- * Server-side code should use getCurrentProvider() from @core/utils/spending/provider.
+ * Server-side code should use getCurrentProvider() from @lucky/core/utils/spending/provider.
  */
 const BROWSER_DEFAULT_PROVIDER: LuckyProvider = "openrouter"
 

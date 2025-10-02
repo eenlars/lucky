@@ -1,4 +1,4 @@
-import { TOOL_GROUPS } from "@examples/definitions/registry-grouped"
+import { TOOL_GROUPS } from "@lucky/examples/definitions/registry-grouped"
 import type { CodeToolName, ToolExecutionContext } from "@lucky/tools"
 import { registerAllTools } from "@lucky/tools"
 import { beforeEach, describe, expect, it } from "vitest"

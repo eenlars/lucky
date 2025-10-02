@@ -1,5 +1,5 @@
 import { ADAPTIVE_RESULTS_URL, getLatestFileByPrefixes, loadJsonProdOrLocal } from "@/lib/experiments/file-utils"
-import type { Condition } from "@experiments/tool-real/experiments/03-context-adaptation/types"
+import type { Condition } from "@lucky/experiments/tool-real/experiments/03-context-adaptation/types"
 import { promises as fs } from "fs"
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/api-auth"

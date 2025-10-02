@@ -1,9 +1,9 @@
 /**
  * Quick validation suite - test one model with minimal tool counts to verify setup
  */
-import { lgg } from "@core/utils/logging/Logger"
-import type { OpenRouterModelName } from "@core/utils/spending/models.types"
-import { experimentalModels } from "@examples/settings/models"
+import { lgg } from "@lucky/core/utils/logging/Logger"
+import type { OpenRouterModelName } from "@lucky/core/utils/spending/models.types"
+import { experimentalModels } from "@lucky/examples/settings/models"
 import { evaluate } from "../evaluation"
 import { allToolSpecs, chatWithTools } from "../openaiRunner"
 import { prompts } from "../prompts"

@@ -2,7 +2,13 @@
   "name": "@lucky/examples",
   "version": "0.1.0",
   "private": true,
+  "description": "Example implementations and reference configurations for developers",
   "type": "module",
+  "exports": {
+    "./settings/*": "./settings/*.ts",
+    "./settings/*.ts": "./settings/*.ts",
+    "./definitions/*": "./definitions/*"
+  },
   "dependencies": {
     "@lucky/tools": "workspace:*",
     "@mendable/firecrawl-js": "^1.29.3",
@@ -29,8 +35,6 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "tsc": "tsc --noEmit"
   }
 }
