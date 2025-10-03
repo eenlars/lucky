@@ -29,6 +29,9 @@ export function toSnakeCaseObject<T = any>(obj: any): T {
 
   if (typeof obj !== "object") return obj
 
+  // preserve Date instances
+  if (obj instanceof Date) return obj as any
+
   const converted: any = {}
   for (const [key, value] of Object.entries(obj)) {
     const snakeKey = toSnakeCase(key)
@@ -48,6 +51,9 @@ export function toCamelCaseObject<T = any>(obj: any): T {
   }
 
   if (typeof obj !== "object") return obj
+
+  // preserve Date instances
+  if (obj instanceof Date) return obj as any
 
   const converted: any = {}
   for (const [key, value] of Object.entries(obj)) {
@@ -103,19 +109,26 @@ export const FIELD_MAPPINGS = {
 } as const
 
 /**
- * Apply field mappings to an object (camelCase to snake_case)
+ * Apply field mappings to an object (camelCase to snake_case).
+ * Skip undefined/null values to avoid setting them in DB payloads.
  */
 export function applyFieldMappings<T = any>(obj: any): T {
   if (!obj || typeof obj !== "object") return obj
 
+  // preserve Date instances
+  if (obj instanceof Date) return obj as any
+
   const mapped: any = {}
 
   for (const [key, value] of Object.entries(obj)) {
+    // skip undefined values
+    if (value === undefined) continue
+
     // Check if we have a specific mapping
     const mappedKey = (FIELD_MAPPINGS as any)[key] || toSnakeCase(key)
 
     // Recursively map nested objects
-    if (value && typeof value === "object" && !Array.isArray(value)) {
+    if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof Date)) {
       mapped[mappedKey] = applyFieldMappings(value)
     } else if (Array.isArray(value)) {
       mapped[mappedKey] = value.map(item => (typeof item === "object" ? applyFieldMappings(item) : item))
@@ -145,8 +158,8 @@ export function reverseFieldMappings<T = any>(obj: any): T {
     // Check if we have a specific reverse mapping
     const mappedKey = reverseMap[key] || toCamelCase(key)
 
-    // Recursively map nested objects
-    if (value && typeof value === "object" && !Array.isArray(value)) {
+    // Recursively map nested objects (skip Date objects to preserve timestamps)
+    if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof Date)) {
       mapped[mappedKey] = reverseFieldMappings(value)
     } else if (Array.isArray(value)) {
       mapped[mappedKey] = value.map(item => (typeof item === "object" ? reverseFieldMappings(item) : item))

@@ -209,6 +209,7 @@ export class InMemoryPersistence implements IPersistence {
       operation: data.operation || "init",
       parent1_id: data.parent1Id,
       parent2_id: data.parent2Id,
+      created_at: new Date().toISOString(),
     })
   }
 
@@ -233,6 +234,7 @@ export class InMemoryPersistence implements IPersistence {
         dsl: workflowConfig,
         operation,
         generation_id: generationId,
+        created_at: new Date().toISOString(),
       })
     }
     return workflowVersionId

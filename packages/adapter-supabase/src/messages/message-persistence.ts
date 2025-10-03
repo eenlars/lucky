@@ -3,8 +3,9 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { applyFieldMappings } from "./field-mapper"
-import type { IMessagePersistence, MessageData } from "./persistence-interface"
+import { PersistenceError } from "../errors/domain-errors"
+import type { IMessagePersistence, MessageData } from "../persistence-interface"
+import { applyFieldMappings } from "../utils/field-mapper"
 
 export class SupabaseMessagePersistence implements IMessagePersistence {
   constructor(private client: SupabaseClient) {}
@@ -25,7 +26,7 @@ export class SupabaseMessagePersistence implements IMessagePersistence {
     const { error } = await this.client.from("Message").insert(mapped)
 
     if (error) {
-      throw new Error(`Failed to save message: ${error.message}`)
+      throw new PersistenceError(`Failed to save message: ${error.message}`, error)
     }
   }
 
@@ -35,7 +36,7 @@ export class SupabaseMessagePersistence implements IMessagePersistence {
     const { error } = await this.client.from("Message").update(mapped).eq("msg_id", messageId)
 
     if (error) {
-      throw new Error(`Failed to update message "${messageId}": ${error.message}`)
+      throw new PersistenceError(`Failed to update message "${messageId}": ${error.message}`, error)
     }
   }
 }

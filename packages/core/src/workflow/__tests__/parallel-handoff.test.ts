@@ -1,23 +1,15 @@
 import { getDefaultModels } from "@core/core-config/compat"
 import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
-// TODO: Refactor to use adapter pattern
-// import { Messages } from "@core/utils/persistence/message/main"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { InMemoryPersistence } from "@together/adapter-supabase"
+import { describe, expect, it, vi } from "vitest"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.
-// No mocks; will hit real sendAI according to configured environment.
+// Uses InMemoryPersistence to avoid database writes while preserving test coverage.
 
-describe.skip("Parallel handoff integration", () => {
-  // TODO: Refactor test to use adapter pattern
-  // Prevent DB writes for this test only (typed and robust against refactors)
-  beforeAll(() => {
-    // vi.spyOn(Messages, "save").mockResolvedValue()
-    // vi.spyOn(Messages, "update").mockResolvedValue()
-  })
-
+describe("Parallel handoff integration", () => {
   it("fans out distinct messages to two workers and aggregates at join", async () => {
     // Capture invoke call arguments per node for later assertions
     type InvokeArgs = Parameters<WorkFlowNode["invoke"]>[0]
@@ -153,6 +145,7 @@ describe.skip("Parallel handoff integration", () => {
       config: cfg,
       evaluationInput: evaluation,
       toolContext: undefined,
+      persistence: new InMemoryPersistence(),
     })
 
     await wf.prepareWorkflow(evaluation, "none")

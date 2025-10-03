@@ -150,6 +150,7 @@ export class WorkFlowNode {
       fitness: params.fitness,
       setup: params.setup,
       goal: params.goal,
+      persistence: this.persistenceManager.getPersistence(),
     })
 
     // Update config and memory

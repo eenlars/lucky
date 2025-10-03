@@ -6,17 +6,18 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 // Reuses existing persistence helpers to avoid new code paths
 describe("Workflow DB integration - single node persistence", () => {
   it.skip("should persist WorkflowVersion and NodeVersion for a one-node workflow", async () => {
-    // TODO: Refactor test to use adapter pattern
     const [
       { ensureWorkflowExists, createWorkflowVersion },
       // { saveNodeVersionToDB },
       { supabase },
       { getDefaultModels },
+      { SupabasePersistence },
     ] = await Promise.all([
       import("@core/utils/persistence/workflow/registerWorkflow"),
       // import("@core/utils/persistence/node/saveNode"),
       import("@core/utils/clients/supabase/client"),
       import("@core/core-config"),
+      import("@together/adapter-supabase"),
     ])
 
     // Unique identifiers per test run to avoid collisions
@@ -42,10 +43,13 @@ describe("Workflow DB integration - single node persistence", () => {
       entryNodeId: nodeId,
     }
 
+    // Create persistence adapter
+    const persistence = new SupabasePersistence()
+
     // Create Workflow and WorkflowVersion
-    await ensureWorkflowExists(undefined, "Integration test: single-node workflow", workflowId)
+    await ensureWorkflowExists(persistence, "Integration test: single-node workflow", workflowId)
     await createWorkflowVersion({
-      persistence: undefined,
+      persistence,
       workflowVersionId,
       workflowConfig: config,
       commitMessage: "single-node-db-persist",

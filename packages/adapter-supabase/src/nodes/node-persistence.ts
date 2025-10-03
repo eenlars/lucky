@@ -3,8 +3,8 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { applyFieldMappings } from "./field-mapper"
-import type { INodePersistence, NodeInvocationData, NodeVersionData } from "./persistence-interface"
+import { InvalidInputError, NodeVersionMissingError, PersistenceError } from "../errors/domain-errors"
+import type { INodePersistence, NodeInvocationData, NodeVersionData } from "../persistence-interface"
 
 export class SupabaseNodePersistence implements INodePersistence {
   constructor(private client: SupabaseClient) {}
@@ -12,21 +12,27 @@ export class SupabaseNodePersistence implements INodePersistence {
   async saveNodeVersion(data: NodeVersionData): Promise<{ nodeVersionId: string }> {
     const { nodeId, workflowVersionId, config } = data
 
+    if (!nodeId || !workflowVersionId) {
+      throw new InvalidInputError(
+        `nodeId (${nodeId}) or workflowVersionId (${workflowVersionId}) is null, undefined, or empty string`,
+      )
+    }
+
     // Check if node already exists for this workflow version
-    const { data: existingNode } = await this.client
+    const { data: existingNode, error: queryError } = await this.client
       .from("NodeVersion")
       .select("version")
       .eq("node_id", nodeId)
       .eq("wf_version_id", workflowVersionId)
-      .single()
+      .order("version", { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-    const nextVersion = existingNode ? existingNode.version + 1 : 1
-
-    if (!nodeId || !workflowVersionId) {
-      throw new Error(
-        `nodeId (${nodeId}) or workflowVersionId (${workflowVersionId}) is null, undefined, or empty string`,
-      )
+    if (queryError) {
+      throw new PersistenceError(`Failed to query existing node versions: ${queryError.message}`, queryError)
     }
+
+    const nextVersion = existingNode?.version ? existingNode.version + 1 : 1
 
     // Extract config fields
     const { modelName, systemPrompt, mcpTools = [], codeTools = [], description, memory, handOffs } = config as any
@@ -39,8 +45,8 @@ export class SupabaseNodePersistence implements INodePersistence {
       system_prompt: systemPrompt,
       tools: [...(Array.isArray(mcpTools) ? mcpTools : []), ...(Array.isArray(codeTools) ? codeTools : [])],
       extras: {},
-      description: description,
-      memory: memory,
+      description,
+      memory,
       handoffs: handOffs,
     }
 
@@ -51,31 +57,35 @@ export class SupabaseNodePersistence implements INodePersistence {
       .single()
 
     if (error) {
-      throw new Error(`Failed to save node version: ${error.message}`)
+      throw new PersistenceError(`Failed to save node version: ${error.message}`, error)
     }
 
     return { nodeVersionId: result.node_version_id }
   }
 
   async saveNodeInvocation(data: NodeInvocationData): Promise<{ nodeInvocationId: string }> {
-    const mapped = applyFieldMappings(data)
+    // Build extras with fields not in DB schema
+    const extras: Record<string, unknown> = {}
+    if (data.messageId) extras.message_id = data.messageId
+    if (data.agentSteps) extras.agentSteps = data.agentSteps
+    if (data.updatedMemory) extras.updatedMemory = data.updatedMemory
 
-    // Transform specific fields that need special handling
+    // Manually build insertable with snake_case fields (fields going to extras are excluded)
     const insertable = {
-      ...mapped,
+      node_id: data.nodeId,
+      wf_invocation_id: data.workflowInvocationId,
+      wf_version_id: data.workflowVersionId,
+      start_time: data.startTime,
+      end_time: data.endTime,
+      usd_cost: data.usdCost,
+      output: data.output,
+      summary: data.summary,
+      files: data.files,
+      model: data.model,
       status: "completed",
-      extras: {
-        message_id: mapped.message_id,
-        ...(mapped.agent_steps && { agentSteps: mapped.agent_steps }),
-        ...(mapped.updated_memory && { updatedMemory: mapped.updated_memory }),
-      },
+      extras,
       metadata: {},
     }
-
-    // Remove fields that were moved to extras
-    insertable.message_id = undefined
-    insertable.agent_steps = undefined
-    insertable.updated_memory = undefined
 
     const { data: result, error } = await this.client
       .from("NodeInvocation")
@@ -90,15 +100,13 @@ export class SupabaseNodePersistence implements INodePersistence {
         .select("node_id, version")
         .eq("node_id", data.nodeId)
         .eq("wf_version_id", data.workflowVersionId)
-        .single()
+        .maybeSingle()
 
       if (!nodeVersionCheck) {
-        throw new Error(
-          `Cannot save NodeInvocation: NodeVersion doesn't exist for node_id=${data.nodeId}, wf_version_id=${data.workflowVersionId}`,
-        )
+        throw new NodeVersionMissingError(data.nodeId, data.workflowVersionId, error)
       }
 
-      throw new Error(`Failed to save node invocation: ${error.message}`)
+      throw new PersistenceError(`Failed to save node invocation: ${error.message}`, error)
     }
 
     return { nodeInvocationId: result.node_invocation_id }
@@ -112,7 +120,7 @@ export class SupabaseNodePersistence implements INodePersistence {
       .order("start_time", { ascending: true })
 
     if (error) {
-      throw new Error(`Failed to retrieve node summaries: ${error.message}`)
+      throw new PersistenceError(`Failed to retrieve node summaries: ${error.message}`, error)
     }
 
     return (data || []).map(item => ({
@@ -129,7 +137,7 @@ export class SupabaseNodePersistence implements INodePersistence {
       .eq("wf_version_id", workflowVersionId)
 
     if (error) {
-      throw new Error(`Failed to update node memory: ${error.message}`)
+      throw new PersistenceError(`Failed to update node memory: ${error.message}`, error)
     }
   }
 }

@@ -50,6 +50,13 @@ export class NodePersistenceManager {
   }
 
   /**
+   * Returns the persistence adapter instance.
+   */
+  public getPersistence(): IPersistence | undefined {
+    return this.persistence
+  }
+
+  /**
    * Updates the memory with new entries.
    */
   public updateMemory(newMemory: Record<string, string>): void {

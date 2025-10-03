@@ -5,26 +5,40 @@
  * Provides optional database persistence through a clean interface.
  */
 
+// Main factory function
+export { createPersistence } from "./factory"
+export type { PersistenceConfig } from "./factory"
+
+// Type exports
 export type {
-  IPersistence,
-  IEvolutionPersistence,
-  INodePersistence,
-  IMessagePersistence,
-  WorkflowVersionData,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  NodeVersionData,
-  NodeInvocationData,
-  MessageData,
-  RunData,
-  GenerationData,
-  GenerationUpdate,
-  EvolutionContext,
-  PopulationStats,
   CleanupStats,
   DatasetRecord,
+  EvolutionContext,
+  GenerationData,
+  GenerationUpdate,
+  IEvolutionPersistence,
+  IMessagePersistence,
+  INodePersistence,
+  IPersistence,
+  MessageData,
+  NodeInvocationData,
+  NodeVersionData,
+  PopulationStats,
+  RunData,
+  WorkflowInvocationData,
+  WorkflowInvocationUpdate,
+  WorkflowVersionData,
 } from "./persistence-interface"
 
-export { SupabasePersistence } from "./supabase-persistence"
+// Error exports
+export {
+  DatasetRecordNotFoundError,
+  InvalidInputError,
+  NodeVersionMissingError,
+  PersistenceError,
+  WorkflowNotFoundError,
+} from "./errors/domain-errors"
+
+// Implementation exports (for advanced usage)
 export { InMemoryPersistence } from "./memory-persistence"
-export { getSupabaseClient, resetSupabaseClient } from "./client"
+export { SupabasePersistence } from "./supabase-persistence"

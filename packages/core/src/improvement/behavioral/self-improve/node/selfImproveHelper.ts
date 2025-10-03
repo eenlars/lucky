@@ -6,8 +6,8 @@ import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
 import { saveInLoc } from "@core/utils/fs/fileSaver"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
-// import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence } from "@together/adapter-supabase"
 
 export async function selfImproveHelper({
   n,
@@ -15,12 +15,14 @@ export async function selfImproveHelper({
   workflowInvocationId,
   setup,
   goal,
+  persistence,
 }: {
   n: WorkFlowNode
   fitness: FitnessOfWorkflow
   workflowInvocationId: string
   setup: WorkflowConfig
   goal: string
+  persistence?: IPersistence
 }): Promise<{ config: WorkflowNodeConfig; usdCost: number }> {
   const nodeConfig = setup.nodes.find(node => node.nodeId === n.nodeId)
   if (!nodeConfig) {
@@ -32,23 +34,27 @@ export async function selfImproveHelper({
 
   if (CONFIG.improvement.flags.useSummariesForImprovement) {
     try {
-      // TODO: Re-implement with persistence adapter
-      // const summaries = await retrieveNodeInvocationSummaries(workflowInvocationId, n.nodeId)
-      const summaries: any[] = []
-
-      if (summaries.length > 0) {
-        // format summaries for the prompt
-        executionData = summaries
-          .map((s: any, idx: number) => {
-            const summary = s.summary || "no summary available"
-            return `execution ${idx + 1}:\n- status: ${s.status}\n- cost: $${s.usd_cost?.toFixed(4) || "0.0000"}\n- summary: ${summary}`
-          })
-          .join("\n\n")
-
-        lgg.log(`using ${summaries.length} summaries for node ${n.nodeId} improvement`)
-      } else {
-        lgg.warn(`no summaries found for node ${n.nodeId}, falling back to runtime store`)
+      if (!persistence) {
+        lgg.warn(`no persistence adapter available for node ${n.nodeId}, skipping summaries`)
         executionData = "no execution data"
+      } else {
+        const summaries = await persistence.nodes.retrieveNodeSummaries(workflowInvocationId)
+        const nodeSummaries = summaries.filter(s => s.nodeId === n.nodeId)
+
+        if (nodeSummaries.length > 0) {
+          // format summaries for the prompt
+          executionData = nodeSummaries
+            .map((s, idx: number) => {
+              const summary = s.summary || "no summary available"
+              return `execution ${idx + 1}:\n- summary: ${summary}`
+            })
+            .join("\n\n")
+
+          lgg.log(`using ${nodeSummaries.length} summaries for node ${n.nodeId} improvement`)
+        } else {
+          lgg.warn(`no summaries found for node ${n.nodeId}, falling back to runtime store`)
+          executionData = "no execution data"
+        }
       }
     } catch (error) {
       lgg.error(`failed to retrieve summaries for node ${n.nodeId}:`, error)
