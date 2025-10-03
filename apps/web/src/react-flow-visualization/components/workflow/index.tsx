@@ -4,9 +4,10 @@ import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react"
 import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
 import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect"
+import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
+import { WorkflowPromptBar } from "@/react-flow-visualization/components/workflow-prompt-bar"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
@@ -136,6 +137,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
       >
         <Background />
         <WorkflowControls />
+        <WorkflowPromptBar />
       </ReactFlow>
 
       {/* Steve Jobs-inspired Inspector Panel */}
