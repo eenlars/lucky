@@ -1,9 +1,7 @@
 import { TOOL_GROUPS } from "@lucky/examples/definitions/registry-grouped"
 import type { CodeToolName, ToolExecutionContext } from "@lucky/tools"
-import { registerAllTools } from "@lucky/tools"
-import { codeToolRegistry } from "@lucky/tools"
+import { codeToolRegistry, registerAllTools, setupCodeToolsForNode } from "@lucky/tools"
 import { beforeEach, describe, expect, it } from "vitest"
-import { setupCodeToolsForNode } from "../codeToolsSetup"
 
 describe("codeToolsSetup bug demonstration", () => {
   // TODO: This test suite is labeled as "bug demonstration" which suggests it's testing

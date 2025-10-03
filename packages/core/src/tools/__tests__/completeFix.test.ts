@@ -3,7 +3,7 @@
  */
 
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
+import { validateAndCorrectWithSchema } from "@lucky/tools"
 import { tool, zodSchema } from "ai"
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
