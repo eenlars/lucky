@@ -4,8 +4,8 @@ import { getDefaultModels } from "@core/core-config/compat"
  * Consolidates duplicate test patterns and eliminates verbose boilerplate
  */
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
-import { JSONN } from "@core/utils/json"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { JSONN } from "@lucky/shared"
 import type { GenerateTextResult, ToolSet } from "ai"
 
 /**

@@ -186,6 +186,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  button {
+    @apply cursor-pointer;
+  }
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
 
   /* Enhanced React Flow edge styling for better visibility */
   .react-flow .react-flow__edge-path {

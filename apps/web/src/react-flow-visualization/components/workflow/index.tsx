@@ -4,9 +4,10 @@ import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react"
 import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
+import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect"
 import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
-import { NodeDetailsDialog } from "@/react-flow-visualization/components/node-details-dialog-human"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes"
+import { WorkflowPromptBar } from "@/react-flow-visualization/components/workflow-prompt-bar"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
 // runner context removed
 import { useAppStore } from "@/react-flow-visualization/store"
@@ -113,8 +114,6 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     )
   }
 
-  const selectedNode = selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null
-
   return (
     <>
       <ReactFlow
@@ -138,20 +137,11 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
       >
         <Background />
         <WorkflowControls />
+        <WorkflowPromptBar />
       </ReactFlow>
 
-      {selectedNode && (
-        <NodeDetailsDialog
-          open={nodeDetailsOpen}
-          onOpenChange={open => {
-            if (!open) closeNodeDetails()
-          }}
-          nodeData={selectedNode.data}
-          onSave={updateNode}
-        />
-      )}
-
-      {/* Runner removed */}
+      {/* Steve Jobs-inspired Inspector Panel */}
+      <AgentDialogInspect />
     </>
   )
 }

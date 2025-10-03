@@ -16,9 +16,9 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@core/*": ["../core/src/*"],
-      "@examples/*": ["../examples/*"],
-      "@lucky/examples": ["../examples"],
-      "@lucky/examples/*": ["../examples/*"],
+      "@examples/*": ["../../apps/examples/*"],
+      "@lucky/examples": ["../../apps/examples"],
+      "@lucky/examples/*": ["../../apps/examples/*"],
       "@lucky/core": ["../core/src"],
       "@lucky/core/*": ["../core/src/*"],
       "@lucky/shared": ["../shared/src"],

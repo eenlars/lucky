@@ -14,7 +14,7 @@ import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
-import { validateAndDecide } from "@core/utils/validation/message"
+import { validateAndDecide } from "@core/utils/validation/message/validateAndDecide"
 import type { NodeInvocationData } from "@together/adapter-supabase"
 
 /**

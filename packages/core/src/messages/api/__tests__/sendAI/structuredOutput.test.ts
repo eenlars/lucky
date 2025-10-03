@@ -1,6 +1,6 @@
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { RS } from "@core/utils/types"
-import { R } from "@core/utils/types"
+import type { RS } from "@lucky/shared"
+import { R } from "@lucky/shared"
 import type { ModelMessage } from "ai"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"

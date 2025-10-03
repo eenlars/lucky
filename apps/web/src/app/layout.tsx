@@ -1,4 +1,4 @@
-import { IntegratedAside } from "@/app/components/aside"
+import { IntegratedAside } from "@/app/components/aside/integrated-aside"
 import MainContent from "@/components/MainContent"
 import { SidebarProvider } from "@/contexts/SidebarContext"
 import { AppStoreProvider } from "@/react-flow-visualization/store"

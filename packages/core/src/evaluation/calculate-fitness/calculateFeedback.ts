@@ -5,7 +5,7 @@ import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { singleFeedbackSystemPrompt, singleFeedbackUserPrompt } from "@core/prompts/evaluator/feedback/singleFeedback.p"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
+import { R, type RS } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 
 export async function calculateFeedback({

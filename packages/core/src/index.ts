@@ -35,5 +35,5 @@ export type { ToolExecutionContext } from "./tools/toolFactory"
 // Utils exports
 export { genShortId } from "./utils/common/utils"
 export { lgg } from "./utils/logging/Logger"
-export { R, type RS } from "./utils/types"
+export { R, type RS } from "@lucky/shared"
 export { hashWorkflow, hashWorkflowNode } from "./workflow/schema/hash"

@@ -1,3 +1,4 @@
+import { R, type RS } from "@lucky/shared"
 import type { ZodTypeAny } from "zod"
 
 /**
@@ -32,42 +33,6 @@ export interface ToolExecutionContext {
  */
 export type InvocationContext = ToolExecutionContext
 
-/**
- * Result type for tool execution (success or error)
- */
-export type RS<T> =
-  | {
-      success: true
-      error?: undefined
-      data: T
-      usdCost: number | undefined
-    }
-  | {
-      success: false
-      error: string
-      data?: never
-      usdCost: number | undefined
-    }
-
-/**
- * Helper for creating RS result objects
- */
-export const R: {
-  error: (error: string, usdCost: number | undefined) => RS<never>
-  success: <T>(data: T, usdCost: number | undefined) => RS<T>
-} = {
-  error(error: string, usdCost: number | undefined): RS<never> {
-    return {
-      success: false,
-      error,
-      usdCost,
-    }
-  },
-  success<T>(data: T, usdCost: number | undefined): RS<T> {
-    return {
-      success: true,
-      data,
-      usdCost,
-    }
-  },
-}
+// RS and R are now imported from @lucky/shared
+export type { RS }
+export { R }

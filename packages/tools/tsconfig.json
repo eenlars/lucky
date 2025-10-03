@@ -20,7 +20,7 @@
       "@lucky/shared": ["../shared/src/index.ts"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@core/*": ["../core/src/*"],
-      "@examples/*": ["../examples/*"]
+      "@examples/*": ["../../apps/examples/*"]
     }
   },
   "include": ["src/**/*.ts"],

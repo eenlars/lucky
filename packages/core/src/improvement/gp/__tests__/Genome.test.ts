@@ -178,9 +178,9 @@ import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
 import { createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 
-import type { RS } from "@core/utils/types"
 import type { EvaluationCSV, EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { RS } from "@lucky/shared"
 // Get references to mocked functions
 const mockIdeaToWorkflow = vi.fn()
 const mockWorkflowConfigToGenome = vi.mocked(workflowConfigToGenome)

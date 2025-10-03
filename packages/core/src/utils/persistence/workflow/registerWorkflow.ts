@@ -1,7 +1,7 @@
-import type { Json } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { Json } from "@lucky/shared"
 import type {
   IPersistence,
   WorkflowInvocationData,

@@ -6,11 +6,11 @@ import type { Genome } from "@core/improvement/gp/Genome"
 import { MockGPEvaluator } from "@core/improvement/gp/resources/debug/MockGPEvaluator"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
-import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
-import { R } from "@core/utils/types"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { JSONN } from "@lucky/shared"
+import { R } from "@lucky/shared"
 import type { EvolutionEvaluator } from "./EvolutionEvaluator"
 
 /**

@@ -6,7 +6,6 @@ import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution
 import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
-import type { RS } from "@core/utils/types"
 import { Workflow } from "@core/workflow/Workflow"
 import type {
   EvaluationCSV,
@@ -15,6 +14,7 @@ import type {
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { RS } from "@lucky/shared"
 import { vi } from "vitest"
 
 // CLI and system-level mocks

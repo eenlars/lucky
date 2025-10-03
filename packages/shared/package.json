@@ -33,9 +33,9 @@
       "import": "./dist/client.js"
     },
     "./fs": {
-      "types": "./dist/fs/index.d.ts",
+      "types": "./dist/fs/paths.d.ts",
       "node": {
-        "import": "./dist/fs/index.js"
+        "import": "./dist/fs/paths.js"
       }
     },
     "./csv": {

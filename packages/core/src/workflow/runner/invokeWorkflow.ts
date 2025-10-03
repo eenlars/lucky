@@ -14,16 +14,16 @@
 
 import { CONFIG } from "@core/core-config/compat"
 import { genShortId } from "@core/utils/common/utils"
-import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSL, loadFromDatabase, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
+import { JSONN } from "@lucky/shared"
+import { R, type RS } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
@@ -122,7 +122,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     // Set workflow IO (handles multiple inputs via IngestionLayer)
     await workflow.prepareWorkflow(evalInput, CONFIG.workflow.prepareProblemMethod)
 
-    const { success, error, data: runResults, usdCost } = await workflow.run()
+    const { success, error, data: runResults } = await workflow.run()
 
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)

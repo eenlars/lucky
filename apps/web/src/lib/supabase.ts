@@ -4,7 +4,7 @@
  * This client is initialized with Next.js environment variables and should be used
  * throughout the app instead of importing from core.
  */
-import type { Database } from "@lucky/core/utils/json"
+import type { Database } from "@lucky/shared"
 import { createClient } from "@supabase/supabase-js"
 
 // Get Supabase configuration from environment

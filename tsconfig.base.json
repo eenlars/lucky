@@ -7,7 +7,7 @@
       "path": "./packages/core/tsconfig.json"
     },
     {
-      "path": "./packages/examples/tsconfig.json"
+      "path": "./apps/examples/tsconfig.json"
     },
     {
       "path": "./apps/web/tsconfig.json"
