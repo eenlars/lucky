@@ -3,7 +3,10 @@
   "type": "module",
   "private": true,
   "packageManager": "bun@1.2.22",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.1",
     "@mendable/firecrawl-js": "^1.29.3",
