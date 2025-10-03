@@ -97,10 +97,10 @@ import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
-import type { RS } from "@core/utils/types"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { RS } from "@lucky/shared"
 import type { WorkflowGenome } from "../resources/gp.types"
 
 // Cast mocked functions for type safety

@@ -21,7 +21,7 @@ export default defineConfig([
   // Node.js-only subpaths
   {
     entry: {
-      "fs/index": "src/fs/index.ts",
+      "fs/paths": "src/fs/paths.ts",
       "csv/index": "src/csv/index.ts",
     },
     format: ["esm"],

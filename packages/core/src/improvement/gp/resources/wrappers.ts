@@ -5,10 +5,10 @@
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { R, type RS } from "@lucky/shared"
 import { Genome } from "../Genome"
 
 /**

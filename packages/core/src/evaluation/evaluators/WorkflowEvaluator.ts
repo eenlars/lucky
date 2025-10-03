@@ -2,10 +2,10 @@
 
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { InvocationSummary } from "@core/messages/summaries"
-import type { RS } from "@core/utils/types"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import type { RS } from "@lucky/shared"
 
 export interface WorkflowEvaluationResult {
   fitness: FitnessOfWorkflow

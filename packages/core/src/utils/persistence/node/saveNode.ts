@@ -1,8 +1,8 @@
 import { supabase } from "@core/utils/clients/supabase/client"
-import type { Json, TablesInsert } from "@core/utils/json"
-import { JSONN, isJSON } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { Json, TablesInsert } from "@lucky/shared"
+import { JSONN, isJSON } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 
 export const saveNodeVersionToDB = async ({

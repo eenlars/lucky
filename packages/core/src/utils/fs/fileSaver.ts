@@ -7,7 +7,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { getCorePaths } from "@core/core-config"
-import { JSONN } from "@core/utils/json"
+import { JSONN } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
 import { nanoid } from "nanoid"
 

@@ -1,7 +1,7 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { randomUserAgents } from "@examples/definitions/browser-automation/constants"
 import { saveInLoc } from "@examples/definitions/file-saver/save"
-import type { ProxyResponse } from "@examples/definitions/googlescraper/main"
+import type { ProxyResponse } from "@examples/definitions/googlescraper/utils/proxies"
 import { PATHS } from "@lucky/tools/config/runtime"
 import type { HTTPRequest, HTTPResponse, Page } from "puppeteer"
 import puppeteer from "puppeteer"

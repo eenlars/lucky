@@ -155,8 +155,8 @@ import {
   createMockEvolutionSettings,
   createMockWorkflowConfig,
 } from "@core/utils/__tests__/setup/coreMocks"
-import type { RS } from "@core/utils/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
+import type { RS } from "@lucky/shared"
 
 // Module-level mock instances
 const mockSupabaseChain = {

@@ -6,8 +6,8 @@ import { autoScroll, cleanupBrowser, sanitizeJSON } from "@examples/definitions/
 import { normalizeHostname } from "@examples/definitions/googlescraper/utils/hostname"
 import type { ProxyResponse } from "@examples/definitions/googlescraper/utils/proxies"
 import { isNir } from "@lucky/shared"
+import { Tools } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
-import Tools from "@lucky/tools"
 import type { Browser, Page } from "puppeteer"
 
 const toolName = "searchGoogleMaps" as const

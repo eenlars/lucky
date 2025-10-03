@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [tsconfigPaths()],
     build: {
       lib: {
-        entry: resolve(__dirname, "code_tools/index.ts"),
+        entry: resolve(__dirname, "definitions/registry.ts"),
         name: "Examples",
         fileName: "index",
         formats: ["es", "cjs"],

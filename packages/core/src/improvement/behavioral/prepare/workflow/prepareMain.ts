@@ -1,12 +1,12 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
-import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@core/workflow/runner/types"
+import { JSONN } from "@lucky/shared"
 import { z } from "zod"
 
 export type PrepareProblemMethod = "workflow" | "ai" | "none"

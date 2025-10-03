@@ -1,7 +1,7 @@
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { createMockEvaluationInputGeneric } from "@core/utils/__tests__/setup/coreMocks"
 import { lgg } from "@core/utils/logging/Logger"
-import type { RS } from "@core/utils/types"
+import type { RS } from "@lucky/shared"
 import type { Genome } from "../../Genome"
 import { EvolutionEngine } from "../../evolutionengine"
 import type { GenomeEvaluationResults, PopulationStats } from "../gp.types"

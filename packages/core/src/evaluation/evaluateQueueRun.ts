@@ -1,12 +1,12 @@
 import { CONFIG } from "@core/core-config/compat"
 import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateFeedback"
 import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
-import { JSONN, type Json } from "@core/utils/json"
 import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/workflow/registerWorkflow"
-import { R, type RS } from "@core/utils/types"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationResult, QueueRunResult } from "@core/workflow/runner/types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import { JSONN, type Json } from "@lucky/shared"
+import { R, type RS } from "@lucky/shared"
 
 export const evaluateQueueRun = async ({
   workflow,

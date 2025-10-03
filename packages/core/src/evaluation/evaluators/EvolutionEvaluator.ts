@@ -2,7 +2,7 @@
 
 import type { Genome } from "@core/improvement/gp/Genome"
 import type { GenomeEvaluationResults } from "@core/improvement/gp/resources/gp.types"
-import type { RS } from "@core/utils/types"
+import type { RS } from "@lucky/shared"
 
 export interface EvolutionEvaluator {
   evaluate(

@@ -1,5 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
+import { R, type RS } from "@lucky/shared"
 import type { MapboxFeature } from "./resources/exampleFeature"
 
 interface LocationData {

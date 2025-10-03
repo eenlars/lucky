@@ -1,5 +1,5 @@
 import { envi } from "@core/utils/env.mjs"
-import type { Database } from "@core/utils/json"
+import type { Database } from "@lucky/shared"
 import { createClient } from "@supabase/supabase-js"
 
 // Create Supabase client with flexible env resolution

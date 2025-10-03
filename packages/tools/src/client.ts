@@ -23,8 +23,11 @@ export {
 } from "./registry/types"
 
 // Config metadata (no runtime code)
-export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index"
-export type { ToolConfig } from "./config/index"
+export {
+  TOOLS,
+  DEFAULT_TOOL_CONFIG,
+  type ToolConfig,
+} from "./config/tools"
 
 // Tool factory types only (no runtime code - defineTool/commonSchemas pulled in @lucky/shared main bundle with Node.js deps)
-export type { ToolExecutionContext, InvocationContext } from "./factory/index"
+export type { ToolExecutionContext, InvocationContext } from "./factory/types"

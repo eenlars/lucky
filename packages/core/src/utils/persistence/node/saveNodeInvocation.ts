@@ -3,10 +3,10 @@ import { normalizeModelName } from "@core/messages/api/sendAI/sendAI"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { supabase } from "@core/utils/clients/supabase/client"
 import { llmify } from "@core/utils/common/llmify"
-import type { Json, TablesInsert } from "@core/utils/json"
-import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
+import type { Json, TablesInsert } from "@lucky/shared"
+import { JSONN } from "@lucky/shared"
 
 type SaveNodeInvocationOpts = {
   nodeId: string
