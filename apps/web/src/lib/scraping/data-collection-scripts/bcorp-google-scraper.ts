@@ -16,7 +16,7 @@ import path from "node:path"
 
 import { saveInLoc } from "@lucky/core/utils/fs/fileSaver"
 import { lgg } from "@lucky/core/utils/logging/Logger"
-import { searchGoogleMaps } from "@lucky/examples/definitions/googlescraper/main"
+import { searchGoogleMaps } from "@lucky/examples/definitions/googlescraper/main/main"
 import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { PATHS } from "@lucky/examples/settings/constants"
 import { isNir } from "@lucky/shared/client"

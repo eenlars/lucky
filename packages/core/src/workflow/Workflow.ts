@@ -16,8 +16,6 @@ import {
   updateWorkflowVersionWithIO,
 } from "@core/utils/persistence/workflow/registerWorkflow"
 import type { ModelName } from "@core/utils/spending/models.types"
-import type { RS } from "@core/utils/types"
-import { R } from "@core/utils/types"
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow"
 import { zodToJson } from "@core/utils/zod/zodToJson"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
@@ -28,6 +26,8 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { RS } from "@lucky/shared"
+import { R } from "@lucky/shared"
 import { INACTIVE_TOOLS } from "@lucky/tools"
 import type { ToolExecutionContext } from "@lucky/tools"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"

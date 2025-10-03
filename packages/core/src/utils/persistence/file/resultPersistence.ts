@@ -4,9 +4,9 @@
 import path from "node:path"
 import { PATHS } from "@core/core-config/compat"
 import { mkdirIfMissing, writeJsonAtomic } from "@core/utils/common/files"
-import type { Json } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { Json } from "@lucky/shared"
 
 /**
  * Persist finalConfig and (optionally) analysisResult.

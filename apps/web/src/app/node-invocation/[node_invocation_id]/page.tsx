@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase"
-import { NodeInvocation } from "@/trace-visualization/components"
+import { NodeInvocation } from "@/trace-visualization/components/NodeInvocation"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { notFound } from "next/navigation"
 

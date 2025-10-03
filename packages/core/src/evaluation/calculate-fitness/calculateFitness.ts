@@ -11,8 +11,8 @@ import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { R, type RS } from "@core/utils/types"
 import { zodToJson } from "@core/utils/zod/zodToJson"
+import { R, type RS } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 
 async function calculateFitness({

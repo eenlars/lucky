@@ -1,5 +1,5 @@
 import vm from "node:vm"
-import Tools from "@lucky/tools"
+import { Tools } from "@lucky/shared"
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 

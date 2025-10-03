@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { searchGoogleMaps } from "../main"
+import { searchGoogleMaps } from "../main/main"
 
 const expectedAlbertHeijnStructure = {
   storeName: "Albert Heijn",

@@ -1,8 +1,8 @@
 import { isNir } from "@lucky/shared"
 import type { CodeToolName } from "@lucky/tools"
 import type { ToolExecutionContext } from "@lucky/tools"
+import { codeToolRegistry } from "@lucky/tools"
 import type { Tool, ToolSet } from "ai"
-import { codeToolRegistry } from "./index"
 
 /**
  * Code-specific tool setup that accepts workflowInvocationId for context injection

@@ -5,8 +5,9 @@ import { cleanupBrowser, parseNumber, sanitizeJSON } from "@examples/definitions
 import { parseHours } from "@examples/definitions/googlescraper/utils/extractHours"
 import type { ProxyResponse } from "@examples/definitions/googlescraper/utils/proxies"
 import { setupPage } from "@examples/definitions/googlescraper/utils/scrapeUtils"
+import { Tools } from "@lucky/shared"
 import type { CodeToolName } from "@lucky/tools"
-import Tools, { type CodeToolResult } from "@lucky/tools"
+import type { CodeToolResult } from "@lucky/tools"
 import * as cheerio from "cheerio"
 
 const toolName: CodeToolName = "searchGoogleMaps"

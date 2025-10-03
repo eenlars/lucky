@@ -7,6 +7,10 @@
 export * from "./utils/files/json/jsonParse"
 export * from "./utils/common/isNir"
 
+// Result type and helper
+export type { RS } from "./types/result.types"
+export { R } from "./types/result.types"
+
 // Types
 export type {
   Database,

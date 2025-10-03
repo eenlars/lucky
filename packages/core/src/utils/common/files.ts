@@ -1,4 +1,4 @@
-import type { Json } from "@core/utils/json"
+import type { Json } from "@lucky/shared"
 
 // Server-side only functions - will throw error if used in client
 export async function mkdirIfMissing(p: string) {

@@ -15,7 +15,7 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
-import { validateAndDecide } from "@core/utils/validation/message"
+import { validateAndDecide } from "@core/utils/validation/message/validateAndDecide"
 
 /**
  * Handles successful response processing.

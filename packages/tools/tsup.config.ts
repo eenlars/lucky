@@ -4,12 +4,6 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     client: "src/client.ts",
-    "factory/index": "src/factory/index.ts",
-    "registry/index": "src/registry/index.ts",
-    "config/index": "src/config/index.ts",
-    "mcp/index": "src/mcp/index.ts",
-    "registration/index": "src/registration/index.ts",
-    "schemas/index": "src/schemas/index.ts",
     "config/runtime": "src/config/runtime.ts",
   },
   format: ["esm"],

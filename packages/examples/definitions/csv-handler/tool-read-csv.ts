@@ -1,7 +1,8 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { CsvHandler } from "@examples/definitions/csv-handler/main/CsvHandler"
-import Tools, { type CodeToolResult } from "@lucky/tools"
+import { Tools } from "@lucky/shared"
+import type { CodeToolResult } from "@lucky/tools"
 import { type ToolExecutionContext, defineTool } from "@lucky/tools"
 import { z } from "zod"
 

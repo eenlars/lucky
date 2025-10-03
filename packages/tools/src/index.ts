@@ -6,28 +6,27 @@
  */
 
 // Factory - Tool creation and execution
+export { defineTool, toAITool, commonSchemas } from "./factory/toolFactory"
+export { validateAndCorrectWithSchema } from "./factory/validation"
 export {
-  defineTool,
-  toAITool,
-  commonSchemas,
-  validateAndCorrectWithSchema,
   R,
-  Tools,
-} from "./factory/index"
-
+  type RS,
+  type ToolExecutionContext,
+  type InvocationContext,
+  type WorkflowFile,
+  type OutputSchema,
+} from "./factory/types"
 export type {
-  RS,
-  ToolExecutionContext,
-  InvocationContext,
-  WorkflowFile,
-  OutputSchema,
   CodeToolResult,
   CodeToolSuccess,
   CodeToolFailure,
-} from "./factory/index"
+} from "@lucky/shared"
 
 // Registry - Tool types, filtering, and management
 export {
+  type MCPToolName,
+  type CodeToolName,
+  type AllToolNames,
   getActiveTools,
   ACTIVE_MCP_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES,
@@ -37,26 +36,28 @@ export {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_TOOLS_WITH_DESCRIPTION,
   INACTIVE_TOOLS,
+} from "./registry/types"
+export {
   CodeToolRegistry,
   codeToolRegistry,
-  setupCodeToolsForNode,
-  getAllCodeToolNames,
-} from "./registry/index"
-
-export type {
-  MCPToolName,
-  CodeToolName,
-  AllToolNames,
-  FlexibleToolDefinition,
-} from "./registry/index"
+  type FlexibleToolDefinition,
+} from "./registry/CodeToolRegistry"
+export { setupCodeToolsForNode } from "./registry/codeToolsSetup"
+export { getAllCodeToolNames } from "./registry/getAllCodeToolNames"
 
 // Config - Tool metadata and settings
-export { TOOLS, DEFAULT_TOOL_CONFIG } from "./config/index"
-export type { ToolConfig } from "./config/index"
+export {
+  TOOLS,
+  DEFAULT_TOOL_CONFIG,
+  type ToolConfig,
+  type MCPToolName as ConfigMCPToolName,
+  type CodeToolName as ConfigCodeToolName,
+  type AllToolNames as ConfigAllToolNames,
+} from "./config/tools"
 
 // MCP - Model Context Protocol client
-export { MCPClientManager, getMCPTools } from "./mcp/index"
-export type { MCPClientConfig, MCPConfig, MCPToolInfo } from "./mcp/index"
+export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
+export { getMCPTools, type MCPToolInfo } from "./mcp/getMCPTools"
 
 // Registration - Tool registration and startup
 export {
@@ -65,28 +66,28 @@ export {
   getAllTools,
   getToolsByGroup,
   getToolByName,
+  type CodeToolDefinition,
+  type CodeToolGroup,
+  type CodeToolGroups,
+} from "./registration/codeToolsRegistration"
+export {
   mcpToolGroups,
   getAllMCPTools,
   getMCPToolsByGroup,
   getMCPToolByName,
   getAllMCPServerNames,
-  registerAllTools,
-  registerToolGroups,
+  type MCPServerConfig,
+  type MCPToolDefinition,
+  type MCPToolGroup,
+} from "./registration/mcpToolsRegistration"
+export { registerAllTools, registerToolGroups } from "./registration/startup"
+export {
   validateCodeToolRegistration,
   validateMCPToolRegistration,
   validateAllRegistrations,
   printValidationResult,
-} from "./registration/index"
-
-export type {
-  CodeToolDefinition,
-  CodeToolGroup,
-  CodeToolGroups,
-  MCPServerConfig,
-  MCPToolDefinition,
-  MCPToolGroup,
-  ValidationResult,
-} from "./registration/index"
+  type ValidationResult,
+} from "./registration/validation"
 
 // Schemas - Shared type definitions
 export {
@@ -97,7 +98,7 @@ export {
   type LocationData,
   type PartialLocationData,
   type WorkflowLocationData,
-} from "./schemas/index"
+} from "./schemas/location.types"
 
 // Runtime Config - Configurable paths and settings
 export {
@@ -110,6 +111,3 @@ export {
   type ToolRuntimeModels,
   type ToolRuntimeConfig,
 } from "./config/runtime"
-
-// Default export for backward compatibility (Tools utility)
-export { default } from "./factory/output.types"

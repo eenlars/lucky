@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import { lgg } from "@core/utils/logging/Logger"
 import type { GoogleMapsBusiness } from "@examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { normalizeHostname } from "@examples/definitions/googlescraper/utils/hostname"
+import type { StandardizedLocation } from "@lucky/shared"
 
 // get directory path for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -13,34 +14,6 @@ const __dirname = path.dirname(__filename)
 
 export interface GoogleScraperBusinessExtended extends GoogleMapsBusiness {
   coordinates?: { latitude: number; longitude: number }
-}
-
-export interface StandardizedLocation {
-  name: string
-  address: string
-  city: string
-  country: string
-  postcode: string
-  // phone: string | null
-  // email: string | null
-  coordinates: { latitude: number; longitude: number } | null
-  opening_times:
-    | {
-        monday: string
-        tuesday: string
-        wednesday: string
-        thursday: string
-        friday: string
-        saturday: string
-        sunday: string
-      }
-    | null
-    | undefined
-  owner_imgs: string[]
-  metadata: {
-    [key: string]: any
-  }
-  domain: string | null
 }
 
 export function transformLocationData(

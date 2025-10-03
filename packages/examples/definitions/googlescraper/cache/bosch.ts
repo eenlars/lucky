@@ -1,4 +1,4 @@
-import type { StandardizedLocation } from "@examples/definitions/googlescraper/convert"
+import type { StandardizedLocation } from "@lucky/shared"
 
 export const DenBoschAlbertHeijn: StandardizedLocation[] = [
   {

@@ -15,7 +15,7 @@
  * TODO: Create migration script to update calling code automatically
  */
 
-import type { RS } from "@core/utils/types"
+import type { RS } from "@lucky/shared"
 import type { Genome } from "../Genome"
 import { MutationCoordinator } from "./mutations/index"
 import type { MutationOptions as CanonicalMutationOptions } from "./mutations/mutation.types"

@@ -1,7 +1,8 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import { JSONN } from "@lucky/shared"
-import Tools, { type CodeToolResult } from "@lucky/tools"
+import { Tools } from "@lucky/shared"
+import type { CodeToolResult } from "@lucky/tools"
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 

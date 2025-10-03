@@ -9,8 +9,9 @@ import { cleanupBrowser, navigateToGoogleMaps, sanitizeJSON } from "@examples/de
 import { normalizeHostname } from "@examples/definitions/googlescraper/utils/hostname"
 import type { ProxyResponse } from "@examples/definitions/googlescraper/utils/proxies"
 import { detectFeed, setupPage } from "@examples/definitions/googlescraper/utils/scrapeUtils"
+import { Tools } from "@lucky/shared"
 import type { CodeToolName } from "@lucky/tools"
-import Tools, { type CodeToolResult } from "@lucky/tools"
+import type { CodeToolResult } from "@lucky/tools"
 
 export type GoogleMapsResult = {
   businesses: GoogleMapsBusiness[]

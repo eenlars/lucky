@@ -1,6 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
-import Tools from "@lucky/tools"
+import { Tools } from "@lucky/shared"
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 import { filterByMultipleValues, filterByNumericRange, filterCsvData, simpleFilterCsv } from "./main/function"

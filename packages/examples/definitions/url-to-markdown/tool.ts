@@ -1,5 +1,6 @@
 import { htmlToMarkdown } from "@examples/definitions/url-to-markdown/function"
-import Tools, { defineTool, type CodeToolResult } from "@lucky/tools"
+import { Tools } from "@lucky/shared"
+import { type CodeToolResult, defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 const toolName = "urlToMarkdown"
