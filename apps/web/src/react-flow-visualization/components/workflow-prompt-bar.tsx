@@ -90,7 +90,7 @@ export function WorkflowPromptBar() {
       }
 
       await loadWorkflowFromData(result.data)
-      organizeLayout()
+      await organizeLayout()
 
       setPrompt("")
       toast.success("Updated")
