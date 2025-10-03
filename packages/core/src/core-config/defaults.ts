@@ -166,6 +166,11 @@ export function createDefaultCoreConfig(): CoreConfig {
       allowCycles: true,
       enableOutputValidation: false,
     },
+
+    persistence: {
+      useMockBackend: process.env.USE_MOCK_PERSISTENCE === "true",
+      defaultBackend: process.env.USE_MOCK_PERSISTENCE === "true" ? "memory" : "supabase",
+    },
   }
 }
 

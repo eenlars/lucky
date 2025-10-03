@@ -9,6 +9,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { R, type RS } from "@lucky/shared"
+import type { IPersistence } from "@together/adapter-supabase"
 import { Genome } from "../Genome"
 
 /**
@@ -64,6 +65,7 @@ export class VerificationCache {
 }
 
 export async function workflowConfigToGenome({
+  persistence,
   workflowConfig,
   parentWorkflowVersionIds,
   evaluationInput,
@@ -71,6 +73,7 @@ export async function workflowConfigToGenome({
   operation = "init",
   verboseId,
 }: {
+  persistence?: IPersistence
   workflowConfig: WorkflowConfig
   parentWorkflowVersionIds: string[]
   evaluationInput: EvaluationInput
@@ -97,6 +100,7 @@ export async function workflowConfigToGenome({
   }
   try {
     const workflowVersionId = await Genome.createWorkflowVersion({
+      persistence,
       genome: workflowGenome,
       evaluationInput,
       _evolutionContext,

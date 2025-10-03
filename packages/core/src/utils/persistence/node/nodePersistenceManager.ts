@@ -1,7 +1,7 @@
 // src/core/node/persistence/nodePersistence.ts
 
-import { saveNodeVersionToDB } from "@core/utils/persistence/node/saveNode"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence } from "@together/adapter-supabase"
 
 /**
  * Manages persistence operations for workflow nodes.
@@ -11,6 +11,7 @@ export class NodePersistenceManager {
     private readonly nodeId: string,
     private readonly config: WorkflowNodeConfig,
     private memory: Record<string, string> = {},
+    private readonly persistence?: IPersistence,
   ) {
     // Initialize memory from config
     this.memory = { ...(config.memory ?? {}) }
@@ -22,9 +23,15 @@ export class NodePersistenceManager {
   public async registerNode(workflowVersionId: string): Promise<{
     nodeVersionId: string
   }> {
-    const { nodeVersionId } = await saveNodeVersionToDB({
-      config: this.config,
+    if (!this.persistence) {
+      // Return a dummy ID if no persistence
+      return { nodeVersionId: `${this.nodeId}-${workflowVersionId}-${Date.now()}` }
+    }
+
+    const { nodeVersionId } = await this.persistence.nodes.saveNodeVersion({
       workflowVersionId,
+      nodeId: this.nodeId,
+      config: this.config,
     })
     return { nodeVersionId }
   }

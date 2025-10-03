@@ -48,41 +48,43 @@ describe("InvocationPipeline Real Integration", () => {
   // TODO: This helper creates real database records but doesn't clean them up
   // Should use transactions or cleanup in afterEach
   // Helper function to set up required database records
-  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, _nodeId: string) => {
     const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
       "@core/utils/persistence/workflow/registerWorkflow"
     )
-    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
+    // const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "real-pipeline-workflow"
 
     // Create the workflow hierarchy: Workflow -> WorkflowVersion -> WorkflowInvocation -> NodeVersion
-    await ensureWorkflowExists("Real pipeline test workflow", workflowId)
+    await ensureWorkflowExists(undefined, "Real pipeline test workflow", workflowId)
     await createWorkflowVersion({
+      persistence: undefined,
       workflowVersionId,
       workflowConfig: { nodes: [], entryNodeId: "test" },
       commitMessage: "Real pipeline test version",
       workflowId,
     })
     await createWorkflowInvocation({
+      persistence: undefined,
       workflowInvocationId,
       workflowVersionId,
     })
 
     // Create NodeVersion for the test node
-    await saveNodeVersionToDB({
-      config: {
-        nodeId,
-        modelName: getDefaultModels().default,
-        systemPrompt: "use todo write first, and then return the output of todo read",
-        mcpTools: [],
-        codeTools: ["todoWrite", "todoRead"],
-        description: "Real pipeline test node with todo tools",
-        handOffs: ["end"],
-        waitingFor: [],
-      },
-      workflowVersionId,
-    })
+    // await saveNodeVersionToDB({
+    //   config: {
+    //     nodeId,
+    //     modelName: getDefaultModels().default,
+    //     systemPrompt: "use todo write first, and then return the output of todo read",
+    //     mcpTools: [],
+    //     codeTools: ["todoWrite", "todoRead"],
+    //     description: "Real pipeline test node with todo tools",
+    //     handOffs: ["end"],
+    //     waitingFor: [],
+    //   },
+    //   workflowVersionId,
+    // })
   }
 
   it("should use real InvocationPipeline with system prompt and real tools", async () => {

@@ -51,16 +51,17 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: ["test-id-123"],
     }
 
-    const result = await IngestionLayer.convert(evaluation)
+    const mockPersistence = {
+      loadDatasetRecords: vi.fn().mockResolvedValue(mockRecords),
+    } as any
+    const result = await IngestionLayer.convert(evaluation, mockPersistence)
 
     expect(result).toHaveLength(1)
     expect(result[0].workflowInput).toBe("find the patagonia stores in amsterdam")
     expect(result[0].workflowOutput.output).toBe("singel 486 amsterdam")
     expect(result[0].workflowOutput.outputSchema).toBeUndefined()
 
-    expect(supabase.from).toHaveBeenCalledWith("DatasetRecord")
-    expect(mockFrom().select).toHaveBeenCalledWith("*")
-    expect(mockFrom().select().in).toHaveBeenCalledWith("dataset_record_id", ["test-id-123"])
+    expect(mockPersistence.loadDatasetRecords).toHaveBeenCalledWith(["test-id-123"])
   })
 
   it("should handle multiple dataset records", async () => {
@@ -101,7 +102,10 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: ["test-id-1", "test-id-2"],
     }
 
-    const result = await IngestionLayer.convert(evaluation)
+    const mockPersistence = {
+      loadDatasetRecords: vi.fn().mockResolvedValue(mockRecords),
+    } as any
+    const result = await IngestionLayer.convert(evaluation, mockPersistence)
 
     expect(result).toHaveLength(2)
     expect(result[0].workflowInput).toBe("find nike stores in berlin")
@@ -140,7 +144,10 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: ["test-id-null"],
     }
 
-    const result = await IngestionLayer.convert(evaluation)
+    const mockPersistence = {
+      loadDatasetRecords: vi.fn().mockResolvedValue(mockRecords),
+    } as any
+    const result = await IngestionLayer.convert(evaluation, mockPersistence)
 
     expect(result[0].workflowInput).toBe("fallback goal test")
     expect(result[0].workflowOutput.output).toBe("fallback result")
@@ -178,7 +185,10 @@ describe("IngestionLayer - Dataset Records", () => {
       outputSchema: mockSchema as any,
     }
 
-    const result = await IngestionLayer.convert(evaluation)
+    const mockPersistence = {
+      loadDatasetRecords: vi.fn().mockResolvedValue(mockRecords),
+    } as any
+    const result = await IngestionLayer.convert(evaluation, mockPersistence)
 
     expect(result[0].workflowOutput.outputSchema).toBe(mockSchema)
   })
@@ -203,7 +213,8 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: [],
     }
 
-    await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
+    const mockPersistence = { supabase } as any
+    await expect(IngestionLayer.convert(evaluation, mockPersistence)).rejects.toThrow(
       "dataset-records evaluation requires at least one record ID",
     )
   })
@@ -227,7 +238,12 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: ["test-id-error"],
     }
 
-    await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
+    const mockPersistence = {
+      loadDatasetRecords: vi
+        .fn()
+        .mockRejectedValue(new Error("failed to fetch dataset records: Database connection failed")),
+    } as any
+    await expect(IngestionLayer.convert(evaluation, mockPersistence)).rejects.toThrow(
       "failed to convert dataset record evaluation: failed to fetch dataset records: Database connection failed",
     )
   })
@@ -251,7 +267,10 @@ describe("IngestionLayer - Dataset Records", () => {
       recordIds: ["non-existent-id"],
     }
 
-    await expect(IngestionLayer.convert(evaluation)).rejects.toThrow(
+    const mockPersistence = {
+      loadDatasetRecords: vi.fn().mockResolvedValue([]),
+    } as any
+    await expect(IngestionLayer.convert(evaluation, mockPersistence)).rejects.toThrow(
       "no dataset records found for IDs: non-existent-id",
     )
   })

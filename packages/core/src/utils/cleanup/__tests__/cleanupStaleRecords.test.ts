@@ -65,57 +65,30 @@ describe("cleanupStaleRecords", () => {
   })
 
   it("should cleanup stale workflow invocations", async () => {
-    const mockData = [{ wf_invocation_id: "test-id" }]
-    const mockChain = {
-      eq: vi.fn().mockReturnValue({
-        lt: vi.fn().mockReturnValue({
-          select: vi.fn().mockResolvedValue({ data: mockData, error: null }),
-        }),
+    const mockPersistence = {
+      cleanupStaleRecords: vi.fn().mockResolvedValue({
+        workflowInvocations: 1,
+        nodeInvocations: 0,
+        evolutionRuns: 0,
+        generations: 0,
+        messages: 0,
+        evolutionRunsEndTimes: 0,
       }),
-      is: vi.fn().mockReturnValue({
-        lt: vi.fn().mockReturnValue({
-          select: vi.fn().mockResolvedValue({ data: [], error: null }),
-        }),
-      }),
-    }
+    } as any
+    const stats = await cleanupStaleRecords(mockPersistence)
 
-    mockFrom.mockReturnValueOnce({
-      update: vi.fn().mockReturnValue(mockChain),
-      // also include select in this specific call path for completeness
-      select: vi.fn().mockReturnValue({
-        is: vi.fn().mockResolvedValue({ data: [], error: null }),
-      }),
-    } as unknown as ReturnType<typeof supabase.from>)
-
-    const stats = await cleanupStaleRecords()
-
-    expect(mockFrom).toHaveBeenCalledWith("WorkflowInvocation")
+    expect(mockPersistence.cleanupStaleRecords).toHaveBeenCalled()
     expect(stats.workflowInvocations).toBe(1)
     expect(mockLgg.info).toHaveBeenCalledWith("marked 1 stale workflow invocations as failed")
   })
 
   it("should handle database errors gracefully", async () => {
     const error = new Error("database error")
-    const mockChain = {
-      eq: vi.fn().mockReturnValue({
-        lt: vi.fn().mockReturnValue({
-          select: vi.fn().mockResolvedValue({ data: null, error }),
-        }),
-      }),
-      is: vi.fn().mockReturnValue({
-        lt: vi.fn().mockReturnValue({
-          select: vi.fn().mockResolvedValue({ data: [], error: null }),
-        }),
-      }),
-    }
+    const mockPersistence = {
+      cleanupStaleRecords: vi.fn().mockRejectedValue(error),
+    } as any
 
-    mockFrom.mockReturnValueOnce({
-      update: vi.fn().mockReturnValue(mockChain),
-    } as unknown as ReturnType<typeof supabase.from>)
-
-    const stats = await cleanupStaleRecords()
-
-    expect(mockLgg.error).toHaveBeenCalledWith("failed to cleanup stale workflow invocations:", error)
-    expect(stats.workflowInvocations).toBe(0)
+    await expect(cleanupStaleRecords(mockPersistence)).rejects.toThrow(error)
+    expect(mockLgg.error).toHaveBeenCalledWith("cleanup failed:", error)
   })
 })

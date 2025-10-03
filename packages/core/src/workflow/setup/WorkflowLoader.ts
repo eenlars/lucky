@@ -1,5 +1,4 @@
 import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
-import { supabase } from "@core/utils/clients/supabase/client"
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
@@ -7,6 +6,7 @@ import { isValidToolInformation } from "@core/utils/validation/workflow/toolInfo
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
 import type { CodeToolName } from "@lucky/tools"
+import type { IPersistence } from "@together/adapter-supabase"
 
 class WorkflowConfigError extends Error {
   constructor(
@@ -158,7 +158,7 @@ export class WorkflowConfigHandler {
     try {
       const path = await import("node:path")
       const fs = await import("node:fs")
-      const { readText } = await import("@lucky/shared/fs")
+      const { readText } = await import("@lucky/shared/fs/paths")
 
       // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
@@ -271,21 +271,17 @@ export class WorkflowConfigHandler {
   /**
    * Load workflow config from database by version ID
    */
-  async loadFromDatabase(workflowVersionId: string): Promise<WorkflowConfig> {
+  async loadFromDatabase(workflowVersionId: string, persistence: IPersistence): Promise<WorkflowConfig> {
     try {
       lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from database:", { workflowVersionId })
 
-      const { data, error } = await supabase
-        .from("WorkflowVersion")
-        .select("dsl")
-        .eq("wf_version_id", workflowVersionId)
-        .single()
+      const dsl = await persistence.loadWorkflowConfig(workflowVersionId)
 
-      if (error || !data) {
-        throw new DatabaseError(`Workflow version ${workflowVersionId} not found: ${error?.message}`)
+      if (!dsl) {
+        throw new DatabaseError(`Workflow version ${workflowVersionId} not found`)
       }
 
-      const parsedConfig = WorkflowConfigSchema.parse(data.dsl)
+      const parsedConfig = WorkflowConfigSchema.parse(dsl)
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
       if (error instanceof WorkflowConfigError) {
@@ -298,23 +294,19 @@ export class WorkflowConfigHandler {
   /**
    * Load workflow config from database for display only (allows legacy model names)
    */
-  async loadFromDatabaseForDisplay(workflowVersionId: string): Promise<WorkflowConfig> {
+  async loadFromDatabaseForDisplay(workflowVersionId: string, persistence: IPersistence): Promise<WorkflowConfig> {
     try {
       lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Loading workflow from database for display:", {
         workflowVersionId,
       })
 
-      const { data, error } = await supabase
-        .from("WorkflowVersion")
-        .select("dsl")
-        .eq("wf_version_id", workflowVersionId)
-        .single()
+      const dsl = await persistence.loadWorkflowConfigForDisplay(workflowVersionId)
 
-      if (error || !data) {
-        throw new DatabaseError(`Workflow version ${workflowVersionId} not found: ${error?.message}`)
+      if (!dsl) {
+        throw new DatabaseError(`Workflow version ${workflowVersionId} not found`)
       }
 
-      const parsedConfig = WorkflowConfigSchemaDisplay.parse(data.dsl)
+      const parsedConfig = WorkflowConfigSchemaDisplay.parse(dsl)
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
       if (error instanceof WorkflowConfigError) {
@@ -442,10 +434,19 @@ export class WorkflowConfigHandler {
 // Export convenience functions for backward compatibility
 export const workflowConfigHandler = WorkflowConfigHandler.getInstance()
 export const loadSingleWorkflow = (filePath?: string) => workflowConfigHandler.loadSingleWorkflow(filePath)
-export const loadFromDatabase = (workflowVersionId: string) => workflowConfigHandler.loadFromDatabase(workflowVersionId)
 
-export const loadFromDatabaseForDisplay = (workflowVersionId: string) =>
-  workflowConfigHandler.loadFromDatabaseForDisplay(workflowVersionId)
+// These database functions now need to create their own persistence
+import { SupabasePersistence } from "@together/adapter-supabase"
+
+export const loadFromDatabase = async (workflowVersionId: string) => {
+  const persistence = new SupabasePersistence()
+  return workflowConfigHandler.loadFromDatabase(workflowVersionId, persistence)
+}
+
+export const loadFromDatabaseForDisplay = async (workflowVersionId: string) => {
+  const persistence = new SupabasePersistence()
+  return workflowConfigHandler.loadFromDatabaseForDisplay(workflowVersionId, persistence)
+}
 export const loadFromFile = (filename: string) => workflowConfigHandler.loadFromFile(filename)
 export const loadFromDSL = (dslConfig: WorkflowConfig) => workflowConfigHandler.loadFromDSL(dslConfig)
 export const saveWorkflowConfig = (config: WorkflowConfig, filename: string, skipBackup?: boolean) =>

@@ -122,7 +122,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     // Set workflow IO (handles multiple inputs via IngestionLayer)
     await workflow.prepareWorkflow(evalInput, CONFIG.workflow.prepareProblemMethod)
 
-    const { success, error, data: runResults, usdCost } = await workflow.run()
+    const { success, error, data: runResults } = await workflow.run()
 
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)

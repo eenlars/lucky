@@ -14,8 +14,8 @@ import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
-import { saveNodeInvocationToDB } from "@core/utils/persistence/node/saveNodeInvocation"
 import { validateAndDecide } from "@core/utils/validation/message/validateAndDecide"
+import type { NodeInvocationData } from "@together/adapter-supabase"
 
 /**
  * Handles successful response processing.
@@ -152,24 +152,26 @@ export async function handleSuccess(
 
   // save to db
   let nodeInvocationId: string
-  if (context.skipDatabasePersistence) {
+  if (context.skipDatabasePersistence || !context.persistence) {
     // Skip database save and use mock ID
     nodeInvocationId = `mock-invocation-${nodeConfig.nodeId}-${Date.now()}`
   } else {
-    const result = await saveNodeInvocationToDB({
+    const nodeInvocationData: NodeInvocationData = {
       nodeId: nodeConfig.nodeId,
-      start_time: context.startTime,
+      workflowInvocationId: context.workflowInvocationId,
+      workflowVersionId: context.workflowVersionId,
+      startTime: context.startTime,
+      endTime: new Date().toISOString(),
       messageId: context.workflowMessageIncoming.messageId,
       usdCost: response.cost,
       output: finalNodeInvocationOutput,
-      workflowInvocationId: context.workflowInvocationId,
       agentSteps: response.agentSteps,
       summary: response.summary ?? "",
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      workflowVersionId: context.workflowVersionId,
       model: context.nodeConfig.modelName,
       updatedMemory: updatedMemory || undefined,
-    })
+    }
+    const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
     nodeInvocationId = result.nodeInvocationId
   }
 
@@ -209,23 +211,27 @@ export async function handleError({
   }
 
   // Respect skipDatabasePersistence similarly to handleSuccess
-  const nodeInvocationId = context.skipDatabasePersistence
-    ? `mock-invocation-${context.nodeConfig.nodeId}-${Date.now()}`
-    : (
-        await saveNodeInvocationToDB({
-          nodeId: context.nodeConfig.nodeId,
-          start_time: context.startTime,
-          messageId: context.workflowMessageIncoming.messageId,
-          usdCost: 0,
-          output: errorMessage,
-          workflowInvocationId: context.workflowInvocationId,
-          agentSteps,
-          summary,
-          files: filesUsed.length > 0 ? filesUsed : undefined,
-          workflowVersionId: context.workflowVersionId,
-          model: context.nodeConfig.modelName,
-        })
-      ).nodeInvocationId
+  let nodeInvocationId: string
+  if (context.skipDatabasePersistence || !context.persistence) {
+    nodeInvocationId = `mock-invocation-${context.nodeConfig.nodeId}-${Date.now()}`
+  } else {
+    const nodeInvocationData: NodeInvocationData = {
+      nodeId: context.nodeConfig.nodeId,
+      workflowInvocationId: context.workflowInvocationId,
+      workflowVersionId: context.workflowVersionId,
+      startTime: context.startTime,
+      endTime: new Date().toISOString(),
+      messageId: context.workflowMessageIncoming.messageId,
+      usdCost: 0,
+      output: errorMessage,
+      agentSteps,
+      summary,
+      files: filesUsed.length > 0 ? filesUsed : undefined,
+      model: context.nodeConfig.modelName,
+    }
+    const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
+    nodeInvocationId = result.nodeInvocationId
+  }
 
   const {
     handoff: nextNodeId,

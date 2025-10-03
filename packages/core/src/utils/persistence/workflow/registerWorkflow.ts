@@ -1,29 +1,31 @@
-import { supabase } from "@core/utils/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Json, TablesInsert, TablesUpdate } from "@lucky/shared"
+import type { Json } from "@lucky/shared"
+import type {
+  IPersistence,
+  WorkflowInvocationData,
+  WorkflowInvocationUpdate,
+  WorkflowVersionData,
+} from "@together/adapter-supabase"
 
 /**
  * Auxiliary function to ensure the main workflow exists in the database
  */
-export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
-  const workflowInsertable: TablesInsert<"Workflow"> = {
-    wf_id: workflowId,
-    description,
-  }
-
-  const { error } = await supabase.from("Workflow").upsert(workflowInsertable)
-
-  if (error) {
-    throw new Error(`Failed to upsert workflow: ${error.message}`)
-  }
+export const ensureWorkflowExists = async (
+  persistence: IPersistence | undefined,
+  description: string,
+  workflowId: string,
+): Promise<void> => {
+  if (!persistence) return
+  await persistence.ensureWorkflowExists(workflowId, description)
 }
 
 /**
  * Auxiliary function to create a WorkflowVersion entry
  */
 export const createWorkflowVersion = async ({
+  persistence,
   workflowVersionId,
   workflowConfig,
   commitMessage,
@@ -33,6 +35,7 @@ export const createWorkflowVersion = async ({
   parent2Id,
   workflowId,
 }: {
+  persistence: IPersistence | undefined
   workflowVersionId: string
   workflowConfig: WorkflowConfig | Json
   commitMessage: string
@@ -42,33 +45,25 @@ export const createWorkflowVersion = async ({
   parent1Id?: string
   parent2Id?: string
 }): Promise<void> => {
-  await ensureWorkflowExists(commitMessage, workflowId)
-  const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
-    wf_version_id: workflowVersionId,
-    workflow_id: workflowId,
-    commit_message: commitMessage,
-    dsl: workflowConfig as unknown as Json,
-    iteration_budget: 10,
-    time_budget_seconds: 3600,
-    generation_id: generation || null,
-    operation: operation || "init",
-    parent1_id: parent1Id || null,
-    parent2_id: parent2Id || null,
+  if (!persistence) return
+  const data: WorkflowVersionData = {
+    workflowVersionId,
+    workflowId,
+    commitMessage,
+    dsl: workflowConfig,
+    generationId: generation,
+    operation,
+    parent1Id,
+    parent2Id,
   }
-
-  const { error } = await supabase.from("WorkflowVersion").upsert(workflowVersionInsertable, {
-    onConflict: "wf_version_id",
-  })
-
-  if (error) {
-    throw new Error(`Failed to upsert workflow version: ${error.message}`)
-  }
+  await persistence.createWorkflowVersion(data)
 }
 
 /**
  * Auxiliary function to create a WorkflowInvocation entry
  */
 export const createWorkflowInvocation = async ({
+  persistence,
   workflowInvocationId,
   workflowVersionId,
   runId,
@@ -79,6 +74,7 @@ export const createWorkflowInvocation = async ({
   workflowInput,
   workflowOutput,
 }: {
+  persistence: IPersistence | undefined
   workflowInvocationId: string
   workflowVersionId: string
   runId?: string
@@ -89,131 +85,42 @@ export const createWorkflowInvocation = async ({
   workflowInput?: Json
   workflowOutput?: Json
 }): Promise<void> => {
-  // Debug logging for generation linkage
-  // lgg.info(
-  //   `[createWorkflowInvocation] Creating invocation:`,
-  //   {
-  //     workflowInvocationId,
-  //     workflowVersionId,
-  //     runId,
-  //     generation,
-  //   }
-  // )
+  if (!persistence) return
 
-  const workflowInvocationInsertable: TablesInsert<"WorkflowInvocation"> = {
-    wf_invocation_id: workflowInvocationId,
-    wf_version_id: workflowVersionId,
-    status: "running",
-    start_time: new Date().toISOString(),
-    end_time: null,
-    usd_cost: 0,
-    extras: {},
-    metadata: metadata || {},
-    run_id: runId || null,
-    generation_id: generation || null,
-    fitness: fitness || null,
-    evaluation_inputs: null,
-    expected_output_type: expectedOutputType || null,
-    workflow_input: workflowInput || null,
-    expected_output: typeof workflowOutput === "string" ? workflowOutput : JSON.stringify(workflowOutput) || null,
+  const data: WorkflowInvocationData = {
+    workflowInvocationId,
+    workflowVersionId,
+    runId,
+    generationId: generation,
+    metadata,
+    fitness,
+    expectedOutputType,
+    workflowInput,
+    workflowOutput,
   }
-
-  const { error } = await supabase.from("WorkflowInvocation").insert(workflowInvocationInsertable)
-
-  if (error) {
-    throw new Error(`Failed to insert workflow invocation: ${error.message}`)
-  }
-
-  // lgg.info(
-  //   `[createWorkflowInvocation] Successfully created invocation ${workflowInvocationId} for generation ${generation || "none"}`
-  // )
+  await persistence.createWorkflowInvocation(data)
 }
 
-interface UpdateWorkflowInvocationParams
-  extends Partial<Omit<TablesUpdate<"WorkflowInvocation">, "wf_invocation_id" | "wf_version_id">> {
-  /** the PK of the row we're updating */
-  workflowInvocationId: string
-}
-
-export const updateWorkflowInvocationInDatabase = async ({
-  workflowInvocationId,
-  ...fields
-}: UpdateWorkflowInvocationParams): Promise<TablesUpdate<"WorkflowInvocation"> | null> => {
-  // build the actual payload for supabase
-  const updatePayload: Partial<TablesUpdate<"WorkflowInvocation">> = {
-    ...fields,
-  }
-
-  // Ensure integer columns are saved as integers (DB uses smallint)
-  if (typeof updatePayload.accuracy === "number") {
-    updatePayload.accuracy = Math.round(updatePayload.accuracy)
-  }
-  if (typeof updatePayload.fitness_score === "number") {
-    updatePayload.fitness_score = Math.round(updatePayload.fitness_score)
-  }
-
-  // push the update and return the new row
-  const { data, error } = await supabase
-    .from("WorkflowInvocation")
-    .update(updatePayload)
-    .eq("wf_invocation_id", workflowInvocationId)
-    .select()
-    .single()
-
-  if (error) {
-    lgg.error("updateWorkflowInvocationInDatabase error", {
-      workflowInvocationId,
-      updatePayload,
-      error,
-    })
-  }
-
-  if (!data) {
-    return null
-  }
-
-  return data
+export const updateWorkflowInvocationInDatabase = async (
+  persistence: IPersistence | undefined,
+  params: WorkflowInvocationUpdate,
+): Promise<unknown> => {
+  if (!persistence) return
+  return persistence.updateWorkflowInvocation(params)
 }
 
 /**
  * Updates a WorkflowVersion with all_workflow_io after it's been populated
  */
 export const updateWorkflowVersionWithIO = async ({
+  persistence,
   workflowVersionId,
   allWorkflowIO,
 }: {
+  persistence: IPersistence | undefined
   workflowVersionId: string
   allWorkflowIO: WorkflowIO[]
 }): Promise<void> => {
-  // Ensure we only store JSON-serializable data in the DB.
-  // Drop non-serializable fields like outputSchema (ZodTypeAny).
-  const jsonSafeWorkflowIO: Json[] = allWorkflowIO.map(io => {
-    const output = io.workflowOutput?.output
-    let jsonSafeOutput: unknown = null
-    try {
-      // Remove functions/symbols/circular refs by round-tripping when needed
-      jsonSafeOutput = JSON.parse(JSON.stringify(output ?? null))
-    } catch {
-      // Fallback to string representation if somehow non-serializable
-      jsonSafeOutput = typeof output === "string" ? output : String(output)
-    }
-
-    return {
-      workflowInput: io.workflowInput,
-      workflowOutput: {
-        output: jsonSafeOutput,
-      },
-    } as unknown as Json
-  })
-
-  const insertable: TablesUpdate<"WorkflowVersion"> = {
-    all_workflow_io: jsonSafeWorkflowIO,
-    updated_at: new Date().toISOString(),
-  }
-
-  const { error } = await supabase.from("WorkflowVersion").update(insertable).eq("wf_version_id", workflowVersionId)
-
-  if (error) {
-    throw new Error(`Failed to update workflow version with IO: ${error.message}`)
-  }
+  if (!persistence) return
+  await persistence.updateWorkflowVersionWithIO(workflowVersionId, allWorkflowIO)
 }

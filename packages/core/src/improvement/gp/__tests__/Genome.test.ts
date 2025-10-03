@@ -462,6 +462,7 @@ describe("Genome", () => {
     describe("Database Operations", () => {
       it("should save to database with evolution metadata", async () => {
         await createWorkflowVersion({
+          persistence: undefined,
           workflowVersionId: "test-version-id",
           workflowConfig: genome.getWorkflowConfig(),
           commitMessage: "test commit",
@@ -473,6 +474,7 @@ describe("Genome", () => {
         })
 
         expect(vi.mocked(createWorkflowVersion)).toHaveBeenCalledWith({
+          persistence: undefined,
           workflowVersionId: "test-version-id",
           workflowConfig: genome.getWorkflowConfig(),
           commitMessage: "test commit",

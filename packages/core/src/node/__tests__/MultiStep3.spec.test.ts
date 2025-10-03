@@ -12,40 +12,30 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
   // being toolStrategyOverride: "v3". should refactor to avoid duplication or at least
   // document what specific v3 behavior is being tested. also same issues as MultiStep2:
   // integration test making real calls, only testing order not correctness.
-  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, _nodeId: string) => {
     const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
       "@core/utils/persistence/workflow/registerWorkflow"
     )
-    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "multistep3-test-workflow"
 
-    await ensureWorkflowExists("MultiStep3 test workflow", workflowId)
+    // Pass undefined persistence - these test functions handle it gracefully
+    await ensureWorkflowExists(undefined, "MultiStep3 test workflow", workflowId)
     await createWorkflowVersion({
+      persistence: undefined,
       workflowVersionId,
       workflowConfig: { nodes: [], entryNodeId: "test" },
       commitMessage: "MultiStep3 test version",
       workflowId,
     })
     await createWorkflowInvocation({
+      persistence: undefined,
       workflowInvocationId,
       workflowVersionId,
     })
 
-    await saveNodeVersionToDB({
-      config: {
-        nodeId,
-        modelName: model,
-        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
-        mcpTools: [],
-        codeTools: ["todoRead", "todoWrite"],
-        description: "MultiStep3 test node with todo tools",
-        handOffs: ["end"],
-        waitingFor: [],
-        memory: {},
-      },
-      workflowVersionId,
-    })
+    // Node version is handled in-memory for this test
+    // The actual node config is passed directly in the context below
   }
 
   it("should run todoRead and todoWrite sequentially", async () => {

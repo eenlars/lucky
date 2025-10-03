@@ -1,5 +1,6 @@
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { cleanupStaleRecords } from "@lucky/core/utils/cleanup/cleanupStaleRecords"
+import { SupabasePersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 export async function GET() {
@@ -7,7 +8,8 @@ export async function GET() {
   ensureCoreInit()
 
   try {
-    const stats = await cleanupStaleRecords()
+    const persistence = new SupabasePersistence()
+    const stats = await cleanupStaleRecords(persistence)
 
     return NextResponse.json({
       success: true,

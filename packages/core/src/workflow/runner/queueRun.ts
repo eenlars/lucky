@@ -115,12 +115,16 @@ export async function queueRun({
 
   const messageType: MessageType = coordinationType === "sequential" ? "sequential" : "delegation"
 
+  // Get persistence from workflow for all message operations
+  const persistence = workflow.getPersistence()
+
   // Add initial message to the queue
   const initialMessage = new WorkflowMessage({
     originInvocationId: null,
     fromNodeId: "start",
     toNodeId: entryNodeId,
     seq: seq++,
+    persistence,
     payload: {
       kind: messageType,
       berichten: [
@@ -215,6 +219,7 @@ export async function queueRun({
         fromNodeId: "aggregator",
         toNodeId: currentMessage.toNodeId,
         seq: currentMessage.seq,
+        persistence,
         payload: aggregatedPayload,
         wfInvId: currentMessage.wfInvId,
       })
@@ -268,6 +273,7 @@ export async function queueRun({
     } = await targetNode.invoke({
       workflowMessageIncoming: currentMessage,
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
+      persistence: workflow.getPersistence(), // Pass persistence from workflow
       ...toolContext,
     })
 
@@ -332,6 +338,7 @@ export async function queueRun({
           fromNodeId: targetNode.nodeId,
           toNodeId: om.toNodeId,
           seq: seq++,
+          persistence,
           payload: om.payload,
           wfInvId: workflowInvocationId,
         })
@@ -379,6 +386,7 @@ export async function queueRun({
           fromNodeId: targetNode.nodeId,
           toNodeId: nextId,
           seq: seq++,
+          persistence,
           payload: messagePayload,
           wfInvId: workflowInvocationId,
         })
@@ -406,6 +414,7 @@ export async function queueRun({
       await updateWorkflowMemory({
         workflowVersionId: workflow.getWorkflowVersionId(),
         workflowConfig: workflow.getConfig(),
+        persistence,
       })
 
       lgg.onlyIf(verbose, chalk.green("[queueRun] Memory updates persisted to database"))
