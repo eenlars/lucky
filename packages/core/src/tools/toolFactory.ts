@@ -28,12 +28,12 @@
  */
 
 import { TOOLS } from "@core/core-config/compat"
-import { validateAndCorrectWithSchema } from "@core/tools/constraintValidation"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import { R, type RS } from "@lucky/shared"
 import { Tools } from "@lucky/shared"
 import type { CodeToolName } from "@lucky/tools"
+import { validateAndCorrectWithSchema } from "@lucky/tools"
 import { type Tool, tool, zodSchema } from "ai"
 import { type ZodSchema, type ZodTypeAny, z } from "zod"
 

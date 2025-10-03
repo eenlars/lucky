@@ -29,7 +29,7 @@ export type {
   AllToolNames,
   CodeToolName,
   MCPToolName,
-} from "./tools/tool.types"
+} from "@lucky/tools"
 export type { ToolExecutionContext } from "./tools/toolFactory"
 
 // Utils exports

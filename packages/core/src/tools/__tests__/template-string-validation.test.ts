@@ -1,6 +1,6 @@
+import { validateAndCorrectWithSchema } from "@lucky/tools"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
-import { validateAndCorrectWithSchema } from "../constraintValidation"
 
 describe("Template String Validation", () => {
   // TODO: This test suite only tests that template strings fail validation, but doesn't

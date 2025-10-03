@@ -111,3 +111,6 @@ export {
   type ToolRuntimeModels,
   type ToolRuntimeConfig,
 } from "./config/runtime"
+
+// Utils - Schema detection and helpers
+export { isZodSchema, isVercelAIStructure } from "./utils/index"
