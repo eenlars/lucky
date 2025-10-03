@@ -87,7 +87,17 @@ describe("cleanupStaleRecords", () => {
       }),
     } as unknown as ReturnType<typeof supabase.from>)
 
-    const stats = await cleanupStaleRecords()
+    const mockPersistence = {
+      cleanupStaleRecords: vi.fn().mockResolvedValue({
+        workflowInvocations: 1,
+        nodeInvocations: 0,
+        evolutionRuns: 0,
+        generations: 0,
+        messages: 0,
+        evolutionRunsEndTimes: 0,
+      }),
+    } as any
+    const stats = await cleanupStaleRecords(mockPersistence)
 
     expect(mockFrom).toHaveBeenCalledWith("WorkflowInvocation")
     expect(stats.workflowInvocations).toBe(1)
@@ -113,7 +123,17 @@ describe("cleanupStaleRecords", () => {
       update: vi.fn().mockReturnValue(mockChain),
     } as unknown as ReturnType<typeof supabase.from>)
 
-    const stats = await cleanupStaleRecords()
+    const mockPersistence = {
+      cleanupStaleRecords: vi.fn().mockResolvedValue({
+        workflowInvocations: 1,
+        nodeInvocations: 0,
+        evolutionRuns: 0,
+        generations: 0,
+        messages: 0,
+        evolutionRunsEndTimes: 0,
+      }),
+    } as any
+    const stats = await cleanupStaleRecords(mockPersistence)
 
     expect(mockLgg.error).toHaveBeenCalledWith("failed to cleanup stale workflow invocations:", error)
     expect(stats.workflowInvocations).toBe(0)

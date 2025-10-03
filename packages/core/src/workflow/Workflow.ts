@@ -1,5 +1,4 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-// src/core/workflow/Workflow.ts
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
@@ -10,11 +9,6 @@ import { genShortId } from "@core/utils/common/utils"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
-import {
-  createWorkflowInvocation,
-  createWorkflowVersion,
-  updateWorkflowVersionWithIO,
-} from "@core/utils/persistence/workflow/registerWorkflow"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@core/utils/types"
 import { R } from "@core/utils/types"
@@ -30,6 +24,8 @@ import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { INACTIVE_TOOLS } from "@lucky/tools"
 import type { ToolExecutionContext } from "@lucky/tools"
+// src/core/workflow/Workflow.ts
+import type { IPersistence } from "@together/adapter-supabase"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -40,8 +36,8 @@ export class Workflow {
   private readonly config: WorkflowConfig
   private readonly workflowId: string
   private readonly workflowVersionId: string
-  private readonly parent1Id?: string
-  private readonly parent2Id?: string
+  private parent1Id?: string
+  private parent2Id?: string
   private readonly nodeMap = new Map<string, WorkFlowNode>()
   public readonly nodes: WorkFlowNode[] = []
   private workflowInvocationIds = new Map<number, string>()
@@ -59,6 +55,7 @@ export class Workflow {
   private evaluated = false
   private hasRun = false
   private problemAnalysis: string | undefined
+  private persistence?: IPersistence
 
   protected constructor(
     config: WorkflowConfig,
@@ -66,6 +63,7 @@ export class Workflow {
     evolutionContext?: EvolutionContext,
     toolContext?: Partial<ToolExecutionContext> | undefined,
     workflowVersionId?: string,
+    persistence?: IPersistence,
   ) {
     this.config = config
     this.workflowId = evaluationInput.workflowId
@@ -85,6 +83,7 @@ export class Workflow {
     this.evaluationInput = evaluationInput
     this.toolContext = toolContext
     this.problemAnalysis = undefined
+    this.persistence = persistence
   }
 
   private verifyCriticalIssues(config: WorkflowConfig): void {
@@ -114,6 +113,7 @@ export class Workflow {
     evolutionContext,
     toolContext,
     workflowVersionId,
+    persistence,
   }: {
     config: WorkflowConfig
     evaluationInput: EvaluationInput
@@ -122,13 +122,27 @@ export class Workflow {
     evolutionContext?: EvolutionContext
     toolContext: Partial<ToolExecutionContext> | undefined
     workflowVersionId?: string
+    persistence?: IPersistence
   }): Workflow {
-    const wf = new Workflow(config, evaluationInput, evolutionContext, toolContext ?? undefined, workflowVersionId)
+    const wf = new Workflow(
+      config,
+      evaluationInput,
+      evolutionContext,
+      toolContext ?? undefined,
+      workflowVersionId,
+      persistence,
+    )
+    wf.parent1Id = parent1Id
+    wf.parent2Id = parent2Id
     return wf
   }
 
   public getConfig(): WorkflowConfig {
     return this.config
+  }
+
+  public getPersistence(): IPersistence | undefined {
+    return this.persistence
   }
 
   public async prepareWorkflow(
@@ -141,12 +155,11 @@ export class Workflow {
     this.mainGoal = newGoal
     this.problemAnalysis = problemAnalysis
 
-    // Update the WorkflowVersion with all WorkflowIO data
+    // Update the WorkflowVersion with all WorkflowIO data (if persistence enabled)
     if (this.workflowIO.length > 0) {
-      await updateWorkflowVersionWithIO({
-        workflowVersionId: this.workflowVersionId,
-        allWorkflowIO: this.workflowIO,
-      })
+      if (this.persistence) {
+        await this.persistence.updateWorkflowVersionWithIO(this.workflowVersionId, this.workflowIO)
+      }
     } else {
       lgg.warn("No workflow IO to update.. skipping")
       lgg.warn("might be a problem if you are going to evaluate.")
@@ -294,20 +307,27 @@ export class Workflow {
 
     lgg.log("setting up workflow", this.workflowVersionId)
 
-    // Only register the workflow version, not the invocation
-    await createWorkflowVersion({
-      workflowVersionId: this.workflowVersionId,
-      workflowConfig: this.config,
-      commitMessage: this.goal,
-      operation: this.parent1Id ? "mutation" : "init",
-      parent1Id: this.parent1Id,
-      parent2Id: this.parent2Id,
-      generation: this.evolutionContext?.generationId,
-      workflowId: this.workflowId,
-    })
+    // Only register the workflow version (if persistence enabled)
+    if (this.persistence) {
+      await this.persistence.createWorkflowVersion({
+        workflowVersionId: this.workflowVersionId,
+        workflowId: this.workflowId,
+        commitMessage: this.goal,
+        dsl: this.config,
+        generationId: this.evolutionContext?.generationId,
+        operation: this.parent1Id ? "mutation" : "init",
+        parent1Id: this.parent1Id,
+        parent2Id: this.parent2Id,
+      })
+    }
 
     for (const workflowNodeConfig of this.config.nodes) {
-      const workflowNode = await WorkFlowNode.create(workflowNodeConfig, this.workflowVersionId)
+      const workflowNode = await WorkFlowNode.create(
+        workflowNodeConfig,
+        this.workflowVersionId,
+        false,
+        this.persistence,
+      )
       this.nodeMap.set(workflowNodeConfig.nodeId, workflowNode)
       this.nodes.push(workflowNode)
     }
@@ -322,19 +342,21 @@ export class Workflow {
   async createInvocationForIO(index: number, workflowIO: WorkflowIO): Promise<string> {
     const workflowInvocationId = genShortId()
 
-    await createWorkflowInvocation({
-      workflowInvocationId,
-      workflowVersionId: this.workflowVersionId,
-      runId: this.evolutionContext?.runId,
-      generation: this.evolutionContext?.generationId,
-      metadata: {
-        configFiles: this.config.contextFile ? [this.config.contextFile] : [],
-        workflowIOIndex: index,
-      },
-      expectedOutputType: this.evaluationInput.outputSchema ? zodToJson(this.evaluationInput.outputSchema) : null,
-      workflowInput: workflowIO.workflowInput as any,
-      workflowOutput: workflowIO.workflowOutput as any,
-    })
+    if (this.persistence) {
+      await this.persistence.createWorkflowInvocation({
+        workflowInvocationId,
+        workflowVersionId: this.workflowVersionId,
+        runId: this.evolutionContext?.runId,
+        generationId: this.evolutionContext?.generationId,
+        metadata: {
+          configFiles: this.config.contextFile ? [this.config.contextFile] : [],
+          workflowIOIndex: index,
+        },
+        expectedOutputType: this.evaluationInput.outputSchema ? zodToJson(this.evaluationInput.outputSchema) : null,
+        workflowInput: workflowIO.workflowInput as any,
+        workflowOutput: workflowIO.workflowOutput as any,
+      })
+    }
 
     this.workflowInvocationIds.set(index, workflowInvocationId)
     return workflowInvocationId

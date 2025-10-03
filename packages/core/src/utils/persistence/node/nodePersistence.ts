@@ -2,8 +2,8 @@
 
 import { isLoggingEnabled } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
-import { saveNodeVersionToDB } from "@core/utils/persistence/node/saveNode"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence, NodeVersionData } from "@together/adapter-supabase"
 
 /**
  * Manages persistence operations for workflow nodes.
@@ -15,6 +15,7 @@ export class NodePersistenceManager {
     private readonly config: WorkflowNodeConfig,
     private memory: Record<string, string> = {},
     private readonly skipDatabasePersistence: boolean = false,
+    private readonly persistence?: IPersistence,
   ) {
     // Initialize memory from config
     this.memory = { ...(config.memory ?? {}) }
@@ -26,15 +27,18 @@ export class NodePersistenceManager {
   public async registerNode(workflowVersionId: string): Promise<{
     nodeVersionId: string
   }> {
-    if (this.skipDatabasePersistence) {
+    if (this.skipDatabasePersistence || !this.persistence) {
       // Return a mock ID when skipping database operations
       return { nodeVersionId: `mock-${this.nodeId}-${Date.now()}` }
     }
 
-    const { nodeVersionId } = await saveNodeVersionToDB({
-      config: this.config,
+    // Use persistence instead of direct supabase call
+    const nodeVersionData: NodeVersionData = {
+      nodeId: this.nodeId,
       workflowVersionId,
-    })
+      config: this.config,
+    }
+    const { nodeVersionId } = await this.persistence.nodes.saveNodeVersion(nodeVersionData)
     return { nodeVersionId }
   }
 

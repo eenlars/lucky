@@ -38,6 +38,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isNir } from "@lucky/shared"
+import type { IPersistence } from "@together/adapter-supabase"
 import type { GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 import type { EvolutionContext } from "./resources/types"
 
@@ -96,12 +97,14 @@ export class Genome extends Workflow {
    * Create WorkflowVersion database entry for genome
    */
   static async createWorkflowVersion({
+    persistence,
     genome,
     evaluationInput,
     _evolutionContext,
     operation = "init",
     parentWorkflowVersionIds,
   }: {
+    persistence: IPersistence | undefined
     genome: WorkflowGenome
     evaluationInput: EvaluationInput
     _evolutionContext: EvolutionContext
@@ -110,13 +113,18 @@ export class Genome extends Workflow {
   }): Promise<string> {
     const workflowVersionId = `wf_ver_${genShortId()}`
 
-    const parentIds = parentWorkflowVersionIds || []
+    // If no persistence, just return the ID
+    if (!persistence) {
+      return workflowVersionId
+    }
 
+    const parentIds = parentWorkflowVersionIds || []
     const parent1Id = parentIds.length === 2 ? parentIds[0] : undefined
     const parent2Id = parentIds.length === 2 ? parentIds[1] : undefined
 
-    await ensureWorkflowExists(evaluationInput.goal, evaluationInput.workflowId)
+    await ensureWorkflowExists(persistence, evaluationInput.goal, evaluationInput.workflowId)
     await createWorkflowVersion({
+      persistence,
       workflowVersionId,
       workflowConfig: Genome.toWorkflowConfig(genome),
       commitMessage: evaluationInput.goal,

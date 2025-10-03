@@ -41,6 +41,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { Errors, guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isNir } from "@lucky/shared"
+import type { IPersistence } from "@together/adapter-supabase"
 import type { Genome } from "./Genome"
 import { RunService } from "./RunService"
 import { Select } from "./Select"
@@ -59,12 +60,13 @@ export class EvolutionEngine {
     private evolutionSettings: EvolutionSettings,
     private evolutionMode: FlowEvolutionMode,
     restartRunId?: string,
+    private persistence?: IPersistence,
   ) {
     // Validate configuration early to catch issues before evolution starts
     validateEvolutionSettings(evolutionSettings)
 
     this.verificationCache = new VerificationCache()
-    this.runService = new RunService(EvolutionEngine.verbose, this.evolutionMode, restartRunId)
+    this.runService = new RunService(EvolutionEngine.verbose, this.evolutionMode, restartRunId, persistence)
     this.population = new Population(this.evolutionSettings, this.runService)
     this.statsTracker = new StatsTracker(this.evolutionSettings, this.runService, this.population)
 

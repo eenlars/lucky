@@ -91,8 +91,13 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
       handOffs,
     }
 
-    // Create node
-    const node = await WorkFlowNode.create(nodeConfigWithHandoffs, workflowVersionId, skipDatabasePersistence)
+    // Create node (no persistence for standalone invocation)
+    const node = await WorkFlowNode.create(
+      nodeConfigWithHandoffs,
+      workflowVersionId,
+      skipDatabasePersistence,
+      undefined,
+    )
 
     // Create input message
     const message = new WorkflowMessage({
@@ -100,6 +105,7 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
       fromNodeId: "start",
       toNodeId: nodeConfig.nodeId,
       seq: 0,
+      persistence: undefined, // No persistence for standalone invocation
       payload: {
         kind: "sequential",
         berichten: [
@@ -129,6 +135,7 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
     const result = await node.invoke({
       workflowMessageIncoming: message,
       skipDatabasePersistence,
+      persistence: undefined, // No persistence for standalone invocation
       ...toolContext,
     })
 

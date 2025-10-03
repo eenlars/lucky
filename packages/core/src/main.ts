@@ -61,6 +61,7 @@ import { Workflow } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import { loadSingleWorkflow, persistWorkflow, saveWorkflowConfigToOutput } from "@core/workflow/setup/WorkflowLoader"
+import { SupabasePersistence } from "@together/adapter-supabase"
 import chalk from "chalk"
 
 // Parse command line arguments
@@ -161,11 +162,16 @@ type GeneticResult = {
  * Genetic evolution maintains a population and uses crossover/mutation.
  */
 async function runEvolution(): Promise<IterativeResult | GeneticResult> {
+  // Create persistence adapter
+  const persistence = new SupabasePersistence()
+
+  // Persistence is now passed explicitly through the call chain
+
   /* ------------------------------------------------------------------
    * ITERATIVE IMPROVEMENT
    * ------------------------------------------------------------------ */
   if (mode === "iterative") {
-    const runService = new RunService(true, mode)
+    const runService = new RunService(true, mode, undefined, persistence)
 
     // create iterative evolution config
     const iterativeConfig: IterativeConfig = {
@@ -207,6 +213,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     Workflow.create({
       config: setup,
       evaluationInput: SELECTED_QUESTION,
+      persistence,
       parent1Id: undefined,
       parent2Id: undefined,
       evolutionContext: runService.getEvolutionContext(),
@@ -245,6 +252,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           const runner = Workflow.create({
             config: setup,
             evaluationInput: SELECTED_QUESTION,
+            persistence,
             parent1Id,
             parent2Id,
             evolutionContext: runService.getEvolutionContext(),
@@ -417,7 +425,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   // the genomes have not been reset after running this.
   const evaluator = new GPEvaluatorAdapter(workflowIO, newGoal, problemAnalysis)
 
-  const evolutionEngine = new EvolutionEngine(evolutionSettings, "GP")
+  const evolutionEngine = new EvolutionEngine(evolutionSettings, "GP", undefined, persistence)
 
   // Determine optional base workflow for GP mode using the Loader (centralized logging)
   let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<infer T> ? T | undefined : undefined

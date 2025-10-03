@@ -47,7 +47,7 @@ export const evaluateQueueRun = async ({
 
   const fitness = fitnessResult.data
 
-  await updateWorkflowInvocationInDatabase({
+  await updateWorkflowInvocationInDatabase(workflow.getPersistence(), {
     workflowInvocationId: workflowInvocationId,
     status: "completed",
     end_time: new Date().toISOString(),

@@ -1,7 +1,6 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
-import { supabase } from "@core/utils/clients/supabase/client"
 import { truncater } from "@core/utils/common/llmify"
 import * as csv from "@core/utils/csv"
 import { envi } from "@core/utils/env.mjs"
@@ -9,6 +8,7 @@ import { JSONN } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import type { IPersistence } from "@together/adapter-supabase"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**
@@ -22,7 +22,7 @@ export class IngestionLayer {
    * converts EvaluationInput to WorkflowIO array
    * this is the main entry point for input processing
    */
-  static async convert(evaluation: EvaluationInput): Promise<WorkflowIO[]> {
+  static async convert(evaluation: EvaluationInput, persistence?: IPersistence): Promise<WorkflowIO[]> {
     // needs work: validation should happen first before processing
     lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] converting evaluation input", {
       type: evaluation.type,
@@ -50,7 +50,7 @@ export class IngestionLayer {
     }
 
     if (evaluation.type === "dataset-records") {
-      return await IngestionLayer.convertDatasetRecordEvaluation(evaluation)
+      return await IngestionLayer.convertDatasetRecordEvaluation(evaluation, persistence)
     }
 
     // needs work: error message should include the actual type for debugging
@@ -326,10 +326,15 @@ Fallback Question: What is 2 + 2?`,
    */
   private static async convertDatasetRecordEvaluation(
     evaluation: EvaluationInput & { type: "dataset-records" },
+    persistence?: IPersistence,
   ): Promise<WorkflowIO[]> {
     const { recordIds } = evaluation
 
     guard(recordIds, "dataset-records evaluation requires at least one record ID")
+
+    if (!persistence) {
+      throw new Error("dataset-records evaluation requires persistence adapter")
+    }
 
     try {
       lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] fetching dataset records", {
@@ -338,14 +343,7 @@ Fallback Question: What is 2 + 2?`,
       })
 
       // query the database for the specified records
-      const { data: records, error } = await supabase
-        .from("DatasetRecord")
-        .select("*")
-        .in("dataset_record_id", recordIds)
-
-      if (error) {
-        throw new Error(`failed to fetch dataset records: ${error.message}`)
-      }
+      const records = await persistence.loadDatasetRecords(recordIds)
 
       if (!records || records.length === 0) {
         throw new Error(`no dataset records found for IDs: ${recordIds.join(", ")}`)

@@ -26,39 +26,29 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
   // and potentially real AI calls. it should be marked as integration test and not
   // run with unit tests. also, it's testing multi-step execution but doesn't verify
   // the quality of execution, just that tools were called in order.
-  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, nodeId: string) => {
+  const setupTestWorkflow = async (workflowInvocationId: string, workflowVersionId: string, _nodeId: string) => {
     const { createWorkflowInvocation, createWorkflowVersion, ensureWorkflowExists } = await import(
       "@core/utils/persistence/workflow/registerWorkflow"
     )
-    const { saveNodeVersionToDB } = await import("@core/utils/persistence/node/saveNode")
 
     const workflowId = "multistep2-test-workflow"
 
-    await ensureWorkflowExists("MultiStep2 test workflow", workflowId)
+    await ensureWorkflowExists(undefined, "MultiStep2 test workflow", workflowId)
     await createWorkflowVersion({
+      persistence: undefined,
       workflowVersionId,
       workflowConfig: { nodes: [], entryNodeId: "test" },
       commitMessage: "MultiStep2 test version",
       workflowId,
     })
     await createWorkflowInvocation({
+      persistence: undefined,
       workflowInvocationId,
       workflowVersionId,
     })
 
-    await saveNodeVersionToDB({
-      config: {
-        nodeId,
-        modelName: model,
-        systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
-        mcpTools: [],
-        codeTools: ["todoRead", "todoWrite"],
-        description: "MultiStep2 test node with todo tools",
-        handOffs: ["end"],
-        waitingFor: [],
-      },
-      workflowVersionId,
-    })
+    // Node version is handled in-memory for this test
+    // The actual node config is passed directly in the context below
   }
 
   it("should run todoRead and todoWrite sequentially", async () => {

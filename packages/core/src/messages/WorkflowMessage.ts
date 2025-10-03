@@ -2,7 +2,7 @@ import type { Payload } from "@core/messages/MessagePayload"
 import { genShortId } from "@core/utils/common/utils"
 import type { TablesUpdate } from "@core/utils/json"
 import { lgg } from "@core/utils/logging/Logger"
-import { Messages } from "@core/utils/persistence/message/main"
+import type { IPersistence, MessageData } from "@together/adapter-supabase"
 
 export class WorkflowMessage<P extends Payload = Payload> {
   readonly messageId: string = genShortId()
@@ -15,6 +15,7 @@ export class WorkflowMessage<P extends Payload = Payload> {
   readonly replyTo?: string
   readonly wfInvId: string
   private readonly skipDatabasePersistence: boolean
+  private readonly persistence?: IPersistence
 
   constructor(opts: {
     originInvocationId: string | null
@@ -25,6 +26,7 @@ export class WorkflowMessage<P extends Payload = Payload> {
     replyTo?: string
     wfInvId: string
     skipDatabasePersistence?: boolean
+    persistence?: IPersistence
   }) {
     this.originInvocationId = opts.originInvocationId
     this.fromNodeId = opts.fromNodeId
@@ -33,24 +35,40 @@ export class WorkflowMessage<P extends Payload = Payload> {
     this.payload = opts.payload
     this.wfInvId = opts.wfInvId
     this.skipDatabasePersistence = opts.skipDatabasePersistence ?? false
+    this.persistence = opts.persistence
     if (opts.replyTo) this.replyTo = opts.replyTo
 
-    if (!this.skipDatabasePersistence) {
+    if (!this.skipDatabasePersistence && this.persistence) {
       void this.save() // fire-and-forget
     }
   }
 
   private async save() {
+    if (!this.persistence) return
+
     try {
-      await Messages.save(this)
+      const messageData: MessageData = {
+        messageId: this.messageId,
+        fromNodeId: this.fromNodeId,
+        toNodeId: this.toNodeId,
+        originInvocationId: this.originInvocationId || undefined,
+        seq: this.seq,
+        role: this.payload.kind,
+        payload: this.payload,
+        createdAt: this.createdAt,
+        workflowInvocationId: this.wfInvId,
+      }
+      await this.persistence.messages.save(messageData)
     } catch (error) {
       lgg.error(`Failed to save message ${this.messageId}:`, error)
     }
   }
 
   async updateMessage(updates: Partial<TablesUpdate<"Message">>) {
+    if (!this.persistence) return
+
     try {
-      await Messages.update({ message: this, updates })
+      await this.persistence.messages.update(this.messageId, updates as Partial<MessageData>)
     } catch (error) {
       lgg.error(`Failed to update message ${this.messageId}:`, error)
     }

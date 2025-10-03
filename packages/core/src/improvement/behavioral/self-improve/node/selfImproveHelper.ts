@@ -6,7 +6,7 @@ import type { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedAgent"
 import { saveInLoc } from "@core/utils/fs/fileSaver"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
-import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
+// import { retrieveNodeInvocationSummaries } from "@core/utils/persistence/node/retrieveNodeSummaries"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
 export async function selfImproveHelper({
@@ -32,12 +32,14 @@ export async function selfImproveHelper({
 
   if (CONFIG.improvement.flags.useSummariesForImprovement) {
     try {
-      const summaries = await retrieveNodeInvocationSummaries(workflowInvocationId, n.nodeId)
+      // TODO: Re-implement with persistence adapter
+      // const summaries = await retrieveNodeInvocationSummaries(workflowInvocationId, n.nodeId)
+      const summaries: any[] = []
 
       if (summaries.length > 0) {
         // format summaries for the prompt
         executionData = summaries
-          .map((s, idx) => {
+          .map((s: any, idx: number) => {
             const summary = s.summary || "no summary available"
             return `execution ${idx + 1}:\n- status: ${s.status}\n- cost: $${s.usd_cost?.toFixed(4) || "0.0000"}\n- summary: ${summary}`
           })

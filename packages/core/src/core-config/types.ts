@@ -207,6 +207,32 @@ export interface CoreVerificationConfig {
 /**
  * Complete core configuration
  */
+/**
+ * persistence configuration
+ */
+export interface CorePersistenceConfig {
+  /**
+   * use mock (in-memory) persistence instead of supabase.
+   *
+   * useful for:
+   * - running examples without supabase credentials
+   * - fast tests that don't need database
+   * - local development without cloud dependencies
+   *
+   * set via environment variable: USE_MOCK_PERSISTENCE=true
+   *
+   * @default false
+   */
+  readonly useMockBackend: boolean
+
+  /**
+   * default backend to use when not explicitly specified.
+   *
+   * @default "memory" if useMockBackend=true, otherwise "supabase"
+   */
+  readonly defaultBackend: "memory" | "supabase"
+}
+
 export interface CoreConfig {
   readonly paths: CorePathsConfig
   readonly models: CoreModelsConfig
@@ -221,6 +247,7 @@ export interface CoreConfig {
   readonly limits: CoreLimitsConfig
   readonly context: CoreContextConfig
   readonly verification: CoreVerificationConfig
+  readonly persistence: CorePersistenceConfig
   readonly coordinationType: "sequential" | "hierarchical"
   readonly newNodeProbability: number
 }

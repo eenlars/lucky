@@ -12,6 +12,7 @@ import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersist
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { ToolExecutionContext } from "@lucky/tools"
+import type { IPersistence } from "@together/adapter-supabase"
 import chalk from "chalk"
 import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
@@ -49,7 +50,12 @@ export class WorkFlowNode {
   /**
    * Private constructor: no async work, no runtime‐only wiring.
    */
-  private constructor(config: WorkflowNodeConfig, workflowVersionId: string, skipDatabasePersistence = false) {
+  private constructor(
+    config: WorkflowNodeConfig,
+    workflowVersionId: string,
+    skipDatabasePersistence = false,
+    persistence?: IPersistence,
+  ) {
     this.nodeId = config.nodeId
     this.nodeVersionId = genShortId()
     this.config = config
@@ -57,7 +63,13 @@ export class WorkFlowNode {
     // Create managers
     this.toolManager = new ToolManager(config.nodeId, config.mcpTools, config.codeTools, workflowVersionId)
 
-    this.persistenceManager = new NodePersistenceManager(config.nodeId, config, {}, skipDatabasePersistence)
+    this.persistenceManager = new NodePersistenceManager(
+      config.nodeId,
+      config,
+      {},
+      skipDatabasePersistence,
+      persistence,
+    )
 
     // Debug: Log if node has memory
     if (config.memory && Object.keys(config.memory).length > 0 && NodePersistenceManager.verbose) {
@@ -75,8 +87,9 @@ export class WorkFlowNode {
     config: WorkflowNodeConfig,
     workflowVersionId: string,
     skipDatabasePersistence = false,
+    persistence?: IPersistence,
   ): Promise<WorkFlowNode> {
-    const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence)
+    const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence, persistence)
     await node.toolManager.initializeTools()
     return node
   }
@@ -158,6 +171,7 @@ export class WorkFlowNode {
     workflowId,
     workflowConfig,
     skipDatabasePersistence,
+    persistence,
   }: {
     workflowMessageIncoming: WorkflowMessage
     workflowVersionId: string
@@ -166,6 +180,7 @@ export class WorkFlowNode {
     outputType?: any
     workflowConfig?: WorkflowConfig // Added for hierarchical role inference
     skipDatabasePersistence?: boolean
+    persistence?: IPersistence
   } & ToolExecutionContext): Promise<NodeInvocationResult> {
     try {
       // Ensure tools are initialized
@@ -185,6 +200,7 @@ export class WorkFlowNode {
         startTime: new Date().toISOString(),
         workflowConfig,
         skipDatabasePersistence,
+        persistence,
         toolStrategyOverride: "v3" as const,
       }
 
