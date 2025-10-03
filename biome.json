@@ -13,7 +13,7 @@
       "**/.turbo/**",
       "**/mcp/**",
       "apps/web/src/results/**",
-      "packages/examples/logging_folder/**",
+      "apps/examples/logging_folder/**",
       "packages/core/logging_folder/**",
       "packages/experiments/src/experiments-2/**"
     ]
