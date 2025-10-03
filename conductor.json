@@ -1,6 +1,6 @@
 {
   "scripts": {
     "setup": "# Copy configuration files\ncp \"$CONDUCTOR_ROOT_PATH/.env\" .\ncp \"$CONDUCTOR_ROOT_PATH/.env\" ./apps/web/.env\ncp \"$CONDUCTOR_ROOT_PATH/AGENTS.md\" .\ncp \"$CONDUCTOR_ROOT_PATH/AGENTS.md\" ./CLAUDE.md\ncp -r \"$CONDUCTOR_ROOT_PATH/.claude\" ./.claude\n\n# Install dependencies\nbun i\nbun run build:shared",
-    "run": "cd apps/web && bun run dev"
+    "run": "bun run web"
   }
 }
