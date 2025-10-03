@@ -32,7 +32,16 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies()
   const colorModeCookie = cookieStore.get("colorMode")
-  const { userId } = await auth()
+
+  // Safely get auth status - handle case where middleware isn't detected in dev
+  let userId: string | null = null
+  try {
+    const authResult = await auth()
+    userId = authResult.userId
+  } catch (error) {
+    // Middleware not detected - this can happen in dev mode
+    console.warn("Clerk auth() called without middleware detection:", error)
+  }
 
   const theme: ColorMode =
     (colorModeCookie?.value === "dark" || colorModeCookie?.value === "light" ? colorModeCookie.value : null) ??

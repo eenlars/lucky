@@ -92,168 +92,86 @@ export default function PerformanceOverview({
   }
 
   return (
-    <section className="mb-3">
-      {/* Single Flowing Instrument Bar */}
-      <div className="ring-1 ring-gray-300 shadow-sm bg-white rounded-2xl p-3">
+    <section className="mb-6">
+      {/* Performance Overview Card */}
+      <div className="ring-1 ring-sidebar-border dark:ring-sidebar-border shadow-sm bg-sidebar-background dark:bg-sidebar-background rounded-xl p-5 transition-all duration-200">
         <div className="flex items-center justify-between">
-          {/* Left: Expand Control + Title */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-gray-800 hover:text-black transition-all duration-200 group min-w-0 cursor-pointer"
-          >
-            <div className="w-4 h-4 flex items-center justify-center">
-              {isExpanded ? (
-                <ChevronDown size={14} className="text-gray-600 group-hover:text-gray-800" />
-              ) : (
-                <ChevronRight size={14} className="text-gray-600 group-hover:text-gray-800" />
-              )}
+          {/* Left: Critical Status at a Glance */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  workflow.status === "completed"
+                    ? "bg-green-500 shadow-green-500/50 shadow-lg"
+                    : workflow.status === "failed"
+                      ? "bg-red-500 shadow-red-500/50 shadow-lg"
+                      : "bg-yellow-500 shadow-yellow-500/50 shadow-lg animate-pulse"
+                }`}
+              />
+              <span className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground capitalize">
+                {workflow.status}
+              </span>
             </div>
-            <span className="font-semibold text-sm text-black tracking-tight">Performance</span>
-          </button>
-
-          {/* Center: Flowing Metrics */}
-          <div className="flex items-center gap-6 mx-6 flex-1 justify-center">
-            {/* Duration */}
-            <div className="text-center">
-              <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">Duration</div>
-              <div className="text-sm font-bold text-black tabular-nums">
-                {formatDuration(performanceMetrics.totalDuration)}
-              </div>
-            </div>
-
-            {/* Status with color dot */}
-            <div className="text-center">
-              <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">Status</div>
-              <div className="flex items-center justify-center gap-1">
-                <div
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    workflow.status === "completed"
-                      ? "bg-green-500"
-                      : workflow.status === "failed"
-                        ? "bg-red-500"
-                        : "bg-yellow-500"
-                  }`}
-                />
-                <span className="text-sm font-bold text-black capitalize">{workflow.status}</span>
-              </div>
-            </div>
-
-            {/* Nodes */}
-            <div className="text-center">
-              <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">Nodes</div>
-              <div className="text-sm font-bold text-black tabular-nums">{performanceMetrics.totalNodes}</div>
-            </div>
-
-            {/* Operation */}
-            {workflowVersion && (
-              <div className="text-center">
-                <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">Op</div>
-                <div className="text-sm font-bold text-blue-700 capitalize">{workflowVersion.operation}</div>
+            {performanceMetrics.totalCost > 0 && (
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm text-sidebar-muted dark:text-sidebar-muted font-medium">$</span>
+                <span className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground tabular-nums">
+                  {performanceMetrics.totalCost.toFixed(4)}
+                </span>
               </div>
             )}
-
-            {/* Fitness Score */}
-            {workflow.fitness &&
-              (() => {
-                let fitness: any
-                if (typeof workflow.fitness === "string") {
-                  fitness = extractJSON(workflow.fitness)
-                  // If extractJSON couldn't parse it (returns original string), show fallback
-                  if (typeof fitness === "string" && fitness === workflow.fitness) {
-                    return (
-                      <div className="text-center">
-                        <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">
-                          Score
-                        </div>
-                        <div className="text-sm font-bold text-green-700">{String(workflow.fitness)}</div>
-                      </div>
-                    )
-                  }
-                } else if (typeof workflow.fitness === "object") {
-                  fitness = workflow.fitness
-                } else {
-                  fitness = { score: workflow.fitness }
-                }
-
-                if (fitness.data && typeof fitness.data === "object") {
-                  fitness = fitness.data
-                }
-
-                const metrics = []
-
-                if (fitness.score !== undefined) {
-                  metrics.push(
-                    <div key="score" className="text-center">
-                      <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">
-                        Score
-                      </div>
-                      <div className="text-sm font-bold text-green-700 tabular-nums">
-                        {Math.round(fitness.score)}/100
-                      </div>
-                    </div>,
-                  )
-                }
-
-                if (fitness.totalCostUsd !== undefined) {
-                  metrics.push(
-                    <div key="cost" className="text-center">
-                      <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">
-                        Cost
-                      </div>
-                      <div className="text-sm font-bold text-black tabular-nums">
-                        ${fitness.totalCostUsd.toFixed(4)}
-                      </div>
-                    </div>,
-                  )
-                }
-
-                if (fitness.accuracy !== undefined) {
-                  metrics.push(
-                    <div key="accuracy" className="text-center">
-                      <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">
-                        Accuracy
-                      </div>
-                      <div className="text-sm font-bold text-blue-700 tabular-nums">
-                        {Math.round(fitness.accuracy)}%
-                      </div>
-                    </div>,
-                  )
-                }
-
-                if (fitness.efficiency !== undefined) {
-                  metrics.push(
-                    <div key="efficiency" className="text-center">
-                      <div className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-0.5">
-                        Efficiency
-                      </div>
-                      <div className="text-sm font-bold text-orange-700 tabular-nums">
-                        {Math.round(fitness.efficiency)}%
-                      </div>
-                    </div>,
-                  )
-                }
-
-                return metrics
-              })()}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center gap-2 text-sidebar-foreground/70 dark:text-sidebar-foreground/70 hover:text-sidebar-primary dark:hover:text-sidebar-primary transition-colors duration-200 text-sm font-medium px-3 py-1.5 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg"
+            >
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-300 ease-out ${isExpanded ? "rotate-0" : "-rotate-90"}`}
+              />
+              <span>{isExpanded ? "Less" : "Details"}</span>
+            </button>
           </div>
 
-          {/* Right: Structure Link */}
+          {/* Center: Secondary Metrics - Only when expanded */}
+          {isExpanded && (
+            <div className="flex items-center gap-6 mx-6">
+              <div className="text-sm text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
+                <span className="font-medium">{formatDuration(performanceMetrics.totalDuration)}</span>
+              </div>
+              <div className="text-sm text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
+                <span className="font-medium">{performanceMetrics.totalNodes} nodes</span>
+              </div>
+              {workflowVersion && (
+                <div>
+                  <span className="px-2.5 py-1 bg-sidebar-accent dark:bg-sidebar-accent text-sidebar-primary dark:text-sidebar-primary rounded-lg capitalize font-medium text-sm">
+                    {workflowVersion.operation}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Right: Edit Link */}
           <Link
             href={`/edit/${workflowVersion?.wf_version_id}?mode=json`}
-            className="flex items-center gap-1 text-blue-700 hover:text-blue-800 transition-colors text-sm font-semibold"
+            className="flex items-center gap-2 text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 transition-colors duration-200 text-sm font-medium px-3 py-1.5 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg"
           >
-            <FileText size={12} />
-            <span className="hidden sm:inline">Structure</span>
+            <FileText size={14} />
+            <span className="hidden sm:inline">Edit</span>
           </Link>
         </div>
 
         {/* Collapsible Details */}
         {isExpanded && (
-          <div className="border-t border-gray-200 mt-3">
+          <div className="border-t border-sidebar-border dark:border-sidebar-border mt-5 pt-5 space-y-4 transition-all duration-300 ease-out">
             {/* Workflow Goal */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-1">Workflow Goal</div>
-              <div className="text-sm text-gray-900">{workflowVersion?.commit_message ?? "No goal"}</div>
+            <div>
+              <div className="text-xs font-medium text-sidebar-muted dark:text-sidebar-muted uppercase tracking-wide mb-2">
+                Workflow Goal
+              </div>
+              <div className="text-sm text-sidebar-foreground dark:text-sidebar-foreground leading-relaxed">
+                {workflowVersion?.commit_message ?? "No goal"}
+              </div>
             </div>
 
             {/* Configuration Files */}
