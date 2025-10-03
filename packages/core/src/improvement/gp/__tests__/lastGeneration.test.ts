@@ -1,83 +1,55 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Create mock instances directly
-const mockSupabaseChain = {
-  select: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  not: vi.fn().mockReturnThis(),
-  order: vi.fn().mockReturnThis(),
-  limit: vi.fn().mockReturnThis(),
-  single: vi.fn(),
-}
-
-const mockSupabaseClient = {
-  from: vi.fn().mockReturnValue(mockSupabaseChain),
-}
-
-const mockGenShortId = vi.fn()
-const mockLggLog = vi.fn()
-const mockLggError = vi.fn()
-const mockLggWarn = vi.fn()
-
 // Mock external dependencies
-vi.mock("@core/utils/clients/supabase/client", () => ({
-  supabase: mockSupabaseClient,
-}))
-
 vi.mock("@core/utils/common/utils", () => ({
-  genShortId: mockGenShortId,
+  genShortId: vi.fn(() => "short-test-id"),
 }))
 
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: {
-    log: mockLggLog,
-    error: mockLggError,
-    warn: mockLggWarn,
+    log: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
 }))
 
 describe("getLastCompletedGeneration", () => {
+  let mockPersistence: any
+
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Create mock persistence with evolution namespace
+    mockPersistence = {
+      evolution: {
+        getLastCompletedGeneration: vi.fn(),
+      },
+    }
   })
 
   it("should return the last completed generation number if exists", async () => {
-    // Setup mock to return generation number 5
-    mockSupabaseChain.single.mockResolvedValue({
-      data: { number: 5, generation_id: "test-generation-id" },
-      error: null,
-    })
-
-    const { RunService } = await import("@core/improvement/gp/RunService")
-    const service = new RunService()
-
-    const result = await service.getLastCompletedGeneration("test-run-id")
-
-    expect(result).toEqual({
+    const mockResult = {
       runId: "test-run-id",
       generationNumber: 5,
       generationId: "test-generation-id",
-    })
-    expect(mockSupabaseClient.from).toHaveBeenCalledWith("Generation")
-    expect(mockSupabaseChain.select).toHaveBeenCalledWith("number, generation_id")
-    expect(mockSupabaseChain.eq).toHaveBeenCalledWith("run_id", "test-run-id")
-    expect(mockSupabaseChain.not).toHaveBeenCalledWith("end_time", "is", null)
-    expect(mockSupabaseChain.order).toHaveBeenCalledWith("number", {
-      ascending: false,
-    })
-    expect(mockSupabaseChain.limit).toHaveBeenCalledWith(1)
+    }
+
+    mockPersistence.evolution.getLastCompletedGeneration.mockResolvedValue(mockResult)
+
+    const { RunService } = await import("@core/improvement/gp/RunService")
+    const service = new RunService(false, "GP", undefined, mockPersistence)
+
+    const result = await service.getLastCompletedGeneration("test-run-id")
+
+    expect(result).toEqual(mockResult)
+    expect(mockPersistence.evolution.getLastCompletedGeneration).toHaveBeenCalledWith("test-run-id")
   })
 
   it("should return null if no completed generations exist", async () => {
-    // Setup mock to return PGRST116 error (no records found)
-    mockSupabaseChain.single.mockResolvedValue({
-      data: null,
-      error: { code: "PGRST116" },
-    })
+    mockPersistence.evolution.getLastCompletedGeneration.mockResolvedValue(null)
 
     const { RunService } = await import("@core/improvement/gp/RunService")
-    const service = new RunService()
-    // service.setRunId("test-run-id") -> old way
+    const service = new RunService(false, "GP", undefined, mockPersistence)
 
     const result = await service.getLastCompletedGeneration("test-run-id")
 
@@ -85,34 +57,35 @@ describe("getLastCompletedGeneration", () => {
   })
 
   it("should throw on database errors", async () => {
-    // Setup mock to return a database error
-    const dbError = { code: "DATABASE_ERROR", message: "Connection failed" }
-    mockSupabaseChain.single.mockResolvedValue({
-      data: null,
-      error: dbError,
-    })
+    const dbError = new Error("Database connection failed")
+    mockPersistence.evolution.getLastCompletedGeneration.mockRejectedValue(dbError)
 
     const { RunService } = await import("@core/improvement/gp/RunService")
-    const service = new RunService()
-    // service.setRunId("test-run-id") -> old way
+    const service = new RunService(false, "GP", undefined, mockPersistence)
 
-    await expect(service.getLastCompletedGeneration("test-run-id")).rejects.toEqual(dbError)
-    expect(mockLggError).toHaveBeenCalled()
+    await expect(service.getLastCompletedGeneration("test-run-id")).rejects.toThrow("Database connection failed")
   })
 
-  it("should handle data.number being null", async () => {
-    // Setup mock to return data with null number
-    mockSupabaseChain.single.mockResolvedValue({
-      data: { number: null },
-      error: null,
-    })
-
+  it("should return null when no persistence is available", async () => {
     const { RunService } = await import("@core/improvement/gp/RunService")
-    const service = new RunService()
-    // service.setRunId("test-run-id") -> old way
+    const service = new RunService(false, "GP", undefined, undefined)
 
     const result = await service.getLastCompletedGeneration("test-run-id")
 
     expect(result).toBeNull()
+  })
+
+  it("should warn and return null when no run ID provided", async () => {
+    const { lgg } = await import("@core/utils/logging/Logger")
+
+    const { RunService } = await import("@core/improvement/gp/RunService")
+    const service = new RunService(false, "GP", undefined, mockPersistence)
+
+    const result = await service.getLastCompletedGeneration("")
+
+    expect(result).toBeNull()
+    expect(lgg.warn).toHaveBeenCalledWith(
+      "[RunService] No active run ID available for last completed generation lookup",
+    )
   })
 })
