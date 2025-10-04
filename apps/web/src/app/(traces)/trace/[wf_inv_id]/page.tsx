@@ -229,10 +229,35 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
 
   if (loading) {
     return (
-      <div className="p-6 flex justify-center items-center min-h-[50vh]">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xl text-gray-900 dark:text-gray-100">Loading trace data…</p>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/invocations"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-sidebar-foreground/70 dark:text-sidebar-foreground/70 hover:text-sidebar-primary dark:hover:text-sidebar-primary hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg transition-colors duration-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Invocations
+            </Link>
+            <div className="h-4 w-64 bg-sidebar-accent dark:bg-sidebar-accent rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="ring-1 ring-sidebar-border dark:ring-sidebar-border shadow-sm bg-sidebar-background dark:bg-sidebar-background rounded-xl p-6 animate-pulse">
+          <div className="h-8 w-48 bg-sidebar-accent dark:bg-sidebar-accent rounded mb-4" />
+          <div className="space-y-3">
+            <div className="h-4 w-full bg-sidebar-accent dark:bg-sidebar-accent rounded" />
+            <div className="h-4 w-3/4 bg-sidebar-accent dark:bg-sidebar-accent rounded" />
+          </div>
+        </div>
+        <div className="flex justify-center py-8">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-6 h-6 border-4 border-sidebar-primary dark:border-sidebar-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
+              Loading workflow details...
+            </p>
+          </div>
         </div>
       </div>
     )
@@ -241,9 +266,15 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
   if (error) {
     return (
       <div className="p-6">
-        <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <Link href="/invocations" className="text-blue-500 dark:text-blue-400 hover:underline">
-          ← Back to invocations
+        <p className="text-red-500 dark:text-red-400 mb-4 text-sm leading-relaxed">{error}</p>
+        <Link
+          href="/invocations"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg transition-colors duration-200"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to invocations
         </Link>
       </div>
     )
@@ -255,50 +286,54 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
         <div className="flex items-center gap-4">
           <Link
             href="/invocations"
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-sidebar-foreground/70 dark:text-sidebar-foreground/70 hover:text-sidebar-primary dark:hover:text-sidebar-primary hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg transition-colors duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Invocations
           </Link>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Trace for Workflow Invocation</h1>
+          <h1 className="text-xl font-medium text-sidebar-foreground dark:text-sidebar-foreground">
+            Trace for Workflow Invocation
+          </h1>
         </div>
 
         {workflowVersion && (
-          <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-4 text-xs text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">wf_invocation_id:</span>
+              <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">
+                wf_invocation_id:
+              </span>
               <Link
                 href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowInvocation}?schema=public&sort=start_time:desc&filter=wf_invocation_id%3Aeq%3A${wf_inv_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-1 rounded text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
               >
                 {wf_inv_id}
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">wf_version_id:</span>
+              <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">wf_version_id:</span>
               <Link
                 href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowVersion}?schema=public&sort=created_at:desc&filter=wf_version_id%3Aeq%3A${workflowVersion.wf_version_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-1 rounded text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
               >
                 {workflowVersion.wf_version_id}
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900 dark:text-gray-100">Operation:</span>
-              <span className="capitalize bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs">
+              <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">Operation:</span>
+              <span className="capitalize bg-sidebar-accent dark:bg-sidebar-accent text-sidebar-primary dark:text-sidebar-primary px-2.5 py-1 rounded-lg text-xs font-medium">
                 {workflowVersion.operation}
               </span>
             </div>
             {workflowVersion.generation_id && (
               <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-900 dark:text-gray-100">Generation:</span>
-                <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs">
+                <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">Generation:</span>
+                <span className="bg-sidebar-accent dark:bg-sidebar-accent text-sidebar-foreground dark:text-sidebar-foreground px-2.5 py-1 rounded-lg text-xs font-medium">
                   {workflowVersion.generation_id}...
                 </span>
               </div>
@@ -317,10 +352,28 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
       )}
 
       {timelineLoading ? (
-        <div className="p-6 flex justify-center items-center min-h-[30vh]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-lg text-gray-900 dark:text-gray-100">Loading timeline data…</p>
+        <div className="w-full space-y-4">
+          <div className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground">
+            Timeline (loading...)
+          </div>
+          <div className="w-full overflow-x-auto">
+            <div className="flex gap-4 py-2 px-1">
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 w-96 ring-1 ring-sidebar-border dark:ring-sidebar-border shadow-sm bg-sidebar-background dark:bg-sidebar-background rounded-xl p-5 animate-pulse"
+                >
+                  <div className="space-y-4">
+                    <div className="h-8 w-24 bg-sidebar-accent dark:bg-sidebar-accent rounded-lg" />
+                    <div className="h-16 bg-sidebar-accent dark:bg-sidebar-accent rounded-lg" />
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-sidebar-accent dark:bg-sidebar-accent rounded" />
+                      <div className="h-3 w-4/5 bg-sidebar-accent dark:bg-sidebar-accent rounded" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
