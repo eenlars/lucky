@@ -91,6 +91,10 @@ export default function PerformanceOverview({
     return `${minutes}m ${remainingSeconds.toFixed(0)}s`
   }
 
+  // Extract fitness metrics
+  const fitness = workflow.fitness && typeof workflow.fitness === "object" ? (workflow.fitness as any) : null
+  const hasFitnessMetrics = fitness && (fitness.score != null || fitness.accuracy != null)
+
   return (
     <section className="mb-6">
       {/* Performance Overview Card */}
@@ -120,6 +124,27 @@ export default function PerformanceOverview({
                 </span>
               </div>
             )}
+            {/* Fitness Metrics */}
+            {hasFitnessMetrics && (
+              <>
+                {fitness.score != null && (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm text-sidebar-muted dark:text-sidebar-muted font-medium">Score:</span>
+                    <span className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground tabular-nums">
+                      {fitness.score.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {fitness.accuracy != null && (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm text-sidebar-muted dark:text-sidebar-muted font-medium">Accuracy:</span>
+                    <span className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground tabular-nums">
+                      {fitness.accuracy}%
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="flex items-center gap-2 text-sidebar-foreground/70 dark:text-sidebar-foreground/70 hover:text-sidebar-primary dark:hover:text-sidebar-primary transition-colors duration-200 text-sm font-medium px-3 py-1.5 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg"
@@ -146,6 +171,17 @@ export default function PerformanceOverview({
                   <span className="px-2.5 py-1 bg-sidebar-accent dark:bg-sidebar-accent text-sidebar-primary dark:text-sidebar-primary rounded-lg capitalize font-medium text-sm">
                     {workflowVersion.operation}
                   </span>
+                </div>
+              )}
+              {/* Additional Fitness Metrics when expanded */}
+              {fitness?.totalCostUsd != null && fitness.totalCostUsd !== performanceMetrics.totalCost && (
+                <div className="text-sm text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
+                  <span className="font-medium">Fitness Cost: ${fitness.totalCostUsd.toFixed(4)}</span>
+                </div>
+              )}
+              {fitness?.totalTimeSeconds != null && (
+                <div className="text-sm text-sidebar-foreground/70 dark:text-sidebar-foreground/70">
+                  <span className="font-medium">Fitness Time: {formatDuration(fitness.totalTimeSeconds)}</span>
                 </div>
               )}
             </div>
