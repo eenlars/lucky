@@ -1,9 +1,9 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { Send, Loader2 } from "lucide-react"
-import { useState, useCallback, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { Loader2, Send } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface TestPanelProps {
   node: AppNode
@@ -53,7 +53,7 @@ export function TestPanel({ node }: TestPanelProps) {
       }
 
       setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
+    } catch (_error) {
       const errorMessage: Message = {
         role: "assistant",
         content: "An error occurred while processing your request. Please try again.",

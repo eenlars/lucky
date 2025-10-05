@@ -1,7 +1,7 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { ArrowRight } from "lucide-react"
 import { useMemo } from "react"
 import { useShallow } from "zustand/react/shallow"
@@ -41,7 +41,7 @@ export function PurposeSection({ node }: PurposeSectionProps) {
     if (node.data.systemPrompt) {
       const firstSentence = node.data.systemPrompt.split(".")[0]
       if (firstSentence && firstSentence.length < 200) {
-        return firstSentence + "."
+        return `${firstSentence}.`
       }
     }
 

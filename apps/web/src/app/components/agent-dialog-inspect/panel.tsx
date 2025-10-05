@@ -1,12 +1,12 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
+import { ConfigPanel } from "./config-panel"
 import { AgentDetailHeader } from "./header"
 import { TestPanel } from "./test-panel"
-import { ConfigPanel } from "./config-panel"
 
 export function AgentDialogInspect() {
   const { isOpen, nodeId, selectedNode, onClose } = useAppStore(

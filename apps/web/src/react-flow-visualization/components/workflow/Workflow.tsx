@@ -5,12 +5,12 @@ import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect"
-import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge"
-import { nodeTypes } from "@/react-flow-visualization/components/nodes"
-import { WorkflowPromptBar } from "@/react-flow-visualization/components/workflow-prompt-bar"
+import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
+import { nodeTypes } from "@/react-flow-visualization/components/nodes/nodes"
+import { WorkflowPromptBar } from "@/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
 import { useLayout } from "@/react-flow-visualization/hooks/use-layout"
 // runner context removed
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
 

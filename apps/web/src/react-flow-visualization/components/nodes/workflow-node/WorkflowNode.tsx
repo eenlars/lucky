@@ -6,10 +6,10 @@ import { useCallback, useState } from "react"
 import { BaseNode } from "@/react-flow-visualization/components/base-node"
 import { NodeHeaderDeleteAction } from "@/react-flow-visualization/components/node-header"
 import { NodeStatusIndicator } from "@/react-flow-visualization/components/node-status-indicator"
-import { NODE_SIZE, type WorkflowNodeData } from "@/react-flow-visualization/components/nodes/"
+import { NODE_SIZE, type WorkflowNodeData } from "@/react-flow-visualization/components/nodes/nodes"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 // runner context removed
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 // Unused tool imports removed
 // Provider hardcoded for client-side display
 

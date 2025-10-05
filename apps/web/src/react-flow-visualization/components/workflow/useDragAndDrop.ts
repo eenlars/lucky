@@ -1,9 +1,9 @@
 import { useReactFlow } from "@xyflow/react"
 import { useCallback, useMemo } from "react"
 
-import { type AppNode, createNodeByType } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { type AppNode, createNodeByType } from "@/react-flow-visualization/components/nodes/nodes"
 import type { AppStore } from "@/react-flow-visualization/store/app-store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useShallow } from "zustand/react/shallow"
 
 const selector = (state: AppStore) => ({

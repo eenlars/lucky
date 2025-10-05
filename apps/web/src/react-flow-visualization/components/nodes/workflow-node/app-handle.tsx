@@ -16,11 +16,11 @@ import type { AppStore } from "@/react-flow-visualization/store/app-store"
 
 import { AppDropdownMenu } from "@/react-flow-visualization/components/app-dropdown-menu"
 import { ButtonHandle } from "@/react-flow-visualization/components/button-handle"
-import type { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes"
+import type { AppNodeType, NodeConfig } from "@/react-flow-visualization/components/nodes/nodes"
 import { Button } from "@/react-flow-visualization/components/ui/button"
 
 import { useDropdown } from "@/react-flow-visualization/hooks/use-dropdown"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 
 const compatibleNodeTypes = (type: "source" | "target") => {
   if (type === "source") {

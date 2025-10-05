@@ -146,7 +146,10 @@ export async function traceWorkflowEvolution(invocationId: string): Promise<Evol
       startTime: inv.start_time,
       endTime: inv.end_time || undefined,
       duration: duration || undefined,
-      dsl: version?.dsl && typeof version.dsl === "object" && version.dsl !== null ? (version.dsl as Record<string, unknown>) : undefined,
+      dsl:
+        version?.dsl && typeof version.dsl === "object" && version.dsl !== null
+          ? (version.dsl as Record<string, unknown>)
+          : undefined,
       usdCost: inv.usd_cost,
     }
   })
@@ -191,7 +194,10 @@ export async function traceWorkflowEvolution(invocationId: string): Promise<Evol
     accuracyProgression,
     evolutionRun: {
       ...evolutionRun!,
-      config: evolutionRun!.config && typeof evolutionRun!.config === "object" && evolutionRun!.config !== null ? (evolutionRun!.config as Record<string, unknown>) : {},
+      config:
+        evolutionRun!.config && typeof evolutionRun!.config === "object" && evolutionRun!.config !== null
+          ? (evolutionRun!.config as Record<string, unknown>)
+          : {},
     },
     generation: generation!,
     stats,

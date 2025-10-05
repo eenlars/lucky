@@ -1,0 +1,244 @@
+"use client"
+
+import { cn } from "@/lib/utils"
+import { useAppStore } from "@/react-flow-visualization/store/store"
+import { Panel } from "@xyflow/react"
+import { ArrowUp, AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
+import { useShallow } from "zustand/react/shallow"
+import { executeEditMode } from "./edit-mode-handler"
+import { executeRunMode } from "./run-mode-handler"
+
+/**
+ * WorkflowPromptBar - Dual-mode workflow interaction component.
+ *
+ * Two distinct modes:
+ * 1. Edit Mode (default): AI-powered workflow structure modification
+ *    - Changes nodes, edges, and workflow structure
+ *    - Uses natural language to describe changes
+ *    - Calls /api/workflow/formalize
+ *
+ * 2. Run Mode: Execute workflow with user-provided input
+ *    - Runs the current workflow as-is
+ *    - User input becomes the workflow's initial input
+ *    - Calls /api/workflow/invoke
+ */
+export function WorkflowPromptBar() {
+  const { exportToJSON, loadWorkflowFromData, organizeLayout } = useAppStore(
+    useShallow(state => ({
+      exportToJSON: state.exportToJSON,
+      loadWorkflowFromData: state.loadWorkflowFromData,
+      organizeLayout: state.organizeLayout,
+    })),
+  )
+
+  const [prompt, setPrompt] = useState("")
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [isRunMode, setIsRunMode] = useState(false)
+  const [logs, setLogs] = useState<string[]>([])
+  const [showLogs, setShowLogs] = useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const hideLogsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const addLog = useCallback((message: string) => {
+    setLogs(prev => [...prev, message])
+  }, [])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto"
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
+    }
+  }, [prompt])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + K to focus
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideLogsTimeoutRef.current) {
+        clearTimeout(hideLogsTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  const handleSubmit = useCallback(async () => {
+    if (!prompt.trim() || isGenerating) return
+
+    // Clear any pending hide timeout from previous runs
+    if (hideLogsTimeoutRef.current) {
+      clearTimeout(hideLogsTimeoutRef.current)
+      hideLogsTimeoutRef.current = null
+    }
+
+    setIsGenerating(true)
+    setLogs([])
+    setShowLogs(true)
+
+    if (isRunMode) {
+      // Run Mode: Execute workflow with input
+      const result = await executeRunMode(prompt.trim(), exportToJSON, addLog)
+
+      if (result.success) {
+        toast.success("Workflow completed")
+        setPrompt("")
+        // Keep logs visible in run mode so user can see output
+      } else {
+        toast.error(result.error || "Workflow execution failed")
+      }
+    } else {
+      // Edit Mode: Modify workflow structure with AI
+      const result = await executeEditMode(prompt.trim(), exportToJSON, addLog)
+
+      if (result.success && result.workflowConfig) {
+        await loadWorkflowFromData(result.workflowConfig)
+        await organizeLayout()
+        setPrompt("")
+        toast.success("Workflow updated")
+        // Hide logs after edit mode completes (user doesn't need to see technical details)
+        hideLogsTimeoutRef.current = setTimeout(() => {
+          setShowLogs(false)
+          hideLogsTimeoutRef.current = null
+        }, 2000)
+      } else {
+        toast.error(result.error || "Failed to update workflow")
+      }
+    }
+
+    setIsGenerating(false)
+  }, [prompt, isGenerating, isRunMode, exportToJSON, loadWorkflowFromData, organizeLayout, addLog])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault()
+      handleSubmit()
+    }
+  }
+
+  return (
+    <Panel position="bottom-center" className="!pointer-events-none" style={{ marginBottom: "80px" }}>
+      <div
+        className="pointer-events-auto flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg w-[720px]"
+        style={{ zIndex: 50 }}
+      >
+        <textarea
+          ref={inputRef}
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={isRunMode ? "Enter input for the workflow" : "Tell me how to change this"}
+          disabled={isGenerating}
+          className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-[15px] leading-[22px] resize-none outline-none disabled:opacity-50 px-5 pt-4 pb-1"
+          rows={3}
+          style={{
+            minHeight: "80px",
+            maxHeight: "200px",
+          }}
+        />
+
+        {/* Logs Display (shown during and after execution) */}
+        {showLogs && logs.length > 0 && (
+          <div className="mx-4 mb-2 max-h-32 overflow-auto rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2 text-xs font-mono">
+            {logs.map((log, i) => (
+              <p key={i} className="break-words text-gray-700 dark:text-gray-300">
+                {log}
+              </p>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between px-4 pb-4 pt-1">
+          <div className="flex items-center gap-2">
+            <button
+              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
+              aria-label="Add"
+            >
+              <Plus className="size-4" />
+            </button>
+            <button
+              onClick={() => {
+                setIsRunMode(!isRunMode)
+                setLogs([])
+                setShowLogs(false)
+              }}
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 h-8 rounded-lg transition-colors",
+                isRunMode
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
+              )}
+              aria-label="Toggle run mode"
+            >
+              <Play className="size-3.5" />
+              <span className="text-sm">run workflow with input</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
+              aria-label="Audio"
+            >
+              <AudioWaveform className="size-4" />
+            </button>
+            {isGenerating ? (
+              <div
+                className={cn(
+                  "flex items-center justify-center w-9 h-9 rounded-full relative overflow-hidden",
+                  isRunMode ? "bg-green-600" : "bg-blue-600",
+                )}
+              >
+                {/* Stripe-like animated gradient overlay */}
+                <div
+                  className="absolute inset-0 opacity-40"
+                  style={{
+                    background: isRunMode
+                      ? "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)"
+                      : "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)",
+                    backgroundSize: "20px 20px",
+                    animation: "stripe-slide 0.6s linear infinite",
+                  }}
+                />
+                <Loader2 className="size-4 text-white animate-spin relative z-10" />
+              </div>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={!prompt.trim()}
+                className={cn(
+                  "flex items-center justify-center w-9 h-9 rounded-full transition-all",
+                  prompt.trim()
+                    ? isRunMode
+                      ? "bg-green-600 dark:bg-green-500 text-white hover:opacity-80"
+                      : "bg-blue-600 dark:bg-blue-500 text-white hover:opacity-80"
+                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed",
+                )}
+                aria-label="Submit"
+              >
+                {isRunMode ? (
+                  <Play className="size-4 ml-0.5" strokeWidth={2.5} />
+                ) : (
+                  <Pencil className="size-4" strokeWidth={2.5} />
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </Panel>
+  )
+}

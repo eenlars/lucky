@@ -13,13 +13,13 @@ import { create } from "zustand"
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware"
 
 import { setColorModeCookie } from "@/react-flow-visualization/components/actions/cookies"
-import { type AppEdge, createEdge } from "@/react-flow-visualization/components/edges"
+import { type AppEdge, createEdge } from "@/react-flow-visualization/components/edges/edges"
 import nodesConfig, {
   createNodeByType,
   type AppNode,
   type AppNodeType,
   type WorkflowNodeData,
-} from "@/react-flow-visualization/components/nodes"
+} from "@/react-flow-visualization/components/nodes/nodes"
 import { toFrontendWorkflowConfig } from "@/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/react-flow-visualization/store/edge-validation"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"

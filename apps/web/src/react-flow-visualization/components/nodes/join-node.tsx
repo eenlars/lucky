@@ -1,5 +1,5 @@
-import nodesConfig, { type WorkflowNodeProps } from "."
-import WorkflowNode from "./workflow-node"
+import nodesConfig, { type WorkflowNodeProps } from "./nodes"
+import WorkflowNode from "./workflow-node/WorkflowNode"
 import { AppHandle } from "./workflow-node/app-handle"
 
 export function JoinNode({ id, data }: WorkflowNodeProps) {

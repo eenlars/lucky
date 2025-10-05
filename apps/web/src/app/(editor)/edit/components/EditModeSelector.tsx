@@ -10,9 +10,9 @@ import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
 
 import AppContextMenu from "@/react-flow-visualization/components/app-context-menu"
-import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout"
-import Workflow from "@/react-flow-visualization/components/workflow"
-import { useAppStore } from "@/react-flow-visualization/store"
+import SidebarLayout from "@/react-flow-visualization/components/layouts/sidebar-layout/SidebarLayout"
+import Workflow from "@/react-flow-visualization/components/workflow/Workflow"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 
 import EditorHeader from "./EditorHeader"
 import JSONEditor from "./JSONEditor"
@@ -20,23 +20,8 @@ import JSONEditor from "./JSONEditor"
 import DatasetSelector from "@/components/DatasetSelector"
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
-import { PromptInputDialog } from "@/react-flow-visualization/components/prompt-input-dialog"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-
-// Client-side wrapper for server-side DSL validation
-async function loadFromDSLClient(dslConfig: any) {
-  const response = await fetch("/api/workflow/verify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ workflow: dslConfig, mode: "dsl" }),
-  })
-  const result = await response.json()
-  if (!result.isValid) {
-    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
-  }
-  return result.config
-}
 
 async function loadFromDSLClientDisplay(dslConfig: any) {
   const response = await fetch("/api/workflow/verify", {
@@ -55,106 +40,6 @@ type EditMode = "graph" | "json" | "eval"
 
 interface EditModeSelectorProps {
   workflowVersion?: Tables<"WorkflowVersion">
-}
-
-// Stable, top-level component to avoid remounts that close the dialog
-function GraphRunWithPromptButton({ exportToJSON }: { exportToJSON: () => string }) {
-  const [promptDialogOpen, setPromptDialogOpen] = useState(false)
-  const [isRunning, setIsRunning] = useState(false)
-  const [logs, setLogs] = useState<string[]>([])
-
-  const addLog = (message: string) => {
-    setLogs(prev => [...prev, message])
-  }
-
-  const handleExecuteWorkflow = async (prompt: string) => {
-    setIsRunning(true)
-    setLogs([])
-
-    try {
-      addLog("Starting workflow execution...")
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      addLog("Exporting workflow configuration...")
-      const json = exportToJSON()
-      const parsed = JSON.parse(json)
-      const cfgMaybe = toWorkflowConfig(parsed)
-
-      if (!cfgMaybe) {
-        addLog("❌ Error: Invalid workflow configuration")
-        return
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 200))
-      addLog("Loading workflow configuration...")
-      const cfg = await loadFromDSLClient(cfgMaybe)
-
-      await new Promise(resolve => setTimeout(resolve, 200))
-      addLog("Sending request to workflow API...")
-      const response = await fetch("/api/workflow/invoke", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dslConfig: cfg,
-          evalInput: {
-            type: "text",
-            question: prompt,
-            answer: "",
-            goal: "Prompt run",
-            workflowId: "adhoc-ui",
-          },
-        }),
-      })
-
-      addLog("Processing response...")
-      const result = await response.json()
-
-      if (result?.success) {
-        const first = result?.data?.[0]
-        const out = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
-        addLog("✅ Workflow completed successfully!")
-        addLog(`Result: ${out || "No response"}`)
-      } else {
-        addLog(`❌ Error: ${result?.error || "Unknown error"}`)
-      }
-    } catch (error) {
-      addLog(`❌ Error: ${error}`)
-    } finally {
-      setIsRunning(false)
-    }
-  }
-
-  const handleDialogOpenChange = (open: boolean) => {
-    if (isRunning) return // prevent closing during execution
-    setPromptDialogOpen(open)
-    if (!open) {
-      // Clear logs when closing dialog
-      setLogs([])
-    }
-  }
-
-  return (
-    <>
-      <Button
-        onClick={() => {
-          setLogs([]) // Clear logs before opening to ensure fresh state
-          setPromptDialogOpen(true)
-        }}
-        disabled={isRunning}
-        variant="outline"
-        size="sm"
-      >
-        {isRunning ? "Running..." : "Run with Prompt"}
-      </Button>
-      <PromptInputDialog
-        open={promptDialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        onExecute={handleExecuteWorkflow}
-        loading={isRunning}
-        logs={logs}
-      />
-    </>
-  )
 }
 
 export default function EditModeSelector({ workflowVersion }: EditModeSelectorProps) {
@@ -321,8 +206,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     router.push(`?${params.toString()}`)
   }
 
-  // Common actions for all modes
-  const commonActions = <GraphRunWithPromptButton exportToJSON={exportToJSON} />
+  // Common actions for all modes (run functionality now in WorkflowPromptBar)
+  const commonActions = null
 
   if (mode === "graph") {
     const graphActions = (

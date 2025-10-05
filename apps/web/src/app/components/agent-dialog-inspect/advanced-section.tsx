@@ -1,9 +1,9 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { Settings } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { CollapsibleSection } from "./collapsible-section"
 import { useDebouncedUpdate } from "./hooks/use-debounced-update"
 

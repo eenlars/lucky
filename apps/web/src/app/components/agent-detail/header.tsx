@@ -1,10 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { Edit2, Maximize2, Minimize2, X } from "lucide-react"
-import { useCallback, useState, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useStatusColor } from "./hooks/use-status-color"
 
 interface AgentDetailHeaderProps {
@@ -59,7 +59,6 @@ export function AgentDetailHeader({ node, isExpanded, onClose, onToggleExpanded 
               if (e.key === "Enter") handleNameSave()
               if (e.key === "Escape") handleNameCancel()
             }}
-            autoFocus
             className="flex-1 min-w-0 text-lg font-semibold bg-transparent border-none outline-none focus:outline-none text-gray-900 dark:text-gray-100 px-0"
           />
         ) : (

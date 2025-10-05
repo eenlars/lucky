@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from "react"
 export function useDebouncedUpdate(
   nodeId: string,
   updateNode: (nodeId: string, updates: Record<string, any>) => void,
-  delay: number = 500,
+  delay = 500,
 ) {
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 

@@ -1,4 +1,4 @@
-import nodesConfig, { type AppNodeType, type NodeConfig } from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { type AppNodeType, type NodeConfig } from "@/react-flow-visualization/components/nodes/nodes"
 import {
   DropdownMenu,
   DropdownMenuContent,

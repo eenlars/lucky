@@ -1,4 +1,4 @@
-import { createEdge } from "@/react-flow-visualization/components/edges"
+import { createEdge } from "@/react-flow-visualization/components/edges/edges"
 import { describe, expect, it } from "vitest"
 
 describe("createEdge id format", () => {
