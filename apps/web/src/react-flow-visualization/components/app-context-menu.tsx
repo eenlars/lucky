@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 
-import nodesConfig, { type AppNodeType } from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { type AppNodeType } from "@/react-flow-visualization/components/nodes/nodes"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -11,7 +11,7 @@ import {
 } from "@/react-flow-visualization/components/ui/context-menu"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import { useClientPosition } from "@/react-flow-visualization/hooks/use-client-position"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 
 export default function AppContextMenu({ children }: { children: ReactNode }) {
   const [position, setPosition] = useClientPosition()

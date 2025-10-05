@@ -94,7 +94,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
     ? new Date(invocation.end_time).getTime() - new Date(invocation.start_time).getTime()
     : null
 
-  const statusColor = STATUS_TO_COLOR[(invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ?? "default"]
+  const _statusColor = STATUS_TO_COLOR[(invocation.status?.toLowerCase() as keyof typeof STATUS_TO_COLOR) ?? "default"]
 
   // extract a concise input summary if available
   const inputSummaryResult =

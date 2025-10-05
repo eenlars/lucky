@@ -1,7 +1,7 @@
 import type { Edge } from "@xyflow/react"
 import ELK, { type ElkNode, type ElkPort } from "elkjs/lib/elk.bundled.js"
 
-import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 
 const elk = new ELK()
 

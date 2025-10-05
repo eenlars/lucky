@@ -1,20 +1,20 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { cn } from "@/lib/utils"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import {
-  ACTIVE_MCP_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
-  type MCPToolName,
+  ACTIVE_MCP_TOOL_NAMES,
+  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   type CodeToolName,
+  type MCPToolName,
 } from "@lucky/tools/client"
-import { useCallback, useState, useEffect } from "react"
+import { Wrench } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 import { CollapsibleSection } from "./collapsible-section"
 import { ToolCheckbox } from "./components/tool-checkbox"
-import { Wrench } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface ToolsSectionProps {
   node: AppNode
@@ -55,7 +55,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!e.altKey) return
-      const num = parseInt(e.key)
+      const num = Number.parseInt(e.key)
       if (num >= 1 && num <= 9) {
         e.preventDefault()
         const allToolNames = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES]

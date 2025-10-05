@@ -1,17 +1,17 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { useAppStore } from "@/react-flow-visualization/store"
-import {
-  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
-  ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
-  type MCPToolName,
-  type CodeToolName,
-} from "@lucky/tools/client"
-import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
-import { useCallback, useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/react-flow-visualization/store/store"
+import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
+import {
+  ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
+  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
+  type CodeToolName,
+  type MCPToolName,
+} from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 
 interface ConfigPanelProps {
   node: AppNode

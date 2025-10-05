@@ -8,7 +8,7 @@ import nodesConfig, {
   type AppNode,
   createNodeByType,
   type NodeConfig,
-} from "@/react-flow-visualization/components/nodes"
+} from "@/react-flow-visualization/components/nodes/nodes"
 import { SettingsDialog } from "@/react-flow-visualization/components/settings-dialog"
 import { iconMapping } from "@/react-flow-visualization/components/ui/icon-mapping"
 import {
@@ -24,8 +24,8 @@ import {
   useSidebar,
 } from "@/react-flow-visualization/components/ui/sidebar"
 import { cn } from "@/react-flow-visualization/lib/utils"
-import { useAppStore } from "@/react-flow-visualization/store"
 import type { AppStore } from "@/react-flow-visualization/store/app-store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useShallow } from "zustand/react/shallow"
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {

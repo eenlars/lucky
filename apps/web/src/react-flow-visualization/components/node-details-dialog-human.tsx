@@ -1,7 +1,7 @@
 "use client"
 
 import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
-import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
+import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes/nodes"
 // Button no longer used for model chooser
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
 import { Input } from "@/react-flow-visualization/components/ui/input"
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/react-flow-visualization/components/ui/select"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
 import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
 import {

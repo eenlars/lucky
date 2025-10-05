@@ -1,14 +1,14 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useEffect, useRef } from "react"
 import { useShallow } from "zustand/react/shallow"
-import { AgentDetailHeader } from "./header"
-import { CoreConfigSection } from "./core-config-section"
-import { ToolsSection } from "./tools-section"
 import { AdvancedSection } from "./advanced-section"
+import { CoreConfigSection } from "./core-config-section"
+import { AgentDetailHeader } from "./header"
 import { QuickActionsFooter } from "./quick-actions-footer"
+import { ToolsSection } from "./tools-section"
 
 export function AgentDetailPanel() {
   const { isOpen, nodeId, isExpanded, selectedNode, onClose, onToggleExpanded } = useAppStore(

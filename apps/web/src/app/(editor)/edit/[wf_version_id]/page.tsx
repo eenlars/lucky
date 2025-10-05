@@ -1,6 +1,6 @@
 "use client"
 
-import { AppStoreProvider } from "@/react-flow-visualization/store"
+import { AppStoreProvider } from "@/react-flow-visualization/store/store"
 import { notFound } from "next/navigation"
 import { useEffect, useState } from "react"
 import EditModeSelector from "../components/EditModeSelector"

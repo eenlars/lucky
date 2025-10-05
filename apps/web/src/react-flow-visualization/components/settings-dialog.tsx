@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Switch } from "@/react-flow-visualization/components/ui/switch"
-import { useAppStore } from "@/react-flow-visualization/store"
+import { useAppStore } from "@/react-flow-visualization/store/store"
 
 function CheckItem({
   title,

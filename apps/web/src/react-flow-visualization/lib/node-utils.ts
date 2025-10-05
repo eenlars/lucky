@@ -1,4 +1,4 @@
-import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
+import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes/nodes"
 
 /**
  * Get all tools for a node (MCP + Code tools combined)

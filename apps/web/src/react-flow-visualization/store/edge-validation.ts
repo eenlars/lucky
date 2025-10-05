@@ -1,4 +1,4 @@
-import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes"
+import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 
 export type HandleRole = "source" | "target"
 

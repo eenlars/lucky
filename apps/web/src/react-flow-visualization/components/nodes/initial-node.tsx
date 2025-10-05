@@ -1,4 +1,4 @@
-import nodesConfig, { COMPACT_NODE_SIZE, type WorkflowNodeProps } from "."
+import nodesConfig, { COMPACT_NODE_SIZE, type WorkflowNodeProps } from "./nodes"
 import { AppHandle } from "./workflow-node/app-handle"
 
 export function InitialNode({ id, data: _data }: WorkflowNodeProps) {

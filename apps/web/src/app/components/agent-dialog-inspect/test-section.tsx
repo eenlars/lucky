@@ -1,9 +1,9 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes"
-import { Play, CheckCircle, AlertCircle } from "lucide-react"
-import { useState, useCallback, useMemo } from "react"
 import { cn } from "@/lib/utils"
+import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import { AlertCircle, CheckCircle, Play } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
 
 interface TestSectionProps {
   node: AppNode

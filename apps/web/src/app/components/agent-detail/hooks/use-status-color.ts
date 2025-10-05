@@ -1,5 +1,5 @@
+import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes/nodes"
 import { useMemo } from "react"
-import type { WorkflowNodeData } from "@/react-flow-visualization/components/nodes"
 
 const STATUS_COLOR_MAP = {
   initial: "bg-gray-400",
