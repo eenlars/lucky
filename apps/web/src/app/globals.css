@@ -80,6 +80,16 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   }
 
+  /* Stripe-like animated gradient for loading buttons */
+  @keyframes stripe-slide {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 20px 20px;
+    }
+  }
+
   /* custom scrollbar utilities */
   .scrollbar-thin {
     scrollbar-width: thin;

@@ -39,6 +39,7 @@ export function WorkflowPromptBar() {
   const [logs, setLogs] = useState<string[]>([])
   const [showLogs, setShowLogs] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const hideLogsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const addLog = useCallback((message: string) => {
     setLogs(prev => [...prev, message])
@@ -66,8 +67,23 @@ export function WorkflowPromptBar() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideLogsTimeoutRef.current) {
+        clearTimeout(hideLogsTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const handleSubmit = useCallback(async () => {
     if (!prompt.trim() || isGenerating) return
+
+    // Clear any pending hide timeout from previous runs
+    if (hideLogsTimeoutRef.current) {
+      clearTimeout(hideLogsTimeoutRef.current)
+      hideLogsTimeoutRef.current = null
+    }
 
     setIsGenerating(true)
     setLogs([])
@@ -94,7 +110,10 @@ export function WorkflowPromptBar() {
         setPrompt("")
         toast.success("Workflow updated")
         // Hide logs after edit mode completes (user doesn't need to see technical details)
-        setTimeout(() => setShowLogs(false), 2000)
+        hideLogsTimeoutRef.current = setTimeout(() => {
+          setShowLogs(false)
+          hideLogsTimeoutRef.current = null
+        }, 2000)
       } else {
         toast.error(result.error || "Failed to update workflow")
       }
@@ -179,11 +198,22 @@ export function WorkflowPromptBar() {
             {isGenerating ? (
               <div
                 className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full",
-                  isRunMode ? "bg-green-500" : "bg-blue-500",
+                  "flex items-center justify-center w-9 h-9 rounded-full relative overflow-hidden",
+                  isRunMode ? "bg-green-600" : "bg-blue-600",
                 )}
               >
-                <Loader2 className="size-4 text-white animate-spin" />
+                {/* Stripe-like animated gradient overlay */}
+                <div
+                  className="absolute inset-0 opacity-40"
+                  style={{
+                    background: isRunMode
+                      ? "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)"
+                      : "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)",
+                    backgroundSize: "20px 20px",
+                    animation: "stripe-slide 0.6s linear infinite",
+                  }}
+                />
+                <Loader2 className="size-4 text-white animate-spin relative z-10" />
               </div>
             ) : (
               <button
