@@ -41,8 +41,12 @@ export default async function RootLayout({
     userId = authResult.userId
   } catch (error) {
     // Middleware not detected - this can happen in dev mode
-    console.warn("Clerk auth() called without middleware detection:", error)
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Clerk auth() called without middleware detection:", error)
+    }
   }
+
+  // Clerk→IAM sync now handled via webhook; no per-request sync here
 
   const theme: ColorMode =
     (colorModeCookie?.value === "dark" || colorModeCookie?.value === "light" ? colorModeCookie.value : null) ??

@@ -6,6 +6,58 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  iam: {
+    Tables: {
+      users: {
+        Row: {
+          avatar_url: string | null
+          clerk_id: string
+          created_at: string
+          display_name: string | null
+          email: string | null
+          metadata: Json
+          status: Database["iam"]["Enums"]["user_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          clerk_id: string
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          metadata?: Json
+          status?: Database["iam"]["Enums"]["user_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          clerk_id?: string
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          metadata?: Json
+          status?: Database["iam"]["Enums"]["user_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      user_status: "active" | "disabled" | "invited"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       DataSet: {
@@ -43,28 +95,31 @@ export type Database = {
           created_at: string
           dataset_id: string
           dataset_record_id: string
+          dataset_version_id: string | null
           ground_truth: Json | null
           output_schema_json: Json | null
           rubric: Json | null
-          workflow_input: string | null
+          workflow_input: Json | null
         }
         Insert: {
           created_at?: string
           dataset_id: string
           dataset_record_id?: string
+          dataset_version_id?: string | null
           ground_truth?: Json | null
           output_schema_json?: Json | null
           rubric?: Json | null
-          workflow_input?: string | null
+          workflow_input?: Json | null
         }
         Update: {
           created_at?: string
           dataset_id?: string
           dataset_record_id?: string
+          dataset_version_id?: string | null
           ground_truth?: Json | null
           output_schema_json?: Json | null
           rubric?: Json | null
-          workflow_input?: string | null
+          workflow_input?: Json | null
         }
         Relationships: [
           {
@@ -74,7 +129,73 @@ export type Database = {
             referencedRelation: "DataSet"
             referencedColumns: ["dataset_id"]
           },
+          {
+            foreignKeyName: "dsr_dataset_version_fk"
+            columns: ["dataset_version_id"]
+            isOneToOne: false
+            referencedRelation: "DatasetVersion"
+            referencedColumns: ["dataset_version_id"]
+          },
         ]
+      }
+      DatasetVersion: {
+        Row: {
+          created_at: string
+          dataset_id: string
+          dataset_version_id: string
+          name: string | null
+          snapshot_metadata: Json | null
+          version_label: string | null
+        }
+        Insert: {
+          created_at?: string
+          dataset_id: string
+          dataset_version_id?: string
+          name?: string | null
+          snapshot_metadata?: Json | null
+          version_label?: string | null
+        }
+        Update: {
+          created_at?: string
+          dataset_id?: string
+          dataset_version_id?: string
+          name?: string | null
+          snapshot_metadata?: Json | null
+          version_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "DatasetVersion_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "DataSet"
+            referencedColumns: ["dataset_id"]
+          },
+        ]
+      }
+      Evaluator: {
+        Row: {
+          config: Json | null
+          created_at: string
+          evaluator_id: string
+          name: string
+          rubric: Json | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          evaluator_id?: string
+          name: string
+          rubric?: Json | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          evaluator_id?: string
+          name?: string
+          rubric?: Json | null
+        }
+        Relationships: []
       }
       EvolutionRun: {
         Row: {
@@ -227,6 +348,7 @@ export type Database = {
           model: string | null
           node_id: string
           node_invocation_id: string
+          node_version_id: string | null
           output: Json | null
           start_time: string
           status: Database["public"]["Enums"]["InvocationStatus"]
@@ -243,6 +365,7 @@ export type Database = {
           model?: string | null
           node_id: string
           node_invocation_id?: string
+          node_version_id?: string | null
           output?: Json | null
           start_time?: string
           status?: Database["public"]["Enums"]["InvocationStatus"]
@@ -259,6 +382,7 @@ export type Database = {
           model?: string | null
           node_id?: string
           node_invocation_id?: string
+          node_version_id?: string | null
           output?: Json | null
           start_time?: string
           status?: Database["public"]["Enums"]["InvocationStatus"]
@@ -269,11 +393,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "NodeInvocation_node_id_wf_version_id_fkey"
-            columns: ["node_id", "wf_version_id"]
+            foreignKeyName: "nodeinvocation_node_version_id_fk"
+            columns: ["node_version_id"]
             isOneToOne: false
             referencedRelation: "NodeVersion"
-            referencedColumns: ["node_id", "wf_version_id"]
+            referencedColumns: ["node_version_id"]
           },
           {
             foreignKeyName: "NodeInvocation_wf_invocation_id_fkey"
@@ -293,6 +417,7 @@ export type Database = {
           llm_model: string
           memory: Json | null
           node_id: string
+          node_version_id: string
           system_prompt: string
           tools: string[]
           updated_at: string
@@ -308,6 +433,7 @@ export type Database = {
           llm_model: string
           memory?: Json | null
           node_id?: string
+          node_version_id?: string
           system_prompt: string
           tools: string[]
           updated_at?: string
@@ -323,6 +449,7 @@ export type Database = {
           llm_model?: string
           memory?: Json | null
           node_id?: string
+          node_version_id?: string
           system_prompt?: string
           tools?: string[]
           updated_at?: string
@@ -345,37 +472,45 @@ export type Database = {
           created_at: string
           description: string
           updated_at: string
+          user_id: string | null
           wf_id: string
         }
         Insert: {
           created_at?: string
           description: string
           updated_at?: string
+          user_id?: string | null
           wf_id?: string
         }
         Update: {
           created_at?: string
           description?: string
           updated_at?: string
+          user_id?: string | null
           wf_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "Workflow_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "User"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       WorkflowInvocation: {
         Row: {
-          accuracy: number | null
           actual_output: string | null
+          dataset_record_id: string | null
           end_time: string | null
-          evaluation_inputs: Json | null
+          evaluator_id: string | null
           expected_output: string | null
           expected_output_type: Json | null
           extras: Json | null
           feedback: string | null
           fitness: Json | null
-          fitness_score: number | null
           generation_id: string | null
-          metadata: Json | null
-          novelty: number | null
           preparation: string | null
           run_id: string | null
           start_time: string
@@ -384,23 +519,19 @@ export type Database = {
           wf_invocation_id: string
           wf_version_id: string
           workflow_input: Json | null
-          workflow_io: Json | null
           workflow_output: Json | null
         }
         Insert: {
-          accuracy?: number | null
           actual_output?: string | null
+          dataset_record_id?: string | null
           end_time?: string | null
-          evaluation_inputs?: Json | null
+          evaluator_id?: string | null
           expected_output?: string | null
           expected_output_type?: Json | null
           extras?: Json | null
           feedback?: string | null
           fitness?: Json | null
-          fitness_score?: number | null
           generation_id?: string | null
-          metadata?: Json | null
-          novelty?: number | null
           preparation?: string | null
           run_id?: string | null
           start_time?: string
@@ -409,23 +540,19 @@ export type Database = {
           wf_invocation_id?: string
           wf_version_id: string
           workflow_input?: Json | null
-          workflow_io?: Json | null
           workflow_output?: Json | null
         }
         Update: {
-          accuracy?: number | null
           actual_output?: string | null
+          dataset_record_id?: string | null
           end_time?: string | null
-          evaluation_inputs?: Json | null
+          evaluator_id?: string | null
           expected_output?: string | null
           expected_output_type?: Json | null
           extras?: Json | null
           feedback?: string | null
           fitness?: Json | null
-          fitness_score?: number | null
           generation_id?: string | null
-          metadata?: Json | null
-          novelty?: number | null
           preparation?: string | null
           run_id?: string | null
           start_time?: string
@@ -434,7 +561,6 @@ export type Database = {
           wf_invocation_id?: string
           wf_version_id?: string
           workflow_input?: Json | null
-          workflow_io?: Json | null
           workflow_output?: Json | null
         }
         Relationships: [
@@ -453,6 +579,20 @@ export type Database = {
             referencedColumns: ["run_id"]
           },
           {
+            foreignKeyName: "wfi_dataset_record_fk"
+            columns: ["dataset_record_id"]
+            isOneToOne: false
+            referencedRelation: "DatasetRecord"
+            referencedColumns: ["dataset_record_id"]
+          },
+          {
+            foreignKeyName: "wfi_evaluator_fk"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "Evaluator"
+            referencedColumns: ["evaluator_id"]
+          },
+          {
             foreignKeyName: "WorkflowInvocation_wf_version_id_fkey"
             columns: ["wf_version_id"]
             isOneToOne: false
@@ -461,57 +601,92 @@ export type Database = {
           },
         ]
       }
+      WorkflowInvocationEval: {
+        Row: {
+          accuracy: number | null
+          created_at: string
+          feedback: string | null
+          wf_inv_eval_id: string
+          wf_inv_id: string | null
+        }
+        Insert: {
+          accuracy?: number | null
+          created_at?: string
+          feedback?: string | null
+          wf_inv_eval_id?: string
+          wf_inv_id?: string | null
+        }
+        Update: {
+          accuracy?: number | null
+          created_at?: string
+          feedback?: string | null
+          wf_inv_eval_id?: string
+          wf_inv_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "WorkflowInvocationEvaluation_wf_inv_id_fkey"
+            columns: ["wf_inv_id"]
+            isOneToOne: false
+            referencedRelation: "WorkflowInvocation"
+            referencedColumns: ["wf_invocation_id"]
+          },
+        ]
+      }
       WorkflowVersion: {
         Row: {
-          all_workflow_io: Json[] | null
           commit_message: string
           created_at: string
           dsl: Json
           generation_id: string | null
+          input_schema: Json
           iteration_budget: number
           knowledge: Json | null
           operation: Database["public"]["Enums"]["WorkflowOperation"]
+          output_schema: Json | null
           parent_id: string | null
           parent1_id: string | null
           parent2_id: string | null
           time_budget_seconds: number
           updated_at: string
           wf_version_id: string
-          workflow_id: string
+          workflow_id: string | null
         }
         Insert: {
-          all_workflow_io?: Json[] | null
           commit_message: string
           created_at?: string
           dsl: Json
           generation_id?: string | null
+          input_schema?: Json
           iteration_budget?: number
           knowledge?: Json | null
           operation?: Database["public"]["Enums"]["WorkflowOperation"]
+          output_schema?: Json | null
           parent_id?: string | null
           parent1_id?: string | null
           parent2_id?: string | null
           time_budget_seconds?: number
           updated_at?: string
           wf_version_id?: string
-          workflow_id: string
+          workflow_id?: string | null
         }
         Update: {
-          all_workflow_io?: Json[] | null
           commit_message?: string
           created_at?: string
           dsl?: Json
           generation_id?: string | null
+          input_schema?: Json
           iteration_budget?: number
           knowledge?: Json | null
           operation?: Database["public"]["Enums"]["WorkflowOperation"]
+          output_schema?: Json | null
           parent_id?: string | null
           parent1_id?: string | null
           parent2_id?: string | null
           time_budget_seconds?: number
           updated_at?: string
           wf_version_id?: string
-          workflow_id?: string
+          workflow_id?: string | null
         }
         Relationships: [
           {
@@ -553,7 +728,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      User: {
+        Row: {
+          clerk_id: string | null
+          created_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clerk_id?: string | null
+          created_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clerk_id?: string | null
+          created_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       gen_prefixed_id: {
@@ -697,7 +889,14 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
-export const Constants = {
+export type Constants = typeof _Constants
+
+const _Constants = {
+  iam: {
+    Enums: {
+      user_status: ["active", "disabled", "invited"],
+    },
+  },
   public: {
     Enums: {
       EvolutionRunStatus: ["running", "completed", "failed", "interrupted"],

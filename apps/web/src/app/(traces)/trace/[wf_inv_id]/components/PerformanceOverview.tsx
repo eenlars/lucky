@@ -2,21 +2,7 @@
 
 import { SmartContent } from "@/components/utils/SmartContent"
 import type { Tables } from "@lucky/shared/client"
-// Simple JSON extraction function
-const _extractJSON = (input: unknown): any => {
-  if (typeof input === "object" && input !== null) {
-    return input
-  }
-  if (typeof input !== "string") {
-    return input
-  }
-  try {
-    return JSON.parse(input)
-  } catch {
-    return input
-  }
-}
-import { ChevronDown, ChevronRight, FileText, Files } from "lucide-react"
+import { ChevronDown, FileText, Files } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -146,6 +132,7 @@ export default function PerformanceOverview({
               </>
             )}
             <button
+              type="button"
               onClick={() => setIsExpanded(!isExpanded)}
               className="flex items-center gap-2 text-sidebar-foreground/70 dark:text-sidebar-foreground/70 hover:text-sidebar-primary dark:hover:text-sidebar-primary transition-colors duration-200 text-sm font-medium px-3 py-1.5 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg"
             >
@@ -209,32 +196,6 @@ export default function PerformanceOverview({
                 {workflowVersion?.commit_message ?? "No goal"}
               </div>
             </div>
-
-            {/* Configuration Files */}
-            {workflow.metadata &&
-              typeof workflow.metadata === "object" &&
-              !Array.isArray(workflow.metadata) &&
-              (workflow.metadata as any).configFiles &&
-              Array.isArray((workflow.metadata as any).configFiles) &&
-              (workflow.metadata as any).configFiles.length > 0 && (
-                <div className="p-4 border-b border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                    <Files size={16} />
-                    Configuration Files
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {((workflow.metadata as any).configFiles as string[]).map((file: string, index: number) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-xs"
-                      >
-                        <FileText size={10} />
-                        {file}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
 
             {/* Input/Feedback/Output Display - Only in collapsible section */}
             {(workflow.workflow_input || workflow.workflow_output || workflow.feedback) && (
@@ -318,26 +279,6 @@ export default function PerformanceOverview({
                         </div>
                       </div>
                     )}
-
-                    {/* Legacy workflow_io fallback */}
-                    {!workflow.workflow_input && !workflow.workflow_output && workflow.workflow_io && (
-                      <>
-                        <div>
-                          <div className="font-medium text-sm text-gray-900 mb-1">Input (legacy):</div>
-                          <div className="text-xs text-gray-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
-                            {(workflow.workflow_io as any)?.workflowInput || "No input"}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm text-gray-900 mb-1">Output (legacy):</div>
-                          <div className="text-xs text-gray-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
-                            {typeof (workflow.workflow_io as any)?.workflowOutput === "object"
-                              ? JSON.stringify((workflow.workflow_io as any)?.workflowOutput, null, 2)
-                              : (workflow.workflow_io as any)?.workflowOutput || "No output"}
-                          </div>
-                        </div>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
@@ -368,6 +309,7 @@ export default function PerformanceOverview({
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-900">Expected vs Actual Output</h4>
                     <button
+                      type="button"
                       className="p-1 rounded hover:bg-gray-100 transition-colors"
                       onClick={() => setIsExpActExpanded(v => !v)}
                       aria-label={isExpActExpanded ? "Collapse outputs" : "Expand outputs"}

@@ -25,7 +25,7 @@ type WorkflowInvocationSubset = {
   end_time: string | null
   status: string | null
   usd_cost: number | null
-  fitness_score: number | null
+  fitness: number | null
   accuracy: number | null
   run_id: string
   generation_id: string | null
@@ -173,12 +173,12 @@ async function main() {
 
     const genCost = sum(invocations.map(i => i.usd_cost))
     const genAccAvg = average(invocations.map(i => i.accuracy))
-    const genFitAvg = average(invocations.map(i => i.fitness_score))
+    const genFitAvg = average(invocations.map(i => i.fitness))
 
     totalInvocations += invocations.length
     totalCost += genCost
     allAccuracies.push(...invocations.map(i => i.accuracy))
-    allFitness.push(...invocations.map(i => i.fitness_score))
+    allFitness.push(...invocations.map(i => i.fitness))
 
     const statusSummary =
       Array.from(statuses.entries())

@@ -51,14 +51,14 @@ export class ClaudeSDKService {
 
   /**
    * Initialize SDK client (singleton pattern for efficiency).
-   * Uses environment variable ANTH_SECRET_KEY.
+   * Uses environment variable ANTH_API_KEY.
    */
   private static initializeClient(): Anthropic {
     // Always check for API key, even if client exists
-    const apiKey = process.env.ANTH_SECRET_KEY
+    const apiKey = process.env.ANTH_API_KEY
 
     if (!apiKey) {
-      throw new Error("ANTH_SECRET_KEY environment variable is required for SDK usage")
+      throw new Error("ANTH_API_KEY environment variable is required for SDK usage")
     }
 
     if (!ClaudeSDKService.client) {

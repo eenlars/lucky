@@ -4,6 +4,7 @@ import UserProfile from "@/components/UserProfile"
 import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
+import { useClerk } from "@clerk/nextjs"
 import {
   BarChart2,
   Boxes,
@@ -23,10 +24,11 @@ import { useState } from "react"
 import type { ComponentType, SVGProps } from "react"
 
 interface SidebarItem {
-  href: string
+  href?: string
   label: string
   icon: ComponentType<SVGProps<SVGSVGElement>>
   description?: string
+  onClick?: () => void
 }
 
 const baseSidebarItems: SidebarItem[] = [
@@ -66,12 +68,6 @@ const baseSidebarItems: SidebarItem[] = [
     icon: Dna,
     description: "Evolution tracking",
   },
-  {
-    href: "/settings",
-    label: "Settings",
-    icon: Settings,
-    description: "Application settings",
-  },
 ]
 
 // In production, hide some sections entirely; in development, show but disabled
@@ -81,7 +77,7 @@ const disabledHrefs = new Set(["/structures", "/evolution"]) // disabled in dev
 // Build items list per environment
 const sidebarItems: SidebarItem[] = isProd
   ? baseSidebarItems.filter(
-      item => item.href !== "/workflows" && !disabledHrefs.has(item.href), // hide in prod
+      item => item.href !== "/workflows" && !disabledHrefs.has(item.href ?? ""), // hide in prod
     )
   : baseSidebarItems
 
@@ -89,6 +85,16 @@ export default function Sidebar() {
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const { isCollapsed, setIsCollapsed, isMobile } = useSidebar()
+  const { openUserProfile } = useClerk()
+
+  const settingsItem: SidebarItem = {
+    label: "Settings",
+    icon: Settings,
+    description: "User settings",
+    onClick: () => openUserProfile(),
+  }
+
+  const allItems = [...sidebarItems, settingsItem]
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed)
@@ -115,6 +121,7 @@ export default function Sidebar() {
         </Link>
         {isMobile && (
           <button
+            type="button"
             onClick={() => setIsMobileOpen(false)}
             className="ml-auto p-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
             aria-label="Close sidebar"
@@ -136,9 +143,9 @@ export default function Sidebar() {
         aria-label="Primary navigation"
       >
         <ul className="space-y-0.5">
-          {sidebarItems.map(item => {
-            const isDisabled = !isProd && disabledHrefs.has(item.href)
-            const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
+          {allItems.map(item => {
+            const isDisabled = !isProd && item.href && disabledHrefs.has(item.href)
+            const isActive = item.href && (pathname === item.href || pathname?.startsWith(`${item.href}/`))
             const Icon = item.icon
 
             const commonClasses = cn(
@@ -153,12 +160,7 @@ export default function Sidebar() {
             )
 
             const linkContent = isDisabled ? (
-              <div
-                role="link"
-                aria-disabled="true"
-                className={commonClasses}
-                title={`${item.label} (disabled in development)`}
-              >
+              <span aria-disabled="true" className={commonClasses} title={`${item.label} (disabled in development)`}>
                 {isActive && (
                   <div
                     className={cn(
@@ -184,10 +186,34 @@ export default function Sidebar() {
                 >
                   {item.label}
                 </span>
-              </div>
+              </span>
+            ) : item.onClick ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileOpen(false)
+                  item.onClick?.()
+                }}
+                className={commonClasses}
+                title={item.description ?? item.label}
+                data-testid={`sidebar-nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                <Icon
+                  className={cn("size-4 shrink-0 transition-all duration-200", isCollapsed && !isMobile && "size-5")}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn(
+                    "truncate transition-all duration-300 ease-out",
+                    isCollapsed && !isMobile && "w-0 opacity-0 overflow-hidden",
+                  )}
+                >
+                  {item.label}
+                </span>
+              </button>
             ) : (
               <Link
-                href={item.href}
+                href={item.href!}
                 onClick={() => setIsMobileOpen(false)}
                 className={commonClasses}
                 title={item.description ?? item.label}
@@ -224,7 +250,7 @@ export default function Sidebar() {
             )
 
             return (
-              <li key={item.href}>
+              <li key={item.href ?? item.label}>
                 {isCollapsed && !isMobile ? (
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
@@ -249,6 +275,7 @@ export default function Sidebar() {
       {/* Collapse toggle button - desktop only */}
       {!isMobile && (
         <button
+          type="button"
           onClick={toggleCollapse}
           className={cn(
             "absolute -right-3 top-20 z-10",
@@ -282,6 +309,7 @@ export default function Sidebar() {
     <>
       {/* Mobile menu trigger */}
       <button
+        type="button"
         onClick={() => setIsMobileOpen(true)}
         className={cn(
           "fixed left-4 top-4 z-50 p-2 rounded-md",

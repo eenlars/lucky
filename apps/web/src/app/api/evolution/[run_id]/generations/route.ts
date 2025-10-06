@@ -4,19 +4,6 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
-interface WorkflowInvocationSubset {
-  wf_invocation_id: string
-  wf_version_id: string
-  start_time: string
-  end_time: string | null
-  status: "running" | "completed" | "failed" | "rolled_back"
-  usd_cost: number
-  fitness_score: number | null
-  accuracy: number | null
-  run_id: string | null
-  generation_id: string | null
-}
-
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
   const authResult = await requireAuth()
@@ -62,10 +49,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
         end_time,
         status,
         usd_cost,
-        fitness_score,
-        accuracy,
         run_id,
-        generation_id
+        generation_id,
+        fitness
       `,
       )
       .eq("run_id", run_id)
@@ -82,7 +68,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
       return {
         generation,
         versions: genVersions,
-        invocations: genInvocations as WorkflowInvocationSubset[],
+        invocations: genInvocations,
       }
     })
 

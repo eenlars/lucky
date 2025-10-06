@@ -4,6 +4,7 @@ import { z } from "zod"
 export const envi = createEnv({
   server: {
     CLERK_SECRET_KEY: z.string(),
+    CLERK_WEBHOOK_SECRET: z.string().nullish(),
     TAVILY_API_KEY: z.string().nullish(),
     WEBSHARE_API_KEY: z.string().nullish(),
     MAPBOX_TOKEN: z.string().nullish(),
@@ -34,6 +35,7 @@ export const envi = createEnv({
   },
   runtimeEnv: {
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,

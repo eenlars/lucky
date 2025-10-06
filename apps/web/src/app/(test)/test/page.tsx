@@ -288,6 +288,7 @@ export default function TestPage() {
                 )}
               </div>
               <button
+                type="button"
                 onClick={testGet}
                 disabled={loading}
                 className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium text-sm transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
@@ -303,6 +304,7 @@ export default function TestPage() {
                 <span className="hidden sm:inline">Test</span>
               </button>
               <button
+                type="button"
                 onClick={clearChat}
                 className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
               >
@@ -334,6 +336,7 @@ export default function TestPage() {
               </div>
               <div className="flex items-center justify-between sm:justify-end space-x-2">
                 <button
+                  type="button"
                   onClick={() => setMessage("")}
                   className="px-2 sm:px-3 py-1 sm:py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-colors"
                 >
@@ -390,6 +393,7 @@ export default function TestPage() {
               </div>
 
               <button
+                type="button"
                 onClick={sendMessage}
                 disabled={loading || !message.trim()}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-medium transition-all duration-200 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 w-full sm:w-auto"

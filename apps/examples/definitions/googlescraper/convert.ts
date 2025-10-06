@@ -103,19 +103,6 @@ function extractPostcode(location: GoogleMapsBusiness): string {
   return postcodeMatch ? postcodeMatch[1] : ""
 }
 
-function extractPhone(location: GoogleMapsBusiness): string | null {
-  if (!location.phone) return null
-
-  // remove prefix if present
-  const phone = location.phone.replace(/^telefoon:\s*/i, "")
-  return phone || null
-}
-
-function extractEmail(_: GoogleMapsBusiness): string | null {
-  // email not available in the example data
-  return null
-}
-
 function transformOpeningHours(location: GoogleMapsBusiness):
   | {
       monday: string

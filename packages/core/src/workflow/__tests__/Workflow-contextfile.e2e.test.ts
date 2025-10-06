@@ -13,7 +13,7 @@ if (typeof (vi as any).mock === "function")
       TAVILY_API_KEY: "test-tavily-key",
       FIRECRAWL_API_KEY: "test-firecrawl-key",
       SUPABASE_ANON_KEY: "test-supabase-key",
-      SUPABASE_PROJECT_ID: "test-project-id",
+      SUPABASE_PROJECT_ID: "testprojectid",
       OPENROUTER_API_KEY: "test-openrouter-key",
       XAI_API_KEY: "test-xai-key",
       MAPBOX_TOKEN: "test-mapbox-token",

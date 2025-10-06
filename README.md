@@ -41,8 +41,9 @@ git clone <repository-url>
 cd together
 bun install  # This also builds required packages
 
-# (Optional) Create environment file(s) where needed
-# For the web app, create apps/web/.env and set your provider/database keys
+# Configure environment once at the repo root
+cp .env.example .env.local
+# Fill in your API keys and settings in .env.local (and optionally .env)
 
 # Start the web interface
 cd apps/web && bun run dev
@@ -80,7 +81,13 @@ Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + ga
 
 ## Configuration
 
-- App env: `apps/web/.env` (see `apps/web/.env.example`). Placeholder keys are used in tests; live model checks require real keys.
+- Root env: `.env` and/or `.env.local` (see `.env.example`). Root scripts load both via Bun (`--env-file`) and all Turbo tasks inherit it. Optional per-app overrides can live in `apps/<name>/.env.local`.
+
+Tip: If you prefer running `next dev` inside `apps/web` directly, create a symlink so Next’s file-based loader picks up the root env without duplication:
+
+```bash
+ln -s ../../.env.local apps/web/.env.local
+```
 - Path aliases: prefer `@core`, `@shared` in tests and code where available.
 - Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd apps/web && bun run format` or `cd packages/core && bun run format`.
 

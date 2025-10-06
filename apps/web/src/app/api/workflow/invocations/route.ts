@@ -23,8 +23,8 @@ interface WorkflowInvocationFilters {
   maxCost?: number
   minAccuracy?: number
   maxAccuracy?: number
-  minFitnessScore?: number
-  maxFitnessScore?: number
+  minFitness?: number
+  maxFitness?: number
 }
 
 // Allowed columns for sorting to prevent SQL injection and runtime errors
@@ -34,7 +34,7 @@ const ALLOWED_SORT_FIELDS = [
   "status",
   "usd_cost",
   "accuracy",
-  "fitness_score",
+  "fitness",
   "run_id",
   "generation_id",
   "wf_version_id",
@@ -124,17 +124,17 @@ export async function GET(request: NextRequest) {
     if (filters.maxAccuracy !== undefined) {
       query = query.lte("accuracy", filters.maxAccuracy)
     }
-    if (filters.minFitnessScore !== undefined) {
-      query = query.gte("fitness_score", filters.minFitnessScore)
+    if (filters.minFitness !== undefined) {
+      query = query.gte("fitness", filters.minFitness)
     }
-    if (filters.maxFitnessScore !== undefined) {
-      query = query.lte("fitness_score", filters.maxFitnessScore)
+    if (filters.maxFitness !== undefined) {
+      query = query.lte("fitness", filters.maxFitness)
     }
     if (filters.hasFitnessScore === true) {
-      query = query.not("fitness_score", "is", null)
+      query = query.not("fitness", "is", null)
     }
     if (filters.hasFitnessScore === false) {
-      query = query.is("fitness_score", null)
+      query = query.is("fitness", null)
     }
     if (filters.hasAccuracy === true) {
       query = query.not("accuracy", "is", null)

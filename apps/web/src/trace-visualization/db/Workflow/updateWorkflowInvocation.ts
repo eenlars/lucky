@@ -3,18 +3,18 @@ import { lgg } from "@lucky/core/utils/logging/Logger"
 
 export interface InvocationScores {
   accuracy: number
-  fitness_score: number
+  fitness: number
 }
 
 export async function updateWorkflowInvocationScores(invocationId: string, scores: InvocationScores): Promise<void> {
   try {
     const roundedAccuracy = Math.round(scores.accuracy)
-    const roundedFitness = Math.round(scores.fitness_score)
+    const roundedFitness = Math.round(scores.fitness)
     const { error } = await supabase
       .from("WorkflowInvocation")
       .update({
         accuracy: roundedAccuracy,
-        fitness_score: roundedFitness,
+        fitness: roundedFitness,
         updated_at: new Date().toISOString(),
       })
       .eq("wf_invocation_id", invocationId)

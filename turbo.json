@@ -1,34 +1,67 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [".env", ".env.local"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "outputLogs": "new-only",
       "passThroughEnv": [
-        "ANTH_API_KEY",
-        "CLERK_SECRET_KEY",
-        "FIRECRAWL_API_KEY",
-        "GOOGLE_API_KEY",
-        "HF_TOKEN",
-        "HUGGING_FACE_API_KEY",
-        "MAPBOX_TOKEN",
+        "NODE_ENV",
         "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "CLERK_WEBHOOK_SECRET",
         "OPENAI_API_KEY",
         "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "ANTH_API_KEY",
+        "ANTH_SECRET_KEY",
+        "GOOGLE_API_KEY",
         "SERPAPI_API_KEY",
+        "MEM0_API_KEY",
+        "MAPBOX_TOKEN",
+        "HF_TOKEN",
+        "HUGGING_FACE_API_KEY",
         "SUPABASE_ANON_KEY",
         "SUPABASE_PROJECT_ID",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_PROJECT_ID",
         "TAVILY_API_KEY",
-        "VERCEL_OIDC_TOKEN",
         "WEBSHARE_API_KEY",
+        "VERCEL_OIDC_TOKEN",
         "XAI_API_KEY"
       ]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "CLERK_WEBHOOK_SECRET",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "ANTH_API_KEY",
+        "ANTH_SECRET_KEY",
+        "GOOGLE_API_KEY",
+        "SERPAPI_API_KEY",
+        "MEM0_API_KEY",
+        "MAPBOX_TOKEN",
+        "HF_TOKEN",
+        "HUGGING_FACE_API_KEY",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_PROJECT_ID",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_PROJECT_ID",
+        "TAVILY_API_KEY",
+        "WEBSHARE_API_KEY",
+        "VERCEL_OIDC_TOKEN",
+        "XAI_API_KEY"
+      ]
     },
     "lint": {
       "dependsOn": ["^build"]
@@ -44,22 +77,66 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "CLERK_WEBHOOK_SECRET",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "ANTH_API_KEY",
+        "ANTH_SECRET_KEY",
+        "GOOGLE_API_KEY",
+        "SERPAPI_API_KEY",
+        "MAPBOX_TOKEN",
+        "HF_TOKEN",
+        "HUGGING_FACE_API_KEY",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_PROJECT_ID",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_PROJECT_ID",
+        "TAVILY_API_KEY",
+        "WEBSHARE_API_KEY",
+        "VERCEL_OIDC_TOKEN",
+        "XAI_API_KEY"
+      ]
     },
     "test:unit": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": [
+        "NODE_ENV",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "ANTH_API_KEY",
+        "ANTH_SECRET_KEY",
+        "HF_TOKEN"
+      ]
     },
     "test:integration": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": [
+        "NODE_ENV",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "ANTH_API_KEY",
+        "ANTH_SECRET_KEY",
+        "HF_TOKEN"
+      ]
     },
     "coverage": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["NODE_ENV"]
     },
     "tsc": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["NODE_ENV"]
     },
     "clean": {
       "cache": false

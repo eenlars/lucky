@@ -1,4 +1,4 @@
-import { JSONN, type Tables } from "@lucky/shared/client"
+import { JSONN, type Json, type Tables, type TablesInsert } from "@lucky/shared/client"
 import { nanoid } from "nanoid"
 
 /**
@@ -57,13 +57,15 @@ export const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): N
 
 export const normalizeNodeInvocation = (
   raw: Record<string, unknown> & {
-    NodeVersion: Tables<"NodeVersion">
+    NodeVersion: Tables<"NodeVersion"> | null
     inputs?: MessageMetadata[]
     outputs?: MessageMetadata[]
     output?: unknown
   },
-): NodeInvocationExtended => {
+): NodeInvocationExtended | null => {
   const { NodeVersion: nodeDef, inputs = [], outputs = [], output: legacyOutput, ...rest } = raw
+
+  if (!nodeDef) return null
 
   const normalisedOutputs =
     outputs.length > 0 || legacyOutput == null
@@ -72,16 +74,15 @@ export const normalizeNodeInvocation = (
           {
             msg_id: nanoid(),
             seq: 0,
-            role: "assistant",
-            payload: wrapLegacyPayload(legacyOutput),
-            created_at: rest.end_time ?? rest.start_time,
-            wf_invocation_id: rest.wf_version_id,
-            origin_invocation_id: rest.node_invocation_id,
+            role: "assistant" as Tables<"Message">["role"],
+            payload: wrapLegacyPayload(legacyOutput) as Json,
+            created_at: (rest.end_time ?? rest.start_time ?? "") as string,
+            wf_invocation_id: rest.wf_version_id as string,
+            origin_invocation_id: rest.node_invocation_id as string,
             target_invocation_id: null,
-            from_node_id: rest.node_id,
+            from_node_id: rest.node_id as string,
             to_node_id: null,
-            reply_to: null,
-          } as unknown as Tables<"Message">,
+          } satisfies TablesInsert<"Message">,
         ]
 
   return {
