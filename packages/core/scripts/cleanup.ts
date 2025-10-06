@@ -1,12 +1,13 @@
 #!/usr/bin/env tsx
 
 import { cleanupStaleRecords } from "@core/utils/cleanup/cleanupStaleRecords"
-import { SupabasePersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@together/adapter-supabase"
 
 async function main() {
   try {
     console.log("Starting cleanup...")
-    const persistence = new SupabasePersistence()
+    // Auto-detects from USE_MOCK_PERSISTENCE env var, falls back to in-memory if Supabase not configured
+    const persistence = createPersistence()
     const stats = await cleanupStaleRecords(persistence)
     console.log("Cleanup completed successfully:")
     console.log(JSON.stringify(stats, null, 2))
