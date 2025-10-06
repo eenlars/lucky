@@ -2,6 +2,7 @@ import { isNir } from "@lucky/shared"
 import type { Tool, ToolSet } from "ai"
 import type { ToolExecutionContext } from "../factory/types"
 import { codeToolRegistry } from "./CodeToolRegistry"
+import { ensureCodeToolsRegistered } from "./ensureCodeToolsRegistered"
 import type { CodeToolName } from "./types"
 
 /**
@@ -11,12 +12,14 @@ export const setupCodeToolsForNode = async (
   toolNames: CodeToolName[],
   toolExecutionContext?: ToolExecutionContext,
 ): Promise<ToolSet> => {
-  // initialize the code tool registry
-  await codeToolRegistry.initialize()
-
   if (isNir(toolNames)) {
     return {}
   }
+
+  await ensureCodeToolsRegistered(toolNames)
+
+  // initialize the code tool registry
+  await codeToolRegistry.initialize()
 
   // Get tools with context if workflowInvocationId is provided
   if (!toolExecutionContext) {
