@@ -129,14 +129,13 @@ export async function traceWorkflowEvolution(invocationId: string): Promise<Evol
     const endTime = inv.end_time ? new Date(inv.end_time) : null
     const duration = endTime ? endTime.getTime() - startTime.getTime() : null
 
-    return {
+    const result: EvolutionNode = {
       invocationId: inv.wf_invocation_id,
       versionId: inv.wf_version_id,
       runId: inv.run_id || undefined,
       generationId: inv.generation_id || undefined,
       generationNumber: invGeneration?.number || generation?.number,
-      accuracy: inv.accuracy || undefined,
-      fitnessScore: inv.fitness_score || undefined,
+      fitnessScore: inv.fitness as number | undefined,
       status: inv.status,
       operation: version?.operation || "unknown",
       commitMessage: version?.commit_message || "",
@@ -152,6 +151,8 @@ export async function traceWorkflowEvolution(invocationId: string): Promise<Evol
           : undefined,
       usdCost: inv.usd_cost,
     }
+
+    return result
   })
 
   // 7. create accuracy progression

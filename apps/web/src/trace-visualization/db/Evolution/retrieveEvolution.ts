@@ -9,8 +9,6 @@ export interface WorkflowInvocationSubset {
   end_time: string | null
   status: "running" | "completed" | "failed" | "rolled_back"
   usd_cost: number
-  fitness_score: number | null
-  accuracy: number | null
   run_id: string | null
   generation_id: string | null
 }
@@ -115,8 +113,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
         end_time,
         status,
         usd_cost,
-        fitness_score,
-        accuracy,
+        fitness,
         run_id,
         generation_id
       )
@@ -149,7 +146,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
       // Find workflow versions for this generation
       const generationVersions = workflowVersions?.filter(wv => wv.generation_id === generation.generation_id) || []
 
-      return {
+      const returnable: GenerationWithData = {
         generation: {
           generation_id: generation.generation_id,
           number: generation.number,
@@ -163,6 +160,8 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
         versions: generationVersions,
         invocations: generation.workflow_invocations || [],
       }
+
+      return returnable
     }) || []
 
   return generationsWithData

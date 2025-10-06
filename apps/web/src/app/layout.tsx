@@ -44,6 +44,8 @@ export default async function RootLayout({
     console.warn("Clerk auth() called without middleware detection:", error)
   }
 
+  // Clerk→IAM sync now handled via webhook; no per-request sync here
+
   const theme: ColorMode =
     (colorModeCookie?.value === "dark" || colorModeCookie?.value === "light" ? colorModeCookie.value : null) ??
     (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")

@@ -19,8 +19,7 @@ export const retrieveWorkflowInvocation = async (invocationId: string): Promise<
   if (data) {
     lgg.log("Retrieved single invocation with scores:", {
       id: data.wf_invocation_id,
-      accuracy: data.accuracy,
-      fitness_score: data.fitness_score,
+      fitness: data.fitness,
     })
   }
 

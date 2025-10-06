@@ -57,7 +57,9 @@ export const nodeInvocations = cache(async (workflowInvocationId: string): Promi
     throw new Error("Failed to fetch node invocations")
   }
 
-  const nodeInvocations: NodeInvocationExtended[] = (invocations ?? []).map(normalizeNodeInvocation)
+  const nodeInvocations: NodeInvocationExtended[] = (invocations ?? [])
+    .map(normalizeNodeInvocation)
+    .filter((inv): inv is NodeInvocationExtended => inv !== null)
   const groups = groupInvocationsByNode(nodeInvocations)
 
   return {

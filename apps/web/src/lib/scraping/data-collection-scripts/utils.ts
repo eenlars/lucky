@@ -56,29 +56,34 @@ export const europeanCountries: CountryInEurope[] = [
 
 /** lightweight, "good-enough" slug maker for B-Corp URLs */
 export function slugifyBCorp(raw: string): string {
-  return raw
-    .trim()
-    .replace(/\./g, "") //replace all dots
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "") // remove combining diacritical marks
-    .replace(/[àáâãäåæ]/g, "")
-    .replace(/[çć]/g, "")
-    .replace(/[èéêë]/g, "")
-    .replace(/[ìíîï]/g, "")
-    .replace(/[ñ]/g, "")
-    .replace(/[òóôõöø]/g, "")
-    .replace(/[ùúûüū]/g, "")
-    .replace(/[ýÿ]/g, "")
-    .replace(/[ß]/g, "")
-    .replace(/[đ]/g, "")
-    .replace(/[ř]/g, "")
-    .replace(/[š]/g, "")
-    .replace(/[ť]/g, "")
-    .replace(/[ž]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") // strip leading / trailing "-"
+  return (
+    raw
+      .trim()
+      .replace(/\./g, "") //replace all dots
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .toLowerCase()
+      // Important: B-Corp slugs drop accented letters entirely (not just accents).
+      // Remove common accented letters before normalization so the whole letter is dropped.
+      .replace(/[àáâãäåæ]/g, "")
+      .replace(/[çć]/g, "")
+      .replace(/[èéêë]/g, "")
+      .replace(/[ìíîï]/g, "")
+      .replace(/[ñ]/g, "")
+      .replace(/[òóôõöø]/g, "")
+      .replace(/[ùúûüū]/g, "")
+      .replace(/[ýÿ]/g, "")
+      .replace(/[ß]/g, "")
+      .replace(/[đ]/g, "")
+      .replace(/[ř]/g, "")
+      .replace(/[š]/g, "")
+      .replace(/[ť]/g, "")
+      .replace(/[ž]/g, "")
+      // Now normalize and strip any remaining combining marks from characters we didn't explicitly handle above.
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "") // remove combining diacritical marks
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+  ) // strip leading / trailing "-"
 }
 
 /** turn a website field into a bare domain */

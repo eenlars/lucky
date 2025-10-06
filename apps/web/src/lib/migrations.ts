@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import type { Json } from "@lucky/shared/client"
 
 interface NewerFitnessData {
   data: {
@@ -73,29 +74,29 @@ function isOlderFormat(data: unknown): data is OlderFitnessData {
 
 function extractFitnessValues(fitnessData: unknown): {
   accuracy: number | null
-  fitness_score: number | null
+  fitness: number | null
 } {
   if (isNewerFormat(fitnessData)) {
     return {
       accuracy: Math.round(fitnessData.data.accuracy),
-      fitness_score: Math.round(fitnessData.data.score),
+      fitness: Math.round(fitnessData.data.score),
     }
   }
   if (isMiddleFormat(fitnessData)) {
     return {
       accuracy: Math.round(fitnessData.data.dataAccuracy),
-      fitness_score: Math.round(fitnessData.data.score),
+      fitness: Math.round(fitnessData.data.score),
     }
   }
   if (isOlderFormat(fitnessData)) {
     return {
       accuracy: fitnessData.extendedFitness?.dataAccuracy ? Math.round(fitnessData.extendedFitness.dataAccuracy) : null,
-      fitness_score: Math.round(fitnessData.score),
+      fitness: Math.round(fitnessData.score),
     }
   }
   return {
     accuracy: null,
-    fitness_score: null,
+    fitness: null,
   }
 }
 
@@ -106,9 +107,9 @@ export async function migrateFitnessToColumns() {
     // Get all WorkflowInvocation rows that have fitness data but missing the new columns
     const { data: rows, error: fetchError } = await supabase
       .from("WorkflowInvocation")
-      .select("wf_invocation_id, fitness, accuracy, fitness_score")
+      .select("wf_invocation_id, fitness")
       .not("fitness", "is", null)
-      .or("accuracy.is.null,fitness_score.is.null")
+      .or("accuracy.is.null,fitness.is.null")
 
     if (fetchError) {
       throw new Error(`Failed to fetch rows: ${fetchError.message}`)
@@ -126,7 +127,7 @@ export async function migrateFitnessToColumns() {
 
     for (const row of rows) {
       try {
-        const fitnessData = row.fitness
+        const fitnessData = row.fitness as Json
 
         if (!fitnessData) {
           console.log(`- Skipped row ${row.wf_invocation_id}: no fitness data`)
@@ -134,15 +135,15 @@ export async function migrateFitnessToColumns() {
         }
 
         // Extract values using type-safe function
-        const { accuracy, fitness_score } = extractFitnessValues(fitnessData)
+        const { accuracy, fitness } = extractFitnessValues(fitnessData)
 
         // Only update if we have at least one value to update and it's currently null
-        const updates: { accuracy?: number; fitness_score?: number } = {}
-        if (accuracy !== null && row.accuracy === null) {
+        const updates: { accuracy?: number; fitness?: number } = {}
+        if (accuracy !== null && row.fitness === null) {
           updates.accuracy = accuracy
         }
-        if (fitness_score !== null && row.fitness_score === null) {
-          updates.fitness_score = fitness_score
+        if (fitness !== null && row.fitness === null) {
+          updates.fitness = fitness
         }
 
         if (Object.keys(updates).length > 0) {

@@ -29,6 +29,10 @@ async function getNodeInvocationData(nodeInvocationId: string): Promise<FullTrac
 
   const { NodeVersion: nodeDefinition, inputs = [], outputs = [], ...invocation } = nodeInvocation
 
+  if (!nodeDefinition) {
+    throw new Error("Node definition not found")
+  }
+
   return {
     invocation: {
       ...invocation,

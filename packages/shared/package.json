@@ -11,7 +11,8 @@
     "build": "tsup --silent",
     "dev": "tsup --watch",
     "clean": "rimraf dist",
-    "generate": "npx supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public > src/types/database.types.ts",
+    "generate": "bun x supabase@latest gen types typescript --project-id qnvprftdorualkdyogka --schema public,iam > src/types/database.types.ts && bun scripts/fix-db-types.ts",
+    "prebuild": "bun run generate",
     "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
     "tsc": "tsc --noEmit"
   },

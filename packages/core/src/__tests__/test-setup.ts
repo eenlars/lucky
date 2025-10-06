@@ -16,7 +16,7 @@ process.env.SERPAPI_API_KEY = "test-serp-key"
 process.env.TAVILY_API_KEY = "test-tavily-key"
 process.env.FIRECRAWL_API_KEY = "test-firecrawl-key"
 process.env.SUPABASE_ANON_KEY = "test-supabase-key"
-process.env.SUPABASE_PROJECT_ID = "test-project-id"
+process.env.SUPABASE_PROJECT_ID = "testprojectid"
 process.env.OPENROUTER_API_KEY = "test-openrouter-key"
 process.env.XAI_API_KEY = "test-xai-key"
 process.env.MAPBOX_TOKEN = "test-mapbox-token"
@@ -35,7 +35,7 @@ vi.mock("@core/utils/env.mjs", () => ({
     TAVILY_API_KEY: "test-tavily-key",
     FIRECRAWL_API_KEY: "test-firecrawl-key",
     SUPABASE_ANON_KEY: "test-supabase-key",
-    SUPABASE_PROJECT_ID: "test-project-id",
+    SUPABASE_PROJECT_ID: "testprojectid",
     OPENROUTER_API_KEY: "test-openrouter-key",
     XAI_API_KEY: "test-xai-key",
     MAPBOX_TOKEN: "test-mapbox-token",

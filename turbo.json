@@ -59,7 +59,7 @@
       "outputs": ["coverage/**"]
     },
     "tsc": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "build"]
     },
     "clean": {
       "cache": false

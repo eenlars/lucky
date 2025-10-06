@@ -21,7 +21,7 @@ interface WorkflowInvocationSubset {
   end_time: string | null
   status: "running" | "completed" | "failed" | "rolled_back"
   usd_cost: number
-  fitness_score: number | null
+  fitness: number | null
   accuracy: number | null
   run_id: string | null
   generation_id: string | null
@@ -73,8 +73,8 @@ const isStaleRun = (run: Tables<"EvolutionRun">) => {
 
 const getFitnessRange = (invocations: WorkflowInvocationSubset[]) => {
   const fitnessScores = invocations
-    .filter(inv => inv.fitness_score !== null && inv.fitness_score !== undefined)
-    .map(inv => inv.fitness_score!)
+    .filter(inv => inv.fitness !== null && inv.fitness !== undefined)
+    .map(inv => inv.fitness!)
 
   if (fitnessScores.length === 0) return null
 
@@ -313,6 +313,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
       <div className="p-6">
         <div className="text-red-500 dark:text-red-400 mb-4">{error}</div>
         <button
+          type="button"
           onClick={() => {
             fetchEvolutionRun()
             fetchGenerationsData()
@@ -409,20 +410,14 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
           variant="ghost"
           className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
         >
-          <div
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             onClick={() => setShowGraph(!showGraph)}
-            onKeyDown={e => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                setShowGraph(!showGraph)
-              }
-            }}
+            className="w-full flex items-center justify-between text-left"
           >
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Evolution Graph</h2>
             <span className="text-gray-400 dark:text-gray-500">{showGraph ? "▼" : "▶"}</span>
-          </div>
+          </button>
         </Button>
         {showGraph && (
           <div className="border-t border-gray-200 dark:border-gray-700">
@@ -455,16 +450,10 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                   variant="ghost"
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
                 >
-                  <div
-                    role="button"
-                    tabIndex={0}
+                  <button
+                    type="button"
                     onClick={() => toggleGeneration(generation.generation_id)}
-                    onKeyDown={e => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault()
-                        toggleGeneration(generation.generation_id)
-                      }
-                    }}
+                    className="w-full flex items-center justify-between text-left"
                   >
                     <div className="flex items-center gap-4">
                       <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -493,7 +482,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                     <span className="text-gray-400 dark:text-gray-500">
                       {expandedGenerations.has(generation.generation_id) ? "▼" : "▶"}
                     </span>
-                  </div>
+                  </button>
                 </Button>
 
                 {expandedGenerations.has(generation.generation_id) && (
@@ -609,9 +598,9 @@ function InvocationRow({ invocation, showDslModal, dslLoading }: InvocationRowPr
             </div>
 
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              {invocation.fitness_score !== null && invocation.fitness_score !== undefined ? (
+              {invocation.fitness !== null && invocation.fitness !== undefined ? (
                 <div className="flex items-center gap-3">
-                  <span>Fitness: {invocation.fitness_score.toFixed(2)}</span>
+                  <span>Fitness: {invocation.fitness.toFixed(2)}</span>
                   {invocation.accuracy !== null && invocation.accuracy !== undefined && (
                     <span>Accuracy: {invocation.accuracy.toFixed(2)}</span>
                   )}
@@ -683,16 +672,10 @@ function WorkflowStructuresView({
               variant="ghost"
               className="w-full px-4 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between transition-colors rounded-none h-auto font-normal"
             >
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 onClick={() => toggleStructure(structureId)}
-                onKeyDown={e => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    toggleStructure(structureId)
-                  }
-                }}
+                className="w-full flex items-center justify-between text-left"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex-shrink-0">
@@ -723,7 +706,7 @@ function WorkflowStructuresView({
                 <span className="text-gray-400 dark:text-gray-500">
                   {expandedStructures.has(structureId) ? "▼" : "▶"}
                 </span>
-              </div>
+              </button>
             </Button>
 
             {expandedStructures.has(structureId) && (
