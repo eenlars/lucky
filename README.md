@@ -1,5 +1,4 @@
-# Self-Evolving Multi-Agent Workflows: An Evolutionary Optimization Framework
-
+# Self-Improving Agentic Workflows!
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/Bun-1.2+-purple)](https://bun.sh)
 [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
