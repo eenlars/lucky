@@ -42,8 +42,10 @@ const FEATURE_CREDENTIALS: Record<FeatureName, CredentialName[]> = {
 
 /**
  * Credentials that are absolutely required for app to function.
+ * Note: Search providers (SERPAPI_API_KEY, TAVILY_API_KEY) are not individually required
+ * since at least one is sufficient. Health checks use feature-level validation instead.
  */
-const REQUIRED_CREDENTIALS: CredentialName[] = ["OPENAI_API_KEY", "GOOGLE_API_KEY", "SERPAPI_API_KEY"]
+const REQUIRED_CREDENTIALS: CredentialName[] = ["OPENAI_API_KEY", "GOOGLE_API_KEY"]
 
 /**
  * Features that have in-memory fallbacks.

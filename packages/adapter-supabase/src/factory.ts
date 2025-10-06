@@ -3,6 +3,7 @@
  * Supports dependency injection and environment-based configuration.
  */
 
+import { getSupabaseClient } from "./client"
 import { InMemoryPersistence } from "./memory-persistence"
 import type { IPersistence } from "./persistence-interface"
 import { SupabasePersistence } from "./supabase-persistence"
@@ -57,6 +58,8 @@ export function createPersistence(config: PersistenceConfig = {}): IPersistence 
 
   // Try to create Supabase persistence
   try {
+    // Force credential validation by eagerly initializing the client
+    getSupabaseClient()
     return new SupabasePersistence()
   } catch (error) {
     // If backend was explicitly set to "supabase", don't fall back - throw the error

@@ -18,12 +18,27 @@ interface FeatureGuardProps {
  * Shows upgrade prompt or custom fallback when feature is unavailable.
  */
 export function FeatureGuard({ feature, children, fallback, showUpgradePrompt = true }: FeatureGuardProps) {
-  const { features, loading } = useFeatureStatus()
+  const { features, loading, error } = useFeatureStatus()
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="h-6 w-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  // Handle loading errors
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-md p-4">
+        <div className="flex items-start space-x-3">
+          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="text-sm font-medium text-red-900">Failed to load feature status</h3>
+            <p className="text-sm text-red-700 mt-1">{error}</p>
+          </div>
+        </div>
       </div>
     )
   }

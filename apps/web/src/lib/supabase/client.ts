@@ -11,7 +11,8 @@ export function createClient() {
 
   const supabaseKey = envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (!envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID) {
+  // Only require project ID if neither URL nor project ID is provided
+  if (!supabaseUrl && !envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID) {
     throw createCredentialError("SUPABASE_PROJECT_ID")
   }
 

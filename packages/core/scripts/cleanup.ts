@@ -6,8 +6,8 @@ import { createPersistence } from "@together/adapter-supabase"
 async function main() {
   try {
     console.log("Starting cleanup...")
-    // Auto-detects from USE_MOCK_PERSISTENCE env var, falls back to in-memory if Supabase not configured
-    const persistence = createPersistence()
+    // Explicitly require Supabase backend - cleanup should fail if database is not configured
+    const persistence = createPersistence({ backend: "supabase" })
     const stats = await cleanupStaleRecords(persistence)
     console.log("Cleanup completed successfully:")
     console.log(JSON.stringify(stats, null, 2))

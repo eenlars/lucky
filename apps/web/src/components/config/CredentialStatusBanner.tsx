@@ -138,7 +138,7 @@ export function CredentialHealthIndicator() {
 
   if (!health) return null
 
-  if (health.healthy) {
+  if (health.healthy && health.warnings.length === 0) {
     return (
       <div className="flex items-center space-x-2 text-green-700 text-sm">
         <CheckCircle className="h-4 w-4" />
