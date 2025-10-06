@@ -34,10 +34,10 @@ export function isOpenRouterAvailable(): boolean {
 
 /**
  * Export OpenRouter client using Proxy for lazy initialization.
- * Access to any property will attempt to initialize the client.
+ * Access to any property or function call will attempt to initialize the client.
  * Throws descriptive error if API key is not configured.
  */
-export const openrouter = new Proxy({} as ReturnType<typeof createOpenRouter>, {
+export const openrouter = new Proxy((() => {}) as unknown as ReturnType<typeof createOpenRouter>, {
   get(_target, prop) {
     const client = getOpenRouterClient()
 
@@ -56,4 +56,17 @@ export const openrouter = new Proxy({} as ReturnType<typeof createOpenRouter>, {
 
     return value
   },
-})
+  apply(_target, _thisArg, argArray) {
+    const client = getOpenRouterClient()
+
+    if (!client) {
+      throw new Error(
+        "OpenRouter client not available. Set OPENROUTER_API_KEY in your environment. " +
+          "Get your API key at: https://openrouter.ai/keys",
+      )
+    }
+
+    // @ts-expect-error - client is callable but TypeScript doesn't know
+    return client(...argArray)
+  },
+}) as ReturnType<typeof createOpenRouter>
