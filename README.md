@@ -1,4 +1,4 @@
-# Self-Evolving Multi-Agent Workflows: An Evolutionary Optimization Framework
+# 30-second workflow builder with any MCP
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/Bun-1.2+-purple)](https://bun.sh)
