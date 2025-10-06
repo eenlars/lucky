@@ -24,8 +24,7 @@ import type { ToolManager } from "@core/node/toolManager"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import { saveInLoc, saveInLogging } from "@core/utils/fs/fileSaver"
-import { JSONN } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { JSONN, isNir } from "@lucky/shared"
 import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
@@ -325,12 +324,6 @@ export class InvocationPipeline {
   }
 
   private async runSingleCall(): Promise<ProcessedResponse> {
-    // Log tool calling attempt
-    if (verbose) {
-      lgg.log(`[InvocationPipeline] Starting tool call with choice: ${JSON.stringify(this.toolChoice)}`)
-      lgg.log(`[InvocationPipeline] Available tools: ${Object.keys(this.tools).join(", ")}`)
-    }
-
     // Build messages from incoming payload's berichten instead of sdkMessages
     const incomingText = extractTextFromPayload(this.ctx.workflowMessageIncoming.payload)
     const messages = [
@@ -344,10 +337,72 @@ export class InvocationPipeline {
       },
     ]
 
+    const hasTools = !isNir(this.tools)
+
+    if (!hasTools) {
+      if (verbose) {
+        lgg.log("[InvocationPipeline] Starting text call (no tools available)")
+      }
+
+      const res = await sendAI({
+        model: this.ctx.nodeConfig.modelName,
+        messages,
+        mode: "text" as const,
+        opts: {
+          saveOutputs: this.saveOutputs,
+        },
+      })
+
+      if (verbose) {
+        lgg.log(`[InvocationPipeline] Text call success: ${res.success}`)
+        if (!res.success) {
+          lgg.error(`[InvocationPipeline] Text call failed: ${res.error}`)
+        }
+      }
+
+      this.addCost(res.usdCost ?? 0)
+
+      if (!res.success) {
+        return {
+          nodeId: this.ctx.nodeConfig.nodeId,
+          type: "error",
+          message: res.error ?? "Text call failed",
+          details: res.debug_output,
+          cost: res.usdCost ?? 0,
+          agentSteps: [{ type: "error", return: res.error ?? "Text call failed" }],
+        }
+      }
+
+      const text = res.data?.text ?? ""
+      const reasoning = res.data?.reasoning
+      const agentSteps: AgentStep<any>[] = []
+
+      if (!isNir(reasoning)) {
+        agentSteps.push({ type: "reasoning", return: reasoning })
+      }
+
+      agentSteps.push({ type: "text", return: text })
+
+      return {
+        nodeId: this.ctx.nodeConfig.nodeId,
+        type: "text",
+        content: text,
+        cost: res.usdCost ?? 0,
+        summary: text,
+        agentSteps,
+      }
+    }
+
+    if (verbose) {
+      lgg.log("[InvocationPipeline] Starting tool call")
+      lgg.log(`[InvocationPipeline] Available tools: ${Object.keys(this.tools).join(", ")}`)
+      lgg.log(`[InvocationPipeline] Tool choice: ${JSON.stringify(this.toolChoice)}`)
+    }
+
     const res = await sendAI({
       model: this.ctx.nodeConfig.modelName,
       messages,
-      mode: "tool",
+      mode: "tool" as const,
       opts: {
         tools: this.tools,
         toolChoice: this.toolChoice ?? "auto",
@@ -356,7 +411,6 @@ export class InvocationPipeline {
       },
     })
 
-    // Log tool call results
     if (verbose) {
       lgg.log(`[InvocationPipeline] Tool call result success: ${res.success}`)
       if (!res.success) {
@@ -366,21 +420,22 @@ export class InvocationPipeline {
 
     this.addCost(res.usdCost ?? 0)
 
-    // Graceful handling: if sendAI failed, create a proper error ProcessedResponse
-    const processed: ProcessedResponse = res.success
-      ? processResponseVercel({
-          response: res.data as GenerateTextResult<ToolSet, any>,
-          modelUsed: this.ctx.nodeConfig.modelName,
-          nodeId: this.ctx.nodeConfig.nodeId,
-        })
-      : {
-          nodeId: this.ctx.nodeConfig.nodeId,
-          type: "error",
-          message: res.error ?? "Tool call failed",
-          details: res.debug_output,
-          cost: res.usdCost ?? 0,
-          agentSteps: [{ type: "error", return: res.error ?? "Tool call failed" }],
-        }
+    if (!res.success) {
+      return {
+        nodeId: this.ctx.nodeConfig.nodeId,
+        type: "error",
+        message: res.error ?? "Tool call failed",
+        details: res.debug_output,
+        cost: res.usdCost ?? 0,
+        agentSteps: [{ type: "error", return: res.error ?? "Tool call failed" }],
+      }
+    }
+
+    const processed: ProcessedResponse = processResponseVercel({
+      response: res.data as GenerateTextResult<ToolSet, any>,
+      modelUsed: this.ctx.nodeConfig.modelName,
+      nodeId: this.ctx.nodeConfig.nodeId,
+    })
 
     if (verbose) {
       const ts = Date.now()
