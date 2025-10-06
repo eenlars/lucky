@@ -29,6 +29,7 @@ export function ToolCheckbox({ tool, isSelected, onToggle, description, shortcut
 
   return (
     <button
+      type="button"
       onClick={onToggle}
       className={cn(
         "w-full text-left px-3 py-2 rounded-md transition-colors",

@@ -760,10 +760,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="min-cost"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Min Cost ($)
                 </label>
                 <input
+                  id="min-cost"
                   type="number"
                   step="0.000001"
                   value={filters.minCost}
@@ -774,10 +778,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="max-cost"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Max Cost ($)
                 </label>
                 <input
+                  id="max-cost"
                   type="number"
                   step="0.000001"
                   value={filters.maxCost}
@@ -788,10 +796,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="min-accuracy"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Min Accuracy
                 </label>
                 <input
+                  id="min-accuracy"
                   type="number"
                   step="0.001"
                   min="0"
@@ -804,10 +816,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="max-accuracy"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Max Accuracy
                 </label>
                 <input
+                  id="max-accuracy"
                   type="number"
                   step="0.001"
                   min="0"
@@ -820,10 +836,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="min-fitness"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Min Fitness Score
                 </label>
                 <input
+                  id="min-fitness"
                   type="number"
                   step="0.001"
                   min="0"
@@ -836,10 +856,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="max-fitness"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Max Fitness Score
                 </label>
                 <input
+                  id="max-fitness"
                   type="number"
                   step="0.001"
                   min="0"
@@ -852,10 +876,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="date-from"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Date From
                 </label>
                 <input
+                  id="date-from"
                   type="datetime-local"
                   value={filters.dateFrom}
                   onChange={e => setFilters({ ...filters, dateFrom: e.target.value })}
@@ -864,10 +892,14 @@ export default function InvocationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="date-to"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1"
+                >
                   Date To
                 </label>
                 <input
+                  id="date-to"
                   type="datetime-local"
                   value={filters.dateTo}
                   onChange={e => setFilters({ ...filters, dateTo: e.target.value })}

@@ -271,8 +271,11 @@ export default function StructuresPage() {
 
           {!showTestBed && (
             <>
-              <label className="text-sm font-medium">Min nodes:</label>
+              <label htmlFor="min-nodes" className="text-sm font-medium">
+                Min nodes:
+              </label>
               <select
+                id="min-nodes"
                 value={minNodes}
                 onChange={e => setMinNodes(Number(e.target.value))}
                 className="border border-gray-300 rounded px-3 py-1"
@@ -282,8 +285,11 @@ export default function StructuresPage() {
                 <option value={6}>6+</option>
                 <option value={8}>8+</option>
               </select>
-              <label className="text-sm font-medium">Sort by:</label>
+              <label htmlFor="sort-by" className="text-sm font-medium">
+                Sort by:
+              </label>
               <select
+                id="sort-by"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as "time" | "complexity" | "nodes")}
                 className="border border-gray-300 rounded px-3 py-1"

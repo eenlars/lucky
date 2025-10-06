@@ -276,11 +276,15 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
                 <div className="space-y-3">
                   {/* Goal Section */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    <label
+                      htmlFor="evaluation-goal"
+                      className="text-xs font-semibold text-gray-700 uppercase tracking-wide"
+                    >
                       Goal{" "}
                       <span className="text-gray-500 normal-case font-normal">(Define your evaluation objective)</span>
                     </label>
                     <input
+                      id="evaluation-goal"
                       type="text"
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400"
                       placeholder="e.g., 'Evaluate customer service responses' or 'Test data analysis accuracy'"
@@ -292,11 +296,14 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
                   {/* Dataset Section */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    <label
+                      htmlFor="dataset-selector"
+                      className="text-xs font-semibold text-gray-700 uppercase tracking-wide"
+                    >
                       Dataset{" "}
                       <span className="text-gray-500 normal-case font-normal">(Load test cases from database)</span>
                     </label>
-                    <div className="w-full max-w-xs">
+                    <div className="w-full max-w-xs" id="dataset-selector">
                       <DatasetSelector
                         selectedDatasetId={datasetId}
                         onSelect={handleDatasetSelect}

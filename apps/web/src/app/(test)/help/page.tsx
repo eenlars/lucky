@@ -134,6 +134,7 @@ export default function HelpPage() {
             />
 
             <button
+              type="button"
               onClick={handleSubmit}
               disabled={loading || !helpId || !answer.trim()}
               className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed mt-4"
