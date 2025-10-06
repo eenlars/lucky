@@ -4,7 +4,7 @@ import { registerAllTools } from "../registration/startup"
 import { codeToolRegistry } from "./CodeToolRegistry"
 import type { CodeToolName } from "./types"
 
-let attemptedAutoRegistration = false
+let registrationPromise: Promise<void> | null = null
 
 /**
  * Ensures that code tools are registered before a node initializes them.
@@ -26,18 +26,24 @@ export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Prom
     return
   }
 
-  if (attemptedAutoRegistration) return
-  attemptedAutoRegistration = true
-
-  try {
-    const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
-
-    await registerAllTools(TOOL_GROUPS, {
-      validate: true,
-      throwOnError: true,
-    })
-  } catch (error) {
-    const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
-    throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)
+  if (registrationPromise) {
+    await registrationPromise
+    return
   }
+
+  registrationPromise = (async () => {
+    try {
+      const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
+
+      await registerAllTools(TOOL_GROUPS, {
+        validate: true,
+        throwOnError: true,
+      })
+    } catch (error) {
+      const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+      throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)
+    }
+  })()
+
+  await registrationPromise
 }

@@ -59,7 +59,10 @@ export async function POST(req: Request) {
         .from("users")
         .update({ status: "disabled", updated_at: new Date().toISOString() })
         .eq("clerk_id", clerkId)
-      if (error) console.error("iam.users disable failed:", error)
+      if (error) {
+        console.error("iam.users disable failed:", error)
+        return new Response("Database update failed", { status: 500 })
+      }
       return new Response("ok", { status: 200 })
     }
 
@@ -77,7 +80,10 @@ export async function POST(req: Request) {
         } satisfies Database["iam"]["Tables"]["users"]["Insert"],
         { onConflict: "clerk_id" },
       )
-    if (error) console.error("iam.users upsert failed:", error)
+    if (error) {
+      console.error("iam.users upsert failed:", error)
+      return new Response("Database upsert failed", { status: 500 })
+    }
     return new Response("ok", { status: 200 })
   } catch (err) {
     console.error("Clerk webhook verification failed:", err)
