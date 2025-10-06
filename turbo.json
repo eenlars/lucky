@@ -135,7 +135,7 @@
       "passThroughEnv": ["NODE_ENV"]
     },
     "tsc": {
-      "dependsOn": ["^build", "build"],
+      "dependsOn": ["^build"],
       "passThroughEnv": ["NODE_ENV"]
     },
     "clean": {
