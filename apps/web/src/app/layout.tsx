@@ -1,5 +1,6 @@
 import { IntegratedAside } from "@/app/components/aside/integrated-aside"
 import MainContent from "@/components/MainContent"
+import { CredentialStatusBanner } from "@/components/config/CredentialStatusBanner"
 import { SidebarProvider } from "@/contexts/SidebarContext"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
 import { AppStoreProvider } from "@/react-flow-visualization/store/store"
@@ -61,6 +62,7 @@ export default async function RootLayout({
                 Skip to content
               </a>
               <NextTopLoader />
+              {userId && <CredentialStatusBanner />}
               {userId && <IntegratedAside />}
               <MainContent hasAuth={!!userId}>{children}</MainContent>
               <Toaster

@@ -1,3 +1,4 @@
+import { createCredentialError } from "@core/utils/config/credential-errors"
 import { envi } from "@core/utils/env.mjs"
 import type { Database } from "@lucky/shared"
 import { createClient } from "@supabase/supabase-js"
@@ -39,33 +40,19 @@ export function getSupabase(): SupabaseClient<Database> {
 
     // validate credentials
     if (!projectId) {
-      throw new Error(
-        "supabase project id not found.\n\n" +
-          "set one of these environment variables:\n" +
-          "  - SUPABASE_PROJECT_ID (recommended)\n" +
-          "  - NEXT_PUBLIC_SUPABASE_PROJECT_ID\n\n" +
-          "example: SUPABASE_PROJECT_ID=abcdefghijklmnop\n\n" +
-          "if running examples without supabase, set:\n" +
-          "  USE_MOCK_PERSISTENCE=true",
-      )
+      throw createCredentialError("SUPABASE_PROJECT_ID")
     }
 
     if (!supabaseKey) {
-      throw new Error(
-        "supabase anonymous key not found.\n\n" +
-          "set one of these environment variables:\n" +
-          "  - SUPABASE_ANON_KEY (recommended)\n" +
-          "  - NEXT_PUBLIC_SUPABASE_ANON_KEY\n\n" +
-          "find your key at: https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api\n\n" +
-          "if running examples without supabase, set:\n" +
-          "  USE_MOCK_PERSISTENCE=true",
-      )
+      throw createCredentialError("SUPABASE_ANON_KEY")
     }
 
     // validate project id format
     if (projectId.length < 10 || !/^[a-z0-9]+$/.test(projectId)) {
-      throw new Error(
-        `invalid supabase project id format: "${projectId}"\n\nexpected format: lowercase alphanumeric string (e.g., "abcdefghijklmnop")\ncheck your environment variables.`,
+      throw createCredentialError(
+        "SUPABASE_PROJECT_ID",
+        "INVALID_FORMAT",
+        `Invalid Supabase project ID format: "${projectId}". Expected lowercase alphanumeric string (e.g., "abcdefghijklmnop").`,
       )
     }
 

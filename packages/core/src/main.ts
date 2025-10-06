@@ -61,7 +61,7 @@ import { Workflow } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import { loadSingleWorkflow, persistWorkflow, saveWorkflowConfigToOutput } from "@core/workflow/setup/WorkflowLoader"
-import { SupabasePersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@together/adapter-supabase"
 import chalk from "chalk"
 
 // Parse command line arguments
@@ -163,7 +163,8 @@ type GeneticResult = {
  */
 async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   // Create persistence adapter
-  const persistence = new SupabasePersistence()
+  // Auto-detects from USE_MOCK_PERSISTENCE env var, falls back to in-memory if Supabase not configured
+  const persistence = createPersistence()
 
   // Persistence is now passed explicitly through the call chain
 

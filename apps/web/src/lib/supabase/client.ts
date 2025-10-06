@@ -1,4 +1,5 @@
 import { envi } from "@/env.mjs"
+import { createCredentialError } from "@lucky/core/utils/config/credential-errors"
 import type { Database } from "@lucky/shared/client"
 import { createBrowserClient } from "@supabase/ssr"
 
@@ -10,10 +11,17 @@ export function createClient() {
 
   const supabaseKey = envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "Missing Supabase configuration. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    )
+  // Only require project ID if neither URL nor project ID is provided
+  if (!supabaseUrl && !envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID) {
+    throw createCredentialError("SUPABASE_PROJECT_ID")
+  }
+
+  if (!supabaseKey) {
+    throw createCredentialError("SUPABASE_ANON_KEY")
+  }
+
+  if (!supabaseUrl) {
+    throw createCredentialError("SUPABASE_PROJECT_ID", "INVALID_FORMAT", "Invalid Supabase URL configuration")
   }
 
   return createBrowserClient<Database>(supabaseUrl, supabaseKey)

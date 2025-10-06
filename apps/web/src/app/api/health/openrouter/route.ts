@@ -1,3 +1,5 @@
+import { errorResponse } from "@/lib/api-errors"
+import { createCredentialError } from "@lucky/core/utils/config/credential-errors"
 import { NextResponse } from "next/server"
 
 type OpenRouterResponse = {
@@ -14,7 +16,17 @@ export async function GET() {
     const key = process.env.OPENROUTER_API_KEY
 
     if (!key) {
-      return NextResponse.json({ error: "OpenRouter API key not configured" }, { status: 500 })
+      const error = createCredentialError("OPENROUTER_API_KEY")
+      return NextResponse.json(
+        {
+          error: "OpenRouter not configured",
+          code: error.details.code,
+          credential: error.details.credential,
+          message: error.details.userMessage,
+          docsUrl: error.details.setupUrl,
+        },
+        { status: 503 },
+      )
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/auth/key", {
@@ -25,13 +37,13 @@ export async function GET() {
     })
 
     if (!response.ok) {
-      return NextResponse.json({ error: "Failed to fetch OpenRouter status" }, { status: response.status })
+      return errorResponse(`OpenRouter API returned ${response.status}: ${response.statusText}`, response.status)
     }
 
     const data: OpenRouterResponse = await response.json()
 
     return NextResponse.json(data)
-  } catch (_error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } catch (error) {
+    return errorResponse(error instanceof Error ? error.message : "Failed to check OpenRouter status", 500)
   }
 }

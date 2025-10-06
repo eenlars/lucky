@@ -1,12 +1,13 @@
 #!/usr/bin/env tsx
 
 import { cleanupStaleRecords } from "@core/utils/cleanup/cleanupStaleRecords"
-import { SupabasePersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@together/adapter-supabase"
 
 async function main() {
   try {
     console.log("Starting cleanup...")
-    const persistence = new SupabasePersistence()
+    // Explicitly require Supabase backend - cleanup should fail if database is not configured
+    const persistence = createPersistence({ backend: "supabase" })
     const stats = await cleanupStaleRecords(persistence)
     console.log("Cleanup completed successfully:")
     console.log(JSON.stringify(stats, null, 2))

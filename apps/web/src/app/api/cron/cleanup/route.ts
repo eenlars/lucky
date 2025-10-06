@@ -1,6 +1,6 @@
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { cleanupStaleRecords } from "@lucky/core/utils/cleanup/cleanupStaleRecords"
-import { SupabasePersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 export async function GET() {
@@ -8,7 +8,8 @@ export async function GET() {
   ensureCoreInit()
 
   try {
-    const persistence = new SupabasePersistence()
+    // Auto-detects from USE_MOCK_PERSISTENCE env var, falls back to in-memory if Supabase not configured
+    const persistence = createPersistence()
     const stats = await cleanupStaleRecords(persistence)
 
     return NextResponse.json({

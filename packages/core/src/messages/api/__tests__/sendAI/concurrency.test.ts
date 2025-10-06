@@ -1,6 +1,11 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
+  openrouter: vi.fn((model: string) => `mocked-${model}`),
+  isOpenRouterAvailable: vi.fn(() => true),
+}))
+
 vi.mock("ai", () => ({
   /* deterministic fake generator – *never* hits real network */
   generateText: vi.fn(async ({ messages }) => ({
