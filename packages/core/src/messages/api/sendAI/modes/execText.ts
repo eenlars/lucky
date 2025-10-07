@@ -19,11 +19,11 @@
 
 import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
-import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
+import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
@@ -56,7 +56,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
   // TODO: implement intelligent model selection based on prompt characteristics
   const modelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
-  const model = getLanguageModelWithReasoning(modelName, opts)
+  const model = await getLanguageModelWithReasoning(modelName, opts)
 
   try {
     // TODO: add dynamic parameter optimization based on prompt analysis
