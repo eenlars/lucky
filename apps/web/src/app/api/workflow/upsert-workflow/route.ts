@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
 import {
   createWorkflow,
+  deleteWorkflow,
   retrieveWorkflowVersion,
   saveWorkflowVersion,
 } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
@@ -46,8 +47,30 @@ export async function POST(request: NextRequest) {
       }
       workflowId = `wf_id_${genShortId()}`
       await createWorkflow(workflowId, workflowName)
+
+      // Try to save the version, but rollback workflow creation if it fails
+      try {
+        const newVersion = await saveWorkflowVersion({
+          dsl,
+          commitMessage,
+          workflowId,
+          parentId,
+          iterationBudget: finalIterationBudget,
+          timeBudgetSeconds: finalTimeBudgetSeconds,
+        })
+        return NextResponse.json({ success: true, data: newVersion })
+      } catch (versionError) {
+        // Rollback: delete the workflow we just created
+        try {
+          await deleteWorkflow(workflowId)
+        } catch (cleanupError) {
+          console.error("Failed to cleanup workflow after version save error:", cleanupError)
+        }
+        throw versionError
+      }
     }
 
+    // For existing workflows, just save the version
     const newVersion = await saveWorkflowVersion({
       dsl,
       commitMessage,

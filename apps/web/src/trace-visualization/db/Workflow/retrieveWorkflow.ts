@@ -72,6 +72,15 @@ export const createWorkflow = async (workflowId: string, description: string): P
   return data
 }
 
+export const deleteWorkflow = async (workflowId: string): Promise<void> => {
+  const supabase = await createRLSClient()
+  const { error } = await supabase.from("Workflow").delete().eq("wf_id", workflowId)
+
+  if (error) {
+    throw new Error(`Failed to delete workflow: ${error.message}`)
+  }
+}
+
 export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
   const supabase = await createRLSClient()
   const workflowInsertable: TablesInsert<"Workflow"> = {
