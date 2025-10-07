@@ -16,8 +16,6 @@ export default defineConfig({
     environment: "node",
     testTimeout: 10000, // Increase from default 5000ms
     exclude: [...configDefaults.exclude, "**/e2e/**"],
-    // Avoid watching runtime output directories that may contain transient .tmp files
-    watchExclude: ["**/.core-data/**", "**/.core-data/**/*", "**/logs/backups/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json"],
@@ -25,7 +23,9 @@ export default defineConfig({
       include: ["src/**/*.{ts}"],
       exclude: [
         "**/.core-data/**",
-        "**/.core-data/**/*",
+        "**/logs/**",
+        "**/backups/**",
+        "**/*.tmp",
         "node_modules/",
         "**/*.d.ts",
         "**/*.test.ts",
@@ -48,6 +48,10 @@ export default defineConfig({
         // Avoid prebundling puppeteer/stealth which use dynamic requires for evasions
         inline: [/(?!.*)/],
         external: ["puppeteer", "puppeteer-extra", "puppeteer-extra-plugin", "puppeteer-extra-plugin-stealth"],
+      },
+      watch: {
+        // Ignore runtime directories that may contain transient .tmp files
+        ignored: ["**/.core-data/**", "**/logs/**", "**/backups/**", "**/*.tmp"],
       },
     },
     projects: [

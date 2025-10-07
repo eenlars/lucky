@@ -1,11 +1,5 @@
 import { createEnv } from "@t3-oss/env-nextjs"
-import {
-  supabaseServer,
-  aiProviders,
-  searchProviders,
-  toolProviders,
-  coreToggles,
-} from "@lucky/shared/env-models"
+import { supabaseServer, aiProviders, searchProviders, toolProviders, coreToggles } from "@lucky/shared/env-models"
 
 /**
  * Core package environment validation (server-only).
