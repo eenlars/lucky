@@ -1,4 +1,4 @@
-import { BaseEdge, type EdgeProps, getSmoothStepPath } from "@xyflow/react"
+import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react"
 
 import type { AppEdge } from "../edges"
 import { EdgeButton } from "./edge-button"
@@ -17,7 +17,7 @@ export function WorkflowEdge({
   style = {},
   markerEnd,
 }: EdgeProps<AppEdge>) {
-  const [edgePath, labelX, labelY] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
