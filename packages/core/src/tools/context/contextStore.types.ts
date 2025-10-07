@@ -1,11 +1,7 @@
 import { llmify } from "@core/utils/common/llmify"
-import type { WorkflowFile as WorkflowFileBase } from "@lucky/contracts/tools"
+import type { WorkflowFile } from "@lucky/shared"
+export type { WorkflowFile } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
-
-/**
- * Re-export contract type for workflow files
- */
-export type WorkflowFile = WorkflowFileBase
 
 export type WorkflowFiles = {
   workflowFiles: WorkflowFile[]

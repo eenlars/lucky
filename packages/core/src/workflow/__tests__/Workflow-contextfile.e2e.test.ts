@@ -147,7 +147,7 @@ if (typeof (vi as any).mock === "function")
 
 // Mock Supabase client
 if (typeof (vi as any).mock === "function")
-  vi.mock("@core/utils/clients/supabase/client", () => ({
+  vi.mock("@core/clients/supabase/client", () => ({
     supabase: {
       from: vi.fn().mockReturnValue({
         insert: vi.fn().mockReturnValue({

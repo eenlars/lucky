@@ -1,10 +1,10 @@
+import { supabase } from "@core/clients/supabase/client"
 import { CONFIG } from "@core/core-config/compat"
-import { supabase } from "@core/utils/clients/supabase/client"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { IngestionLayer } from "../IngestionLayer"
 
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn(),
   },

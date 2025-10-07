@@ -1,6 +1,5 @@
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
-import { Tools } from "@lucky/shared"
+import { Tools, type WorkflowFile } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
 import { CsvHandler } from "./CsvHandler"
 import type {

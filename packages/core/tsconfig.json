@@ -40,7 +40,11 @@
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],
-      "@lucky/tools/*": ["../tools/src/*"]
+      "@lucky/tools/*": ["../tools/src/*"],
+      "@lucky/models": ["../models/src"],
+      "@lucky/models/*": ["../models/src/*"],
+      "@lucky/models/config": ["../models/src/config"],
+      "@lucky/models/config/*": ["../models/src/config/*"]
     },
     "allowSyntheticDefaultImports": true
   },

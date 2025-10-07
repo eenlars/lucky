@@ -1,6 +1,6 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { ModelName, ModelPricingV2, StandardModels } from "@core/utils/spending/models.types"
-import type { LuckyProvider } from "@core/utils/spending/provider"
+import type { LuckyProvider } from "@lucky/shared"
 
 // model runtime configuration
 export const MODEL_CONFIG = {

@@ -2,7 +2,7 @@
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
-import { supabase } from "@lucky/core/utils/clients/supabase/client"
+import { supabase } from "@lucky/core/clients/supabase/client"
 
 type WorkflowInvocationRow = any
 type WorkflowVersionRow = any

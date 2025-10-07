@@ -1,3 +1,6 @@
+/**
+ * Message payload types - re-exported from @lucky/shared for backwards compatibility
+ */
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
 import type {
   AggregatedPayload as AggregatedPayloadBase,
@@ -5,10 +8,6 @@ import type {
   Payload as PayloadBase,
   ReplyPayload as ReplyPayloadBase,
   SequentialPayload as SequentialPayloadBase,
-} from "@lucky/contracts/messages"
-import {
-  isDelegationPayload as isDelegationPayloadBase,
-  isSequentialPayload as isSequentialPayloadBase,
 } from "@lucky/contracts/messages"
 import type { Enums } from "@lucky/shared"
 
@@ -36,7 +35,7 @@ export type MessageType = Enums<"MessageRole">
 /**
  * Re-export contract types for use throughout the codebase
  */
-export type { DelegationPayloadBase, SequentialPayloadBase, ReplyPayloadBase, AggregatedPayloadBase }
+export type { AggregatedPayloadBase, DelegationPayloadBase, ReplyPayloadBase, SequentialPayloadBase }
 
 /**
  * Implementation-specific payload types (aliases of contract types)
@@ -46,12 +45,6 @@ export type SequentialPayload = SequentialPayloadBase
 export type ReplyPayload = ReplyPayloadBase
 export type AggregatedPayload = AggregatedPayloadBase
 export type Payload = PayloadBase
-
-/**
- * Re-export type guards from contracts
- */
-export const isDelegationPayload = isDelegationPayloadBase
-export const isSequentialPayload = isSequentialPayloadBase
 
 const joinBerichtenTexts = (items: TextContent[] | undefined): string =>
   Array.isArray(items)

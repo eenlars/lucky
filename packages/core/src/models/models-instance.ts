@@ -3,7 +3,7 @@
  * Provides a centralized instance of @lucky/models for the entire core package.
  */
 
-import { Models, type ModelsConfig, type ProviderConfig } from "@lucky/models"
+import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
 let modelsInstance: Models | null = null
@@ -73,7 +73,7 @@ export function getModelsInstance(): Models {
       trackCost: true,
     }
 
-    modelsInstance = new Models(modelsConfig)
+    modelsInstance = createModels(modelsConfig)
   }
 
   return modelsInstance

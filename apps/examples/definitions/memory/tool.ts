@@ -1,4 +1,4 @@
-import { addMemory, deleteMemory, getAllMemories, getMemories } from "@core/utils/clients/mem0/client"
+import { addMemory, deleteMemory, getAllMemories, getMemories } from "@core/clients/mem0/client"
 import { Tools } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
 import { defineTool } from "@lucky/tools"

@@ -98,7 +98,7 @@ export async function getLanguageModelWithReasoning(
   // Provider-specific reasoning configuration
   if (provider === "openrouter") {
     // Import openrouter client for reasoning parameters
-    const { openrouter } = await import("@core/utils/clients/openrouter/openrouterClient")
+    const { openrouter } = await import("@core/clients/openrouter/openrouterClient")
 
     const isAnthropic = modelStr.startsWith("anthropic/")
     const isGeminiThinking =

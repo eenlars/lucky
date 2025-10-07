@@ -3,79 +3,83 @@
  * @module @lucky/models
  */
 
-export { Models } from "./models"
+import { Models } from "./models"
+import type { ModelsConfig } from "./types"
+
+export { defineConfig, defineConfigUnsafe } from "./config/define"
 export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
-export { defineConfig, defineConfigUnsafe } from "./config/define"
 
 // Export types
 export type {
+  AiSdkModel,
+  ExecutionContext,
+  ExecutionStrategy,
+  ModelFactory,
+  ModelResult,
+  ModelsConfig,
+  ModelSpec,
   // Core types
   ProviderConfig,
-  ExecutionStrategy,
-  ModelSpec,
-  ModelsConfig,
-  TierConfig,
   ProviderMetrics,
-  ExecutionContext,
-  ModelResult,
-  AiSdkModel,
-  ModelFactory,
+  TierConfig,
 } from "./types"
 
 export type {
-  // Config types
-  UserConfig,
   ExperimentConfig,
   ResolvedConfig,
+  // Config types
+  UserConfig,
 } from "./types/config"
 
 export type {
   // Pricing types
   ModelPricing,
-  PricingProvider,
   PricingCache,
+  PricingProvider,
 } from "./types/pricing"
 
 // Export Zod schemas and validation
 export {
+  executionContextSchema,
   executionStrategySchema,
+  experimentConfigSchema,
+  modelPricingSchema,
+  modelsConfigSchema,
   modelSpecSchema,
   modelSpecStringSchema,
   modelSpecUnionSchema,
-  modelsConfigSchema,
+  pricingCacheSchema,
   providerConfigSchema,
+  providerMetricsSchema,
   providersConfigSchema,
+  safeValidateModelsConfig,
+  safeValidateUserConfig,
   tierConfigSchema,
   tiersConfigSchema,
   userConfigSchema,
-  experimentConfigSchema,
-  executionContextSchema,
-  modelPricingSchema,
-  pricingCacheSchema,
-  providerMetricsSchema,
   validateModelsConfig,
   validateUserConfig,
-  safeValidateModelsConfig,
-  safeValidateUserConfig,
 } from "./types/schemas"
 
 export type {
-  ProviderConfigInput,
-  ProviderConfigOutput,
-  ModelSpecInput,
-  ModelSpecOutput,
-  TierConfigInput,
-  TierConfigOutput,
-  ModelsConfigInput,
-  ModelsConfigOutput,
-  UserConfigInput,
-  UserConfigOutput,
   ExecutionContextInput,
   ExecutionContextOutput,
   ModelPricingInput,
   ModelPricingOutput,
+  ModelsConfigInput,
+  ModelsConfigOutput,
+  ModelSpecInput,
+  ModelSpecOutput,
+  ProviderConfigInput,
+  ProviderConfigOutput,
+  TierConfigInput,
+  TierConfigOutput,
+  UserConfigInput,
+  UserConfigOutput,
 } from "./types/schemas"
+
+export { Models }
 
 /**
  * Create a new models registry
@@ -101,7 +105,3 @@ export type {
 export function createModels(config: ModelsConfig): Models {
   return new Models(config)
 }
-
-import { Models } from "./models"
-// Re-export for convenience
-import type { ModelsConfig } from "./types"

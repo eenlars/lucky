@@ -14,7 +14,8 @@
     "./evaluation/*": "./src/evaluation/*",
     "./improvement/*": "./src/improvement/*",
     "./node/*": "./src/node/*",
-    "./tools/*": "./src/tools/*"
+    "./tools/*": "./src/tools/*",
+    "./clients/*": "./src/clients/*"
   },
   "scripts": {
     "dev": "vitest --watch --project unit",
