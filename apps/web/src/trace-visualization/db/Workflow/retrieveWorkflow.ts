@@ -41,6 +41,37 @@ export const retrieveWorkflowVersion = async (workflowVersionId: string): Promis
   return data
 }
 
+export const retrieveWorkflow = async (workflowId: string): Promise<Tables<"Workflow"> | null> => {
+  const supabase = await createRLSClient()
+  const { data, error } = await supabase.from("Workflow").select("*").eq("wf_id", workflowId).single()
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // Not found
+      return null
+    }
+    throw error
+  }
+
+  return data
+}
+
+export const createWorkflow = async (workflowId: string, description: string): Promise<Tables<"Workflow">> => {
+  const supabase = await createRLSClient()
+  const workflowInsertable: TablesInsert<"Workflow"> = {
+    wf_id: workflowId,
+    description,
+  }
+
+  const { data, error } = await supabase.from("Workflow").insert(workflowInsertable).select().single()
+
+  if (error) {
+    throw new Error(`Failed to create workflow: ${error.message}`)
+  }
+
+  return data
+}
+
 export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
   const supabase = await createRLSClient()
   const workflowInsertable: TablesInsert<"Workflow"> = {

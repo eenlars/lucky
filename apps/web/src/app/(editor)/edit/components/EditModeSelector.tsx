@@ -224,6 +224,16 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
             Cmd+L
           </span>
         </Button>
+        <Button
+          onClick={() => {
+            // TODO: Implement save functionality
+          }}
+          variant="default"
+          size="sm"
+          data-testid="save-workflow-button"
+        >
+          Save
+        </Button>
         {commonActions}
       </>
     )

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { Loader2, Send } from "lucide-react"
+import { Brain, Link, Loader2, MoreVertical, Paperclip, Send, Sparkles } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 interface TestPanelProps {
@@ -125,35 +125,76 @@ export function TestPanel({ node }: TestPanelProps) {
 
       {/* Input Area */}
       <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex items-end gap-3">
+        <div className="flex flex-col gap-3">
+          {/* Message input */}
           <textarea
             ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Message..."
-            rows={1}
-            className="flex-1 px-3 py-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none leading-5 transition-colors focus:bg-white dark:focus:bg-gray-800"
+            rows={2}
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none leading-5 transition-colors focus:border-gray-400 dark:focus:border-gray-500"
             disabled={isLoading}
-            style={{ minHeight: "40px", maxHeight: "120px" }}
+            style={{ minHeight: "60px", maxHeight: "120px" }}
           />
 
-          <button
-            onClick={handleSubmit}
-            disabled={!input.trim() || isLoading}
-            className={cn(
-              "p-2.5 rounded-lg transition-all",
-              input.trim() && !isLoading
-                ? "bg-gray-900 dark:bg-gray-100 hover:opacity-80 text-white dark:text-gray-900"
-                : "bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed",
-            )}
-          >
-            {isLoading ? (
-              <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </button>
+          {/* Toolbar */}
+          <div className="flex items-center justify-between">
+            {/* Left side - Model selector */}
+            <div className="flex items-center gap-2">
+              <button
+                disabled
+                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-sm text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1.5 cursor-not-allowed"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Sonnet
+              </button>
+            </div>
+
+            {/* Right side - Action icons */}
+            <div className="flex items-center gap-1">
+              <button
+                disabled
+                className="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed rounded-md"
+                title="Agent options"
+              >
+                <Brain className="w-4 h-4" />
+              </button>
+              <button
+                disabled
+                className="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed rounded-md"
+                title="Attach file"
+              >
+                <Paperclip className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isLoading}
+                className={cn(
+                  "p-2.5 rounded-lg transition-all ml-2",
+                  input.trim() && !isLoading
+                    ? "bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed",
+                )}
+              >
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                    <path
+                      d="M8 2L8 12M8 2L4 6M8 2L12 6"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

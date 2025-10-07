@@ -19,7 +19,7 @@ export function AgentDialogInspect() {
   )
 
   const panelRef = useRef<HTMLDivElement>(null)
-  const [dividerPosition, setDividerPosition] = useState(50) // percentage
+  const [dividerPosition, setDividerPosition] = useState(60) // percentage
   const isDragging = useRef(false)
 
   // Handle ESC key to close panel
