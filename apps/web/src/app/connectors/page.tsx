@@ -19,7 +19,7 @@ import {
   Shield,
   X,
 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { type Connector, mockConnectors } from "./mock-data"
 
 export default function ConnectorsPage() {
@@ -303,21 +303,47 @@ function ConnectorDetailModal({
   const [isSaving, setIsSaving] = useState(false)
   const [testResult, setTestResult] = useState<"success" | "error" | null>(null)
 
+  const isMountedRef = useRef(true)
+  const timeoutIdsRef = useRef<NodeJS.Timeout[]>([])
+
   const isInstalled = connector.status === "installed"
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+      // Clear all pending timeouts to prevent state updates on unmounted component
+      timeoutIdsRef.current.forEach(id => clearTimeout(id))
+      timeoutIdsRef.current = []
+    }
+  }, [])
 
   const handleTest = async () => {
     setIsSaving(true)
     setTestResult(null)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setTestResult("success")
-    setIsSaving(false)
+
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current) {
+        setTestResult("success")
+        setIsSaving(false)
+      }
+    }, 1500)
+
+    timeoutIdsRef.current.push(timeoutId)
   }
 
   const handleSave = async () => {
     setIsSaving(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsSaving(false)
-    onClose()
+
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current) {
+        setIsSaving(false)
+        onClose()
+      }
+    }, 1000)
+
+    timeoutIdsRef.current.push(timeoutId)
   }
 
   return (
