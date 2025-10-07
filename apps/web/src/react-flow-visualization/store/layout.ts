@@ -1,120 +1,56 @@
 import type { Edge } from "@xyflow/react"
-import ELK, { type ElkNode, type ElkPort } from "elkjs/lib/elk.bundled.js"
 
 import nodesConfig, { type AppNode } from "@/react-flow-visualization/components/nodes/nodes"
+import {
+  createWorkflowLayoutConfig,
+  layoutGraph as runLayoutAlgorithm,
+} from "@/react-flow-visualization/lib/layout-algorithm"
 
-const elk = new ELK()
-
-const layoutOptions = {
-  "elk.algorithm": "layered",
-  "elk.direction": "RIGHT", // Left-to-right flow direction
-  "elk.layered.spacing.edgeNodeBetweenLayers": "40",
-  "elk.spacing.nodeNode": "80",
-  "elk.layered.nodePlacement.strategy": "SIMPLE",
-  "elk.separateConnectedComponents": "true",
-  "elk.spacing.componentComponent": "100",
-}
-
-function createTargetPort(id: string) {
-  return {
-    id,
-    layoutOptions: {
-      side: "WEST", // Input ports on the left side for left-to-right flow
-    },
+/**
+ * Helper function to get node handles from node configuration
+ */
+function getNodeHandles(nodeType: string) {
+  const config = nodesConfig[nodeType as keyof typeof nodesConfig]
+  if (!config || !config.handles) {
+    return []
   }
+  return config.handles
 }
 
-function createSourcePort(id: string) {
-  return {
-    id,
-    layoutOptions: {
-      side: "EAST", // Output ports on the right side for left-to-right flow
-    },
-  }
-}
+/**
+ * Applies automatic layout to workflow graph nodes
+ *
+ * This is a convenience wrapper around the layout algorithm that:
+ * - Uses optimized defaults for workflow graphs
+ * - Integrates with the node configuration system
+ * - Returns only the positioned nodes (for backwards compatibility)
+ *
+ * @param nodes - Array of workflow nodes to layout
+ * @param edges - Array of edges connecting the nodes
+ * @returns Array of nodes with updated positions
+ */
+export async function layoutGraph(nodes: AppNode[], edges: Edge[]): Promise<AppNode[]> {
+  try {
+    const result = await runLayoutAlgorithm(nodes, edges, createWorkflowLayoutConfig(), getNodeHandles)
 
-function getPorts(node: AppNode) {
-  const handles = nodesConfig[node.type!].handles
-
-  const targetPorts: ElkPort[] = []
-  const sourcePorts: ElkPort[] = []
-
-  handles?.forEach(handle => {
-    if (handle.type === "target") {
-      targetPorts.push(createTargetPort(`${node.id}-target-${handle.id ?? null}`))
+    // Log warnings if any
+    if (result.warnings.length > 0) {
+      console.warn("Layout warnings:", result.warnings)
     }
 
-    if (handle.type === "source") {
-      sourcePorts.push(createSourcePort(`${node.id}-source-${handle.id ?? null}`))
-    }
-  })
-
-  return { targetPorts, sourcePorts }
-}
-
-export async function layoutGraph(nodes: AppNode[], edges: Edge[]) {
-  const connectedNodes = new Set()
-
-  const graph: ElkNode = {
-    id: "root",
-    layoutOptions,
-    edges: edges.map(edge => {
-      connectedNodes.add(edge.source)
-      connectedNodes.add(edge.target)
-      return {
-        id: edge.id,
-        sources: [`${edge.source}-source-${edge.sourceHandle ?? null}`],
-        targets: [`${edge.target}-target-${edge.targetHandle ?? null}`],
-      }
-    }),
-    children: nodes.reduce<ElkNode[]>((acc, node) => {
-      if (!connectedNodes.has(node.id)) {
-        return acc
-      }
-
-      const { targetPorts, sourcePorts } = getPorts(node)
-      acc.push({
-        id: node.id,
-        // TODO: we could use intial sizes here
-        width: node.width ?? node.measured?.width ?? 150,
-        height: node.height ?? node.measured?.height ?? 50,
-        ports: [createSourcePort(node.id), ...targetPorts, ...sourcePorts],
-        layoutOptions: {
-          "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-        },
+    // Log statistics
+    if (process.env.NODE_ENV === "development") {
+      console.log("Layout complete:", {
+        processed: result.stats.nodesProcessed,
+        positioned: result.stats.nodesPositioned,
+        disconnected: result.stats.disconnectedNodes,
       })
-      return acc
-    }, []),
+    }
+
+    return result.nodes
+  } catch (error) {
+    console.error("Layout failed:", error)
+    // Return original nodes if layout fails
+    return nodes
   }
-
-  const elkNodes = await elk.layout(graph)
-
-  const layoutedNodesMap = new Map(elkNodes.children?.map(n => [n.id, n]))
-
-  const layoutedNodes: AppNode[] = nodes.map(node => {
-    const layoutedNode = layoutedNodesMap.get(node.id)
-
-    if (!layoutedNode) {
-      return node
-    }
-
-    if (
-      layoutedNode.x === undefined ||
-      layoutedNode.y === undefined ||
-      (layoutedNode.x === node.position.x && layoutedNode.y === node.position.y)
-    ) {
-      return node
-    }
-
-    return {
-      ...node,
-      position: {
-        x: layoutedNode.x,
-        y: layoutedNode.y,
-      },
-      style: { ...node.style, opacity: 1 },
-    }
-  })
-
-  return layoutedNodes
 }
