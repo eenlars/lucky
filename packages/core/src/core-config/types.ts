@@ -4,7 +4,7 @@
  */
 
 import type { AnyModelName } from "@core/utils/spending/models.types"
-import type { LuckyProvider } from "@core/utils/spending/provider"
+import type { LuckyProvider } from "@lucky/shared"
 
 /**
  * Filesystem paths configuration.

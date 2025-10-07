@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@core": resolve(__dirname, "./src"),
+      "@core/core-config": resolve(__dirname, "./src/core-config/coreConfig.ts"),
     },
   },
   test: {

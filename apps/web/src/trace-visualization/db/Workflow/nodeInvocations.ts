@@ -1,7 +1,6 @@
 "use server"
 
-import { supabase } from "@/lib/supabase"
-import { cache } from "react"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import {
   type MessageMetadata,
   type NodeGroup,
@@ -21,7 +20,8 @@ export interface NodeInvocationsResult {
  * Fetch node invocations for a workflow with optimized query.
  * Only fetches essential Message fields to avoid timeouts on large payloads.
  */
-export const nodeInvocations = cache(async (workflowInvocationId: string): Promise<NodeInvocationsResult> => {
+export async function nodeInvocations(workflowInvocationId: string): Promise<NodeInvocationsResult> {
+  const supabase = await createRLSClient()
   const { data: invocations, error } = await supabase
     .from("NodeInvocation")
     .select(
@@ -66,4 +66,4 @@ export const nodeInvocations = cache(async (workflowInvocationId: string): Promi
     nodeInvocations,
     groups,
   }
-})
+}

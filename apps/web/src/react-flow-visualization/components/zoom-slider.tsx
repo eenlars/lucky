@@ -22,8 +22,13 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
   )
 
   return (
-    <Panel className={cn("flex bg-primary-foreground text-foreground rounded-md gap-1 p-1", className)} {...props}>
-      <Button variant="ghost" size="icon" onClick={() => zoomOut({ duration: 300 })}>
+    <Panel className={cn("flex bg-white text-foreground rounded-lg gap-1.5 p-1.5", className)} {...props}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 hover:bg-gray-100 rounded-lg"
+        onClick={() => zoomOut({ duration: 300 })}
+      >
         <Minus className="h-4 w-4" />
       </Button>
       <Slider
@@ -34,13 +39,27 @@ function ZoomSlider({ className, ...props }: ZoomSliderProps) {
         step={0.01}
         onValueChange={values => zoomTo(values[0])}
       />
-      <Button variant="ghost" size="icon" onClick={() => zoomIn({ duration: 300 })}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 hover:bg-gray-100 rounded-lg"
+        onClick={() => zoomIn({ duration: 300 })}
+      >
         <Plus className="h-4 w-4" />
       </Button>
-      <Button className="min-w-20 tabular-nums" variant="ghost" onClick={() => zoomTo(1, { duration: 300 })}>
+      <Button
+        className="min-w-20 tabular-nums h-8 hover:bg-gray-100 rounded-lg text-xs font-semibold"
+        variant="ghost"
+        onClick={() => zoomTo(1, { duration: 300 })}
+      >
         {(100 * zoom).toFixed(0)}%
       </Button>
-      <Button variant="ghost" size="icon" onClick={() => fitView({ duration: 300 })}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 hover:bg-gray-100 rounded-lg"
+        onClick={() => fitView({ duration: 300 })}
+      >
         <Maximize className="h-4 w-4" />
       </Button>
     </Panel>

@@ -1,6 +1,6 @@
 import path from "node:path"
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
+import type { WorkflowFile } from "@lucky/shared"
 import Papa from "papaparse"
 import type {
   CsvColumn,

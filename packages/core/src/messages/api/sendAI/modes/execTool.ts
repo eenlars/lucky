@@ -19,10 +19,10 @@
 
 import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
-import { getLanguageModelWithReasoning } from "@core/messages/api/modelFactory"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
+import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
@@ -55,7 +55,7 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // TODO: implement smart tool selection based on model capabilities
     const modelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
-    const model = getLanguageModelWithReasoning(modelName, opts)
+    const model = await getLanguageModelWithReasoning(modelName, opts)
 
     // TODO: add dynamic tool parameter optimization
     // TODO: implement tool execution planning and sequencing

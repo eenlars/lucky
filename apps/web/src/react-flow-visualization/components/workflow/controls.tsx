@@ -10,10 +10,13 @@ export function WorkflowControls() {
 
   return (
     <>
-      <ZoomSlider position="bottom-left" className="bg-card" />
-      <Panel position="bottom-right" className="bg-card text-foreground rounded-md">
-        <Button onClick={runLayout} variant="ghost">
-          <Route />
+      <ZoomSlider position="bottom-left" className="bg-white border border-gray-200 shadow-md" />
+      <Panel
+        position="bottom-right"
+        className="bg-white border border-gray-200 text-foreground rounded-lg shadow-md p-1"
+      >
+        <Button onClick={runLayout} variant="ghost" className="hover:bg-gray-100 rounded-lg" size="sm">
+          <Route className="w-4 h-4" />
         </Button>
       </Panel>
     </>

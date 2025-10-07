@@ -1,7 +1,6 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import type { Tables } from "@lucky/shared/client"
-import { cache } from "react"
 
 export interface BasicWorkflowResult {
   workflowInvocation: Tables<"WorkflowInvocation">
@@ -9,7 +8,8 @@ export interface BasicWorkflowResult {
   workflow: Tables<"Workflow">
 }
 
-export const basicWorkflow = cache(async (workflowInvocationId: string): Promise<BasicWorkflowResult | null> => {
+export async function basicWorkflow(workflowInvocationId: string): Promise<BasicWorkflowResult | null> {
+  const supabase = await createRLSClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select(
@@ -39,4 +39,4 @@ export const basicWorkflow = cache(async (workflowInvocationId: string): Promise
     workflowVersion,
     workflow: workflowRaw,
   }
-})
+}

@@ -1,12 +1,11 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type { AgentStep, AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import type { NodeMemory } from "@lucky/core/utils/memory/memorySchema"
 import type { Tables } from "@lucky/shared/client"
 import { JSONN } from "@lucky/shared/client"
 import { nanoid } from "nanoid"
-import { cache } from "react"
 
 export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {
   node: Tables<"NodeVersion">
@@ -38,7 +37,8 @@ export interface FullWorkflowResult {
   groups: NodeGroup[]
 }
 
-export const fullWorkflow = cache(async (workflowInvocationId: string): Promise<FullWorkflowResult | null> => {
+export async function fullWorkflow(workflowInvocationId: string): Promise<FullWorkflowResult | null> {
+  const supabase = await createRLSClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select(
@@ -109,7 +109,7 @@ export const fullWorkflow = cache(async (workflowInvocationId: string): Promise<
     nodeInvocations,
     groups,
   }
-})
+}
 
 /* …helpers (wrapLegacyPayload, isJSON, groupInvocationsByNode) stay unchanged… */
 

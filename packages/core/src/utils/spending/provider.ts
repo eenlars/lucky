@@ -1,9 +1,6 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { LuckyProvider } from "@lucky/shared"
 
-// Re-export LuckyProvider from shared for backwards compatibility
-export type { LuckyProvider } from "@lucky/shared"
-
 /**
  * Get the current provider from runtime configuration.
  * This is the ONLY way to determine the active provider - no compile-time constants.

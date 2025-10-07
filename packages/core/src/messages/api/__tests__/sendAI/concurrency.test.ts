@@ -6,6 +6,11 @@ vi.mock("@core/clients/openrouter/openrouterClient", () => ({
   isOpenRouterAvailable: vi.fn(() => true),
 }))
 
+vi.mock("@core/models/getLanguageModel", () => ({
+  getLanguageModel: vi.fn((model: string) => `mocked-${model}`),
+  getLanguageModelWithReasoning: vi.fn((model: string, _opts?: any) => `mocked-${model}`),
+}))
+
 vi.mock("ai", () => ({
   /* deterministic fake generator – *never* hits real network */
   generateText: vi.fn(async ({ messages }) => ({

@@ -27,6 +27,7 @@
       "@core/prompts/*": ["./src/prompts/*"],
       "@core/validation/*": ["./src/utils/validation/*"],
       "@core/improvement/*": ["./src/improvement/*"],
+      "@core/core-config": ["./src/core-config/coreConfig.ts"],
       "@core/core-config/*": ["./src/core-config/*"],
       "@core/utils/json": ["./src/utils/json"],
       "@core/utils/csv": ["./src/utils/csv"],
@@ -34,10 +35,16 @@
       "@examples/*": ["../../apps/examples/*"],
       "@lucky/examples": ["../../apps/examples"],
       "@lucky/examples/*": ["../../apps/examples/*"],
+      "@lucky/contracts": ["../contracts/src"],
+      "@lucky/contracts/*": ["../contracts/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],
-      "@lucky/tools/*": ["../tools/src/*"]
+      "@lucky/tools/*": ["../tools/src/*"],
+      "@lucky/models": ["../models/src"],
+      "@lucky/models/*": ["../models/src/*"],
+      "@lucky/models/config": ["../models/src/config"],
+      "@lucky/models/config/*": ["../models/src/config/*"]
     },
     "allowSyntheticDefaultImports": true
   },
