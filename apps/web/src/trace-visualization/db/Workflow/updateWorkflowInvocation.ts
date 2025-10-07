@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 
 export interface InvocationScores {
@@ -8,7 +8,7 @@ export interface InvocationScores {
 
 export async function updateWorkflowInvocationScores(invocationId: string, scores: InvocationScores): Promise<void> {
   try {
-    const supabase = await createClient()
+    const supabase = await createRLSClient()
     const roundedAccuracy = Math.round(scores.accuracy)
     const roundedFitness = Math.round(scores.fitness)
     const { error } = await supabase

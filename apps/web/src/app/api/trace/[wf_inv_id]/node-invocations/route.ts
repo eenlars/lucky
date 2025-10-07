@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { createClient } from "@/lib/supabase/server"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import { NextResponse } from "next/server"
 
@@ -8,7 +8,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ wf_
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = await createClient()
+  const supabase = await createRLSClient()
 
   try {
     const { wf_inv_id } = await params
