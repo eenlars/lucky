@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai"
-import { groqProvider } from "@core/utils/clients/groq/groqClient"
-import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
+import { groqProvider } from "@core/clients/groq/groqClient"
+import { openrouter } from "@core/clients/openrouter/openrouterClient"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { type LuckyProvider, getCurrentProvider } from "@core/utils/spending/provider"
 import type { LanguageModel } from "ai"

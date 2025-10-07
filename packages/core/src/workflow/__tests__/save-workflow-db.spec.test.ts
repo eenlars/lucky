@@ -15,7 +15,7 @@ describe("Workflow DB integration - single node persistence", () => {
     ] = await Promise.all([
       import("@core/utils/persistence/workflow/registerWorkflow"),
       // import("@core/utils/persistence/node/saveNode"),
-      import("@core/utils/clients/supabase/client"),
+      import("@core/clients/supabase/client"),
       import("@core/core-config/coreConfig"),
       import("@together/adapter-supabase"),
     ])

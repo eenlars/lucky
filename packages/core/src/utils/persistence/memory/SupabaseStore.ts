@@ -1,6 +1,6 @@
+import { supabase } from "@core/clients/supabase/client"
 import { generateSummaryFromUnknownData } from "@core/messages/summaries/createSummary"
 import type { ContextFileInfo } from "@core/tools/context/contextStore.types"
-import { supabase } from "@core/utils/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ContextStore } from "@core/utils/persistence/memory/ContextStore"
 

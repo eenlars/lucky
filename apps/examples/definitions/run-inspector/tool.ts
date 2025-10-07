@@ -1,4 +1,4 @@
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@core/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
 import { defineTool } from "@lucky/tools"
 import { z } from "zod"

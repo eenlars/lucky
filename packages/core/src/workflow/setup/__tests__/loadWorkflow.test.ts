@@ -139,7 +139,7 @@ vi.mock("@examples/settings/constants", () => ({
 }))
 
 // Mock Supabase client
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
