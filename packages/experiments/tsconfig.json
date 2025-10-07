@@ -16,6 +16,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@core/*": ["../core/src/*"],
+      "@core/core-config": ["../core/src/core-config/coreConfig.ts"],
       "@examples/*": ["../../apps/examples/*"],
       "@lucky/examples": ["../../apps/examples"],
       "@lucky/examples/*": ["../../apps/examples/*"],

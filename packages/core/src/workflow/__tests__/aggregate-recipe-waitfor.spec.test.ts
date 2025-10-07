@@ -89,7 +89,7 @@ describe.skip("Aggregate waitFor integration (recipe config)", () => {
         kind: "result" as const,
         berichten: [{ type: "text", text }],
       })
-      const persistence = undefined
+      const _persistence = undefined
       return {
         nodeId,
         toConfig: () => config,
@@ -200,7 +200,7 @@ describe.skip("Aggregate waitFor integration (recipe config)", () => {
     expect((callArgsByNode["fetch-recipe-3"] ?? []).length).toBe(1)
 
     // DB-level verification: count NodeInvocation rows for this workflow invocation
-    const wfInvocationId = results![0].workflowInvocationId
+    const _wfInvocationId = results![0].workflowInvocationId
     // const summaries = await retrieveNodeInvocationSummaries(wfInvocationId)
     // // We expect exactly one DB record per invoked node (5 nodes in this config)
     // expect(summaries.length).toBe(recipeAggregationConfig.nodes.length)

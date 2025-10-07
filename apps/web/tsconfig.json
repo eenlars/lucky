@@ -23,6 +23,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@core/*": ["../../packages/core/src/*"],
+      "@core/core-config": ["../../packages/core/src/core-config/coreConfig.ts"],
       "@examples/*": ["../examples/*"],
       "@lucky/contracts": ["../../packages/contracts/src"],
       "@lucky/contracts/*": ["../../packages/contracts/src/*"],

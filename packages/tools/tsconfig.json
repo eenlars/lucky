@@ -22,6 +22,7 @@
       "@lucky/shared": ["../shared/src/index.ts"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@core/*": ["../core/src/*"],
+      "@core/core-config": ["../core/src/core-config/coreConfig.ts"],
       "@examples/*": ["../../apps/examples/*"]
     }
   },
