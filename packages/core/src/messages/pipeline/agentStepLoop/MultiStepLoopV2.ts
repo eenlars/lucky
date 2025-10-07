@@ -87,7 +87,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
         toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
-        mainWorkflowGoal: ctx.mainWorkflowGoal,
+        mainWorkflowGoal: ctx.mainWorkflowGoal ?? "Complete the workflow task",
       })
 
       if (learningResult.agentStep.type !== "error") {

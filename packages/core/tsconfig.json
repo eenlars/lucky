@@ -34,6 +34,8 @@
       "@examples/*": ["../../apps/examples/*"],
       "@lucky/examples": ["../../apps/examples"],
       "@lucky/examples/*": ["../../apps/examples/*"],
+      "@lucky/contracts": ["../contracts/src"],
+      "@lucky/contracts/*": ["../contracts/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],

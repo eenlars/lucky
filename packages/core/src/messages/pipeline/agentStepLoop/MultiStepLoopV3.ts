@@ -138,7 +138,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
         toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
-        mainWorkflowGoal: ctx.mainWorkflowGoal,
+        mainWorkflowGoal: ctx.mainWorkflowGoal ?? "Complete the workflow task",
       })
 
       if (learningResult.agentStep.type !== "error") {
@@ -319,7 +319,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
     toolLogs: toolUsageToString(agentSteps),
     nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
     currentMemory: ctx.nodeMemory ?? {},
-    mainWorkflowGoal: ctx.mainWorkflowGoal,
+    mainWorkflowGoal: ctx.mainWorkflowGoal ?? "Complete the workflow task",
   })
 
   if (fallbackLearning.agentStep.type !== "error") {

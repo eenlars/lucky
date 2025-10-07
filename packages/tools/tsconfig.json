@@ -17,6 +17,8 @@
     "paths": {
       "@lucky/tools": ["./src/index.ts"],
       "@lucky/tools/*": ["./src/*"],
+      "@lucky/contracts": ["../contracts/src"],
+      "@lucky/contracts/*": ["../contracts/src/*"],
       "@lucky/shared": ["../shared/src/index.ts"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@core/*": ["../core/src/*"],

@@ -10,6 +10,13 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type {
+  IWorkflowNode,
+  NodeInvocationResult as NodeInvocationResultBase,
+  SelfImproving,
+  SupportsCodeTools,
+  SupportsMCPTools,
+} from "@lucky/contracts/agent"
 import { genShortId } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import type { IPersistence } from "@together/adapter-supabase"
@@ -18,25 +25,27 @@ import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"
 import { ToolManager } from "./toolManager"
 
-export interface NodeInvocationResult {
-  nodeInvocationId: string
-  nodeInvocationFinalOutput: string
+/**
+ * Extended result type with implementation-specific fields
+ */
+export interface NodeInvocationResult extends NodeInvocationResultBase {
   summaryWithInfo: InvocationSummary //todo-summary: allow null later
   replyMessage: Payload
-  nextIds: readonly string[]
   /** Optional: when present, use these to enqueue exact per-target messages */
   outgoingMessages?: { toNodeId: string; payload: Payload }[]
-  usdCost: number
-  error?: {
-    message: string
-    stack?: string
-  }
-  agentSteps: AgentSteps
-  updatedMemory?: Record<string, string>
   debugPrompts: string[]
 }
 
-export class WorkFlowNode {
+/**
+ * Concrete implementation of IWorkflowNode with MCP tools, code tools, and self-improvement support
+ */
+export class WorkFlowNode
+  implements
+    IWorkflowNode<Payload, InvocationSummary, WorkflowNodeConfig>,
+    SupportsMCPTools,
+    SupportsCodeTools,
+    SelfImproving<WorkflowNodeConfig>
+{
   // ————— Public identifiers —————
   public readonly nodeId: string
   public readonly nodeVersionId: string
@@ -162,51 +171,22 @@ export class WorkFlowNode {
    * Invokes the node and processes workflow messages through AI model generation.
    * Uses the pipeline pattern for better organization and error handling.
    */
-  public async invoke({
-    workflowMessageIncoming,
-    workflowInvocationId,
-    workflowVersionId,
-    workflowFiles,
-    expectedOutputType,
-    mainWorkflowGoal,
-    workflowId,
-    workflowConfig,
-    skipDatabasePersistence,
-    persistence,
-  }: {
-    workflowMessageIncoming: WorkflowMessage
-    workflowVersionId: string
-    inputFile?: string // todo-files-context this needs to work later stage.
-    evalExplanation?: string
-    outputType?: any
-    workflowConfig?: WorkflowConfig // Added for hierarchical role inference
-    skipDatabasePersistence?: boolean
-    persistence?: IPersistence
-  } & ToolExecutionContext): Promise<NodeInvocationResult> {
+  public async invoke(context: NodeInvocationCallContext): Promise<NodeInvocationResult> {
     try {
       // Ensure tools are initialized
       await this.toolManager.initializeTools()
 
-      // Create invocation context
-      const context: NodeInvocationCallContext = {
-        nodeConfig: this.config,
-        nodeMemory: this.getMemory(),
-        workflowMessageIncoming,
-        workflowInvocationId,
-        workflowVersionId,
-        workflowId,
-        workflowFiles,
-        expectedOutputType,
-        mainWorkflowGoal,
-        startTime: new Date().toISOString(),
-        workflowConfig,
-        skipDatabasePersistence,
-        persistence,
-        toolStrategyOverride: "v3" as const,
+      // Enhance context with node-specific data if not already present
+      const enhancedContext: NodeInvocationCallContext = {
+        ...context,
+        nodeConfig: context.nodeConfig ?? this.config,
+        nodeMemory: context.nodeMemory ?? this.getMemory(),
+        startTime: context.startTime ?? new Date().toISOString(),
+        toolStrategyOverride: context.toolStrategyOverride ?? ("v3" as const),
       }
 
-      // Create pipeline
-      const pipeline = new InvocationPipeline(context, this.toolManager, true)
+      // Create pipeline with enhanced context
+      const pipeline = new InvocationPipeline(enhancedContext, this.toolManager, true)
 
       // Execute pipeline steps sequentially
       await pipeline.prepare()
