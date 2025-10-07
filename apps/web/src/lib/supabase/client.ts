@@ -1,6 +1,5 @@
-import { envi } from "@/env.mjs"
-import { createCredentialError } from "@lucky/core/utils/config/credential-errors"
 import type { Database } from "@lucky/shared/client"
+import { getSupabaseCredentials } from "@lucky/shared/supabase-credentials.client"
 import { createBrowserClient } from "@supabase/ssr"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
@@ -18,30 +17,15 @@ export function registerSupabaseTokenGetter(getter: TokenGetter) {
 }
 
 /**
- * Creates a singleton Supabase browser client
- * Uses registered token getter for Clerk authentication
- * No session parameter needed - token is provided via registered getter
+ * Creates a singleton Supabase browser client for use in Client Components.
+ * Uses registered token getter for Clerk authentication.
+ * Only uses browser-safe credentials (NEXT_PUBLIC_* variables).
  */
 export function createClient(): SupabaseClient<Database> {
   if (browserClient) return browserClient
 
-  const supabaseUrl =
-    envi.NEXT_PUBLIC_SUPABASE_URL ??
-    (envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID ? `https://${envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co` : null)
-
-  const supabaseKey = envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl && !envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID) {
-    throw createCredentialError("SUPABASE_PROJECT_ID")
-  }
-
-  if (!supabaseKey) {
-    throw createCredentialError("SUPABASE_ANON_KEY")
-  }
-
-  if (!supabaseUrl) {
-    throw createCredentialError("SUPABASE_PROJECT_ID", "INVALID_FORMAT", "Invalid Supabase URL configuration")
-  }
+  // Get credentials from shared resolver (browser context)
+  const { url, key } = getSupabaseCredentials()
 
   function decodeJwtPayload(token: string): any {
     try {
@@ -56,10 +40,10 @@ export function createClient(): SupabaseClient<Database> {
     }
   }
 
-  browserClient = createBrowserClient<Database>(supabaseUrl, supabaseKey, {
+  browserClient = createBrowserClient<Database>(url, key, {
     async accessToken() {
       const token = getTokenRef ? await getTokenRef() : null
-      const expected = envi.NEXT_PUBLIC_CLERK_EXPECTED_ISSUER || null
+      const expected = process.env.NEXT_PUBLIC_CLERK_EXPECTED_ISSUER || null
       if (token && expected) {
         const payload = decodeJwtPayload(token)
         const iss = payload?.iss

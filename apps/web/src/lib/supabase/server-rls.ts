@@ -15,11 +15,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js"
  * queries, as it uses the service-role key which bypasses all RLS policies.
  */
 export async function createRLSClient() {
-  const supabaseUrl =
-    envi.SUPABASE_URL ??
-    envi.NEXT_PUBLIC_SUPABASE_URL ??
-    (envi.SUPABASE_PROJECT_ID ? `https://${envi.SUPABASE_PROJECT_ID}.supabase.co` : null) ??
-    (envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID ? `https://${envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co` : null)
+  const supabaseUrl = envi.SUPABASE_URL ?? envi.NEXT_PUBLIC_SUPABASE_URL
 
   // Always use anon key for RLS (never service-role key)
   const supabaseKey = envi.SUPABASE_ANON_KEY ?? envi.NEXT_PUBLIC_SUPABASE_ANON_KEY

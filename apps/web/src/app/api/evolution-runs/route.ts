@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -9,6 +9,7 @@ export async function GET(request: Request) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
+  const supabase = await createClient()
   const { searchParams } = new URL(request.url)
   const limit = Number.parseInt(searchParams.get("limit") || "1000")
   const offset = Number.parseInt(searchParams.get("offset") || "0")

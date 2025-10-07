@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 // app/api/evolution-run/[run_id]/route.ts
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -10,6 +10,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ run
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
+  const supabase = await createClient()
   const { run_id } = await params
 
   const { data: run, error: runErr } = await supabase.from("EvolutionRun").select("*").eq("run_id", run_id).single()

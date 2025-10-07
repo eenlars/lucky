@@ -1,28 +1,24 @@
-import { envi } from "@/env.mjs"
 import type { Database } from "@lucky/shared/client"
+import { type GetCredentialsOptions, getSupabaseCredentials } from "@lucky/shared/supabase-credentials.server"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-export async function createClient() {
+/**
+ * Creates a Supabase client for server-side use (Server Components, Route Handlers, Server Actions).
+ *
+ * By default, uses the anon key with RLS for security.
+ * Pass `{ keyType: 'service' }` only for admin operations that need to bypass RLS.
+ *
+ * @param options - Options for credential selection
+ * @returns Supabase server client configured with request cookies
+ */
+export async function createClient(options?: GetCredentialsOptions) {
   const cookieStore = await cookies()
 
-  // Use standard SUPABASE_URL env var, fallback to constructed URL
-  const supabaseUrl =
-    envi.SUPABASE_URL ??
-    envi.NEXT_PUBLIC_SUPABASE_URL ??
-    (envi.SUPABASE_PROJECT_ID ? `https://${envi.SUPABASE_PROJECT_ID}.supabase.co` : null) ??
-    (envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID ? `https://${envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co` : null)
+  // Get credentials from shared resolver (server context)
+  const { url, key } = getSupabaseCredentials(options)
 
-  // Prefer service role key for server-side, fallback to anon key
-  const supabaseKey = envi.SUPABASE_SERVICE_ROLE_KEY ?? envi.SUPABASE_ANON_KEY ?? envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "Missing Supabase configuration. Please set SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY/SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    )
-  }
-
-  return createServerClient<Database>(supabaseUrl, supabaseKey, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()

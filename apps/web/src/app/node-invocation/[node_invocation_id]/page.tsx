@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { NodeInvocation } from "@/trace-visualization/components/NodeInvocation"
 import type { FullTraceEntry } from "@/trace-visualization/types"
 import { notFound } from "next/navigation"
@@ -10,6 +10,7 @@ interface PageProps {
 }
 
 async function getNodeInvocationData(nodeInvocationId: string): Promise<FullTraceEntry> {
+  const supabase = await createClient()
   const { data: nodeInvocation, error } = await supabase
     .from("NodeInvocation")
     .select(

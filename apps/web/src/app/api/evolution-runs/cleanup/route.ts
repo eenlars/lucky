@@ -1,10 +1,12 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
 export async function POST() {
   try {
+    const supabase = await createClient()
+
     // Get all running evolution runs
     const { data: runningRuns, error: fetchError } = await supabase
       .from("EvolutionRun")

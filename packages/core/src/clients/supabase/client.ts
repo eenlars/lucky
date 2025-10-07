@@ -1,6 +1,5 @@
-import { createCredentialError } from "@core/utils/config/credential-errors"
-import { envi } from "@core/utils/env.mjs"
-import type { Database } from "@lucky/shared"
+import type { Database } from "@lucky/shared/client"
+import { getSupabaseCredentials, hasSupabaseCredentials } from "@lucky/shared/supabase-credentials.server"
 import { createClient } from "@supabase/supabase-js"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
@@ -34,32 +33,11 @@ export function getSupabase(): SupabaseClient<Database> {
   }
 
   try {
-    // attempt to initialize client
-    const projectId = envi.SUPABASE_PROJECT_ID ?? envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID
-    const supabaseKey = envi.SUPABASE_ANON_KEY ?? envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    // validate credentials
-    if (!projectId) {
-      throw createCredentialError("SUPABASE_PROJECT_ID")
-    }
-
-    if (!supabaseKey) {
-      throw createCredentialError("SUPABASE_ANON_KEY")
-    }
-
-    // validate project id format
-    if (projectId.length < 10 || !/^[a-z0-9]+$/.test(projectId)) {
-      throw createCredentialError(
-        "SUPABASE_PROJECT_ID",
-        "INVALID_FORMAT",
-        `Invalid Supabase project ID format: "${projectId}". Expected lowercase alphanumeric string (e.g., "abcdefghijklmnop").`,
-      )
-    }
-
-    const supabaseUrl = `https://${projectId}.supabase.co`
+    // get credentials from shared resolver
+    const { url, key } = getSupabaseCredentials()
 
     // create client
-    _supabaseClient = createClient<Database>(supabaseUrl, supabaseKey, {
+    _supabaseClient = createClient<Database>(url, key, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -87,12 +65,7 @@ export function getSupabase(): SupabaseClient<Database> {
  * @returns true if credentials available, false otherwise
  */
 export function hasSupabase(): boolean {
-  try {
-    getSupabase()
-    return true
-  } catch {
-    return false
-  }
+  return hasSupabaseCredentials()
 }
 
 /**

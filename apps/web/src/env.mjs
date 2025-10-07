@@ -1,62 +1,88 @@
 import { createEnv } from "@t3-oss/env-nextjs"
-import { z } from "zod"
+import {
+  supabaseServer,
+  supabaseClient,
+  clerkServer,
+  clerkClient,
+  aiProviders,
+  searchProviders,
+  toolProviders,
+} from "@lucky/shared/env-models"
 
+/**
+ * Web app environment validation (server + client).
+ * Uses shared schemas from @lucky/shared/env-models as the single source of truth.
+ *
+ * Import from this module instead of using process.env directly.
+ */
 export const envi = createEnv({
   server: {
-    CLERK_SECRET_KEY: z.string(),
-    CLERK_WEBHOOK_SECRET: z.string().nullish(),
-    TAVILY_API_KEY: z.string().nullish(),
-    WEBSHARE_API_KEY: z.string().nullish(),
-    MAPBOX_TOKEN: z.string().nullish(),
-    OPENROUTER_API_KEY: z.string().nullish(),
-    GROQ_API_KEY: z.string().nullish(),
-    GOOGLE_API_KEY: z.string(),
-    OPENAI_API_KEY: z.string(),
-    SERPAPI_API_KEY: z.string(),
-    // Standard Supabase env vars (optional to support non-Supabase environments)
-    SUPABASE_URL: z.string().nullish(),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().nullish(),
-    // Fallback vars for backwards compatibility
-    SUPABASE_PROJECT_ID: z.string().nullish(),
-    SUPABASE_ANON_KEY: z.string().nullish(),
+    ...clerkServer.shape,
+    ...supabaseServer.shape,
+    ...aiProviders.shape,
+    ...searchProviders.shape,
+    ...toolProviders.shape,
   },
   client: {
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-    // Make Clerk URLs configurable but safe-defaulted
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default("/sign-in"),
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
-    // Optional guard: expected Clerk issuer for third-party auth
-    NEXT_PUBLIC_CLERK_EXPECTED_ISSUER: z.string().url().nullish(),
-    // Deprecated in Clerk; use component-level fallbackRedirectUrl/forceRedirectUrl instead
-    // Standard Supabase env vars (optional to support non-Supabase environments)
-    NEXT_PUBLIC_SUPABASE_URL: z.string().nullish(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().nullish(),
-    // Fallback vars for backwards compatibility
-    NEXT_PUBLIC_SUPABASE_PROJECT_ID: z.string().nullish(),
+    ...clerkClient.shape,
+    ...supabaseClient.shape,
   },
   runtimeEnv: {
+    // Clerk server
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+    // Clerk client
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
     NEXT_PUBLIC_CLERK_EXPECTED_ISSUER: process.env.NEXT_PUBLIC_CLERK_EXPECTED_ISSUER,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
-    // Standard Supabase env vars
+    // Supabase server
     SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    // Supabase client
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    // Fallback vars for backwards compatibility
-    SUPABASE_PROJECT_ID: process.env.SUPABASE_PROJECT_ID,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_SUPABASE_PROJECT_ID: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID,
-    WEBSHARE_API_KEY: process.env.WEBSHARE_API_KEY,
-    MAPBOX_TOKEN: process.env.MAPBOX_TOKEN,
+    // AI providers
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    ANTH_API_KEY: process.env.ANTH_API_KEY,
+    XAI_API_KEY: process.env.XAI_API_KEY,
+    HF_TOKEN: process.env.HF_TOKEN,
+    HUGGING_FACE_API_KEY: process.env.HUGGING_FACE_API_KEY,
+    // Search providers
+    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
     SERPAPI_API_KEY: process.env.SERPAPI_API_KEY,
+    // Tool providers
+    FIRECRAWL_API_KEY: process.env.FIRECRAWL_API_KEY,
+    MAPBOX_TOKEN: process.env.MAPBOX_TOKEN,
+    MEM0_API_KEY: process.env.MEM0_API_KEY,
+    WEBSHARE_API_KEY: process.env.WEBSHARE_API_KEY,
   },
 })
+
+/**
+ * Assert that server and client Supabase configs match (if both are set).
+ * Call this at app startup to catch configuration drift.
+ */
+export function assertSupabaseMirrors() {
+  const serverUrl = process.env.SUPABASE_URL
+  const clientUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (serverUrl && clientUrl && serverUrl !== clientUrl) {
+    throw new Error(
+      "Configuration error: SUPABASE_URL and NEXT_PUBLIC_SUPABASE_URL must match. " +
+        `Got server="${serverUrl}" vs client="${clientUrl}"`,
+    )
+  }
+
+  const serverKey = process.env.SUPABASE_ANON_KEY
+  const clientKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (serverKey && clientKey && serverKey !== clientKey) {
+    throw new Error(
+      "Configuration error: SUPABASE_ANON_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY must match. " +
+        "Check your .env file for inconsistencies.",
+    )
+  }
+}

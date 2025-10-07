@@ -1,12 +1,13 @@
 /* eslint-disable no-restricted-imports */
 "use server"
 
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { Tables } from "@lucky/shared/client"
 
 import type { EvolutionGraph, EvolutionNode } from "@/lib/evolution-utils"
 
 export async function traceWorkflowEvolution(invocationId: string): Promise<EvolutionGraph | null> {
+  const supabase = await createClient()
   console.log(`Tracing evolution for invocation: ${invocationId}`)
 
   // 1. get the target invocation

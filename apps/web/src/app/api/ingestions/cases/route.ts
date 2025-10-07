@@ -3,7 +3,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { IngestionLayer } from "@lucky/core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
 import { type NextRequest, NextResponse } from "next/server"
@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
 
   // Ensure core is initialized
   ensureCoreInit()
+
+  const supabase = await createClient()
 
   try {
     const body = await req.json()

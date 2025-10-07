@@ -1,8 +1,9 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { TablesUpdate } from "@lucky/shared/client"
 
 export const retrieveNodeInvocations = async (workflowInvocationId: string) => {
+  const supabase = await createClient()
   const { data, error: nodeInvocationError } = await supabase
     .from("NodeInvocation")
     .select("*")
@@ -17,6 +18,7 @@ export const retrieveNodeInvocations = async (workflowInvocationId: string) => {
 }
 
 export const retrieveNode = async (nodeId: string) => {
+  const supabase = await createClient()
   const { data, error: nodeError } = await supabase.from("NodeVersion").select("*").eq("node_id", nodeId).single()
 
   if (nodeError) {
@@ -27,6 +29,7 @@ export const retrieveNode = async (nodeId: string) => {
 }
 
 export const retrieveNodeDefinitions = async (workflowVersionId: string) => {
+  const supabase = await createClient()
   const { data, error: nodeDefinitionError } = await supabase
     .from("NodeVersion")
     .select("*")
@@ -44,6 +47,7 @@ export const retrieveNodeDefinitions = async (workflowVersionId: string) => {
  * A node invocation is considered stale if it's been running for more than 2 hours
  */
 export const cleanupStaleNodeInvocations = async () => {
+  const supabase = await createClient()
   const staleThresholdHours = 2
   const staleThresholdMs = staleThresholdHours * 60 * 60 * 1000
   const cutoffTime = new Date(Date.now() - staleThresholdMs).toISOString()

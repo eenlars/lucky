@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { Tables, TablesInsert } from "@lucky/shared/client"
 
 export type DataSet = Tables<"DataSet">
@@ -11,6 +11,7 @@ export async function createDataSet(data: {
   description?: string
   data_format?: string
 }): Promise<DataSet> {
+  const supabase = await createClient()
   const { data: result, error } = await supabase
     .from("DataSet")
     .insert({
@@ -32,6 +33,7 @@ export async function createDatasetRecord(data: {
   output_schema_json?: any
   rubric?: any
 }): Promise<DatasetRecord> {
+  const supabase = await createClient()
   const { data: result, error } = await supabase
     .from("DatasetRecord")
     .insert({
@@ -49,6 +51,7 @@ export async function createDatasetRecord(data: {
 }
 
 export async function getDataSet(dataset_id: string): Promise<DataSet | null> {
+  const supabase = await createClient()
   const { data, error } = await supabase.from("DataSet").select("*").eq("dataset_id", dataset_id).single()
 
   if (error) {
@@ -59,6 +62,7 @@ export async function getDataSet(dataset_id: string): Promise<DataSet | null> {
 }
 
 export async function listDataSets(): Promise<DataSet[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase.from("DataSet").select("*").order("created_at", { ascending: false })
 
   if (error) throw new Error(`Failed to list datasets: ${error.message}`)
@@ -66,6 +70,7 @@ export async function listDataSets(): Promise<DataSet[]> {
 }
 
 export async function getDatasetRecords(dataset_id: string): Promise<DatasetRecord[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("DatasetRecord")
     .select("*")
