@@ -16,7 +16,7 @@ import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.ty
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
 import { prepareIncomingMessage } from "@core/messages/pipeline/prepare/incomingMessage"
-import { createSummary } from "@core/messages/summaries"
+import { createSummary } from "@core/messages/summaries/createSummary"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"
@@ -106,7 +106,16 @@ export class InvocationPipeline {
    */
   public async prepare(): Promise<this> {
     await this.toolManager.initializeTools()
-    this.tools = await this.toolManager.getAllTools(this.ctx)
+    // Extract tool execution context from node invocation context
+    const toolContext = {
+      workflowId: this.ctx.workflowId,
+      workflowVersionId: this.ctx.workflowVersionId,
+      workflowInvocationId: this.ctx.workflowInvocationId,
+      workflowFiles: this.ctx.workflowFiles,
+      expectedOutputType: this.ctx.expectedOutputType,
+      mainWorkflowGoal: this.ctx.mainWorkflowGoal,
+    }
+    this.tools = await this.toolManager.getAllTools(toolContext)
     if (isNir(this.tools)) {
       this.toolChoice = "auto"
       return this
@@ -508,7 +517,7 @@ export class InvocationPipeline {
       toolLogs,
       nodeSystemPrompt: this.ctx.nodeConfig.systemPrompt,
       currentMemory: this.ctx.nodeMemory ?? {},
-      mainWorkflowGoal: this.ctx.mainWorkflowGoal,
+      mainWorkflowGoal: this.ctx.mainWorkflowGoal ?? "Complete the workflow task",
     })
 
     // Store memory updates

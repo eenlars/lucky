@@ -2,7 +2,7 @@
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { genShortId } from "@lucky/core/utils/common/utils"
 import { lgg } from "@lucky/core/utils/logging/Logger"
-import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared/client"
+import { type Tables, type TablesInsert, type TablesUpdate, genShortId } from "@lucky/shared/client"
 
 export const retrieveWorkflowInvocation = async (invocationId: string): Promise<Tables<"WorkflowInvocation">> => {
   const supabase = await createRLSClient()

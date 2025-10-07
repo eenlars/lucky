@@ -1,7 +1,7 @@
 import { AGENT_KEY_EXPLANATIONS } from "@core/node/schemas/improvementSchema"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
-import { withDescriptions } from "@core/utils/zod/withDescriptions"
+import { withDescriptions } from "@lucky/shared"
 import { type ZodRawShape, z } from "zod"
 
 // define a restricted shape for improvement output (excluding tools and handoffs) ———

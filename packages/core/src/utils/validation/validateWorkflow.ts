@@ -1,8 +1,8 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { verifyWorkflowConfig } from "@core/utils/validation/workflow"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
+import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import { repairWorkflow } from "@core/workflow/actions/repair/repairWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 

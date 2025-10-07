@@ -1,9 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock external dependencies
-vi.mock("@core/utils/common/utils", () => ({
-  genShortId: vi.fn(() => "short-test-id"),
-}))
+vi.mock("@lucky/shared", async importOriginal => {
+  const actual = await importOriginal<typeof import("@lucky/shared")>()
+  return {
+    ...actual,
+    genShortId: vi.fn(() => "short-test-id"),
+  }
+})
 
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: {
@@ -16,7 +20,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
 describe("getLastCompletedGeneration", () => {
   let mockPersistence: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
 
     // Create mock persistence with evolution namespace

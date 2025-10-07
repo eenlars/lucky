@@ -25,8 +25,8 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
 }))
 
 // Mock core config to mark testInactiveTool as inactive for this test
-vi.mock("@core/core-config/index", async importOriginal => {
-  const original = await importOriginal<typeof import("@core/core-config/index")>()
+vi.mock("@core/core-config/coreConfig", async importOriginal => {
+  const original = await importOriginal<typeof import("@core/core-config/coreConfig")>()
   const defaultConfig = original.createDefaultCoreConfig()
 
   return {

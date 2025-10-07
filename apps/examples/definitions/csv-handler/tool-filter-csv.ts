@@ -113,7 +113,7 @@ const csvFilterTool = defineTool({
   async execute(params, context) {
     const { action, filterOptions, column, value, operator = "contains", values, min, max, options = {} } = params
 
-    if (!context?.workflowFiles[0]) {
+    if (!context?.workflowFiles?.[0]) {
       return Tools.createFailure("csvFilter", {
         location: "csvFilter",
         error: "no file provided in tool execution context",

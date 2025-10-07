@@ -20,7 +20,7 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { responseToAgentSteps } from "@core/messages/api/vercel/responseToAgentSteps"
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
-import { generateSummaryFromUnknownData } from "@core/messages/summaries"
+import { generateSummaryFromUnknownData } from "@core/messages/summaries/createSummary"
 import { makeLearning } from "@core/prompts/makeLearning"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -138,7 +138,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
         toolLogs: toolUsageToString(agentSteps),
         nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
         currentMemory: ctx.nodeMemory ?? {},
-        mainWorkflowGoal: ctx.mainWorkflowGoal,
+        mainWorkflowGoal: ctx.mainWorkflowGoal ?? "Complete the workflow task",
       })
 
       if (learningResult.agentStep.type !== "error") {
@@ -319,7 +319,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
     toolLogs: toolUsageToString(agentSteps),
     nodeSystemPrompt: ctx.nodeConfig.systemPrompt,
     currentMemory: ctx.nodeMemory ?? {},
-    mainWorkflowGoal: ctx.mainWorkflowGoal,
+    mainWorkflowGoal: ctx.mainWorkflowGoal ?? "Complete the workflow task",
   })
 
   if (fallbackLearning.agentStep.type !== "error") {

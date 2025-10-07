@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
 import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
 import { supabase } from "@/lib/supabase"
-import { genShortId } from "@lucky/core/utils/common/utils"
+import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
 
 type IngestionType = "csv" | "text"

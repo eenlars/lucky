@@ -18,6 +18,8 @@
     "paths": {
       "@core/*": ["../../packages/core/src/*"],
       "@examples/*": ["./*"],
+      "@lucky/contracts": ["../../packages/contracts/src"],
+      "@lucky/contracts/*": ["../../packages/contracts/src/*"],
       "@lucky/core": ["../../packages/core/src"],
       "@lucky/core/*": ["../../packages/core/src/*"],
       "@lucky/shared": ["../../packages/shared/src"],

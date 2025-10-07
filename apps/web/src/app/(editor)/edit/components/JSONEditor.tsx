@@ -3,8 +3,7 @@
 // Using API route instead of server actions
 import { showToast } from "@/lib/toast-utils"
 import { useAppStore } from "@/react-flow-visualization/store/store"
-import { genShortId } from "@lucky/core/utils/common/utils"
-import type { Tables } from "@lucky/shared/client"
+import { type Tables, genShortId } from "@lucky/shared/client"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"

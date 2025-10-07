@@ -10,6 +10,7 @@
     "./definitions/*": "./definitions/*"
   },
   "dependencies": {
+    "@lucky/contracts": "workspace:*",
     "@lucky/tools": "workspace:*",
     "@mendable/firecrawl-js": "^1.29.3",
     "axios": "^1.11.0",
