@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { safeJSON } from "@/trace-visualization/db/Workflow/utils"
 import type { AgentStep, AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import type { NodeMemory } from "@lucky/core/utils/memory/memorySchema"
@@ -39,6 +39,7 @@ export interface FullWorkflowResult {
 }
 
 export const fullWorkflow = cache(async (workflowInvocationId: string): Promise<FullWorkflowResult | null> => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select(

@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { Tables } from "@lucky/shared/client"
 import { cache } from "react"
 
@@ -10,6 +10,7 @@ export interface BasicWorkflowResult {
 }
 
 export const basicWorkflow = cache(async (workflowInvocationId: string): Promise<BasicWorkflowResult | null> => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select(

@@ -1,10 +1,11 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { genShortId } from "@lucky/core/utils/common/utils"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import type { Tables, TablesInsert, TablesUpdate } from "@lucky/shared/client"
 
 export const retrieveWorkflowInvocation = async (invocationId: string): Promise<Tables<"WorkflowInvocation">> => {
+  const supabase = await createClient()
   const { data, error: WFInvocationError } = await supabase
     .from("WorkflowInvocation")
     .select("*")
@@ -27,6 +28,7 @@ export const retrieveWorkflowInvocation = async (invocationId: string): Promise<
 }
 
 export const retrieveWorkflowVersion = async (workflowVersionId: string): Promise<Tables<"WorkflowVersion">> => {
+  const supabase = await createClient()
   const { data, error: WFVersionError } = await supabase
     .from("WorkflowVersion")
     .select("*")
@@ -41,6 +43,7 @@ export const retrieveWorkflowVersion = async (workflowVersionId: string): Promis
 }
 
 export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
+  const supabase = await createClient()
   const workflowInsertable: TablesInsert<"Workflow"> = {
     wf_id: workflowId,
     description,
@@ -61,6 +64,7 @@ export const saveWorkflowVersion = async (data: {
   iterationBudget?: number
   timeBudgetSeconds?: number
 }): Promise<Tables<"WorkflowVersion">> => {
+  const supabase = await createClient()
   const { dsl, commitMessage, workflowId, parentId, iterationBudget = 50, timeBudgetSeconds = 3600 } = data
 
   const insertData: TablesInsert<"WorkflowVersion"> = {
@@ -113,6 +117,7 @@ export const retrieveWorkflowInvocations = async (
   filters?: WorkflowInvocationFilters,
   sort?: WorkflowInvocationSortOptions,
 ): Promise<WorkflowInvocationsResponse> => {
+  const supabase = await createClient()
   // First, build the base query with count
   let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
 
@@ -242,6 +247,7 @@ export const retrieveWorkflowInvocations = async (
 }
 
 export const retrieveLatestWorkflowVersions = async (limit?: number): Promise<Tables<"WorkflowVersion">[]> => {
+  const supabase = await createClient()
   let query = supabase.from("WorkflowVersion").select("*").order("created_at", { ascending: false })
 
   if (limit) {
@@ -258,6 +264,7 @@ export const retrieveLatestWorkflowVersions = async (limit?: number): Promise<Ta
 }
 
 export const deleteWorkflowInvocations = async (invocationIds: string[]): Promise<number> => {
+  const supabase = await createClient()
   const { error } = await supabase.from("WorkflowInvocation").delete().in("wf_invocation_id", invocationIds)
 
   if (error) throw error
@@ -271,6 +278,7 @@ export const deleteWorkflowInvocations = async (invocationIds: string[]): Promis
  * This more aggressive cleanup prevents false "running" status display
  */
 export const cleanupStaleWorkflowInvocations = async (): Promise<number> => {
+  const supabase = await createClient()
   const staleThresholdMinutes = 10 // Reduced from 2 hours to 10 minutes
   const staleThresholdMs = staleThresholdMinutes * 60 * 1000
   const cutoffTime = new Date(Date.now() - staleThresholdMs).toISOString()
