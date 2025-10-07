@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/ui/card"
+import { Card } from "@/components/ui/card"
 import { isNir } from "@lucky/shared/client"
 import { CheckCircle2, ChevronDown, ChevronUp, Copy } from "lucide-react"
 import dynamic from "next/dynamic"

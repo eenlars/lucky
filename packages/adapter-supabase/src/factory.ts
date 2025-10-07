@@ -52,6 +52,13 @@ export function createPersistence(config: PersistenceConfig = {}): IPersistence 
     selectedBackend = shouldUseMock ? "memory" : "supabase"
   }
 
+  // Enforce server-only usage for Supabase backend
+  if (selectedBackend === "supabase" && typeof window !== "undefined") {
+    throw new Error(
+      "@together/adapter-supabase (supabase backend) is server-only. Use the memory backend in browser code or move persistence to the server.",
+    )
+  }
+
   if (selectedBackend === "memory") {
     return new InMemoryPersistence()
   }
@@ -69,8 +76,13 @@ export function createPersistence(config: PersistenceConfig = {}): IPersistence 
 
     // Auto-detect mode: fall back to in-memory persistence
     const errorMessage = error instanceof Error ? error.message : String(error)
+    // Allow enforcing persistence via env
+    if (process.env.REQUIRE_PERSISTENCE === "1" || process.env.REQUIRE_PERSISTENCE === "true") {
+      throw new Error(`Supabase persistence required but not configured: ${errorMessage.split("\n")[0]}`)
+    }
+
     console.warn(
-      `\n⚠️  Supabase credentials not configured, using in-memory persistence.\n   Data will not persist across restarts.\n   ${errorMessage.split("\n")[0]}\n   To use Supabase, set SUPABASE_PROJECT_ID and SUPABASE_ANON_KEY.\n   To silence this warning, set USE_MOCK_PERSISTENCE=true\n`,
+      `\n⚠️  Supabase not fully configured; using in-memory persistence.\n   Data will not persist across restarts.\n   ${errorMessage.split("\n")[0]}\n   To use Supabase, set SUPABASE_URL or SUPABASE_PROJECT_ID, and provide SUPABASE_SERVICE_ROLE_KEY (server) or SUPABASE_ANON_KEY.\n   To enforce failure instead of fallback, set REQUIRE_PERSISTENCE=1.\n   To silence this warning, set USE_MOCK_PERSISTENCE=true\n`,
     )
 
     return new InMemoryPersistence()

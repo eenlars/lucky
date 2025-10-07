@@ -1,4 +1,4 @@
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 import type { Tables } from "@lucky/shared/client"
 import Link from "next/link"
 

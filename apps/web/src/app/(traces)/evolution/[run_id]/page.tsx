@@ -2,7 +2,7 @@
 
 import { StructureMiniMap } from "@/app/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Database } from "@lucky/shared/client"

@@ -1,3 +1,4 @@
+import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
 import { IntegratedAside } from "@/app/components/aside/integrated-aside"
 import MainContent from "@/components/MainContent"
 import { CredentialStatusBanner } from "@/components/config/CredentialStatusBanner"
@@ -54,6 +55,7 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
+      <SupabaseTokenBridge />
       <AppStoreProvider initialState={{ ...defaultState, colorMode: theme }}>
         <html lang="en" className={theme}>
           <body className="h-screen">

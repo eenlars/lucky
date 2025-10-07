@@ -1,8 +1,8 @@
 "use client"
 
+import { Card } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { Button } from "@/react-flow-visualization/components/ui/button"
-import { Card } from "@/ui/card"
-import { Separator } from "@/ui/separator"
 import { ChevronDown, ChevronUp, Code, DollarSign, Wrench } from "lucide-react"
 import { useState } from "react"
 import { InspectableCode } from "./InspectableCode"

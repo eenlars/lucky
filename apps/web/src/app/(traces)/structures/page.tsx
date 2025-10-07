@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 import { type WorkflowConfig, toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { MODELS } from "@lucky/examples/settings/constants.client"
 import type { Tables } from "@lucky/shared/client"

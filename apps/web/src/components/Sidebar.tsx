@@ -1,9 +1,9 @@
 "use client"
 
 import UserProfile from "@/components/UserProfile"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { useClerk } from "@clerk/nextjs"
 import {
   BarChart2,

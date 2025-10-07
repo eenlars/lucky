@@ -1,7 +1,7 @@
 "use client"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar"
 import { useClerk, useUser } from "@clerk/nextjs"
 
 interface UserProfileProps {
