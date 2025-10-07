@@ -113,28 +113,6 @@ export const executionContextSchema = z.object({
 })
 
 // ============================================================================
-// Pricing Schemas
-// ============================================================================
-
-export const pricingSourceSchema = z.enum(["api", "manual", "fallback"])
-
-export const modelPricingSchema = z.object({
-  provider: z.string().min(1),
-  model: z.string().min(1),
-  inputPerMillion: z.number().nonnegative(),
-  outputPerMillion: z.number().nonnegative(),
-  cachedInputPerMillion: z.number().nonnegative().optional(),
-  updatedAt: z.number().int().positive(),
-  source: pricingSourceSchema,
-})
-
-export const pricingCacheSchema = z.object({
-  pricing: z.array(modelPricingSchema),
-  updatedAt: z.number().int().positive(),
-  version: z.string(),
-})
-
-// ============================================================================
 // Metrics Schemas
 // ============================================================================
 
@@ -196,9 +174,6 @@ export type UserConfigOutput = z.output<typeof userConfigSchema>
 
 export type ExecutionContextInput = z.input<typeof executionContextSchema>
 export type ExecutionContextOutput = z.output<typeof executionContextSchema>
-
-export type ModelPricingInput = z.input<typeof modelPricingSchema>
-export type ModelPricingOutput = z.output<typeof modelPricingSchema>
 
 // ============================================================================
 // Validation Helpers

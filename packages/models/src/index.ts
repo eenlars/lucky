@@ -10,6 +10,37 @@ export { defineConfig, defineConfigUnsafe } from "./config/define"
 export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
 
+// Export Facade (primary public API)
+export { ModelsFacade, getFacade, resetFacade } from "./facade"
+export type { ModelSelection, SelectionOptions } from "./facade"
+
+// Export Pricing
+export { PricingService, getPricingService, resetPricingService } from "./pricing/pricing-service"
+export type { PricingSnapshot, PricingOverride } from "./pricing/pricing-service"
+export { MODEL_CATALOG, getActiveModels, getModelsByProvider, findModelById, getCatalogStats } from "./pricing/catalog"
+export type { ModelEntry } from "./pricing/catalog"
+
+// Export Registry
+export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"
+export type { ModelQuery, RegistryStats } from "./registry/model-registry"
+
+// Export Selector
+export { PolicySelector, getSelector, resetSelector } from "./selector/policy-selector"
+export type { SelectionReason } from "./selector/policy-selector"
+
+// Export Observability
+export { ModelLogger, getLogger, resetLogger, withPerformanceLogging } from "./observability/logger"
+export type {
+  LogLevel,
+  LogEntry,
+  SelectionLog,
+  CostLog,
+  ErrorLog,
+  FallbackLog,
+  PerformanceLog,
+  LoggerConfig,
+} from "./observability/logger"
+
 // Export types
 export type {
   AiSdkModel,
@@ -32,24 +63,15 @@ export type {
   UserConfig,
 } from "./types/config"
 
-export type {
-  // Pricing types
-  ModelPricing,
-  PricingCache,
-  PricingProvider,
-} from "./types/pricing"
-
 // Export Zod schemas and validation
 export {
   executionContextSchema,
   executionStrategySchema,
   experimentConfigSchema,
-  modelPricingSchema,
   modelsConfigSchema,
   modelSpecSchema,
   modelSpecStringSchema,
   modelSpecUnionSchema,
-  pricingCacheSchema,
   providerConfigSchema,
   providerMetricsSchema,
   providersConfigSchema,
@@ -65,8 +87,6 @@ export {
 export type {
   ExecutionContextInput,
   ExecutionContextOutput,
-  ModelPricingInput,
-  ModelPricingOutput,
   ModelsConfigInput,
   ModelsConfigOutput,
   ModelSpecInput,
