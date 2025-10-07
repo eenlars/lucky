@@ -6,6 +6,9 @@
 // Browser-safe utilities
 export * from "./utils/files/json/jsonParse"
 export * from "./utils/common/isNir"
+export * from "./utils/common/id"
+export * from "./utils/common/array"
+export * from "./utils/zod/withDescriptions"
 
 // Result type and helper
 export type { RS } from "./types/result.types"

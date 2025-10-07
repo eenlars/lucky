@@ -1,5 +1,5 @@
 // todo-circulardep: MemoryStore imports from ContextStore which imports back from MemoryStore
-import { generateSummaryFromUnknownData } from "@core/messages/summaries"
+import { generateSummaryFromUnknownData } from "@core/messages/summaries/createSummary"
 import type { ContextFileInfo } from "@core/tools/context/contextStore.types"
 import type { ContextStore } from "./ContextStore"
 

@@ -1,4 +1,4 @@
-import { getCoreConfig } from "@core/core-config"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 
 export type LuckyProvider = "openai" | "openrouter" | "groq"
 

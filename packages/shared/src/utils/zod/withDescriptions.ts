@@ -1,6 +1,8 @@
 import { type ZodRawShape, type ZodTypeAny, z } from "zod"
 
-// helper to give each property a .describe(…) from a map
+/**
+ * Helper to give each property a .describe() from a map
+ */
 export function withDescriptions<S extends ZodRawShape, D extends { [K in keyof S]: string }>(
   shape: S,
   descs: D,

@@ -17,7 +17,7 @@
 
 import type { RS } from "@lucky/shared"
 import type { Genome } from "../Genome"
-import { MutationCoordinator } from "./mutations/index"
+import { MutationCoordinator } from "./mutations/MutationCoordinator"
 import type { MutationOptions as CanonicalMutationOptions } from "./mutations/mutation.types"
 
 // Legacy interface with old terminology for backward compatibility.
