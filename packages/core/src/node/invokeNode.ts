@@ -16,9 +16,9 @@ import { lgg } from "@core/utils/logging/Logger"
 
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import { genShortId } from "@core/utils/common/utils"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { genShortId } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import { type NodeInvocationResult, WorkFlowNode } from "./WorkFlowNode"
 

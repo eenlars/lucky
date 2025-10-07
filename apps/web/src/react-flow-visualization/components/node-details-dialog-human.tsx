@@ -39,6 +39,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   const [data, setData] = useState(nodeData)
   const [isEditingId, setIsEditingId] = useState(false)
   const [nodeIdDraft, setNodeIdDraft] = useState(nodeData.nodeId || "")
+  const [isToolsExpanded, setIsToolsExpanded] = useState(false)
   const edges = useAppStore(s => s.edges)
 
   // Prevent auto-save loop when props refresh local state
@@ -167,6 +168,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
     setData(nodeData)
     setNodeIdDraft(nodeData.nodeId || "")
     setIsEditingId(false)
+    setIsToolsExpanded(false)
   }, [nodeData])
 
   const outEdgeCount = useMemo(() => edges.filter(e => e.source === nodeData.nodeId).length, [edges, nodeData.nodeId])
@@ -285,8 +287,11 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
           {/* Left: Core Configuration */}
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm text-gray-700">Description</label>
+              <label htmlFor="node-description" className="text-sm text-gray-700">
+                Description
+              </label>
               <Textarea
+                id="node-description"
                 value={data.description || ""}
                 onChange={e =>
                   setData(prev => ({
@@ -300,8 +305,11 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-gray-700">Instructions</label>
+              <label htmlFor="node-instructions" className="text-sm text-gray-700">
+                Instructions
+              </label>
               <Textarea
+                id="node-instructions"
                 value={data.systemPrompt || ""}
                 onChange={e =>
                   setData(prev => ({
@@ -315,7 +323,9 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-sm text-gray-700 w-20">Model</label>
+              <label htmlFor="node-model" className="text-sm text-gray-700 w-20">
+                Model
+              </label>
               <Select
                 value={data.modelName || ""}
                 onValueChange={value =>
@@ -325,7 +335,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                   }))
                 }
               >
-                <SelectTrigger className="w-full h-9 text-sm border-gray-200">
+                <SelectTrigger id="node-model" className="w-full h-9 text-sm border-gray-200">
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent position="popper">
@@ -348,7 +358,9 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
             {canSetHandOffType && (
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                  <label className="text-sm text-gray-700 w-20">Handoff</label>
+                  <label htmlFor="node-handoff" className="text-sm text-gray-700 w-20">
+                    Handoff
+                  </label>
                   <Select
                     value={data.handOffType || "sequential"}
                     onValueChange={value =>
@@ -358,7 +370,10 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                       }))
                     }
                   >
-                    <SelectTrigger className="w-full h-9 text-sm border-gray-200 focus:ring-0 focus:outline-none">
+                    <SelectTrigger
+                      id="node-handoff"
+                      className="w-full h-9 text-sm border-gray-200 focus:ring-0 focus:outline-none"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -371,7 +386,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
             )}
 
             <div className="space-y-1">
-              <label className="text-sm text-gray-700">Connections</label>
+              <div className="text-sm text-gray-700">Connections</div>
               <div className="flex flex-wrap gap-1.5">
                 {data.handOffs?.map((handoff, index) => (
                   <span
@@ -393,117 +408,140 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
           <div className="space-y-4 border-l pl-6">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-normal">Tools</h3>
+              <button
+                type="button"
+                onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                aria-label={isToolsExpanded ? "Collapse tools" : "Expand tools"}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`transition-transform duration-200 ${isToolsExpanded ? "rotate-180" : ""}`}
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
             </div>
 
-            <div className="space-y-6">
-              {/* MCP tools */}
-              <div className="space-y-2">
-                <h4 className="text-sm text-gray-600">Web & API</h4>
-                <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
-                  {ACTIVE_MCP_TOOL_NAMES.map((tool, index) => {
-                    const selected = data.mcpTools?.includes(tool)
-                    const description = ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
-                    return (
-                      <button
-                        key={tool}
-                        type="button"
-                        onClick={() => toggleMcpTool(tool)}
-                        aria-pressed={selected}
-                        className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
-                          selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div
-                            className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
-                              selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
-                            }`}
-                          >
-                            {selected && (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="3"
-                                className="h-3 w-3"
-                              >
-                                <path d="M20 6 9 17l-5-5" />
-                              </svg>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-800">{tool}</span>
-                              {index + 1 <= 9 && (
-                                <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
-                                  ⌥{index + 1}
-                                </kbd>
+            {isToolsExpanded && (
+              <div className="space-y-6">
+                {/* MCP tools */}
+                <div className="space-y-2">
+                  <h4 className="text-sm text-gray-600">Web & API</h4>
+                  <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
+                    {ACTIVE_MCP_TOOL_NAMES.map((tool, index) => {
+                      const selected = data.mcpTools?.includes(tool)
+                      const description = ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                      return (
+                        <button
+                          key={tool}
+                          type="button"
+                          onClick={() => toggleMcpTool(tool)}
+                          aria-pressed={selected}
+                          className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
+                            selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div
+                              className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
+                                selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
+                              }`}
+                            >
+                              {selected && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="white"
+                                  strokeWidth="3"
+                                  className="h-3 w-3"
+                                >
+                                  <path d="M20 6 9 17l-5-5" />
+                                </svg>
                               )}
                             </div>
-                            <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-slate-800">{tool}</span>
+                                {index + 1 <= 9 && (
+                                  <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
+                                    ⌥{index + 1}
+                                  </kbd>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
+                            </div>
                           </div>
-                        </div>
-                      </button>
-                    )
-                  })}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              {/* Code tools */}
-              <div className="space-y-2">
-                <h4 className="text-sm text-gray-600">Code & Files</h4>
-                <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
-                  {ACTIVE_CODE_TOOL_NAMES.map((tool, index) => {
-                    const selected = data.codeTools?.includes(tool)
-                    const description = ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
-                    return (
-                      <button
-                        key={tool}
-                        type="button"
-                        onClick={() => toggleCodeTool(tool)}
-                        aria-pressed={selected}
-                        className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
-                          selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div
-                            className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
-                              selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
-                            }`}
-                          >
-                            {selected && (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="3"
-                                className="h-3 w-3"
-                              >
-                                <path d="M20 6 9 17l-5-5" />
-                              </svg>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-800">{tool}</span>
-                              {ACTIVE_MCP_TOOL_NAMES.length + index + 1 <= 9 && (
-                                <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
-                                  ⌥{ACTIVE_MCP_TOOL_NAMES.length + index + 1}
-                                </kbd>
+                {/* Code tools */}
+                <div className="space-y-2">
+                  <h4 className="text-sm text-gray-600">Code & Files</h4>
+                  <div className="max-h-64 overflow-y-auto rounded-md border border-gray-200 divide-y">
+                    {ACTIVE_CODE_TOOL_NAMES.map((tool, index) => {
+                      const selected = data.codeTools?.includes(tool)
+                      const description = ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""
+                      return (
+                        <button
+                          key={tool}
+                          type="button"
+                          onClick={() => toggleCodeTool(tool)}
+                          aria-pressed={selected}
+                          className={`w-full text-left px-3 py-2 cursor-pointer transition-colors ${
+                            selected ? "bg-slate-50" : "bg-white hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div
+                              className={`mt-0.5 h-4 w-4 flex items-center justify-center rounded-sm border ${
+                                selected ? "bg-slate-600 border-slate-600" : "bg-white border-gray-300"
+                              }`}
+                            >
+                              {selected && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="white"
+                                  strokeWidth="3"
+                                  className="h-3 w-3"
+                                >
+                                  <path d="M20 6 9 17l-5-5" />
+                                </svg>
                               )}
                             </div>
-                            <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-slate-800">{tool}</span>
+                                {ACTIVE_MCP_TOOL_NAMES.length + index + 1 <= 9 && (
+                                  <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200">
+                                    ⌥{ACTIVE_MCP_TOOL_NAMES.length + index + 1}
+                                  </kbd>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-600 line-clamp-2">{description}</div>
+                            </div>
                           </div>
-                        </div>
-                      </button>
-                    )
-                  })}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {data.status && data.status !== "initial" && (
               <div className="space-y-2">

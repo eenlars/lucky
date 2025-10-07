@@ -16,7 +16,7 @@ import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.ty
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
 import { prepareIncomingMessage } from "@core/messages/pipeline/prepare/incomingMessage"
-import { createSummary } from "@core/messages/summaries"
+import { createSummary } from "@core/messages/summaries/createSummary"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { extractToolLogs } from "@core/node/extractToolLogs"
 import { handleError, handleSuccess } from "@core/node/responseHandler"

@@ -7,7 +7,10 @@
 
 // Utility functions safe for client
 export * from "./utils/common/isNir"
+export * from "./utils/common/id"
+export * from "./utils/common/array"
 export * from "./utils/files/json/jsonParse"
+export * from "./utils/zod/withDescriptions"
 
 // Tool result types (type-only exports - Tools helpers are server-side only)
 export type {

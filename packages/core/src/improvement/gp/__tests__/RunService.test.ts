@@ -8,9 +8,13 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock external dependencies without referencing outer vars (avoid hoist issues)
-vi.mock("@core/utils/common/utils", () => ({
-  genShortId: vi.fn(() => "short-test-id"),
-}))
+vi.mock("@lucky/shared", async importOriginal => {
+  const actual = await importOriginal<typeof import("@lucky/shared")>()
+  return {
+    ...actual,
+    genShortId: vi.fn(() => "short-test-id"),
+  }
+})
 
 vi.mock("@core/utils/logging/Logger", () => ({
   lgg: {
@@ -33,7 +37,7 @@ describe("RunService", () => {
 
     // Access mocked modules via dynamic import to respect path aliases
     ;({ lgg } = await import("@core/utils/logging/Logger"))
-    ;({ genShortId } = await import("@core/utils/common/utils"))
+    ;({ genShortId } = await import("@lucky/shared"))
 
     // ensure default genShortId
     vi.mocked(genShortId).mockReturnValue("short-test-id")

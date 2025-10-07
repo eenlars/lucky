@@ -222,7 +222,7 @@ describe("Crossover", () => {
       error: undefined,
     })
     // Spy on real verifyWorkflowConfig
-    const validationModule = await import("@core/utils/validation/workflow")
+    const validationModule = await import("@core/utils/validation/workflow/verifyWorkflow")
     mockVerifyWorkflowConfigStrict = vi
       .spyOn(validationModule, "verifyWorkflowConfig")
       .mockResolvedValue({ isValid: true, errors: [] })

@@ -9,7 +9,7 @@ import { HandoffMessageHandler } from "@core/messages/handoffs/HandoffMessageHan
 import { chooseHandoff } from "@core/messages/handoffs/main"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
-import { formatSummary } from "@core/messages/summaries"
+import { formatSummary } from "@core/messages/summaries/createSummary"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"

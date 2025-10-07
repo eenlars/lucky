@@ -6,8 +6,7 @@ import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/nod
 import type { Payload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { InvocationSummary } from "@core/messages/summaries"
-import { genShortId } from "@core/utils/common/utils"
+import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
@@ -18,6 +17,7 @@ import type {
   SupportsCodeTools,
   SupportsMCPTools,
 } from "@lucky/contracts/agent"
+import { genShortId } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import type { IPersistence } from "@together/adapter-supabase"
 import chalk from "chalk"

@@ -145,11 +145,12 @@ export function AppHandle({
         onClick={onClick}
         size="icon"
         variant="secondary"
-        className={clsx("border h-6 w-6 rounded-xl hover:bg-card", {
-          "border-red-500": isPotentialConnection,
+        className={clsx("h-7 w-7 rounded-md border bg-white shadow hover:shadow-md transition-all duration-200", {
+          "border-blue-500 bg-blue-50": isPotentialConnection,
+          "border-gray-300": !isPotentialConnection,
         })}
       >
-        +
+        <span className="text-sm font-semibold">+</span>
       </Button>
       {isOpen && (
         <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2">

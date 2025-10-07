@@ -1,5 +1,5 @@
 import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
-import { withDescriptions } from "@core/utils/zod/withDescriptions"
+import { withDescriptions } from "@lucky/shared"
 import type { z } from "zod"
 
 // descriptions for single node

@@ -135,7 +135,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
         defaultEdgeOptions={{ type: "workflow" }}
         proOptions={proOptions}
       >
-        <Background />
+        <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
         <WorkflowControls />
         <WorkflowPromptBar />
       </ReactFlow>
