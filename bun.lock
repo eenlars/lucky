@@ -75,6 +75,7 @@
         "@lucky/core": "workspace:*",
         "@lucky/examples": "workspace:*",
         "@lucky/experiments": "workspace:*",
+        "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
         "@lucky/tools": "workspace:*",
         "@mendable/firecrawl-js": "^1.29.3",
