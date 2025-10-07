@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
+import type { LuckyProvider } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -12,6 +13,8 @@ import {
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
+
+const PROVIDERS: LuckyProvider[] = ["openai", "openrouter", "groq"]
 
 interface ConfigPanelProps {
   node: AppNode
@@ -66,14 +69,28 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
+  const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
   const mcpTools = node.data.mcpTools || []
   const codeTools = node.data.codeTools || []
 
   // Sync state when node changes
   useEffect(() => {
+    setDescription(node.data.description || "")
     setSystemPrompt(node.data.systemPrompt || "")
-  }, [node.id, node.data.systemPrompt])
+  }, [node.id, node.data.description, node.data.systemPrompt])
+
+  // Auto-save description after delay
+  useEffect(() => {
+    // Only set timer if the value actually changed from what's in node.data
+    if (description === node.data.description) return
+
+    const timer = setTimeout(() => {
+      updateNode(node.id, { description: description })
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [description]) // Only depend on description, not node.data
 
   // Auto-save system prompt after delay
   useEffect(() => {
@@ -110,31 +127,54 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
   return (
     <div className="h-full flex flex-col overflow-y-auto">
-      {/* System Prompt Section - Always visible */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <div className="p-6">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">System Prompt</h3>
-          <div className="relative">
-            <textarea
-              value={systemPrompt}
-              onChange={e => setSystemPrompt(e.target.value)}
-              placeholder="Enter instructions for this agent..."
-              rows={8}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-300 dark:focus:border-gray-600 focus:bg-white dark:focus:bg-gray-800 transition-all resize-none font-mono leading-relaxed"
-              style={{ minHeight: "160px" }}
-            />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
-              {systemPrompt.length} chars
+      {/* Core Configuration - Collapsible */}
+      <CollapsibleSection title="Core Configuration" defaultOpen={false}>
+        <div className="space-y-6">
+          {/* Description */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Description</h3>
+            <div className="relative">
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="Briefly describe what this agent does..."
+                rows={2}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-300 dark:focus:border-gray-600 focus:bg-white dark:focus:bg-gray-800 transition-all resize-none leading-relaxed"
+              />
+              <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+                {description.length} chars
+              </div>
             </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+              A short summary of this agent&apos;s purpose and role
+            </p>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-            Define how this agent should behave and respond
-          </p>
+
+          {/* System Prompt */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">System Prompt</h3>
+            <div className="relative">
+              <textarea
+                value={systemPrompt}
+                onChange={e => setSystemPrompt(e.target.value)}
+                placeholder="Enter instructions for this agent..."
+                rows={8}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-300 dark:focus:border-gray-600 focus:bg-white dark:focus:bg-gray-800 transition-all resize-none font-mono leading-relaxed"
+                style={{ minHeight: "160px" }}
+              />
+              <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+                {systemPrompt.length} chars
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+              Define how this agent should behave and respond
+            </p>
+          </div>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Tools Section - Collapsible */}
-      <CollapsibleSection title={`Tools (${totalTools} selected)`} defaultOpen={true}>
+      <CollapsibleSection title={`Tools (${totalTools} selected)`} defaultOpen={false}>
         {/* MCP Tools */}
         {Object.entries(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).length > 0 && (
           <div className="mb-6">
@@ -253,6 +293,21 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
       {/* Advanced Configuration - Collapsed by default */}
       <CollapsibleSection title="Advanced Configuration" defaultOpen={false}>
         <div className="space-y-4">
+          {/* Model Provider Selection */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Model Provider</label>
+            <select
+              className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              defaultValue={PROVIDERS[0]}
+            >
+              {PROVIDERS.map(provider => (
+                <option key={provider} value={provider}>
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Model Selection */}
           <div>
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Model</label>

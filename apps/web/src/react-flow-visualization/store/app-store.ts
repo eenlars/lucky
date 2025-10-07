@@ -439,10 +439,41 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           const workflowNodes = nodes
             .filter(node => node.id !== "start" && node.id !== "end")
             .map(node => {
-              const { label, icon, status, messageCount, ...coreData } = node.data
+              // Remove UI-only fields, keep all WorkflowNodeConfig fields
+              const {
+                label,
+                icon,
+                status,
+                messageCount,
+                nodeId: _nodeId,
+                description,
+                systemPrompt,
+                modelName,
+                mcpTools,
+                codeTools,
+                handOffs,
+                memory,
+                waitingFor,
+                waitFor,
+                handOffType,
+                useClaudeSDK,
+                sdkConfig,
+              } = node.data
+
               return {
-                ...coreData,
                 nodeId: node.id, // Ensure nodeId matches the graph node id
+                description,
+                systemPrompt,
+                modelName,
+                mcpTools,
+                codeTools,
+                handOffs,
+                ...(memory !== undefined && { memory }),
+                ...(waitingFor !== undefined && { waitingFor }),
+                ...(waitFor !== undefined && { waitFor }),
+                ...(handOffType !== undefined && { handOffType }),
+                ...(useClaudeSDK !== undefined && { useClaudeSDK }),
+                ...(sdkConfig !== undefined && { sdkConfig }),
               }
             })
 
