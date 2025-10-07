@@ -25,8 +25,9 @@ export const envi = createEnv({
     // Make Clerk URLs configurable but safe-defaulted
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default("/sign-in"),
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default("/"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/"),
+    // Optional guard: expected Clerk issuer for third-party auth
+    NEXT_PUBLIC_CLERK_EXPECTED_ISSUER: z.string().url().nullish(),
+    // Deprecated in Clerk; use component-level fallbackRedirectUrl/forceRedirectUrl instead
     // Standard Supabase env vars (optional to support non-Supabase environments)
     NEXT_PUBLIC_SUPABASE_URL: z.string().nullish(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().nullish(),
@@ -39,8 +40,7 @@ export const envi = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
+    NEXT_PUBLIC_CLERK_EXPECTED_ISSUER: process.env.NEXT_PUBLIC_CLERK_EXPECTED_ISSUER,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     TAVILY_API_KEY: process.env.TAVILY_API_KEY,
     // Standard Supabase env vars

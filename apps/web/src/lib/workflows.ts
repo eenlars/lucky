@@ -74,13 +74,13 @@ export async function listWorkflows(): Promise<WorkflowWithVersions[]> {
   const [versionCountsResults, latestVersionsResults] = await Promise.all([versionCountsPromise, latestVersionsPromise])
 
   // Build version count map
-  const versionCountMap = new Map()
+  const versionCountMap = new Map<string, number>()
   for (const result of versionCountsResults) {
     versionCountMap.set(result.workflowId, result.count)
   }
 
   // Build latest version map
-  const latestVersionMap = new Map()
+  const latestVersionMap = new Map<string, WorkflowVersion>()
   for (const result of latestVersionsResults) {
     if (result.latest) {
       latestVersionMap.set(result.workflowId, result.latest)

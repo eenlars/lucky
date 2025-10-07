@@ -1,6 +1,7 @@
 "use client"
 
 import { useWorkflowStore } from "@/stores/workflow-store"
+import { useAuth } from "@clerk/nextjs"
 import { useEffect } from "react"
 
 /**
@@ -27,10 +28,14 @@ export function useWorkflows() {
     clearError,
   } = store
 
-  // Load workflows on mount
+  // Load workflows after Clerk is ready and user is signed in
+  const { isLoaded, isSignedIn } = useAuth()
+
   useEffect(() => {
-    loadWorkflows()
-  }, [loadWorkflows])
+    if (isLoaded && isSignedIn) {
+      void loadWorkflows()
+    }
+  }, [isLoaded, isSignedIn, loadWorkflows])
 
   return {
     // Data

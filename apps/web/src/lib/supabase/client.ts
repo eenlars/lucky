@@ -43,9 +43,33 @@ export function createClient(): SupabaseClient<Database> {
     throw createCredentialError("SUPABASE_PROJECT_ID", "INVALID_FORMAT", "Invalid Supabase URL configuration")
   }
 
+  function decodeJwtPayload(token: string): any {
+    try {
+      const part = token.split(".")[1] || ""
+      const base64 = part.replace(/-/g, "+").replace(/_/g, "/")
+      const pad = base64.length % 4
+      const padded = base64 + (pad ? "=".repeat(4 - pad) : "")
+      const json = typeof atob !== "undefined" ? atob(padded) : Buffer.from(padded, "base64").toString("utf8")
+      return JSON.parse(json)
+    } catch {
+      return null
+    }
+  }
+
   browserClient = createBrowserClient<Database>(supabaseUrl, supabaseKey, {
     async accessToken() {
-      return getTokenRef ? getTokenRef() : null
+      const token = getTokenRef ? await getTokenRef() : null
+      const expected = envi.NEXT_PUBLIC_CLERK_EXPECTED_ISSUER || null
+      if (token && expected) {
+        const payload = decodeJwtPayload(token)
+        const iss = payload?.iss
+        if (iss && iss !== expected) {
+          const msg = `Clerk token issuer mismatch: expected ${expected}, got ${iss}. Ensure you're using production Clerk keys locally.`
+          // Throwing here prevents silent anon queries under RLS
+          throw new Error(msg)
+        }
+      }
+      return token
     },
   })
 
