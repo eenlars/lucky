@@ -146,7 +146,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               </div>
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              A short summary of this agent's purpose and role
+              A short summary of this agent&apos;s purpose and role
             </p>
           </div>
 

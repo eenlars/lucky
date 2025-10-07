@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { Brain, Link, Loader2, MoreVertical, Paperclip, Send, Sparkles } from "lucide-react"
+import { Brain, Paperclip, Sparkles } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 interface TestPanelProps {

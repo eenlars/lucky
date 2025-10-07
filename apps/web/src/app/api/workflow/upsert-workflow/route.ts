@@ -26,15 +26,19 @@ export async function POST(request: NextRequest) {
 
     if (workflowVersionId) {
       // Editing existing workflow - look up the version to get workflow_id and inherit settings
-      const existingVersion = await retrieveWorkflowVersion(workflowVersionId)
-      if (!existingVersion.workflow_id) {
-        return NextResponse.json({ error: "Workflow version has no associated workflow" }, { status: 400 })
+      try {
+        const existingVersion = await retrieveWorkflowVersion(workflowVersionId)
+        if (!existingVersion.workflow_id) {
+          return NextResponse.json({ error: "Workflow version has no associated workflow" }, { status: 400 })
+        }
+        workflowId = existingVersion.workflow_id
+        parentId = workflowVersionId
+        // Inherit budget settings from parent version if not explicitly provided
+        if (iterationBudget === undefined) finalIterationBudget = existingVersion.iteration_budget
+        if (timeBudgetSeconds === undefined) finalTimeBudgetSeconds = existingVersion.time_budget_seconds
+      } catch (versionError) {
+        return NextResponse.json({ error: "Workflow version not found" }, { status: 404 })
       }
-      workflowId = existingVersion.workflow_id
-      parentId = workflowVersionId
-      // Inherit budget settings from parent version if not explicitly provided
-      if (iterationBudget === undefined) finalIterationBudget = existingVersion.iteration_budget
-      if (timeBudgetSeconds === undefined) finalTimeBudgetSeconds = existingVersion.time_budget_seconds
     } else {
       // Creating new workflow
       if (!workflowName) {
