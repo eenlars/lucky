@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { createClient } from "@/lib/supabase/server"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ wf_
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = await createClient()
+  const supabase = await createRLSClient()
   const { wf_version_id } = await params
 
   try {

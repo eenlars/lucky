@@ -1,7 +1,7 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lucky/shared", "@lucky/tools"],
+  transpilePackages: ["@lucky/shared", "@lucky/tools", "@lucky/models"],
   outputFileTracingExcludes: {
     "/api/*": [".next/**"],
   },

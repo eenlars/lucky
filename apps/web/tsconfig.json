@@ -33,6 +33,8 @@
       "@lucky/examples/*": ["../examples/*"],
       "@lucky/experiments": ["../../packages/experiments/src"],
       "@lucky/experiments/*": ["../../packages/experiments/src/*"],
+      "@lucky/models": ["../../packages/models/src"],
+      "@lucky/models/*": ["../../packages/models/src/*"],
       "@lucky/shared": ["../../packages/shared/src"],
       "@lucky/shared/*": ["../../packages/shared/src/*"],
       "@lucky/tools": ["../../packages/tools/src"],
