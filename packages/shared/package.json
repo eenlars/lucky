@@ -33,6 +33,27 @@
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js"
     },
+    "./env": {
+      "types": "./dist/env.d.ts",
+      "import": "./dist/env.js"
+    },
+    "./env-models": {
+      "types": "./dist/env-models.d.ts",
+      "import": "./dist/env-models.js"
+    },
+    "./supabase-credentials.server": {
+      "types": "./dist/supabase-credentials.server.d.ts",
+      "node": {
+        "import": "./dist/supabase-credentials.server.js"
+      }
+    },
+    "./supabase-credentials.client": {
+      "types": "./dist/supabase-credentials.client.d.ts",
+      "browser": {
+        "import": "./dist/supabase-credentials.client.js"
+      },
+      "import": "./dist/supabase-credentials.client.js"
+    },
     "./fs": {
       "types": "./dist/fs/paths.d.ts",
       "node": {

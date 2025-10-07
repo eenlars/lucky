@@ -7,6 +7,9 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       client: "src/client.ts",
+      env: "src/env.ts",
+      "env-models": "src/env-models.ts",
+      "supabase-credentials.client": "src/supabase-credentials.client.ts",
     },
     format: ["esm"],
     platform: "browser",
@@ -23,6 +26,7 @@ export default defineConfig([
     entry: {
       "fs/paths": "src/fs/paths.ts",
       "csv/index": "src/csv/index.ts",
+      "supabase-credentials.server": "src/supabase-credentials.server.ts",
     },
     format: ["esm"],
     platform: "node",

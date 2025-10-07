@@ -4,6 +4,7 @@
  */
 
 import { envi } from "@core/utils/env.mjs"
+import { hasSupabaseCredentials } from "@lucky/shared/supabase-credentials.server"
 import type { CredentialName } from "./credential-errors"
 
 // Re-export for consumers
@@ -33,8 +34,8 @@ export interface FeatureStatus {
  * Defines which credentials enable which features.
  */
 const FEATURE_CREDENTIALS: Record<FeatureName, CredentialName[]> = {
-  persistence: ["SUPABASE_PROJECT_ID", "SUPABASE_ANON_KEY"],
-  evolution: ["SUPABASE_PROJECT_ID", "SUPABASE_ANON_KEY"],
+  persistence: ["SUPABASE_ANON_KEY"],
+  evolution: ["SUPABASE_ANON_KEY"],
   ai_models: ["OPENROUTER_API_KEY", "OPENAI_API_KEY", "GOOGLE_API_KEY", "GROQ_API_KEY"],
   search: ["TAVILY_API_KEY", "SERPAPI_API_KEY"],
   memory: ["MEM0_API_KEY"],
@@ -56,6 +57,11 @@ const FEATURES_WITH_FALLBACK: FeatureName[] = ["persistence", "evolution", "memo
  * Check if a credential is configured.
  */
 function isCredentialConfigured(credential: CredentialName): boolean {
+  // Special handling for Supabase - use centralized validation
+  if (credential === "SUPABASE_ANON_KEY") {
+    return hasSupabaseCredentials()
+  }
+
   const value = getCredentialValue(credential)
   return !!value && value.length > 0 && !value.startsWith("test-")
 }
@@ -65,10 +71,9 @@ function isCredentialConfigured(credential: CredentialName): boolean {
  */
 function getCredentialValue(credential: CredentialName): string | undefined | null {
   switch (credential) {
-    case "SUPABASE_PROJECT_ID":
-      return envi.SUPABASE_PROJECT_ID ?? envi.NEXT_PUBLIC_SUPABASE_PROJECT_ID
     case "SUPABASE_ANON_KEY":
-      return envi.SUPABASE_ANON_KEY ?? envi.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      // Trust the validated env object - don't check process.env directly
+      return envi.SUPABASE_ANON_KEY
     case "OPENROUTER_API_KEY":
       return envi.OPENROUTER_API_KEY
     case "OPENAI_API_KEY":
@@ -131,7 +136,6 @@ export function getCredentialStatus(credential: CredentialName): CredentialStatu
     .map(([feature]) => feature)
 
   const descriptions: Record<CredentialName, string> = {
-    SUPABASE_PROJECT_ID: "Database persistence and evolution tracking",
     SUPABASE_ANON_KEY: "Database persistence and evolution tracking",
     OPENROUTER_API_KEY: "Access to multiple AI models via OpenRouter",
     OPENAI_API_KEY: "Access to OpenAI GPT models",
@@ -182,7 +186,6 @@ export function getFeatureStatus(feature: FeatureName): FeatureStatus {
  */
 export function getAllCredentialStatus(): CredentialStatus[] {
   const allCredentials: CredentialName[] = [
-    "SUPABASE_PROJECT_ID",
     "SUPABASE_ANON_KEY",
     "OPENROUTER_API_KEY",
     "OPENAI_API_KEY",
@@ -245,7 +248,7 @@ function maskCredential(value: string | null | undefined): string {
  * Check if in-memory fallback mode is enabled.
  */
 export function isUsingMockPersistence(): boolean {
-  return process.env.USE_MOCK_PERSISTENCE === "true"
+  return envi.USE_MOCK_PERSISTENCE === "true"
 }
 
 /**
