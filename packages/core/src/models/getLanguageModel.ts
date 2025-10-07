@@ -14,6 +14,10 @@ import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
  * Get a basic language model without reasoning support.
  * Supports both direct model names (provider/model) and tier names (nano, low, etc.).
  *
+ * Special handling for OpenRouter:
+ * - When current provider is OpenRouter, all models route through OpenRouter
+ * - Model names like "openai/gpt-4" are passed as-is to OpenRouter
+ *
  * @param modelName - Model name or tier name
  * @returns Promise resolving to AI SDK LanguageModel
  *
@@ -27,8 +31,20 @@ import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
  * ```
  */
 export async function getLanguageModel(modelName: ModelName): Promise<LanguageModel> {
-  const models = getModelsInstance()
+  const currentProvider = getCurrentProvider()
   const resolved = resolveTierOrModel(modelName)
+
+  // Special handling for OpenRouter: route all models through OpenRouter
+  if (currentProvider === "openrouter") {
+    // If resolved is a model name (contains /), pass it to OpenRouter directly
+    if (typeof resolved === "string" && resolved.includes("/")) {
+      const models = getModelsInstance()
+      return await models.model({ provider: "openrouter", model: resolved })
+    }
+  }
+
+  // For other providers or tier references, use standard resolution
+  const models = getModelsInstance()
   return await models.model(resolved)
 }
 
