@@ -130,19 +130,23 @@ export class ModelRegistry {
 
       if (query.capabilities.tools) {
         const toolsSet = this.byCapability.get("tools")
-        if (toolsSet) capSets.push(toolsSet)
+        if (!toolsSet) return [] // Required capability missing
+        capSets.push(toolsSet)
       }
       if (query.capabilities.jsonMode) {
         const jsonSet = this.byCapability.get("jsonMode")
-        if (jsonSet) capSets.push(jsonSet)
+        if (!jsonSet) return [] // Required capability missing
+        capSets.push(jsonSet)
       }
       if (query.capabilities.streaming) {
         const streamSet = this.byCapability.get("streaming")
-        if (streamSet) capSets.push(streamSet)
+        if (!streamSet) return [] // Required capability missing
+        capSets.push(streamSet)
       }
       if (query.capabilities.vision) {
         const visionSet = this.byCapability.get("vision")
-        if (visionSet) capSets.push(visionSet)
+        if (!visionSet) return [] // Required capability missing
+        capSets.push(visionSet)
       }
 
       // Intersect all capability sets
@@ -156,19 +160,17 @@ export class ModelRegistry {
     // Filter by speed
     if (query.speed) {
       const speedSet = this.bySpeed.get(query.speed)
-      if (speedSet) {
-        candidates = candidates ? this.intersectSets([candidates, speedSet]) : speedSet
-        if (candidates.size === 0) return []
-      }
+      if (!speedSet) return [] // Required speed missing
+      candidates = candidates ? this.intersectSets([candidates, speedSet]) : speedSet
+      if (candidates.size === 0) return []
     }
 
     // Filter by pricing tier
     if (query.pricingTier) {
       const tierSet = this.byPricingTier.get(query.pricingTier)
-      if (tierSet) {
-        candidates = candidates ? this.intersectSets([candidates, tierSet]) : tierSet
-        if (candidates.size === 0) return []
-      }
+      if (!tierSet) return [] // Required tier missing
+      candidates = candidates ? this.intersectSets([candidates, tierSet]) : tierSet
+      if (candidates.size === 0) return []
     }
 
     // Get model entries from candidates or all models
@@ -191,6 +193,9 @@ export class ModelRegistry {
     }
 
     const sets = required.map(cap => this.byCapability.get(cap)).filter(Boolean) as Set<string>[]
+
+    // If any required capability is missing, no models can satisfy the request
+    if (sets.length !== required.length) return []
 
     if (sets.length === 0) return []
 
@@ -330,15 +335,18 @@ export class ModelRegistry {
     const totalInputCost = active.reduce((sum, m) => sum + m.input, 0)
     const totalOutputCost = active.reduce((sum, m) => sum + m.output, 0)
 
+    // Guard against division by zero when no active models
+    const activeCount = active.length || 1
+
     return {
       total: models.length,
       active: active.length,
       byProvider,
       bySpeed,
       byPricingTier,
-      avgContextLength: Math.round(totalContext / active.length),
-      avgInputCost: Number((totalInputCost / active.length).toFixed(3)),
-      avgOutputCost: Number((totalOutputCost / active.length).toFixed(3)),
+      avgContextLength: active.length > 0 ? Math.round(totalContext / activeCount) : 0,
+      avgInputCost: active.length > 0 ? Number((totalInputCost / activeCount).toFixed(3)) : 0,
+      avgOutputCost: active.length > 0 ? Number((totalOutputCost / activeCount).toFixed(3)) : 0,
     }
   }
 

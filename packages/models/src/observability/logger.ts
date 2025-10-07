@@ -175,7 +175,7 @@ export class ModelLogger {
       enableConsole: config.enableConsole !== false,
       enableJson: config.enableJson !== false,
       customHandler: config.customHandler,
-      sampleRate: config.sampleRate || 1.0,
+      sampleRate: config.sampleRate ?? 1.0,
     }
   }
 

@@ -264,6 +264,25 @@ export class PolicySelector {
       return model?.active ? [model] : []
     }
 
+    // Map tier intents to intelligence/cost filters
+    const tierMapping: Record<string, { minIntelligence?: number; maxAvgCost?: number }> = {
+      nano: { maxAvgCost: 0.5 },
+      low: { minIntelligence: 5, maxAvgCost: 2.0 },
+      medium: { minIntelligence: 7 },
+      high: { minIntelligence: 8 },
+      reasoning: { minIntelligence: 9 },
+      fitness: { minIntelligence: 7 },
+      summary: { minIntelligence: 5, maxAvgCost: 1.0 },
+      fallback: { maxAvgCost: 0.3 },
+      default: {},
+    }
+
+    // Apply tier-based filtering if recognized
+    const tierFilter = tierMapping[intent]
+    if (tierFilter) {
+      return this.registry.list({ ...tierFilter, activeOnly: true })
+    }
+
     // Otherwise, get all active models
     return this.registry.list({ activeOnly: true })
   }
@@ -489,10 +508,22 @@ export class PolicySelector {
    * Convert SelectionOptions to ModelQuery
    */
   private optionsToQuery(options: SelectionOptions): any {
+    // Convert maxLatency to speed (ModelRegistry expects "speed", not "maxLatency")
+    let speed: "fast" | "medium" | "slow" | undefined
+    if (options.maxLatency === "fast") {
+      speed = "fast"
+    } else if (options.maxLatency === "medium") {
+      // maxLatency "medium" means fast or medium is acceptable
+      speed = undefined // Don't filter by speed, will be filtered in select()
+    } else if (options.maxLatency === "slow") {
+      // maxLatency "slow" means any speed is acceptable
+      speed = undefined
+    }
+
     return {
       minContextLength: options.minContextLength,
       minIntelligence: options.minIntelligence,
-      maxLatency: options.maxLatency,
+      speed, // Use speed instead of maxLatency
       capabilities: options.requiredFeatures
         ? {
             tools: options.requiredFeatures.includes("tools"),
