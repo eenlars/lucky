@@ -8,6 +8,60 @@ export type Database = {
   }
   iam: {
     Tables: {
+      org_memberships: {
+        Row: {
+          clerk_id: string
+          created_at: string | null
+          org_id: string
+          role: string
+        }
+        Insert: {
+          clerk_id: string
+          created_at?: string | null
+          org_id: string
+          role?: string
+        }
+        Update: {
+          clerk_id?: string
+          created_at?: string | null
+          org_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_memberships_clerk_id_fkey"
+            columns: ["clerk_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_memberships_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      orgs: {
+        Row: {
+          created_at: string | null
+          name: string
+          org_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          name: string
+          org_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          name?: string
+          org_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -18,7 +72,6 @@ export type Database = {
           metadata: Json
           status: Database["iam"]["Enums"]["user_status"]
           updated_at: string
-          user_id: string
         }
         Insert: {
           avatar_url?: string | null
@@ -29,7 +82,6 @@ export type Database = {
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string
-          user_id?: string
         }
         Update: {
           avatar_url?: string | null
@@ -40,7 +92,6 @@ export type Database = {
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -49,7 +100,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_org_admin: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_status: "active" | "disabled" | "invited"
@@ -469,35 +531,27 @@ export type Database = {
       }
       Workflow: {
         Row: {
+          clerk_id: string | null
           created_at: string
           description: string
           updated_at: string
-          user_id: string | null
           wf_id: string
         }
         Insert: {
+          clerk_id?: string | null
           created_at?: string
           description: string
           updated_at?: string
-          user_id?: string | null
           wf_id?: string
         }
         Update: {
+          clerk_id?: string | null
           created_at?: string
           description?: string
           updated_at?: string
-          user_id?: string | null
           wf_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "Workflow_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "User"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       WorkflowInvocation: {
         Row: {
@@ -728,24 +782,7 @@ export type Database = {
       }
     }
     Views: {
-      User: {
-        Row: {
-          clerk_id: string | null
-          created_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          clerk_id?: string | null
-          created_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          clerk_id?: string | null
-          created_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       gen_prefixed_id: {
@@ -753,6 +790,14 @@ export type Database = {
         Returns: string
       }
       gen_short_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      require_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      sub: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

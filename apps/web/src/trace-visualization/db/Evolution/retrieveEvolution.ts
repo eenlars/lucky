@@ -106,6 +106,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
       end_time,
       run_id,
       best_workflow_version_id,
+      clerk_id,
       workflow_invocations:WorkflowInvocation!fk_wfi_generation (
         wf_invocation_id,
         wf_version_id,
@@ -156,6 +157,7 @@ const performComplexQuery = async (runId: string): Promise<GenerationWithData[]>
           end_time: generation.end_time,
           run_id: generation.run_id,
           best_workflow_version_id: generation.best_workflow_version_id,
+          clerk_id: generation.clerk_id,
         },
         versions: generationVersions,
         invocations: generation.workflow_invocations || [],
