@@ -1,11 +1,7 @@
 import { llmify } from "@core/utils/common/llmify"
+import type { WorkflowFile } from "@lucky/shared"
+export type { WorkflowFile } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
-
-export type WorkflowFile = {
-  store: "supabase"
-  filePath: string // the supabase file path
-  summary: string // what the file is about
-}
 
 export type WorkflowFiles = {
   workflowFiles: WorkflowFile[]

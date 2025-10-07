@@ -1,14 +1,14 @@
+import type {
+  ToolExecutionContext as ToolExecutionContextBase,
+  WorkflowFile as WorkflowFileBase,
+} from "@lucky/contracts/tools"
 import { R, type RS } from "@lucky/shared"
 import type { ZodTypeAny } from "zod"
 
 /**
- * Workflow file reference for tool context
+ * Re-export contract type for workflow files
  */
-export type WorkflowFile = {
-  store: "supabase"
-  filePath: string // the supabase file path
-  summary: string // what the file is about
-}
+export type WorkflowFile = WorkflowFileBase
 
 /**
  * Zod schema representing the expected output type
@@ -16,16 +16,16 @@ export type WorkflowFile = {
 export type OutputSchema = ZodTypeAny
 
 /**
- * Tool execution context provides runtime information about workflow execution
- * This enables tools to access files, understand goals, and coordinate
+ * Tool execution context provides runtime information about workflow execution.
+ * Extends the base contract with implementation-specific fields.
  */
-export interface ToolExecutionContext {
+export interface ToolExecutionContext extends Omit<ToolExecutionContextBase, "expectedOutputType"> {
   workflowId: string
   workflowVersionId: string
   workflowInvocationId: string
-  workflowFiles: WorkflowFile[]
-  expectedOutputType: OutputSchema | undefined
-  mainWorkflowGoal: string
+  workflowFiles?: WorkflowFile[]
+  expectedOutputType?: OutputSchema
+  mainWorkflowGoal?: string
 }
 
 /**

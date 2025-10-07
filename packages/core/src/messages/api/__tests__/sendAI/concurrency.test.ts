@@ -1,9 +1,14 @@
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
+vi.mock("@core/clients/openrouter/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
   isOpenRouterAvailable: vi.fn(() => true),
+}))
+
+vi.mock("@core/models/getLanguageModel", () => ({
+  getLanguageModel: vi.fn((model: string) => `mocked-${model}`),
+  getLanguageModelWithReasoning: vi.fn((model: string, _opts?: any) => `mocked-${model}`),
 }))
 
 vi.mock("ai", () => ({

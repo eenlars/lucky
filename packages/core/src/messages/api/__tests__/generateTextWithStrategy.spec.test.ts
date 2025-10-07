@@ -1,7 +1,7 @@
+import { openrouter } from "@core/clients/openrouter/openrouterClient"
 import { getDefaultModels } from "@core/core-config/compat"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { createPrepareStepStrategy } from "@core/messages/pipeline/selectTool/selectToolStrategy"
-import { openrouter } from "@core/utils/clients/openrouter/openrouterClient"
 import { JSONN } from "@lucky/shared"
 import { type ToolSet, generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"

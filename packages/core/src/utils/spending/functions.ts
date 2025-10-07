@@ -1,7 +1,8 @@
 import { MODEL_CONFIG } from "@core/core-config/compat"
 import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
-import { type LuckyProvider, getCurrentProvider } from "@core/utils/spending/provider"
+import { getCurrentProvider } from "@core/utils/spending/provider"
+import type { LuckyProvider } from "@lucky/shared"
 import { isNir } from "@lucky/shared/client"
 
 // Get all active models from provider structure

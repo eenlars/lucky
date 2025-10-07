@@ -201,7 +201,7 @@ vi.mock("@core/persistence/workflow/registerWorkflow", () => ({
 }))
 
 // Mock supabase client to avoid real database calls
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockResolvedValue({ error: null }),

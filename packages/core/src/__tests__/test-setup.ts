@@ -201,7 +201,7 @@ vi.mock("@lucky/tools/client", async importOriginal => {
 })
 
 // Mock Supabase client to prevent database connection issues
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockResolvedValue({ error: null, data: [{ id: "test-id" }] }),

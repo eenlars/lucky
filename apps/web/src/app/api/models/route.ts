@@ -1,5 +1,5 @@
 import { getActiveModelNames, getModelV2 } from "@lucky/core/utils/spending/functions"
-import type { LuckyProvider } from "@lucky/core/utils/spending/provider"
+import type { LuckyProvider } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"

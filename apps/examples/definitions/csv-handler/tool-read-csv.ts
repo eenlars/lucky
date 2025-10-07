@@ -29,8 +29,7 @@ const execute = async (
 ): Promise<CodeToolResult<ColumnData>> => {
   const { columnName, page = 1, limit = 10 } = params
 
-  if (!toolExecutionContext?.workflowFiles[0]) {
-    //todo-fix-[0]
+  if (!toolExecutionContext?.workflowFiles?.[0]) {
     return Tools.createFailure("csvReader", {
       location: "csvReader",
       error: "no file provided in tool execution context",

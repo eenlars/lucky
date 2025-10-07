@@ -748,7 +748,7 @@ export const mockVerificationCache = () => {
 }
 
 export const mockSupabaseClient = () => {
-  vi.mock("@core/utils/clients/supabase/client", () => ({
+  vi.mock("@core/clients/supabase/client", () => ({
     supabase: {
       from: vi.fn().mockReturnValue({
         insert: vi.fn().mockResolvedValue({ error: null }),

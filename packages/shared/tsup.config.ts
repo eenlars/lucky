@@ -27,6 +27,8 @@ export default defineConfig([
       "fs/paths": "src/fs/paths.ts",
       "csv/index": "src/csv/index.ts",
       "supabase-credentials.server": "src/supabase-credentials.server.ts",
+      "utils/fs/fileSaver": "src/utils/fs/fileSaver.ts",
+      "utils/observability/obs": "src/utils/observability/obs.ts",
     },
     format: ["esm"],
     platform: "node",

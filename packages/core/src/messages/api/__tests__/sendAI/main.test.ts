@@ -15,8 +15,13 @@ vi.mock("ai", () => ({
   zodSchema: vi.fn((schema: any) => schema),
 }))
 
-vi.mock("@core/utils/clients/openrouter/openrouterClient", () => ({
+vi.mock("@core/clients/openrouter/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
+}))
+
+vi.mock("@core/models/getLanguageModel", () => ({
+  getLanguageModel: vi.fn((model: string) => `mocked-${model}`),
+  getLanguageModelWithReasoning: vi.fn((model: string, _opts?: any) => `mocked-${model}`),
 }))
 
 vi.mock("@core/utils/spending/SpendingTracker", () => ({

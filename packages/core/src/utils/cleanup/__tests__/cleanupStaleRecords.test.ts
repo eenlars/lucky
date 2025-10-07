@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock supabase client
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: {
     from: vi.fn(),
   },
@@ -16,7 +16,7 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-import { supabase } from "@core/utils/clients/supabase/client"
+import { supabase } from "@core/clients/supabase/client"
 import { lgg } from "@core/utils/logging/Logger"
 import { cleanupStaleRecords } from "../cleanupStaleRecords"
 

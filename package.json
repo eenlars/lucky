@@ -39,6 +39,7 @@
     "dev": "bun --env-file .env --env-file .env.local bunx turbo run dev",
     "build": "bun --env-file .env --env-file .env.local bunx turbo run build",
     "build:shared": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=@lucky/shared",
+    "build:models": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=@lucky/models",
     "build:tools": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=@lucky/tools",
     "build:app": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=together",
     "build:packages": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=@lucky/shared --filter=@lucky/tools",

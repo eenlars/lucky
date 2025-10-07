@@ -1,6 +1,5 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
-
-export type LuckyProvider = "openai" | "openrouter" | "groq"
+import type { LuckyProvider } from "@lucky/shared"
 
 /**
  * Get the current provider from runtime configuration.

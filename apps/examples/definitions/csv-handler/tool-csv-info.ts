@@ -34,7 +34,7 @@ const csvInfoTool = defineTool({
   async execute(params, context) {
     const { action } = params
 
-    if (!context?.workflowFiles[0]) {
+    if (!context?.workflowFiles?.[0]) {
       return Tools.createFailure(TOOLNAME, {
         location: TOOLNAME,
         error: "no file provided in tool execution context",

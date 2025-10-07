@@ -30,3 +30,39 @@ export type {
   TablesInsert,
   TablesUpdate,
 } from "./types/database.types"
+
+// Model types (type-only, client-safe)
+export type {
+  LuckyProvider,
+  ModelPricingV2,
+  ActiveKeys,
+  AnyModelName,
+  AllowedModelName,
+  ModelName,
+  OpenRouterModelName,
+  TokenUsage,
+  StandardModels,
+  ModelPool,
+  ActiveModelName,
+} from "./types/models"
+export { providersV2 } from "./types/models"
+
+// Memory schemas (client-safe)
+export * from "./utils/memory/memorySchema"
+
+// Message types (client-safe)
+export type {
+  TextContent,
+  Annotations,
+  MessageType,
+  BasePayload,
+  SequentialPayload,
+  DelegationPayload,
+  ReplyPayload,
+  AggregatedPayload,
+  Payload,
+} from "./types/message"
+export { isDelegationPayload, isSequentialPayload, extractTextFromPayload } from "./types/message"
+
+// Workflow types (type-only, client-safe)
+export type { WorkflowFile, OutputSchema } from "./types/workflow"

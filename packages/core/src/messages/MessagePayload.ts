@@ -1,5 +1,16 @@
+/**
+ * Message payload types - re-exported from @lucky/shared for backwards compatibility
+ */
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
+import type {
+  AggregatedPayload as AggregatedPayloadBase,
+  DelegationPayload as DelegationPayloadBase,
+  Payload as PayloadBase,
+  ReplyPayload as ReplyPayloadBase,
+  SequentialPayload as SequentialPayloadBase,
+} from "@lucky/contracts/messages"
 import type { Enums } from "@lucky/shared"
+
 // collaboration Types
 
 // OFFLOAD
@@ -17,64 +28,23 @@ import type { Enums } from "@lucky/shared"
 /**
  * Enum alias of the `MessageRole` database type.
  * Represents the high-level intent or coordination kind of a message.
+ * In the implementation, this matches the database enum.
  */
 export type MessageType = Enums<"MessageRole">
 
 /**
- * Common fields shared by all payload kinds.
- * - kind: discriminant for payload shape
- * - berichten: list of textual items composing the message body
+ * Re-export contract types for use throughout the codebase
  */
-export interface BasePayload {
-  kind: MessageType
-  berichten: TextContent[] // todo-payload change name after the aggregated payload is renamed
-}
+export type { AggregatedPayloadBase, DelegationPayloadBase, ReplyPayloadBase, SequentialPayloadBase }
 
 /**
- * Payload indicating sequential handoff/processing to the next node.
+ * Implementation-specific payload types (aliases of contract types)
  */
-export interface SequentialPayload extends BasePayload {
-  kind: "sequential"
-}
-
-/**
- * Payload indicating delegated work to a specific recipient node.
- */
-export interface DelegationPayload extends BasePayload {
-  kind: "delegation"
-}
-
-/**
- * Final/terminal payload carrying the result of a workflow branch.
- */
-export interface ReplyPayload extends BasePayload {
-  kind: "result" //todo-payload change name to reply
-}
-
-/**
- * Payload combining results from multiple workers.
- */
-export interface AggregatedPayload extends BasePayload {
-  kind: "aggregated"
-  messages: Array<{
-    fromNodeId: string
-    payload: Payload
-  }>
-}
-
-export const isDelegationPayload = (payload: unknown): payload is DelegationPayload => {
-  return (payload as DelegationPayload).kind === "delegation"
-}
-
-export const isSequentialPayload = (payload: unknown): payload is SequentialPayload => {
-  if (!payload) return false
-  return (payload as SequentialPayload).kind === "sequential"
-}
-
-/**
- * Discriminated union of all supported payload shapes.
- */
-export type Payload = DelegationPayload | SequentialPayload | AggregatedPayload | ReplyPayload
+export type DelegationPayload = DelegationPayloadBase
+export type SequentialPayload = SequentialPayloadBase
+export type ReplyPayload = ReplyPayloadBase
+export type AggregatedPayload = AggregatedPayloadBase
+export type Payload = PayloadBase
 
 const joinBerichtenTexts = (items: TextContent[] | undefined): string =>
   Array.isArray(items)

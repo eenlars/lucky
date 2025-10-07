@@ -1,4 +1,8 @@
+import type { OutputSchema } from "@lucky/shared"
 import type { ZodTypeAny } from "zod"
+
+// Re-export OutputSchema from shared for backwards compatibility
+export type { OutputSchema } from "@lucky/shared"
 
 /**
  * Single IO case used to run and evaluate a workflow.
@@ -14,9 +18,6 @@ export interface WorkflowIO {
     outputSchema?: OutputSchema
   }
 }
-
-/** Zod schema representing the expected output type. */
-export type OutputSchema = ZodTypeAny
 
 /**
  * Supported evaluation input formats to drive a workflow.

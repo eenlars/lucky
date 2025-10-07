@@ -205,7 +205,7 @@ const mockVerificationCache = {
 }
 
 // Mock external dependencies at module level
-vi.mock("@core/utils/clients/supabase/client", () => ({
+vi.mock("@core/clients/supabase/client", () => ({
   supabase: mockSupabaseClient,
 }))
 

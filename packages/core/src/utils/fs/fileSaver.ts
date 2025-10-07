@@ -1,15 +1,18 @@
 /**
- * File saving utilities for core (standalone version).
- * Replaces @examples/code_tools/file-saver/save
+ * File saving utilities for core.
+ * - saveInLoc is re-exported from @lucky/shared
+ * - Other utilities (save, saveInLogging) have core dependencies and remain here
  */
 
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { getCorePaths } from "@core/core-config/coreConfig"
-import { JSONN } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
 import { nanoid } from "nanoid"
+
+// Re-export saveInLoc from shared (direct subpath import to avoid browser bundle issues)
+export { saveInLoc } from "@lucky/shared/utils/fs/fileSaver"
 
 function getCallerDir(): string {
   if (typeof window !== "undefined") {
@@ -46,34 +49,6 @@ export function save<T = any>(filename: string, data: T): void {
   fs.writeFileSync(fullPath, toWrite)
 }
 
-/**
- * Save data to an explicit filesystem path, but treat ANY leading slash
- * as project‐root‐relative.
- *
- * @param filePath   Absolute or project‐relative, e.g. "/src/x.txt" or "build/x.json"
- * @param data       string | Buffer | any JSON‐serializable
- */
-export function saveInLoc<T = any>(filePath: string, data: T): void {
-  // 1) Resolve against your project root (where you ran `node …`)
-  const fullPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath.replace(/^[/\\]+/, ""))
-
-  // 2) Make any missing directories
-  fs.mkdirSync(path.dirname(fullPath), { recursive: true })
-
-  const is_json = JSONN.isJSON(data)
-
-  const parsed = is_json ? JSONN.extract(data) : data
-
-  // 4) Write out Buffer, string or JSON
-  const toWrite = is_json
-    ? JSON.stringify(parsed, null, 2)
-    : Buffer.isBuffer(data) || typeof data === "string"
-      ? data
-      : String(data)
-
-  fs.writeFileSync(fullPath, toWrite)
-}
-
 export async function saveFile(
   filename: string,
   data: string,
@@ -94,6 +69,7 @@ export async function saveFileInLoc(
   filePath: string,
   data: string,
 ): Promise<CodeToolResult<{ success: boolean; data: string }>> {
+  const { saveInLoc } = await import("@lucky/shared/utils/fs/fileSaver")
   saveInLoc(filePath, data)
   return {
     success: true,

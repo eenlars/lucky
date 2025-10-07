@@ -2,12 +2,11 @@
  * Client-safe model utilities for React components.
  * Uses API routes to access server-side model utilities.
  */
-import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
-import type { LuckyProvider } from "@lucky/core/utils/spending/provider"
+import type { AllowedModelName, LuckyProvider, ModelPricingV2 } from "@lucky/shared"
 
 /**
  * Browser default provider (hardcoded since runtime config requires Node.js).
- * Server-side code should use getCurrentProvider() from @lucky/core/utils/spending/provider.
+ * Server-side code should use getCurrentProvider() from @lucky/shared.
  */
 const BROWSER_DEFAULT_PROVIDER: LuckyProvider = "openrouter"
 
