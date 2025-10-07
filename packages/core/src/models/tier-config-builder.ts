@@ -3,7 +3,7 @@
  * Maps semantic tier names (nano, low, medium, etc.) to provider/model specs.
  */
 
-import { getDefaultModels } from "@core/core-config"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import type { TierConfig } from "@lucky/models"
 

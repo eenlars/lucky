@@ -4,7 +4,7 @@
  * to the tier: format expected by @lucky/models.
  */
 
-import { getDefaultModels } from "@core/core-config"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
