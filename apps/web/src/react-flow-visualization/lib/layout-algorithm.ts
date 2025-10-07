@@ -346,8 +346,13 @@ function alignStartEndNodes(nodes: AppNode[]): AppNode[] {
   const startHeight = startNode.height ?? startNode.measured?.height ?? 50
   const referenceCenterY = startNode.position.y + startHeight / 2
 
-  // Align all nodes by their center to the reference center
+  // Only align start and end nodes to preserve ELK's vertical spacing for branches
   return nodes.map(node => {
+    // Only process start and end nodes
+    if (node.id !== "start" && node.id !== "end") {
+      return node
+    }
+
     const nodeHeight = node.height ?? node.measured?.height ?? 50
     const newY = referenceCenterY - nodeHeight / 2
 

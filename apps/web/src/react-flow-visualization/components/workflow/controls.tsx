@@ -12,7 +12,7 @@ export function WorkflowControls() {
   // Keyboard shortcut: Cmd/Ctrl + Shift + L to organize layout
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "l") {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "l") {
         e.preventDefault()
         runLayout()
       }
