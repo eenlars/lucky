@@ -24,6 +24,8 @@
       "@lucky/contracts/*": ["../contracts/src/*"],
       "@lucky/core": ["../core/src"],
       "@lucky/core/*": ["../core/src/*"],
+      "@lucky/models": ["../models/src"],
+      "@lucky/models/*": ["../models/src/*"],
       "@lucky/shared": ["../shared/src"],
       "@lucky/shared/*": ["../shared/src/*"],
       "@lucky/tools": ["../tools/src"],
