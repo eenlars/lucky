@@ -1,11 +1,9 @@
 /* eslint-disable no-restricted-imports */
-"use server"
-
-import { createClient } from "@/lib/supabase/server"
+import { createStandaloneClient } from "@/lib/supabase/standalone"
 
 // test with the actual invocation ID to see what data we have
 export async function exploreWorkflowInvocation(invocationId: string) {
-  const supabase = await createClient()
+  const supabase = createStandaloneClient(true)
   console.log(`Exploring workflow invocation: ${invocationId}`)
 
   // get the workflow invocation
@@ -37,7 +35,7 @@ export async function exploreWorkflowInvocation(invocationId: string) {
 
 // explore the workflow version and evolution data
 export async function exploreEvolutionChain(invocationId: string) {
-  const supabase = await createClient()
+  const supabase = createStandaloneClient(true)
   console.log("\n=== EXPLORING EVOLUTION CHAIN ===")
 
   // start with the invocation
@@ -116,7 +114,7 @@ export async function exploreEvolutionChain(invocationId: string) {
 
 // get all invocations from the same evolution run
 export async function exploreEvolutionRunInvocations(runId: string) {
-  const supabase = await createClient()
+  const supabase = createStandaloneClient(true)
   console.log(`\n=== EXPLORING ALL INVOCATIONS IN RUN ${runId} ===`)
 
   const { data: invocations, error } = await supabase
@@ -148,7 +146,7 @@ export async function exploreEvolutionRunInvocations(runId: string) {
 
 // get all workflow versions from the same generation
 export async function exploreGenerationVersions(generationId: string) {
-  const supabase = await createClient()
+  const supabase = createStandaloneClient(true)
   console.log(`\n=== EXPLORING ALL VERSIONS IN GENERATION ${generationId} ===`)
 
   const { data: versions, error } = await supabase

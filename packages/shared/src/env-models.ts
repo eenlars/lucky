@@ -22,6 +22,7 @@ export type Provider = (typeof Providers)[number]
 // --- Supabase (server-side)
 export const supabaseServer = z.object({
   SUPABASE_URL: httpsUrl.optional(),
+  SUPABASE_PROJECT_ID: z.string().optional(),
   SUPABASE_ANON_KEY: jwt.optional(),
   SUPABASE_SERVICE_ROLE_KEY: jwt.optional(),
 })
@@ -29,6 +30,7 @@ export const supabaseServer = z.object({
 // --- Supabase (client-side)
 export const supabaseClient = z.object({
   NEXT_PUBLIC_SUPABASE_URL: httpsUrl.optional(),
+  NEXT_PUBLIC_SUPABASE_PROJECT_ID: z.string().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: jwt.optional(),
 })
 
@@ -242,8 +244,15 @@ export const docs: VarDoc[] = [
   {
     key: "SUPABASE_URL",
     required: false,
-    description: "Supabase project URL (server-side)",
+    description: "Supabase project URL (server-side, or use SUPABASE_PROJECT_ID)",
     example: "https://yourproject.supabase.co",
+    section: "Supabase - Database configuration",
+  },
+  {
+    key: "SUPABASE_PROJECT_ID",
+    required: false,
+    description: "Supabase project ID (alternative to full URL)",
+    example: "yourproject",
     section: "Supabase - Database configuration",
   },
   {
@@ -265,8 +274,15 @@ export const docs: VarDoc[] = [
   {
     key: "NEXT_PUBLIC_SUPABASE_URL",
     required: false,
-    description: "Supabase project URL (browser-safe, must match SUPABASE_URL)",
+    description: "Supabase project URL (browser-safe, or use NEXT_PUBLIC_SUPABASE_PROJECT_ID)",
     example: "https://yourproject.supabase.co",
+    section: "Supabase - Database configuration",
+  },
+  {
+    key: "NEXT_PUBLIC_SUPABASE_PROJECT_ID",
+    required: false,
+    description: "Supabase project ID (browser-safe, alternative to full URL)",
+    example: "yourproject",
     section: "Supabase - Database configuration",
   },
   {
