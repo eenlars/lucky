@@ -1,21 +1,22 @@
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import type { InvocationContext } from "@lucky/tools"
+import type { NodeInvocationCallContext as NodeInvocationCallContextBase } from "@lucky/contracts/agent"
 import type { IPersistence } from "@together/adapter-supabase"
 
 /**
  * Execution context for invoking a workflow node.
- * Extends the generic tool invocation context with workflow-specific data.
+ * Extends the contract context with implementation-specific data.
  */
-export interface NodeInvocationCallContext extends InvocationContext {
+export interface NodeInvocationCallContext extends NodeInvocationCallContextBase {
   startTime: string
   workflowVersionId: string
+  workflowId: string
+  workflowInvocationId: string
 
   workflowMessageIncoming: WorkflowMessage
 
   nodeConfig: WorkflowNodeConfig
-
   nodeMemory: NodeMemory
 
   // workflowConfig is used for hierarchical role inference

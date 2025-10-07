@@ -5,11 +5,16 @@
   "description": "Core workflow engine, evaluation, and evolution algorithms",
   "exports": {
     "./package.json": "./package.json",
-    "./core-config": "./src/core-config",
+    "./core-config": "./src/core-config/coreConfig.ts",
+    "./models/*": "./src/models/*",
     "./workflow/*": "./src/workflow/*",
     "./utils/*": "./src/utils/*",
     "./messages/*": "./src/messages/*",
-    "./prompts/*": "./src/prompts/*"
+    "./prompts/*": "./src/prompts/*",
+    "./evaluation/*": "./src/evaluation/*",
+    "./improvement/*": "./src/improvement/*",
+    "./node/*": "./src/node/*",
+    "./tools/*": "./src/tools/*"
   },
   "scripts": {
     "dev": "vitest --watch --project unit",
@@ -34,6 +39,7 @@
     "@ai-sdk/openai": "^2.0.0",
     "@dagrejs/dagre": "^1.1.5",
     "@huggingface/hub": "^2.4.0",
+    "@lucky/contracts": "workspace:*",
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "@lucky/tools": "workspace:*",

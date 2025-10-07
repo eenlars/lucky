@@ -4,7 +4,7 @@ import { CONFIG } from "@core/core-config/compat"
 import type { AggregatedPayload, MessageType } from "@core/messages/MessagePayload"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { InvocationSummary } from "@core/messages/summaries"
+import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
@@ -191,7 +191,7 @@ export async function queueRun({
       // check if all required messages are received
       const receivedMessages = waitingMessages.get(waitingKey)!
       const receivedFromNodes = new Set(receivedMessages.map(m => m.fromNodeId))
-      const allReceived = waitingFor.every(nodeId => receivedFromNodes.has(nodeId))
+      const allReceived = waitingFor.every((nodeId: string) => receivedFromNodes.has(nodeId))
 
       if (!allReceived) {
         // still waiting for more messages, skip this node for now
@@ -271,10 +271,13 @@ export async function queueRun({
       updatedMemory,
       agentSteps: nodeAgentSteps,
     } = await targetNode.invoke({
+      ...toolContext,
       workflowMessageIncoming: currentMessage,
+      startTime: new Date().toISOString(),
+      nodeConfig: targetNode.toConfig(),
+      nodeMemory: targetNode.getMemory(),
       workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
       persistence: workflow.getPersistence(), // Pass persistence from workflow
-      ...toolContext,
     })
 
     lastNodeOutput = nodeInvocationFinalOutput

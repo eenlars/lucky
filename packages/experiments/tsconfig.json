@@ -16,9 +16,12 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "@core/*": ["../core/src/*"],
+      "@core/core-config": ["../core/src/core-config/coreConfig.ts"],
       "@examples/*": ["../../apps/examples/*"],
       "@lucky/examples": ["../../apps/examples"],
       "@lucky/examples/*": ["../../apps/examples/*"],
+      "@lucky/contracts": ["../contracts/src"],
+      "@lucky/contracts/*": ["../contracts/src/*"],
       "@lucky/core": ["../core/src"],
       "@lucky/core/*": ["../core/src/*"],
       "@lucky/shared": ["../shared/src"],

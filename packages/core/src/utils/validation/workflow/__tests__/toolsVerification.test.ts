@@ -2,13 +2,13 @@ import { getDefaultModels } from "@core/core-config/compat"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../index"
 import {
   verifyAllToolsAreActive,
   verifyMaxToolsPerAgent,
   verifyToolSetEachNodeIsUnique,
   verifyToolsUnique,
 } from "../toolsVerification"
+import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../verifyWorkflow"
 
 // Mock the constants module
 vi.mock("@examples/settings/constants", () => ({

@@ -13,7 +13,7 @@
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { getDefaultModels as coreGetDefaultModels, getCoreConfig, isLoggingEnabled } from "./index"
+import { getDefaultModels as coreGetDefaultModels, getCoreConfig, isLoggingEnabled } from "./coreConfig"
 import type { CoreConfig } from "./types"
 
 // Re-export placeholder tools for test compatibility

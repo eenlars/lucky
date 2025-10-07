@@ -16,7 +16,7 @@ describe("Workflow DB integration - single node persistence", () => {
       import("@core/utils/persistence/workflow/registerWorkflow"),
       // import("@core/utils/persistence/node/saveNode"),
       import("@core/utils/clients/supabase/client"),
-      import("@core/core-config"),
+      import("@core/core-config/coreConfig"),
       import("@together/adapter-supabase"),
     ])
 
