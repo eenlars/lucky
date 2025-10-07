@@ -38,6 +38,11 @@ export interface TextContent {
    * Optional annotations for the client.
    */
   annotations?: Annotations
+
+  /**
+   * Optional metadata for the content.
+   */
+  _meta?: { [key: string]: unknown }
 }
 
 /**
@@ -89,6 +94,7 @@ export interface AggregatedPayload extends BasePayload {
 }
 
 export const isDelegationPayload = (payload: unknown): payload is DelegationPayload => {
+  if (!payload || typeof payload !== "object") return false
   return (payload as DelegationPayload).kind === "delegation"
 }
 

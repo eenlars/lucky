@@ -349,7 +349,7 @@ export function getActiveModelNamesFromProvider(provider: LuckyProvider): string
  * @returns Array of all active model names
  */
 export function getAllActiveModelNames(): string[] {
-  const providers: LuckyProvider[] = ["openai", "openrouter", "groq"]
+  const providers = Object.keys(providersV2) as LuckyProvider[]
   return providers.flatMap(provider => getActiveModelNamesFromProvider(provider))
 }
 

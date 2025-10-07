@@ -15,7 +15,12 @@ import { JSONN } from "../../index"
  */
 export function saveInLoc<T = any>(filePath: string, data: T): void {
   // 1) Resolve against your project root (where you ran `node …`)
-  const fullPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath.replace(/^[/\\]+/, ""))
+  // Leading slashes are treated as project-relative, not filesystem-absolute
+  const isLeadingSlash = /^[/\\]/.test(filePath)
+  const fullPath =
+    !isLeadingSlash && path.isAbsolute(filePath)
+      ? filePath
+      : path.resolve(process.cwd(), filePath.replace(/^[/\\]+/, ""))
 
   // 2) Make any missing directories
   fs.mkdirSync(path.dirname(fullPath), { recursive: true })
