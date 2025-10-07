@@ -225,7 +225,7 @@ describe("Mutations", () => {
           getDefaultModels: () => mockModels,
         }
       })
-      const { MutationCoordinator } = await import("@core/improvement/gp/operators/mutations/index")
+      const { MutationCoordinator } = await import("@core/improvement/gp/operators/mutations/MutationCoordinator")
 
       const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,

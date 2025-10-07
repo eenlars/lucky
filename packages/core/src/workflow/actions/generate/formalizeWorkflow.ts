@@ -6,12 +6,11 @@ import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { llmify } from "@core/utils/common/llmify"
 import { validateAndRepairWorkflow } from "@core/utils/validation/validateWorkflow"
-import { withDescriptions } from "@core/utils/zod/withDescriptions"
 import type { AfterGenerationOptions, GenerationOptions } from "@core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchemaEasy, handleWorkflowCompletion } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { R, type RS } from "@lucky/shared"
+import { R, type RS, withDescriptions } from "@lucky/shared"
 import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 
 // generate a single workflow from scratch based on a prompt

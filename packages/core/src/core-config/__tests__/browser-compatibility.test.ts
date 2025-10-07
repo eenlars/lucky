@@ -2,7 +2,7 @@
  * Test that core-config works in browser-like environments
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import { getCoreConfig, initCoreConfig } from "../index"
+import { getCoreConfig, initCoreConfig } from "../coreConfig"
 
 describe("Browser Compatibility", () => {
   let originalWindow: any

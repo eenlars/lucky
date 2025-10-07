@@ -4,7 +4,7 @@ import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsag
 import { type ProcessedResponse, isVercelTextResponse } from "@core/messages/api/vercel/processResponse.types"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { type InvocationSummary, formatSummary } from "@core/messages/summaries"
+import { type InvocationSummary, formatSummary } from "@core/messages/summaries/createSummary"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"

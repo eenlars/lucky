@@ -1,6 +1,6 @@
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { InvocationSummary } from "@core/messages/summaries"
+import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
