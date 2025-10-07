@@ -44,6 +44,18 @@
       "node": {
         "import": "./dist/csv/index.js"
       }
+    },
+    "./utils/fs/fileSaver": {
+      "types": "./dist/utils/fs/fileSaver.d.ts",
+      "node": {
+        "import": "./dist/utils/fs/fileSaver.js"
+      }
+    },
+    "./utils/observability/obs": {
+      "types": "./dist/utils/observability/obs.d.ts",
+      "node": {
+        "import": "./dist/utils/observability/obs.js"
+      }
     }
   },
   "dependencies": {

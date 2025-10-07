@@ -23,6 +23,8 @@ export default defineConfig([
     entry: {
       "fs/paths": "src/fs/paths.ts",
       "csv/index": "src/csv/index.ts",
+      "utils/fs/fileSaver": "src/utils/fs/fileSaver.ts",
+      "utils/observability/obs": "src/utils/observability/obs.ts",
     },
     format: ["esm"],
     platform: "node",
