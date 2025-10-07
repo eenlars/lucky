@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { supabase } from "@/lib/supabase"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
+  const supabase = await createRLSClient()
   const searchParams = request.nextUrl.searchParams
   const page = Number.parseInt(searchParams.get("page") || "1", 10)
   const pageSize = Number.parseInt(searchParams.get("pageSize") || "20", 10)
@@ -173,6 +174,8 @@ export async function DELETE(request: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  const supabase = await createRLSClient()
 
   try {
     const body = await request.json()

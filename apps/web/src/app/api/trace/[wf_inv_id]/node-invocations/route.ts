@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { supabase } from "@/lib/supabase"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import { NextResponse } from "next/server"
 
@@ -8,10 +8,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ wf_
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
+  const supabase = await createRLSClient()
+
   try {
     const { wf_inv_id } = await params
 
-    // Verify the workflow invocation exists
+    // Verify the workflow invocation exists and user has access (RLS will enforce)
     const { data: exists, error: existsError } = await supabase
       .from("WorkflowInvocation")
       .select("wf_invocation_id")
