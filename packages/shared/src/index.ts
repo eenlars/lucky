@@ -10,6 +10,10 @@ export * from "./utils/common/id"
 export * from "./utils/common/array"
 export * from "./utils/zod/withDescriptions"
 
+// Supabase credentials - import via subpath exports:
+//   - @lucky/shared/supabase-credentials.server (server-only)
+//   - @lucky/shared/supabase-credentials.client (browser-safe)
+
 // Result type and helper
 export type { RS } from "./types/result.types"
 export { R } from "./types/result.types"

@@ -4,7 +4,6 @@
  */
 
 export type CredentialName =
-  | "SUPABASE_PROJECT_ID"
   | "SUPABASE_ANON_KEY"
   | "OPENROUTER_API_KEY"
   | "OPENAI_API_KEY"
@@ -70,12 +69,6 @@ export function createCredentialError(
   customMessage?: string,
 ): CredentialError {
   const messages: Record<CredentialName, { message: string; userMessage: string; setupUrl?: string }> = {
-    SUPABASE_PROJECT_ID: {
-      message: "Supabase project ID not configured",
-      userMessage:
-        "Database features require Supabase. Set SUPABASE_PROJECT_ID in your environment or use in-memory mode with USE_MOCK_PERSISTENCE=true.",
-      setupUrl: "/docs/setup/supabase",
-    },
     SUPABASE_ANON_KEY: {
       message: "Supabase anonymous key not configured",
       userMessage:

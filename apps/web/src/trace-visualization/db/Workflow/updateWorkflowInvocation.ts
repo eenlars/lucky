@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 
 export interface InvocationScores {
@@ -7,6 +7,7 @@ export interface InvocationScores {
 }
 
 export async function updateWorkflowInvocationScores(invocationId: string, scores: InvocationScores): Promise<void> {
+  const supabase = await createClient()
   try {
     const roundedAccuracy = Math.round(scores.accuracy)
     const roundedFitness = Math.round(scores.fitness)

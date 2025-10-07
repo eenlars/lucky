@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { Json } from "@lucky/shared/client"
 
 interface NewerFitnessData {
@@ -101,6 +101,7 @@ function extractFitnessValues(fitnessData: unknown): {
 }
 
 export async function migrateFitnessToColumns() {
+  const supabase = await createClient()
   console.log("Starting fitness data migration...")
 
   try {

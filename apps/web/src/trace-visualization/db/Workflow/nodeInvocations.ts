@@ -1,6 +1,6 @@
 "use server"
 
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { cache } from "react"
 import {
   type MessageMetadata,
@@ -22,6 +22,7 @@ export interface NodeInvocationsResult {
  * Only fetches essential Message fields to avoid timeouts on large payloads.
  */
 export const nodeInvocations = cache(async (workflowInvocationId: string): Promise<NodeInvocationsResult> => {
+  const supabase = await createClient()
   const { data: invocations, error } = await supabase
     .from("NodeInvocation")
     .select(

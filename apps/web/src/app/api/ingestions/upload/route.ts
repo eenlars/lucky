@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+
+  const supabase = await createClient()
 
   try {
     const formData = await req.formData()

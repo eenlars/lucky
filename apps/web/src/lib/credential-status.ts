@@ -141,7 +141,6 @@ export function getFeatureDisplayName(feature: FeatureName): string {
  */
 export function getCredentialDisplayName(credential: CredentialName): string {
   const names: Record<CredentialName, string> = {
-    SUPABASE_PROJECT_ID: "Supabase Project ID",
     SUPABASE_ANON_KEY: "Supabase Anonymous Key",
     OPENROUTER_API_KEY: "OpenRouter API Key",
     OPENAI_API_KEY: "OpenAI API Key",

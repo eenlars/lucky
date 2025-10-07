@@ -1,5 +1,5 @@
 "use server"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { Tables } from "@lucky/shared/client"
 
 export interface WorkflowInvocationSubset {
@@ -61,6 +61,7 @@ const cleanupCache = () => {
 }
 
 export const retrieveEvolutionRuns = async (limit = 15, offset = 0) => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("EvolutionRun")
     .select("*")
@@ -73,6 +74,7 @@ export const retrieveEvolutionRuns = async (limit = 15, offset = 0) => {
 }
 
 export const retrieveEvolutionRun = async (runId: string) => {
+  const supabase = await createClient()
   const { data, error } = await supabase.from("EvolutionRun").select("*").eq("run_id", runId).single()
 
   if (error) throw error
@@ -81,6 +83,7 @@ export const retrieveEvolutionRun = async (runId: string) => {
 }
 
 export const retrieveGenerationsByRun = async (runId: string) => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("Generation")
     .select("*")
@@ -93,6 +96,7 @@ export const retrieveGenerationsByRun = async (runId: string) => {
 }
 
 const performComplexQuery = async (runId: string): Promise<GenerationWithData[]> => {
+  const supabase = await createClient()
   // Use the same pattern as the working API route - deep join with foreign key constraints
   const { data: generations, error: generationsError } = await supabase
     .from("Generation")
@@ -199,6 +203,7 @@ export const retrieveAllInvocationsForRunGroupedByGeneration = async (runId: str
 }
 
 export const retrieveInvocationsByGeneration = async (generation: string) => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select("*")
@@ -211,6 +216,7 @@ export const retrieveInvocationsByGeneration = async (generation: string) => {
 }
 
 export const retrieveInvocationsByRun = async (runId: string) => {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("WorkflowInvocation")
     .select("*")
@@ -227,6 +233,7 @@ export const retrieveInvocationsByRun = async (runId: string) => {
  * A run is considered stale if it's been running for more than 26 hours (2 hours past the 24h limit)
  */
 export const cleanupStaleEvolutionRuns = async () => {
+  const supabase = await createClient()
   const staleThresholdHours = 6
   const staleThresholdMs = staleThresholdHours * 60 * 60 * 1000
   const cutoffTime = new Date(Date.now() - staleThresholdMs).toISOString()

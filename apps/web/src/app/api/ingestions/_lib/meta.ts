@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import type { DatasetMeta, WorkflowIO } from "./types"
 
 const BUCKET = "input"
@@ -8,6 +8,7 @@ function metaPath(datasetId: string) {
 }
 
 export async function loadDatasetMeta(datasetId: string): Promise<DatasetMeta> {
+  const supabase = await createClient()
   const { data, error } = await supabase.storage.from(BUCKET).download(metaPath(datasetId))
 
   if (error || !data) {
@@ -30,6 +31,7 @@ export async function loadDatasetMeta(datasetId: string): Promise<DatasetMeta> {
 }
 
 export async function saveDatasetMeta(meta: DatasetMeta): Promise<void> {
+  const supabase = await createClient()
   const json = JSON.stringify(meta, null, 2)
   const { error } = await supabase.storage
     .from(BUCKET)
