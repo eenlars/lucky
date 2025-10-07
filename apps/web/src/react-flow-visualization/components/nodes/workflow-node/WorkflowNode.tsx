@@ -1,6 +1,5 @@
 "use client"
 
-import { Edit, Play } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { BaseNode } from "@/react-flow-visualization/components/base-node"
@@ -22,7 +21,7 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
   const _updateNode = useAppStore(state => state.updateNode)
   const [_isToolSelectorOpen, _setIsToolSelectorOpen] = useState(false)
 
-  const onRunClick = useCallback((e: React.MouseEvent) => {
+  const _onRunClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     // When clicking run from a node in graph mode, just open the prompt dialog.
     // Optionally, we could pre-fill a startNodeId here.
@@ -67,98 +66,99 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
   return (
     <NodeStatusIndicator status={data?.status}>
       <BaseNode
-        className={`bg-white border border-gray-200 rounded-lg shadow-sm transition-shadow p-4 group focus:outline-none ${
+        className={`bg-white border-2 border-gray-200 rounded-xl transition-all duration-200 p-0 group focus:outline-none ${
           isStartOrEndNode
             ? "cursor-default opacity-75"
-            : "cursor-pointer hover:shadow-md focus:ring-2 focus:ring-blue-300"
+            : "cursor-pointer hover:border-gray-300 hover:shadow-lg focus:ring-2 focus:ring-blue-400/50"
         }`}
         style={{ ...NODE_SIZE }}
         onClick={onNodeClick}
         onDoubleClick={onNodeClick}
-        tabIndex={isStartOrEndNode ? -1 : 0}
-        role="button"
         aria-label={`Node ${data?.nodeId}`}
       >
-        {/* Header + Controls */}
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex flex-col gap-1">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
             <h3
-              className={`text-lg font-medium text-gray-900 rounded px-1 -mx-1 transition-colors group/title ${
-                isStartOrEndNode ? "" : "cursor-pointer hover:bg-gray-50"
+              className={`text-sm font-semibold text-gray-900 truncate ${
+                isStartOrEndNode ? "" : "group-hover:text-blue-600 transition-colors"
               }`}
               onDoubleClick={onNodeClick}
             >
               {data?.nodeId}
-              {!isStartOrEndNode && (
-                <Edit className="w-3 h-3 ml-2 opacity-0 group-hover/title:opacity-50 inline transition-opacity" />
-              )}
             </h3>
             {!isStartOrEndNode && displayModelName && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                {displayModelName}
-              </span>
+              <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                <span className="w-1 h-1 rounded-full bg-green-500" />
+                <span className="truncate">{displayModelName}</span>
+              </div>
             )}
           </div>
 
-          <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={onRunClick}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
-              aria-label="Run node"
-            >
-              <Play className="w-5 h-5 text-gray-600" />
-            </button>
-            <NodeHeaderDeleteAction />
-          </div>
-        </div>
-
-        {/* Pills Row */}
-        <div className="flex items-center gap-2 mb-3">
-          {/* Visible tools */}
-          {data?.mcpTools?.slice(0, 3).map((tool, index) => (
-            <span
-              key={`mcp-${index}`}
-              className="inline-block bg-blue-50 text-blue-600 text-xs font-medium px-2 py-0.5 rounded-full truncate"
-            >
-              {tool}
-            </span>
-          ))}
-          {data?.codeTools?.slice(0, 3 - (data?.mcpTools?.length || 0)).map((tool, index) => (
-            <span
-              key={`code-${index}`}
-              className="inline-block bg-green-50 text-green-600 text-xs font-medium px-2 py-0.5 rounded-full truncate"
-            >
-              {tool}
-            </span>
-          ))}
-
-          {/* Overflow pill with popover */}
-          {hiddenTools.length > 0 && (
-            <div className="relative group/popover">
-              <button
-                className="inline-block border border-gray-300 text-gray-500 text-xs px-2 py-0.5 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                onClick={e => e.stopPropagation()}
-              >
-                +{hiddenTools.length} more
-              </button>
-              <div className="hidden group-hover/popover:block absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                <ul className="p-2 space-y-1">
-                  {hiddenTools.map((tool, index) => (
-                    <li key={index} className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-50">
-                      {tool}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          {!isStartOrEndNode && (
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <NodeHeaderDeleteAction />
             </div>
           )}
         </div>
 
-        {/* Description */}
-        <p className="text-sm text-gray-600 leading-relaxed line-clamp-2 mb-2">
-          {data?.description || data?.label || "No description provided"}
-        </p>
+        {/* Content */}
+        <div className="px-4 py-3 space-y-3">
+          {/* Description */}
+          <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
+            {data?.description || data?.label || "No description"}
+          </p>
+
+          {/* Tools Grid */}
+          {(data?.mcpTools?.length > 0 || data?.codeTools?.length > 0) && (
+            <div className="flex flex-wrap gap-1.5">
+              {data?.mcpTools?.slice(0, 3).map((tool, index) => (
+                <span
+                  key={`mcp-${index}`}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-medium rounded-md truncate max-w-[120px]"
+                  title={tool}
+                >
+                  <span className="w-1 h-1 rounded-full bg-blue-500" />
+                  {tool}
+                </span>
+              ))}
+              {data?.codeTools?.slice(0, 3 - (data?.mcpTools?.length || 0)).map((tool, index) => (
+                <span
+                  key={`code-${index}`}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-medium rounded-md truncate max-w-[120px]"
+                  title={tool}
+                >
+                  <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                  {tool}
+                </span>
+              ))}
+
+              {hiddenTools.length > 0 && (
+                <div className="relative group/popover">
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-2 py-0.5 border border-gray-200 bg-gray-50 text-gray-600 text-[10px] font-medium rounded-md hover:bg-gray-100 transition-colors"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    +{hiddenTools.length}
+                  </button>
+                  <div className="hidden group-hover/popover:block absolute left-0 bottom-full mb-2 w-48 bg-white border-2 border-gray-200 rounded-xl shadow-xl z-10 overflow-hidden">
+                    <div className="p-2 bg-gray-50 border-b border-gray-200">
+                      <p className="text-[10px] font-semibold text-gray-700">Additional Tools</p>
+                    </div>
+                    <ul className="p-2 space-y-1 max-h-40 overflow-y-auto">
+                      {hiddenTools.map((tool, index) => (
+                        <li key={index} className="text-[11px] text-gray-700 px-2 py-1 rounded-md hover:bg-gray-50">
+                          {tool}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ReactFlow connection handles */}
         {children}

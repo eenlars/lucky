@@ -33,8 +33,13 @@ export default function AppContextMenu({ children }: { children: ReactNode }) {
           {Object.values(nodesConfig).map(item => {
             const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
-              <button type="button" key={item.displayName} onClick={() => onItemClick(item.id)} className="w-full">
-                <ContextMenuItem className="flex items-center space-x-2">
+              <button
+                type="button"
+                key={item.displayName}
+                onClick={() => onItemClick(item.id)}
+                className="w-full cursor-pointer"
+              >
+                <ContextMenuItem className="flex items-center space-x-2 cursor-pointer">
                   {IconComponent ? <IconComponent aria-label={item?.icon} /> : null}
                   <span>New {item.displayName}</span>
                 </ContextMenuItem>

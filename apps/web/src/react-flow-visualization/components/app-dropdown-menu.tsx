@@ -25,8 +25,13 @@ export function AppDropdownMenu({
           .map(item => {
             const IconComponent = item?.icon ? iconMapping[item.icon] : undefined
             return (
-              <button type="button" key={item.displayName} onClick={() => onAddNode(item.id)} className="w-full">
-                <DropdownMenuItem className="flex items-center space-x-2">
+              <button
+                type="button"
+                key={item.displayName}
+                onClick={() => onAddNode(item.id)}
+                className="w-full cursor-pointer"
+              >
+                <DropdownMenuItem className="flex items-center space-x-2 cursor-pointer">
                   {IconComponent ? <IconComponent aria-label={item?.icon} /> : null}
                   <span>New {item.displayName}</span>
                 </DropdownMenuItem>
