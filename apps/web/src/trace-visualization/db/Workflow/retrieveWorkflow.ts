@@ -1,6 +1,5 @@
 "use server"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { genShortId } from "@lucky/core/utils/common/utils"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import { type Tables, type TablesInsert, type TablesUpdate, genShortId } from "@lucky/shared/client"
 
