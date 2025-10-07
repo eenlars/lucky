@@ -1,5 +1,6 @@
 "use client"
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
 } from "@/react-flow-visualization/components/ui/dialog"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@lucky/core/messages/MessagePayload"
 import type { AgentSteps, AgentStepsLegacy } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { isLegacyToolUsage, normalizeLegacyToolUsage } from "@lucky/core/messages/pipeline/LegacyToolUsage.types"

@@ -1,7 +1,7 @@
 "use client"
 
+import { Card } from "@/components/ui/card"
 import { SmartContent } from "@/components/utils/SmartContent"
-import { Card } from "@/ui/card"
 import type { AgentStep } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { ChevronDown } from "lucide-react"
 import { TerminateStep } from "./agent-steps/TerminateStep"

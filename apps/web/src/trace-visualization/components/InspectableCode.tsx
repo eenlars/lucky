@@ -1,7 +1,7 @@
 "use client"
 
+import { CodeInput } from "@/components/ui/code"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/react-flow-visualization/components/ui/dialog"
-import { CodeInput } from "@/ui/code"
 import { Maximize2 } from "lucide-react"
 import { useState } from "react"
 

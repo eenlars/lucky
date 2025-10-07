@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
 import { ReactFlowProvider } from "@xyflow/react"

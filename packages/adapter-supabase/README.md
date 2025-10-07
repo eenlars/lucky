@@ -25,12 +25,23 @@ const persistence = createPersistence()
 
 ## Environment Variables
 
-For Supabase backend:
+For Supabase backend (server-only adapter):
 
 ```bash
+# Either provide a full URL or a project ID
+SUPABASE_URL=https://<project>.supabase.co
+# or
 SUPABASE_PROJECT_ID=your-project-id
+
+# Choose one key path:
+# - Service role (server workloads; bypasses RLS; never expose to browsers)
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# - Or anon key (RLS enforced; typically for user-scoped, token-bearing clients)
 SUPABASE_ANON_KEY=your-anon-key
-USE_MOCK_PERSISTENCE=false  # optional, defaults to supabase if false
+
+# Optional controls
+USE_MOCK_PERSISTENCE=false   # if true, always use in-memory
+REQUIRE_PERSISTENCE=1        # if set, fail instead of falling back to memory
 ```
 
 ## Architecture

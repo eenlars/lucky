@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/ui/button"
+import { Button } from "@/components/ui/button"
 import { createWorkflowPrompt } from "@lucky/core/prompts/createWorkflow"
 import { useState } from "react"
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { SmartContent } from "@/components/utils/SmartContent"
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
-import { Button } from "@/ui/button"
 import { useState } from "react"
 import { toast } from "sonner"
 import type { FeedbackData, Metrics } from "./types/evaluation"

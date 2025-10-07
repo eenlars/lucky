@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/ui/card"
+import { Card } from "@/components/ui/card"
 import type { AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { isNir } from "@lucky/shared/client"
 import {

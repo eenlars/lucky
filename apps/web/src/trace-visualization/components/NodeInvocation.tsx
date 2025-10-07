@@ -1,5 +1,6 @@
 "use client"
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,6 @@ import { PayloadRender } from "@/trace-visualization/components/InputRender"
 import { getAgentSteps } from "@/trace-visualization/components/TimelineEntry"
 import type { NodeInvocationExtras } from "@/trace-visualization/db/Workflow/fullWorkflow"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip"
 import { extractTextFromPayload } from "@lucky/core/messages/MessagePayload"
 import type { AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
 import { TOOLS } from "@lucky/examples/settings/tools"

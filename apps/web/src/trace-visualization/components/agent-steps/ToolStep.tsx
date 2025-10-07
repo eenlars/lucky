@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/ui/card"
+import { Card } from "@/components/ui/card"
 import { isNir } from "@lucky/shared/client"
 import { CheckCircle2, Copy, Maximize2, Minimize2 } from "lucide-react"
 import { formatArgsSummary, getResultSummary, getStepIcon, getStepTheme } from "./utils"
