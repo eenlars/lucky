@@ -26,6 +26,7 @@
     "@codemirror/view": "^6.38.2",
     "@dagrejs/dagre": "^1.1.5",
     "@huggingface/hub": "^2.6.4",
+    "@lucky/contracts": "workspace:*",
     "@lucky/core": "workspace:*",
     "@lucky/examples": "workspace:*",
     "@lucky/experiments": "workspace:*",

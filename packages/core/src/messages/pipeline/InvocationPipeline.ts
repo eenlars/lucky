@@ -106,7 +106,16 @@ export class InvocationPipeline {
    */
   public async prepare(): Promise<this> {
     await this.toolManager.initializeTools()
-    this.tools = await this.toolManager.getAllTools(this.ctx)
+    // Extract tool execution context from node invocation context
+    const toolContext = {
+      workflowId: this.ctx.workflowId,
+      workflowVersionId: this.ctx.workflowVersionId,
+      workflowInvocationId: this.ctx.workflowInvocationId,
+      workflowFiles: this.ctx.workflowFiles,
+      expectedOutputType: this.ctx.expectedOutputType,
+      mainWorkflowGoal: this.ctx.mainWorkflowGoal,
+    }
+    this.tools = await this.toolManager.getAllTools(toolContext)
     if (isNir(this.tools)) {
       this.toolChoice = "auto"
       return this
@@ -508,7 +517,7 @@ export class InvocationPipeline {
       toolLogs,
       nodeSystemPrompt: this.ctx.nodeConfig.systemPrompt,
       currentMemory: this.ctx.nodeMemory ?? {},
-      mainWorkflowGoal: this.ctx.mainWorkflowGoal,
+      mainWorkflowGoal: this.ctx.mainWorkflowGoal ?? "Complete the workflow task",
     })
 
     // Store memory updates

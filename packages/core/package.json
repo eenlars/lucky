@@ -34,6 +34,7 @@
     "@ai-sdk/openai": "^2.0.0",
     "@dagrejs/dagre": "^1.1.5",
     "@huggingface/hub": "^2.4.0",
+    "@lucky/contracts": "workspace:*",
     "@lucky/shared": "workspace:*",
     "@lucky/tools": "workspace:*",
     "@mendable/firecrawl-js": "^1.29.1",

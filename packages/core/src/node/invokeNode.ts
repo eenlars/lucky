@@ -131,12 +131,15 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
 
     lgg.log(`[invokeNode] Invoking node with prompt: ${prompt.slice(0, 100)}...`)
 
-    // Invoke node
+    // Invoke node with full context
     const result = await node.invoke({
+      ...toolContext,
       workflowMessageIncoming: message,
+      startTime: new Date().toISOString(),
+      nodeConfig: nodeConfigWithHandoffs,
+      nodeMemory: {},
       skipDatabasePersistence,
       persistence: undefined, // No persistence for standalone invocation
-      ...toolContext,
     })
 
     const outputPreview =

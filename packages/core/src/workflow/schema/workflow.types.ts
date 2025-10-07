@@ -1,5 +1,9 @@
 import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
+import type {
+  WorkflowConfig as WorkflowConfigBase,
+  WorkflowNodeConfig as WorkflowNodeConfigBase,
+} from "@lucky/contracts/workflow"
 import type { CodeToolName, MCPToolName } from "@lucky/tools"
 
 // Import SDK config type - can be removed cleanly when ejecting SDK
@@ -8,32 +12,21 @@ import type { ClaudeSDKConfig } from "@core/tools/claude-sdk/types"
 
 /**
  * Declarative configuration for a single workflow node.
- * modelName accepts any model from any provider - validation happens at runtime
+ * Extends the base contract with specific types for models and tools.
  */
-export interface WorkflowNodeConfig {
-  nodeId: string
-  description: string
-  systemPrompt: string
+export interface WorkflowNodeConfig
+  extends Omit<WorkflowNodeConfigBase, "modelName" | "mcpTools" | "codeTools" | "sdkConfig"> {
   modelName: AnyModelName
   mcpTools: MCPToolName[]
   codeTools: CodeToolName[]
-  handOffs: string[]
-  memory?: Record<string, string> | null
-  waitingFor?: string[]
-  waitFor?: string[] // Alternative name for waitingFor, both are supported
-  handOffType?: "conditional" | "sequential" | "parallel"
-  useClaudeSDK?: boolean // Enable Claude Code SDK for this node
   sdkConfig?: ClaudeSDKConfig // SDK-specific configuration
 }
 
 /**
- * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
+ * WorkflowConfig extends the base contract with implementation-specific types.
  */
-export interface WorkflowConfig {
+export interface WorkflowConfig extends Omit<WorkflowConfigBase, "nodes" | "toolsInformation"> {
   nodes: WorkflowNodeConfig[]
-  entryNodeId: string
-  contextFile?: string | null
-  memory?: Record<string, string> | null
   toolsInformation?: ToolsInformation
 }
 

@@ -25,6 +25,7 @@ describe("Parallel handoff integration", () => {
       return {
         nodeId,
         toConfig: () => config,
+        getMemory: () => ({}),
         invoke: async (args: InvokeArgs) => {
           if (!callArgsByNode[nodeId]) callArgsByNode[nodeId] = []
           callArgsByNode[nodeId].push(args)

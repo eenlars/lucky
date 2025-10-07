@@ -1,11 +1,11 @@
 import { llmify } from "@core/utils/common/llmify"
+import type { WorkflowFile as WorkflowFileBase } from "@lucky/contracts/tools"
 import { JSONN } from "@lucky/shared"
 
-export type WorkflowFile = {
-  store: "supabase"
-  filePath: string // the supabase file path
-  summary: string // what the file is about
-}
+/**
+ * Re-export contract type for workflow files
+ */
+export type WorkflowFile = WorkflowFileBase
 
 export type WorkflowFiles = {
   workflowFiles: WorkflowFile[]
