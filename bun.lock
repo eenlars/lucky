@@ -399,6 +399,8 @@
       "version": "0.1.0",
       "dependencies": {
         "@lucky/contracts": "workspace:*",
+        "@lucky/core": "workspace:*",
+        "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
         "axios": "^1.11.0",
         "cheerio": "^1.1.2",

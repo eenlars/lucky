@@ -14,6 +14,7 @@ import {
   Home,
   Menu,
   Network,
+  Plug,
   Settings,
   Wrench,
   X,
@@ -49,6 +50,12 @@ const baseSidebarItems: SidebarItem[] = [
     label: "Editor",
     icon: Wrench,
     description: "Workflow editor",
+  },
+  {
+    href: "/connectors",
+    label: "Connectors",
+    icon: Plug,
+    description: "Manage connectors",
   },
   {
     href: "/invocations",

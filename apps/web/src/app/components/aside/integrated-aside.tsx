@@ -2,7 +2,7 @@
 
 import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
-import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Settings, Wrench, X } from "lucide-react"
+import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Plug, Settings, Wrench, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -46,6 +46,12 @@ const navigationItems: NavItemData[] = [
     label: "Editor",
     icon: <Wrench className="w-4 h-4" />,
     description: "Workflow editor",
+  },
+  {
+    href: "/connectors",
+    label: "Connectors",
+    icon: <Plug className="w-4 h-4" />,
+    description: "Manage connectors",
   },
   {
     href: "/invocations",
@@ -303,6 +309,7 @@ export function IntegratedAside() {
     <>
       {/* Mobile menu trigger */}
       <button
+        type="button"
         onClick={() => setIsMobileOpen(true)}
         className={cn(
           "fixed left-4 top-4 z-50 p-2 rounded-md",
@@ -345,6 +352,7 @@ export function IntegratedAside() {
                 App Navigation
               </Link>
               <button
+                type="button"
                 onClick={() => setIsMobileOpen(false)}
                 className="ml-auto p-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
                 aria-label="Close sidebar"
