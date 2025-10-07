@@ -55,8 +55,8 @@ export const isWorkflowConfig = (config: unknown): config is WorkflowConfig => {
   // check entryNodeId
   if (typeof obj.entryNodeId !== "string") return false
 
-  // contextFile is optional
-  if (obj.contextFile !== undefined && typeof obj.contextFile !== "string") return false
+  // contextFile is optional and can be null
+  if (obj.contextFile !== undefined && obj.contextFile !== null && typeof obj.contextFile !== "string") return false
 
   return true
 }

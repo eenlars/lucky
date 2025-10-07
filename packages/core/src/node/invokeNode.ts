@@ -137,7 +137,7 @@ export async function invokeAgent(input: InvokeAgentInput): Promise<NodeInvocati
       workflowMessageIncoming: message,
       startTime: new Date().toISOString(),
       nodeConfig: nodeConfigWithHandoffs,
-      nodeMemory: {},
+      nodeMemory: node.getMemory(), // Preserve node's persisted memory
       skipDatabasePersistence,
       persistence: undefined, // No persistence for standalone invocation
     })

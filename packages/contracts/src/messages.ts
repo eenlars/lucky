@@ -74,6 +74,7 @@ export type Payload = DelegationPayload | SequentialPayload | AggregatedPayload 
  * Type guard for delegation payloads
  */
 export const isDelegationPayload = (payload: unknown): payload is DelegationPayload => {
+  if (!payload || typeof payload !== "object") return false
   return (payload as DelegationPayload).kind === "delegation"
 }
 
