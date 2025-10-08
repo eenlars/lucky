@@ -13,6 +13,7 @@
  */
 
 import { CONFIG } from "@core/core-config/compat"
+import { WorkflowConfigurationError, WorkflowExecutionError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
@@ -69,7 +70,9 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
     if (isNir(evalInput)) {
       lgg.error("evalInput is null/undefined", evalInput)
-      throw new Error("evalInput is null/undefined")
+      throw new WorkflowExecutionError("Evaluation input is missing or invalid.", {
+        details: { providedInput: evalInput },
+      })
     }
 
     // Set defaults
@@ -99,7 +102,13 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     } else if ("dslConfig" in input && input.dslConfig) {
       config = await loadFromDSL(input.dslConfig)
     } else {
-      throw new Error("Either workflowVersionId, filename, or dslConfig must be provided")
+      throw new WorkflowConfigurationError(
+        "No workflow source provided. Must specify one of: workflowVersionId, filename, or dslConfig.",
+        {
+          field: "workflow source",
+          expectedFormat: "{ workflowVersionId: string } | { filename: string } | { dslConfig: WorkflowConfig }",
+        },
+      )
     }
 
     // Initialize spending tracker if enabled

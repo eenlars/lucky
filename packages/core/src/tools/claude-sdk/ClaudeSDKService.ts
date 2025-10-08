@@ -7,6 +7,7 @@ import Anthropic from "@anthropic-ai/sdk"
 import type { Message, Tool } from "@anthropic-ai/sdk/resources"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
+import { MissingConfigError } from "@core/utils/errors/data-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ClaudeSDKConfig, MODEL_PRICING, SDK_VERSION } from "./types"
 
@@ -58,7 +59,10 @@ export class ClaudeSDKService {
     const apiKey = process.env.ANTH_API_KEY
 
     if (!apiKey) {
-      throw new Error("ANTH_API_KEY environment variable is required for SDK usage")
+      throw new MissingConfigError("ANTH_API_KEY", {
+        requiredFor: "Anthropic Claude SDK usage",
+        suggestion: "Set ANTH_API_KEY in your environment variables with your Anthropic API key.",
+      })
     }
 
     if (!ClaudeSDKService.client) {

@@ -8,6 +8,7 @@
 import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { FlowEvolutionMode } from "@core/types"
+import { RunTrackingError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { type Tables, type TablesInsert, type TablesUpdate, genShortId } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
@@ -54,14 +55,19 @@ export class RunService {
 
   getRunId(): string {
     if (!this.runId) {
-      throw new Error("No current run ID available")
+      throw new RunTrackingError("No active run found. Create a run first before accessing its ID.", {
+        operation: "getRunId",
+      })
     }
     return this.runId
   }
 
   getCurrentGenerationId(): string {
     if (!this.currentGenerationId) {
-      throw new Error("No current generation ID available")
+      throw new RunTrackingError("No active generation found. Create a generation first before accessing its ID.", {
+        operation: "getCurrentGenerationId",
+        runId: this.runId,
+      })
     }
     return this.currentGenerationId
   }
@@ -79,7 +85,13 @@ export class RunService {
         this.currentGenerationNumber = lastCompletedGeneration.generationNumber
         return
       }
-      throw new Error(`[RunService] No last completed generation found for run: ${continueRunId}`)
+      throw new RunTrackingError(
+        `Cannot continue from run '${continueRunId}'. No completed generations found for this run.`,
+        {
+          runId: continueRunId,
+          operation: "createRun (continue mode)",
+        },
+      )
     }
 
     let notes = ""
@@ -131,7 +143,9 @@ export class RunService {
     if (!this.evolutionPersistence) return false
     const activeRunId = this.runId
     if (!activeRunId) {
-      throw new Error("No active run ID available for generation check")
+      throw new RunTrackingError("Cannot check generation completion. No active run ID available.", {
+        operation: "hasCompletedGenerations",
+      })
     }
     return this.evolutionPersistence.generationExists(activeRunId, generationNumber)
   }

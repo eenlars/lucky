@@ -38,12 +38,24 @@ export function onlyIf(condition: unknown, message: string): string {
   return message
 }
 
-export class WorkflowError extends Error {
+import { EnhancedError } from "@core/utils/errors/enhanced-error"
+
+export class WorkflowError extends EnhancedError {
   constructor(
     message: string,
     public readonly code?: string,
   ) {
-    super(message)
+    super({
+      title: "Workflow Error",
+      message,
+      action: "Check the workflow configuration and ensure all required fields are set.",
+      debug: {
+        code: code || "WORKFLOW_ERROR",
+        context: { message },
+        timestamp: new Date().toISOString(),
+      },
+      retryable: false,
+    })
     this.name = "WorkflowError"
   }
 }

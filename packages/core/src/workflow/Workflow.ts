@@ -5,6 +5,7 @@ import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/beh
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
@@ -206,12 +207,20 @@ export class Workflow {
 
   //todo-leak :: Workflow retains fitness state accessible during improvement phases
   getFitness(): FitnessOfWorkflow | undefined {
-    if (!this.fitness) throw new Error("Fitness not found for workflow")
+    if (!this.fitness)
+      throw new WorkflowFitnessError("Fitness data has not been calculated for this workflow yet.", {
+        workflowId: this.workflowId,
+        workflowVersionId: this.workflowVersionId,
+      })
     return this.fitness
   }
 
   getFitnessScore(): number {
-    if (!this.fitness) throw new Error("Fitness not found for workflow")
+    if (!this.fitness)
+      throw new WorkflowFitnessError("Fitness score is not available. Workflow must be evaluated first.", {
+        workflowId: this.workflowId,
+        workflowVersionId: this.workflowVersionId,
+      })
     return this.fitness.score
   }
 
