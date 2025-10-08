@@ -38,13 +38,13 @@ export async function getLanguageModel(modelName: ModelName): Promise<LanguageMo
   if (currentProvider === "openrouter") {
     // If resolved is a model name (contains /), pass it to OpenRouter directly
     if (typeof resolved === "string" && resolved.includes("/")) {
-      const models = getModelsInstance()
+      const models = await getModelsInstance()
       return await models.model({ provider: "openrouter", model: resolved })
     }
   }
 
   // For other providers or tier references, use standard resolution
-  const models = getModelsInstance()
+  const models = await getModelsInstance()
   return await models.model(resolved)
 }
 
@@ -88,7 +88,7 @@ export async function getLanguageModelWithReasoning(
   // Since @lucky/models doesn't yet support passing reasoning options,
   // we get the model and recreate it with reasoning parameters
 
-  const models = getModelsInstance()
+  const models = await getModelsInstance()
   const resolved = resolveTierOrModel(modelName)
 
   // Resolve tier to actual model name for provider-specific logic
@@ -97,17 +97,18 @@ export async function getLanguageModelWithReasoning(
 
   // Provider-specific reasoning configuration
   if (provider === "openrouter") {
-    // Import openrouter client for reasoning parameters
-    const { openrouter } = await import("@core/clients/openrouter/openrouterClient")
+    // Use async client factory for per-user API keys
+    const { getOpenRouterClient } = await import("@core/clients/openrouter/openrouterClient")
+    const openrouterClient = await getOpenRouterClient()
 
     const isAnthropic = modelStr.startsWith("anthropic/")
     const isGeminiThinking =
       modelStr.includes("gemini") && (modelStr.includes("thinking") || modelStr.includes("think"))
 
     if (isAnthropic || isGeminiThinking) {
-      return openrouter(actualModelName, { reasoning: { max_tokens: 2048 } as any })
+      return openrouterClient(actualModelName, { reasoning: { max_tokens: 2048 } as any })
     }
-    return openrouter(actualModelName, { reasoning: { effort: "medium" } as any })
+    return openrouterClient(actualModelName, { reasoning: { effort: "medium" } as any })
   }
 
   if (provider === "openai") {

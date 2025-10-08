@@ -1,14 +1,12 @@
-import { requireAuth } from "@/lib/api-auth"
+import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { createSecretResolver } from "@/lib/lockbox/secretResolver"
+import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
-  // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-
   // Ensure core is initialized
   ensureCoreInit()
 
@@ -20,7 +18,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid invocation input" }, { status: 400 })
     }
 
-    const result = await invokeWorkflow(input)
+    // Check if we already have execution context (from upstream caller like /api/v1/invoke)
+    const existingContext = getExecutionContext()
+
+    if (existingContext) {
+      // Context already set, just invoke
+      const result = await invokeWorkflow(input)
+
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 500 })
+      }
+
+      return NextResponse.json(result, { status: 200 })
+    }
+
+    // No context set, this is a direct call - authenticate and create context
+    const principal = await authenticateRequest(req)
+    if (!principal) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+    }
+
+    const secrets = createSecretResolver(principal.clerk_id)
+
+    // Pre-fetch common provider keys
+    const apiKeys = await secrets.getAll(["OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"])
+
+    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
+      return invokeWorkflow(input)
+    })
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 })
