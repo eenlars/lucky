@@ -1,5 +1,6 @@
 "use client"
 
+import { DevOnly } from "@/components/DevOnly"
 import { useEffect, useState } from "react"
 import PerfectRateChart from "./components/PerfectRateChart"
 import SequentialResultsChart from "./components/SequentialResultsChart"
@@ -139,33 +140,35 @@ export default function SequentialResultsPage() {
   const { dataAvg, dataPerfect, chains, overall } = aggregateByModelAndChain(results)
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Sequential Chains — Results Overview</h1>
-        <p className="text-gray-600 mb-6">
-          Average score per model, broken down by chain complexity. Higher is better.
-        </p>
+    <DevOnly>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sequential Chains — Results Overview</h1>
+          <p className="text-gray-600 mb-6">
+            Average score per model, broken down by chain complexity. Higher is better.
+          </p>
 
-        {overall.length > 0 ? (
-          <div className="mb-6 text-sm text-gray-700">
-            <span className="font-semibold">Top models:</span>{" "}
-            {overall
-              .slice(0, 5)
-              .map(o => `${o.model} (${o.avg.toFixed(2)})`)
-              .join(", ")}
+          {overall.length > 0 ? (
+            <div className="mb-6 text-sm text-gray-700">
+              <span className="font-semibold">Top models:</span>{" "}
+              {overall
+                .slice(0, 5)
+                .map(o => `${o.model} (${o.avg.toFixed(2)})`)
+                .join(", ")}
+            </div>
+          ) : null}
+
+          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4 mb-8">
+            <h2 className="text-xl font-semibold mb-2">Average Score per model</h2>
+            <SequentialResultsChart data={dataAvg} chains={chains} />
           </div>
-        ) : null}
 
-        <div className="w-full h-[520px] bg-white rounded-lg shadow p-4 mb-8">
-          <h2 className="text-xl font-semibold mb-2">Average Score per model</h2>
-          <SequentialResultsChart data={dataAvg} chains={chains} />
-        </div>
-
-        <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-          <h2 className="text-xl font-semibold mb-2">Perfect Runs (% of 1.0 scores)</h2>
-          <PerfectRateChart data={dataPerfect} chains={chains} />
+          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+            <h2 className="text-xl font-semibold mb-2">Perfect Runs (% of 1.0 scores)</h2>
+            <PerfectRateChart data={dataPerfect} chains={chains} />
+          </div>
         </div>
       </div>
-    </div>
+    </DevOnly>
   )
 }

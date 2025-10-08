@@ -459,16 +459,25 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                       <span className="font-medium text-gray-900 dark:text-gray-100">
                         Generation {generation.number}
                       </span>
-                      <Link
-                        href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/96125?filter=generation_id:eq:${generation.generation_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded border border-blue-200 dark:border-blue-700"
-                        onClick={e => e.stopPropagation()}
-                        title="View in Supabase Dashboard"
-                      >
-                        {generation.generation_id}
-                      </Link>
+                      {process.env.NODE_ENV === "development" ? (
+                        <Link
+                          href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/96125?filter=generation_id:eq:${generation.generation_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded border border-blue-200 dark:border-blue-700"
+                          onClick={e => e.stopPropagation()}
+                          title="View in Supabase Dashboard"
+                        >
+                          {generation.generation_id}
+                        </Link>
+                      ) : (
+                        <span
+                          className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          {generation.generation_id}
+                        </span>
+                      )}
                       <span className="text-sm text-gray-600 dark:text-gray-400">{invocations.length} invocations</span>
                       {fitnessRange && (
                         <span className="text-sm text-green-600 font-medium">

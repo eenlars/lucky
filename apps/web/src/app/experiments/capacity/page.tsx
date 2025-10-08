@@ -1,4 +1,5 @@
 import type { ToolCapacityExperimentResponse } from "@/app/api/experiments/capacity/route"
+import { DevOnly } from "@/components/DevOnly"
 import type { ToolCapacityResult } from "@lucky/experiments/tool-real/experiments/01-capacity-limits/main-experiment"
 import AccuracyByModelChart from "./components/AccuracyByModelChart"
 import AccuracyByToolCountChart from "./components/AccuracyByToolCountChart"
@@ -162,23 +163,25 @@ export default async function CapacityPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Tool Selection Capacity — Results</h1>
-        <p className="text-gray-600 mb-6">Accuracy vs number of available tools, and average accuracy by model.</p>
+    <DevOnly>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tool Selection Capacity — Results</h1>
+          <p className="text-gray-600 mb-6">Accuracy vs number of available tools, and average accuracy by model.</p>
 
-        <div className="grid grid-cols-1 gap-8">
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-2">Accuracy vs Tool Count</h2>
-            <AccuracyByToolCountChart data={lineData} series={series} points={points} />
-          </div>
+          <div className="grid grid-cols-1 gap-8">
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-2">Accuracy vs Tool Count</h2>
+              <AccuracyByToolCountChart data={lineData} series={series} points={points} />
+            </div>
 
-          <div className="w-full h-[380px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-2">Accuracy by Model</h2>
-            <AccuracyByModelChart data={barData} />
+            <div className="w-full h-[380px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-2">Accuracy by Model</h2>
+              <AccuracyByModelChart data={barData} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </DevOnly>
   )
 }

@@ -304,25 +304,37 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
               <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">
                 wf_invocation_id:
               </span>
-              <Link
-                href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowInvocation}?schema=public&sort=start_time:desc&filter=wf_invocation_id%3Aeq%3A${wf_inv_id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
-              >
-                {wf_inv_id}
-              </Link>
+              {process.env.NODE_ENV === "development" ? (
+                <Link
+                  href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowInvocation}?schema=public&sort=start_time:desc&filter=wf_invocation_id%3Aeq%3A${wf_inv_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
+                >
+                  {wf_inv_id}
+                </Link>
+              ) : (
+                <span className="font-mono bg-sidebar-accent dark:bg-sidebar-accent px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary">
+                  {wf_inv_id}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">wf_version_id:</span>
-              <Link
-                href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowVersion}?schema=public&sort=created_at:desc&filter=wf_version_id%3Aeq%3A${workflowVersion.wf_version_id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
-              >
-                {workflowVersion.wf_version_id}
-              </Link>
+              {process.env.NODE_ENV === "development" ? (
+                <Link
+                  href={`https://supabase.com/dashboard/project/qnvprftdorualkdyogka/editor/${SUPABASE_TABLES.WorkflowVersion}?schema=public&sort=created_at:desc&filter=wf_version_id%3Aeq%3A${workflowVersion.wf_version_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono bg-sidebar-accent dark:bg-sidebar-accent hover:bg-sidebar-accent/80 dark:hover:bg-sidebar-accent/80 px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 underline transition-colors duration-200"
+                >
+                  {workflowVersion.wf_version_id}
+                </Link>
+              ) : (
+                <span className="font-mono bg-sidebar-accent dark:bg-sidebar-accent px-2 py-1 rounded text-sidebar-primary dark:text-sidebar-primary">
+                  {workflowVersion.wf_version_id}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-sidebar-foreground dark:text-sidebar-foreground">Operation:</span>

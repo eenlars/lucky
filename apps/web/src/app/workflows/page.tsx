@@ -209,7 +209,7 @@ export default function WorkflowsPage() {
             <RefreshCw className={cn("size-4", loading && "animate-spin")} />
           </button>
           <Link
-            href="/create"
+            href="/edit"
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
           >
             <Plus className="size-4" />
@@ -235,7 +235,7 @@ export default function WorkflowsPage() {
           <h2 className="text-lg font-semibold text-foreground mb-2">No workflows yet</h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-sm">Create your first workflow to get started</p>
           <Link
-            href="/create"
+            href="/edit"
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-md hover:bg-primary/90 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
           >
             <Plus className="size-4" />

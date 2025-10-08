@@ -1,6 +1,7 @@
 import AdaptationMetricsChart from "@/app/experiments/context-adaptation/components/AdaptationMetricsChart"
 import AdaptationOurAlgorithmConnected from "@/app/experiments/context-adaptation/components/AdaptationOurAlgorithmConnected"
 import AdaptationOurAlgorithmSpecial from "@/app/experiments/context-adaptation/components/AdaptationOurAlgorithmSpecial"
+import { DevOnly } from "@/components/DevOnly"
 import AdaptationSuccessChart from "./components/AdaptationSuccessChart"
 import PerformanceComparisonTable from "./components/PerformanceComparisonTable"
 
@@ -63,96 +64,98 @@ export default async function ContextAdaptationPage() {
   const baselineTitle = "Baseline (aggregated)"
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Context Adaptation — Results</h1>
-        <p className="text-gray-600 mb-6">
-          Success rate by model for vague vs clear prompts (excluding control scenario).
-        </p>
-
-        {errors?.length || info?.length ? (
-          <div className="mb-4 space-y-1">
-            {errors?.length ? (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
-                <strong>Errors:</strong> {errors.join("; ")}
-              </div>
-            ) : null}
-            {info?.length ? (
-              <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-                <strong>Info:</strong> {info.join("; ")}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        {/* PRIMARY FOCAL POINT: Performance Comparison Table */}
-        <div className="mb-8">
-          <PerformanceComparisonTable />
-        </div>
-
-        {/* SUPPORTING VISUALIZATIONS */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Supporting Visualizations</h2>
+    <DevOnly>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Context Adaptation — Results</h1>
           <p className="text-gray-600 mb-6">
-            Additional charts and detailed analysis supporting the main findings above.
+            Success rate by model for vague vs clear prompts (excluding control scenario).
           </p>
-        </div>
 
-        {/* Row 1: 3 charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">{baselineTitle}</h2>
-            <p className="text-xs text-gray-500 mb-2">Source: baseline</p>
-            <AdaptationSuccessChart data={baselineData} />
-          </div>
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Time per model (avg)</h2>
-            <p className="text-xs text-gray-500 mb-2">Y-axis: time in ms</p>
-            <AdaptationMetricsChart data={metricsData} metric="time" />
-          </div>
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Cost per trace (avg)</h2>
-            <p className="text-xs text-gray-500 mb-2">Y-axis: USD</p>
-            <AdaptationMetricsChart data={metricsData} metric="cost" />
-          </div>
-        </div>
+          {errors?.length || info?.length ? (
+            <div className="mb-4 space-y-1">
+              {errors?.length ? (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+                  <strong>Errors:</strong> {errors.join("; ")}
+                </div>
+              ) : null}
+              {info?.length ? (
+                <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+                  <strong>Info:</strong> {info.join("; ")}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
-        {/* Row 2: 3 charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Calls per trace (avg)</h2>
-            <p className="text-xs text-gray-500 mb-2">Y-axis: calls</p>
-            <AdaptationMetricsChart data={metricsData} metric="calls" />
+          {/* PRIMARY FOCAL POINT: Performance Comparison Table */}
+          <div className="mb-8">
+            <PerformanceComparisonTable />
           </div>
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Time per item (avg)</h2>
-            <p className="text-xs text-gray-500 mb-2">Y-axis: ms per item</p>
-            <AdaptationMetricsChart data={metricsData} metric="msPerItem" />
+
+          {/* SUPPORTING VISUALIZATIONS */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Supporting Visualizations</h2>
+            <p className="text-gray-600 mb-6">
+              Additional charts and detailed analysis supporting the main findings above.
+            </p>
           </div>
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Cost per item (avg)</h2>
-            <p className="text-xs text-gray-500 mb-2">Y-axis: $ per item</p>
-            <AdaptationMetricsChart data={metricsData} metric="costPerItem" />
+
+          {/* Row 1: 3 charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">{baselineTitle}</h2>
+              <p className="text-xs text-gray-500 mb-2">Source: baseline</p>
+              <AdaptationSuccessChart data={baselineData} />
+            </div>
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Time per model (avg)</h2>
+              <p className="text-xs text-gray-500 mb-2">Y-axis: time in ms</p>
+              <AdaptationMetricsChart data={metricsData} metric="time" />
+            </div>
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Cost per trace (avg)</h2>
+              <p className="text-xs text-gray-500 mb-2">Y-axis: USD</p>
+              <AdaptationMetricsChart data={metricsData} metric="cost" />
+            </div>
           </div>
-        </div>
 
-        <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
-          <AdaptationOurAlgorithmSpecial />
-        </div>
+          {/* Row 2: 3 charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Calls per trace (avg)</h2>
+              <p className="text-xs text-gray-500 mb-2">Y-axis: calls</p>
+              <AdaptationMetricsChart data={metricsData} metric="calls" />
+            </div>
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Time per item (avg)</h2>
+              <p className="text-xs text-gray-500 mb-2">Y-axis: ms per item</p>
+              <AdaptationMetricsChart data={metricsData} metric="msPerItem" />
+            </div>
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Cost per item (avg)</h2>
+              <p className="text-xs text-gray-500 mb-2">Y-axis: $ per item</p>
+              <AdaptationMetricsChart data={metricsData} metric="costPerItem" />
+            </div>
+          </div>
 
-        {/* Big combined graph with connections */}
-        <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
-          <AdaptationOurAlgorithmConnected />
-        </div>
+          <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
+            <AdaptationOurAlgorithmSpecial />
+          </div>
 
-        <div className="grid grid-cols-1 gap-6 mt-6">
-          <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-1">Final (aggregated)</h2>
-            <p className="text-xs text-gray-500 mb-2">Source: final</p>
-            <AdaptationSuccessChart data={finalData} />
+          {/* Big combined graph with connections */}
+          <div className="w-full bg-white rounded-lg shadow p-4 mt-6">
+            <AdaptationOurAlgorithmConnected />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 mt-6">
+            <div className="w-full h-[520px] bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-semibold mb-1">Final (aggregated)</h2>
+              <p className="text-xs text-gray-500 mb-2">Source: final</p>
+              <AdaptationSuccessChart data={finalData} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </DevOnly>
   )
 }
