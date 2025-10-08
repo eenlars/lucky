@@ -260,9 +260,9 @@ function AddServerForm({
 
         {serverType === "remote" ? (
           <>
-            {/* MCP Server URL */}
+            {/* Server URL */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">MCP Server URL</label>
+              <label className="block text-sm font-medium text-foreground">Server URL</label>
               <input
                 type="url"
                 value={url}
@@ -290,7 +290,7 @@ function AddServerForm({
             {/* API Key Input */}
             {authType === "apikey" && (
               <div className="space-y-2">
-                <label className="block text-sm text-muted-foreground">API Key</label>
+                <label className="block text-sm font-medium text-foreground">API Key</label>
                 <input
                   type="password"
                   value={apiKey}
@@ -315,11 +315,9 @@ function AddServerForm({
               />
             </div>
 
-            {/* Arguments */}
+            {/* Options */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">
-                Arguments <span className="text-muted-foreground font-normal">(optional, one per line)</span>
-              </label>
+              <label className="block text-sm font-medium text-foreground">Options</label>
               <textarea
                 value={args}
                 onChange={e => setArgs(e.target.value)}
@@ -329,11 +327,9 @@ function AddServerForm({
               />
             </div>
 
-            {/* Environment Variables */}
+            {/* Environment variables */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">
-                Environment Variables <span className="text-muted-foreground font-normal">(optional)</span>
-              </label>
+              <label className="block text-sm font-medium text-foreground">Environment variables</label>
               <textarea
                 value={envVars}
                 onChange={e => setEnvVars(e.target.value)}
@@ -360,13 +356,12 @@ function ServerRow({ name, config, onDelete }: { name: string; config: MCPServer
   return (
     <div className="group border border-border rounded-lg overflow-hidden hover:border-muted-foreground/30 transition-colors">
       <div className="flex items-center justify-between p-4 bg-background">
-        <button type="button" onClick={() => setExpanded(!expanded)} className="flex items-center gap-3 flex-1 text-left">
-          <ChevronDown
-            className={cn(
-              "size-4 text-muted-foreground transition-transform",
-              !expanded && "-rotate-90",
-            )}
-          />
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-3 flex-1 text-left"
+        >
+          <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", !expanded && "-rotate-90")} />
           <div>
             <div className="text-sm font-medium text-foreground">{name}</div>
             <code className="text-xs text-muted-foreground">{config.command}</code>
@@ -386,7 +381,7 @@ function ServerRow({ name, config, onDelete }: { name: string; config: MCPServer
         <div className="border-t border-border bg-muted/20 p-4 space-y-3 text-xs">
           {config.args.length > 0 && (
             <div>
-              <div className="font-medium text-muted-foreground mb-1">Arguments</div>
+              <div className="font-medium text-muted-foreground mb-1">Options</div>
               {config.args.map((arg, i) => (
                 <code key={i} className="block bg-background px-2 py-1 rounded mb-1 text-foreground">
                   {arg}
