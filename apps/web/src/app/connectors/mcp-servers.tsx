@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { AlertCircle, Check, ChevronDown, ChevronRight, Copy, Plus, Server, Trash2, X } from "lucide-react"
+import { AlertCircle, Check, ChevronDown, FileJson, Trash2, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export interface MCPServerConfig {
@@ -45,63 +45,17 @@ function saveMCPConfig(config: MCPServers): void {
 
 export function MCPServersConfig() {
   const [config, setConfig] = useState<MCPServers>({ mcpServers: {} })
-  const [jsonInput, setJsonInput] = useState("")
-  const [jsonError, setJsonError] = useState("")
-  const [jsonSuccess, setJsonSuccess] = useState(false)
-  const [showManualAdd, setShowManualAdd] = useState(false)
+  const [showJsonMode, setShowJsonMode] = useState(false)
 
-  // Load config on mount
   useEffect(() => {
-    const loaded = getStoredMCPConfig()
-    setConfig(loaded)
-    setJsonInput(JSON.stringify(loaded, null, 2))
+    setConfig(getStoredMCPConfig())
   }, [])
-
-  const handleJsonPaste = (value: string) => {
-    setJsonInput(value)
-    setJsonError("")
-    setJsonSuccess(false)
-
-    if (!value.trim()) return
-
-    try {
-      const parsed = JSON.parse(value)
-
-      // Validate structure
-      if (!parsed.mcpServers || typeof parsed.mcpServers !== "object") {
-        setJsonError("Invalid format. Must have 'mcpServers' object")
-        return
-      }
-
-      // Validate each server
-      for (const [name, serverConfig] of Object.entries(parsed.mcpServers)) {
-        const server = serverConfig as any
-        if (!server.command || !Array.isArray(server.args)) {
-          setJsonError(`Server '${name}': missing command or args array`)
-          return
-        }
-      }
-
-      // Valid! Apply it
-      setConfig(parsed)
-      saveMCPConfig(parsed)
-      setJsonSuccess(true)
-      setTimeout(() => setJsonSuccess(false), 2000)
-    } catch (err) {
-      setJsonError(err instanceof Error ? err.message : "Invalid JSON")
-    }
-  }
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(config, null, 2))
-  }
 
   const handleDeleteServer = (serverName: string) => {
     const newConfig = { ...config }
     delete newConfig.mcpServers[serverName]
     setConfig(newConfig)
     saveMCPConfig(newConfig)
-    setJsonInput(JSON.stringify(newConfig, null, 2))
   }
 
   const handleAddServer = (name: string, serverConfig: MCPServerConfig) => {
@@ -114,190 +68,340 @@ export function MCPServersConfig() {
     }
     setConfig(newConfig)
     saveMCPConfig(newConfig)
-    setJsonInput(JSON.stringify(newConfig, null, 2))
-    setShowManualAdd(false)
   }
 
   const serverNames = Object.keys(config.mcpServers)
-  const hasServers = serverNames.length > 0
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Primary: JSON Paste Interface */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-light text-foreground">MCP Configuration</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Paste your MCP servers JSON or add them manually
-            </p>
-          </div>
-          <a
-            href="https://modelcontextprotocol.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            MCP Docs →
-          </a>
-        </div>
-
-        <div className="relative">
-          <textarea
-            value={jsonInput}
-            onChange={e => handleJsonPaste(e.target.value)}
-            placeholder={`{\n  "mcpServers": {\n    "tavily": {\n      "command": "npx",\n      "args": ["-y", "@tavily/mcp-server"],\n      "env": { "TAVILY_API_KEY": "\${TAVILY_API_KEY}" }\n    }\n  }\n}`}
-            className={cn(
-              "w-full h-64 px-4 py-3 rounded-lg border font-mono text-xs",
-              "bg-background focus:outline-none focus:ring-1 transition-all resize-none",
-              jsonError && "border-red-500 focus:ring-red-500",
-              jsonSuccess && "border-green-500 focus:ring-green-500",
-              !jsonError && !jsonSuccess && "border-border focus:ring-primary/50",
-            )}
-          />
-          <Button
-            onClick={handleCopy}
-            variant="ghost"
-            size="sm"
-            className="absolute top-2 right-2 h-7 px-2 text-xs"
-          >
-            <Copy className="size-3 mr-1" />
-            Copy
-          </Button>
-        </div>
-
-        {/* Feedback */}
-        {jsonError && (
-          <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
-            <AlertCircle className="size-4 flex-shrink-0 mt-0.5" />
-            <span>{jsonError}</span>
-          </div>
-        )}
-
-        {jsonSuccess && (
-          <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
-            <Check className="size-4 flex-shrink-0" />
-            <span>Configuration loaded successfully</span>
-          </div>
-        )}
+    <div className="max-w-2xl space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-3xl font-light text-foreground">MCP Servers</h2>
+        <p className="text-sm text-muted-foreground mt-2">
+          Connect to Model Context Protocol servers to extend your workflows with external tools
+        </p>
       </div>
 
-      {/* Secondary: Server List */}
-      {hasServers && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              {serverNames.length} {serverNames.length === 1 ? "server" : "servers"} configured
-            </h3>
-            <Button onClick={() => setShowManualAdd(true)} variant="ghost" size="sm" className="h-7 text-xs">
-              <Plus className="size-3 mr-1" />
-              Add server
-            </Button>
-          </div>
+      {/* Add Server Form */}
+      <AddServerForm onAdd={handleAddServer} existingNames={serverNames} />
 
+      {/* Server List */}
+      {serverNames.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            {serverNames.length} {serverNames.length === 1 ? "server" : "servers"}
+          </h3>
           <div className="space-y-2">
-            {serverNames.map(serverName => (
-              <MCPServerRow
-                key={serverName}
-                serverName={serverName}
-                serverConfig={config.mcpServers[serverName]}
-                onDelete={() => handleDeleteServer(serverName)}
+            {serverNames.map(name => (
+              <ServerRow
+                key={name}
+                name={name}
+                config={config.mcpServers[name]}
+                onDelete={() => handleDeleteServer(name)}
               />
             ))}
           </div>
         </div>
       )}
 
-      {/* Empty State */}
-      {!hasServers && !showManualAdd && (
-        <Card className="p-8">
-          <div className="text-center space-y-3">
-            <Server className="size-8 text-muted-foreground mx-auto" />
-            <div>
-              <p className="text-sm text-foreground">No servers configured</p>
-              <p className="text-xs text-muted-foreground mt-1">Paste JSON above or add manually</p>
-            </div>
-            <Button onClick={() => setShowManualAdd(true)} variant="outline" size="sm">
-              Add your first server
-            </Button>
-          </div>
-        </Card>
-      )}
+      {/* JSON Mode Toggle */}
+      <button
+        type="button"
+        onClick={() => setShowJsonMode(!showJsonMode)}
+        className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <FileJson className="size-3" />
+        {showJsonMode ? "Hide" : "Show"} JSON configuration
+      </button>
 
-      {/* Manual Add Form */}
-      {showManualAdd && (
-        <QuickAddForm
-          onSave={handleAddServer}
-          onCancel={() => setShowManualAdd(false)}
-          existingNames={serverNames}
-        />
-      )}
+      {/* JSON Editor */}
+      {showJsonMode && <JsonEditor config={config} onUpdate={setConfig} />}
     </div>
   )
 }
 
-function MCPServerRow({
-  serverName,
-  serverConfig,
-  onDelete,
+function AddServerForm({
+  onAdd,
+  existingNames,
 }: {
-  serverName: string
-  serverConfig: MCPServerConfig
-  onDelete: () => void
+  onAdd: (name: string, config: MCPServerConfig) => void
+  existingNames: string[]
 }) {
+  const [serverType, setServerType] = useState<"remote" | "local">("remote")
+  const [name, setName] = useState("")
+  const [url, setUrl] = useState("")
+  const [authType, setAuthType] = useState<"none" | "apikey" | "oauth" | "custom">("none")
+  const [apiKey, setApiKey] = useState("")
+  const [command, setCommand] = useState("")
+  const [args, setArgs] = useState("")
+  const [envVars, setEnvVars] = useState("")
+  const [error, setError] = useState("")
+
+  const handleSubmit = () => {
+    setError("")
+
+    if (!name.trim()) {
+      setError("Name is required")
+      return
+    }
+
+    if (existingNames.includes(name.trim())) {
+      setError("A server with this name already exists")
+      return
+    }
+
+    if (serverType === "remote") {
+      if (!url.trim()) {
+        setError("URL is required")
+        return
+      }
+      // For remote, create a local proxy command that connects to the URL
+      const serverConfig: MCPServerConfig = {
+        command: "npx",
+        args: ["-y", "@modelcontextprotocol/mcp-proxy", url.trim()],
+        env:
+          authType === "apikey" && apiKey.trim()
+            ? {
+                MCP_API_KEY: apiKey.trim(),
+              }
+            : undefined,
+      }
+      onAdd(name.trim(), serverConfig)
+    } else {
+      if (!command.trim()) {
+        setError("Command is required")
+        return
+      }
+
+      const parsedArgs = args
+        .split("\n")
+        .map(a => a.trim())
+        .filter(Boolean)
+
+      const parsedEnv: Record<string, string> = {}
+      if (envVars.trim()) {
+        envVars.split("\n").forEach(line => {
+          const [key, ...valueParts] = line.split("=")
+          if (key && valueParts.length > 0) {
+            parsedEnv[key.trim()] = valueParts.join("=").trim()
+          }
+        })
+      }
+
+      const serverConfig: MCPServerConfig = {
+        command: command.trim(),
+        args: parsedArgs,
+        ...(Object.keys(parsedEnv).length > 0 && { env: parsedEnv }),
+      }
+
+      onAdd(name.trim(), serverConfig)
+    }
+
+    // Reset form
+    setName("")
+    setUrl("")
+    setApiKey("")
+    setCommand("")
+    setArgs("")
+    setEnvVars("")
+    setAuthType("none")
+  }
+
+  return (
+    <Card className="p-6">
+      <div className="space-y-6">
+        {/* Server Type Toggle */}
+        <div className="flex gap-2 p-1 bg-muted rounded-lg w-fit">
+          <button
+            type="button"
+            onClick={() => setServerType("remote")}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-md transition-all",
+              serverType === "remote"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Remote
+          </button>
+          <button
+            type="button"
+            onClick={() => setServerType("local")}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-md transition-all",
+              serverType === "local"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Local
+          </button>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
+            <AlertCircle className="size-4 flex-shrink-0" />
+            {error}
+          </div>
+        )}
+
+        {/* Name */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="e.g., Tavily Search, Firecrawl, Playwright"
+            className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+
+        {serverType === "remote" ? (
+          <>
+            {/* MCP Server URL */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">MCP Server URL</label>
+              <input
+                type="url"
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                placeholder="https://example.com/mcp"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+              />
+            </div>
+
+            {/* Authentication */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">Authentication</label>
+              <select
+                value={authType}
+                onChange={e => setAuthType(e.target.value as any)}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              >
+                <option value="none">None</option>
+                <option value="apikey">API Key</option>
+                <option value="oauth">OAuth</option>
+                <option value="custom">Custom Headers</option>
+              </select>
+            </div>
+
+            {/* API Key Input */}
+            {authType === "apikey" && (
+              <div className="space-y-2">
+                <label className="block text-sm text-muted-foreground">API Key</label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={e => setApiKey(e.target.value)}
+                  placeholder="Enter your API key"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Command */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">Command</label>
+              <input
+                type="text"
+                value={command}
+                onChange={e => setCommand(e.target.value)}
+                placeholder="e.g., npx, python3, node"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+              />
+            </div>
+
+            {/* Arguments */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Arguments <span className="text-muted-foreground font-normal">(optional, one per line)</span>
+              </label>
+              <textarea
+                value={args}
+                onChange={e => setArgs(e.target.value)}
+                placeholder={"-y\n@modelcontextprotocol/server-tavily"}
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono resize-none"
+              />
+            </div>
+
+            {/* Environment Variables */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                Environment Variables <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={envVars}
+                onChange={e => setEnvVars(e.target.value)}
+                placeholder={"TAVILY_API_KEY=${TAVILY_API_KEY}\nAPI_ENDPOINT=https://api.example.com"}
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono resize-none"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Add Button */}
+        <Button onClick={handleSubmit} className="w-full" size="lg">
+          Add Server
+        </Button>
+      </div>
+    </Card>
+  )
+}
+
+function ServerRow({ name, config, onDelete }: { name: string; config: MCPServerConfig; onDelete: () => void }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
     <div className="group border border-border rounded-lg overflow-hidden hover:border-muted-foreground/30 transition-colors">
-      <div className="flex items-center justify-between p-3 bg-background">
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 flex-1 text-left"
-        >
-          {expanded ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-2">
-              <span className="text-sm font-medium text-foreground">{serverName}</span>
-              <code className="text-xs text-muted-foreground truncate">{serverConfig.command}</code>
-            </div>
+      <div className="flex items-center justify-between p-4 bg-background">
+        <button type="button" onClick={() => setExpanded(!expanded)} className="flex items-center gap-3 flex-1 text-left">
+          <ChevronDown
+            className={cn(
+              "size-4 text-muted-foreground transition-transform",
+              !expanded && "-rotate-90",
+            )}
+          />
+          <div>
+            <div className="text-sm font-medium text-foreground">{name}</div>
+            <code className="text-xs text-muted-foreground">{config.command}</code>
           </div>
         </button>
         <Button
           onClick={onDelete}
           variant="ghost"
           size="sm"
-          className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <Trash2 className="size-3 text-muted-foreground hover:text-red-600" />
+          <Trash2 className="size-4 text-muted-foreground" />
         </Button>
       </div>
 
       {expanded && (
-        <div className="border-t border-border bg-muted/30 p-3 space-y-2">
-          {serverConfig.args.length > 0 && (
+        <div className="border-t border-border bg-muted/20 p-4 space-y-3 text-xs">
+          {config.args.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Arguments</p>
-              <div className="space-y-1">
-                {serverConfig.args.map((arg, idx) => (
-                  <code key={idx} className="block text-xs bg-background px-2 py-1 rounded text-foreground">
-                    {arg}
-                  </code>
-                ))}
-              </div>
+              <div className="font-medium text-muted-foreground mb-1">Arguments</div>
+              {config.args.map((arg, i) => (
+                <code key={i} className="block bg-background px-2 py-1 rounded mb-1 text-foreground">
+                  {arg}
+                </code>
+              ))}
             </div>
           )}
-
-          {serverConfig.env && Object.keys(serverConfig.env).length > 0 && (
+          {config.env && Object.keys(config.env).length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Environment</p>
-              <div className="space-y-1">
-                {Object.entries(serverConfig.env).map(([key, value]) => (
-                  <code key={key} className="block text-xs bg-background px-2 py-1 rounded text-foreground">
-                    {key}={value}
-                  </code>
-                ))}
-              </div>
+              <div className="font-medium text-muted-foreground mb-1">Environment</div>
+              {Object.entries(config.env).map(([key, val]) => (
+                <code key={key} className="block bg-background px-2 py-1 rounded mb-1 text-foreground">
+                  {key}={val}
+                </code>
+              ))}
             </div>
           )}
         </div>
@@ -306,121 +410,80 @@ function MCPServerRow({
   )
 }
 
-function QuickAddForm({
-  onSave,
-  onCancel,
-  existingNames,
-}: {
-  onSave: (name: string, config: MCPServerConfig) => void
-  onCancel: () => void
-  existingNames: string[]
-}) {
-  const [name, setName] = useState("")
-  const [command, setCommand] = useState("")
-  const [argsText, setArgsText] = useState("")
-  const [envText, setEnvText] = useState("")
+function JsonEditor({ config, onUpdate }: { config: MCPServers; onUpdate: (config: MCPServers) => void }) {
+  const [jsonText, setJsonText] = useState(JSON.stringify(config, null, 2))
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
 
-  const handleSubmit = () => {
+  const handlePaste = (value: string) => {
+    setJsonText(value)
     setError("")
+    setSuccess(false)
 
-    if (!name.trim()) {
-      setError("Server name required")
-      return
-    }
+    if (!value.trim()) return
 
-    if (existingNames.includes(name.trim())) {
-      setError("Server name already exists")
-      return
-    }
+    try {
+      const parsed = JSON.parse(value)
+      if (!parsed.mcpServers || typeof parsed.mcpServers !== "object") {
+        setError("Invalid format: must have 'mcpServers' object")
+        return
+      }
 
-    if (!command.trim()) {
-      setError("Command required")
-      return
-    }
-
-    // Parse args (one per line)
-    const args = argsText
-      .split("\n")
-      .map(a => a.trim())
-      .filter(Boolean)
-
-    // Parse env (KEY=value format, one per line)
-    const env: Record<string, string> = {}
-    if (envText.trim()) {
-      const lines = envText.split("\n").filter(l => l.trim())
-      for (const line of lines) {
-        const [key, ...valueParts] = line.split("=")
-        if (key && valueParts.length > 0) {
-          env[key.trim()] = valueParts.join("=").trim()
+      for (const [name, serverConfig] of Object.entries(parsed.mcpServers)) {
+        const server = serverConfig as any
+        if (!server.command || !Array.isArray(server.args)) {
+          setError(`Server '${name}': missing command or args`)
+          return
         }
       }
-    }
 
-    const config: MCPServerConfig = {
-      command: command.trim(),
-      args,
-      ...(Object.keys(env).length > 0 && { env }),
+      onUpdate(parsed)
+      saveMCPConfig(parsed)
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 2000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid JSON")
     }
-
-    onSave(name.trim(), config)
   }
 
   return (
-    <Card className="p-4 space-y-3 border-primary/50">
+    <Card className="p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-foreground">Add Server</h3>
-        <Button onClick={onCancel} variant="ghost" size="sm" className="h-6 w-6 p-0">
-          <X className="size-4" />
+        <h3 className="text-sm font-medium text-foreground">JSON Configuration</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigator.clipboard.writeText(JSON.stringify(config, null, 2))}
+          className="text-xs"
+        >
+          Copy
         </Button>
       </div>
+
+      <textarea
+        value={jsonText}
+        onChange={e => handlePaste(e.target.value)}
+        className={cn(
+          "w-full h-64 px-3 py-2 rounded-lg border bg-background text-xs font-mono resize-none focus:outline-none focus:ring-2 transition-all",
+          error && "border-red-500 focus:ring-red-500",
+          success && "border-green-500 focus:ring-green-500",
+          !error && !success && "border-border focus:ring-primary/20 focus:border-primary",
+        )}
+      />
 
       {error && (
-        <div className="text-xs text-red-600 bg-red-50 dark:bg-red-950/20 px-2 py-1 rounded">{error}</div>
+        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
+          <AlertCircle className="size-4" />
+          {error}
+        </div>
       )}
 
-      <div className="space-y-2">
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Server name (e.g., tavily)"
-          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
-        />
-
-        <input
-          type="text"
-          value={command}
-          onChange={e => setCommand(e.target.value)}
-          placeholder="Command (e.g., npx or /usr/bin/python3)"
-          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
-        />
-
-        <textarea
-          value={argsText}
-          onChange={e => setArgsText(e.target.value)}
-          placeholder="Arguments (one per line)&#10;-y&#10;@tavily/mcp-server"
-          rows={3}
-          className="w-full px-3 py-2 rounded-md border border-border bg-background text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
-        />
-
-        <textarea
-          value={envText}
-          onChange={e => setEnvText(e.target.value)}
-          placeholder="Environment variables (KEY=value, one per line)&#10;TAVILY_API_KEY=${TAVILY_API_KEY}"
-          rows={2}
-          className="w-full px-3 py-2 rounded-md border border-border bg-background text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
-        />
-      </div>
-
-      <div className="flex items-center gap-2 justify-end pt-2">
-        <Button onClick={onCancel} variant="ghost" size="sm">
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} size="sm">
-          Add Server
-        </Button>
-      </div>
+      {success && (
+        <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
+          <Check className="size-4" />
+          Configuration updated
+        </div>
+      )}
     </Card>
   )
 }
