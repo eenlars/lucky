@@ -10,8 +10,8 @@ export function generateApiKey(): { keyId: string; secret: string; fullKey: stri
     .createHash("sha256")
     .update(secretBytes)
     .digest("base64url")
-    .substring(0, 8)
     .replace(/[-]/g, "")
+    .substring(0, 8)
   const keyId = `alive_${keyIdHash}`
 
   // Full key is prefix + secret
