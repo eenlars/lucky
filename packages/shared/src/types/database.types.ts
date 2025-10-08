@@ -124,6 +124,7 @@ export type Database = {
     Tables: {
       DataSet: {
         Row: {
+          clerk_id: string
           created_at: string
           data_format: string | null
           dataset_id: string
@@ -133,6 +134,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clerk_id?: string
           created_at?: string
           data_format?: string | null
           dataset_id?: string
@@ -142,6 +144,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clerk_id?: string
           created_at?: string
           data_format?: string | null
           dataset_id?: string
@@ -237,6 +240,7 @@ export type Database = {
       }
       Evaluator: {
         Row: {
+          clerk_id: string
           config: Json | null
           created_at: string
           evaluator_id: string
@@ -244,6 +248,7 @@ export type Database = {
           rubric: Json | null
         }
         Insert: {
+          clerk_id?: string
           config?: Json | null
           created_at?: string
           evaluator_id?: string
@@ -251,6 +256,7 @@ export type Database = {
           rubric?: Json | null
         }
         Update: {
+          clerk_id?: string
           config?: Json | null
           created_at?: string
           evaluator_id?: string
@@ -261,6 +267,7 @@ export type Database = {
       }
       EvolutionRun: {
         Row: {
+          clerk_id: string | null
           config: Json
           end_time: string | null
           evolution_type: string | null
@@ -271,6 +278,7 @@ export type Database = {
           status: Database["public"]["Enums"]["EvolutionRunStatus"]
         }
         Insert: {
+          clerk_id?: string | null
           config: Json
           end_time?: string | null
           evolution_type?: string | null
@@ -281,6 +289,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["EvolutionRunStatus"]
         }
         Update: {
+          clerk_id?: string | null
           config?: Json
           end_time?: string | null
           evolution_type?: string | null
@@ -295,6 +304,7 @@ export type Database = {
       Generation: {
         Row: {
           best_workflow_version_id: string | null
+          clerk_id: string | null
           comment: string | null
           end_time: string | null
           feedback: string | null
@@ -305,6 +315,7 @@ export type Database = {
         }
         Insert: {
           best_workflow_version_id?: string | null
+          clerk_id?: string | null
           comment?: string | null
           end_time?: string | null
           feedback?: string | null
@@ -315,6 +326,7 @@ export type Database = {
         }
         Update: {
           best_workflow_version_id?: string | null
+          clerk_id?: string | null
           comment?: string | null
           end_time?: string | null
           feedback?: string | null
@@ -679,7 +691,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "WorkflowInvocationEvaluation_wf_inv_id_fkey"
+            foreignKeyName: "WorkflowInvocationEval_wf_inv_id_fkey"
             columns: ["wf_inv_id"]
             isOneToOne: false
             referencedRelation: "WorkflowInvocation"
@@ -785,6 +797,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       gen_prefixed_id: {
         Args: { p_prefix: string }
         Returns: string
@@ -792,6 +808,18 @@ export type Database = {
       gen_short_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      owns_workflow: {
+        Args: { p_workflow_id: string }
+        Returns: boolean
+      }
+      owns_workflow_invocation: {
+        Args: { p_wf_invocation_id: string }
+        Returns: boolean
+      }
+      owns_workflow_version: {
+        Args: { p_wf_version_id: string }
+        Returns: boolean
       }
       require_authenticated: {
         Args: Record<PropertyKey, never>
