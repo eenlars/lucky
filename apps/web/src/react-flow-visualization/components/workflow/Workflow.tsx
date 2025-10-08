@@ -122,7 +122,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
+        connectionLineType={ConnectionLineType.Bezier}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onInit={runLayout}
