@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { Tables } from "@lucky/shared/client"
 import Link from "next/link"
+import WorkflowInvocationButton from "../WorkflowInvocationButton"
 
 type EditorHeaderProps = {
   workflowVersion?: Tables<"WorkflowVersion">
@@ -67,7 +68,9 @@ export default function EditorHeader({
         </div>
 
         <div className="flex items-center gap-3">
-          {workflowVersion && (
+          <WorkflowInvocationButton workflowVersionId={workflowVersion?.wf_version_id} />
+
+          {workflowVersion ? (
             <Link
               href={"/"}
               className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-sm cursor-pointer"
@@ -88,6 +91,24 @@ export default function EditorHeader({
               </svg>
               Run
             </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled title="Save workflow first to run it">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Run
+            </Button>
           )}
 
           <div className="relative group">

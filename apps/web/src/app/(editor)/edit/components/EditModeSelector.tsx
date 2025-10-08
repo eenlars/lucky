@@ -22,6 +22,7 @@ import DatasetSelector from "@/components/DatasetSelector"
 import WorkflowIOTable from "@/components/WorkflowIOTable"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import WorkflowInvocationButton from "./WorkflowInvocationButton"
 
 async function loadFromDSLClientDisplay(dslConfig: any) {
   const response = await fetch("/api/workflow/verify", {
@@ -175,6 +176,24 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
   // Load initial data into graph when component mounts
   useEffect(() => {
+    // Check for demo workflow in sessionStorage first
+    const demoWorkflow = sessionStorage.getItem("demo_workflow")
+    if (demoWorkflow && !workflowVersion) {
+      try {
+        const workflow = JSON.parse(demoWorkflow) as WorkflowConfig
+        const jsonString = JSON.stringify(workflow, null, 2)
+        updateWorkflowJSON(jsonString)
+        loadWorkflowFromData(workflow).then(() => {
+          organizeLayout()
+        })
+        // Clear the demo workflow from sessionStorage after loading
+        sessionStorage.removeItem("demo_workflow")
+      } catch (error) {
+        console.error("Failed to load demo workflow:", error)
+      }
+      return
+    }
+
     if (
       workflowVersion?.dsl &&
       typeof workflowVersion.dsl === "object" &&
@@ -212,6 +231,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
   if (mode === "graph") {
     const graphActions = (
       <>
+        <WorkflowInvocationButton workflowVersionId={workflowVersion?.wf_version_id} />
         <Button
           onClick={organizeLayout}
           variant="ghost"
