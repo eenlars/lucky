@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
   ],
   /* config options here */
   webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Suppress expected dynamic import warnings for config loader
+      // The config loader intentionally uses dynamic imports for user configs at runtime
+      config.module = config.module || {}
+      config.module.exprContextCritical = false
+    }
+
     if (!isServer) {
       // Don't resolve these Node.js modules on the client side
       config.resolve.fallback = {
