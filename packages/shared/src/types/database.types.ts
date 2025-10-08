@@ -6,8 +6,102 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  app: {
+    Tables: {
+      feedback: {
+        Row: {
+          clerk_id: string | null
+          content: string
+          context: string | null
+          created_at: string | null
+          feedback_id: string
+          status: string | null
+        }
+        Insert: {
+          clerk_id?: string | null
+          content: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
+        }
+        Update: {
+          clerk_id?: string | null
+          content?: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   iam: {
     Tables: {
+      org_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          invite_id: string
+          invited_by: string | null
+          org_id: string
+          role: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id?: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_invites_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
       org_memberships: {
         Row: {
           clerk_id: string
@@ -114,6 +208,7 @@ export type Database = {
       }
     }
     Enums: {
+      org_role: "owner" | "admin" | "member"
       user_status: "active" | "disabled" | "invited"
     }
     CompositeTypes: {
@@ -1119,8 +1214,12 @@ export type CompositeTypes<
 export type Constants = typeof _Constants
 
 const _Constants = {
+  app: {
+    Enums: {},
+  },
   iam: {
     Enums: {
+      org_role: ["owner", "admin", "member"],
       user_status: ["active", "disabled", "invited"],
     },
   },

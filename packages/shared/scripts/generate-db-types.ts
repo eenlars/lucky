@@ -26,7 +26,7 @@ async function main() {
     "--project-id",
     "qnvprftdorualkdyogka",
     "--schema",
-    "public,iam,lockbox",
+    "public,iam,lockbox,app",
   ]
 
   const proc = Bun.spawn(["bun", ...args], { stdout: "pipe", stderr: "inherit" })
