@@ -1,7 +1,6 @@
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { personalProfileSchema } from "@/schemas/profile.schema"
 import { auth } from "@clerk/nextjs/server"
-import type { Database } from "@lucky/shared/client"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
 
@@ -14,24 +13,24 @@ export async function GET() {
 
     const supabase = await createRLSClient()
     const { data, error } = await supabase
-      .schema("iam")
-      .from("users")
-      .select("metadata")
+      .schema("app")
+      .from("user_profile")
+      .select("about, goals")
       .eq("clerk_id", userId)
-      .single()
+      .maybeSingle()
 
     if (error) {
-      // Handle case where user doesn't exist yet
-      if (error.code === "PGRST116") {
-        return NextResponse.json({ profile: {} })
-      }
       console.error("Failed to fetch user profile:", error)
       return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
     }
 
-    // Ensure metadata is a valid object and validate with Zod
-    const rawProfile = typeof data?.metadata === "object" && data.metadata !== null ? data.metadata : {}
-    const validatedProfile = personalProfileSchema.parse(rawProfile)
+    // If no profile exists yet, return empty profile
+    if (!data) {
+      return NextResponse.json({ profile: {} })
+    }
+
+    // Validate with Zod
+    const validatedProfile = personalProfileSchema.parse(data)
 
     return NextResponse.json({ profile: validatedProfile })
   } catch (error) {
@@ -69,13 +68,18 @@ export async function PUT(req: Request) {
 
     const supabase = await createRLSClient()
     const { error } = await supabase
-      .schema("iam")
-      .from("users")
-      .update({
-        metadata: validatedProfile as Database["iam"]["Tables"]["users"]["Update"]["metadata"],
-        updated_at: new Date().toISOString(),
-      } satisfies Database["iam"]["Tables"]["users"]["Update"])
-      .eq("clerk_id", userId)
+      .schema("app")
+      .from("user_profile")
+      .upsert(
+        {
+          clerk_id: userId,
+          about: validatedProfile.about ?? null,
+          goals: validatedProfile.goals ?? null,
+        },
+        {
+          onConflict: "clerk_id",
+        },
+      )
 
     if (error) {
       console.error("Failed to update user profile:", error)

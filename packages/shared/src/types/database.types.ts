@@ -35,6 +35,87 @@ export type Database = {
         }
         Relationships: []
       }
+      user_onboarding: {
+        Row: {
+          approval_rules: Json
+          autonomy: string
+          completed_at: string | null
+          created_at: string
+          data_sources: string[]
+          experience: string
+          industry: string | null
+          locale: string | null
+          marketing_opt_in: boolean
+          notify_channels: string[]
+          org_id: string | null
+          preferred_apps: string[]
+          primary_goal: string | null
+          privacy_accepted_at: string | null
+          role: string | null
+          status: string
+          success_metric: string | null
+          team_size: number | null
+          time_budget_min_per_week: number | null
+          timezone: string | null
+          top_tasks: string[]
+          tos_accepted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approval_rules?: Json
+          autonomy?: string
+          completed_at?: string | null
+          created_at?: string
+          data_sources?: string[]
+          experience?: string
+          industry?: string | null
+          locale?: string | null
+          marketing_opt_in?: boolean
+          notify_channels?: string[]
+          org_id?: string | null
+          preferred_apps?: string[]
+          primary_goal?: string | null
+          privacy_accepted_at?: string | null
+          role?: string | null
+          status?: string
+          success_metric?: string | null
+          team_size?: number | null
+          time_budget_min_per_week?: number | null
+          timezone?: string | null
+          top_tasks?: string[]
+          tos_accepted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approval_rules?: Json
+          autonomy?: string
+          completed_at?: string | null
+          created_at?: string
+          data_sources?: string[]
+          experience?: string
+          industry?: string | null
+          locale?: string | null
+          marketing_opt_in?: boolean
+          notify_channels?: string[]
+          org_id?: string | null
+          preferred_apps?: string[]
+          primary_goal?: string | null
+          privacy_accepted_at?: string | null
+          role?: string | null
+          status?: string
+          success_metric?: string | null
+          team_size?: number | null
+          time_budget_min_per_week?: number | null
+          timezone?: string | null
+          top_tasks?: string[]
+          tos_accepted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profile: {
         Row: {
           about: string | null
