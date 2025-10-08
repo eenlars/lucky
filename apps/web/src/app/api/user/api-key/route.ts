@@ -25,6 +25,13 @@ export async function GET(_req: NextRequest) {
       .maybeSingle()
 
     if (error) {
+      console.error("[GET /api/user/api-key] Supabase error:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        clerkId,
+      })
       return NextResponse.json({ error: `Failed to fetch API key: ${error.message}` }, { status: 500 })
     }
 

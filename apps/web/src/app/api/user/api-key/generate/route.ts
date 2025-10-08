@@ -8,14 +8,19 @@ export const runtime = "nodejs"
 function generateApiKey(): { keyId: string; secret: string; fullKey: string } {
   // Generate a random secret (32 bytes = 256 bits)
   const secretBytes = crypto.randomBytes(32)
-  const secret = secretBytes.toString("base64url")
+  const secret = secretBytes.toString("base64url").replace(/[-]/g, "")
 
   // Create a shorter key_id for display (first 8 chars of the secret hash)
-  const keyIdHash = crypto.createHash("sha256").update(secretBytes).digest("base64url").substring(0, 8)
-  const keyId = `lky_${keyIdHash}`
+  const keyIdHash = crypto
+    .createHash("sha256")
+    .update(secretBytes)
+    .digest("base64url")
+    .substring(0, 8)
+    .replace(/[-]/g, "")
+  const keyId = `alive_${keyIdHash}`
 
   // Full key is prefix + secret
-  const fullKey = `lky_${secret}`
+  const fullKey = `alive_${secret}`
 
   return { keyId, secret, fullKey }
 }
@@ -70,7 +75,7 @@ export async function POST(_req: NextRequest) {
           key_id: keyId,
           secret_hash: secretHash,
           name: "Default API Key",
-          environment: "production",
+          environment: "live",
           scopes: { all: true },
           created_by: clerkId,
           updated_by: clerkId,
