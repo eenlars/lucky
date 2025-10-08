@@ -8,6 +8,57 @@ export type Database = {
   }
   iam: {
     Tables: {
+      org_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          invite_id: string
+          invited_by: string | null
+          org_id: string
+          role: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id?: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_invites_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
       org_memberships: {
         Row: {
           clerk_id: string
@@ -114,6 +165,7 @@ export type Database = {
       }
     }
     Enums: {
+      org_role: "owner" | "admin" | "member"
       user_status: "active" | "disabled" | "invited"
     }
     CompositeTypes: {
@@ -1121,6 +1173,7 @@ export type Constants = typeof _Constants
 const _Constants = {
   iam: {
     Enums: {
+      org_role: ["owner", "admin", "member"],
       user_status: ["active", "disabled", "invited"],
     },
   },
