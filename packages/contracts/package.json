@@ -16,7 +16,8 @@
     "./agent": "./src/agent.ts",
     "./workflow": "./src/workflow.ts",
     "./messages": "./src/messages.ts",
-    "./tools": "./src/tools.ts"
+    "./tools": "./src/tools.ts",
+    "./invoke": "./src/invoke.ts"
   },
   "dependencies": {
     "zod": "^3.25.73"
