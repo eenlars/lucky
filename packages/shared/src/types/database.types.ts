@@ -44,6 +44,7 @@ export type Database = {
           data_sources: string[]
           experience: string
           industry: string | null
+          ip_address: string | null
           locale: string | null
           marketing_opt_in: boolean
           notify_channels: string[]
@@ -70,6 +71,7 @@ export type Database = {
           data_sources?: string[]
           experience?: string
           industry?: string | null
+          ip_address?: string | null
           locale?: string | null
           marketing_opt_in?: boolean
           notify_channels?: string[]
@@ -96,6 +98,7 @@ export type Database = {
           data_sources?: string[]
           experience?: string
           industry?: string | null
+          ip_address?: string | null
           locale?: string | null
           marketing_opt_in?: boolean
           notify_channels?: string[]
