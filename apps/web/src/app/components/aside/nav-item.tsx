@@ -32,7 +32,11 @@ export function NavItem({
           </div>
         </div>
       </a>
-      {hasSubmenu && <div className="transition-all duration-300 ease-out overflow-hidden max-h-0">{children}</div>}
+      {hasSubmenu && (
+        <div className="transition-all duration-300 ease-out overflow-hidden max-h-0 group-hover:max-h-[500px]">
+          {children}
+        </div>
+      )}
     </div>
   )
 }
