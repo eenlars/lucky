@@ -86,6 +86,7 @@ const navigationItems: NavItemData[] = [
     description: "Configure app",
     submenus: [
       { label: "General", href: "/settings" },
+      { label: "Profile", href: "/profile" },
       { label: "Providers", href: "/providers" },
     ],
   },
