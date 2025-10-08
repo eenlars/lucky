@@ -22,6 +22,9 @@ function WorkflowRow({
   const versionCount = workflow.versionCount || 0
   const timeAgo = workflow.updated_at ? formatTimeAgo(new Date(workflow.updated_at)) : null
 
+  const latestVersionId = workflow.activeVersion?.wf_version_id
+  const editHref = latestVersionId ? `/edit/${latestVersionId}` : `/edit/${workflow.wf_id}`
+
   return (
     <div className="relative flex items-center gap-4 px-4 h-14 border-b border-border/30 hover:bg-black/[0.03] dark:hover:bg-white/[0.06] transition-all duration-[80ms] ease-out group">
       <div
@@ -32,7 +35,7 @@ function WorkflowRow({
       {/* Name/Description */}
       <div className="flex-1 min-w-0">
         <Link
-          href={`/edit/${workflow.wf_id}`}
+          href={editHref}
           className="font-semibold text-[14px] leading-[20px] text-foreground hover:underline truncate block"
           title={workflow.description}
         >
@@ -96,7 +99,7 @@ function WorkflowRow({
         </button>
 
         <Link
-          href={`/edit/${workflow.wf_id}`}
+          href={editHref}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2"
         >
           <Pencil className="size-3" />

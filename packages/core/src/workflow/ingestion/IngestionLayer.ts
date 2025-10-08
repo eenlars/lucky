@@ -41,6 +41,10 @@ export class IngestionLayer {
       return IngestionLayer.convertPromptOnlyEvaluation(evaluation)
     }
 
+    if (evaluation.type === "mcp-invoke") {
+      return IngestionLayer.convertMCPInvokeEvaluation(evaluation)
+    }
+
     if (evaluation.type === "swebench") {
       return await IngestionLayer.convertSWEBenchEvaluation(evaluation)
     }
@@ -79,6 +83,43 @@ export class IngestionLayer {
         workflowInput: evaluation.goal,
         workflowOutput: {
           output: "everything is correct, always return 100%",
+        },
+      },
+    ]
+  }
+
+  /**
+   * converts MCP invoke input to WorkflowIO
+   * handles structured data by converting to JSON string for now
+   */
+  private static convertMCPInvokeEvaluation(evaluation: EvaluationInput & { type: "mcp-invoke" }): WorkflowIO[] {
+    // Convert inputData to string format for workflow processing
+    let workflowInput: string
+    if (typeof evaluation.inputData === "string") {
+      workflowInput = evaluation.inputData
+    } else if (typeof evaluation.inputData === "object" && evaluation.inputData !== null) {
+      // Stringify objects for processing
+      workflowInput = JSON.stringify(evaluation.inputData, null, 2)
+    } else {
+      workflowInput = String(evaluation.inputData)
+    }
+
+    // Prepend goal if provided for context
+    if (evaluation.goal && evaluation.goal.trim().length > 0) {
+      workflowInput = `${evaluation.goal}\n\nInput:\n${workflowInput}`
+    }
+
+    lgg.onlyIf(IngestionLayer.verbose, "[IngestionLayer] created MCP invoke workflow case", {
+      inputDataType: typeof evaluation.inputData,
+      hasGoal: !!evaluation.goal,
+    })
+
+    return [
+      {
+        workflowInput,
+        workflowOutput: {
+          output: "everything is correct, always return 100%",
+          outputSchema: evaluation.outputSchema,
         },
       },
     ]

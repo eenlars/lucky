@@ -1,11 +1,14 @@
 "use client"
 
+import { EmptyState } from "@/components/empty-states/EmptyState"
+import { HelpTooltip, helpContent } from "@/components/help/HelpTooltip"
+import { TableSkeleton } from "@/components/loading/Skeleton"
 import { Button } from "@/components/ui/button"
 import { showToast } from "@/lib/toast-utils"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { ChevronDown, ChevronUp, Filter, Trash2, X } from "lucide-react"
+import { ChevronDown, ChevronUp, Filter, Rocket, Trash2, X } from "lucide-react"
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -665,14 +668,16 @@ export default function InvocationsPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">
-          Workflow Invocations
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Each row represents a single workflow execution. The emoji in the Version column helps you quickly identify
-          invocations from the same workflow version.
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Workflow History</h1>
+            <HelpTooltip content={helpContent.invocation} />
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Every time you run a workflow, it appears here. Track performance, costs, and results for each run.
+          </p>
+        </div>
       </div>
 
       <div className="mb-6 space-y-4">
@@ -1088,6 +1093,7 @@ export default function InvocationsPage() {
                       <div className="flex items-center gap-1">
                         <span>Accuracy</span>
                         <SortIcon field="accuracy" />
+                        <HelpTooltip content={helpContent.accuracy} />
                       </div>
                     </th>
                     <th
@@ -1095,8 +1101,9 @@ export default function InvocationsPage() {
                       onClick={() => handleSort("fitness")}
                     >
                       <div className="flex items-center gap-1">
-                        <span>Fitness Score</span>
+                        <span>Fitness</span>
                         <SortIcon field="fitness" />
+                        <HelpTooltip content={helpContent.fitness} />
                       </div>
                     </th>
                     <th
@@ -1290,37 +1297,45 @@ export default function InvocationsPage() {
             </div>
           </div>
         </div>
+      ) : loading ? (
+        <TableSkeleton rows={itemsPerPage} columns={8} />
+      ) : invocations.length === 0 &&
+        (filters.status ||
+          filters.minCost ||
+          filters.maxCost ||
+          filters.dateFrom ||
+          filters.dateTo ||
+          filters.minAccuracy ||
+          filters.maxAccuracy ||
+          filters.minFitnessScore ||
+          filters.maxFitnessScore ||
+          showCompletedOnly) ? (
+        <EmptyState
+          icon="🔍"
+          title="No matches found"
+          description="Try adjusting your filters to see more results."
+          action={{
+            label: "Clear filters",
+            onClick: () => {
+              clearFilters()
+              setShowCompletedOnly(false)
+            },
+          }}
+        />
       ) : (
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center py-12">
-          <div className="text-center">
-            {loading ? (
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-gray-500 dark:text-gray-400">Loading invocations...</p>
-              </div>
-            ) : invocations.length === 0 ? (
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">📋</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No invocations found</h3>
-                  <p className="text-gray-500 dark:text-gray-400">Start by creating your first workflow invocation.</p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">🔍</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No matches found</h3>
-                  <p className="text-gray-500 dark:text-gray-400">Try adjusting your filters to see more results.</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <EmptyState
+          icon={Rocket}
+          title="No runs yet"
+          description="Create and run your first workflow to see it appear here. Each run shows you exactly how your workflow performed."
+          action={{
+            label: "Create workflow",
+            href: "/edit",
+          }}
+          secondaryAction={{
+            label: "Quick start demo",
+            href: "/",
+          }}
+        />
       )}
 
       {/* Delete Confirmation Modal */}

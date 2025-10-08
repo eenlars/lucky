@@ -27,6 +27,7 @@ export type EvaluationInput =
   | EvaluationCSV
   | EvaluationText
   | PromptOnly
+  | MCPInvokeInput
   | SWEBenchInput
   | GAIAInput
   | WebArenaInput
@@ -54,6 +55,17 @@ export interface EvaluationText extends MainGoal {
 export interface PromptOnly extends MainGoal {
   type: "prompt-only"
   outputSchema?: never
+}
+
+/** MCP JSON-RPC invocation input; supports structured data with schema validation. */
+export interface MCPInvokeInput extends MainGoal {
+  type: "mcp-invoke"
+  /** Structured input data (can be string, object, etc.) */
+  inputData: unknown
+  /** Optional input schema for validation (if not provided, uses workflow's inputSchema) */
+  inputSchema?: OutputSchema
+  /** Optional output schema for validation */
+  outputSchema?: OutputSchema
 }
 
 /** SWE-bench evaluation input, configured by goal and optional schema. */
@@ -127,6 +139,7 @@ export interface WebArenaInstance {
 export const hasGroundTruth = (evaluation: EvaluationInput): boolean => {
   switch (evaluation.type) {
     case "prompt-only":
+    case "mcp-invoke":
       return false
     case "text":
       return (evaluation.answer ?? "").trim().length > 0

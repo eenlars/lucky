@@ -1,10 +1,13 @@
 "use client"
 
+import { EmptyState } from "@/components/empty-states/EmptyState"
+import { HelpTooltip, helpContent } from "@/components/help/HelpTooltip"
 import { Button } from "@/components/ui/button"
 import { type EvolutionRunWithStats, useEvolutionRunsStore } from "@/stores/evolution-runs-store"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { Sparkles } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -141,9 +144,12 @@ export default function EvolutionPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Evolution Runs</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Learning Runs</h1>
+            <HelpTooltip content={helpContent.evolution} />
+          </div>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Monitor and analyze your workflow evolution experiments
+            Watch your workflows learn and improve automatically through evolution
           </p>
         </div>
 
@@ -490,29 +496,43 @@ export default function EvolutionPage() {
               </table>
             </div>
           </div>
-        ) : (
+        ) : loading ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12">
             <div className="text-center">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                {loading
-                  ? "Loading evolution runs..."
-                  : hideEmptyRuns
-                    ? "No evolution runs with invocations found"
-                    : "No evolution runs found"}
-              </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {!loading && "Try adjusting your filters or creating a new evolution run."}
-              </p>
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             </div>
           </div>
+        ) : searchTerm || statusFilter !== "all" || modeFilter !== "all" || dateFilter !== "all" || hideEmptyRuns ? (
+          <EmptyState
+            icon="🔍"
+            title="No matches found"
+            description="Try adjusting your filters to see more results."
+            action={{
+              label: "Clear all filters",
+              onClick: () => {
+                setSearchTerm("")
+                setStatusFilter("all")
+                setModeFilter("all")
+                setDateFilter("all")
+                setHideEmptyRuns(false)
+              },
+            }}
+          />
+        ) : (
+          <EmptyState
+            icon={Sparkles}
+            title="No learning runs yet"
+            description="Evolution runs help workflows learn and improve automatically. Create your first workflow, then start an evolution run to watch it optimize itself."
+            action={{
+              label: "Create workflow",
+              href: "/edit",
+            }}
+            secondaryAction={{
+              label: "Learn about evolution",
+              href: "/",
+            }}
+          />
         )}
       </div>
     </div>

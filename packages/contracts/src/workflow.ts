@@ -19,6 +19,17 @@ export interface WorkflowNodeConfig {
 }
 
 /**
+ * JSON Schema definition for workflow input/output validation
+ */
+export interface JsonSchemaDefinition {
+  type: "object" | "string" | "number" | "boolean" | "array"
+  properties?: Record<string, any>
+  required?: string[]
+  items?: any
+  description?: string
+}
+
+/**
  * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
  */
 export interface WorkflowConfig {
@@ -27,6 +38,8 @@ export interface WorkflowConfig {
   contextFile?: string | null
   memory?: Record<string, string> | null
   toolsInformation?: any // ToolsInformation - any for now
+  inputSchema?: JsonSchemaDefinition // Schema for validating external invocation inputs
+  outputSchema?: OutputSchema // Schema for workflow output
 }
 
 /**
@@ -72,6 +85,7 @@ export const toWorkflowConfig = (dsl: unknown): WorkflowConfig | null => {
 
 /**
  * Output schema for workflow results
+ * @deprecated Use JsonSchemaDefinition instead
  */
 export interface OutputSchema {
   type: "object" | "string" | "array"
