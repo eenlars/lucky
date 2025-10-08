@@ -161,6 +161,9 @@ export function Aside() {
                 <SubNavItem href="/settings/developer" delay={100}>
                   Developer
                 </SubNavItem>
+                <SubNavItem href="/providers" delay={120}>
+                  Providers
+                </SubNavItem>
               </NavItem>
             </div>
           </nav>

@@ -20,8 +20,8 @@ import {
   X,
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { type Connector, mockConnectors } from "./mock-data"
 import { MCPServersConfig } from "./mcp-servers"
+import { type Connector, mockConnectors } from "./mock-data"
 
 export default function ConnectorsPage() {
   const [activeTab, setActiveTab] = useState("marketplace")

@@ -6,7 +6,7 @@ import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Plug, Settings, Wre
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FeedbackButton } from "./feedback-button"
 import { UserProfile } from "./user-profile"
 
@@ -84,7 +84,11 @@ const navigationItems: NavItemData[] = [
     label: "Settings",
     icon: <Settings className="w-4 h-4" />,
     description: "Configure app",
-    submenus: [{ label: "Profile", href: "/profile" }],
+    submenus: [
+      { label: "General", href: "/settings" },
+      { label: "Profile", href: "/profile" },
+      { label: "Providers", href: "/providers" },
+    ],
   },
 ]
 
@@ -188,6 +192,25 @@ export function IntegratedAside() {
   const [isHovered, setIsHovered] = useState(false)
   const { isMobile } = useSidebar()
 
+  // Auto-expand submenus when on a submenu route
+  useEffect(() => {
+    navigationItems.forEach(item => {
+      if (item.submenus) {
+        const isSubmenuActive = item.submenus.some(
+          submenu => pathname === submenu.href || pathname?.startsWith(`${submenu.href}/`),
+        )
+        if (isSubmenuActive) {
+          setOpenSubmenus(prev => {
+            if (!prev.has(item.href)) {
+              return new Set(prev).add(item.href)
+            }
+            return prev
+          })
+        }
+      }
+    })
+  }, [pathname])
+
   // Handle submenu toggle
   const toggleSubmenu = (href: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -243,7 +266,13 @@ export function IntegratedAside() {
           <nav className="w-full">
             <div className="flex flex-col gap-2">
               {navigationItems.map(item => {
-                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
+                // Check if any submenu is active
+                const isSubmenuActive =
+                  item.submenus?.some(
+                    submenu => pathname === submenu.href || pathname?.startsWith(`${submenu.href}/`),
+                  ) ?? false
+
+                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`) || isSubmenuActive
 
                 return (
                   <div key={item.href} className="group">
@@ -265,32 +294,44 @@ export function IntegratedAside() {
                           openSubmenus.has(item.href) ? "max-h-[500px]" : "max-h-0",
                         )}
                       >
-                        {item.submenus.map((submenu, index) => (
-                          <Link
-                            key={submenu.href}
-                            href={submenu.href}
-                            className="block group/child"
-                            onClick={handleNavClick}
-                          >
-                            <div className="relative">
-                              <div
-                                className={cn(
-                                  "ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out",
-                                  openSubmenus.has(item.href)
-                                    ? "opacity-100 translate-x-0"
-                                    : "opacity-0 -translate-x-2",
-                                )}
-                                style={{
-                                  transitionDelay: `${index * 20}ms`,
-                                }}
-                              >
-                                <span className="text-xs font-medium transition-colors duration-200 text-[#888] group-hover/child:text-primary whitespace-nowrap overflow-hidden">
-                                  {submenu.label}
-                                </span>
+                        {item.submenus.map((submenu, index) => {
+                          const isSubmenuItemActive =
+                            pathname === submenu.href || pathname?.startsWith(`${submenu.href}/`)
+
+                          return (
+                            <Link
+                              key={submenu.href}
+                              href={submenu.href}
+                              className="block group/child"
+                              onClick={handleNavClick}
+                            >
+                              <div className="relative">
+                                <div
+                                  className={cn(
+                                    "ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out",
+                                    openSubmenus.has(item.href)
+                                      ? "opacity-100 translate-x-0"
+                                      : "opacity-0 -translate-x-2",
+                                  )}
+                                  style={{
+                                    transitionDelay: `${index * 20}ms`,
+                                  }}
+                                >
+                                  <span
+                                    className={cn(
+                                      "text-xs font-medium transition-colors duration-200 whitespace-nowrap overflow-hidden",
+                                      isSubmenuItemActive
+                                        ? "text-primary"
+                                        : "text-[#888] group-hover/child:text-primary",
+                                    )}
+                                  >
+                                    {submenu.label}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          </Link>
-                        ))}
+                            </Link>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
