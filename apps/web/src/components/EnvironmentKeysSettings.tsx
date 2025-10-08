@@ -352,8 +352,8 @@ export default function EnvironmentKeysSettings() {
             <div className="space-y-1">
               <p className="text-sm font-medium text-foreground">Storage notice</p>
               <p className="text-xs text-muted-foreground">
-                Environment variables are stored locally in your browser's localStorage. They're accessible to scripts
-                on this page, so never paste untrusted code. Never commit these values to version control.
+                Environment variables are stored locally in your browser&apos;s localStorage. They&apos;re accessible to
+                scripts on this page, so never paste untrusted code. Never commit these values to version control.
               </p>
             </div>
           </div>
