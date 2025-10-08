@@ -120,6 +120,144 @@ export type Database = {
       [_ in never]: never
     }
   }
+  lockbox: {
+    Tables: {
+      secret_keys: {
+        Row: {
+          clerk_id: string
+          created_at: string
+          created_by: string | null
+          environment: string
+          expires_at: string | null
+          key_id: string
+          last_used_at: string | null
+          name: string
+          rate_limit_pm: number | null
+          revoked_at: string | null
+          scopes: Json
+          secret_hash: string
+          secret_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          clerk_id: string
+          created_at?: string
+          created_by?: string | null
+          environment?: string
+          expires_at?: string | null
+          key_id: string
+          last_used_at?: string | null
+          name: string
+          rate_limit_pm?: number | null
+          revoked_at?: string | null
+          scopes?: Json
+          secret_hash: string
+          secret_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          clerk_id?: string
+          created_at?: string
+          created_by?: string | null
+          environment?: string
+          expires_at?: string | null
+          key_id?: string
+          last_used_at?: string | null
+          name?: string
+          rate_limit_pm?: number | null
+          revoked_at?: string | null
+          scopes?: Json
+          secret_hash?: string
+          secret_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      user_secrets: {
+        Row: {
+          auth_tag: string
+          ciphertext: string
+          clerk_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          is_current: boolean
+          iv: string
+          last_used_at: string | null
+          name: string
+          namespace: string
+          scope: Json
+          updated_at: string
+          updated_by: string | null
+          user_secret_id: string
+          version: number
+        }
+        Insert: {
+          auth_tag: string
+          ciphertext: string
+          clerk_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          is_current?: boolean
+          iv: string
+          last_used_at?: string | null
+          name: string
+          namespace?: string
+          scope?: Json
+          updated_at?: string
+          updated_by?: string | null
+          user_secret_id?: string
+          version?: number
+        }
+        Update: {
+          auth_tag?: string
+          ciphertext?: string
+          clerk_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          is_current?: boolean
+          iv?: string
+          last_used_at?: string | null
+          name?: string
+          namespace?: string
+          scope?: Json
+          updated_at?: string
+          updated_by?: string | null
+          user_secret_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_org_admin: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       DataSet: {
@@ -298,6 +436,33 @@ export type Database = {
           run_id?: string
           start_time?: string
           status?: Database["public"]["Enums"]["EvolutionRunStatus"]
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          clerk_id: string | null
+          content: string
+          context: string | null
+          created_at: string | null
+          feedback_id: string
+          status: string | null
+        }
+        Insert: {
+          clerk_id?: string | null
+          content: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
+        }
+        Update: {
+          clerk_id?: string | null
+          content?: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
         }
         Relationships: []
       }
@@ -969,6 +1134,9 @@ const _Constants = {
     Enums: {
       user_status: ["active", "disabled", "invited"],
     },
+  },
+  lockbox: {
+    Enums: {},
   },
   public: {
     Enums: {

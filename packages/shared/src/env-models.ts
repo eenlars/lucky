@@ -61,6 +61,15 @@ export const toolProviders = z.object({
   WEBSHARE_API_KEY: apiKey.optional(),
 })
 
+// --- Lockbox (server-side secrets)
+export const lockboxServer = z.object({
+  /**
+   * 32-byte key for AES-256-GCM encryption of user secrets.
+   * Accepts raw text, hex, or base64. For production, use a random 32-byte value.
+   */
+  LOCKBOX_KEK: z.string().optional(),
+})
+
 // --- Clerk Auth (server-side)
 export const clerkServer = z.object({
   CLERK_SECRET_KEY: apiKey,
@@ -231,6 +240,14 @@ export const docs: VarDoc[] = [
     description: "Webshare proxy API key",
     example: "",
     section: "Tools / data",
+  },
+  // Lockbox
+  {
+    key: "LOCKBOX_KEK",
+    required: false,
+    description: "32-byte key (raw/hex/base64) used to encrypt user secrets with AES-256-GCM. Set on server only.",
+    example: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    section: "Security / secrets",
   },
   {
     key: "MEM0_API_KEY",
