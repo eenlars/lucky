@@ -9,7 +9,7 @@ interface QuickActionsFooterProps {
   node: AppNode
 }
 
-export function QuickActionsFooter({ node }: QuickActionsFooterProps) {
+export function QuickActionsFooter({ node: _node }: QuickActionsFooterProps) {
   const [testInput, setTestInput] = useState("")
   const [isRunning, setIsRunning] = useState(false)
 
@@ -47,6 +47,7 @@ export function QuickActionsFooter({ node }: QuickActionsFooterProps) {
             disabled={isRunning}
           />
           <button
+            type="button"
             onClick={handleQuickRun}
             disabled={!testInput.trim() || isRunning}
             className={cn(
@@ -65,6 +66,7 @@ export function QuickActionsFooter({ node }: QuickActionsFooterProps) {
         {/* Quick Actions Row */}
         <div className="flex items-center justify-between">
           <button
+            type="button"
             className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors flex items-center gap-1.5"
             title="View execution history (⌘T)"
           >

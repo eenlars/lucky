@@ -18,7 +18,11 @@ export function CollapsibleSection({ title, defaultOpen = true, children, badge,
   return (
     <div className="space-y-3">
       {/* Section Header - matches aside nav item style */}
-      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full group">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full group"
+      >
         <div className="flex items-center gap-2">
           {icon && <div className="text-gray-600 dark:text-gray-400">{icon}</div>}
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">

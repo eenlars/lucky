@@ -172,6 +172,7 @@ export default function ExperimentsOverviewPage() {
           {/* Tab Navigation */}
           <div className="flex space-x-1 mb-8 bg-gray-200 p-1 rounded-lg">
             <button
+              type="button"
               onClick={() => setActiveTab("overview")}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
                 activeTab === "overview" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
@@ -180,6 +181,7 @@ export default function ExperimentsOverviewPage() {
               Overview
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("adaptive")}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
                 activeTab === "adaptive" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
@@ -188,6 +190,7 @@ export default function ExperimentsOverviewPage() {
               Adaptive Behavior
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("sequential")}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
                 activeTab === "sequential" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
@@ -196,6 +199,7 @@ export default function ExperimentsOverviewPage() {
               Sequential Execution
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("capacity")}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
                 activeTab === "capacity" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"

@@ -122,7 +122,7 @@ export default function WorkflowInvocationButton({ workflowVersionId }: Workflow
                   {/* Curl Command */}
                   <div className="relative">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-gray-700">cURL Command</label>
+                      <div className="text-sm font-medium text-gray-700">cURL Command</div>
                       <Button
                         onClick={handleCopy}
                         variant="ghost"

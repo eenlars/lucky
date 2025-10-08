@@ -17,7 +17,7 @@ const tool1 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async ({ input: _input }: { input: string }) => {
     return "555"
   },
 })

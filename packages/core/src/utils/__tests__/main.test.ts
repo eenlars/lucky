@@ -400,7 +400,7 @@ describe("main.ts", () => {
       // Should throw GP error but won't reach GP code path
       mocks.evolutionEngineRun.mockRejectedValue(new Error("GP initialization failed"))
 
-      const { default: main } = await import("@core/main")
+      const { default: _main } = await import("@core/main")
 
       // await expect(main()).rejects.toThrow("GP initialization failed")
     })
@@ -408,7 +408,7 @@ describe("main.ts", () => {
     it("should create evolution engine with correct config", async () => {
       // IMPROVEMENT NEEDED: EvolutionEngine not called in iterative mode
       const { default: main } = await import("@core/main")
-      const { EvolutionEngine } = await import("@core/improvement/gp/evolutionengine")
+      const { EvolutionEngine: _EvolutionEngine } = await import("@core/improvement/gp/evolutionengine")
 
       await main()
 

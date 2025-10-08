@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         // Inherit budget settings from parent version if not explicitly provided
         if (iterationBudget === undefined) finalIterationBudget = existingVersion.iteration_budget
         if (timeBudgetSeconds === undefined) finalTimeBudgetSeconds = existingVersion.time_budget_seconds
-      } catch (versionError) {
+      } catch (_versionError) {
         return NextResponse.json({ error: "Workflow version not found" }, { status: 404 })
       }
     } else {

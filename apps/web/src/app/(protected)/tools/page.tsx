@@ -211,6 +211,7 @@ export default function ToolsPage() {
         <div className="p-3">
           {tools.map(tool => (
             <button
+              type="button"
               key={tool.id}
               onClick={() => handleToolSelect(tool)}
               className={cn(
@@ -259,12 +260,14 @@ export default function ToolsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => setInput(JSON.stringify(selectedTool.example, null, 2))}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Load Example
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleCopy(input, setCopied)}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                 >
@@ -313,6 +316,7 @@ export default function ToolsPage() {
               </div>
               {output && (
                 <button
+                  type="button"
                   onClick={() => handleCopy(output, setOutputCopied)}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                 >

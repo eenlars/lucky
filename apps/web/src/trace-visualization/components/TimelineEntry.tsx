@@ -114,6 +114,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
+              type="button"
               className="text-lg font-medium text-sidebar-foreground bg-sidebar-accent px-3 py-1.5 border border-sidebar-border hover:bg-sidebar-accent/80 transition-colors duration-200 cursor-pointer"
               onClick={() => router.push(`/node-invocation/${invocation.node_invocation_id}`)}
               title="View detailed node invocation"
@@ -122,6 +123,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
             </button>
             {nodeDefinition?.system_prompt && (
               <button
+                type="button"
                 className="p-1.5 hover:bg-sidebar-accent transition-colors duration-200"
                 onClick={() => setIsPromptExpanded(!isPromptExpanded)}
                 title="Toggle system prompt"
@@ -138,6 +140,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
             <Dialog>
               <DialogTrigger asChild>
                 <button
+                  type="button"
                   className="p-1.5 hover:bg-sidebar-accent transition-colors duration-200 text-sidebar-foreground/70 hover:text-sidebar-primary"
                   title="Inspect raw database content"
                   aria-label="Inspect raw database content"
@@ -391,6 +394,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
+                          type="button"
                           className="p-1.5 rounded hover:bg-sidebar-accent transition-colors duration-200 border border-sidebar-border"
                           onClick={() => setIsUpdatedMemoryExpanded(true)}
                           title="Expand updated memory"
@@ -403,6 +407,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
+                          type="button"
                           className="p-1.5 rounded hover:bg-sidebar-accent transition-colors duration-200 border border-sidebar-border"
                           onClick={() => setIsUpdatedMemoryExpanded(false)}
                           title="Collapse updated memory"
@@ -504,6 +509,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <button
+                type="button"
                 onClick={() => setShowExecutionSteps(!showExecutionSteps)}
                 className="text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-primary transition-colors duration-200 flex items-center gap-2 pb-2 flex-1"
               >
@@ -518,6 +524,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
+                        type="button"
                         className="p-1.5 hover:bg-sidebar-accent transition-colors duration-200 border border-sidebar-border"
                         onClick={() => setExpandAllLogs(true)}
                         title="Expand all logs"
@@ -530,6 +537,7 @@ export const TimelineEntry = ({ entry, index, isLastNode: _isLastNode = false }:
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
+                        type="button"
                         className="p-1.5 hover:bg-sidebar-accent transition-colors duration-200 border border-sidebar-border"
                         onClick={() => setExpandAllLogs(false)}
                         title="Collapse all logs"

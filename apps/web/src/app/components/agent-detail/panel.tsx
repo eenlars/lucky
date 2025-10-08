@@ -22,7 +22,7 @@ export function AgentDetailPanel() {
     })),
   )
 
-  const panelRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDialogElement>(null)
 
   // Handle ESC key to close panel
   useEffect(() => {
@@ -67,7 +67,7 @@ export function AgentDetailPanel() {
       />
 
       {/* Panel with elastic slide animation */}
-      <div
+      <dialog
         ref={panelRef}
         className={cn(
           "fixed top-0 right-0 h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 shadow-2xl overflow-hidden flex flex-col",
@@ -79,9 +79,9 @@ export function AgentDetailPanel() {
         style={{
           transitionTimingFunction: isOpen ? "cubic-bezier(0.34, 1.56, 0.64, 1)" : "cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-        role="dialog"
         aria-modal="true"
         aria-label="Agent inspector"
+        open={isOpen}
       >
         {/* Header */}
         <AgentDetailHeader
@@ -107,7 +107,7 @@ export function AgentDetailPanel() {
 
         {/* Quick Actions - sticky footer */}
         <QuickActionsFooter node={selectedNode} />
-      </div>
+      </dialog>
     </>
   )
 }

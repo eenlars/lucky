@@ -111,8 +111,11 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
           >
             {/* Task */}
             <div className="col-span-3 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">Task</label>
+              <label htmlFor={`task-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
+                Task
+              </label>
               <textarea
+                id={`task-${io.id}`}
                 className={`flex-1 w-full border rounded text-sm p-2 resize-none transition-colors focus:border-blue-500 focus:outline-none ${
                   task && task.trim().length < 10 ? "border-red-400 bg-red-50" : "border-gray-300"
                 }`}
@@ -128,8 +131,11 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
 
             {/* Expected Output */}
             <div className="col-span-4 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">Expected Output</label>
+              <label htmlFor={`expected-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
+                Expected Output
+              </label>
               <textarea
+                id={`expected-${io.id}`}
                 className="flex-1 w-full border border-gray-300 rounded text-sm p-2 resize-none focus:border-blue-500 focus:outline-none"
                 value={io.expected}
                 onChange={e => updateCase(io.id, { expected: e.target.value })}
@@ -141,28 +147,34 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
 
             {/* Output */}
             <div className="col-span-3 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">Output</label>
-              {metricsHook.metrics.output ? (
-                <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
-                  <SmartContent
-                    value={metricsHook.metrics.output}
-                    className="text-xs text-gray-700"
-                    showExpanders={false}
-                    enableClipboard={false}
-                    stringifySpacing={2}
-                  />
-                </div>
-              ) : (
-                <div className="flex-1 text-xs text-gray-400 bg-gray-50 rounded p-2 flex items-center justify-center">
-                  No output yet
-                </div>
-              )}
+              <label htmlFor={`output-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
+                Output
+              </label>
+              <div id={`output-${io.id}`}>
+                {metricsHook.metrics.output ? (
+                  <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
+                    <SmartContent
+                      value={metricsHook.metrics.output}
+                      className="text-xs text-gray-700"
+                      showExpanders={false}
+                      enableClipboard={false}
+                      stringifySpacing={2}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex-1 text-xs text-gray-400 bg-gray-50 rounded p-2 flex items-center justify-center">
+                    No output yet
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Metrics */}
             <div className="col-span-1 flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">Metrics</label>
-              <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
+              <label htmlFor={`metrics-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
+                Metrics
+              </label>
+              <div id={`metrics-${io.id}`} className="flex-1 bg-gray-50 rounded p-2 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-gray-500 font-medium">Score</span>
                   <span
@@ -195,6 +207,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
             {/* Actions */}
             <div className="col-span-1 flex flex-col justify-start items-end gap-1.5 pt-4">
               <button
+                type="button"
                 onClick={handleRun}
                 disabled={!canRun || busy}
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
@@ -217,6 +230,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
               </button>
 
               <button
+                type="button"
                 className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
                   res && isInvokeWorkflowResult(res)
                     ? "border-gray-300 hover:bg-gray-50 cursor-pointer"
@@ -242,6 +256,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
               </button>
 
               <button
+                type="button"
                 onClick={() => setFeedbackOpen(true)}
                 className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                 title="Feedback"
@@ -258,6 +273,7 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
               </button>
 
               <button
+                type="button"
                 onClick={() => removeCase(io.id)}
                 disabled={busy}
                 className="w-7 h-7 rounded-full border border-red-300 flex items-center justify-center hover:bg-red-50 transition-colors disabled:opacity-50"

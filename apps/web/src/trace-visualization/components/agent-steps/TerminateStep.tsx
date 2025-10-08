@@ -87,6 +87,7 @@ export const TerminateStep = ({
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
               onClick={e => {
                 e.stopPropagation()
@@ -97,6 +98,7 @@ export const TerminateStep = ({
               <Copy size={14} className="text-slate-500 dark:text-slate-400" />
             </button>
             <button
+              type="button"
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
               onClick={e => {
                 e.stopPropagation()
@@ -144,6 +146,7 @@ export const TerminateStep = ({
           {!isExpanded && (
             <div className="mt-2">
               <button
+                type="button"
                 className="w-full bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700 rounded-lg p-2 text-sm text-blue-700 dark:text-blue-300 font-medium transition-colors"
                 onClick={e => {
                   e.stopPropagation()

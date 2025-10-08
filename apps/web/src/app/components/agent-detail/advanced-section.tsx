@@ -32,10 +32,14 @@ export function AdvancedSection({ node }: AdvancedSectionProps) {
       <div className="space-y-4">
         {/* Instructions */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+          <label
+            htmlFor="agent-detail-instructions-textarea"
+            className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide"
+          >
             Instructions
           </label>
           <textarea
+            id="agent-detail-instructions-textarea"
             value={systemPrompt}
             onChange={e => {
               setSystemPrompt(e.target.value)
@@ -50,10 +54,14 @@ export function AdvancedSection({ node }: AdvancedSectionProps) {
         {/* Handoff Type */}
         {connections.length > 1 && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <label
+              htmlFor="agent-detail-handoff-strategy-select"
+              className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide"
+            >
               Handoff Strategy
             </label>
             <select
+              id="agent-detail-handoff-strategy-select"
               value={handoffType}
               onChange={e =>
                 updateNode(node.id, {
@@ -71,9 +79,9 @@ export function AdvancedSection({ node }: AdvancedSectionProps) {
         {/* Connections - read-only display */}
         {connections.length > 0 && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               Connections
-            </label>
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {connections.map((target, idx) => (
                 <span
@@ -93,9 +101,7 @@ export function AdvancedSection({ node }: AdvancedSectionProps) {
         {/* Memory - if present */}
         {node.data.memory && Object.keys(node.data.memory).length > 0 && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-              Memory
-            </label>
+            <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Memory</div>
             <div className="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1">
               {Object.entries(node.data.memory).map(([key, value], idx) => (
                 <div key={idx} className="text-xs">

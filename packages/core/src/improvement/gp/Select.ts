@@ -199,7 +199,7 @@ export class Select {
   private static async generateOffspring({
     population,
     config,
-    nextGen,
+    nextGen: _nextGen,
     verbose = false,
     evaluationInput,
     _evolutionContext,
