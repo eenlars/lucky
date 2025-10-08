@@ -100,7 +100,10 @@ export async function POST(req: NextRequest) {
     const invocationInput = createInvocationInput(transformed)
 
     // Call internal workflow invocation API
-    const invokeResponse = await fetch(`http://localhost:${process.env.PORT || 3000}/api/workflow/invoke`, {
+    // Use configured base URL or request origin (works in production/serverless)
+    const baseUrl =
+      process.env.BASE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : req.nextUrl.origin)
+    const invokeResponse = await fetch(`${baseUrl}/api/workflow/invoke`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

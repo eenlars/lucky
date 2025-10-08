@@ -1,6 +1,4 @@
-import { ErrorCodes, JsonRpcInvokeRequest, RequestIdTracker } from "@lucky/contracts/invoke"
-
-const requestIdTracker = new RequestIdTracker()
+import { ErrorCodes, JsonRpcInvokeRequest } from "@lucky/contracts/invoke"
 
 export interface ValidationResult {
   success: boolean
@@ -13,7 +11,9 @@ export interface ValidationResult {
 }
 
 /**
- * Validates JSON-RPC request structure and checks request ID uniqueness
+ * Validates JSON-RPC request structure
+ * Note: Does not enforce request ID uniqueness since HTTP requests are stateless.
+ * Each HTTP request is an independent JSON-RPC session.
  */
 export function validateInvokeRequest(body: unknown): ValidationResult {
   // Validate JSON-RPC structure
@@ -29,32 +29,8 @@ export function validateInvokeRequest(body: unknown): ValidationResult {
     }
   }
 
-  const rpcRequest = parseResult.data
-
-  // Check request ID uniqueness
-  try {
-    requestIdTracker.assertNew(rpcRequest.id)
-  } catch (err) {
-    return {
-      success: false,
-      error: {
-        code: ErrorCodes.INVALID_REQUEST,
-        message: err instanceof Error ? err.message : "Duplicate request ID",
-      },
-    }
-  }
-
   return {
     success: true,
-    data: rpcRequest,
+    data: parseResult.data,
   }
-}
-
-/**
- * Reset request ID tracker (useful for testing)
- */
-export function resetRequestIdTracker() {
-  // Create new instance by clearing the Set
-  // Note: This is a workaround since RequestIdTracker doesn't expose reset
-  // In production, this would be per-session/connection
 }

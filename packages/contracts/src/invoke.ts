@@ -71,7 +71,7 @@ export const JsonRpcInvokeSuccess = z
 export const JsonRpcInvokeError = z
   .object({
     jsonrpc: z.literal("2.0"),
-    id: JsonRpcId, // MCP forbids null
+    id: z.union([JsonRpcId, z.null()]), // JSON-RPC 2.0 allows null when request id is unknown (e.g., parse errors)
     error: z
       .object({
         code: z.number().int(), // integer
