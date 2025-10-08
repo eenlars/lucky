@@ -130,7 +130,7 @@ function AddServerForm({
   const [serverType, setServerType] = useState<"remote" | "local">("remote")
   const [name, setName] = useState("")
   const [url, setUrl] = useState("")
-  const [authType, setAuthType] = useState<"none" | "apikey" | "oauth" | "custom">("none")
+  const [authType, setAuthType] = useState<"none" | "apikey">("none")
   const [apiKey, setApiKey] = useState("")
   const [command, setCommand] = useState("")
   const [args, setArgs] = useState("")
@@ -282,8 +282,6 @@ function AddServerForm({
               >
                 <option value="none">None</option>
                 <option value="apikey">API Key</option>
-                <option value="oauth">OAuth</option>
-                <option value="custom">Custom Headers</option>
               </select>
             </div>
 
@@ -409,6 +407,10 @@ function JsonEditor({ config, onUpdate }: { config: MCPServers; onUpdate: (confi
   const [jsonText, setJsonText] = useState(JSON.stringify(config, null, 2))
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    setJsonText(JSON.stringify(config, null, 2))
+  }, [config])
 
   const handlePaste = (value: string) => {
     setJsonText(value)
