@@ -1,18 +1,8 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
+import { clerkMiddleware } from "@clerk/nextjs/server"
 
-// Define public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/health(.*)", // Keep health checks public if needed
-  "/api/clerk/webhooks", // Allow Clerk webhooks without auth
-])
-
-export default clerkMiddleware(async (auth, req) => {
-  // Protect all routes except public ones
-  if (!isPublicRoute(req)) {
-    await auth.protect()
-  }
+export default clerkMiddleware({
+  // Enable debug logging in development when CLERK_DEBUG=1
+  debug: process.env.NODE_ENV === "development" && process.env.CLERK_DEBUG === "1",
 })
 
 export const config = {

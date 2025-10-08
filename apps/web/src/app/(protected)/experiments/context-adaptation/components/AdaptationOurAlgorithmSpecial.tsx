@@ -1,6 +1,6 @@
 "use client"
 
-import { axes, scenarioColors, semantic, seriesPalette } from "@/app/experiments/chartColors"
+import { axes, scenarioColors, semantic, seriesPalette } from "@/app/(protected)/experiments/chartColors"
 import { useEffect, useMemo, useState } from "react"
 import {
   CartesianGrid,

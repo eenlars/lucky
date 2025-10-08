@@ -1,6 +1,6 @@
 "use client"
 
-import { seriesPalette } from "@/app/experiments/chartColors"
+import { seriesPalette } from "@/app/(protected)/experiments/chartColors"
 import { CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type Row = { tools: number } & Record<string, number>

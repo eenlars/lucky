@@ -1,6 +1,6 @@
 "use client"
 
-import { semantic } from "@/app/experiments/chartColors"
+import { semantic } from "@/app/(protected)/experiments/chartColors"
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type Row = { model: string; accuracy: number }
