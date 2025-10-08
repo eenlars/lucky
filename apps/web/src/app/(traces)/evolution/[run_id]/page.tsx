@@ -471,7 +471,10 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                           {generation.generation_id}
                         </Link>
                       ) : (
-                        <span className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                        <span
+                          className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700"
+                          onClick={e => e.stopPropagation()}
+                        >
                           {generation.generation_id}
                         </span>
                       )}
