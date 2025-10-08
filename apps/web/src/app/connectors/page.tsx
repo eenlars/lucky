@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { type Connector, mockConnectors } from "./mock-data"
+import { MCPServersConfig } from "./mcp-servers"
 
 export default function ConnectorsPage() {
   const [activeTab, setActiveTab] = useState("marketplace")
@@ -105,6 +106,16 @@ export default function ConnectorsPage() {
                     </Badge>
                   )}
                 </TabsTrigger>
+                <TabsTrigger
+                  value="mcp-servers"
+                  className={cn(
+                    "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                    "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                    "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  MCP Servers
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -158,6 +169,11 @@ export default function ConnectorsPage() {
                   </div>
                 </div>
               )}
+            </TabsContent>
+
+            {/* MCP Servers Tab */}
+            <TabsContent value="mcp-servers" className="flex-1 m-0 p-8 overflow-auto">
+              <MCPServersConfig />
             </TabsContent>
           </Tabs>
         </div>
