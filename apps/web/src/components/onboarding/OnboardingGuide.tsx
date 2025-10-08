@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 const ONBOARDING_STORAGE_KEY = "lucky_onboarding_completed"
 
@@ -62,6 +62,26 @@ export function OnboardingGuide() {
     }
   }, [])
 
+  const handleClose = useCallback(() => {
+    setIsClosing(true)
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsVisible(false)
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, "true")
+    }, 300)
+  }, [])
+
+  const handleNext = useCallback(() => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1)
+    } else {
+      handleClose()
+    }
+  }, [currentStep, handleClose])
+
+  const handleSkip = useCallback(() => {
+    handleClose()
+  }, [handleClose])
+
   // Keyboard navigation
   useEffect(() => {
     if (!isVisible) return
@@ -78,27 +98,7 @@ export function OnboardingGuide() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isVisible, currentStep])
-
-  const handleClose = () => {
-    setIsClosing(true)
-    closeTimeoutRef.current = setTimeout(() => {
-      setIsVisible(false)
-      localStorage.setItem(ONBOARDING_STORAGE_KEY, "true")
-    }, 300)
-  }
-
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      handleClose()
-    }
-  }
-
-  const handleSkip = () => {
-    handleClose()
-  }
+  }, [isVisible, currentStep, handleNext, handleSkip])
 
   if (!isVisible) return null
 
@@ -171,7 +171,7 @@ export function OnboardingGuide() {
               onClick={handleSkip}
               className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
-              I've used this before
+              I&apos;ve used this before
             </button>
           </div>
           <div className="text-center text-xs text-gray-400 dark:text-gray-500">

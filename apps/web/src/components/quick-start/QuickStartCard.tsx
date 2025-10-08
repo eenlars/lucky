@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
+import Link from "next/link"
 import { useState } from "react"
 
 const DEMO_WORKFLOW: WorkflowConfig = {
@@ -84,7 +85,7 @@ export function QuickStartCard() {
         <div className="flex-1">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Try it in 30 seconds</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            See an AI workflow in action. We'll ask it: "{DEMO_QUESTION}"
+            See an AI workflow in action. We&apos;ll ask it: &ldquo;{DEMO_QUESTION}&rdquo;
           </p>
 
           {result && (
@@ -97,20 +98,20 @@ export function QuickStartCard() {
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-800">
-                <a
+                <Link
                   href="/edit"
                   className="text-sm text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 font-medium inline-flex items-center gap-1"
                 >
                   Create your own workflow
                   <ArrowRight className="w-3 h-3" />
-                </a>
+                </Link>
               </div>
             </div>
           )}
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-400">
-              <p className="font-medium mb-1">Couldn't run demo</p>
+              <p className="font-medium mb-1">Couldn&apos;t run demo</p>
               <p className="text-xs">{error}</p>
             </div>
           )}

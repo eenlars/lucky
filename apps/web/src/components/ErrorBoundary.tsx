@@ -56,7 +56,7 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
           <div>
             <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              We encountered an unexpected error. This has been logged and we'll look into it.
+              We encountered an unexpected error. This has been logged and we&apos;ll look into it.
             </p>
           </div>
           <details className="w-full">
