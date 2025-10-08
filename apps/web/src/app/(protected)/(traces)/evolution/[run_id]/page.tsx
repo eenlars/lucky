@@ -1,6 +1,6 @@
 "use client"
 
-import { StructureMiniMap } from "@/app/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
+import { StructureMiniMap } from "@/app/(protected)/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
 import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"

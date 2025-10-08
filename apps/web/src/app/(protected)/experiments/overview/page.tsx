@@ -1,6 +1,6 @@
 "use client"
 
-import { modelColors, semantic, stepColors } from "@/app/experiments/chartColors"
+import { modelColors, semantic, stepColors } from "@/app/(protected)/experiments/chartColors"
 import { DevOnly } from "@/components/DevOnly"
 import { useEffect, useState } from "react"
 import {

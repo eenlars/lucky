@@ -1,6 +1,6 @@
 "use client"
 
-import { seriesPalette } from "@/app/experiments/chartColors"
+import { seriesPalette } from "@/app/(protected)/experiments/chartColors"
 import {
   Bar,
   BarChart,
