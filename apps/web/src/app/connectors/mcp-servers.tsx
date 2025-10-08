@@ -1,21 +1,9 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import {
-  AlertCircle,
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Save,
-  Server,
-  Trash2,
-  X,
-} from "lucide-react"
+import { AlertCircle, Check, ChevronDown, ChevronRight, Copy, Plus, Server, Trash2, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export interface MCPServerConfig {
@@ -57,27 +45,55 @@ function saveMCPConfig(config: MCPServers): void {
 
 export function MCPServersConfig() {
   const [config, setConfig] = useState<MCPServers>({ mcpServers: {} })
-  const [editingServer, setEditingServer] = useState<string | null>(null)
-  const [isCreatingNew, setIsCreatingNew] = useState(false)
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
+  const [jsonInput, setJsonInput] = useState("")
+  const [jsonError, setJsonError] = useState("")
+  const [jsonSuccess, setJsonSuccess] = useState(false)
+  const [showManualAdd, setShowManualAdd] = useState(false)
 
   // Load config on mount
   useEffect(() => {
-    setConfig(getStoredMCPConfig())
+    const loaded = getStoredMCPConfig()
+    setConfig(loaded)
+    setJsonInput(JSON.stringify(loaded, null, 2))
   }, [])
 
-  const handleSave = () => {
-    setSaveStatus("saving")
-    saveMCPConfig(config)
-    setTimeout(() => {
-      setSaveStatus("saved")
-      setTimeout(() => setSaveStatus("idle"), 2000)
-    }, 300)
+  const handleJsonPaste = (value: string) => {
+    setJsonInput(value)
+    setJsonError("")
+    setJsonSuccess(false)
+
+    if (!value.trim()) return
+
+    try {
+      const parsed = JSON.parse(value)
+
+      // Validate structure
+      if (!parsed.mcpServers || typeof parsed.mcpServers !== "object") {
+        setJsonError("Invalid format. Must have 'mcpServers' object")
+        return
+      }
+
+      // Validate each server
+      for (const [name, serverConfig] of Object.entries(parsed.mcpServers)) {
+        const server = serverConfig as any
+        if (!server.command || !Array.isArray(server.args)) {
+          setJsonError(`Server '${name}': missing command or args array`)
+          return
+        }
+      }
+
+      // Valid! Apply it
+      setConfig(parsed)
+      saveMCPConfig(parsed)
+      setJsonSuccess(true)
+      setTimeout(() => setJsonSuccess(false), 2000)
+    } catch (err) {
+      setJsonError(err instanceof Error ? err.message : "Invalid JSON")
+    }
   }
 
-  const handleAddServer = () => {
-    setIsCreatingNew(true)
-    setEditingServer(null)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(JSON.stringify(config, null, 2))
   }
 
   const handleDeleteServer = (serverName: string) => {
@@ -85,309 +101,260 @@ export function MCPServersConfig() {
     delete newConfig.mcpServers[serverName]
     setConfig(newConfig)
     saveMCPConfig(newConfig)
+    setJsonInput(JSON.stringify(newConfig, null, 2))
+  }
+
+  const handleAddServer = (name: string, serverConfig: MCPServerConfig) => {
+    const newConfig = {
+      ...config,
+      mcpServers: {
+        ...config.mcpServers,
+        [name]: serverConfig,
+      },
+    }
+    setConfig(newConfig)
+    saveMCPConfig(newConfig)
+    setJsonInput(JSON.stringify(newConfig, null, 2))
+    setShowManualAdd(false)
   }
 
   const serverNames = Object.keys(config.mcpServers)
+  const hasServers = serverNames.length > 0
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-foreground">MCP Servers</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure Model Context Protocol servers for your workflows
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {saveStatus === "saved" && (
-            <span className="text-sm text-green-600 flex items-center gap-1">
-              <CheckCircle2 className="size-4" />
-              Saved
-            </span>
-          )}
-          <Button onClick={handleSave} variant="outline" size="sm" disabled={saveStatus === "saving"}>
-            <Save className="size-4 mr-2" />
-            {saveStatus === "saving" ? "Saving..." : "Save Config"}
-          </Button>
-          <Button onClick={handleAddServer} size="sm">
-            <Plus className="size-4 mr-2" />
-            Add Server
-          </Button>
-        </div>
-      </div>
-
-      {/* Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="size-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-          <div className="space-y-2">
-            <p className="text-sm text-blue-900 dark:text-blue-100">
-              MCP servers extend your workflows with external tools and capabilities. Configure servers following the{" "}
-              <a
-                href="https://modelcontextprotocol.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-blue-700"
-              >
-                MCP standard
-              </a>
-              .
+    <div className="space-y-6 max-w-4xl">
+      {/* Primary: JSON Paste Interface */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-light text-foreground">MCP Configuration</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Paste your MCP servers JSON or add them manually
             </p>
-            <div className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-              <p>• Each server requires a command (executable path) and arguments</p>
-              <p>• Environment variables can be set per-server for configuration</p>
-              <p>• Configuration is stored locally in your browser</p>
-            </div>
           </div>
-        </div>
-      </div>
-
-      {/* New Server Form */}
-      {isCreatingNew && (
-        <MCPServerForm
-          onSave={(name, serverConfig) => {
-            const newConfig = {
-              ...config,
-              mcpServers: {
-                ...config.mcpServers,
-                [name]: serverConfig,
-              },
-            }
-            setConfig(newConfig)
-            saveMCPConfig(newConfig)
-            setIsCreatingNew(false)
-          }}
-          onCancel={() => setIsCreatingNew(false)}
-        />
-      )}
-
-      {/* Server List */}
-      {serverNames.length === 0 && !isCreatingNew ? (
-        <Card className="p-12">
-          <div className="text-center">
-            <Server className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No MCP servers configured</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Add your first MCP server to extend your workflow capabilities
-            </p>
-            <Button onClick={handleAddServer} size="sm">
-              <Plus className="size-4 mr-2" />
-              Add MCP Server
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {serverNames.map(serverName => (
-            <MCPServerCard
-              key={serverName}
-              serverName={serverName}
-              serverConfig={config.mcpServers[serverName]}
-              isEditing={editingServer === serverName}
-              onEdit={() => setEditingServer(serverName)}
-              onSave={updatedConfig => {
-                const newConfig = {
-                  ...config,
-                  mcpServers: {
-                    ...config.mcpServers,
-                    [serverName]: updatedConfig,
-                  },
-                }
-                setConfig(newConfig)
-                saveMCPConfig(newConfig)
-                setEditingServer(null)
-              }}
-              onDelete={() => handleDeleteServer(serverName)}
-              onCancel={() => setEditingServer(null)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Export/Import Section */}
-      <Card className="p-6">
-        <h3 className="text-sm font-medium text-foreground mb-3">Configuration JSON</h3>
-        <div className="relative">
-          <pre className="bg-muted p-4 rounded-md text-xs overflow-auto max-h-64 font-mono">
-            {JSON.stringify(config, null, 2)}
-          </pre>
-          <Button
-            size="sm"
-            variant="outline"
-            className="absolute top-2 right-2"
-            onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(config, null, 2))
-            }}
+          <a
+            href="https://modelcontextprotocol.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
+            MCP Docs →
+          </a>
+        </div>
+
+        <div className="relative">
+          <textarea
+            value={jsonInput}
+            onChange={e => handleJsonPaste(e.target.value)}
+            placeholder={`{\n  "mcpServers": {\n    "tavily": {\n      "command": "npx",\n      "args": ["-y", "@tavily/mcp-server"],\n      "env": { "TAVILY_API_KEY": "\${TAVILY_API_KEY}" }\n    }\n  }\n}`}
+            className={cn(
+              "w-full h-64 px-4 py-3 rounded-lg border font-mono text-xs",
+              "bg-background focus:outline-none focus:ring-1 transition-all resize-none",
+              jsonError && "border-red-500 focus:ring-red-500",
+              jsonSuccess && "border-green-500 focus:ring-green-500",
+              !jsonError && !jsonSuccess && "border-border focus:ring-primary/50",
+            )}
+          />
+          <Button
+            onClick={handleCopy}
+            variant="ghost"
+            size="sm"
+            className="absolute top-2 right-2 h-7 px-2 text-xs"
+          >
+            <Copy className="size-3 mr-1" />
             Copy
           </Button>
         </div>
-      </Card>
+
+        {/* Feedback */}
+        {jsonError && (
+          <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
+            <AlertCircle className="size-4 flex-shrink-0 mt-0.5" />
+            <span>{jsonError}</span>
+          </div>
+        )}
+
+        {jsonSuccess && (
+          <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
+            <Check className="size-4 flex-shrink-0" />
+            <span>Configuration loaded successfully</span>
+          </div>
+        )}
+      </div>
+
+      {/* Secondary: Server List */}
+      {hasServers && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              {serverNames.length} {serverNames.length === 1 ? "server" : "servers"} configured
+            </h3>
+            <Button onClick={() => setShowManualAdd(true)} variant="ghost" size="sm" className="h-7 text-xs">
+              <Plus className="size-3 mr-1" />
+              Add server
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            {serverNames.map(serverName => (
+              <MCPServerRow
+                key={serverName}
+                serverName={serverName}
+                serverConfig={config.mcpServers[serverName]}
+                onDelete={() => handleDeleteServer(serverName)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!hasServers && !showManualAdd && (
+        <Card className="p-8">
+          <div className="text-center space-y-3">
+            <Server className="size-8 text-muted-foreground mx-auto" />
+            <div>
+              <p className="text-sm text-foreground">No servers configured</p>
+              <p className="text-xs text-muted-foreground mt-1">Paste JSON above or add manually</p>
+            </div>
+            <Button onClick={() => setShowManualAdd(true)} variant="outline" size="sm">
+              Add your first server
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Manual Add Form */}
+      {showManualAdd && (
+        <QuickAddForm
+          onSave={handleAddServer}
+          onCancel={() => setShowManualAdd(false)}
+          existingNames={serverNames}
+        />
+      )}
     </div>
   )
 }
 
-function MCPServerCard({
+function MCPServerRow({
   serverName,
   serverConfig,
-  isEditing,
-  onEdit,
-  onSave,
   onDelete,
-  onCancel,
 }: {
   serverName: string
   serverConfig: MCPServerConfig
-  isEditing: boolean
-  onEdit: () => void
-  onSave: (config: MCPServerConfig) => void
   onDelete: () => void
-  onCancel: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
 
-  if (isEditing) {
-    return (
-      <MCPServerForm
-        initialName={serverName}
-        initialConfig={serverConfig}
-        onSave={(_, config) => onSave(config)}
-        onCancel={onCancel}
-        isEditing
-      />
-    )
-  }
-
   return (
-    <Card className="overflow-hidden">
-      <div className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setExpanded(!expanded)}
-                className="p-1 hover:bg-accent rounded transition-colors"
-              >
-                {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-              </button>
-              <div>
-                <h3 className="text-base font-semibold text-foreground">{serverName}</h3>
-                <code className="text-xs text-muted-foreground">{serverConfig.command}</code>
-              </div>
+    <div className="group border border-border rounded-lg overflow-hidden hover:border-muted-foreground/30 transition-colors">
+      <div className="flex items-center justify-between p-3 bg-background">
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-2 flex-1 text-left"
+        >
+          {expanded ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm font-medium text-foreground">{serverName}</span>
+              <code className="text-xs text-muted-foreground truncate">{serverConfig.command}</code>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {serverConfig.args.length} args
-            </Badge>
-            {serverConfig.env && Object.keys(serverConfig.env).length > 0 && (
-              <Badge variant="secondary" className="text-xs">
-                {Object.keys(serverConfig.env).length} env vars
-              </Badge>
-            )}
-            <Button onClick={onEdit} variant="ghost" size="sm">
-              Edit
-            </Button>
-            <Button onClick={onDelete} variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-              <Trash2 className="size-4" />
-            </Button>
-          </div>
-        </div>
+        </button>
+        <Button
+          onClick={onDelete}
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <Trash2 className="size-3 text-muted-foreground hover:text-red-600" />
+        </Button>
+      </div>
 
-        {expanded && (
-          <div className="mt-4 pl-9 space-y-3">
+      {expanded && (
+        <div className="border-t border-border bg-muted/30 p-3 space-y-2">
+          {serverConfig.args.length > 0 && (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">Arguments</p>
-              {serverConfig.args.length > 0 ? (
-                <div className="space-y-1">
-                  {serverConfig.args.map((arg, idx) => (
-                    <code key={idx} className="block text-xs bg-muted px-2 py-1 rounded">
-                      {arg}
-                    </code>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground italic">No arguments</p>
-              )}
-            </div>
-
-            {serverConfig.env && Object.keys(serverConfig.env).length > 0 && (
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">Environment Variables</p>
-                <div className="space-y-1">
-                  {Object.entries(serverConfig.env).map(([key, value]) => (
-                    <div key={key} className="text-xs bg-muted px-2 py-1 rounded flex items-center gap-2">
-                      <span className="font-mono text-foreground">{key}=</span>
-                      <span className="font-mono text-muted-foreground truncate">{value}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="space-y-1">
+                {serverConfig.args.map((arg, idx) => (
+                  <code key={idx} className="block text-xs bg-background px-2 py-1 rounded text-foreground">
+                    {arg}
+                  </code>
+                ))}
               </div>
-            )}
-          </div>
-        )}
-      </div>
-    </Card>
+            </div>
+          )}
+
+          {serverConfig.env && Object.keys(serverConfig.env).length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-1">Environment</p>
+              <div className="space-y-1">
+                {Object.entries(serverConfig.env).map(([key, value]) => (
+                  <code key={key} className="block text-xs bg-background px-2 py-1 rounded text-foreground">
+                    {key}={value}
+                  </code>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
-function MCPServerForm({
-  initialName,
-  initialConfig,
+function QuickAddForm({
   onSave,
   onCancel,
-  isEditing = false,
+  existingNames,
 }: {
-  initialName?: string
-  initialConfig?: MCPServerConfig
   onSave: (name: string, config: MCPServerConfig) => void
   onCancel: () => void
-  isEditing?: boolean
+  existingNames: string[]
 }) {
-  const [name, setName] = useState(initialName || "")
-  const [command, setCommand] = useState(initialConfig?.command || "")
-  const [args, setArgs] = useState<string[]>(initialConfig?.args || [])
-  const [newArg, setNewArg] = useState("")
-  const [env, setEnv] = useState<Record<string, string>>(initialConfig?.env || {})
-  const [newEnvKey, setNewEnvKey] = useState("")
-  const [newEnvValue, setNewEnvValue] = useState("")
+  const [name, setName] = useState("")
+  const [command, setCommand] = useState("")
+  const [argsText, setArgsText] = useState("")
+  const [envText, setEnvText] = useState("")
   const [error, setError] = useState("")
 
-  const handleAddArg = () => {
-    if (newArg.trim()) {
-      setArgs([...args, newArg.trim()])
-      setNewArg("")
-    }
-  }
-
-  const handleRemoveArg = (index: number) => {
-    setArgs(args.filter((_, i) => i !== index))
-  }
-
-  const handleAddEnv = () => {
-    if (newEnvKey.trim() && newEnvValue.trim()) {
-      setEnv({ ...env, [newEnvKey.trim()]: newEnvValue.trim() })
-      setNewEnvKey("")
-      setNewEnvValue("")
-    }
-  }
-
-  const handleRemoveEnv = (key: string) => {
-    const newEnv = { ...env }
-    delete newEnv[key]
-    setEnv(newEnv)
-  }
-
   const handleSubmit = () => {
+    setError("")
+
     if (!name.trim()) {
-      setError("Server name is required")
+      setError("Server name required")
       return
     }
-    if (!command.trim()) {
-      setError("Command is required")
+
+    if (existingNames.includes(name.trim())) {
+      setError("Server name already exists")
       return
+    }
+
+    if (!command.trim()) {
+      setError("Command required")
+      return
+    }
+
+    // Parse args (one per line)
+    const args = argsText
+      .split("\n")
+      .map(a => a.trim())
+      .filter(Boolean)
+
+    // Parse env (KEY=value format, one per line)
+    const env: Record<string, string> = {}
+    if (envText.trim()) {
+      const lines = envText.split("\n").filter(l => l.trim())
+      for (const line of lines) {
+        const [key, ...valueParts] = line.split("=")
+        if (key && valueParts.length > 0) {
+          env[key.trim()] = valueParts.join("=").trim()
+        }
+      }
     }
 
     const config: MCPServerConfig = {
@@ -400,120 +367,59 @@ function MCPServerForm({
   }
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">
-            {isEditing ? `Edit Server: ${initialName}` : "New MCP Server"}
-          </h3>
-        </div>
+    <Card className="p-4 space-y-3 border-primary/50">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-foreground">Add Server</h3>
+        <Button onClick={onCancel} variant="ghost" size="sm" className="h-6 w-6 p-0">
+          <X className="size-4" />
+        </Button>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-md p-3">
-            <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-          </div>
-        )}
+      {error && (
+        <div className="text-xs text-red-600 bg-red-50 dark:bg-red-950/20 px-2 py-1 rounded">{error}</div>
+      )}
 
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Server Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            disabled={isEditing}
-            placeholder="e.g., tavily, firecrawl, playwright"
-            className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
-          />
-        </div>
+      <div className="space-y-2">
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Server name (e.g., tavily)"
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">
-            Command <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={command}
-            onChange={e => setCommand(e.target.value)}
-            placeholder="e.g., npx, /usr/bin/python3, /path/to/server"
-            className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
-          />
-          <p className="text-xs text-muted-foreground mt-1">Full path to the executable or command</p>
-        </div>
+        <input
+          type="text"
+          value={command}
+          onChange={e => setCommand(e.target.value)}
+          placeholder="Command (e.g., npx or /usr/bin/python3)"
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary/50"
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Arguments</label>
-          <div className="space-y-2">
-            {args.map((arg, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-muted px-3 py-2 rounded">{arg}</code>
-                <Button onClick={() => handleRemoveArg(idx)} variant="ghost" size="sm">
-                  <X className="size-4" />
-                </Button>
-              </div>
-            ))}
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={newArg}
-                onChange={e => setNewArg(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleAddArg()}
-                placeholder="Add argument..."
-                className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
-              />
-              <Button onClick={handleAddArg} variant="outline" size="sm">
-                <Plus className="size-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <textarea
+          value={argsText}
+          onChange={e => setArgsText(e.target.value)}
+          placeholder="Arguments (one per line)&#10;-y&#10;@tavily/mcp-server"
+          rows={3}
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Environment Variables</label>
-          <div className="space-y-2">
-            {Object.entries(env).map(([key, value]) => (
-              <div key={key} className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-muted px-3 py-2 rounded">
-                  {key}={value}
-                </code>
-                <Button onClick={() => handleRemoveEnv(key)} variant="ghost" size="sm">
-                  <X className="size-4" />
-                </Button>
-              </div>
-            ))}
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={newEnvKey}
-                onChange={e => setNewEnvKey(e.target.value)}
-                placeholder="KEY"
-                className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
-              />
-              <input
-                type="text"
-                value={newEnvValue}
-                onChange={e => setNewEnvValue(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleAddEnv()}
-                placeholder="value"
-                className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
-              />
-              <Button onClick={handleAddEnv} variant="outline" size="sm">
-                <Plus className="size-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <textarea
+          value={envText}
+          onChange={e => setEnvText(e.target.value)}
+          placeholder="Environment variables (KEY=value, one per line)&#10;TAVILY_API_KEY=${TAVILY_API_KEY}"
+          rows={2}
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
+        />
+      </div>
 
-        <div className="flex items-center justify-end gap-2 pt-4 border-t">
-          <Button onClick={onCancel} variant="outline" size="sm">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} size="sm">
-            <Check className="size-4 mr-2" />
-            {isEditing ? "Update Server" : "Add Server"}
-          </Button>
-        </div>
+      <div className="flex items-center gap-2 justify-end pt-2">
+        <Button onClick={onCancel} variant="ghost" size="sm">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} size="sm">
+          Add Server
+        </Button>
       </div>
     </Card>
   )
