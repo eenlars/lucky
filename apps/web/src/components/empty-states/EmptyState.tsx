@@ -44,17 +44,17 @@ export function EmptyState({ icon, title, description, action, secondaryAction }
             <div className="flex gap-3 pt-2">
               {action &&
                 (action.href ? (
-                  <Link href={action.href}>
-                    <Button>{action.label}</Button>
-                  </Link>
+                  <Button asChild>
+                    <Link href={action.href}>{action.label}</Link>
+                  </Button>
                 ) : (
                   <Button onClick={action.onClick}>{action.label}</Button>
                 ))}
               {secondaryAction &&
                 (secondaryAction.href ? (
-                  <Link href={secondaryAction.href}>
-                    <Button variant="outline">{secondaryAction.label}</Button>
-                  </Link>
+                  <Button variant="outline" asChild>
+                    <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
+                  </Button>
                 ) : (
                   <Button variant="outline" onClick={secondaryAction.onClick}>
                     {secondaryAction.label}

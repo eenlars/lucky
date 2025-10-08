@@ -17,7 +17,11 @@ export function HelpTooltip({ content, className = "" }: HelpTooltipProps) {
         type="button"
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
-        onClick={() => setIsVisible(!isVisible)}
+        onClick={e => {
+          e.stopPropagation()
+          setIsVisible(!isVisible)
+        }}
+        onBlur={() => setIsVisible(false)}
         className={`inline-flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${className}`}
         aria-label="Help"
       >

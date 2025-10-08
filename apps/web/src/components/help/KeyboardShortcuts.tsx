@@ -20,7 +20,7 @@ export function KeyboardShortcuts() {
       // Show keyboard shortcuts help: Cmd/Ctrl + /
       if (cmdOrCtrl && e.key === "/") {
         e.preventDefault()
-        setShowHelp(!showHelp)
+        setShowHelp(prev => !prev)
         return
       }
 

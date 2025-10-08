@@ -1,14 +1,14 @@
 import { type ErrorMessage, getErrorMessage } from "@/lib/error-messages"
 import { useCallback, useState } from "react"
 
-interface AsyncActionState {
+interface AsyncActionState<T> {
   isLoading: boolean
   error: ErrorMessage | null
-  data: any | null
+  data: T | null
 }
 
-interface UseAsyncActionOptions {
-  onSuccess?: (data: any) => void
+interface UseAsyncActionOptions<T> {
+  onSuccess?: (data: T) => void
   onError?: (error: ErrorMessage) => void
 }
 
@@ -16,8 +16,8 @@ interface UseAsyncActionOptions {
  * Hook for handling async actions with loading and error states
  * Follows design guide principles: speed, clarity, plain language
  */
-export function useAsyncAction<T = any>(options?: UseAsyncActionOptions) {
-  const [state, setState] = useState<AsyncActionState>({
+export function useAsyncAction<T = any>(options?: UseAsyncActionOptions<T>) {
+  const [state, setState] = useState<AsyncActionState<T>>({
     isLoading: false,
     error: null,
     data: null,

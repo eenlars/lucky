@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const ONBOARDING_STORAGE_KEY = "lucky_onboarding_completed"
 
@@ -40,13 +40,25 @@ export function OnboardingGuide() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [isClosing, setIsClosing] = useState(false)
+  const showTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // Check if user has completed onboarding
     const hasCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY)
     if (!hasCompleted) {
       // Small delay before showing to avoid flash
-      setTimeout(() => setIsVisible(true), 500)
+      showTimeoutRef.current = setTimeout(() => setIsVisible(true), 500)
+    }
+
+    // Cleanup timeouts on unmount
+    return () => {
+      if (showTimeoutRef.current) {
+        clearTimeout(showTimeoutRef.current)
+      }
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -70,7 +82,7 @@ export function OnboardingGuide() {
 
   const handleClose = () => {
     setIsClosing(true)
-    setTimeout(() => {
+    closeTimeoutRef.current = setTimeout(() => {
       setIsVisible(false)
       localStorage.setItem(ONBOARDING_STORAGE_KEY, "true")
     }, 300)

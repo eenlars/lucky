@@ -1,5 +1,3 @@
-"use client"
-
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
 import { QuickStartCard } from "@/components/quick-start/QuickStartCard"
 import Link from "next/link"
