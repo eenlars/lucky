@@ -229,11 +229,11 @@ export default function EnvironmentKeysSettings() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       {/* API Key Management Section */}
-      <Card className="rounded-lg border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
+      <Card className="rounded-[10px] border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.01] pointer-events-none" />
         <CardHeader className="relative space-y-1 pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+            <div className="flex items-center justify-center size-10 rounded-[10px] bg-primary/10 ring-1 ring-primary/20">
               <Key className="size-5 text-primary" />
             </div>
             <div>
@@ -266,7 +266,7 @@ export default function EnvironmentKeysSettings() {
                         className="font-mono text-sm bg-white dark:bg-white/5 border-black/10 dark:border-white/10 pr-12 focus-visible:ring-primary/40 focus-visible:border-primary/50 transition-all h-10 shadow-sm group-hover:border-primary/30 group-hover:shadow-md"
                       />
                       <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/10 text-primary">
                           <div className="size-1.5 rounded-full bg-primary animate-pulse" />
                           <span className="text-xs font-medium">Active</span>
                         </div>
@@ -306,10 +306,10 @@ export default function EnvironmentKeysSettings() {
 
               <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
 
-              <div className="relative overflow-hidden rounded-lg border border-destructive/20 dark:border-destructive/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
+              <div className="relative overflow-hidden rounded-[10px] border border-destructive/20 dark:border-destructive/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
                 <div className="absolute inset-0 bg-gradient-to-br from-destructive/[0.03] to-transparent" />
                 <div className="relative p-4 flex items-start gap-4">
-                  <div className="flex items-center justify-center size-10 rounded-lg bg-destructive/10 ring-1 ring-destructive/20 shrink-0">
+                  <div className="flex items-center justify-center size-10 rounded-[10px] bg-destructive/10 ring-1 ring-destructive/20 shrink-0">
                     <RefreshCw className="size-5 text-destructive" />
                   </div>
                   <div className="flex-1 space-y-3">
@@ -347,8 +347,8 @@ export default function EnvironmentKeysSettings() {
           ) : (
             <div className="text-center py-12">
               <div className="relative inline-flex mb-6">
-                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl animate-pulse" />
-                <div className="relative flex items-center justify-center size-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
+                <div className="absolute inset-0 bg-primary/20 rounded-[10px] blur-xl animate-pulse" />
+                <div className="relative flex items-center justify-center size-20 rounded-[10px] bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
                   <Key className="size-10 text-primary" />
                 </div>
               </div>
@@ -384,12 +384,12 @@ export default function EnvironmentKeysSettings() {
       </Card>
 
       {/* Environment Keys Section */}
-      <Card className="rounded-lg border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
+      <Card className="rounded-[10px] border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-accent/[0.02] pointer-events-none" />
         <CardHeader className="relative space-y-1 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center size-10 rounded-xl bg-accent/50 ring-1 ring-accent-foreground/10">
+              <div className="flex items-center justify-center size-10 rounded-[10px] bg-accent/50 ring-1 ring-accent-foreground/10">
                 <div className="size-5 font-mono font-bold text-accent-foreground flex items-center justify-center">
                   $
                 </div>
@@ -418,8 +418,8 @@ export default function EnvironmentKeysSettings() {
           {keys.length === 0 ? (
             <div className="text-center py-12">
               <div className="relative inline-flex mb-6">
-                <div className="absolute inset-0 bg-accent/20 rounded-xl blur-xl" />
-                <div className="relative flex items-center justify-center size-20 rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 ring-1 ring-accent-foreground/10">
+                <div className="absolute inset-0 bg-accent/20 rounded-[10px] blur-xl" />
+                <div className="relative flex items-center justify-center size-20 rounded-[10px] bg-gradient-to-br from-accent/30 to-accent/10 ring-1 ring-accent-foreground/10">
                   <div className="text-3xl font-mono font-bold text-accent-foreground">$</div>
                 </div>
               </div>
@@ -545,10 +545,10 @@ export default function EnvironmentKeysSettings() {
           )}
 
           {keys.length > 0 && (
-            <div className="mt-6 relative overflow-hidden rounded-lg border border-primary/20 dark:border-primary/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
+            <div className="mt-6 relative overflow-hidden rounded-[10px] border border-primary/20 dark:border-primary/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent" />
               <div className="relative p-4 flex gap-3">
-                <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 ring-1 ring-primary/20 shrink-0">
+                <div className="flex items-center justify-center size-9 rounded-[10px] bg-primary/10 ring-1 ring-primary/20 shrink-0">
                   <AlertCircle className="size-4 text-primary" />
                 </div>
                 <div className="space-y-1 flex-1">
