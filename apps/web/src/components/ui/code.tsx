@@ -82,6 +82,7 @@ export function CodeInput({ children, block = false, className, wrap = false }: 
       </Component>
       {block && (
         <button
+          type="button"
           className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition p-1 rounded bg-muted hover:bg-muted/80"
           onClick={handleCopy}
           aria-label="Copy code"

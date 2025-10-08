@@ -98,6 +98,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
           ))}
           {allTools.length > 3 && (
             <button
+              type="button"
               onClick={() => setIsToolsExpanded(true)}
               className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
@@ -106,6 +107,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
           )}
           {allTools.length === 0 && (
             <button
+              type="button"
               onClick={() => setIsToolsExpanded(true)}
               className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
@@ -114,6 +116,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
           )}
           {allTools.length > 0 && allTools.length <= 3 && (
             <button
+              type="button"
               onClick={() => setIsToolsExpanded(true)}
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
             >
@@ -131,6 +134,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400">Web & API</h4>
               <button
+                type="button"
                 onClick={() => setIsToolsExpanded(false)}
                 className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               >

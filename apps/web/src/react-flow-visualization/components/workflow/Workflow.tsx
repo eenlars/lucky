@@ -25,8 +25,8 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     colorMode,
     workflowLoading,
     workflowError,
-    selectedNodeId,
-    nodeDetailsOpen,
+    selectedNodeId: _selectedNodeId,
+    nodeDetailsOpen: _nodeDetailsOpen,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -34,8 +34,8 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     onNodeDragStop,
     loadWorkflowConfig,
     loadWorkflowVersion,
-    closeNodeDetails,
-    updateNode,
+    closeNodeDetails: _closeNodeDetails,
+    updateNode: _updateNode,
   } = useAppStore(
     useShallow(state => ({
       nodes: state.nodes,
@@ -104,6 +104,7 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
           <p className="mb-2">Failed to load workflow configuration</p>
           <p className="text-sm">{workflowError}</p>
           <button
+            type="button"
             onClick={() => (workflowVersionId ? loadWorkflowVersion(workflowVersionId) : loadWorkflowConfig())}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >

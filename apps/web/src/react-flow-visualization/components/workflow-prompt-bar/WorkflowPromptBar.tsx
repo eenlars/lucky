@@ -164,12 +164,14 @@ export function WorkflowPromptBar() {
         <div className="flex items-center justify-between px-4 pb-4 pt-1">
           <div className="flex items-center gap-2">
             <button
+              type="button"
               className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
               aria-label="Add"
             >
               <Plus className="size-4" />
             </button>
             <button
+              type="button"
               onClick={() => {
                 setIsRunMode(!isRunMode)
                 setLogs([])
@@ -190,6 +192,7 @@ export function WorkflowPromptBar() {
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
               aria-label="Audio"
             >
@@ -217,6 +220,7 @@ export function WorkflowPromptBar() {
               </div>
             ) : (
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={!prompt.trim()}
                 className={cn(

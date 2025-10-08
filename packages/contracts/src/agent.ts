@@ -86,7 +86,7 @@ export type NodeFactory<TPayload = any, TSummary = any, TConfig = WorkflowNodeCo
 /**
  * Execution context passed to a node's invoke method
  */
-export interface NodeInvocationCallContext<TPayload = any, TConfig = WorkflowNodeConfig> {
+export interface NodeInvocationCallContext<_TPayload = any, TConfig = WorkflowNodeConfig> {
   startTime: string
   workflowVersionId: string
   workflowId: string

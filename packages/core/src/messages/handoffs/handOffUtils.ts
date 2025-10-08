@@ -53,7 +53,7 @@ export function buildResultHandoff({
   usdCost,
   replyMessage,
   content,
-  workflowMessage,
+  workflowMessage: _workflowMessage,
 }: {
   data: {
     handoff: string

@@ -84,16 +84,16 @@ class SupabasePersistence {
   }
 
   // Observability
-  async saveInvocation({ workflowId, nodeOutputs, duration, error }) {
+  async saveInvocation({ workflowId: _workflowId, nodeOutputs: _nodeOutputs, duration: _duration, error: _error }) {
     // INSERT into invocation table
   }
 
-  async saveMetrics({ invocationId, metrics }) {
+  async saveMetrics({ invocationId: _invocationId, metrics: _metrics }) {
     // INSERT into metrics table
   }
 
   // Version management
-  async saveWorkflowVersion({ dsl, parentId, operation, commitMessage }) {
+  async saveWorkflowVersion({ dsl: _dsl, parentId: _parentId, operation: _operation, commitMessage: _commitMessage }) {
     // INSERT into workflow_version, return ID
   }
 
@@ -111,7 +111,7 @@ class SupabasePersistence {
   }
 
   // Datasets
-  async saveDataset({ name, records }) {
+  async saveDataset({ name: _name, records: _records }) {
     // INSERT dataset + records
   }
 }

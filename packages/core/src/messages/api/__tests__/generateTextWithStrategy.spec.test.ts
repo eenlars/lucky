@@ -20,7 +20,7 @@ const nod_333 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async ({ input: _input }: { input: string }) => {
     return "555"
   },
 })
@@ -59,7 +59,7 @@ const rod_333 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async ({ input: _input }: { input: string }) => {
     return "F"
   },
 })
@@ -71,7 +71,7 @@ const mod_333 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async ({ input: _input }: { input: string }) => {
     return "F"
   },
 })

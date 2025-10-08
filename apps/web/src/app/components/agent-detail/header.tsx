@@ -63,6 +63,7 @@ export function AgentDetailHeader({ node, isExpanded, onClose, onToggleExpanded 
           />
         ) : (
           <button
+            type="button"
             onClick={() => setIsEditingName(true)}
             className="flex items-center gap-2 group flex-1 min-w-0 text-left"
           >
@@ -79,6 +80,7 @@ export function AgentDetailHeader({ node, isExpanded, onClose, onToggleExpanded 
       <div className="flex items-center gap-1 flex-shrink-0 ml-4">
         {/* Expand/Collapse */}
         <button
+          type="button"
           onClick={onToggleExpanded}
           className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400"
           aria-label={isExpanded ? "Collapse panel" : "Expand panel"}
@@ -89,6 +91,7 @@ export function AgentDetailHeader({ node, isExpanded, onClose, onToggleExpanded 
 
         {/* Close */}
         <button
+          type="button"
           onClick={onClose}
           className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400"
           aria-label="Close inspector"

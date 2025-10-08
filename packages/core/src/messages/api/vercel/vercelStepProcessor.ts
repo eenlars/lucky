@@ -110,7 +110,7 @@ export const processStepsV2 = <T extends ToolSet>(
   let lastText = ""
   const hasAnyNonNullStep = convertedSteps.some((s: StepResult<T>) => s != null)
 
-  for (const { toolCalls, totalCost, rawText } of perStep) {
+  for (const { toolCalls, totalCost: _totalCost, rawText } of perStep) {
     // add tool outputs if present
     for (const call of toolCalls) {
       aggregated.push({

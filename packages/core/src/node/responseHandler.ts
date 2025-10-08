@@ -28,7 +28,7 @@ export async function handleSuccess(
   updatedMemory?: NodeMemory | null,
   agentSteps?: AgentSteps,
 ): Promise<NodeInvocationResult> {
-  const { nodeConfig, workflowFiles, workflowConfig } = context
+  const { nodeConfig, workflowFiles, workflowConfig: _workflowConfig } = context
   if (!response) {
     return handleError({
       context,

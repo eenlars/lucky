@@ -114,6 +114,7 @@ export function TestSection({ node }: TestSectionProps) {
           <div className="flex flex-wrap gap-2">
             {exampleInputs.map((example, idx) => (
               <button
+                type="button"
                 key={idx}
                 onClick={() => handleExampleClick(example)}
                 className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-md transition-colors"
@@ -141,6 +142,7 @@ export function TestSection({ node }: TestSectionProps) {
           disabled={isRunning}
         />
         <button
+          type="button"
           onClick={handleRun}
           disabled={!testInput.trim() || isRunning}
           className={cn(
@@ -196,6 +198,7 @@ export function TestSection({ node }: TestSectionProps) {
           </span>
           <div className="flex gap-2">
             <button
+              type="button"
               className="text-sm px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
               onClick={() => {
                 // Close dialog or move to next task
@@ -205,6 +208,7 @@ export function TestSection({ node }: TestSectionProps) {
               Yes, looks good
             </button>
             <button
+              type="button"
               className="text-sm px-3 py-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
               onClick={() => {
                 // Expand configuration section

@@ -241,7 +241,7 @@ export class Genome extends Workflow {
    */
   static async createPrepared({
     evaluationInput,
-    baseWorkflow,
+    baseWorkflow: _baseWorkflow,
     parentWorkflowVersionIds,
     _evolutionContext,
     problemAnalysis,
