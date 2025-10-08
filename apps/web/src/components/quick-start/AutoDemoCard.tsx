@@ -17,7 +17,7 @@ const DEMO_WORKFLOW: WorkflowConfig = {
       modelName: "anthropic/claude-3-5-haiku",
       mcpTools: [],
       codeTools: [],
-      handOffs: [],
+      handOffs: ["end"],
     },
   ],
   entryNodeId: "demo-agent",
