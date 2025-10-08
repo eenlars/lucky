@@ -1,11 +1,15 @@
 import { ErrorCodes } from "@lucky/contracts/invoke"
 import type { InvokeRequest } from "@lucky/contracts/invoke"
+import type { JsonSchemaDefinition } from "@lucky/contracts/workflow"
 import { genShortId } from "@lucky/shared/client"
 import type { TransformedInvokeInput } from "./types"
 
 export interface TransformResult {
   success: boolean
-  data?: TransformedInvokeInput
+  data?: TransformedInvokeInput & {
+    inputData: unknown
+    inputSchema?: JsonSchemaDefinition
+  }
   error?: {
     code: number
     message: string
@@ -14,26 +18,18 @@ export interface TransformResult {
 
 /**
  * Transforms MCP JSON-RPC invoke request to internal invocation format
+ * Now returns structured data for mcp-invoke type
  */
 export function transformInvokeInput(rpcRequest: InvokeRequest): TransformResult {
   const { workflow_id, input, options } = rpcRequest.params
 
-  // Extract prompt from input
-  let prompt: string
-  if (typeof input === "string") {
-    prompt = input
-  } else if (options?.goal) {
-    prompt = options.goal
-  } else if (typeof input === "object" && input !== null) {
-    // TODO: In future, validate input against workflow's JSON Schema
-    // For now, just stringify it
-    prompt = JSON.stringify(input)
-  } else {
+  // Validate that we have some input
+  if (input === undefined || input === null) {
     return {
       success: false,
       error: {
         code: ErrorCodes.INVALID_PARAMS,
-        message: "Input must be a string, object, or options.goal must be provided",
+        message: "Input is required",
       },
     }
   }
@@ -41,26 +37,39 @@ export function transformInvokeInput(rpcRequest: InvokeRequest): TransformResult
   // Generate unique workflow invocation ID
   const workflowId = `mcp_invoke_${genShortId()}`
 
+  // Extract goal (if provided)
+  const goal = options?.goal || "Process the provided input"
+
   return {
     success: true,
     data: {
       workflowVersionId: workflow_id,
-      prompt,
+      prompt: goal, // Legacy field, kept for compatibility
       workflowId,
+      inputData: input,
+      inputSchema: undefined, // Will be populated from workflow config later
     },
   }
 }
 
 /**
  * Creates the internal invocation input format for the workflow engine
+ * Uses mcp-invoke type instead of prompt-only
  */
-export function createInvocationInput(transformed: TransformedInvokeInput) {
+export function createInvocationInput(
+  transformed: TransformedInvokeInput & {
+    inputData: unknown
+    inputSchema?: JsonSchemaDefinition
+  },
+) {
   return {
     workflowVersionId: transformed.workflowVersionId,
     evalInput: {
-      type: "prompt-only" as const,
+      type: "mcp-invoke" as const,
       goal: transformed.prompt,
       workflowId: transformed.workflowId,
+      inputData: transformed.inputData,
+      inputSchema: transformed.inputSchema,
     },
   }
 }

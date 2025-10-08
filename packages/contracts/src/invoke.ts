@@ -104,11 +104,22 @@ export function extractBearerToken(
   const raw = (headers.authorization || headers.Authorization) as string | undefined
   if (raw) {
     const m = raw.match(AuthHeaderRegex)
-    if (!m) throw new Error("Invalid Authorization header format")
+    if (!m) {
+      throw new Error(
+        "Invalid Authorization header format. Expected: 'Bearer <token>' where token is at least 16 characters",
+      )
+    }
     return m[1]!
   }
-  if (bodyAuth?.bearer && bodyAuth.bearer.length >= 16) return bodyAuth.bearer
-  throw new Error("Missing bearer token (Authorization header or params.auth.bearer)")
+  if (bodyAuth?.bearer) {
+    if (bodyAuth.bearer.length < 16) {
+      throw new Error("Bearer token must be at least 16 characters long")
+    }
+    return bodyAuth.bearer
+  }
+  throw new Error(
+    "Missing authentication. Provide either Authorization header ('Bearer <token>') or params.auth.bearer field",
+  )
 }
 
 export function pickIdempotencyKey(
@@ -118,7 +129,9 @@ export function pickIdempotencyKey(
   const hk = (headers["idempotency-key"] || headers["Idempotency-Key"]) as string | undefined
   const key = hk ?? optionsKey
   if (!key) return undefined
-  if (key.length < 8 || key.length > 256) throw new Error("Invalid Idempotency-Key length")
+  if (key.length < 8 || key.length > 256) {
+    throw new Error("Idempotency-Key must be between 8 and 256 characters")
+  }
   return key
 }
 

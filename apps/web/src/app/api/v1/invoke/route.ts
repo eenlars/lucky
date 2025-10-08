@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
 import {
   createInvocationInput,
+  createSchemaValidationError,
   extractTraceId,
   extractWorkflowOutput,
   formatErrorResponse,
@@ -8,9 +9,11 @@ import {
   formatSuccessResponse,
   formatWorkflowError,
   transformInvokeInput,
+  validateAgainstSchema,
   validateAuth,
   validateInvokeRequest,
 } from "@/lib/mcp-invoke"
+import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**
@@ -67,6 +70,22 @@ export async function POST(req: NextRequest) {
     //   if (cached) return cached response
     // }
 
+    // Load workflow configuration to get input schema
+    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id)
+    if (!workflowLoadResult.success) {
+      return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
+    }
+
+    const { inputSchema } = workflowLoadResult
+
+    // Validate input against workflow's input schema (if defined)
+    if (inputSchema) {
+      const schemaValidationResult = validateAgainstSchema(rpcRequest.params.input, inputSchema)
+      if (!schemaValidationResult.valid) {
+        return NextResponse.json(createSchemaValidationError(requestId, schemaValidationResult), { status: 400 })
+      }
+    }
+
     // Transform MCP input to internal format
     const transformResult = transformInvokeInput(rpcRequest)
     if (!transformResult.success) {
@@ -74,6 +93,10 @@ export async function POST(req: NextRequest) {
     }
 
     const transformed = transformResult.data!
+
+    // Add input schema to transformed data for the invocation
+    transformed.inputSchema = inputSchema
+
     const invocationInput = createInvocationInput(transformed)
 
     // Call internal workflow invocation API
