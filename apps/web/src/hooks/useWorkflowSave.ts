@@ -38,8 +38,8 @@ export function useWorkflowSave({ workflowVersion, onSuccess }: UseWorkflowSaveO
             commitMessage,
             workflowId,
             parentId: workflowVersion?.wf_version_id,
-            iterationBudget: workflowVersion?.iteration_budget || 50,
-            timeBudgetSeconds: workflowVersion?.time_budget_seconds || 3600,
+            iterationBudget: workflowVersion?.iteration_budget ?? 50,
+            timeBudgetSeconds: workflowVersion?.time_budget_seconds ?? 3600,
           }),
         })
 
