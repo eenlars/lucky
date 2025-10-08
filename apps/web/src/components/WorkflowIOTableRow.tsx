@@ -147,34 +147,28 @@ export default function WorkflowIOTableRow({ io, workflowConfig, onRun }: PropsW
 
             {/* Output */}
             <div className="col-span-3 flex flex-col">
-              <label htmlFor={`output-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
-                Output
-              </label>
-              <div id={`output-${io.id}`}>
-                {metricsHook.metrics.output ? (
-                  <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
-                    <SmartContent
-                      value={metricsHook.metrics.output}
-                      className="text-xs text-gray-700"
-                      showExpanders={false}
-                      enableClipboard={false}
-                      stringifySpacing={2}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex-1 text-xs text-gray-400 bg-gray-50 rounded p-2 flex items-center justify-center">
-                    No output yet
-                  </div>
-                )}
-              </div>
+              <div className="text-xs font-medium text-gray-600 mb-1">Output</div>
+              {metricsHook.metrics.output ? (
+                <div className="flex-1 text-xs text-gray-700 bg-gray-50 rounded p-2 overflow-y-auto">
+                  <SmartContent
+                    value={metricsHook.metrics.output}
+                    className="text-xs text-gray-700"
+                    showExpanders={false}
+                    enableClipboard={false}
+                    stringifySpacing={2}
+                  />
+                </div>
+              ) : (
+                <div className="flex-1 text-xs text-gray-400 bg-gray-50 rounded p-2 flex items-center justify-center">
+                  No output yet
+                </div>
+              )}
             </div>
 
             {/* Metrics */}
             <div className="col-span-1 flex flex-col">
-              <label htmlFor={`metrics-${io.id}`} className="text-xs font-medium text-gray-600 mb-1">
-                Metrics
-              </label>
-              <div id={`metrics-${io.id}`} className="flex-1 bg-gray-50 rounded p-2 space-y-1">
+              <div className="text-xs font-medium text-gray-600 mb-1">Metrics</div>
+              <div className="flex-1 bg-gray-50 rounded p-2 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-gray-500 font-medium">Score</span>
                   <span

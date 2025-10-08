@@ -59,11 +59,9 @@ export default function FeedbackDialog({ open, onOpenChange, taskId, metrics, wo
 
         <div className="space-y-4 py-4">
           {/* Rating Section */}
-          <div>
-            <label htmlFor="feedback-rating" className="text-sm font-medium text-gray-700 block mb-2">
-              Overall Rating
-            </label>
-            <div id="feedback-rating" className="flex gap-2">
+          <fieldset>
+            <legend className="text-sm font-medium text-gray-700 block mb-2">Overall Rating</legend>
+            <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(rating => (
                 <Button
                   key={rating}
@@ -71,12 +69,14 @@ export default function FeedbackDialog({ open, onOpenChange, taskId, metrics, wo
                   variant={feedbackRating === rating ? "default" : "outline"}
                   size="icon"
                   className={`w-8 h-8 rounded-full ${feedbackRating === rating ? "" : "hover:border-blue-300"}`}
+                  aria-label={`Rate ${rating} out of 5`}
+                  aria-pressed={feedbackRating === rating}
                 >
                   {rating}
                 </Button>
               ))}
             </div>
-          </div>
+          </fieldset>
 
           {/* Feedback Text */}
           <div>

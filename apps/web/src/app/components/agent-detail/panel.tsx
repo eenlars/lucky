@@ -81,7 +81,7 @@ export function AgentDetailPanel() {
         }}
         aria-modal="true"
         aria-label="Agent inspector"
-        open={isOpen}
+        open
       >
         {/* Header */}
         <AgentDetailHeader

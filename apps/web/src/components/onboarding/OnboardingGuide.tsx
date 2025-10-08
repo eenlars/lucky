@@ -113,6 +113,7 @@ export function OnboardingGuide() {
         }`}
         aria-labelledby="onboarding-title"
         aria-describedby="onboarding-description"
+        aria-modal="true"
         open={isVisible}
       >
         <button
