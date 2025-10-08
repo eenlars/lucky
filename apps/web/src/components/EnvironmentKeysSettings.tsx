@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
 type EnvironmentKey = {
@@ -25,10 +25,18 @@ export default function EnvironmentKeysSettings() {
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [isRollingKey, setIsRollingKey] = useState(false)
   const [justCopied, setJustCopied] = useState(false)
+  const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     loadKeys()
     loadApiKey()
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current)
+      }
+    }
   }, [])
 
   const loadKeys = async () => {
@@ -124,7 +132,14 @@ export default function EnvironmentKeysSettings() {
       await navigator.clipboard.writeText(text)
       setJustCopied(true)
       toast.success("Copied to clipboard")
-      setTimeout(() => setJustCopied(false), 2000)
+
+      // Clear existing timeout before setting a new one
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current)
+      }
+
+      // Store timeout ID in ref for cleanup
+      copyTimeoutRef.current = setTimeout(() => setJustCopied(false), 2000)
     } catch (error) {
       console.error("Failed to copy to clipboard:", error)
       toast.error("Failed to copy to clipboard")
