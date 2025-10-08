@@ -301,6 +301,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          clerk_id: string | null
+          content: string
+          context: string | null
+          created_at: string | null
+          feedback_id: string
+          status: string | null
+        }
+        Insert: {
+          clerk_id?: string | null
+          content: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
+        }
+        Update: {
+          clerk_id?: string | null
+          content?: string
+          context?: string | null
+          created_at?: string | null
+          feedback_id?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       Generation: {
         Row: {
           best_workflow_version_id: string | null

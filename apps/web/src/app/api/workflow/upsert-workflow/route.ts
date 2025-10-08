@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "workflowName is required for new workflows" }, { status: 400 })
       }
       workflowId = `wf_id_${genShortId()}`
-      await createWorkflow(workflowId, workflowName)
+      await createWorkflow(workflowId, workflowName, authResult)
 
       // Try to save the version, but rollback workflow creation if it fails
       try {

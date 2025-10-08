@@ -56,11 +56,16 @@ export const retrieveWorkflow = async (workflowId: string): Promise<Tables<"Work
   return data
 }
 
-export const createWorkflow = async (workflowId: string, description: string): Promise<Tables<"Workflow">> => {
+export const createWorkflow = async (
+  workflowId: string,
+  description: string,
+  clerkId: string,
+): Promise<Tables<"Workflow">> => {
   const supabase = await createRLSClient()
   const workflowInsertable: TablesInsert<"Workflow"> = {
     wf_id: workflowId,
     description,
+    clerk_id: clerkId,
   }
 
   const { data, error } = await supabase.from("Workflow").insert(workflowInsertable).select().single()
