@@ -1,8 +1,45 @@
+"use client"
+
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
+import { AutoDemoCard } from "@/components/quick-start/AutoDemoCard"
 import { QuickStartCard } from "@/components/quick-start/QuickStartCard"
+import { trackEvent } from "@/lib/analytics"
+import { isFeatureEnabled, isInTreatmentGroup } from "@/lib/feature-flags"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export default function HomePage() {
+  const [shouldAutoRun, setShouldAutoRun] = useState(false)
+  const [isFirstVisit, setIsFirstVisit] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    // Check if this is user's first visit
+    const hasCompletedDemo = localStorage.getItem("lucky_demo_completed")
+    const isFirst = !hasCompletedDemo
+
+    setIsFirstVisit(isFirst)
+
+    // Track first visit
+    if (isFirst) {
+      trackEvent("first_visit")
+    }
+
+    // Determine if we should auto-run based on feature flag and A/B test
+    if (isFirst) {
+      const featureEnabled = isFeatureEnabled("AUTO_RUN_FIRST_DEMO")
+      const inTreatment = isInTreatmentGroup(25) // 25% rollout
+
+      // Track treatment assignment
+      if (featureEnabled) {
+        trackEvent(inTreatment ? "treatment_assigned" : "control_assigned")
+      }
+
+      setShouldAutoRun(featureEnabled && inTreatment)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-white pt-24">
       <OnboardingGuide />
@@ -15,7 +52,7 @@ export default function HomePage() {
         </div>
 
         <div className="mb-16">
-          <QuickStartCard />
+          {isFirstVisit && shouldAutoRun ? <AutoDemoCard autoRun={true} /> : <QuickStartCard />}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
