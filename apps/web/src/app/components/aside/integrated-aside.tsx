@@ -7,6 +7,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
 import { useState } from "react"
+import { FeedbackButton } from "./feedback-button"
 import { UserProfile } from "./user-profile"
 
 // Navigation items with submenu information
@@ -299,6 +300,9 @@ export function IntegratedAside() {
           </nav>
         </div>
       </div>
+
+      {/* Feedback Button */}
+      <FeedbackButton />
 
       {/* User Profile */}
       <UserProfile initials="AW" />
