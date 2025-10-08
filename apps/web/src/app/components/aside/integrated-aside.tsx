@@ -84,6 +84,7 @@ const navigationItems: NavItemData[] = [
     label: "Settings",
     icon: <Settings className="w-4 h-4" />,
     description: "Configure app",
+    submenus: [{ label: "Profile", href: "/profile" }],
   },
 ]
 
