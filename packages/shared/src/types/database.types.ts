@@ -8,6 +8,60 @@ export type Database = {
   }
   iam: {
     Tables: {
+      org_memberships: {
+        Row: {
+          clerk_id: string
+          created_at: string | null
+          org_id: string
+          role: string
+        }
+        Insert: {
+          clerk_id: string
+          created_at?: string | null
+          org_id: string
+          role?: string
+        }
+        Update: {
+          clerk_id?: string
+          created_at?: string | null
+          org_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_memberships_clerk_id_fkey"
+            columns: ["clerk_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_memberships_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      orgs: {
+        Row: {
+          created_at: string | null
+          name: string
+          org_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          name: string
+          org_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          name?: string
+          org_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -18,7 +72,6 @@ export type Database = {
           metadata: Json
           status: Database["iam"]["Enums"]["user_status"]
           updated_at: string
-          user_id: string
         }
         Insert: {
           avatar_url?: string | null
@@ -29,7 +82,6 @@ export type Database = {
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string
-          user_id?: string
         }
         Update: {
           avatar_url?: string | null
@@ -40,7 +92,6 @@ export type Database = {
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -49,7 +100,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_org_admin: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_status: "active" | "disabled" | "invited"
@@ -62,6 +124,7 @@ export type Database = {
     Tables: {
       DataSet: {
         Row: {
+          clerk_id: string
           created_at: string
           data_format: string | null
           dataset_id: string
@@ -71,6 +134,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clerk_id?: string
           created_at?: string
           data_format?: string | null
           dataset_id?: string
@@ -80,6 +144,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clerk_id?: string
           created_at?: string
           data_format?: string | null
           dataset_id?: string
@@ -175,6 +240,7 @@ export type Database = {
       }
       Evaluator: {
         Row: {
+          clerk_id: string
           config: Json | null
           created_at: string
           evaluator_id: string
@@ -182,6 +248,7 @@ export type Database = {
           rubric: Json | null
         }
         Insert: {
+          clerk_id?: string
           config?: Json | null
           created_at?: string
           evaluator_id?: string
@@ -189,6 +256,7 @@ export type Database = {
           rubric?: Json | null
         }
         Update: {
+          clerk_id?: string
           config?: Json | null
           created_at?: string
           evaluator_id?: string
@@ -199,6 +267,7 @@ export type Database = {
       }
       EvolutionRun: {
         Row: {
+          clerk_id: string | null
           config: Json
           end_time: string | null
           evolution_type: string | null
@@ -209,6 +278,7 @@ export type Database = {
           status: Database["public"]["Enums"]["EvolutionRunStatus"]
         }
         Insert: {
+          clerk_id?: string | null
           config: Json
           end_time?: string | null
           evolution_type?: string | null
@@ -219,6 +289,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["EvolutionRunStatus"]
         }
         Update: {
+          clerk_id?: string | null
           config?: Json
           end_time?: string | null
           evolution_type?: string | null
@@ -233,6 +304,7 @@ export type Database = {
       Generation: {
         Row: {
           best_workflow_version_id: string | null
+          clerk_id: string | null
           comment: string | null
           end_time: string | null
           feedback: string | null
@@ -243,6 +315,7 @@ export type Database = {
         }
         Insert: {
           best_workflow_version_id?: string | null
+          clerk_id?: string | null
           comment?: string | null
           end_time?: string | null
           feedback?: string | null
@@ -253,6 +326,7 @@ export type Database = {
         }
         Update: {
           best_workflow_version_id?: string | null
+          clerk_id?: string | null
           comment?: string | null
           end_time?: string | null
           feedback?: string | null
@@ -469,35 +543,27 @@ export type Database = {
       }
       Workflow: {
         Row: {
+          clerk_id: string | null
           created_at: string
           description: string
           updated_at: string
-          user_id: string | null
           wf_id: string
         }
         Insert: {
+          clerk_id?: string | null
           created_at?: string
           description: string
           updated_at?: string
-          user_id?: string | null
           wf_id?: string
         }
         Update: {
+          clerk_id?: string | null
           created_at?: string
           description?: string
           updated_at?: string
-          user_id?: string | null
           wf_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "Workflow_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "User"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       WorkflowInvocation: {
         Row: {
@@ -625,7 +691,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "WorkflowInvocationEvaluation_wf_inv_id_fkey"
+            foreignKeyName: "WorkflowInvocationEval_wf_inv_id_fkey"
             columns: ["wf_inv_id"]
             isOneToOne: false
             referencedRelation: "WorkflowInvocation"
@@ -728,31 +794,38 @@ export type Database = {
       }
     }
     Views: {
-      User: {
-        Row: {
-          clerk_id: string | null
-          created_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          clerk_id?: string | null
-          created_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          clerk_id?: string | null
-          created_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       gen_prefixed_id: {
         Args: { p_prefix: string }
         Returns: string
       }
       gen_short_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      owns_workflow: {
+        Args: { p_workflow_id: string }
+        Returns: boolean
+      }
+      owns_workflow_invocation: {
+        Args: { p_wf_invocation_id: string }
+        Returns: boolean
+      }
+      owns_workflow_version: {
+        Args: { p_wf_version_id: string }
+        Returns: boolean
+      }
+      require_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      sub: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
