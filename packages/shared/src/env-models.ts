@@ -66,8 +66,9 @@ export const lockboxServer = z.object({
   /**
    * 32-byte key for AES-256-GCM encryption of user secrets.
    * Accepts raw text, hex, or base64. For production, use a random 32-byte value.
+   * REQUIRED: Lockbox API endpoints will fail with 500 errors if this is not set.
    */
-  LOCKBOX_KEK: z.string().optional(),
+  LOCKBOX_KEK: z.string().min(1, "LOCKBOX_KEK is required for lockbox encryption"),
 })
 
 // --- Clerk Auth (server-side)
@@ -244,7 +245,7 @@ export const docs: VarDoc[] = [
   // Lockbox
   {
     key: "LOCKBOX_KEK",
-    required: false,
+    required: true,
     description: "32-byte key (raw/hex/base64) used to encrypt user secrets with AES-256-GCM. Set on server only.",
     example: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
     section: "Security / secrets",
