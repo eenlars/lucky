@@ -229,8 +229,8 @@ export default function EnvironmentKeysSettings() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       {/* API Key Management Section */}
-      <Card className="border-0 shadow-sm bg-gradient-to-br from-card to-card/80 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
+      <Card className="rounded-lg border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.01] pointer-events-none" />
         <CardHeader className="relative space-y-1 pb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 ring-1 ring-primary/20">
@@ -256,15 +256,14 @@ export default function EnvironmentKeysSettings() {
                   {isFullKey ? "Your API Key (save it now!)" : "API Key ID"}
                 </Label>
                 <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative flex gap-2">
+                  <div className="relative flex items-center gap-2">
                     <div className="flex-1 relative">
                       <Input
                         id="api-key"
                         type="text"
                         value={apiKey}
                         readOnly
-                        className="font-mono text-sm bg-muted/50 border-muted-foreground/20 pr-12 focus-visible:ring-primary/40 transition-all"
+                        className="font-mono text-sm bg-white dark:bg-white/5 border-black/10 dark:border-white/10 pr-12 focus-visible:ring-primary/40 focus-visible:border-primary/50 transition-all h-10 shadow-sm group-hover:border-primary/30 group-hover:shadow-md"
                       />
                       <div className="absolute right-2 top-1/2 -translate-y-1/2">
                         <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary">
@@ -276,9 +275,9 @@ export default function EnvironmentKeysSettings() {
                     <Button
                       type="button"
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       onClick={() => copyToClipboard(apiKey)}
-                      className="relative overflow-hidden transition-all hover:scale-105 hover:shadow-md"
+                      className="relative overflow-hidden transition-all hover:scale-105 hover:shadow-md h-10 w-10 shrink-0"
                     >
                       <div
                         className={`absolute inset-0 bg-primary/10 transition-opacity ${justCopied ? "opacity-100" : "opacity-0"}`}
@@ -307,8 +306,8 @@ export default function EnvironmentKeysSettings() {
 
               <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
 
-              <div className="relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-muted/30 backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent" />
+              <div className="relative overflow-hidden rounded-lg border border-destructive/20 dark:border-destructive/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-destructive/[0.03] to-transparent" />
                 <div className="relative p-4 flex items-start gap-4">
                   <div className="flex items-center justify-center size-10 rounded-lg bg-destructive/10 ring-1 ring-destructive/20 shrink-0">
                     <RefreshCw className="size-5 text-destructive" />
@@ -348,8 +347,8 @@ export default function EnvironmentKeysSettings() {
           ) : (
             <div className="text-center py-12">
               <div className="relative inline-flex mb-6">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                <div className="relative flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
+                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl animate-pulse" />
+                <div className="relative flex items-center justify-center size-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
                   <Key className="size-10 text-primary" />
                 </div>
               </div>
@@ -385,8 +384,8 @@ export default function EnvironmentKeysSettings() {
       </Card>
 
       {/* Environment Keys Section */}
-      <Card className="border-0 shadow-sm bg-gradient-to-br from-card to-card/80 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
+      <Card className="rounded-lg border border-black/5 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/50 bg-white/90 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-accent/[0.02] pointer-events-none" />
         <CardHeader className="relative space-y-1 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -419,8 +418,8 @@ export default function EnvironmentKeysSettings() {
           {keys.length === 0 ? (
             <div className="text-center py-12">
               <div className="relative inline-flex mb-6">
-                <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl" />
-                <div className="relative flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 ring-1 ring-accent-foreground/10">
+                <div className="absolute inset-0 bg-accent/20 rounded-xl blur-xl" />
+                <div className="relative flex items-center justify-center size-20 rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 ring-1 ring-accent-foreground/10">
                   <div className="text-3xl font-mono font-bold text-accent-foreground">$</div>
                 </div>
               </div>
@@ -441,75 +440,63 @@ export default function EnvironmentKeysSettings() {
             </div>
           ) : (
             <>
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* Header Row */}
+                <div className="grid grid-cols-[1fr,1fr,auto] gap-4 px-1">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-primary" />
+                    Variable Name
+                  </Label>
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-primary" />
+                    Value
+                  </Label>
+                  <div className="w-[72px]" />
+                </div>
+
+                {/* Variable Rows */}
                 {keys.map(key => (
-                  <div
-                    key={key.id}
-                    className="group relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-muted/20 p-5 transition-all hover:border-muted-foreground/20 hover:bg-muted/30"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={`key-name-${key.id}`}
-                          className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"
-                        >
-                          <span className="size-1.5 rounded-full bg-primary" />
-                          Variable Name
-                        </Label>
-                        <Input
-                          id={`key-name-${key.id}`}
-                          placeholder="OPENAI_API_KEY"
-                          autoComplete="off"
-                          value={key.name}
-                          onChange={e => updateKey(key.id, "name", e.target.value)}
-                          className="text-sm font-mono bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/40 transition-all"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={`key-value-${key.id}`}
-                          className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"
-                        >
-                          <span className="size-1.5 rounded-full bg-primary" />
-                          Value
-                        </Label>
-                        <div className="relative">
-                          <Input
-                            id={`key-value-${key.id}`}
-                            type={key.isVisible ? "text" : "password"}
-                            placeholder="sk-..."
-                            autoComplete="new-password"
-                            value={key.value}
-                            onChange={e => updateKey(key.id, "value", e.target.value)}
-                            className="pr-20 text-sm font-mono bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/40 transition-all"
-                          />
-                          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="size-8 p-0 hover:bg-accent transition-all"
-                              onClick={() => toggleVisibility(key.id)}
-                            >
-                              {key.isVisible ? (
-                                <EyeOff className="size-4 text-muted-foreground" />
-                              ) : (
-                                <Eye className="size-4 text-muted-foreground" />
-                              )}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="size-8 p-0 hover:bg-destructive/10 transition-all"
-                              onClick={() => deleteKey(key.id)}
-                            >
-                              <Trash2 className="size-4 text-destructive/70 hover:text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                  <div key={key.id} className="grid grid-cols-[1fr,1fr,auto] gap-4 items-center">
+                    <Input
+                      id={`key-name-${key.id}`}
+                      placeholder="OPENAI_API_KEY"
+                      autoComplete="off"
+                      value={key.name}
+                      onChange={e => updateKey(key.id, "name", e.target.value)}
+                      className="text-sm font-mono bg-white dark:bg-black/20 border-black/10 dark:border-white/10 focus-visible:ring-primary/40 focus-visible:border-primary/50 transition-all shadow-sm"
+                    />
+                    <Input
+                      id={`key-value-${key.id}`}
+                      type={key.isVisible ? "text" : "password"}
+                      placeholder="sk-..."
+                      autoComplete="new-password"
+                      value={key.value}
+                      onChange={e => updateKey(key.id, "value", e.target.value)}
+                      className="text-sm font-mono bg-white dark:bg-black/20 border-black/10 dark:border-white/10 focus-visible:ring-primary/40 focus-visible:border-primary/50 transition-all shadow-sm"
+                    />
+                    <div className="flex gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="size-8 p-0 hover:bg-accent transition-all"
+                        onClick={() => toggleVisibility(key.id)}
+                      >
+                        {key.isVisible ? (
+                          <EyeOff className="size-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="size-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="size-8 p-0 hover:bg-destructive/10 transition-all"
+                        onClick={() => deleteKey(key.id)}
+                      >
+                        <Trash2 className="size-4 text-destructive/70 hover:text-destructive" />
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -558,8 +545,8 @@ export default function EnvironmentKeysSettings() {
           )}
 
           {keys.length > 0 && (
-            <div className="mt-6 relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-gradient-to-br from-muted/30 to-muted/20 backdrop-blur-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent" />
+            <div className="mt-6 relative overflow-hidden rounded-lg border border-primary/20 dark:border-primary/30 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent" />
               <div className="relative p-4 flex gap-3">
                 <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 ring-1 ring-primary/20 shrink-0">
                   <AlertCircle className="size-4 text-primary" />
