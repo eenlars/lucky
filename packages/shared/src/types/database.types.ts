@@ -35,6 +35,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profile: {
+        Row: {
+          about: string | null
+          clerk_id: string | null
+          created_at: string
+          goals: string | null
+          user_profile_id: string
+        }
+        Insert: {
+          about?: string | null
+          clerk_id?: string | null
+          created_at?: string
+          goals?: string | null
+          user_profile_id?: string
+        }
+        Update: {
+          about?: string | null
+          clerk_id?: string | null
+          created_at?: string
+          goals?: string | null
+          user_profile_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
