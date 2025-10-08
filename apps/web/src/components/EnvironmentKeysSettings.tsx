@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { type EnvironmentKey, EnvironmentKeysManager } from "@/lib/environment-keys"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
-import { AlertCircle, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -16,6 +16,7 @@ export default function EnvironmentKeysSettings() {
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [isRollingKey, setIsRollingKey] = useState(false)
+  const [justCopied, setJustCopied] = useState(false)
 
   useEffect(() => {
     loadKeys()
@@ -88,7 +89,9 @@ export default function EnvironmentKeysSettings() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text)
+      setJustCopied(true)
       toast.success("Copied to clipboard")
+      setTimeout(() => setJustCopied(false), 2000)
     } catch (error) {
       console.error("Failed to copy to clipboard:", error)
       toast.error("Failed to copy to clipboard")
@@ -160,85 +163,140 @@ export default function EnvironmentKeysSettings() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-8">
       {/* API Key Management Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>API Key</CardTitle>
-          <CardDescription>Manage your personal API key for programmatic access to the platform</CardDescription>
+      <Card className="border-0 shadow-sm bg-gradient-to-br from-card to-card/80 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
+        <CardHeader className="relative space-y-1 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+              <Key className="size-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-semibold tracking-tight">API Access</CardTitle>
+              <CardDescription className="text-sm">Secure programmatic access to your account</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           {apiKey ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="api-key" className="text-sm font-medium">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="api-key" className="text-sm font-medium flex items-center gap-2">
+                  <Sparkles className="size-3.5 text-primary" />
                   Your API Key
                 </Label>
-                <div className="flex gap-2">
-                  <Input id="api-key" type="text" value={apiKey} readOnly className="font-mono text-sm bg-muted" />
-                  <Button type="button" variant="outline" size="sm" onClick={() => copyToClipboard(apiKey)}>
-                    <Copy className="size-4" />
-                  </Button>
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative flex gap-2">
+                    <div className="flex-1 relative">
+                      <Input
+                        id="api-key"
+                        type="text"
+                        value={apiKey}
+                        readOnly
+                        className="font-mono text-sm bg-muted/50 border-muted-foreground/20 pr-12 focus-visible:ring-primary/40 transition-all"
+                      />
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+                          <div className="size-1.5 rounded-full bg-primary animate-pulse" />
+                          <span className="text-xs font-medium">Active</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(apiKey)}
+                      className="relative overflow-hidden transition-all hover:scale-105 hover:shadow-md"
+                    >
+                      <div
+                        className={`absolute inset-0 bg-primary/10 transition-opacity ${justCopied ? "opacity-100" : "opacity-0"}`}
+                      />
+                      {justCopied ? <Check className="size-4 text-primary" /> : <Copy className="size-4" />}
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Use this key to authenticate API requests. Keep it secure and never share it publicly.
+                <p className="text-xs text-muted-foreground flex items-start gap-2 pl-1">
+                  <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
+                  <span>Keep this key secure. Never share it publicly or commit it to version control.</span>
                 </p>
               </div>
 
-              <Separator />
+              <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
 
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <AlertCircle className="size-5 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <p className="text-sm text-foreground font-medium">Roll your API key</p>
-                  <p className="text-xs text-muted-foreground">
-                    If your key has been compromised, you can generate a new one. This will immediately invalidate your
-                    current key.
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={rollApiKey}
-                    disabled={isRollingKey}
-                    className="mt-2"
-                  >
-                    {isRollingKey ? (
-                      <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
-                        Rolling key...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="size-4 mr-2" />
-                        Roll key
-                      </>
-                    )}
-                  </Button>
+              <div className="relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-muted/30 backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent" />
+                <div className="relative p-4 flex items-start gap-4">
+                  <div className="flex items-center justify-center size-10 rounded-lg bg-destructive/10 ring-1 ring-destructive/20 shrink-0">
+                    <RefreshCw className="size-5 text-destructive" />
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Rotate API Key</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Generate a new key if the current one has been compromised. This action immediately invalidates
+                        your existing key.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={rollApiKey}
+                      disabled={isRollingKey}
+                      className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
+                    >
+                      {isRollingKey ? (
+                        <>
+                          <Loader2 className="size-4 mr-2 animate-spin" />
+                          Rotating...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="size-4 mr-2" />
+                          Rotate Key
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center size-16 rounded-full bg-muted mb-4">
-                <Key className="size-8 text-muted-foreground" />
+            <div className="text-center py-12">
+              <div className="relative inline-flex mb-6">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                <div className="relative flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
+                  <Key className="size-10 text-primary" />
+                </div>
               </div>
-              <h3 className="font-medium text-foreground mb-1">No API key generated</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Generate an API key to authenticate programmatic access
+              <h3 className="text-lg font-semibold text-foreground mb-2">Ready to Connect</h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                Generate your first API key to start building with programmatic access
               </p>
-              <Button type="button" onClick={generateApiKey} disabled={isGeneratingKey} size="sm">
-                {isGeneratingKey ? (
-                  <>
-                    <Loader2 className="size-4 mr-2 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Key className="size-4 mr-2" />
-                    Generate API key
-                  </>
-                )}
+              <Button
+                type="button"
+                onClick={generateApiKey}
+                disabled={isGeneratingKey}
+                size="default"
+                className="relative overflow-hidden group shadow-lg hover:shadow-xl transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative flex items-center gap-2">
+                  {isGeneratingKey ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="size-4" />
+                      <span>Generate API Key</span>
+                    </>
+                  )}
+                </div>
               </Button>
             </div>
           )}
@@ -246,71 +304,127 @@ export default function EnvironmentKeysSettings() {
       </Card>
 
       {/* Environment Keys Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Environment Variables</CardTitle>
-          <CardDescription>Store API keys and secrets for use in your workflows</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {keys.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground mb-4">No environment variables configured</p>
-              <Button type="button" variant="outline" onClick={addNewKey} size="sm">
+      <Card className="border-0 shadow-sm bg-gradient-to-br from-card to-card/80 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
+        <CardHeader className="relative space-y-1 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center size-10 rounded-xl bg-accent/50 ring-1 ring-accent-foreground/10">
+                <div className="size-5 font-mono font-bold text-accent-foreground flex items-center justify-center">
+                  $
+                </div>
+              </div>
+              <div>
+                <CardTitle className="text-xl font-semibold tracking-tight">Environment Variables</CardTitle>
+                <CardDescription className="text-sm">Securely store secrets for workflow execution</CardDescription>
+              </div>
+            </div>
+            {keys.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addNewKey}
+                size="sm"
+                className="relative overflow-hidden group transition-all hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Plus className="size-4 mr-2" />
-                Add variable
+                <span>Add Variable</span>
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="relative">
+          {keys.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="relative inline-flex mb-6">
+                <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl" />
+                <div className="relative flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 ring-1 ring-accent-foreground/10">
+                  <div className="text-3xl font-mono font-bold text-accent-foreground">$</div>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Variables Yet</h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                Add environment variables to securely store API keys and secrets
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addNewKey}
+                size="default"
+                className="shadow-sm hover:shadow-md transition-all"
+              >
+                <Plus className="size-4 mr-2" />
+                Add First Variable
               </Button>
             </div>
           ) : (
             <>
               <div className="space-y-3">
-                {keys.map(key => (
-                  <div key={key.id} className="rounded-lg border p-4 space-y-3">
-                    <div className="grid gap-4 sm:grid-cols-2">
+                {keys.map((key, index) => (
+                  <div
+                    key={key.id}
+                    className="group relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-muted/20 p-5 transition-all hover:border-muted-foreground/20 hover:bg-muted/30"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor={`key-name-${key.id}`} className="text-xs font-medium text-muted-foreground">
+                        <Label
+                          htmlFor={`key-name-${key.id}`}
+                          className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"
+                        >
+                          <span className="size-1.5 rounded-full bg-primary" />
                           Variable Name
                         </Label>
                         <Input
                           id={`key-name-${key.id}`}
-                          placeholder="e.g., OPENAI_API_KEY"
+                          placeholder="OPENAI_API_KEY"
                           autoComplete="off"
                           value={key.name}
                           onChange={e => updateKey(key.id, "name", e.target.value)}
-                          className="text-sm font-mono"
+                          className="text-sm font-mono bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/40 transition-all"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor={`key-value-${key.id}`} className="text-xs font-medium text-muted-foreground">
+                        <Label
+                          htmlFor={`key-value-${key.id}`}
+                          className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5"
+                        >
+                          <span className="size-1.5 rounded-full bg-primary" />
                           Value
                         </Label>
                         <div className="relative">
                           <Input
                             id={`key-value-${key.id}`}
                             type={key.isVisible ? "text" : "password"}
-                            placeholder="Enter value"
+                            placeholder="sk-..."
                             autoComplete="new-password"
                             value={key.value}
                             onChange={e => updateKey(key.id, "value", e.target.value)}
-                            className="pr-16 text-sm font-mono"
+                            className="pr-20 text-sm font-mono bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/40 transition-all"
                           />
-                          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="size-7 p-0"
+                              className="size-8 p-0 hover:bg-accent transition-all"
                               onClick={() => toggleVisibility(key.id)}
                             >
-                              {key.isVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                              {key.isVisible ? (
+                                <EyeOff className="size-4 text-muted-foreground" />
+                              ) : (
+                                <Eye className="size-4 text-muted-foreground" />
+                              )}
                             </Button>
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="size-7 p-0 text-destructive hover:text-destructive"
+                              className="size-8 p-0 hover:bg-destructive/10 transition-all"
                               onClick={() => deleteKey(key.id)}
                             >
-                              <Trash2 className="size-4" />
+                              <Trash2 className="size-4 text-destructive/70 hover:text-destructive" />
                             </Button>
                           </div>
                         </div>
@@ -320,43 +434,65 @@ export default function EnvironmentKeysSettings() {
                 ))}
               </div>
 
-              <Separator className="my-4" />
+              <Separator className="my-6 bg-gradient-to-r from-transparent via-border to-transparent" />
 
-              <div className="flex items-center justify-between">
-                <Button type="button" variant="outline" onClick={addNewKey} size="sm">
-                  <Plus className="size-4 mr-2" />
-                  Add variable
-                </Button>
-
+              <div className="flex items-center justify-between gap-4">
                 <div className="flex gap-2">
-                  <Button type="button" variant="ghost" onClick={loadKeys} disabled={isLoading} size="sm">
-                    Reset
-                  </Button>
-                  <Button type="button" onClick={handleSave} disabled={isLoading} size="sm">
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save changes"
-                    )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={loadKeys}
+                    disabled={isLoading}
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    Reset Changes
                   </Button>
                 </div>
+
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  size="sm"
+                  className="relative overflow-hidden group shadow-md hover:shadow-lg transition-all"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative flex items-center gap-2">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="size-4" />
+                        <span>Save Changes</span>
+                      </>
+                    )}
+                  </div>
+                </Button>
               </div>
             </>
           )}
 
-          <div className="mt-6 p-3 rounded-lg bg-muted/50 flex gap-3">
-            <AlertCircle className="size-5 text-muted-foreground mt-0.5 shrink-0" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-foreground">Storage notice</p>
-              <p className="text-xs text-muted-foreground">
-                Environment variables are stored locally in your browser&apos;s localStorage. They&apos;re accessible to
-                scripts on this page, so never paste untrusted code. Never commit these values to version control.
-              </p>
+          {keys.length > 0 && (
+            <div className="mt-6 relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-gradient-to-br from-muted/30 to-muted/20 backdrop-blur-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent" />
+              <div className="relative p-4 flex gap-3">
+                <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 ring-1 ring-primary/20 shrink-0">
+                  <AlertCircle className="size-4 text-primary" />
+                </div>
+                <div className="space-y-1 flex-1">
+                  <p className="text-sm font-semibold text-foreground">Local Storage Notice</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Variables are stored locally in your browser. Never paste untrusted code or commit these values to
+                    version control.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>
