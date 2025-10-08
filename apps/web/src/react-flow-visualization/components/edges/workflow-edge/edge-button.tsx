@@ -14,6 +14,7 @@ import type { AppEdge } from "../edges"
 const selector = (id: string) => {
   return (state: AppStore) => ({
     addNodeInBetween: state.addNodeInBetween,
+    removeEdge: state.removeEdge,
     connectionSites: state.connectionSites,
     isPotentialConnection: state.potentialConnection?.id === `edge-${id}`,
   })
@@ -37,7 +38,7 @@ export function EdgeButton({
   y: number
   style: CSSProperties
 }) {
-  const { addNodeInBetween, connectionSites, isPotentialConnection } = useAppStore(useShallow(selector(id)))
+  const { addNodeInBetween, removeEdge, connectionSites, isPotentialConnection } = useAppStore(useShallow(selector(id)))
   const { isOpen, toggleDropdown, ref } = useDropdown()
 
   const onAddNode = useCallback(
@@ -53,6 +54,10 @@ export function EdgeButton({
     },
     [addNodeInBetween, source, sourceHandleId, targetHandleId, target, x, y],
   )
+
+  const onDelete = useCallback(() => {
+    removeEdge(id)
+  }, [removeEdge, id])
 
   const connectionId = `edge-${id}`
   // We add the possible connection sites to the store
@@ -106,7 +111,7 @@ export function EdgeButton({
             transform: "translate(-50%, -50%)",
           }}
         >
-          <AppDropdownMenu onAddNode={onAddNode} filterNodes={filterNodes} />
+          <AppDropdownMenu onAddNode={onAddNode} onDelete={onDelete} filterNodes={filterNodes} />
         </div>
       )}
     </EdgeLabelRenderer>

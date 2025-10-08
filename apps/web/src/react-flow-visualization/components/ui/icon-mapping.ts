@@ -5,6 +5,7 @@ import {
   Rocket,
   Spline,
   Split,
+  Trash2,
   // Import other icons as needed
 } from "lucide-react"
 
@@ -15,5 +16,6 @@ export const iconMapping: Record<string, React.FC<React.SVGProps<SVGSVGElement>>
   Merge: Merge,
   CheckCheck: CheckCheck,
   Ban: Ban,
+  Trash2: Trash2,
   // Add other mappings here
 }
