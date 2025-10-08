@@ -55,6 +55,9 @@ export function transformInvokeInput(rpcRequest: InvokeRequest): TransformResult
 /**
  * Creates the internal invocation input format for the workflow engine
  * Uses mcp-invoke type instead of prompt-only
+ *
+ * Note: inputSchema validation happens at the API route level using JSON Schema.
+ * We don't pass it through to the workflow engine since the input is already validated.
  */
 export function createInvocationInput(
   transformed: TransformedInvokeInput & {
@@ -69,7 +72,7 @@ export function createInvocationInput(
       goal: transformed.prompt,
       workflowId: transformed.workflowId,
       inputData: transformed.inputData,
-      inputSchema: transformed.inputSchema,
+      // inputSchema omitted - validation already done at API layer
     },
   }
 }
