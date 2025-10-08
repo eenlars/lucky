@@ -15,6 +15,7 @@ export default function WorkflowVersionEditor({ params }: PageProps) {
   const [workflowVersion, setWorkflowVersion] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -33,21 +34,23 @@ export default function WorkflowVersionEditor({ params }: PageProps) {
 
             if (latestVersion?.wf_version_id) {
               // Redirect to the latest version
+              setRedirecting(true)
               router.replace(`/edit/${latestVersion.wf_version_id}`)
               return
             }
           }
 
           setError(true)
+          setLoading(false)
           return
         }
 
         const data = await response.json()
         setWorkflowVersion(data)
+        setLoading(false)
       } catch (err) {
         console.error("Failed to load workflow version:", err)
         setError(true)
-      } finally {
         setLoading(false)
       }
     }
@@ -55,7 +58,7 @@ export default function WorkflowVersionEditor({ params }: PageProps) {
     loadWorkflow()
   }, [params, router])
 
-  if (loading) return <div>Loading...</div>
+  if (loading || redirecting) return <div>Loading...</div>
   if (error) notFound()
   if (!workflowVersion) notFound()
 
