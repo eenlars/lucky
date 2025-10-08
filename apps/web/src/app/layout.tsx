@@ -1,7 +1,9 @@
 import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
 import { IntegratedAside } from "@/app/components/aside/integrated-aside"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 import MainContent from "@/components/MainContent"
 import { CredentialStatusBanner } from "@/components/config/CredentialStatusBanner"
+import { KeyboardShortcuts } from "@/components/help/KeyboardShortcuts"
 import { SidebarProvider } from "@/contexts/SidebarContext"
 import { defaultState } from "@/react-flow-visualization/store/app-store"
 import { AppStoreProvider } from "@/react-flow-visualization/store/store"
@@ -16,8 +18,8 @@ import { Toaster } from "sonner"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Automated Agentic Workflows",
-  description: "Creating workflows that learn the optimal workflow to solve a specific task.",
+  title: "AI Workflows That Learn",
+  description: "Create workflows that automatically optimize themselves to solve your tasks better.",
   robots: {
     index: false,
     follow: false,
@@ -59,30 +61,33 @@ export default async function RootLayout({
       <AppStoreProvider initialState={{ ...defaultState, colorMode: theme }}>
         <html lang="en" className={theme}>
           <body className="h-screen">
-            <SidebarProvider>
-              {/* Skip link for accessibility */}
-              <a
-                href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-sidebar-accent focus:px-3 focus:py-2 focus:text-sidebar-accent-foreground"
-              >
-                Skip to content
-              </a>
-              <NextTopLoader />
-              {userId && <CredentialStatusBanner />}
-              {userId && <IntegratedAside />}
-              <MainContent hasAuth={!!userId}>{children}</MainContent>
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: theme === "dark" ? "#1a1a1a" : "#fff",
-                    color: theme === "dark" ? "#fff" : "#000",
-                    border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
-                  },
-                }}
-              />
-            </SidebarProvider>
+            <ErrorBoundary>
+              <SidebarProvider>
+                {/* Skip link for accessibility */}
+                <a
+                  href="#main-content"
+                  className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-sidebar-accent focus:px-3 focus:py-2 focus:text-sidebar-accent-foreground"
+                >
+                  Skip to content
+                </a>
+                <NextTopLoader />
+                {userId && <CredentialStatusBanner />}
+                {userId && <IntegratedAside />}
+                <MainContent hasAuth={!!userId}>{children}</MainContent>
+                {userId && <KeyboardShortcuts />}
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: theme === "dark" ? "#1a1a1a" : "#fff",
+                      color: theme === "dark" ? "#fff" : "#000",
+                      border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
+                    },
+                  }}
+                />
+              </SidebarProvider>
+            </ErrorBoundary>
           </body>
         </html>
       </AppStoreProvider>

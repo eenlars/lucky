@@ -28,37 +28,37 @@ interface NavItemWithSubmenus {
 // Legacy interface for compatibility
 type NavItemData = NavItemWithSubmenus
 
-// Original navigation items with smaller icons
+// Navigation items with plain language labels
 const navigationItems: NavItemData[] = [
   {
     href: "/",
     label: "Home",
     icon: <Home className="w-4 h-4" />,
-    description: "Dashboard overview",
+    description: "Start here",
   },
   {
     href: "/workflows",
     label: "Workflows",
     icon: <Network className="w-4 h-4" />,
-    description: "Manage individual workflows",
+    description: "Your workflows",
   },
   {
     href: "/edit",
-    label: "Editor",
+    label: "Create",
     icon: <Wrench className="w-4 h-4" />,
-    description: "Workflow editor",
+    description: "Build workflows",
   },
   {
     href: "/connectors",
     label: "Connectors",
     icon: <Plug className="w-4 h-4" />,
-    description: "Manage connectors",
+    description: "Connect services",
   },
   {
     href: "/invocations",
-    label: "Traces",
+    label: "History",
     icon: <BarChart2 className="w-4 h-4" />,
-    description: "View execution traces",
+    description: "Past runs",
   },
   {
     href: "/structures",
@@ -69,22 +69,21 @@ const navigationItems: NavItemData[] = [
   },
   {
     href: "/evolution",
-    label: "Evolution",
+    label: "Learning",
     icon: <Dna className="w-4 h-4" />,
-    description: "Evolution tracking",
-    disabled: true,
+    description: "Watch improvement",
   },
   {
     href: "/tools",
     label: "Tools",
     icon: <Hammer className="w-4 h-4" />,
-    description: "Development tools",
+    description: "Developer tools",
   },
   {
     href: "/settings",
     label: "Settings",
     icon: <Settings className="w-4 h-4" />,
-    description: "Application settings",
+    description: "Configure app",
   },
 ]
 
