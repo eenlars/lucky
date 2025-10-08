@@ -134,20 +134,55 @@ export default function WorkflowsPage() {
   const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(new Set())
   const { workflows, loading, saving, error, refresh, deleteWorkflow } = useWorkflows()
 
-  const handleRun = async (workflow: any) => {
+  const handleRun = async (workflow: WorkflowWithVersions) => {
     if (!workflow.activeVersion) return
+
+    // Prompt user for input
+    const userInput = prompt("Enter input for the workflow:")
+    if (!userInput) return
 
     setRunningWorkflows(prev => new Set(prev).add(workflow.wf_id))
 
-    // TODO: Implement actual workflow execution
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/workflow/invoke", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          workflowVersionId: workflow.activeVersion.wf_version_id,
+          evalInput: {
+            type: "prompt-only",
+            workflowId: workflow.wf_id,
+            goal: userInput,
+          },
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Failed to run workflow")
+      }
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert(
+          `Workflow completed successfully!\n\nOutput: ${JSON.stringify(result.data, null, 2)}\n\nCost: $${result.usdCost?.toFixed(4) || "0"}`,
+        )
+      } else {
+        throw new Error(result.error || "Workflow execution failed")
+      }
+    } catch (error) {
+      console.error("Failed to run workflow:", error)
+      alert(`Failed to run workflow: ${error instanceof Error ? error.message : "Unknown error"}`)
+    } finally {
       setRunningWorkflows(prev => {
         const next = new Set(prev)
         next.delete(workflow.wf_id)
         return next
       })
-      console.log(`Workflow "${workflow.description}" started`)
-    }, 2000)
+    }
   }
 
   const handleDelete = async (workflowId: string) => {
