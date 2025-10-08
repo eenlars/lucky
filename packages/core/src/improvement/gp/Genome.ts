@@ -361,19 +361,23 @@ export class Genome extends Workflow {
    * @remarks
    * Updates both genomeEvaluationResults and base workflow properties.
    * Marks the genome as evaluated.
-   *
-   * TODO: fix memory leak - genome evaluation results persist through improvement operations
-   * TODO: implement proper cleanup of evaluation results between generations
-   * TODO: consider using WeakMap for storing transient evaluation data
+   * Uses explicit field assignment instead of object spread to prevent data corruption.
    */
   setFitnessAndFeedback({ fitness, feedback }: { fitness: FitnessOfWorkflow; feedback: string | null }): void {
+    // Explicit field assignment to prevent object spread corruption
     this.genomeEvaluationResults = {
-      ...(this.genomeEvaluationResults || {}),
-      ...fitness,
       workflowVersionId: this.getWorkflowVersionId(),
       hasBeenEvaluated: true,
       evaluatedAt: new Date().toISOString(),
-      feedback,
+      fitness: {
+        score: fitness.score,
+        totalCostUsd: fitness.totalCostUsd,
+        totalTimeSeconds: fitness.totalTimeSeconds,
+        accuracy: fitness.accuracy,
+      },
+      costOfEvaluation: this.genomeEvaluationResults?.costOfEvaluation || 0,
+      errors: this.genomeEvaluationResults?.errors || [],
+      feedback: feedback,
     }
 
     // Use new feedback if provided, otherwise keep existing feedback
@@ -382,6 +386,29 @@ export class Genome extends Workflow {
     this.feedback = hasNewFeedback ? feedback : hasCurrentFeedback ? this.feedback : null
     this.fitness = fitness.score > 0 ? fitness : undefined
     this.isEvaluated = true
+  }
+
+  /**
+   * Clears evaluation state to prevent data leakage between generations.
+   * Should be called before genetic operations (crossover, mutation) to ensure isolation.
+   */
+  override clearEvaluationState(): void {
+    super.clearEvaluationState()
+    this.isEvaluated = false
+    this.genomeEvaluationResults = {
+      workflowVersionId: this.getWorkflowVersionId(),
+      hasBeenEvaluated: false,
+      evaluatedAt: new Date().toISOString(),
+      fitness: {
+        score: 0,
+        totalCostUsd: 0,
+        totalTimeSeconds: 0,
+        accuracy: 0,
+      },
+      costOfEvaluation: 0,
+      errors: [],
+      feedback: null,
+    }
   }
 
   /**

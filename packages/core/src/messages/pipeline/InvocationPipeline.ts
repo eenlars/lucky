@@ -1,3 +1,4 @@
+import { RaceConditionError, StateManagementError } from "@core/utils/errors/WorkflowErrors"
 import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
@@ -67,6 +68,20 @@ const verbose = isLoggingEnabled("InvocationPipeline")
  * rather than throwing, ensuring workflow continuity. Critical context is
  * logged for debugging including node ID, workflow version, and available tools.
  */
+/**
+ * Execution state for pipeline lifecycle management.
+ * Prevents race conditions and ensures proper method ordering.
+ */
+enum PipelineState {
+  CREATED = "CREATED",
+  PREPARED = "PREPARED",
+  EXECUTING = "EXECUTING",
+  EXECUTED = "EXECUTED",
+  PROCESSING = "PROCESSING",
+  COMPLETED = "COMPLETED",
+  ERROR = "ERROR",
+}
+
 export class InvocationPipeline {
   /* ------------------------------- state --------------------------------- */
   private sdkMessages: ModelMessage[] = []
@@ -78,6 +93,12 @@ export class InvocationPipeline {
   private updatedMemory: Record<string, string> | null = null
   private agentSteps: AgentStep<any>[] = []
   private debugPrompts: string[] = []
+
+  /**
+   * Pipeline execution state. Prevents race conditions and ensures proper method ordering.
+   * State transitions: CREATED -> PREPARED -> EXECUTING -> EXECUTED -> PROCESSING -> COMPLETED
+   */
+  private executionState: PipelineState = PipelineState.CREATED
 
   constructor(
     private readonly ctx: NodeInvocationCallContext,
@@ -105,6 +126,16 @@ export class InvocationPipeline {
    * @returns this instance for method chaining
    */
   public async prepare(): Promise<this> {
+    if (this.executionState !== PipelineState.CREATED) {
+      throw new StateManagementError(`prepare() called in invalid state: ${this.executionState}`, {
+        currentState: this.executionState,
+        expectedState: PipelineState.CREATED,
+        nodeId: this.ctx.nodeConfig.nodeId,
+      })
+    }
+
+    this.executionState = PipelineState.PREPARED
+
     await this.toolManager.initializeTools()
     // Extract tool execution context from node invocation context
     const toolContext = {
@@ -171,6 +202,16 @@ export class InvocationPipeline {
    * @throws Never - errors are caught and transformed into responses
    */
   public async execute(): Promise<this> {
+    if (this.executionState !== PipelineState.PREPARED) {
+      throw new StateManagementError(`execute() called in invalid state: ${this.executionState}`, {
+        currentState: this.executionState,
+        expectedState: PipelineState.PREPARED,
+        nodeId: this.ctx.nodeConfig.nodeId,
+      })
+    }
+
+    this.executionState = PipelineState.EXECUTING
+
     try {
       // Check if this node should use Claude SDK
       if (this.ctx.nodeConfig.useClaudeSDK) {
@@ -230,10 +271,12 @@ export class InvocationPipeline {
 
       // Reset state to prevent inconsistencies
       this.processedResponse = null
+      this.executionState = PipelineState.ERROR
 
       throw new Error(`Execution error: ${msg}`)
     }
 
+    this.executionState = PipelineState.EXECUTED
     return this
   }
 
@@ -242,11 +285,34 @@ export class InvocationPipeline {
   /* ---------------------------------------------------------------------- */
 
   public async process(): Promise<NodeInvocationResult> {
-    // todo-racecondition: potential race condition if execute() hasn't completed when process() is called
+    if (this.executionState === PipelineState.EXECUTING) {
+      throw new RaceConditionError(
+        "process() called while execute() is still running. This indicates a race condition.",
+        {
+          currentState: this.executionState,
+          expectedState: PipelineState.EXECUTED,
+          nodeId: this.ctx.nodeConfig.nodeId,
+        },
+      )
+    }
+
+    if (this.executionState !== PipelineState.EXECUTED) {
+      throw new StateManagementError(`process() called in invalid state: ${this.executionState}`, {
+        currentState: this.executionState,
+        expectedState: PipelineState.EXECUTED,
+        nodeId: this.ctx.nodeConfig.nodeId,
+      })
+    }
+
+    this.executionState = PipelineState.PROCESSING
+
     if (!this.processedResponse) {
       const message =
-        "[InvocationPipeline] Processing error: empty processedResponse - ensure execute() completed before calling process()"
-      lgg.warn(message)
+        "[InvocationPipeline] Processing error: empty processedResponse - this should never happen after execute() completes"
+      lgg.error(message, {
+        nodeId: this.ctx.nodeConfig.nodeId,
+        state: this.executionState,
+      })
       return handleError({
         context: this.ctx,
         errorMessage: message,
@@ -277,6 +343,7 @@ export class InvocationPipeline {
       this.agentSteps,
     )
 
+    this.executionState = PipelineState.COMPLETED
     return result
   }
 
