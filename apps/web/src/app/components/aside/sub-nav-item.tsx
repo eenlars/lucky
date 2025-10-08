@@ -12,7 +12,7 @@ export function SubNavItem({ href, children, delay = 0, isActive = false }: SubN
     <a className="block group/child" href={href}>
       <div className="relative">
         <div
-          className="ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out opacity-0 -translate-x-2"
+          className="ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
           style={{ transitionDelay: `${delay}ms` }}
         >
           <span
