@@ -3,17 +3,25 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { type EnvironmentKey, EnvironmentKeysManager } from "@/lib/environment-keys"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
+type EnvironmentKey = {
+  id: string
+  name: string
+  value: string
+  isVisible: boolean
+}
+
 export default function EnvironmentKeysSettings() {
   const [keys, setKeys] = useState<EnvironmentKey[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [apiKey, setApiKey] = useState<string | null>(null)
+  const [isLoadingApiKey, setIsLoadingApiKey] = useState(true)
+  const [isFullKey, setIsFullKey] = useState(false)
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [isRollingKey, setIsRollingKey] = useState(false)
   const [justCopied, setJustCopied] = useState(false)
@@ -23,38 +31,63 @@ export default function EnvironmentKeysSettings() {
     loadApiKey()
   }, [])
 
-  const loadKeys = () => {
+  const loadKeys = async () => {
     try {
-      const savedKeys = EnvironmentKeysManager.getKeys()
-      setKeys(savedKeys)
+      setIsLoading(true)
+      const response = await fetch("/api/user/env-keys")
+      if (response.ok) {
+        const data = await response.json()
+        // Fetch decrypted values for each key
+        const keysWithValues = await Promise.all(
+          data.keys.map(async (key: { id: string; name: string }) => {
+            const valueResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(key.name)}`)
+            if (valueResponse.ok) {
+              const valueData = await valueResponse.json()
+              return {
+                id: key.id,
+                name: key.name,
+                value: valueData.value,
+                isVisible: false,
+              }
+            }
+            return { id: key.id, name: key.name, value: "", isVisible: false }
+          }),
+        )
+        setKeys(keysWithValues)
+      }
     } catch (error) {
       console.error("Failed to load environment keys:", error)
       toast.error("Failed to load environment keys")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const loadApiKey = async () => {
     try {
-      // Assume backend function exists
+      setIsLoadingApiKey(true)
       const response = await fetch("/api/user/api-key")
       if (response.ok) {
         const data = await response.json()
         setApiKey(data.apiKey)
+        setIsFullKey(false) // GET only returns key ID, not full key
       }
     } catch (error) {
       console.error("Failed to load API key:", error)
+    } finally {
+      setIsLoadingApiKey(false)
     }
   }
 
   const generateApiKey = async () => {
     try {
       setIsGeneratingKey(true)
-      // Assume backend function exists
       const response = await fetch("/api/user/api-key/generate", { method: "POST" })
       if (response.ok) {
         const data = await response.json()
         setApiKey(data.apiKey)
-        toast.success("API key generated successfully")
+        setIsFullKey(true) // This is the full key, shown only once
+        toast.success("API key generated! Save it now - you won't see it again.")
       } else {
         toast.error("Failed to generate API key")
       }
@@ -69,12 +102,12 @@ export default function EnvironmentKeysSettings() {
   const rollApiKey = async () => {
     try {
       setIsRollingKey(true)
-      // Assume backend function exists
       const response = await fetch("/api/user/api-key/roll", { method: "POST" })
       if (response.ok) {
         const data = await response.json()
         setApiKey(data.apiKey)
-        toast.success("API key rolled successfully. Your old key is now invalid.")
+        setIsFullKey(true) // This is the new full key, shown only once
+        toast.success("New API key generated! Save it now - your old key is invalid.")
       } else {
         toast.error("Failed to roll API key")
       }
@@ -101,7 +134,19 @@ export default function EnvironmentKeysSettings() {
   const saveKeys = async (newKeys: EnvironmentKey[]) => {
     try {
       setIsLoading(true)
-      EnvironmentKeysManager.saveKeys(newKeys)
+      // Save each key to the backend
+      await Promise.all(
+        newKeys.map(async key => {
+          const response = await fetch("/api/user/env-keys", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: key.name, value: key.value }),
+          })
+          if (!response.ok) {
+            throw new Error(`Failed to save ${key.name}`)
+          }
+        }),
+      )
       setKeys(newKeys)
       toast.success("Environment keys saved successfully")
     } catch (error) {
@@ -113,7 +158,7 @@ export default function EnvironmentKeysSettings() {
   }
 
   const addNewKey = () => {
-    const newKey = EnvironmentKeysManager.createKey("", "")
+    const newKey = { id: crypto.randomUUID(), name: "", value: "", isVisible: false }
     setKeys([...keys, newKey])
   }
 
@@ -122,12 +167,28 @@ export default function EnvironmentKeysSettings() {
     setKeys(updatedKeys)
   }
 
-  const deleteKey = (id: string) => {
-    const updatedKeys = keys.filter(key => key.id !== id)
-    setKeys(updatedKeys)
-    toast.message("Key removed", {
-      description: "Click Save to apply changes",
-    })
+  const deleteKey = async (id: string) => {
+    const keyToDelete = keys.find(k => k.id === id)
+    if (!keyToDelete || !keyToDelete.name) {
+      // If no name, it's a new unsaved key, just remove from state
+      setKeys(keys.filter(key => key.id !== id))
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/user/env-keys?name=${encodeURIComponent(keyToDelete.name)}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        setKeys(keys.filter(key => key.id !== id))
+        toast.success("Environment variable deleted")
+      } else {
+        toast.error("Failed to delete environment variable")
+      }
+    } catch (error) {
+      console.error("Failed to delete environment key:", error)
+      toast.error("Failed to delete environment variable")
+    }
   }
 
   const toggleVisibility = (id: string) => {
@@ -142,11 +203,14 @@ export default function EnvironmentKeysSettings() {
       return
     }
 
-    // Validate key names
+    // Validate key names (alphanumeric + underscore, max 128 chars)
     for (const key of keys) {
-      const error = EnvironmentKeysManager.validateKeyName(key.name)
-      if (error) {
-        toast.error(`Invalid key name "${key.name}": ${error}`)
+      if (!/^[A-Z0-9_]+$/i.test(key.name)) {
+        toast.error(`Invalid key name "${key.name}": must be alphanumeric with underscores only`)
+        return
+      }
+      if (key.name.length > 128) {
+        toast.error(`Invalid key name "${key.name}": maximum 128 characters`)
         return
       }
     }
@@ -179,12 +243,17 @@ export default function EnvironmentKeysSettings() {
           </div>
         </CardHeader>
         <CardContent className="relative">
-          {apiKey ? (
+          {isLoadingApiKey ? (
+            <div className="text-center py-12">
+              <Loader2 className="size-8 animate-spin mx-auto mb-4 text-primary/50" />
+              <p className="text-sm text-muted-foreground">Loading API key...</p>
+            </div>
+          ) : apiKey ? (
             <div className="space-y-6">
               <div className="space-y-3">
                 <Label htmlFor="api-key" className="text-sm font-medium flex items-center gap-2">
                   <Sparkles className="size-3.5 text-primary" />
-                  Your API Key
+                  {isFullKey ? "Your API Key (save it now!)" : "API Key ID"}
                 </Label>
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -218,10 +287,22 @@ export default function EnvironmentKeysSettings() {
                     </Button>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground flex items-start gap-2 pl-1">
-                  <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
-                  <span>Keep this key secure. Never share it publicly or commit it to version control.</span>
-                </p>
+                {isFullKey ? (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-500 font-medium flex items-start gap-2 pl-1">
+                    <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
+                    <span>
+                      Save this key now! You won&apos;t be able to see the full key again. Use it to authenticate API
+                      requests.
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground flex items-start gap-2 pl-1">
+                    <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
+                    <span>
+                      This is your key ID for reference only. The full secret key was shown once during generation.
+                    </span>
+                  </p>
+                )}
               </div>
 
               <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
@@ -361,7 +442,7 @@ export default function EnvironmentKeysSettings() {
           ) : (
             <>
               <div className="space-y-3">
-                {keys.map((key, index) => (
+                {keys.map(key => (
                   <div
                     key={key.id}
                     className="group relative overflow-hidden rounded-xl border border-muted-foreground/10 bg-muted/20 p-5 transition-all hover:border-muted-foreground/20 hover:bg-muted/30"
@@ -484,10 +565,10 @@ export default function EnvironmentKeysSettings() {
                   <AlertCircle className="size-4 text-primary" />
                 </div>
                 <div className="space-y-1 flex-1">
-                  <p className="text-sm font-semibold text-foreground">Local Storage Notice</p>
+                  <p className="text-sm font-semibold text-foreground">Secure Storage</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Variables are stored locally in your browser. Never paste untrusted code or commit these values to
-                    version control.
+                    Environment variables are encrypted and stored securely in the database. Only you can access them.
+                    Never commit these values to version control or share them publicly.
                   </p>
                 </div>
               </div>
