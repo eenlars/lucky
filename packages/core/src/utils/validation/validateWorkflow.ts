@@ -1,5 +1,6 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { truncater } from "@core/utils/common/llmify"
+import { WorkflowRepairError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import type { VerificationResult } from "@core/utils/validation/workflow/verify.types"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
@@ -66,7 +67,9 @@ export async function validateAndRepairWorkflow(
   if (onFail === "returnNull") {
     return { finalConfig: null, cost: currentCost }
   }
-  throw new Error(
-    `Workflow repair failed after ${maxRetries} attempts. Please check the workflow configuration. ${verificationResult ? JSON.stringify(verificationResult.errors, null, 2) : ""}`,
-  )
+  throw new WorkflowRepairError(`Failed to repair workflow after ${maxRetries} attempts.`, {
+    attempts: maxRetries,
+    maxRetries,
+    errors: verificationResult?.errors,
+  })
 }

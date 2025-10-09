@@ -6,7 +6,7 @@ import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/beh
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import { EvaluationError } from "@core/utils/errors/WorkflowErrors"
+import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
@@ -211,14 +211,14 @@ export class Workflow {
    * Note: Fitness data should be cleared between evaluation phases to prevent data leakage.
    *
    * @returns The fitness score
-   * @throws {EvaluationError} If fitness has not been calculated
+   * @throws {WorkflowFitnessError} If fitness has not been calculated
    */
   getFitness(): FitnessOfWorkflow | undefined {
-    if (!this.fitness) {
-      throw new EvaluationError("Fitness not found for workflow", {
+    if (!this.fitness)
+      throw new WorkflowFitnessError("Fitness data has not been calculated for this workflow yet.", {
+        workflowId: this.workflowId,
         workflowVersionId: this.workflowVersionId,
       })
-    }
     return this.fitness
   }
 
@@ -226,14 +226,14 @@ export class Workflow {
    * Gets the numeric fitness score.
    *
    * @returns The numeric fitness score
-   * @throws {EvaluationError} If fitness has not been calculated
+   * @throws {WorkflowFitnessError} If fitness has not been calculated
    */
   getFitnessScore(): number {
-    if (!this.fitness) {
-      throw new EvaluationError("Fitness not found for workflow", {
+    if (!this.fitness)
+      throw new WorkflowFitnessError("Fitness score is not available. Workflow must be evaluated first.", {
+        workflowId: this.workflowId,
         workflowVersionId: this.workflowVersionId,
       })
-    }
     return this.fitness.score
   }
 

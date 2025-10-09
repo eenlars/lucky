@@ -9,9 +9,32 @@ export interface ParsedArgs {
   setupFile?: string
 }
 
-export class ArgumentParsingError extends Error {
-  constructor(message: string) {
-    super(message)
+import { EnhancedError } from "@core/utils/errors/enhanced-error"
+
+export class ArgumentParsingError extends EnhancedError {
+  constructor(
+    message: string,
+    context?: {
+      args?: string[]
+      expectedFormat?: string
+      validOptions?: string[]
+    },
+  ) {
+    super({
+      title: "Invalid Arguments",
+      message,
+      action: context?.expectedFormat
+        ? `Expected format: ${context.expectedFormat}`
+        : "Check argument syntax and try again. Use --help for usage information.",
+      debug: {
+        code: "ARGUMENT_PARSING_FAILED",
+        context: context || {},
+        timestamp: new Date().toISOString(),
+      },
+      docsUrl: "/docs/cli/usage",
+      retryable: true,
+      retryStrategy: "manual",
+    })
     this.name = "ArgumentParsingError"
   }
 }
@@ -21,7 +44,9 @@ function parseArgument(arg: string): [string, string] {
   const value = valueParts.join("=")
 
   if (!value) {
-    throw new ArgumentParsingError(`Empty value for ${key}`)
+    throw new ArgumentParsingError(`Empty value for ${key}`, {
+      expectedFormat: `${key}=<value>`,
+    })
   }
 
   return [key, value]
@@ -30,7 +55,9 @@ function parseArgument(arg: string): [string, string] {
 function parseInteger(value: string, name: string): number {
   const num = Number.parseInt(value, 10)
   if (Number.isNaN(num) || num <= 0) {
-    throw new ArgumentParsingError(`${name} must be a positive integer, got: ${value}`)
+    throw new ArgumentParsingError(`${name} must be a positive integer, got: ${value}`, {
+      expectedFormat: `--${name}=<positive integer>`,
+    })
   }
   return num
 }
@@ -39,7 +66,9 @@ function parseBoolean(value: string): boolean {
   const normalized = value.toLowerCase()
   if (["true", "1", "yes"].includes(normalized)) return true
   if (["false", "0", "no"].includes(normalized)) return false
-  throw new ArgumentParsingError(`Boolean value must be true/false/1/0/yes/no, got: ${value}`)
+  throw new ArgumentParsingError(`Boolean value must be true/false/1/0/yes/no, got: ${value}`, {
+    validOptions: ["true", "false", "1", "0", "yes", "no"],
+  })
 }
 
 const VALID_MODES = ["iterative", "GP", "genetic"] as const

@@ -1,5 +1,6 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { type WorkflowFiles, contextFilePrompt } from "@core/tools/context/contextStore.types"
+import { MessageValidationError } from "@core/utils/errors/api-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { isNir } from "@lucky/shared"
 import type { ModelMessage } from "ai"
@@ -49,9 +50,10 @@ export function buildSimpleMessage({
 }: BuildSimpleMessageContext): ModelMessage[] {
   // validate input
   if (!message) {
-    throw new Error(
-      `Invalid message: missing required fields - message: ${!!message} ${typeof message}, nodeDescription: ${nodeDescription}, context: ${context}`,
-    )
+    throw new MessageValidationError("Message content is required but was not provided.", {
+      missingFields: ["message"],
+      providedData: { message: !!message, messageType: typeof message, nodeDescription, context },
+    })
   }
 
   // build the chat messages
@@ -107,7 +109,9 @@ Use this memory to inform your decisions and responses.`
 
   // validate messages before sending to AI
   if (!Array.isArray(sdkMessages) || sdkMessages.some(msg => !msg.role || msg.content === undefined)) {
-    throw new Error("Invalid messages format for AI model")
+    throw new MessageValidationError("Generated messages have invalid format for AI model.", {
+      providedData: { isArray: Array.isArray(sdkMessages), messageCount: sdkMessages?.length },
+    })
   }
 
   if (isLoggingEnabled("InvocationPipeline") && debug) {
