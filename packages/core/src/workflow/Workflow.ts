@@ -594,6 +594,7 @@ export class Workflow {
       parent2Id: this.parent2Id,
       evolutionContext: this.evolutionContext,
       toolContext: this.toolContext,
+      persistence: this.persistence,
     })
   }
 
