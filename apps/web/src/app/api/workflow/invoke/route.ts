@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
+import { ApiKeyResolver } from "@/lib/auth/ApiKeyResolver"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { ApiKeyResolver } from "@lucky/core/auth/ApiKeyResolver"
 import type { UserExecutionContext } from "@lucky/core/auth/types"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"

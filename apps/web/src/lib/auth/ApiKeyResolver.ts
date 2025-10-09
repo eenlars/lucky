@@ -5,10 +5,10 @@
  * Handles decryption, caching, and model access validation.
  */
 
+import type { ApiKeyResolver as IApiKeyResolver } from "@lucky/core/auth/types"
 import type { LuckyProvider } from "@lucky/shared"
 import { decryptGCM } from "@lucky/shared/crypto/lockbox"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import type { ApiKeyResolver as IApiKeyResolver } from "./types"
 
 /**
  * Extract provider from model name.
@@ -123,8 +123,8 @@ export class ApiKeyResolver implements IApiKeyResolver {
       })
 
       return decryptedKey
-    } catch (err) {
-      console.error(`[ApiKeyResolver] Error fetching/decrypting ${provider} API key:`, err)
+    } catch (_err) {
+      console.error(`[ApiKeyResolver] Error fetching/decrypting ${provider} API key:`, _err)
       return null
     }
   }
@@ -179,8 +179,8 @@ export class ApiKeyResolver implements IApiKeyResolver {
       })
 
       return enabledModels
-    } catch (err) {
-      console.error(`[ApiKeyResolver] Error fetching ${provider} settings:`, err)
+    } catch (_err) {
+      console.error(`[ApiKeyResolver] Error fetching ${provider} settings:`, _err)
       return []
     }
   }
