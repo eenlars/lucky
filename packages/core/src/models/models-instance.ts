@@ -4,6 +4,7 @@
  */
 
 import type { UserExecutionContext } from "@core/auth/types"
+import { getCurrentProvider } from "@core/utils/spending/provider"
 import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
@@ -11,48 +12,38 @@ let modelsInstance: Models | null = null
 
 /**
  * Build provider configuration from core config and environment.
- * Configures ALL providers that have API keys available.
- * In test environments (when API keys are missing), provides mock API keys
- * to allow unit tests to run without real credentials.
+ * When using OpenRouter, creates aliases for all providers to route through it.
+ * This matches old behavior where all models route through CURRENT_PROVIDER.
  */
 function buildProviderConfig(): Record<string, ProviderConfig> {
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
+  const currentProvider = getCurrentProvider()
 
   const providers: Record<string, ProviderConfig> = {}
 
-  // Configure all available providers (not just the current one)
-  // This allows code to use any model from any provider (e.g., openai/gpt-4, openrouter/...)
-  // Note: Lucky supports openai, openrouter, and groq as primary providers
-  // Anthropic models are accessed via OpenRouter
+  // Get API key for current provider
+  const envKey = process.env[`${currentProvider.toUpperCase()}_API_KEY`]
+  const apiKey = envKey || (isTest ? "test-key" : undefined)
 
-  // OpenAI
-  const openaiKey = process.env.OPENAI_API_KEY || (isTest ? "test-key" : undefined)
-  if (openaiKey) {
-    providers.openai = {
-      id: "openai",
-      apiKey: openaiKey,
-      enabled: true,
-    }
+  if (!apiKey && !isTest) {
+    throw new Error(`No API key found for provider: ${currentProvider}`)
   }
 
-  // OpenRouter
-  const openrouterKey = process.env.OPENROUTER_API_KEY || (isTest ? "test-key" : undefined)
-  if (openrouterKey) {
+  // If using OpenRouter, configure it to handle ALL provider prefixes
+  // OpenRouter supports models from all providers (openai/*, anthropic/*, etc.)
+  if (currentProvider === "openrouter") {
     providers.openrouter = {
       id: "openrouter",
-      apiKey: openrouterKey,
-      baseUrl: "https://openrouter.ai/api/v1",
+      apiKey: apiKey!,
+      baseUrl: getBaseUrlForProvider("openrouter"),
       enabled: true,
     }
-  }
-
-  // Groq
-  const groqKey = process.env.GROQ_API_KEY || (isTest ? "test-key" : undefined)
-  if (groqKey) {
-    providers.groq = {
-      id: "groq",
-      apiKey: groqKey,
-      baseUrl: "https://api.groq.com/openai/v1",
+  } else {
+    // For other providers, configure only that provider
+    providers[currentProvider] = {
+      id: currentProvider,
+      apiKey: apiKey!,
+      baseUrl: getBaseUrlForProvider(currentProvider),
       enabled: true,
     }
   }
@@ -103,49 +94,47 @@ function getBaseUrlForProvider(provider: string): string | undefined {
 
 /**
  * Build provider configuration with user-scoped API keys.
+ * When using OpenRouter, creates aliases for all providers to route through it.
  * Falls back to environment variables if user context not provided or user doesn't have keys.
  */
 async function buildProviderConfigWithUserKeys(
   userContext?: UserExecutionContext,
 ): Promise<Record<string, ProviderConfig>> {
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
+  const currentProvider = getCurrentProvider()
   const providers: Record<string, ProviderConfig> = {}
 
-  const providerNames = ["openai", "openrouter", "groq"] as const
+  let apiKey: string | undefined
 
-  for (const providerName of providerNames) {
-    let apiKey: string | undefined
-
-    // Try user's API key first if user context provided
-    if (userContext) {
-      try {
-        const userKey = await userContext.apiKeyResolver.getProviderApiKey(providerName)
-        apiKey = userKey ?? undefined
-      } catch (_error) {
-        // If user key retrieval fails, fall back to env
-        apiKey = undefined
-      }
+  // Try user's API key first if user context provided
+  if (userContext) {
+    try {
+      const userKey = await userContext.apiKeyResolver.getProviderApiKey(currentProvider)
+      apiKey = userKey ?? undefined
+    } catch (_error) {
+      // If user key retrieval fails, fall back to env
+      apiKey = undefined
     }
+  }
 
-    // Fallback to environment variable
-    if (!apiKey) {
-      const envKey = process.env[`${providerName.toUpperCase()}_API_KEY`]
-      apiKey = envKey
-    }
+  // Fallback to environment variable
+  if (!apiKey) {
+    const envKey = process.env[`${currentProvider.toUpperCase()}_API_KEY`]
+    apiKey = envKey
+  }
 
-    // Test mode fallback
-    if (!apiKey && isTest) {
-      apiKey = "test-key"
-    }
+  // Test mode fallback
+  if (!apiKey && isTest) {
+    apiKey = "test-key"
+  }
 
-    // Only add provider if we have an API key
-    if (apiKey) {
-      providers[providerName] = {
-        id: providerName,
-        apiKey,
-        baseUrl: getBaseUrlForProvider(providerName),
-        enabled: true,
-      }
+  // Only add provider if we have an API key
+  if (apiKey) {
+    providers[currentProvider] = {
+      id: currentProvider,
+      apiKey,
+      baseUrl: getBaseUrlForProvider(currentProvider),
+      enabled: true,
     }
   }
 

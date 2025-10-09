@@ -5,6 +5,7 @@
 
 import type { UserExecutionContext } from "@core/auth/types"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { getCurrentProvider } from "@core/utils/spending/provider"
 import type { LanguageModel } from "ai"
 import { getModelsInstanceForUser } from "./models-instance"
 import { resolveTierToModel } from "./tier-resolver"
@@ -50,9 +51,22 @@ export async function getLanguageModel(
   // Get Models instance with user-scoped API keys
   const models = await getModelsInstanceForUser(userContext)
 
+  // Rewrite model spec to use CURRENT_PROVIDER when using OpenRouter
+  // This ensures "openai/gpt-4" routes through OpenRouter, not OpenAI directly
+  const currentProvider = getCurrentProvider()
+  let modelSpec: string | { provider: string; model: string } = modelName as string
+
+  if (currentProvider === "openrouter" && String(modelName).includes("/")) {
+    // Extract model name without provider prefix
+    const fullModelName = String(modelName)
+    modelSpec = {
+      provider: "openrouter",
+      model: fullModelName, // Keep full name like "openai/gpt-4"
+    }
+  }
+
   // Use Models to resolve and return the language model
-  // Models handles: tier resolution, provider routing, client creation, caching
-  return await models.model(modelName as string)
+  return await models.model(modelSpec)
 }
 
 /**
