@@ -35,6 +35,36 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_settings: {
+        Row: {
+          clerk_id: string
+          created_at: string
+          enabled_models: Json
+          is_enabled: boolean
+          provider: string
+          provider_setting_id: string
+          updated_at: string
+        }
+        Insert: {
+          clerk_id: string
+          created_at?: string
+          enabled_models?: Json
+          is_enabled?: boolean
+          provider: string
+          provider_setting_id?: string
+          updated_at?: string
+        }
+        Update: {
+          clerk_id?: string
+          created_at?: string
+          enabled_models?: Json
+          is_enabled?: boolean
+          provider?: string
+          provider_setting_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_onboarding: {
         Row: {
           approval_rules: Json
