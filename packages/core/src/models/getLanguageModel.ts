@@ -35,17 +35,23 @@ export async function getLanguageModel(
   modelName: ModelName,
   userContext?: UserExecutionContext,
 ): Promise<LanguageModel> {
-  // Validate model access if user context provided
+  // Validate model access only if user has configured API keys
+  // If no API keys configured, skip validation to allow environment fallback
   if (userContext) {
-    // Resolve tier to actual model name for validation
-    const actualModelName = resolveTierToModel(String(modelName)) || modelName
-    const hasAccess = await userContext.apiKeyResolver.validateModelAccess(actualModelName as string)
+    const configuredProviders = await userContext.apiKeyResolver.getAllConfiguredProviders()
 
-    if (!hasAccess) {
-      throw new Error(
-        `Model "${actualModelName}" is not enabled for your account. Please configure your API keys in provider settings.`,
-      )
+    if (configuredProviders.length > 0) {
+      // User has configured API keys - validate model access
+      const actualModelName = resolveTierToModel(String(modelName)) || modelName
+      const hasAccess = await userContext.apiKeyResolver.validateModelAccess(actualModelName as string)
+
+      if (!hasAccess) {
+        throw new Error(
+          `Model "${actualModelName}" is not enabled for your account. Please configure your API keys in provider settings.`,
+        )
+      }
     }
+    // else: No configured providers - allow environment fallback
   }
 
   // Get Models instance with user-scoped API keys

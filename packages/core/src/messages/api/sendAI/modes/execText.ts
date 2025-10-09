@@ -56,7 +56,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
   // TODO: implement intelligent model selection based on prompt characteristics
   const modelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
-  const model = await getLanguageModelWithReasoning(modelName, { ...opts, userContext })
+  const model = await getLanguageModelWithReasoning(modelName, { ...(opts || {}), userContext })
 
   try {
     // TODO: add dynamic parameter optimization based on prompt analysis
