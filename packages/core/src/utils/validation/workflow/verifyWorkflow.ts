@@ -58,7 +58,7 @@ export const verifyNoDuplicateHandoffs = async (config: WorkflowConfig): Promise
 export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (node.modelName && CONFIG.models.inactive.has(node.modelName)) {
+    if (node.modelName && CONFIG.models.inactive.includes(node.modelName)) {
       errors.push(`Node '${node.nodeId}' uses inactive model: ${node.modelName}`)
     }
   }

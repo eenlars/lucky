@@ -9,6 +9,21 @@ describe("RuntimeConfig Schema Validation", () => {
   const validConfig: RuntimeConfig = {
     coordinationType: "sequential",
     newNodeProbability: 0.7,
+    models: {
+      provider: "openrouter",
+      inactive: [],
+      defaults: {
+        summary: "google/gemini-2.5-flash-lite",
+        nano: "google/gemini-2.5-flash-lite",
+        low: "google/gemini-2.5-flash-lite",
+        medium: "openai/gpt-4.1-mini",
+        high: "openai/gpt-4.1",
+        default: "openai/gpt-4.1-nano",
+        fitness: "openai/gpt-4.1-mini",
+        reasoning: "openai/gpt-4.1-mini",
+        fallback: "switchpoint/router",
+      },
+    },
     logging: {
       level: "info",
       override: {

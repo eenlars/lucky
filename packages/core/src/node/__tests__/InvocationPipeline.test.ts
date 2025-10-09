@@ -34,12 +34,12 @@ vi.mock("@examples/settings/constants", () => ({
       parallelExecution: false,
     },
     tools: {
-      inactive: new Set(),
+      inactive: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set(),
+      defaultTools: [],
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
@@ -48,7 +48,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       provider: "openai" as const,
-      inactive: new Set(),
+      inactive: [],
     },
     improvement: {
       fitness: {

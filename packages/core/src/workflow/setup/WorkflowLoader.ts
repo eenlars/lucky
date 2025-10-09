@@ -222,8 +222,8 @@ export class WorkflowConfigHandler {
       }
 
       // Apply default tools from CONFIG if any are specified
-      if (CONFIG.tools.defaultTools.size > 0) {
-        const defaultCodeTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
+      if (CONFIG.tools.defaultTools.length > 0) {
+        const defaultCodeTools = CONFIG.tools.defaultTools as CodeToolName[]
 
         workflowConfig.nodes = workflowConfig.nodes.map(node => {
           // Get unique tools by combining existing and defaults

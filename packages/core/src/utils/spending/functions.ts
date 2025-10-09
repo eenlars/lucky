@@ -21,8 +21,8 @@ export function isActiveModel(model: string): model is AllowedModelName {
   const models = providersV2[provider]
   const modelConfig = models?.[model as keyof typeof models] as ModelPricingV2 | undefined
 
-  // Check both the providersV2 active flag AND the MODEL_CONFIG inactive set
-  return Boolean(modelConfig?.active === true && !MODEL_CONFIG.inactive.has(model))
+  // Check both the providersV2 active flag AND the MODEL_CONFIG inactive array
+  return Boolean(modelConfig?.active === true && !MODEL_CONFIG.inactive.includes(model))
 }
 
 // Get model pricing for a given model name. Throws if the model is unknown.

@@ -36,7 +36,7 @@ vi.mock("@core/core-config/coreConfig", async importOriginal => {
       ...defaultConfig,
       tools: {
         ...defaultConfig.tools,
-        inactive: new Set(["testInactiveTool"]),
+        inactive: ["testInactiveTool"],
       },
     }),
   }

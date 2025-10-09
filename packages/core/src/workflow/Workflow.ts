@@ -95,7 +95,7 @@ export class Workflow {
       const allNodeTools = [...(node.codeTools || []), ...(node.mcpTools || [])]
 
       for (const tool of allNodeTools) {
-        if (INACTIVE_TOOLS.has(tool)) {
+        if (INACTIVE_TOOLS.includes(tool)) {
           inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
         }
       }

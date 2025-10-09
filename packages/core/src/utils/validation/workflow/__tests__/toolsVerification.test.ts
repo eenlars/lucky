@@ -609,8 +609,8 @@ describe("verifyMaxToolsPerAgent", () => {
 
 describe("verifyModelsAreActive", () => {
   it("should detect inactive models", async () => {
-    // Add model to inactive set temporarily
-    CONFIG.models.inactive.add("inactive-model")
+    // Add model to inactive array temporarily
+    CONFIG.models.inactive.push("inactive-model")
 
     const inactiveModelWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
@@ -634,7 +634,8 @@ describe("verifyModelsAreActive", () => {
     expect(errors[0]).toContain("node1")
 
     // Clean up
-    CONFIG.models.inactive.delete("inactive-model")
+    const index = CONFIG.models.inactive.indexOf("inactive-model")
+    if (index > -1) CONFIG.models.inactive.splice(index, 1)
   })
 
   it("should allow active models", async () => {

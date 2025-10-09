@@ -6,6 +6,11 @@
 import { z } from "zod"
 
 /**
+ * Model provider type
+ */
+export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"])
+
+/**
  * Coordination type for workflow execution
  */
 export const CoordinationTypeSchema = z.enum(["sequential", "hierarchical"])
@@ -29,6 +34,42 @@ export const PrepareProblemMethodSchema = z.enum(["ai", "workflow"])
  * Improvement type
  */
 export const ImprovementTypeSchema = z.enum(["judge", "unified"])
+
+/**
+ * Model tier defaults configuration
+ */
+export const ModelDefaultsSchema = z.object({
+  /** Model for summarization tasks */
+  summary: z.string(),
+  /** Smallest/fastest model */
+  nano: z.string(),
+  /** Low-tier model */
+  low: z.string(),
+  /** Medium-tier model */
+  medium: z.string(),
+  /** High-tier model */
+  high: z.string(),
+  /** Default model when tier not specified */
+  default: z.string(),
+  /** Model for fitness evaluation */
+  fitness: z.string(),
+  /** Model for reasoning tasks */
+  reasoning: z.string(),
+  /** Fallback model */
+  fallback: z.string(),
+})
+
+/**
+ * Models configuration
+ */
+export const ModelsConfigSchema = z.object({
+  /** Model provider */
+  provider: ModelProviderSchema,
+  /** Inactive models that should not be used */
+  inactive: z.array(z.string()),
+  /** Default models for different tiers */
+  defaults: ModelDefaultsSchema,
+})
 
 /**
  * Logging configuration with component-specific overrides
@@ -190,6 +231,8 @@ export const RuntimeConfigSchema = z.object({
   coordinationType: CoordinationTypeSchema,
   /** Probability of creating new nodes during evolution */
   newNodeProbability: z.number().min(0).max(1),
+  /** Models configuration */
+  models: ModelsConfigSchema,
   /** Logging configuration */
   logging: LoggingConfigSchema,
   /** Tools configuration */
@@ -214,12 +257,15 @@ export const RuntimeConfigSchema = z.object({
 export const PartialRuntimeConfigSchema = RuntimeConfigSchema.deepPartial()
 
 // Type exports
+export type ModelProvider = z.infer<typeof ModelProviderSchema>
 export type CoordinationType = z.infer<typeof CoordinationTypeSchema>
 export type LogLevel = z.infer<typeof LogLevelSchema>
 export type HandoffContent = z.infer<typeof HandoffContentSchema>
 export type PrepareProblemMethod = z.infer<typeof PrepareProblemMethodSchema>
 export type ImprovementType = z.infer<typeof ImprovementTypeSchema>
 
+export type ModelDefaults = z.infer<typeof ModelDefaultsSchema>
+export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 export type LoggingConfig = z.infer<typeof LoggingConfigSchema>
 export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 export type WorkflowConfig = z.infer<typeof WorkflowConfigSchema>

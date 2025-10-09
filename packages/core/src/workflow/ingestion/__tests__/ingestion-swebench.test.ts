@@ -38,12 +38,12 @@ vi.mock("@examples/settings/constants", () => {
       prepareProblemWorkflowVersionId: "test",
     },
     tools: {
-      inactive: new Set<string>(),
+      inactive: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set<string>(),
+      defaultTools: [],
       autoSelectTools: false,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: false,
@@ -51,7 +51,7 @@ vi.mock("@examples/settings/constants", () => {
       experimentalMultiStepLoopMaxRounds: 20,
     },
     models: {
-      inactive: new Set<string>(),
+      inactive: [],
       provider: "openai",
     },
     improvement: {

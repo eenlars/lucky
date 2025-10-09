@@ -76,12 +76,12 @@ vi.mock("@examples/settings/constants", () => ({
       parallelExecution: false,
     },
     tools: {
-      inactive: new Set(),
+      inactive: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set(["todoRead", "todoWrite"]), // Test tools: always available, simple & predictable
+      defaultTools: ["todoRead", "todoWrite"], // Test tools: always available, simple & predictable
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
@@ -89,7 +89,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       provider: "openai" as const,
-      inactive: new Set(),
+      inactive: [],
     },
     improvement: {
       fitness: {
@@ -196,7 +196,7 @@ vi.mock("@lucky/tools/client", async importOriginal => {
     ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION: {
       tavily: "Search the web",
     },
-    INACTIVE_TOOLS: new Set(),
+    INACTIVE_TOOLS: [],
   }
 })
 

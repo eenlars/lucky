@@ -47,7 +47,7 @@ vi.mock("@examples/settings/constants", () => {
   }
 
   const MODELS_T: FullFlowRuntimeConfig["MODELS"] = {
-    inactive: new Set<string>(),
+    inactive: [],
     provider: "openai",
   }
 
@@ -81,12 +81,12 @@ vi.mock("@examples/settings/constants", () => {
       prepareProblemWorkflowVersionId: "test-version-id",
     },
     tools: {
-      inactive: new Set<string>(),
+      inactive: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set<string>(),
+      defaultTools: [],
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
@@ -94,7 +94,7 @@ vi.mock("@examples/settings/constants", () => {
       experimentalMultiStepLoopMaxRounds: 0,
     },
     models: {
-      inactive: new Set<string>(),
+      inactive: [],
       provider: MODELS_T.provider,
     },
     improvement: {

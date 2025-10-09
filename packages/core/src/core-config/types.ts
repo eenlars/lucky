@@ -41,7 +41,7 @@ export interface CoreModelsConfig {
   /** Model provider (openrouter, openai, groq) */
   readonly provider: LuckyProvider
   /** Inactive models that should not be used */
-  readonly inactive: Set<string>
+  readonly inactive: string[]
   /** Default models for different tiers */
   readonly defaults: {
     readonly summary: AnyModelName
@@ -61,7 +61,7 @@ export interface CoreModelsConfig {
  */
 export interface CoreToolsConfig {
   /** Inactive tools that should not be used */
-  readonly inactive: Set<string>
+  readonly inactive: string[]
   /** Whether each agent should have unique tools */
   readonly uniqueToolsPerAgent: boolean
   /** Whether each agent should have unique tool sets */
@@ -71,7 +71,7 @@ export interface CoreToolsConfig {
   /** Maximum steps for Vercel AI SDK */
   readonly maxStepsVercel: number
   /** Default tools to always include */
-  readonly defaultTools: Set<string>
+  readonly defaultTools: string[]
   /** Whether to auto-select tools */
   readonly autoSelectTools: boolean
   /** Whether to use prepare step strategy */

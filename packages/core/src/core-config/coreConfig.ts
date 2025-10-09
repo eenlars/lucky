@@ -74,20 +74,20 @@ export function getDefaultModels() {
  * Check if a tool is inactive
  */
 export function isToolInactive(toolName: string): boolean {
-  return getCoreConfig().tools.inactive.has(toolName)
+  return getCoreConfig().tools.inactive.includes(toolName)
 }
 
 /**
  * Check if a model is inactive
  */
 export function isModelInactive(modelName: string): boolean {
-  return getCoreConfig().models.inactive.has(modelName)
+  return getCoreConfig().models.inactive.includes(modelName)
 }
 
 /**
- * Get the default tools set
+ * Get the default tools array
  */
-export function getDefaultTools(): Set<string> {
+export function getDefaultTools(): string[] {
   return getCoreConfig().tools.defaultTools
 }
 

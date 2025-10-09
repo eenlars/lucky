@@ -22,12 +22,12 @@ describe("CoreConfig Validation", () => {
     expect(() => {
       initCoreConfig({
         tools: {
-          inactive: new Set(),
+          inactive: [],
           uniqueToolsPerAgent: false,
           uniqueToolSetsPerAgent: false,
           maxToolsPerAgent: 3,
           maxStepsVercel: -1, // Invalid!
-          defaultTools: new Set(),
+          defaultTools: [],
           autoSelectTools: true,
           usePrepareStepStrategy: false,
           experimentalMultiStepLoop: true,
@@ -72,12 +72,12 @@ describe("CoreConfig Validation", () => {
     expect(() => {
       initCoreConfig({
         tools: {
-          inactive: new Set(["tool1", "tool2"]),
+          inactive: ["tool1", "tool2"],
           uniqueToolsPerAgent: true,
           uniqueToolSetsPerAgent: false,
           maxToolsPerAgent: 5,
           maxStepsVercel: 20,
-          defaultTools: new Set(["defaultTool1"]),
+          defaultTools: ["defaultTool1"],
           autoSelectTools: false,
           usePrepareStepStrategy: true,
           experimentalMultiStepLoop: false,
@@ -91,12 +91,12 @@ describe("CoreConfig Validation", () => {
   it("should validate toRuntimeContract conversion", () => {
     initCoreConfig({
       tools: {
-        inactive: new Set(["tool1", "tool2"]),
+        inactive: ["tool1", "tool2"],
         uniqueToolsPerAgent: false,
         uniqueToolSetsPerAgent: false,
         maxToolsPerAgent: 3,
         maxStepsVercel: 10,
-        defaultTools: new Set(["defaultTool"]),
+        defaultTools: ["defaultTool"],
         autoSelectTools: true,
         usePrepareStepStrategy: false,
         experimentalMultiStepLoop: true,

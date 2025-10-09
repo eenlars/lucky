@@ -4,11 +4,12 @@ const INACTIVE_TOOLS = DEFAULT_TOOL_CONFIG.inactive
 const DEFAULT_TOOLS = DEFAULT_TOOL_CONFIG.defaultTools
 
 export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault = false): T => {
-  if (INACTIVE_TOOLS.size === 0 && DEFAULT_TOOLS.size === 0) return tools
+  if (INACTIVE_TOOLS.length === 0 && DEFAULT_TOOLS.length === 0) return tools
   return Object.fromEntries(
     Object.entries(tools).filter(
       ([key]) =>
-        !INACTIVE_TOOLS.has(key as AllToolNames) && (includeDefault || !DEFAULT_TOOLS.has(key as AllToolNames)),
+        !INACTIVE_TOOLS.includes(key as AllToolNames) &&
+        (includeDefault || !DEFAULT_TOOLS.includes(key as AllToolNames)),
     ),
   ) as T
 }

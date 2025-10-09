@@ -63,9 +63,9 @@ export const verifyAllToolsAreActive = async (config: WorkflowConfig): Promise<V
 
     // check if any used tools are inactive or unknown
     for (const tool of allNodeTools) {
-      if (INACTIVE_TOOLS.has(tool)) {
+      if (INACTIVE_TOOLS.includes(tool)) {
         inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
-      } else if (CONFIG.tools.defaultTools.has(tool)) {
+      } else if (CONFIG.tools.defaultTools.includes(tool)) {
         // skip default tools, they are always active, but do not appear on the all active tools list,
         // because they shouldn't be assigned while creating a workflow. (they are assigned by default)
       } else if (!ALL_ACTIVE_TOOL_NAMES.includes(tool)) {
@@ -129,7 +129,7 @@ export const verifyToolSetEachNodeIsUnique = async (config: WorkflowConfig): Pro
 export const verifyMaxToolsPerAgent = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: VerificationErrors = []
 
-  const defaultToolsCount = CONFIG.tools.defaultTools.size
+  const defaultToolsCount = CONFIG.tools.defaultTools.length
   for (const node of config.nodes) {
     const mcpToolsCount = node.mcpTools?.length ?? 0
     const codeToolsCount = node.codeTools?.length ?? 0
