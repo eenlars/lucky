@@ -86,8 +86,11 @@ export function useDeleteWorkflow() {
 
   return useMutation({
     mutationFn: (workflowId: string) => deleteWorkflow(workflowId),
-    onSuccess: () => {
-      // Invalidate workflows list
+    onSuccess: (_, workflowId) => {
+      // Invalidate both the specific workflow detail and workflows list
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workflows.detail(workflowId),
+      })
       queryClient.invalidateQueries({ queryKey: queryKeys.workflows.lists() })
     },
   })

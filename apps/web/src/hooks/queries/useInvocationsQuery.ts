@@ -24,8 +24,8 @@ interface WorkflowInvocationFilters {
   maxCost?: number
   minAccuracy?: number
   maxAccuracy?: number
-  minFitnessScore?: number
-  maxFitnessScore?: number
+  minFitness?: number
+  maxFitness?: number
 }
 
 interface WorkflowInvocationSortOptions {
@@ -97,7 +97,7 @@ export function useInvocationsQuery({
  */
 export function useInvocationQuery(invocationId: string | undefined) {
   return useQuery({
-    queryKey: invocationId ? queryKeys.invocations.detail(invocationId) : ["invocations", "detail", "disabled"],
+    queryKey: invocationId ? queryKeys.invocations.detail(invocationId) : ["invocations", "detail", null],
     queryFn: async () => {
       if (!invocationId) throw new Error("Invocation ID is required")
       const response = await fetch(`/api/workflow/invocations/${invocationId}`)

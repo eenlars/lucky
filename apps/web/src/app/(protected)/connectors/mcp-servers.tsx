@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { type MCPServerConfig, useMCPConfigStore } from "@/stores/mcp-config-store"
 import { AlertCircle, Check, ChevronDown, FileJson, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export function MCPServersConfig() {
   const config = useMCPConfigStore(state => state.config)
@@ -378,6 +378,11 @@ function JsonEditor() {
   const [jsonText, setJsonText] = useState(() => JSON.stringify(config, null, 2))
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+
+  // Sync jsonText when config changes (e.g., when servers are added/deleted via UI)
+  useEffect(() => {
+    setJsonText(JSON.stringify(config, null, 2))
+  }, [config])
 
   const handlePaste = (value: string) => {
     setJsonText(value)

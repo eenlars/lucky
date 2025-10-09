@@ -12,7 +12,7 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Rocket, Trash2, X } from "lucide-react"
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 // Temporary type extension for new scoring fields
 type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
@@ -39,8 +39,8 @@ interface WorkflowInvocationFilters {
   maxCost?: number
   minAccuracy?: number
   maxAccuracy?: number
-  minFitnessScore?: number
-  maxFitnessScore?: number
+  minFitness?: number
+  maxFitness?: number
 }
 
 interface WorkflowInvocationSortOptions {
@@ -127,9 +127,9 @@ export default function InvocationsPage() {
     if (filters.minAccuracy) params.minAccuracy = Number.parseFloat(filters.minAccuracy)
     if (filters.maxAccuracy) params.maxAccuracy = Number.parseFloat(filters.maxAccuracy)
 
-    // Fitness score filters
-    if (filters.minFitnessScore) params.minFitnessScore = Number.parseFloat(filters.minFitnessScore)
-    if (filters.maxFitnessScore) params.maxFitnessScore = Number.parseFloat(filters.maxFitnessScore)
+    // Fitness score filters (API expects minFitness/maxFitness)
+    if (filters.minFitnessScore) params.minFitness = Number.parseFloat(filters.minFitnessScore)
+    if (filters.maxFitnessScore) params.maxFitness = Number.parseFloat(filters.maxFitnessScore)
 
     return params
   }, [filters, showCompletedOnly])
@@ -150,6 +150,11 @@ export default function InvocationsPage() {
   const totalItems = totalCount
 
   const deleteInvocationsMutation = useDeleteInvocations()
+
+  // Reset to page 1 when filters or sort changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filterParams, sortField, sortOrder])
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

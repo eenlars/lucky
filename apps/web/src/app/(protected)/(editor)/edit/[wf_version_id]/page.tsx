@@ -48,8 +48,8 @@ export default function WorkflowVersionEditor({ params }: PageProps) {
     notFound()
   }
 
-  // Show redirecting state
-  if (shouldFetchWorkflow && workflowData) {
+  // Show redirecting state only if we have a redirect target
+  if (shouldFetchWorkflow && workflowData && workflowData.versions?.[0]?.wf_version_id) {
     return <div>Loading...</div>
   }
 

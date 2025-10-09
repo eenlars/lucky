@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query"
  */
 export function useWorkflowVersionQuery(versionId: string | undefined) {
   return useQuery({
-    queryKey: versionId ? queryKeys.workflowVersions.detail(versionId) : ["workflowVersions", "detail", "disabled"],
+    queryKey: versionId ? queryKeys.workflowVersions.detail(versionId) : ["workflowVersions", "detail", null],
     queryFn: async () => {
       if (!versionId) throw new Error("Version ID is required")
       const response = await fetch(`/api/workflow/version/${versionId}`)

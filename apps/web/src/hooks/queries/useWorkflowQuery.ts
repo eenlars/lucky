@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query"
  */
 export function useWorkflowQuery(workflowId: string | undefined) {
   return useQuery({
-    queryKey: workflowId ? queryKeys.workflows.detail(workflowId) : ["workflows", "detail", "disabled"],
+    queryKey: workflowId ? queryKeys.workflows.detail(workflowId) : ["workflows", "detail", null],
     queryFn: async () => {
       if (!workflowId) throw new Error("Workflow ID is required")
       return getWorkflow(workflowId)
