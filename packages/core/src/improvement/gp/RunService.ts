@@ -144,7 +144,7 @@ export class RunService {
     const activeRunId = this.runId
     if (!activeRunId) {
       throw new RunTrackingError("Cannot check generation completion. No active run ID available.", {
-        operation: "hasCompletedGenerations",
+        operation: "generationExists",
       })
     }
     return this.evolutionPersistence.generationExists(activeRunId, generationNumber)
