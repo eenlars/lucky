@@ -18,7 +18,7 @@ export function AgentDialogInspect() {
     })),
   )
 
-  const panelRef = useRef<HTMLDialogElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const [dividerPosition, setDividerPosition] = useState(60) // percentage
   const isDragging = useRef(false)
 
@@ -72,7 +72,7 @@ export function AgentDialogInspect() {
       {/* Backdrop - click to close */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/20 z-40 transition-all duration-200",
+          "fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-all duration-200",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
         onClick={onClose}
@@ -87,7 +87,7 @@ export function AgentDialogInspect() {
         )}
       >
         {/* Dialog - clean rectangular design */}
-        <dialog
+        <div
           ref={panelRef}
           className={cn(
             "bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col pointer-events-auto",
@@ -97,9 +97,9 @@ export function AgentDialogInspect() {
             "transition-all duration-200",
             isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0",
           )}
+          role="dialog"
           aria-modal="true"
           aria-label="Agent inspector"
-          open={isOpen}
           onContextMenu={e => {
             // Prevent context menu from appearing when right-clicking inside the dialog
             e.preventDefault()
@@ -144,7 +144,7 @@ export function AgentDialogInspect() {
               <ConfigPanel node={selectedNode} />
             </div>
           </div>
-        </dialog>
+        </div>
       </div>
     </>
   )

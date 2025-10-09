@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@lucky/contracts": "workspace:*",
+    "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "ai": "^5.0.58",
     "zod": "^3.25.73"
