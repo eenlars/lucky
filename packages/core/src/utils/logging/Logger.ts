@@ -2,32 +2,37 @@
 // no node:* imports here so this file can be bundled for client
 // for server-side file logging, import Logger.node.ts directly where needed
 
+import type { Loggable, TypeSafeLogger } from "./types"
+
+/**
+ * @deprecated Use TypeSafeLogger for new code. Maintained for backward compatibility.
+ */
 export interface Logger {
-  log: (...args: any[]) => Promise<void>
-  onlyIf: (decider: boolean, ...args: any[]) => Promise<undefined | null>
-  info: (...args: any[]) => Promise<void>
-  warn: (...args: any[]) => Promise<void>
-  error: (...args: any[]) => Promise<void>
-  debug: (...args: any[]) => Promise<void>
-  trace: (...args: any[]) => Promise<void>
-  logAndSave: (fileName: string, ...args: any[]) => Promise<void>
+  log: (...args: Loggable[]) => Promise<void>
+  onlyIf: (decider: boolean, ...args: Loggable[]) => Promise<undefined | null>
+  info: (...args: Loggable[]) => Promise<void>
+  warn: (...args: Loggable[]) => Promise<void>
+  error: (...args: Loggable[]) => Promise<void>
+  debug: (...args: Loggable[]) => Promise<void>
+  trace: (...args: Loggable[]) => Promise<void>
+  logAndSave: (fileName: string, ...args: Loggable[]) => Promise<void>
   finalizeWorkflowLog: () => Promise<string | null>
 }
 
-export const lgg: Logger = {
-  log: async (...args: any[]) => console.log(...args),
-  onlyIf: async (decider: boolean, ...args: any[]) => {
+export const lgg: TypeSafeLogger = {
+  log: async <T extends Loggable[]>(...args: T) => console.log(...args),
+  onlyIf: async <T extends Loggable[]>(decider: boolean, ...args: T) => {
     if (decider) {
       console.log(...args)
       return undefined
     }
     return null
   },
-  info: async (...args: any[]) => console.info(...args),
-  warn: async (...args: any[]) => console.warn(...args),
-  error: async (...args: any[]) => console.error(...args),
-  debug: async (...args: any[]) => console.debug(...args),
-  trace: async (...args: any[]) => console.trace(...args),
-  logAndSave: async (_fileName: string, ...args: any[]) => console.log(...args),
+  info: async <T extends Loggable[]>(...args: T) => console.info(...args),
+  warn: async <T extends Loggable[]>(...args: T) => console.warn(...args),
+  error: async <T extends Loggable[]>(...args: T) => console.error(...args),
+  debug: async <T extends Loggable[]>(...args: T) => console.debug(...args),
+  trace: async <T extends Loggable[]>(...args: T) => console.trace(...args),
+  logAndSave: async <T extends Loggable[]>(_fileName: string, ...args: T) => console.log(...args),
   finalizeWorkflowLog: async () => null,
 }
