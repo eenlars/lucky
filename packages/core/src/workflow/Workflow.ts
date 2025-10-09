@@ -1,3 +1,4 @@
+import type { UserExecutionContext } from "@core/auth/types"
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
@@ -56,6 +57,7 @@ export class Workflow {
   private hasRun = false
   private problemAnalysis: string | undefined
   private persistence?: IPersistence
+  private userContext?: UserExecutionContext
 
   protected constructor(
     config: WorkflowConfig,
@@ -64,6 +66,7 @@ export class Workflow {
     toolContext?: Partial<ToolExecutionContext> | undefined,
     workflowVersionId?: string,
     persistence?: IPersistence,
+    userContext?: UserExecutionContext,
   ) {
     this.config = config
     this.workflowId = evaluationInput.workflowId
@@ -84,6 +87,7 @@ export class Workflow {
     this.toolContext = toolContext
     this.problemAnalysis = undefined
     this.persistence = persistence
+    this.userContext = userContext
   }
 
   private verifyCriticalIssues(config: WorkflowConfig): void {
@@ -114,6 +118,7 @@ export class Workflow {
     toolContext,
     workflowVersionId,
     persistence,
+    userContext,
   }: {
     config: WorkflowConfig
     evaluationInput: EvaluationInput
@@ -123,6 +128,7 @@ export class Workflow {
     toolContext: Partial<ToolExecutionContext> | undefined
     workflowVersionId?: string
     persistence?: IPersistence
+    userContext?: UserExecutionContext
   }): Workflow {
     const wf = new Workflow(
       config,
@@ -131,6 +137,7 @@ export class Workflow {
       toolContext ?? undefined,
       workflowVersionId,
       persistence,
+      userContext,
     )
     wf.parent1Id = parent1Id
     wf.parent2Id = parent2Id
@@ -186,6 +193,10 @@ export class Workflow {
 
   public getWorkflowVersionId(): string {
     return this.workflowVersionId
+  }
+
+  public getUserContext(): UserExecutionContext | undefined {
+    return this.userContext
   }
 
   getWorkflowIO(): WorkflowIO[] {
@@ -251,11 +262,17 @@ export class Workflow {
 
   /**
    * Executes the workflow for all IO without evaluation.
+   * @param userContext - Optional user execution context (overrides stored context)
    * @returns array of run results for each IO
    */
-  async run(): Promise<RS<RunResult[]>> {
+  async run(userContext?: UserExecutionContext): Promise<RS<RunResult[]>> {
     throwIf(this.evaluated, "Workflow has already been evaluated")
     throwIf(this.hasRun, "Workflow has already been run")
+
+    // Override stored userContext if provided
+    if (userContext) {
+      this.userContext = userContext
+    }
 
     lgg.log(`[Workflow.run] Starting setup for ${this.getWorkflowVersionId()}`)
     await this.setup()
@@ -482,6 +499,7 @@ export class Workflow {
       workflowFiles: files,
       mainWorkflowGoal: this.mainGoal,
       workflowId: this.workflowId,
+      userContext: this.userContext,
     }
     return context
   }

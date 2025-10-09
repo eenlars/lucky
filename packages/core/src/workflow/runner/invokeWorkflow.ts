@@ -12,6 +12,7 @@
  * @module workflow/runner/invokeWorkflow
  */
 
+import type { UserExecutionContext } from "@core/auth/types"
 import { CONFIG } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
@@ -42,6 +43,7 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
  *   - workflowVersionId: ID to load workflow from database
  *   - filename: Path to load workflow from file
  *   - dslConfig: Direct workflow configuration object
+ * @param userContext - Optional user execution context for API key resolution
  *
  * @returns Result containing array of invocation results with:
  *   - queueRunResult: Raw execution results
@@ -52,18 +54,22 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
  * @throws Error if evalInput is missing or no valid workflow source provided
  *
  * @example
- * // Load from database
+ * // Load from database with user context
  * const result = await invokeWorkflow({
  *   workflowVersionId: "wf_123",
  *   evalInput: { type: "text", input: "Hello", workflowId: "test" }
- * })
+ * }, userContext)
  *
  * @remarks
  * - Automatically saves memory updates back to file-based workflows
  * - Tracks spending limits when enabled in configuration
  * - Evaluates results when answer/expectedOutput is provided
+ * - User context enables per-user API key resolution from lockbox
  */
-export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeWorkflowResult[]>> {
+export async function invokeWorkflow(
+  input: InvocationInput,
+  userContext?: UserExecutionContext,
+): Promise<RS<InvokeWorkflowResult[]>> {
   try {
     const { evalInput } = input
 
@@ -110,18 +116,19 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     // Strictly validate before creating workflow
     await verifyWorkflowConfigStrict(config)
 
-    // Create workflow
+    // Create workflow with user context
     const workflow = Workflow.create({
       config: config,
       evaluationInput: evalInput,
       toolContext: undefined,
+      userContext,
       // No parentVersionId or evolutionContext for ad-hoc invocation
     })
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
     await workflow.prepareWorkflow(evalInput, CONFIG.workflow.prepareProblemMethod)
 
-    const { success, error, data: runResults } = await workflow.run()
+    const { success, error, data: runResults } = await workflow.run(userContext)
 
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)

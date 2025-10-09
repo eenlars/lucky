@@ -360,6 +360,7 @@ export class InvocationPipeline {
         opts: {
           saveOutputs: this.saveOutputs,
         },
+        userContext: this.ctx.userContext,
       })
 
       if (verbose) {
@@ -418,6 +419,7 @@ export class InvocationPipeline {
         saveOutputs: this.saveOutputs,
         maxSteps: this.toolChoice === "required" ? 1 : undefined,
       },
+      userContext: this.ctx.userContext,
     })
 
     if (verbose) {

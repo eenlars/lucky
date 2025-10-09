@@ -3,6 +3,7 @@
  * Provides a centralized instance of @lucky/models for the entire core package.
  */
 
+import type { UserExecutionContext } from "@core/auth/types"
 import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
@@ -84,4 +85,99 @@ export function getModelsInstance(): Models {
  */
 export function resetModelsInstance(): void {
   modelsInstance = null
+}
+
+/**
+ * Get base URL for a given provider.
+ */
+function getBaseUrlForProvider(provider: string): string | undefined {
+  switch (provider) {
+    case "openrouter":
+      return "https://openrouter.ai/api/v1"
+    case "groq":
+      return "https://api.groq.com/openai/v1"
+    default:
+      return undefined
+  }
+}
+
+/**
+ * Build provider configuration with user-scoped API keys.
+ * Falls back to environment variables if user context not provided or user doesn't have keys.
+ */
+async function buildProviderConfigWithUserKeys(
+  userContext?: UserExecutionContext,
+): Promise<Record<string, ProviderConfig>> {
+  const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
+  const providers: Record<string, ProviderConfig> = {}
+
+  const providerNames = ["openai", "openrouter", "groq"] as const
+
+  for (const providerName of providerNames) {
+    let apiKey: string | undefined
+
+    // Try user's API key first if user context provided
+    if (userContext) {
+      try {
+        const userKey = await userContext.apiKeyResolver.getProviderApiKey(providerName)
+        apiKey = userKey ?? undefined
+      } catch (_error) {
+        // If user key retrieval fails, fall back to env
+        apiKey = undefined
+      }
+    }
+
+    // Fallback to environment variable
+    if (!apiKey) {
+      const envKey = process.env[`${providerName.toUpperCase()}_API_KEY`]
+      apiKey = envKey
+    }
+
+    // Test mode fallback
+    if (!apiKey && isTest) {
+      apiKey = "test-key"
+    }
+
+    // Only add provider if we have an API key
+    if (apiKey) {
+      providers[providerName] = {
+        id: providerName,
+        apiKey,
+        baseUrl: getBaseUrlForProvider(providerName),
+        enabled: true,
+      }
+    }
+  }
+
+  return providers
+}
+
+/**
+ * Create a Models instance with user-scoped API key resolution.
+ * This is the recommended way to get models in production workflows with user context.
+ *
+ * @param userContext - Optional user execution context with API key resolver
+ * @returns Models instance configured with user's API keys (or env fallback)
+ *
+ * @example
+ * ```ts
+ * // With user context (production)
+ * const models = await getModelsInstanceForUser(userContext)
+ * const model = await models.model('openai/gpt-4')
+ *
+ * // Without user context (dev/test)
+ * const models = await getModelsInstanceForUser()
+ * const model = await models.model('openai/gpt-4')
+ * ```
+ */
+export async function getModelsInstanceForUser(userContext?: UserExecutionContext): Promise<Models> {
+  const modelsConfig: ModelsConfig = {
+    providers: await buildProviderConfigWithUserKeys(userContext),
+    tiers: buildTierConfigFromDefaults(),
+    defaultTier: "default",
+    trackPerformance: true,
+    trackCost: true,
+  }
+
+  return createModels(modelsConfig)
 }

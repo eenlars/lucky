@@ -47,7 +47,7 @@ const spending = SpendingTracker.getInstance()
 // TODO: add tool execution debugging and profiling
 // TODO: create tool execution security auditing
 export async function execTool(req: ToolRequest): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
-  const { messages, model: modelIn, retries = 2, opts } = req
+  const { messages, model: modelIn, retries = 2, opts, userContext } = req
   const requestedModel = modelIn ?? getDefaultModels().default
 
   try {
@@ -55,7 +55,7 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // TODO: implement smart tool selection based on model capabilities
     const modelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
-    const model = await getLanguageModelWithReasoning(modelName, opts)
+    const model = await getLanguageModelWithReasoning(modelName, { ...opts, userContext })
 
     // TODO: add dynamic tool parameter optimization
     // TODO: implement tool execution planning and sequencing

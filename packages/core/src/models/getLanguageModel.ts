@@ -1,126 +1,83 @@
 /**
- * Language model retrieval with @lucky/models integration.
- * Drop-in replacement for the old modelFactory system.
- * Supports tier-based model selection and provider-aware reasoning.
+ * Language model retrieval with user-scoped API key resolution.
+ * Properly uses @lucky/models architecture for provider management.
  */
 
+import type { UserExecutionContext } from "@core/auth/types"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { getCurrentProvider } from "@core/utils/spending/provider"
 import type { LanguageModel } from "ai"
-import { getModelsInstance } from "./models-instance"
-import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
+import { getModelsInstanceForUser } from "./models-instance"
+import { resolveTierToModel } from "./tier-resolver"
 
 /**
- * Get a basic language model without reasoning support.
- * Supports both direct model names (provider/model) and tier names (nano, low, etc.).
+ * Get a language model with user-scoped API key resolution.
+ * Uses @lucky/models architecture to handle provider routing and configuration.
  *
- * Special handling for OpenRouter:
- * - When current provider is OpenRouter, all models route through OpenRouter
- * - Model names like "openai/gpt-4" are passed as-is to OpenRouter
- *
- * @param modelName - Model name or tier name
+ * @param modelName - Model name or tier name (e.g., "high", "openai/gpt-4")
+ * @param userContext - Optional user execution context for API key resolution
  * @returns Promise resolving to AI SDK LanguageModel
+ * @throws Error if model not enabled or API key not configured
  *
  * @example
  * ```ts
- * // Using tier name
+ * // With user context (production)
+ * const model = await getLanguageModel('high', userContext)
+ *
+ * // Without user context (dev/test)
  * const model = await getLanguageModel('high')
  *
- * // Using direct model name
- * const model = await getLanguageModel('openai/gpt-4')
+ * // Direct model name
+ * const model = await getLanguageModel('openai/gpt-4', userContext)
  * ```
  */
-export async function getLanguageModel(modelName: ModelName): Promise<LanguageModel> {
-  const currentProvider = getCurrentProvider()
-  const resolved = resolveTierOrModel(modelName)
+export async function getLanguageModel(
+  modelName: ModelName,
+  userContext?: UserExecutionContext,
+): Promise<LanguageModel> {
+  // Validate model access if user context provided
+  if (userContext) {
+    // Resolve tier to actual model name for validation
+    const actualModelName = resolveTierToModel(String(modelName)) || modelName
+    const hasAccess = await userContext.apiKeyResolver.validateModelAccess(actualModelName as string)
 
-  // Special handling for OpenRouter: route all models through OpenRouter
-  if (currentProvider === "openrouter") {
-    // If resolved is a model name (contains /), pass it to OpenRouter directly
-    if (typeof resolved === "string" && resolved.includes("/")) {
-      const models = getModelsInstance()
-      return await models.model({ provider: "openrouter", model: resolved })
+    if (!hasAccess) {
+      throw new Error(
+        `Model "${actualModelName}" is not enabled for your account. Please configure your API keys in provider settings.`,
+      )
     }
   }
 
-  // For other providers or tier references, use standard resolution
-  const models = getModelsInstance()
-  return await models.model(resolved)
+  // Get Models instance with user-scoped API keys
+  const models = await getModelsInstanceForUser(userContext)
+
+  // Use Models to resolve and return the language model
+  // Models handles: tier resolution, provider routing, client creation, caching
+  return await models.model(modelName as string)
 }
 
 /**
  * Get a language model with optional reasoning support.
- * Applies provider-specific reasoning configurations.
- *
- * Provider-specific behavior:
- * - OpenRouter: Uses unified `reasoning` parameter
- *   - Anthropic and Gemini thinking models: `{ max_tokens: 2048 }`
- *   - Other models: `{ effort: 'medium' }`
- * - OpenAI: Standard model (reasoning support TBD)
- * - Groq: No reasoning support (SDK limitation)
+ * Note: Reasoning configuration currently handled by Models package.
  *
  * @param modelName - Model name or tier name
- * @param opts - Options including reasoning flag
+ * @param opts - Options including reasoning flag and user context
  * @returns Promise resolving to AI SDK LanguageModel
+ * @throws Error if model not enabled or API key not configured
  *
  * @example
  * ```ts
- * // Get reasoning model
- * const model = await getLanguageModelWithReasoning('reasoning', { reasoning: true })
- *
- * // Regular model (reasoning flag off)
- * const model = await getLanguageModelWithReasoning('high')
+ * // Get reasoning model with user context
+ * const model = await getLanguageModelWithReasoning('reasoning', {
+ *   reasoning: true,
+ *   userContext
+ * })
  * ```
  */
 export async function getLanguageModelWithReasoning(
   modelName: ModelName,
-  opts?: { reasoning?: boolean },
+  opts?: { reasoning?: boolean; userContext?: UserExecutionContext },
 ): Promise<LanguageModel> {
-  const provider = getCurrentProvider()
-  const wantsReasoning = Boolean(opts?.reasoning)
-
-  // If no reasoning needed, use basic retrieval
-  if (!wantsReasoning) {
-    return getLanguageModel(modelName)
-  }
-
-  // For reasoning, we need provider-specific handling
-  // Since @lucky/models doesn't yet support passing reasoning options,
-  // we get the model and recreate it with reasoning parameters
-
-  const models = getModelsInstance()
-  const resolved = resolveTierOrModel(modelName)
-
-  // Resolve tier to actual model name for provider-specific logic
-  const actualModelName = resolveTierToModel(String(modelName)) || modelName
-  const modelStr = String(actualModelName).toLowerCase()
-
-  // Provider-specific reasoning configuration
-  if (provider === "openrouter") {
-    // Import openrouter client for reasoning parameters
-    const { openrouter } = await import("@core/clients/openrouter/openrouterClient")
-
-    const isAnthropic = modelStr.startsWith("anthropic/")
-    const isGeminiThinking =
-      modelStr.includes("gemini") && (modelStr.includes("thinking") || modelStr.includes("think"))
-
-    if (isAnthropic || isGeminiThinking) {
-      return openrouter(actualModelName, { reasoning: { max_tokens: 2048 } as any })
-    }
-    return openrouter(actualModelName, { reasoning: { effort: "medium" } as any })
-  }
-
-  if (provider === "openai") {
-    // OpenAI reasoning support: for now, return standard model
-    // TODO: Implement OpenAI-specific reasoning parameters when SDK supports it
-    return models.model(resolved)
-  }
-
-  if (provider === "groq") {
-    // Groq doesn't support reasoning parameters in their SDK
-    return models.model(resolved)
-  }
-
-  // Fallback: use standard model
-  return models.model(resolved)
+  // For now, reasoning is handled within the Models package or by the caller
+  // We simply return the base model - reasoning parameters can be passed when calling AI SDK
+  return getLanguageModel(modelName, opts?.userContext)
 }

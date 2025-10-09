@@ -16,6 +16,12 @@ export type WorkflowFile = WorkflowFileBase
 export type OutputSchema = ZodTypeAny
 
 /**
+ * User execution context for API key resolution and access control.
+ * Imported dynamically to avoid circular dependencies.
+ */
+export type UserExecutionContext = any // Will be properly typed when used
+
+/**
  * Tool execution context provides runtime information about workflow execution.
  * Extends the base contract with implementation-specific fields.
  */
@@ -26,6 +32,7 @@ export interface ToolExecutionContext extends Omit<ToolExecutionContextBase, "ex
   workflowFiles?: WorkflowFile[]
   expectedOutputType?: OutputSchema
   mainWorkflowGoal?: string
+  userContext?: UserExecutionContext
 }
 
 /**

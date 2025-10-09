@@ -1,5 +1,8 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { createRLSClient } from "@/lib/supabase/server-rls"
+import { ApiKeyResolver } from "@lucky/core/auth/ApiKeyResolver"
+import type { UserExecutionContext } from "@lucky/core/auth/types"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { type NextRequest, NextResponse } from "next/server"
@@ -8,6 +11,7 @@ export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+  const clerkId = authResult
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -20,7 +24,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid invocation input" }, { status: 400 })
     }
 
-    const result = await invokeWorkflow(input)
+    // Create user execution context for API key resolution
+    const supabase = await createRLSClient()
+    const apiKeyResolver = new ApiKeyResolver(clerkId, supabase)
+
+    const userContext: UserExecutionContext = {
+      clerkId,
+      apiKeyResolver,
+    }
+
+    // Invoke workflow with user context
+    const result = await invokeWorkflow(input, userContext)
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 })

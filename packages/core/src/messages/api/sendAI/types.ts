@@ -79,6 +79,11 @@ export type PreparedStepsFunction<T extends ToolSet = ToolSet, M extends Languag
 >
 
 /**
+ * User execution context type (imported dynamically to avoid circular deps)
+ */
+type UserExecutionContext = any
+
+/**
  * Base interface for all sendAI request types.
  *
  * Contains common properties shared across text, tool, and structured requests.
@@ -97,6 +102,7 @@ interface RequestBase {
     maxSteps?: number
     reasoning?: boolean
   }
+  userContext?: UserExecutionContext
 }
 
 /**

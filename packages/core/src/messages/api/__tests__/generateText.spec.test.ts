@@ -1,6 +1,6 @@
-import { openrouter } from "@core/clients/openrouter/openrouterClient"
 import { getDefaultModels } from "@core/core-config/compat"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
+import { getLanguageModel } from "@core/models/getLanguageModel"
 import { JSONN } from "@lucky/shared"
 import { generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
@@ -17,7 +17,7 @@ const tool1 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async () => {
     return "555"
   },
 })
@@ -49,7 +49,7 @@ const tool3 = tool({
 describe("generateText with sequential tools", () => {
   it("should execute tools in sequence: tool1 -> tool2 -> tool3 with little extra context", async () => {
     const result = await generateText({
-      model: openrouter("anthropic/claude-3-5-sonnet-20241022"),
+      model: await getLanguageModel("anthropic/claude-3-5-sonnet-20241022" as any),
       messages: [
         {
           role: "system",
@@ -89,7 +89,7 @@ describe("generateText with sequential tools", () => {
 
   it("should execute tools in sequence despite large irrelevant context", async () => {
     const result = await generateText({
-      model: openrouter("anthropic/claude-3-5-sonnet-20241022"),
+      model: await getLanguageModel("anthropic/claude-3-5-sonnet-20241022" as any),
       messages: [
         {
           role: "system",

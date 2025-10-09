@@ -5,6 +5,11 @@ import type { NodeInvocationCallContext as NodeInvocationCallContextBase } from 
 import type { IPersistence } from "@together/adapter-supabase"
 
 /**
+ * User execution context type (imported dynamically to avoid circular deps)
+ */
+type UserExecutionContext = any
+
+/**
  * Execution context for invoking a workflow node.
  * Extends the contract context with implementation-specific data.
  */
@@ -24,6 +29,9 @@ export interface NodeInvocationCallContext extends NodeInvocationCallContextBase
 
   // persistence for database operations
   persistence?: IPersistence
+
+  // user execution context for API key resolution
+  userContext?: UserExecutionContext
 
   //optional
   skipDatabasePersistence?: boolean

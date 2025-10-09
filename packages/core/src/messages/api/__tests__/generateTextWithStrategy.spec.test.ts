@@ -1,13 +1,13 @@
-import { openrouter } from "@core/clients/openrouter/openrouterClient"
 import { getDefaultModels } from "@core/core-config/compat"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { createPrepareStepStrategy } from "@core/messages/pipeline/selectTool/selectToolStrategy"
+import { getLanguageModel } from "@core/models/getLanguageModel"
 import { JSONN } from "@lucky/shared"
 import { type ToolSet, generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-const model = openrouter(getDefaultModels().medium)
+const model = await getLanguageModel(getDefaultModels().medium)
 
 // TODO: Comment "return F if it should never return that" is unclear
 // Should explain what F represents and why it indicates failure
@@ -59,7 +59,7 @@ const rod_333 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async () => {
     return "F"
   },
 })
@@ -71,7 +71,7 @@ const mod_333 = tool({
       input: z.string(),
     }),
   ),
-  execute: async ({ input }: { input: string }) => {
+  execute: async () => {
     return "F"
   },
 })
