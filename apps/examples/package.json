@@ -15,7 +15,6 @@
     "@mendable/firecrawl-js": "^1.29.3",
     "axios": "^1.11.0",
     "cheerio": "^1.1.2",
-    "merge-deep": "^3.0.3",
     "nanoid": "^5.1.5",
     "papaparse": "^5.5.3",
     "puppeteer": "^24.15.0",
