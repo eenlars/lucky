@@ -50,13 +50,16 @@ const spending = SpendingTracker.getInstance()
 // TODO: add text generation retry strategies with exponential backoff
 // TODO: create text generation debugging and profiling tools
 export async function execText(req: TextRequest): Promise<TResponse<{ text: string; reasoning?: string }>> {
-  const { messages, model: wanted = getDefaultModels().default, retries = 2, opts = {} } = req
+  const { messages, model: wanted = getDefaultModels().default, retries = 2, opts: rawOpts = {} } = req
+
+  // Normalize opts to handle null/undefined - must be done before any property access
+  const opts = rawOpts || {}
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
   const modelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
-  const model = await getLanguageModelWithReasoning(modelName, opts || {})
+  const model = await getLanguageModelWithReasoning(modelName, opts)
 
   try {
     // TODO: add dynamic parameter optimization based on prompt analysis
