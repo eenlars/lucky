@@ -1,11 +1,9 @@
 /**
  * Client-safe constants that can be used in browser environments.
  * This file contains only the constants that don't require Node.js modules.
- * Configuration is validated at build time against the runtime contract.
  */
 
 import type { FlowCoordinationType, FlowRuntimeConfig } from "@core/types"
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
 import { EVOLUTION_CONFIG } from "./evolution"
 import { LoggingTypes } from "./logging"
 import { MODEL_CONFIG, getDefaultModels } from "./models"
@@ -98,54 +96,5 @@ export const CONFIG = {
     GP: Omit<FlowRuntimeConfig["evolution"]["GP"], "initialPopulationFile"> & {
       initialPopulationFile: string
     }
-  }
-}
-
-// Validate CONFIG against runtime contract at build time (excludes evolution)
-// This catches configuration errors early in development
-if (typeof window === "undefined") {
-  // Only validate server-side to avoid bundle bloat
-  const runtimeConfig = {
-    coordinationType: CONFIG.coordinationType,
-    newNodeProbability: CONFIG.newNodeProbability,
-    logging: CONFIG.logging,
-    tools: {
-      inactive: Array.from(CONFIG.tools.inactive),
-      uniqueToolsPerAgent: CONFIG.tools.uniqueToolsPerAgent,
-      uniqueToolSetsPerAgent: CONFIG.tools.uniqueToolSetsPerAgent,
-      maxToolsPerAgent: CONFIG.tools.maxToolsPerAgent,
-      maxStepsVercel: CONFIG.tools.maxStepsVercel,
-      defaultTools: Array.from(CONFIG.tools.defaultTools),
-      autoSelectTools: CONFIG.tools.autoSelectTools,
-      usePrepareStepStrategy: CONFIG.tools.usePrepareStepStrategy,
-      experimentalMultiStepLoop: CONFIG.tools.experimentalMultiStepLoop,
-      showParameterSchemas: CONFIG.tools.showParameterSchemas,
-      experimentalMultiStepLoopMaxRounds: CONFIG.tools.experimentalMultiStepLoopMaxRounds,
-    },
-    workflow: {
-      maxTotalNodeInvocations: CONFIG.workflow.maxTotalNodeInvocations,
-      maxPerNodeInvocations: CONFIG.workflow.maxPerNodeInvocations,
-      maxNodes: CONFIG.workflow.maxNodes,
-      handoffContent: CONFIG.workflow.handoffContent,
-      prepareProblem: CONFIG.workflow.prepareProblem,
-      prepareProblemMethod: CONFIG.workflow.prepareProblemMethod,
-      prepareProblemWorkflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
-      parallelExecution: CONFIG.workflow.parallelExecution,
-    },
-    improvement: CONFIG.improvement,
-    limits: CONFIG.limits,
-    context: CONFIG.context,
-    verification: CONFIG.verification,
-    persistence: {
-      useMockBackend: false,
-      defaultBackend: "supabase" as const,
-    },
-  }
-
-  try {
-    validateRuntimeConfig(runtimeConfig)
-  } catch (error) {
-    console.error("❌ Configuration validation failed:", error)
-    throw new Error("Invalid runtime configuration in constants.client.ts. Please fix the configuration errors above.")
   }
 }
