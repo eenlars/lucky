@@ -472,6 +472,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@lucky/contracts": "workspace:*",
+        "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
         "@modelcontextprotocol/sdk": "^1.17.2",
         "ai": "^5.0.58",

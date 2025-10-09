@@ -86,17 +86,43 @@ export const deleteWorkflow = async (workflowId: string): Promise<void> => {
   }
 }
 
-export const ensureWorkflowExists = async (description: string, workflowId: string): Promise<void> => {
+export const ensureWorkflowExists = async (description: string, workflowId: string, clerkId: string): Promise<void> => {
   const supabase = await createRLSClient()
+
+  // Step 1: Check if the current user already has access to this workflow
+  {
+    const { data, error } = await supabase.from("Workflow").select("wf_id").eq("wf_id", workflowId).maybeSingle()
+    console.log("wf exists 1", data, error, workflowId)
+    if (error) {
+      // If it isn't a simple not-found, bubble up
+      if (error.code !== "PGRST116") {
+        throw new Error(`Failed to check workflow existence: ${error.message}`)
+      }
+    }
+    if (data) return // Already exists and is visible to this user
+  }
+
+  // Step 2: Try to create it for this user
   const workflowInsertable: TablesInsert<"Workflow"> = {
     wf_id: workflowId,
     description,
+    clerk_id: clerkId,
   }
 
-  const { error } = await supabase.from("Workflow").upsert(workflowInsertable)
+  const { error: insertError } = await supabase.from("Workflow").insert(workflowInsertable)
+  console.log("wf exists 2", insertError)
+  if (insertError) {
+    // Unique violation means a row with this wf_id exists but is not visible due to RLS (e.g., NULL or different owner)
+    if (insertError.code === "23505") {
+      const conflict = new Error(
+        `WORKFLOW_OWNERSHIP_CONFLICT: A workflow with id ${workflowId} exists but is not accessible to the current user. This often indicates legacy data missing clerk_id.`,
+      )
+      // Attach a flag for callers to handle gracefully
+      ;(conflict as any).code = "WORKFLOW_OWNERSHIP_CONFLICT"
+      throw conflict
+    }
 
-  if (error) {
-    throw new Error(`Failed to upsert workflow: ${error.message}`)
+    throw new Error(`Failed to ensure workflow exists: ${insertError.message}`)
   }
 }
 
