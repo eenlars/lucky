@@ -3,11 +3,14 @@
  * This is the main entry point for configuration access in core.
  */
 
+import { validateRuntimeConfig } from "@lucky/contracts/runtime"
 import { createDefaultCoreConfig, mergeConfig } from "./defaults"
 import type { CoreConfig, CoreModelsConfig, CorePathsConfig } from "./types"
+import { toRuntimeContract } from "./validation"
 
 export type { CoreConfig, CorePathsConfig, CoreModelsConfig } from "./types"
 export { createDefaultCoreConfig, mergeConfig } from "./defaults"
+export { toRuntimeContract } from "./validation"
 
 /**
  * Global configuration instance
@@ -17,16 +20,20 @@ let globalConfig: CoreConfig | null = null
 /**
  * Initialize or update core configuration.
  * Should be called once at application startup, before any other core functionality.
+ * Validates runtime configuration against the contract schema.
  *
  * @param override - Partial configuration to override defaults
+ * @throws ZodError if runtime configuration is invalid
  */
 export function initCoreConfig(override?: Partial<CoreConfig>): void {
   const defaults = createDefaultCoreConfig()
-  if (override) {
-    globalConfig = mergeConfig(defaults, override)
-  } else {
-    globalConfig = defaults
-  }
+  const merged = override ? mergeConfig(defaults, override) : defaults
+
+  // Validate runtime configuration subset against contract
+  const runtimeConfig = toRuntimeContract(merged)
+  validateRuntimeConfig(runtimeConfig)
+
+  globalConfig = merged
 }
 
 /**

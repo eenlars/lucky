@@ -13,8 +13,10 @@
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
+import { validateRuntimeConfig } from "@lucky/contracts/runtime"
 import { getDefaultModels as coreGetDefaultModels, getCoreConfig, isLoggingEnabled } from "./coreConfig"
 import type { CoreConfig } from "./types"
+import { toRuntimeContract } from "./validation"
 
 // Re-export placeholder tools for test compatibility
 export { tavily, todoWrite } from "./placeholder-tools"
@@ -186,4 +188,15 @@ function mapCoreConfigToLegacy(coreConfig: CoreConfig): FlowRuntimeConfig {
     },
     limits: coreConfig.limits,
   }
+}
+
+/**
+ * Validate the current CONFIG against runtime contract.
+ * Useful for testing and validation.
+ *
+ * @throws ZodError if config is invalid
+ */
+export function validateCurrentConfig(): void {
+  const runtimeConfig = toRuntimeContract(getCoreConfig())
+  validateRuntimeConfig(runtimeConfig)
 }
