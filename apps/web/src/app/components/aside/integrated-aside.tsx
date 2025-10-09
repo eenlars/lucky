@@ -150,74 +150,95 @@ function IntegratedNavItem({
   const hasSubmenus = item.submenus && item.submenus.length > 0
   const isSubmenuOpen = openSubmenus.has(item.href)
 
-  const content = (
-    <div className="relative">
-      {/* Background div - changes width based on collapsed state */}
-      <div
-        className={cn(
-          "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
-          isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
-          isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
-        )}
-      />
-
-      {/* Icon - stays at same position */}
-      <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
-        <div
-          className={cn(
-            "transition-colors duration-200",
-            isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+  if (item.disabled) {
+    return (
+      <div className="group opacity-50 cursor-not-allowed">
+        <div className="relative">
+          <div
+            className={cn(
+              "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
+              isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
+              isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
+            )}
+          />
+          <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 pointer-events-none">
+            {item.icon}
+          </div>
+          {!isCollapsed && (
+            <div className="absolute top-0 left-[55px] right-[4px] h-[40px] flex items-center pointer-events-none">
+              <span className="text-sm font-medium text-[#666]">{item.label}</span>
+            </div>
           )}
-        >
-          {item.icon}
         </div>
       </div>
-
-      {/* Text label and chevron - only shown when expanded */}
-      {!isCollapsed && (
-        <div className="absolute top-0 left-[55px] right-[4px] h-[40px] flex items-center pointer-events-none">
-          <span
-            className={cn(
-              "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden pr-2",
-              isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
-            )}
-          >
-            {item.label}
-          </span>
-          {hasSubmenus && (
-            <button
-              type="button"
-              className="w-8 h-8 flex items-center justify-center transition-all duration-200 ml-auto mr-3 text-[#888] hover:text-primary hover:bg-sidebar-accent rounded-md pointer-events-auto"
-              onClick={e => onToggleSubmenu(item.href, e)}
-            >
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                strokeWidth="0"
-                viewBox="0 0 24 24"
-                height="16"
-                width="16"
-                xmlns="http://www.w3.org/2000/svg"
-                className={cn("transition-transform duration-200", isSubmenuOpen && "rotate-180")}
-              >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z" />
-              </svg>
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  )
-
-  if (item.disabled) {
-    return <div className="group opacity-50 cursor-not-allowed">{content}</div>
+    )
   }
 
   return (
-    <Link href={item.href} className="group" onClick={onClick}>
-      {content}
-    </Link>
+    <div className="group relative">
+      {/* Navigation Link - wraps only the clickable navigation area */}
+      <Link href={item.href} className="block" onClick={onClick}>
+        <div className="relative">
+          {/* Background div - changes width based on collapsed state */}
+          <div
+            className={cn(
+              "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
+              isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
+              isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
+            )}
+          />
+
+          {/* Icon - stays at same position */}
+          <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+            <div
+              className={cn(
+                "transition-colors duration-200",
+                isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+              )}
+            >
+              {item.icon}
+            </div>
+          </div>
+
+          {/* Text label - only shown when expanded */}
+          {!isCollapsed && (
+            <div className="absolute top-0 left-[55px] right-[48px] h-[40px] flex items-center pointer-events-none">
+              <span
+                className={cn(
+                  "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden",
+                  isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
+                )}
+              >
+                {item.label}
+              </span>
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* Chevron button - separate from Link, absolutely positioned */}
+      {!isCollapsed && hasSubmenus && (
+        <button
+          type="button"
+          className="absolute top-0 right-[15px] w-8 h-10 flex items-center justify-center transition-all duration-200 text-[#888] hover:text-primary hover:bg-sidebar-accent rounded-md z-10"
+          onClick={e => onToggleSubmenu(item.href, e)}
+        >
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 24 24"
+            height="16"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn("transition-transform duration-200", isSubmenuOpen && "rotate-180")}
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z" />
+          </svg>
+        </button>
+      )}
+    </div>
   )
 }
 
