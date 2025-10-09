@@ -20,9 +20,10 @@ import { format } from "date-fns"
 import { ChevronDown, Database, Eye } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useState } from "react"
+import type { ReactJsonViewProps } from "react-json-view"
 import { STATUS_TO_COLOR, formatCost } from "./constants"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
+const ReactJson = dynamic<ReactJsonViewProps>(() => import("react-json-view").then(mod => mod.default), { ssr: false })
 
 const getReactJsonTheme = () => {
   if (typeof window !== "undefined" && document.documentElement.classList.contains("dark")) {
