@@ -66,6 +66,7 @@
     "next": "15.3.5",
     "nextjs-toploader": "^3.9.17",
     "react": "^19.1.1",
+    "react-json-view": "^1.21.3",
     "react-markdown": "^10.1.0",
     "reactflow": "^11.11.4",
     "recharts": "^3.2.0",
