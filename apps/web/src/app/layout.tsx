@@ -57,7 +57,9 @@ export default async function RootLayout({
                   >
                     Skip to content
                   </a>
-                  <NextTopLoader />
+                  <div className="hidden">
+                    <NextTopLoader />
+                  </div>
                   <SignedIn>
                     <CredentialStatusBanner />
                     <IntegratedAside />
