@@ -1,6 +1,8 @@
 "use client"
 
-import { useWorkflows } from "@/hooks/useWorkflows"
+import { useInvokeWorkflow } from "@/hooks/queries/useInvocationMutations"
+import { useDeleteWorkflow } from "@/hooks/queries/useWorkflowMutations"
+import { useWorkflowsQuery } from "@/hooks/queries/useWorkflowsQuery"
 import { cn } from "@/lib/utils"
 import type { WorkflowWithVersions } from "@/lib/workflows"
 import { Pencil, Play, Plus, RefreshCw, Trash2 } from "lucide-react"
@@ -135,39 +137,29 @@ function formatTimeAgo(date: Date): string {
 
 export default function WorkflowsPage() {
   const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(new Set())
-  const { workflows, loading, saving, error, refresh, deleteWorkflow } = useWorkflows()
+
+  // Use TanStack Query hooks
+  const { data: workflows = [], isLoading, error, refetch } = useWorkflowsQuery()
+  const invokeWorkflow = useInvokeWorkflow()
+  const deleteWorkflowMutation = useDeleteWorkflow()
 
   const handleRun = async (workflow: WorkflowWithVersions) => {
     if (!workflow.activeVersion) return
 
-    // Prompt user for input
     const userInput = prompt("Enter input for the workflow:")
     if (!userInput) return
 
     setRunningWorkflows(prev => new Set(prev).add(workflow.wf_id))
 
     try {
-      const response = await fetch("/api/workflow/invoke", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const result = await invokeWorkflow.mutateAsync({
+        workflowVersionId: workflow.activeVersion.wf_version_id,
+        evalInput: {
+          type: "prompt-only",
+          workflowId: workflow.wf_id,
+          goal: userInput,
         },
-        body: JSON.stringify({
-          workflowVersionId: workflow.activeVersion.wf_version_id,
-          evalInput: {
-            type: "prompt-only",
-            workflowId: workflow.wf_id,
-            goal: userInput,
-          },
-        }),
       })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to run workflow")
-      }
-
-      const result = await response.json()
 
       if (result.success) {
         alert(
@@ -190,7 +182,7 @@ export default function WorkflowsPage() {
 
   const handleDelete = async (workflowId: string) => {
     if (confirm("Are you sure you want to delete this workflow?")) {
-      await deleteWorkflow(workflowId)
+      await deleteWorkflowMutation.mutateAsync(workflowId)
     }
   }
 
@@ -204,12 +196,12 @@ export default function WorkflowsPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={refresh}
-            disabled={loading}
+            onClick={() => refetch()}
+            disabled={isLoading}
             className="inline-flex items-center gap-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
             title="Refresh"
           >
-            <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+            <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
           </button>
           <Link
             href="/edit"
@@ -224,12 +216,12 @@ export default function WorkflowsPage() {
       {/* Error state */}
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-200 text-red-700 rounded-md dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400">
-          {error}
+          {error.message}
         </div>
       )}
 
       {/* Content */}
-      {loading && workflows.length === 0 ? (
+      {isLoading && workflows.length === 0 ? (
         <div className="flex justify-center py-16">
           <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
@@ -259,11 +251,12 @@ export default function WorkflowsPage() {
         </div>
       )}
 
-      {/* Saving indicator */}
-      {saving && (
+      {/* Mutation loading indicators */}
+      {(invokeWorkflow.isPending || deleteWorkflowMutation.isPending) && (
         <div className="fixed bottom-4 right-4 bg-black/80 text-white px-4 py-2 rounded-md flex items-center gap-2">
           <div className="size-4 animate-spin rounded-full border border-current border-t-transparent" />
-          Saving...
+          {invokeWorkflow.isPending && "Running workflow..."}
+          {deleteWorkflowMutation.isPending && "Deleting..."}
         </div>
       )}
     </div>

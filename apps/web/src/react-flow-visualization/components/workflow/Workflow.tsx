@@ -18,7 +18,11 @@ const edgeTypes = {
   workflow: WorkflowEdge,
 }
 
-export default function Workflow({ workflowVersionId }: { workflowVersionId: string | undefined }) {
+export default function Workflow({
+  workflowVersionId,
+}: {
+  workflowVersionId: string | undefined
+}) {
   const {
     nodes,
     edges,

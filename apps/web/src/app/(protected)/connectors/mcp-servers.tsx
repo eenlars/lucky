@@ -3,72 +3,16 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { AlertCircle, Check, ChevronDown, FileJson, Trash2, X } from "lucide-react"
-import { useEffect, useState } from "react"
-
-export interface MCPServerConfig {
-  command: string
-  args: string[]
-  env?: Record<string, string>
-}
-
-export interface MCPServers {
-  mcpServers: Record<string, MCPServerConfig>
-}
-
-const MCP_STORAGE_KEY = "mcp_servers_config"
-
-function getStoredMCPConfig(): MCPServers {
-  if (typeof window === "undefined") return { mcpServers: {} }
-
-  try {
-    const stored = localStorage.getItem(MCP_STORAGE_KEY)
-    if (stored) {
-      return JSON.parse(stored)
-    }
-  } catch (error) {
-    console.error("Failed to load MCP config:", error)
-  }
-
-  return { mcpServers: {} }
-}
-
-function saveMCPConfig(config: MCPServers): void {
-  if (typeof window === "undefined") return
-
-  try {
-    localStorage.setItem(MCP_STORAGE_KEY, JSON.stringify(config, null, 2))
-  } catch (error) {
-    console.error("Failed to save MCP config:", error)
-  }
-}
+import { type MCPServerConfig, useMCPConfigStore } from "@/stores/mcp-config-store"
+import { AlertCircle, Check, ChevronDown, FileJson, Trash2 } from "lucide-react"
+import { useState } from "react"
 
 export function MCPServersConfig() {
-  const [config, setConfig] = useState<MCPServers>({ mcpServers: {} })
+  const config = useMCPConfigStore(state => state.config)
+  const addServer = useMCPConfigStore(state => state.addServer)
+  const deleteServer = useMCPConfigStore(state => state.deleteServer)
+
   const [showJsonMode, setShowJsonMode] = useState(false)
-
-  useEffect(() => {
-    setConfig(getStoredMCPConfig())
-  }, [])
-
-  const handleDeleteServer = (serverName: string) => {
-    const newConfig = { ...config }
-    delete newConfig.mcpServers[serverName]
-    setConfig(newConfig)
-    saveMCPConfig(newConfig)
-  }
-
-  const handleAddServer = (name: string, serverConfig: MCPServerConfig) => {
-    const newConfig = {
-      ...config,
-      mcpServers: {
-        ...config.mcpServers,
-        [name]: serverConfig,
-      },
-    }
-    setConfig(newConfig)
-    saveMCPConfig(newConfig)
-  }
 
   const serverNames = Object.keys(config.mcpServers)
 
@@ -83,7 +27,7 @@ export function MCPServersConfig() {
       </div>
 
       {/* Add Server Form */}
-      <AddServerForm onAdd={handleAddServer} existingNames={serverNames} />
+      <AddServerForm onAdd={addServer} existingNames={serverNames} />
 
       {/* Server List */}
       {serverNames.length > 0 && (
@@ -93,12 +37,7 @@ export function MCPServersConfig() {
           </h3>
           <div className="space-y-2">
             {serverNames.map(name => (
-              <ServerRow
-                key={name}
-                name={name}
-                config={config.mcpServers[name]}
-                onDelete={() => handleDeleteServer(name)}
-              />
+              <ServerRow key={name} name={name} config={config.mcpServers[name]} onDelete={() => deleteServer(name)} />
             ))}
           </div>
         </div>
@@ -115,7 +54,7 @@ export function MCPServersConfig() {
       </button>
 
       {/* JSON Editor */}
-      {showJsonMode && <JsonEditor config={config} onUpdate={setConfig} />}
+      {showJsonMode && <JsonEditor />}
     </div>
   )
 }
@@ -348,7 +287,15 @@ function AddServerForm({
   )
 }
 
-function ServerRow({ name, config, onDelete }: { name: string; config: MCPServerConfig; onDelete: () => void }) {
+function ServerRow({
+  name,
+  config,
+  onDelete,
+}: {
+  name: string
+  config: MCPServerConfig
+  onDelete: () => void
+}) {
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -403,14 +350,13 @@ function ServerRow({ name, config, onDelete }: { name: string; config: MCPServer
   )
 }
 
-function JsonEditor({ config, onUpdate }: { config: MCPServers; onUpdate: (config: MCPServers) => void }) {
-  const [jsonText, setJsonText] = useState(JSON.stringify(config, null, 2))
+function JsonEditor() {
+  const config = useMCPConfigStore(state => state.config)
+  const updateConfig = useMCPConfigStore(state => state.updateConfig)
+
+  const [jsonText, setJsonText] = useState(() => JSON.stringify(config, null, 2))
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
-
-  useEffect(() => {
-    setJsonText(JSON.stringify(config, null, 2))
-  }, [config])
 
   const handlePaste = (value: string) => {
     setJsonText(value)
@@ -434,8 +380,7 @@ function JsonEditor({ config, onUpdate }: { config: MCPServers; onUpdate: (confi
         }
       }
 
-      onUpdate(parsed)
-      saveMCPConfig(parsed)
+      updateConfig(parsed)
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
     } catch (err) {

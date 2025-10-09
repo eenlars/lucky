@@ -4,13 +4,15 @@ import { EmptyState } from "@/components/empty-states/EmptyState"
 import { HelpTooltip, helpContent } from "@/components/help/HelpTooltip"
 import { TableSkeleton } from "@/components/loading/Skeleton"
 import { Button } from "@/components/ui/button"
+import { useDeleteInvocations } from "@/hooks/queries/useInvocationMutations"
+import { useInvocationsQuery } from "@/hooks/queries/useInvocationsQuery"
 import { showToast } from "@/lib/toast-utils"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { ChevronDown, ChevronUp, Filter, Rocket, Trash2, X } from "lucide-react"
 import Link from "next/link"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 // Temporary type extension for new scoring fields
 type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
@@ -82,10 +84,6 @@ interface FilterState {
 }
 
 export default function InvocationsPage() {
-  const [invocations, setInvocations] = useState<WorkflowInvocationWithScores[]>([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>("start_time")
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc")
@@ -104,119 +102,54 @@ export default function InvocationsPage() {
   })
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(25)
-  // Add state to force re-render for updating time differences
-  const [_, setTimeUpdate] = useState(0)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const [deleteLoading, setDeleteLoading] = useState(false)
 
-  const fetchWorkflowInvocations = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  // Build filter parameters
+  const filterParams = useMemo<WorkflowInvocationFilters>(() => {
+    const params: WorkflowInvocationFilters = {}
 
-    try {
-      // Skip cleanup on page load to prevent timeouts
-      // TODO: Move cleanup to background job or API endpoint
-
-      // Build filter parameters
-      const filterParams: WorkflowInvocationFilters = {}
-
-      // Status filter
-      if (filters.status) {
-        filterParams.status = filters.status as "running" | "completed" | "failed" | "rolled_back"
-      }
-
-      // Cost filters
-      if (filters.minCost) {
-        filterParams.minCost = Number.parseFloat(filters.minCost)
-      }
-      if (filters.maxCost) {
-        filterParams.maxCost = Number.parseFloat(filters.maxCost)
-      }
-
-      // Date filters
-      if (filters.dateFrom) {
-        filterParams.dateFrom = filters.dateFrom
-      }
-      if (filters.dateTo) {
-        filterParams.dateTo = filters.dateTo
-      }
-
-      // Accuracy filters
-      if (filters.minAccuracy) {
-        filterParams.minAccuracy = Number.parseFloat(filters.minAccuracy)
-      }
-      if (filters.maxAccuracy) {
-        filterParams.maxAccuracy = Number.parseFloat(filters.maxAccuracy)
-      }
-
-      // Fitness score filters
-      if (filters.minFitnessScore) {
-        filterParams.minFitnessScore = Number.parseFloat(filters.minFitnessScore)
-      }
-      if (filters.maxFitnessScore) {
-        filterParams.maxFitnessScore = Number.parseFloat(filters.maxFitnessScore)
-      }
-
-      // Override with completed only filter if active
-      if (showCompletedOnly) {
-        filterParams.status = "completed"
-      }
-
-      // Build sort parameters
-      const sortParams: WorkflowInvocationSortOptions = {
-        field: sortField,
-        order: sortOrder,
-      }
-
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        pageSize: itemsPerPage.toString(),
-        filters: JSON.stringify(filterParams),
-        sort: JSON.stringify(sortParams),
-      })
-
-      const response = await fetch(`/api/workflow/invocations?${params}`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch invocations: ${response.statusText}`)
-      }
-
-      const result = await response.json()
-      setInvocations(result.data)
-      setTotalCount(result.totalCount)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch workflow invocations")
-      console.error("Error fetching workflow invocations:", err)
-    } finally {
-      setLoading(false)
+    // Status filter (override with completed only filter if active)
+    if (showCompletedOnly) {
+      params.status = "completed"
+    } else if (filters.status) {
+      params.status = filters.status as "running" | "completed" | "failed" | "rolled_back"
     }
-  }, [filters, sortField, sortOrder, showCompletedOnly, currentPage, itemsPerPage])
 
-  useEffect(() => {
-    fetchWorkflowInvocations()
-  }, [fetchWorkflowInvocations])
+    // Cost filters
+    if (filters.minCost) params.minCost = Number.parseFloat(filters.minCost)
+    if (filters.maxCost) params.maxCost = Number.parseFloat(filters.maxCost)
 
-  // Update time differences every second and auto-refresh every 30 seconds
-  useEffect(() => {
-    const timeInterval = setInterval(() => {
-      setTimeUpdate(prev => prev + 1)
-    }, 1000)
+    // Date filters
+    if (filters.dateFrom) params.dateFrom = filters.dateFrom
+    if (filters.dateTo) params.dateTo = filters.dateTo
 
-    // Auto-refresh every 30 seconds to catch status changes
-    const refreshInterval = setInterval(() => {
-      if (!loading) {
-        fetchWorkflowInvocations()
-      }
-    }, 30000)
+    // Accuracy filters
+    if (filters.minAccuracy) params.minAccuracy = Number.parseFloat(filters.minAccuracy)
+    if (filters.maxAccuracy) params.maxAccuracy = Number.parseFloat(filters.maxAccuracy)
 
-    return () => {
-      clearInterval(timeInterval)
-      clearInterval(refreshInterval)
-    }
-  }, [loading, fetchWorkflowInvocations])
+    // Fitness score filters
+    if (filters.minFitnessScore) params.minFitnessScore = Number.parseFloat(filters.minFitnessScore)
+    if (filters.maxFitnessScore) params.maxFitnessScore = Number.parseFloat(filters.maxFitnessScore)
 
-  // No need for client-side pagination since backend handles it
+    return params
+  }, [filters, showCompletedOnly])
+
+  // Use TanStack Query for data fetching with auto-refresh
+  const { data, isLoading, error, refetch } = useInvocationsQuery({
+    page: currentPage,
+    pageSize: itemsPerPage,
+    filters: filterParams,
+    sortField,
+    sortOrder,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+  })
+
+  const invocations = data?.data ?? []
+  const totalCount = data?.totalCount ?? 0
   const totalPages = Math.ceil(totalCount / itemsPerPage)
   const totalItems = totalCount
+
+  const deleteInvocationsMutation = useDeleteInvocations()
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -260,45 +193,18 @@ export default function InvocationsPage() {
     setCurrentPage(1)
   }
 
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [filters, showCompletedOnly, sortField, sortOrder])
-
   const handleDeleteSelected = async () => {
-    setDeleteLoading(true)
-    setError(null)
-
     try {
       const idsToDelete = Array.from(selectedRows)
-
-      const response = await fetch("/api/workflow/invocations", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ids: idsToDelete }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to delete invocations")
-      }
-
-      // Remove deleted items from the invocations list
-      setInvocations(invocations.filter(inv => !selectedRows.has(inv.wf_invocation_id)))
+      await deleteInvocationsMutation.mutateAsync(idsToDelete)
       setSelectedRows(new Set())
       setDeleteConfirmOpen(false)
-
       const count = idsToDelete.length
       showToast.success.delete(`Deleted ${count} invocation${count === 1 ? "" : "s"}`)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to delete selected invocations"
-      setError(errorMessage)
       showToast.error.generic(errorMessage)
       console.error("Error deleting invocations:", err)
-    } finally {
-      setDeleteLoading(false)
     }
   }
 
@@ -682,11 +588,11 @@ export default function InvocationsPage() {
 
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-3 items-center">
-          <Button onClick={fetchWorkflowInvocations} disabled={loading}>
-            {loading && (
+          <Button onClick={() => refetch()} disabled={isLoading}>
+            {isLoading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
             )}
-            {loading ? "Loading..." : "Refresh Invocations"}
+            {isLoading ? "Loading..." : "Refresh Invocations"}
           </Button>
 
           <Button onClick={() => setShowFilters(!showFilters)} variant="outline">
@@ -922,7 +828,7 @@ export default function InvocationsPage() {
           </div>
         )}
 
-        {error && <div className="mt-2 text-red-500">{(error as any).message}</div>}
+        {error && <div className="mt-2 text-red-500">{error.message}</div>}
 
         {/* Active Filters Indicator */}
         {(filters.status ||
@@ -1297,7 +1203,7 @@ export default function InvocationsPage() {
             </div>
           </div>
         </div>
-      ) : loading ? (
+      ) : isLoading ? (
         <TableSkeleton rows={itemsPerPage} columns={8} />
       ) : invocations.length === 0 &&
         (filters.status ||
@@ -1348,14 +1254,22 @@ export default function InvocationsPage() {
               This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <Button onClick={() => setDeleteConfirmOpen(false)} disabled={deleteLoading} variant="outline">
+              <Button
+                onClick={() => setDeleteConfirmOpen(false)}
+                disabled={deleteInvocationsMutation.isPending}
+                variant="outline"
+              >
                 Cancel
               </Button>
-              <Button onClick={handleDeleteSelected} disabled={deleteLoading} variant="destructive">
-                {deleteLoading && (
+              <Button
+                onClick={handleDeleteSelected}
+                disabled={deleteInvocationsMutation.isPending}
+                variant="destructive"
+              >
+                {deleteInvocationsMutation.isPending && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 )}
-                {deleteLoading ? "Deleting..." : "Delete"}
+                {deleteInvocationsMutation.isPending ? "Deleting..." : "Delete"}
               </Button>
             </div>
           </div>

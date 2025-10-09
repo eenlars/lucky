@@ -116,7 +116,9 @@ export async function POST(req: NextRequest) {
 
     if (!invokeResponse.ok) {
       const errorData = await invokeResponse.json()
-      return NextResponse.json(formatWorkflowError(requestId, errorData), { status: 500 })
+      return NextResponse.json(formatWorkflowError(requestId, errorData), {
+        status: 500,
+      })
     }
 
     const result = await invokeResponse.json()
@@ -136,6 +138,8 @@ export async function POST(req: NextRequest) {
     )
   } catch (error) {
     console.error("MCP Invoke API Error:", error)
-    return NextResponse.json(formatInternalError(requestId ?? null, error), { status: 500 })
+    return NextResponse.json(formatInternalError(requestId ?? null, error), {
+      status: 500,
+    })
   }
 }

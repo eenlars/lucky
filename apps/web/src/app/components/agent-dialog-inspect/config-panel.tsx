@@ -313,7 +313,11 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Model</label>
             <select
               value={node.data.modelName || ""}
-              onChange={e => updateNode(node.id, { modelName: e.target.value as AnyModelName })}
+              onChange={e =>
+                updateNode(node.id, {
+                  modelName: e.target.value as AnyModelName,
+                })
+              }
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               <option value="openai/gpt-4o">GPT-4o</option>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { useConnectorsUIStore } from "@/stores/connectors-ui-store"
 import {
   Check,
   CheckCircle2,
@@ -24,8 +25,11 @@ import { MCPServersConfig } from "./mcp-servers"
 import { type Connector, mockConnectors } from "./mock-data"
 
 export default function ConnectorsPage() {
-  const [activeTab, setActiveTab] = useState("marketplace")
-  const [searchQuery, setSearchQuery] = useState("")
+  const activeTab = useConnectorsUIStore(state => state.activeTab)
+  const setActiveTab = useConnectorsUIStore(state => state.setActiveTab)
+  const searchQuery = useConnectorsUIStore(state => state.searchQuery)
+  const setSearchQuery = useConnectorsUIStore(state => state.setSearchQuery)
+
   const [selectedConnector, setSelectedConnector] = useState<Connector | null>(null)
   const [configuring, setConfiguring] = useState(false)
 
@@ -78,7 +82,11 @@ export default function ConnectorsPage() {
 
         {/* Tabs */}
         <div className="flex-1 flex flex-col">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <Tabs
+            value={activeTab}
+            onValueChange={tab => setActiveTab(tab as "marketplace" | "my-connectors" | "mcp-servers")}
+            className="flex-1 flex flex-col"
+          >
             <div className="border-b border-border px-8">
               <TabsList className="bg-transparent border-0 p-0 h-auto">
                 <TabsTrigger
@@ -194,7 +202,13 @@ export default function ConnectorsPage() {
   )
 }
 
-function ConnectorCard({ connector, onClick }: { connector: Connector; onClick: () => void }) {
+function ConnectorCard({
+  connector,
+  onClick,
+}: {
+  connector: Connector
+  onClick: () => void
+}) {
   return (
     <Card className="group cursor-pointer transition-all hover:shadow-md hover:border-primary/50" onClick={onClick}>
       <div className="p-6">
@@ -257,7 +271,13 @@ function ConnectorCard({ connector, onClick }: { connector: Connector; onClick: 
   )
 }
 
-function InstalledConnectorCard({ connector, onClick }: { connector: Connector; onClick: () => void }) {
+function InstalledConnectorCard({
+  connector,
+  onClick,
+}: {
+  connector: Connector
+  onClick: () => void
+}) {
   return (
     <Card className="group cursor-pointer transition-all hover:shadow-md hover:border-primary/50" onClick={onClick}>
       <div className="p-6">
@@ -558,7 +578,12 @@ function ConnectorDetailModal({
                         type={showCredentials.apiKey ? "text" : "password"}
                         placeholder="Enter your API key"
                         value={credentials.apiKey || ""}
-                        onChange={e => setCredentials({ ...credentials, apiKey: e.target.value })}
+                        onChange={e =>
+                          setCredentials({
+                            ...credentials,
+                            apiKey: e.target.value,
+                          })
+                        }
                         className="w-full px-3 py-2 pr-10 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                       />
                       <button

@@ -231,7 +231,11 @@ function CustomTooltip({ active, payload }: any) {
   )
 }
 
-export default function AdaptationOurAlgorithmConnected({ className = "" }: { className?: string }) {
+export default function AdaptationOurAlgorithmConnected({
+  className = "",
+}: {
+  className?: string
+}) {
   const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
