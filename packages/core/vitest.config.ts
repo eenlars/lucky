@@ -15,7 +15,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     testTimeout: 10000, // Increase from default 5000ms
-    exclude: [...configDefaults.exclude, "**/e2e/**"],
+    exclude: [...configDefaults.exclude, "**/e2e/**", "**/.core-data/**", "**/logs/**", "**/backups/**", "**/*.tmp"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json"],
