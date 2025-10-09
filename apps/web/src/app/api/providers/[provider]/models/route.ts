@@ -13,11 +13,13 @@ const modelCache = new Map<
   }
 >()
 
-// GET /api/providers/[provider]/models?apiKey=xxx
+// POST /api/providers/[provider]/models
 // Fetches available models from the provider's API
-export async function GET(req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
+// Body: { apiKey: string }
+export async function POST(req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params
-  const apiKey = req.nextUrl.searchParams.get("apiKey")
+  const body = await req.json()
+  const apiKey = body.apiKey
 
   // Validate provider
   const validProviders: LuckyProvider[] = ["openai", "openrouter", "groq"]

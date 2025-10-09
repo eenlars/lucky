@@ -83,7 +83,11 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsLoadingModels(true)
     try {
-      const response = await fetch(`/api/providers/${provider}/models?apiKey=${encodeURIComponent(key)}`)
+      const response = await fetch(`/api/providers/${provider}/models`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: key }),
+      })
 
       if (!response.ok) {
         throw new Error("Failed to load models")
