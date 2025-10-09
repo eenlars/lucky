@@ -33,6 +33,10 @@ export function initCore() {
     context: CONFIG.context,
     evolution: CONFIG.evolution,
     limits: CONFIG.limits,
+    persistence: {
+      useMockBackend: process.env.USE_MOCK_PERSISTENCE === "true",
+      defaultBackend: process.env.USE_MOCK_PERSISTENCE === "true" ? "memory" : "supabase",
+    },
   })
 
   initialized = true

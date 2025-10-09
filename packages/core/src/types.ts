@@ -52,12 +52,12 @@ export type FlowRuntimeConfig = {
     readonly prepareProblemWorkflowVersionId: string
   }
   readonly tools: {
-    readonly inactive: Set<string>
+    readonly inactive: string[]
     readonly uniqueToolsPerAgent: boolean
     readonly uniqueToolSetsPerAgent: boolean
     readonly maxToolsPerAgent: number
     readonly maxStepsVercel: number
-    readonly defaultTools: Set<string>
+    readonly defaultTools: string[]
     readonly autoSelectTools: boolean
     readonly usePrepareStepStrategy: boolean
     readonly experimentalMultiStepLoop: boolean
@@ -65,7 +65,7 @@ export type FlowRuntimeConfig = {
     readonly experimentalMultiStepLoopMaxRounds: number
   }
   readonly models: {
-    readonly inactive: Set<string>
+    readonly inactive: string[]
     readonly provider: FullFlowRuntimeConfig["MODELS"]["provider"]
   }
   readonly improvement: {
@@ -130,7 +130,7 @@ export type FullFlowRuntimeConfig = {
   CONFIG: FlowRuntimeConfig
   PATHS: FlowPathsConfig
   MODELS: {
-    inactive: Set<string>
+    inactive: string[]
     provider: "openai" | "openrouter" | "groq"
   }
 }

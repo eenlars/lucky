@@ -1,9 +1,11 @@
 /**
  * Test configuration mocks for @core/core-config/compat
- * Provides properly typed CONFIG objects for testing
+ * Provides properly typed CONFIG objects for testing with validation
  */
 
+import { toRuntimeContract } from "@core/core-config/validation"
 import type { FlowRuntimeConfig } from "@core/types"
+import { validateRuntimeConfig } from "@lucky/contracts/runtime"
 
 /**
  * Create a complete mock CONFIG for verbose mode testing
@@ -39,8 +41,8 @@ export function createMockConfigVerbose(): FlowRuntimeConfig {
       prepareProblemWorkflowVersionId: "",
     },
     tools: {
-      inactive: new Set(),
-      defaultTools: new Set(),
+      inactive: [],
+      defaultTools: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
@@ -52,7 +54,7 @@ export function createMockConfigVerbose(): FlowRuntimeConfig {
       experimentalMultiStepLoopMaxRounds: 6,
     },
     models: {
-      inactive: new Set(),
+      inactive: [],
       provider: "openrouter",
     },
     improvement: {
@@ -168,4 +170,32 @@ export function createMockModels() {
     reasoning: "openai/gpt-4.1-mini",
     fallback: "switchpoint/router",
   }
+}
+
+/**
+ * Validate a FlowRuntimeConfig against the runtime contract.
+ * Useful for testing that mock configs conform to the schema.
+ *
+ * @throws ZodError if config is invalid
+ */
+export function validateMockConfig(config: FlowRuntimeConfig): void {
+  // Convert to runtime contract format (excluding evolution and ingestion)
+  const runtimeConfig = {
+    coordinationType: config.coordinationType,
+    newNodeProbability: config.newNodeProbability,
+    models: config.models,
+    logging: config.logging,
+    tools: config.tools,
+    workflow: config.workflow,
+    improvement: config.improvement,
+    limits: config.limits,
+    context: config.context,
+    verification: config.verification,
+    persistence: {
+      useMockBackend: true,
+      defaultBackend: "memory" as const,
+    },
+  }
+
+  validateRuntimeConfig(runtimeConfig)
 }

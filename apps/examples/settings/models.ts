@@ -5,7 +5,7 @@ import type { LuckyProvider } from "@lucky/shared"
 // model runtime configuration
 export const MODEL_CONFIG = {
   provider: "openrouter" as const satisfies LuckyProvider,
-  inactive: new Set<string>([
+  inactive: [
     "moonshotai/kimi-k2",
     // "deepseek/deepseek-r1-0528:free", // timeouts
     // "anthropic/claude-sonnet-4",
@@ -15,7 +15,7 @@ export const MODEL_CONFIG = {
     // "google/gemini-2.5-pro-preview",
     // "openai/gpt-4.1",
     // "openai/gpt-4.1-mini",
-  ]),
+  ] as string[],
 } as const
 
 /* ---------- DEFAULT MODELS ---------- */
@@ -78,7 +78,7 @@ export const getCheapestActiveModelId = (): ModelName => {
 
   for (const [modelId, pricing] of Object.entries(models)) {
     if (!pricing?.active) continue
-    if (inactive.has(modelId)) continue
+    if (inactive.includes(modelId)) continue
     const inputPrice = typeof pricing.input === "number" ? pricing.input : Number.POSITIVE_INFINITY
     if (inputPrice < lowestInput) {
       lowestInput = inputPrice

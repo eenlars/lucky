@@ -13,12 +13,12 @@ vi.mock("@examples/settings/constants", () => ({
   CONFIG: {
     tools: {
       showParameterSchemas: true,
-      inactive: new Set(),
-      defaultTools: new Set(),
+      inactive: [],
+      defaultTools: [],
       maxToolsPerAgent: 6,
     },
     models: {
-      inactive: new Set(),
+      inactive: [],
     },
     logging: {
       level: "info",

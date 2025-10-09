@@ -84,9 +84,9 @@ export type AllToolNames = MCPToolName | CodeToolName
  */
 export interface ToolConfig {
   /** Tools that are currently inactive */
-  inactive: Set<AllToolNames>
+  inactive: AllToolNames[]
   /** Tools that are automatically added to all nodes by default */
-  defaultTools: Set<AllToolNames>
+  defaultTools: AllToolNames[]
   /** Maximum steps for Vercel AI SDK */
   maxStepsVercel: number
   /** Whether to enable experimental multi-step loop */
@@ -100,7 +100,7 @@ export interface ToolConfig {
  * Can be overridden at runtime
  */
 export const DEFAULT_TOOL_CONFIG: ToolConfig = {
-  inactive: new Set<AllToolNames>([
+  inactive: [
     // NOTE: Tests use todoRead/todoWrite as stable, always-active tools for testing
     // tool-related functionality. These tools are simple, predictable, and don't require
     // external dependencies (no MCP, no API calls), making them ideal for unit tests.
@@ -130,10 +130,10 @@ export const DEFAULT_TOOL_CONFIG: ToolConfig = {
     "firecrawl",
     "humanApproval",
     "humanHelp",
-  ]),
-  defaultTools: new Set<AllToolNames>([
+  ],
+  defaultTools: [
     // Tools automatically added to all nodes
-  ]),
+  ],
   maxStepsVercel: 10,
   experimentalMultiStepLoop: true,
   experimentalMultiStepLoopMaxRounds: 10,

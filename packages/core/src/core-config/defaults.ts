@@ -54,7 +54,7 @@ export function createDefaultCoreConfig(): CoreConfig {
 
     models: {
       provider: "openrouter",
-      inactive: new Set(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
+      inactive: ["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"],
       defaults: {
         summary: "google/gemini-2.5-flash-lite",
         nano: "google/gemini-2.5-flash-lite",
@@ -69,12 +69,12 @@ export function createDefaultCoreConfig(): CoreConfig {
     },
 
     tools: {
-      inactive: new Set<string>(),
+      inactive: [],
       uniqueToolsPerAgent: false,
       uniqueToolSetsPerAgent: false,
       maxToolsPerAgent: 3,
       maxStepsVercel: 10,
-      defaultTools: new Set<string>(),
+      defaultTools: [],
       autoSelectTools: true,
       usePrepareStepStrategy: false,
       experimentalMultiStepLoop: true,
@@ -176,7 +176,7 @@ export function createDefaultCoreConfig(): CoreConfig {
 
 /**
  * Deep merge two objects, with override taking precedence.
- * Sets are replaced entirely, not merged.
+ * Arrays are replaced entirely, not merged.
  */
 export function mergeConfig<T extends Record<string, any>>(base: T, override: Partial<T>): T {
   const result: any = { ...base }
@@ -189,19 +189,19 @@ export function mergeConfig<T extends Record<string, any>>(base: T, override: Pa
       continue
     }
 
-    // Replace Sets entirely - check for Set-like objects
-    if (overrideValue && typeof overrideValue === "object" && "size" in overrideValue && "has" in overrideValue) {
+    // Replace arrays entirely (don't merge)
+    if (Array.isArray(overrideValue)) {
       result[key] = overrideValue
       continue
     }
 
-    // Deep merge objects
-    if (typeof overrideValue === "object" && overrideValue !== null && !Array.isArray(overrideValue)) {
+    // Deep merge objects (but not arrays or null)
+    if (typeof overrideValue === "object" && overrideValue !== null) {
       result[key] = mergeConfig(baseValue || {}, overrideValue as any)
       continue
     }
 
-    // Replace primitives and arrays
+    // Replace primitives
     result[key] = overrideValue
   }
 

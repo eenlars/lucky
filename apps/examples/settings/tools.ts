@@ -73,7 +73,7 @@ export const TOOLS = {
 // tool runtime configuration
 export const TOOL_CONFIG = {
   experimentalMultiStepLoopMaxRounds: 10,
-  inactive: new Set<AllToolNames>([
+  inactive: [
     // DO NOT CHANGE THIS!
     // "tavily",
     // "todoWrite",
@@ -105,16 +105,16 @@ export const TOOL_CONFIG = {
     "humanApproval",
     "humanHelp",
     // DO NOT CHANGE THIS!
-  ]),
+  ] as AllToolNames[],
   uniqueToolsPerAgent: false,
   uniqueToolSetsPerAgent: false,
   maxToolsPerAgent: 3,
   maxStepsVercel: 10,
-  defaultTools: new Set<AllToolNames>([
+  defaultTools: [
     // "memoryManager",
     // "todoWrite",
     // "todoRead",
-  ]), // Tools to automatically add to all nodes
+  ] as AllToolNames[], // Tools to automatically add to all nodes
   autoSelectTools: true,
   usePrepareStepStrategy: false, // Use experimental_prepareStep instead of single toolChoice
   experimentalMultiStepLoop: true, // in kimi, it might be working with an auto-loop.... -> result: it does not work!
