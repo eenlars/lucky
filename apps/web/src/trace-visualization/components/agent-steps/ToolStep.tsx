@@ -86,6 +86,7 @@ export const ToolStep = ({
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200"
               onClick={e => {
                 e.stopPropagation()
@@ -96,6 +97,7 @@ export const ToolStep = ({
               <Copy size={14} className="text-slate-500 dark:text-slate-400" />
             </button>
             <button
+              type="button"
               className="p-1.5 rounded-full hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors duration-200 cursor-pointer"
               onClick={e => {
                 e.stopPropagation()

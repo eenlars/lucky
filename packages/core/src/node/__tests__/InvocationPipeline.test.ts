@@ -2,6 +2,7 @@
 import { getDefaultModels } from "@core/core-config/compat"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
+import { StateManagementError } from "@core/utils/errors/WorkflowErrors"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
@@ -493,19 +494,12 @@ describe("InvocationPipeline", () => {
       expect(result.error).toBeUndefined()
     })
 
-    it("handles processing without execution", async () => {
-      // TODO: this test assumes specific error message "empty processedResponse" but
-      // doesn't verify this is the actual error behavior. if implementation changes
-      // error message, test will fail for wrong reasons. should test error type or
-      // more generic error conditions rather than exact message matching.
+    it("throws StateManagementError when process() called without execute()", async () => {
       const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
-      const result = await pipeline.process()
-
-      expect(result).toBeDefined()
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toContain("empty processedResponse")
+      await expect(pipeline.process()).rejects.toThrow(StateManagementError)
+      await expect(pipeline.process()).rejects.toThrow("process() called in invalid state: CREATED")
     })
   })
 

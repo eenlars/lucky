@@ -12,6 +12,7 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist",
     "generate": "bun scripts/generate-db-types.ts",
+    "postgenerate": "biome format --write src/types/database.types.ts",
     "prebuild": "bun run generate",
     "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
     "tsc": "tsc --noEmit"

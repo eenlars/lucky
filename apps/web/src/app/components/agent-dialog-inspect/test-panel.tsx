@@ -144,6 +144,7 @@ export function TestPanel({ node }: TestPanelProps) {
             {/* Left side - Model selector */}
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 disabled
                 className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-sm text-gray-400 dark:text-gray-500 font-medium flex items-center gap-1.5 cursor-not-allowed"
               >
@@ -155,6 +156,7 @@ export function TestPanel({ node }: TestPanelProps) {
             {/* Right side - Action icons */}
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 disabled
                 className="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed rounded-md"
                 title="Agent options"
@@ -162,6 +164,7 @@ export function TestPanel({ node }: TestPanelProps) {
                 <Brain className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 disabled
                 className="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed rounded-md"
                 title="Attach file"
@@ -169,6 +172,7 @@ export function TestPanel({ node }: TestPanelProps) {
                 <Paperclip className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={!input.trim() || isLoading}
                 className={cn(

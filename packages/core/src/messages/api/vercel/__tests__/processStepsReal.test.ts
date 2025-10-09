@@ -7,7 +7,7 @@ import responseMultiple from "../../__tests__/resources/toolResponseMultipleStep
 import responseNoToolUsed from "../../__tests__/resources/toolResponseNoToolUsed.json"
 import { processStepsV2 } from "../vercelStepProcessor"
 
-interface LocationDataManagerArgs {
+interface _LocationDataManagerArgs {
   operation: "insertLocations" | "getLocations" | "removeLocations"
   locationData?: LocationData[]
   locationIdsToRemove?: string[]

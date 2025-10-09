@@ -20,6 +20,7 @@ import nodesConfig, {
   type AppNodeType,
   type WorkflowNodeData,
 } from "@/react-flow-visualization/components/nodes/nodes"
+import { CITY_NAMES } from "@/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/react-flow-visualization/store/edge-validation"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
@@ -172,7 +173,31 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         },
 
         addNodeByType: (type, position) => {
-          const newNode = createNodeByType({ type, position })
+          // Generate a unique city name for workflow nodes
+          let nodeId: string | undefined = undefined
+          if (type === "transform-node" || type === "branch-node" || type === "join-node") {
+            const nodes = get().nodes
+            const existingNodeIds = new Set(nodes.map(n => n.id))
+
+            // Find first unused city name
+            let cityName = CITY_NAMES.find(city => !existingNodeIds.has(city))
+
+            // If all cities are used, add a number suffix
+            if (!cityName) {
+              for (const city of CITY_NAMES) {
+                let suffix = 2
+                while (existingNodeIds.has(`${city} ${suffix}`)) {
+                  suffix++
+                }
+                cityName = `${city} ${suffix}`
+                break
+              }
+            }
+
+            nodeId = cityName
+          }
+
+          const newNode = createNodeByType({ type, position, id: nodeId })
 
           if (!newNode) return null
 
@@ -441,10 +466,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             .map(node => {
               // Remove UI-only fields, keep all WorkflowNodeConfig fields
               const {
-                label,
-                icon,
-                status,
-                messageCount,
+                label: _label,
+                icon: _icon,
+                status: _status,
+                messageCount: _messageCount,
                 nodeId: _nodeId,
                 description,
                 systemPrompt,

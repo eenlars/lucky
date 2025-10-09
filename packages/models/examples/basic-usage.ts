@@ -70,7 +70,7 @@ async function example2TierBased() {
   console.log("Result:", result.text)
 }
 
-async function example3LocalFirst() {
+async function _example3LocalFirst() {
   console.log("\n=== Example 3: Local Model ===")
 
   // Use local Ollama model
@@ -84,7 +84,7 @@ async function example3LocalFirst() {
   console.log("Result:", result.text)
 }
 
-async function example4Streaming() {
+async function _example4Streaming() {
   console.log("\n=== Example 4: Streaming ===")
 
   const model = await models.model("openai/gpt-4o-mini")
@@ -101,7 +101,7 @@ async function example4Streaming() {
   console.log("\n")
 }
 
-async function example5UserConfig() {
+async function _example5UserConfig() {
   console.log("\n=== Example 5: User Configuration ===")
 
   // Load user-specific config

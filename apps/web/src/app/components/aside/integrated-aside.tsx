@@ -12,15 +12,19 @@ import { UserProfile } from "./user-profile"
 
 // Navigation items with submenu information
 interface SubMenuItem {
+  type: string
   label: string
   href: string
+  enabled?: boolean
 }
 
 interface NavItemWithSubmenus {
+  type: string
   href: string
   label: string
   icon: React.ReactNode
   description?: string
+  enabled?: boolean
   disabled?: boolean
   submenus?: SubMenuItem[]
 }
@@ -29,67 +33,96 @@ interface NavItemWithSubmenus {
 type NavItemData = NavItemWithSubmenus
 
 // Navigation items with plain language labels
-const navigationItems: NavItemData[] = [
+const allNavigationItems: NavItemData[] = [
   {
+    type: "home",
     href: "/",
     label: "Home",
     icon: <Home className="w-4 h-4" />,
     description: "Start here",
   },
   {
+    type: "workflows",
     href: "/workflows",
     label: "Workflows",
     icon: <Network className="w-4 h-4" />,
     description: "Your workflows",
   },
   {
+    type: "editor",
     href: "/edit",
     label: "Create",
     icon: <Wrench className="w-4 h-4" />,
     description: "Build workflows",
   },
   {
+    type: "connectors",
     href: "/connectors",
     label: "Connectors",
     icon: <Plug className="w-4 h-4" />,
-    description: "Connect services",
+    description: "Manage tools and connectors",
+    submenus: [
+      { type: "connectors-marketplace", label: "Connectors", href: "/connectors" },
+      { type: "developer-tools", label: "Developers", href: "/tools" },
+    ],
   },
   {
+    type: "invocations",
     href: "/invocations",
     label: "History",
     icon: <BarChart2 className="w-4 h-4" />,
     description: "Past runs",
   },
   {
+    type: "structures",
     href: "/structures",
     label: "Structures",
     icon: <Boxes className="w-4 h-4" />,
     description: "Workflow structures",
+    enabled: false,
     disabled: true,
   },
   {
+    type: "evolution",
     href: "/evolution",
     label: "Learning",
     icon: <Dna className="w-4 h-4" />,
     description: "Watch improvement",
+    enabled: false,
   },
   {
-    href: "/tools",
-    label: "Tools",
-    icon: <Hammer className="w-4 h-4" />,
-    description: "Developer tools",
-  },
-  {
+    type: "settings",
     href: "/settings",
     label: "Settings",
     icon: <Settings className="w-4 h-4" />,
     description: "Configure app",
     submenus: [
-      { label: "General", href: "/settings" },
-      { label: "Providers", href: "/providers" },
+      { type: "settings-general", label: "General", href: "/settings" },
+      { type: "settings-profile", label: "Profile", href: "/profile" },
+      { type: "settings-providers", label: "Providers", href: "/providers" },
     ],
   },
 ]
+
+// Filter navigation items based on environment
+const navigationItems = allNavigationItems
+  .filter(item => {
+    // In production, hide items where enabled === false
+    if (process.env.NODE_ENV !== "development" && item.enabled === false) {
+      return false
+    }
+    return true
+  })
+  .map(item => ({
+    ...item,
+    // Also filter submenus in production
+    submenus: item.submenus?.filter(submenu => {
+      if (process.env.NODE_ENV !== "development" && submenu.enabled === false) {
+        return false
+      }
+      return true
+    }),
+  }))
 
 interface IntegratedNavItemProps {
   item: NavItemData
@@ -150,7 +183,7 @@ function IntegratedNavItem({
           {hasSubmenus && (
             <button
               type="button"
-              className="w-8 h-8 flex items-center justify-center transition-all duration-200 ml-auto mr-3 text-[#888] hover:text-primary pointer-events-auto"
+              className="w-8 h-8 flex items-center justify-center transition-all duration-200 ml-auto mr-3 text-[#888] hover:text-primary hover:bg-sidebar-accent rounded-md pointer-events-auto"
               onClick={e => onToggleSubmenu(item.href, e)}
             >
               <svg

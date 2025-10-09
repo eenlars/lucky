@@ -18,7 +18,7 @@ export const evaluateCritiqueQuality = async ({
   totalTime,
   totalCost,
   evaluation,
-  expectedOutputTypeOfWorkflow,
+  expectedOutputTypeOfWorkflow: _expectedOutputTypeOfWorkflow,
 }: {
   originalOutput: any
   criticWorkflowOutput: any

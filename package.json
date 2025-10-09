@@ -35,7 +35,9 @@
   "scripts": {
     "prepare": "husky",
     "gen:env": "bun run scripts/generate-env-artifacts.ts",
+    "gen:db": "cd packages/shared && bun run generate",
     "web": "bun --env-file .env --env-file .env.local bunx turbo run dev --filter=together",
+    "web:dev:direct": "cd apps/web && bun run dev",
     "dev": "bun --env-file .env --env-file .env.local bunx turbo run dev",
     "build": "bun --env-file .env --env-file .env.local bunx turbo run build",
     "build:shared": "bun --env-file .env --env-file .env.local bunx turbo run build --filter=@lucky/shared",

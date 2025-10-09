@@ -1,4 +1,5 @@
 import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { ENV_CONFIG } from "@core/core-config/constants"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
@@ -205,7 +206,13 @@ export class Workflow {
     return this.evaluationInput
   }
 
-  //todo-leak :: Workflow retains fitness state accessible during improvement phases
+  /**
+   * Gets the fitness score for this workflow.
+   * Note: Fitness data should be cleared between evaluation phases to prevent data leakage.
+   *
+   * @returns The fitness score
+   * @throws {WorkflowFitnessError} If fitness has not been calculated
+   */
   getFitness(): FitnessOfWorkflow | undefined {
     if (!this.fitness)
       throw new WorkflowFitnessError("Fitness data has not been calculated for this workflow yet.", {
@@ -215,6 +222,12 @@ export class Workflow {
     return this.fitness
   }
 
+  /**
+   * Gets the numeric fitness score.
+   *
+   * @returns The numeric fitness score
+   * @throws {WorkflowFitnessError} If fitness has not been calculated
+   */
   getFitnessScore(): number {
     if (!this.fitness)
       throw new WorkflowFitnessError("Fitness score is not available. Workflow must be evaluated first.", {
@@ -224,13 +237,33 @@ export class Workflow {
     return this.fitness.score
   }
 
-  //todo-leak :: Workflow retains feedback state accessible during improvement phases
+  /**
+   * Gets the feedback for this workflow.
+   * Note: Feedback data should be cleared between evaluation phases to prevent data leakage.
+   *
+   * @returns The feedback string or null
+   */
   getFeedback(): GenomeFeedback {
     return this.feedback
   }
 
+  /**
+   * Clears evaluation state to prevent data leakage between phases.
+   * Should be called before improvement operations to ensure isolation.
+   */
+  clearEvaluationState(): void {
+    this.fitness = undefined
+    this.feedback = null
+  }
+
+  /**
+   * Gets the URL for the workflow trace viewer.
+   *
+   * @param invocationId - Optional invocation ID to link to specific run
+   * @returns URL to the trace viewer
+   */
   getLink(invocationId?: string): string {
-    const baseUrl = "https://flowgenerator.vercel.app/trace"
+    const baseUrl = ENV_CONFIG.TRACE_BASE_URL
     if (invocationId) {
       return `${baseUrl}/${invocationId}`
     }

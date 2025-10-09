@@ -111,6 +111,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">System Prompt</h3>
                 <button
+                  type="button"
                   className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => setIsPromptExpanded(!isPromptExpanded)}
                   title="Toggle system prompt"
@@ -466,6 +467,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                   <div className="flex items-center gap-1">
                     {step.type === "reasoning" && (
                       <button
+                        type="button"
                         onClick={() => toggleReasoningStep(index)}
                         className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         title={expandedReasoningSteps.has(index) ? "Collapse reasoning" : "Expand reasoning"}
@@ -478,6 +480,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     )}
                     {step.type === "tool" && (
                       <button
+                        type="button"
                         onClick={() => handleToolClick(step.name)}
                         className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         title="Inspect tool call"
@@ -523,6 +526,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       Terminal output available in JSON viewer
                       <button
+                        type="button"
                         onClick={() => {
                           setSelectedTool(`terminate-${index}`)
                           setRightPanelMode("json")
@@ -568,12 +572,14 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
             </h2>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => setRightPanelMode("tools")}
                 className={`px-3 py-1 rounded text-sm ${rightPanelMode === "tools" ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300" : "text-gray-600 dark:text-gray-400"}`}
               >
                 Tools
               </button>
               <button
+                type="button"
                 onClick={() => setRightPanelMode("json")}
                 disabled={!selectedTool}
                 className={`px-3 py-1 rounded text-sm ${rightPanelMode === "json" ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300" : "text-gray-600 dark:text-gray-400"} ${!selectedTool ? "opacity-50" : ""}`}
@@ -613,6 +619,7 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                       </div>
                       {wasUsed && (
                         <button
+                          type="button"
                           onClick={() => handleToolClick(tool)}
                           className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                           title="View usage details"

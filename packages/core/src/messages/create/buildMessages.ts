@@ -32,7 +32,7 @@ export function buildMessages({
   inputFile,
   evalExplanation,
   outputType,
-  mainWorkflowGoal,
+  mainWorkflowGoal: _mainWorkflowGoal,
 }: BuildMessagesContext): ModelMessage[] {
   const { payload } = workflowMessageIncoming
 

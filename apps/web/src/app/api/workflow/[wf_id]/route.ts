@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(request: NextRequest, context: { params: Promise<{ wf_id: string }> }) {
+export async function GET(_request: NextRequest, context: { params: Promise<{ wf_id: string }> }) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 

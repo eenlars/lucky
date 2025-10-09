@@ -1,13 +1,13 @@
-import { createEnv } from "@t3-oss/env-nextjs"
 import {
-  supabaseServer,
-  supabaseClient,
-  clerkServer,
-  clerkClient,
   aiProviders,
+  clerkClient,
+  clerkServer,
   searchProviders,
+  supabaseClient,
+  supabaseServer,
   toolProviders,
 } from "@lucky/shared/env-models"
+import { createEnv } from "@t3-oss/env-nextjs"
 
 /**
  * Web app environment validation (server + client).
@@ -72,8 +72,7 @@ export function assertSupabaseMirrors() {
   const clientUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   if (serverUrl && clientUrl && serverUrl !== clientUrl) {
     throw new Error(
-      "Configuration error: SUPABASE_URL and NEXT_PUBLIC_SUPABASE_URL must match. " +
-        `Got server="${serverUrl}" vs client="${clientUrl}"`,
+      `Configuration error: SUPABASE_URL and NEXT_PUBLIC_SUPABASE_URL must match. Got server="${serverUrl}" vs client="${clientUrl}"`,
     )
   }
 

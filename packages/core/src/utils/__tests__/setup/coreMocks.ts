@@ -518,10 +518,12 @@ export const createMockGenome = async (
       currentFitness = newFitness
       isEvaluated = true
     }),
-    setFitnessAndFeedback: vi.fn(({ fitness, feedback }: { fitness: FitnessOfWorkflow; feedback: string | null }) => {
-      currentFitness = fitness
-      isEvaluated = true
-    }),
+    setFitnessAndFeedback: vi.fn(
+      ({ fitness, feedback: _feedback }: { fitness: FitnessOfWorkflow; feedback: string | null }) => {
+        currentFitness = fitness
+        isEvaluated = true
+      },
+    ),
 
     // Workflow interface methods
     getFeedback: vi.fn(() => (fitness ? "test feedback with good results" : "test feedback")),
