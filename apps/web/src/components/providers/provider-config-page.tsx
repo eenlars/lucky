@@ -5,15 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
-import { EnvironmentKeysManager } from "@/lib/environment-keys"
-import { fetchActiveModelNames } from "@/lib/models/client-utils"
-import {
-  PROVIDER_CONFIGS,
-  type ProviderConfig,
-  getEnabledModelsKey,
-  testConnection,
-  validateApiKey,
-} from "@/lib/providers/provider-utils"
+import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
 import type { LuckyProvider } from "@lucky/shared"
@@ -28,7 +20,6 @@ import {
   Loader2,
   RefreshCw,
   Save,
-  Zap,
 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -40,12 +31,14 @@ interface ProviderConfigPageProps {
 
 export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const config = PROVIDER_CONFIGS[provider]
+  const Icon = config.icon
 
   const [apiKey, setApiKey] = useState("")
   const [isVisible, setIsVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
+  const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [isConfigured, setIsConfigured] = useState(false)
   const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle")
   const [availableModels, setAvailableModels] = useState<string[]>([])
@@ -55,23 +48,27 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   useEffect(() => {
     loadConfiguration()
-    loadModels()
   }, [])
 
-  const loadConfiguration = () => {
+  const loadConfiguration = async () => {
     setIsLoading(true)
     try {
-      const keys = EnvironmentKeysManager.getKeys()
-      const providerKey = keys.find(k => k.name === config.apiKeyName)
-
-      if (providerKey) {
-        setApiKey(providerKey.value)
+      // Load API key from lockbox
+      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
+      if (keyResponse.ok) {
+        const keyData = await keyResponse.json()
+        setApiKey(keyData.value)
         setIsConfigured(true)
+
+        // Load models with the API key
+        await loadModels(keyData.value)
       }
 
-      const savedEnabledModels = localStorage.getItem(getEnabledModelsKey(provider))
-      if (savedEnabledModels) {
-        setEnabledModels(new Set(JSON.parse(savedEnabledModels)))
+      // Load provider settings
+      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
+      if (settingsResponse.ok) {
+        const settingsData = await settingsResponse.json()
+        setEnabledModels(new Set(settingsData.enabledModels || []))
       }
     } catch (error) {
       console.error("Failed to load configuration:", error)
@@ -81,18 +78,37 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
-  const loadModels = async () => {
-    try {
-      const models = await fetchActiveModelNames(provider)
-      setAvailableModels(models as string[])
+  const loadModels = async (key: string) => {
+    if (!key) return
 
-      const savedEnabledModels = localStorage.getItem(getEnabledModelsKey(provider))
-      if (!savedEnabledModels) {
-        setEnabledModels(new Set(models as string[]))
+    setIsLoadingModels(true)
+    try {
+      const response = await fetch(`/api/providers/${provider}/models`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: key }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to load models")
+      }
+
+      const data = await response.json()
+      setAvailableModels(data.models || [])
+
+      // If no models are enabled yet, enable all by default
+      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
+      if (settingsResponse.ok) {
+        const settingsData = await settingsResponse.json()
+        if (!settingsData.enabledModels || settingsData.enabledModels.length === 0) {
+          setEnabledModels(new Set(data.models || []))
+        }
       }
     } catch (error) {
       console.error("Failed to load models:", error)
       toast.error("Failed to load available models")
+    } finally {
+      setIsLoadingModels(false)
     }
   }
 
@@ -121,6 +137,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       if (result.success) {
         setTestStatus("success")
         toast.success(`Connection successful! ${result.modelCount} models available.`)
+        // Load models after successful test
+        await loadModels(apiKey)
       } else {
         setTestStatus("error")
         toast.error(result.error || "Connection failed")
@@ -134,7 +152,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const validation = validateApiKey(provider, apiKey)
     if (!validation.valid) {
       setValidationError(validation.error || null)
@@ -149,17 +167,34 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      const keys = EnvironmentKeysManager.getKeys()
-      const existingKeyIndex = keys.findIndex(k => k.name === config.apiKeyName)
+      // Save API key to lockbox
+      const keyResponse = await fetch("/api/user/env-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: config.apiKeyName,
+          value: apiKey,
+        }),
+      })
 
-      if (existingKeyIndex >= 0) {
-        keys[existingKeyIndex].value = apiKey
-      } else {
-        keys.push(EnvironmentKeysManager.createKey(config.apiKeyName, apiKey))
+      if (!keyResponse.ok) {
+        throw new Error("Failed to save API key")
       }
 
-      EnvironmentKeysManager.saveKeys(keys)
-      localStorage.setItem(getEnabledModelsKey(provider), JSON.stringify([...enabledModels]))
+      // Save provider settings
+      const settingsResponse = await fetch("/api/user/provider-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider,
+          enabledModels: [...enabledModels],
+          isEnabled: true,
+        }),
+      })
+
+      if (!settingsResponse.ok) {
+        throw new Error("Failed to save provider settings")
+      }
 
       setIsConfigured(true)
       setHasUnsavedChanges(false)
@@ -202,9 +237,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-4">
       {/* Breadcrumb */}
-      <div className="mb-4">
+      <div className="mb-6">
         <Link
           href="/providers"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -216,11 +251,11 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
       {/* Header */}
       <div className="mb-8">
-        <div className="flex flex-wrap items-center gap-3 mb-2">
-          <div className="text-4xl">{config.icon}</div>
+        <div className="flex flex-wrap items-center gap-4 mb-3">
+          <Icon className="size-10 text-sidebar-primary" />
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-semibold text-foreground">{config.name} Configuration</h1>
-            <p className="text-sm text-muted-foreground">{config.description}</p>
+            <p className="text-sm text-muted-foreground mt-1">{config.description}</p>
           </div>
           {isConfigured && (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
@@ -235,7 +270,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* API Key Configuration */}
         <Card>
           <CardHeader>
-            <CardTitle>API Key</CardTitle>
+            <CardTitle className="text-lg">API Key</CardTitle>
             <CardDescription>Your {config.name} API key for accessing models</CardDescription>
           </CardHeader>
           <CardContent>
@@ -252,6 +287,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                       placeholder={`${config.apiKeyPrefix}...`}
                       value={apiKey}
                       onChange={e => handleApiKeyChange(e.target.value)}
+                      autoComplete="off"
                       className={`pr-16 font-mono text-sm ${validationError ? "border-destructive" : ""}`}
                     />
                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
@@ -336,7 +372,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-foreground">Security Notice</p>
                   <p className="text-xs text-muted-foreground">
-                    Your API key is stored locally in your browser. Keep it secure and never share it publicly.
+                    Your API key is encrypted and stored securely using AES-256-GCM encryption. Never share it publicly.
                   </p>
                 </div>
               </div>
@@ -349,7 +385,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <CardTitle>Model Selection</CardTitle>
+                <CardTitle className="text-lg">Model Selection</CardTitle>
                 <CardDescription>Choose which models are available in your workflows</CardDescription>
               </div>
               <Badge variant="outline">
@@ -359,10 +395,15 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {availableModels.length === 0 ? (
+              {isLoadingModels ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Loader2 className="size-8 animate-spin mx-auto mb-2" />
                   <p className="text-sm">Loading available models...</p>
+                </div>
+              ) : availableModels.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <AlertCircle className="size-8 mx-auto mb-2" />
+                  <p className="text-sm">Test your connection first to load available models</p>
                 </div>
               ) : (
                 <>
@@ -388,33 +429,14 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                     </div>
                   </div>
 
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-muted/20 scrollbar-thumb-border">
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
                     {availableModels.map(model => (
                       <div
                         key={model}
                         className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex-1 min-w-0 mr-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-mono text-sm font-medium break-all">{model}</span>
-                            {(model.includes("mini") || model.includes("instant") || provider === "groq") && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-blue-50 text-blue-700 border-blue-200 shrink-0"
-                              >
-                                <Zap className="size-3 mr-1" />
-                                Fast
-                              </Badge>
-                            )}
-                            {(model.includes("4o") || model.includes("latest")) && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-purple-50 text-purple-700 border-purple-200 shrink-0"
-                              >
-                                Latest
-                              </Badge>
-                            )}
-                          </div>
+                          <span className="font-mono text-sm font-medium break-all">{model}</span>
                         </div>
                         <Switch checked={enabledModels.has(model)} onCheckedChange={() => toggleModel(model)} />
                       </div>
