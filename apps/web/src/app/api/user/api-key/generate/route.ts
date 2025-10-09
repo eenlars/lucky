@@ -31,7 +31,9 @@ export async function POST(_req: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "You already have an active API key. Use the roll endpoint to generate a new one." },
+        {
+          error: "You already have an active API key. Use the roll endpoint to generate a new one.",
+        },
         { status: 400 },
       )
     }

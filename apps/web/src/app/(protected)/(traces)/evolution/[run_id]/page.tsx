@@ -3,35 +3,23 @@
 import { StructureMiniMap } from "@/app/(protected)/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
 import { EvolutionGraph } from "@/app/components/EvolutionGraph"
 import { Button } from "@/components/ui/button"
+import {
+  type GenerationWithData,
+  type WorkflowInvocationSubset,
+  useEvolutionRun,
+  useGenerationsData,
+  useWorkflowVersion,
+} from "@/hooks/queries/useEvolutionQuery"
+import { useEvolutionUIStore } from "@/stores/evolution-ui-store"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { isWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "next/link"
-import { use, useCallback, useEffect, useRef, useState } from "react"
+import { use, useState } from "react"
 
 dayjs.extend(relativeTime)
-
-// Type definitions (moved from server action file)
-interface WorkflowInvocationSubset {
-  wf_invocation_id: string
-  wf_version_id: string
-  start_time: string
-  end_time: string | null
-  status: "running" | "completed" | "failed" | "rolled_back"
-  usd_cost: number
-  fitness: number | null
-  accuracy: number | null
-  run_id: string | null
-  generation_id: string | null
-}
-
-interface GenerationWithData {
-  generation: Tables<"Generation">
-  versions: Tables<"WorkflowVersion">[]
-  invocations: WorkflowInvocationSubset[]
-}
 
 interface WorkflowStructureGroup {
   dslHash: string
@@ -147,158 +135,50 @@ const groupByWorkflowStructure = (
   return Array.from(structureGroups.values()).sort((a, b) => a.firstSeenGeneration - b.firstSeenGeneration)
 }
 
-export default function EvolutionRunPage({ params }: { params: Promise<{ run_id: string }> }) {
-  const [evolutionRun, setEvolutionRun] = useState<Tables<"EvolutionRun"> | null>(null)
-  const [generationsData, setGenerationsData] = useState<GenerationWithData[]>([])
-  const [loading, setLoading] = useState(false)
-  const [generationsLoading, setGenerationsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [expandedGenerations, setExpandedGenerations] = useState<Set<string>>(new Set())
-  const [expandedStructures, setExpandedStructures] = useState<Set<string>>(new Set())
-  const [_lastFetchTime, setLastFetchTime] = useState<number>(0)
-  const [showGraph, setShowGraph] = useState<boolean>(true)
-
-  // DSL modal state
-  const [dslModalOpen, setDslModalOpen] = useState(false)
-  const [currentDsl, setCurrentDsl] = useState<WorkflowConfig | null>(null)
-  const [dslLoading, setDslLoading] = useState(false)
-
-  // Workflow versions cache
-  const [workflowVersions, setWorkflowVersions] = useState<Map<string, Tables<"WorkflowVersion">>>(new Map())
-  const workflowVersionsRef = useRef(workflowVersions)
-  useEffect(() => {
-    workflowVersionsRef.current = workflowVersions
-  }, [workflowVersions])
-  const inFlightRequests = useRef(new Map<string, Promise<Tables<"WorkflowVersion">>>())
-
+export default function EvolutionRunPage({
+  params,
+}: {
+  params: Promise<{ run_id: string }>
+}) {
   const { run_id } = use(params)
 
-  const fetchEvolutionRun = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  // TanStack Query hooks
+  const { data: evolutionRun, isLoading: loading, error, refetch: refetchEvolutionRun } = useEvolutionRun(run_id)
 
-    try {
-      // Clean up stale runs first
-      await fetch("/api/evolution-runs/cleanup", { method: "POST" })
+  const {
+    data: generationsData = [],
+    isLoading: generationsLoading,
+    refetch: refetchGenerations,
+  } = useGenerationsData(run_id, !!evolutionRun)
 
-      // Fetch evolution run data
-      const response = await fetch(`/api/evolution/${run_id}`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch evolution run: ${response.statusText}`)
-      }
+  // UI state from Zustand
+  const {
+    expandedGenerations,
+    expandedStructures,
+    showGraph,
+    dslModalOpen,
+    currentDsl,
+    toggleGeneration,
+    toggleStructure,
+    setShowGraph,
+    openDslModal,
+    closeDslModal,
+  } = useEvolutionUIStore()
 
-      const data = await response.json()
-      setEvolutionRun(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch evolution run")
-      console.error("Error fetching evolution run:", err)
-    } finally {
-      setLoading(false)
-    }
-  }, [run_id])
+  // For DSL modal - track loading and selected version
+  const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null)
+  const { data: selectedVersion, isLoading: dslLoading } = useWorkflowVersion(selectedVersionId)
 
-  const fetchGenerationsData = useCallback(async () => {
-    setGenerationsLoading(true)
-    try {
-      const response = await fetch(`/api/evolution/${run_id}/generations`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch generations: ${response.statusText}`)
-      }
-
-      const generationsWithInvocations = await response.json()
-      setGenerationsData(generationsWithInvocations)
-      setLastFetchTime(Date.now())
-    } catch (err) {
-      console.error("Error fetching generations data:", err)
-    } finally {
-      setGenerationsLoading(false)
-    }
-  }, [run_id])
-
-  const toggleGeneration = (generation: string) => {
-    const newExpanded = new Set(expandedGenerations)
-    if (newExpanded.has(generation)) {
-      newExpanded.delete(generation)
-    } else {
-      newExpanded.add(generation)
-    }
-    setExpandedGenerations(newExpanded)
-  }
-
-  const toggleStructure = (structureHash: string) => {
-    const newExpanded = new Set(expandedStructures)
-    if (newExpanded.has(structureHash)) {
-      newExpanded.delete(structureHash)
-    } else {
-      newExpanded.add(structureHash)
-    }
-    setExpandedStructures(newExpanded)
-  }
-
-  const fetchWorkflowVersion = useCallback(async (versionId: string) => {
-    const cached = workflowVersionsRef.current.get(versionId)
-    if (cached) return cached
-
-    const inflight = inFlightRequests.current.get(versionId)
-    if (inflight) return await inflight
-
-    const promise = (async () => {
-      const response = await fetch(`/api/workflow/version/${versionId}`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch workflow version: ${response.statusText}`)
-      }
-      const version = await response.json()
-      setWorkflowVersions(prev => {
-        const next = new Map(prev)
-        next.set(versionId, version)
-        return next
-      })
-      return version
-    })()
-
-    inFlightRequests.current.set(versionId, promise)
-    try {
-      return await promise
-    } finally {
-      inFlightRequests.current.delete(versionId)
-    }
-  }, [])
-
+  // Show DSL modal when version is loaded
   const showDslModal = async (versionId: string) => {
-    setDslLoading(true)
-    try {
-      const version = await fetchWorkflowVersion(versionId)
-      if (isWorkflowConfig(version.dsl)) {
-        setCurrentDsl(version.dsl)
-        setDslModalOpen(true)
-      }
-    } catch (err) {
-      console.error("Failed to load DSL:", err)
-    } finally {
-      setDslLoading(false)
-    }
+    setSelectedVersionId(versionId)
   }
 
-  useEffect(() => {
-    fetchEvolutionRun()
-  }, [run_id, fetchEvolutionRun])
-
-  useEffect(() => {
-    if (evolutionRun) {
-      fetchGenerationsData()
-    }
-  }, [evolutionRun, fetchGenerationsData])
-
-  // Auto-refresh if evolution run is still running
-  useEffect(() => {
-    if (!evolutionRun || evolutionRun.status !== "running") return
-
-    const interval = setInterval(() => {
-      fetchGenerationsData() // Refresh every 30 seconds
-    }, 30000)
-
-    return () => clearInterval(interval)
-  }, [evolutionRun, fetchGenerationsData])
+  // Open modal when selected version loads
+  if (selectedVersion && isWorkflowConfig(selectedVersion.dsl) && !dslModalOpen) {
+    openDslModal(selectedVersion.dsl)
+    setSelectedVersionId(null) // Reset for next time
+  }
 
   if (loading) {
     return (
@@ -311,12 +191,14 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
   if (error) {
     return (
       <div className="p-6">
-        <div className="text-red-500 dark:text-red-400 mb-4">{error}</div>
+        <div className="text-red-500 dark:text-red-400 mb-4">
+          {error instanceof Error ? error.message : "Failed to load evolution run"}
+        </div>
         <button
           type="button"
           onClick={() => {
-            fetchEvolutionRun()
-            fetchGenerationsData()
+            refetchEvolutionRun()
+            refetchGenerations()
           }}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
@@ -514,7 +396,6 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
                           invocations,
                         },
                       ]}
-                      workflowVersions={workflowVersions}
                       expandedStructures={expandedStructures}
                       toggleStructure={toggleStructure}
                       showDslModal={showDslModal}
@@ -542,7 +423,7 @@ export default function EvolutionRunPage({ params }: { params: Promise<{ run_id:
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Workflow DSL</h3>
               <Button
-                onClick={() => setDslModalOpen(false)}
+                onClick={closeDslModal}
                 variant="ghost"
                 size="sm"
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl h-auto p-1"
@@ -637,7 +518,6 @@ function InvocationRow({ invocation, showDslModal, dslLoading }: InvocationRowPr
 
 interface WorkflowStructuresViewProps {
   generationsData: GenerationWithData[]
-  workflowVersions: Map<string, Tables<"WorkflowVersion">>
   expandedStructures: Set<string>
   toggleStructure: (structureHash: string) => void
   showDslModal: (versionId: string) => Promise<void>
@@ -647,14 +527,13 @@ interface WorkflowStructuresViewProps {
 
 function WorkflowStructuresView({
   generationsData,
-  workflowVersions,
   expandedStructures,
   toggleStructure,
   showDslModal,
   dslLoading,
   idPrefix = "",
 }: WorkflowStructuresViewProps) {
-  const structureGroups = groupByWorkflowStructure(generationsData, workflowVersions)
+  const structureGroups = groupByWorkflowStructure(generationsData, new Map())
 
   if (structureGroups.length === 0) {
     return <div className="text-center py-8 text-gray-500 dark:text-gray-400">No workflow structures found</div>

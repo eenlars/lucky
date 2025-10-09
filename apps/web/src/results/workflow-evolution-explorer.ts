@@ -176,7 +176,7 @@ export async function exploreGenerationVersions(generationId: string) {
 
 // test calls
 exploreEvolutionChain("b463376e")
-  .then(async result => {
+  .then(async (result) => {
     console.log("\n=== EXPLORATION COMPLETE ===")
 
     if (result?.invocation.run_id) {
@@ -187,6 +187,6 @@ exploreEvolutionChain("b463376e")
       await exploreGenerationVersions(result.invocation.generation_id)
     }
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("Exploration failed:", err)
   })

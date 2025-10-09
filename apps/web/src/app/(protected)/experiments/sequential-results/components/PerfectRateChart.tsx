@@ -15,7 +15,13 @@ import {
 
 type Row = Record<string, number | string>
 
-export default function PerfectRateChart({ data, chains }: { data: Row[]; chains: string[] }) {
+export default function PerfectRateChart({
+  data,
+  chains,
+}: {
+  data: Row[]
+  chains: string[]
+}) {
   const palette = seriesPalette
 
   return (

@@ -408,7 +408,11 @@ function LegendByModel({ modelOrder }: { modelOrder: string[] }) {
   )
 }
 
-export default function AdaptationOurAlgorithmSpecial({ className = "" }: { className?: string }) {
+export default function AdaptationOurAlgorithmSpecial({
+  className = "",
+}: {
+  className?: string
+}) {
   const [data, setData] = useState<OurAlgorithmExperimentResults | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)

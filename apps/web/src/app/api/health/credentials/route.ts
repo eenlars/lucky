@@ -11,7 +11,10 @@ export async function GET() {
     return NextResponse.json(health)
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to check system health", details: error instanceof Error ? error.message : "Unknown error" },
+      {
+        error: "Failed to check system health",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     )
   }

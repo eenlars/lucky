@@ -70,7 +70,9 @@ export async function POST(req: NextRequest) {
   // Validate name (alphanumeric, underscore, max 128 chars)
   if (!/^[A-Z0-9_]+$/i.test(name) || name.length > 128) {
     return NextResponse.json(
-      { error: "Invalid name: must be alphanumeric/underscore, max 128 characters" },
+      {
+        error: "Invalid name: must be alphanumeric/underscore, max 128 characters",
+      },
       { status: 400 },
     )
   }
@@ -159,7 +161,11 @@ export async function DELETE(req: NextRequest) {
     const { error } = await supabase
       .schema("lockbox")
       .from("user_secrets")
-      .update({ deleted_at: new Date().toISOString(), is_current: false, updated_by: clerkId })
+      .update({
+        deleted_at: new Date().toISOString(),
+        is_current: false,
+        updated_by: clerkId,
+      })
       .eq("clerk_id", clerkId)
       .eq("namespace", ENV_NAMESPACE)
       .ilike("name", name)

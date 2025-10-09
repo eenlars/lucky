@@ -38,13 +38,21 @@ function getKEK(): Buffer {
   return bytes.length === 32 ? bytes : crypto.createHash("sha256").update(bytes).digest()
 }
 
-export function encryptGCM(plaintext: string): { ciphertext: Uint8Array; iv: Uint8Array; authTag: Uint8Array } {
+export function encryptGCM(plaintext: string): {
+  ciphertext: Uint8Array
+  iv: Uint8Array
+  authTag: Uint8Array
+} {
   const key = getKEK()
   const iv = crypto.randomBytes(12) // 96-bit nonce for GCM
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv)
   const enc = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()])
   const tag = cipher.getAuthTag()
-  return { ciphertext: new Uint8Array(enc), iv: new Uint8Array(iv), authTag: new Uint8Array(tag) }
+  return {
+    ciphertext: new Uint8Array(enc),
+    iv: new Uint8Array(iv),
+    authTag: new Uint8Array(tag),
+  }
 }
 
 export function decryptGCM(params: {
