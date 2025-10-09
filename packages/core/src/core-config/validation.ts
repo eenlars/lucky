@@ -2,7 +2,7 @@
  * Validation helpers for converting CoreConfig to contract schemas
  */
 
-import type { RuntimeConfig } from "@lucky/contracts/runtime"
+import type { RuntimeConfig } from "@lucky/shared/contracts/runtime"
 import type { CoreConfig } from "./types"
 
 /**

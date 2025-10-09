@@ -2,7 +2,7 @@
  * Tests for CoreConfig validation using runtime contract
  */
 
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 import { describe, expect, it } from "vitest"
 import { getCoreConfig, initCoreConfig } from "../coreConfig"
 import { toRuntimeContract } from "../validation"

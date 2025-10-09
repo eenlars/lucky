@@ -5,7 +5,7 @@
 
 import { toRuntimeContract } from "@core/core-config/validation"
 import type { FlowRuntimeConfig } from "@core/types"
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 
 /**
  * Create a complete mock CONFIG for verbose mode testing
