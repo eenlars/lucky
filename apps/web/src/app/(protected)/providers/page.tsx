@@ -4,10 +4,9 @@ import { ProviderOverviewSkeleton } from "@/components/providers/provider-skelet
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { EnvironmentKeysManager } from "@/lib/environment-keys"
-import { PROVIDER_CONFIGS, getEnabledModelsKey } from "@/lib/providers/provider-utils"
+import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import type { LuckyProvider } from "@lucky/shared"
-import { AlertCircle, ArrowRight, CheckCircle2, DollarSign, Key, TrendingUp, Zap } from "lucide-react"
+import { AlertCircle, ArrowRight, CheckCircle2, Key } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -17,7 +16,7 @@ interface ProviderCardData {
   provider: LuckyProvider
   status: ProviderStatus
   enabledModels: number
-  totalModels: number
+  hasApiKey: boolean
 }
 
 export default function ProvidersPage() {
@@ -29,24 +28,31 @@ export default function ProvidersPage() {
     loadProviders()
   }, [])
 
-  const loadProviders = () => {
+  const loadProviders = async () => {
     setIsLoading(true)
     try {
-      const keys = EnvironmentKeysManager.getKeys()
-      const keyMap = Object.fromEntries(keys.map(k => [k.name, k.value]))
+      // Load all env keys
+      const keysResponse = await fetch("/api/user/env-keys")
+      const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
+      const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
+
+      // Load all provider settings
+      const settingsResponse = await fetch("/api/user/provider-settings")
+      const settingsData = settingsResponse.ok ? await settingsResponse.json() : { settings: [] }
+      const settingsMap = new Map<string, { provider: string; enabledModels: string[] }>(
+        settingsData.settings.map((s: { provider: string; enabledModels: string[] }) => [s.provider, s]),
+      )
 
       const providerData: ProviderCardData[] = (Object.keys(PROVIDER_CONFIGS) as LuckyProvider[]).map(provider => {
         const config = PROVIDER_CONFIGS[provider]
-        const hasKey = !!keyMap[config.apiKeyName]
-
-        // Load enabled models
-        const savedModels = localStorage.getItem(getEnabledModelsKey(provider))
-        const enabledModels = savedModels ? JSON.parse(savedModels).length : 0
+        const hasApiKey = keyNames.has(config.apiKeyName)
+        const settings = settingsMap.get(provider)
+        const enabledModels = settings?.enabledModels?.length ?? 0
 
         let status: ProviderStatus = "unconfigured"
-        if (hasKey && enabledModels > 0) {
+        if (hasApiKey && enabledModels > 0) {
           status = "configured"
-        } else if (hasKey) {
+        } else if (hasApiKey) {
           status = "partial"
         }
 
@@ -54,7 +60,7 @@ export default function ProvidersPage() {
           provider,
           status,
           enabledModels,
-          totalModels: config.defaultModelsCount,
+          hasApiKey,
         }
       })
 
@@ -108,7 +114,7 @@ export default function ProvidersPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-foreground mb-2">AI Providers</h1>
         <p className="text-sm text-muted-foreground">
@@ -140,32 +146,26 @@ export default function ProvidersPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <Zap className="size-4" />
-              Total Models
+              <Key className="size-4" />
+              Active Models
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">{providers.reduce((sum, p) => sum + p.enabledModels, 0)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {providers.reduce((sum, p) => sum + p.totalModels, 0)}+ models available
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Enabled across all providers</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <TrendingUp className="size-4" />
-              Quick Action
+              <AlertCircle className="size-4" />
+              Security
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/providers/analytics">
-              <Button variant="outline" size="sm" className="w-full">
-                <DollarSign className="size-4 mr-2" />
-                View Analytics
-              </Button>
-            </Link>
+            <div className="text-2xl font-semibold">AES-256</div>
+            <p className="text-xs text-muted-foreground mt-1">All API keys encrypted</p>
           </CardContent>
         </Card>
       </div>
@@ -174,12 +174,13 @@ export default function ProvidersPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
         {providers.map(providerData => {
           const config = PROVIDER_CONFIGS[providerData.provider]
+          const Icon = config.icon
           return (
             <Card key={providerData.provider} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="text-3xl shrink-0">{config.icon}</div>
+                    <Icon className="size-8 shrink-0 text-sidebar-primary" />
                     <div className="min-w-0">
                       <CardTitle className="text-lg">{config.name}</CardTitle>
                       <CardDescription className="text-xs mt-1">{config.description}</CardDescription>
@@ -197,9 +198,7 @@ export default function ProvidersPage() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Enabled Models</span>
-                    <span className="text-sm font-medium">
-                      {providerData.enabledModels} / {providerData.totalModels}+
-                    </span>
+                    <span className="text-sm font-medium">{providerData.enabledModels}</span>
                   </div>
 
                   {providerData.status === "partial" && (

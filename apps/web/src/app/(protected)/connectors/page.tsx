@@ -559,6 +559,7 @@ function ConnectorDetailModal({
                         placeholder="Enter your API key"
                         value={credentials.apiKey || ""}
                         onChange={e => setCredentials({ ...credentials, apiKey: e.target.value })}
+                        autoComplete="off"
                         className="w-full px-3 py-2 pr-10 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                       />
                       <button

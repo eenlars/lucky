@@ -178,7 +178,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      sub: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
@@ -344,6 +347,10 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: boolean
       }
+      sub: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       org_role: "owner" | "admin" | "member"
@@ -471,7 +478,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      sub: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
@@ -1103,7 +1113,7 @@ export type Database = {
           time_budget_seconds: number
           updated_at: string
           wf_version_id: string
-          workflow_id: string | null
+          workflow_id: string
         }
         Insert: {
           commit_message: string
@@ -1121,7 +1131,7 @@ export type Database = {
           time_budget_seconds?: number
           updated_at?: string
           wf_version_id?: string
-          workflow_id?: string | null
+          workflow_id: string
         }
         Update: {
           commit_message?: string
@@ -1139,7 +1149,7 @@ export type Database = {
           time_budget_seconds?: number
           updated_at?: string
           wf_version_id?: string
-          workflow_id?: string | null
+          workflow_id?: string
         }
         Relationships: [
           {

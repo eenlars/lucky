@@ -306,6 +306,7 @@ function AddServerForm({
                   value={apiKey}
                   onChange={e => setApiKey(e.target.value)}
                   placeholder="Enter your API key"
+                  autoComplete="off"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
                 />
               </div>
