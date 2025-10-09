@@ -90,7 +90,9 @@ export default function EnvironmentKeysSettings() {
   const generateApiKey = async () => {
     try {
       setIsGeneratingKey(true)
-      const response = await fetch("/api/user/api-key/generate", { method: "POST" })
+      const response = await fetch("/api/user/api-key/generate", {
+        method: "POST",
+      })
       if (response.ok) {
         const data = await response.json()
         setApiKey(data.apiKey)
@@ -173,7 +175,12 @@ export default function EnvironmentKeysSettings() {
   }
 
   const addNewKey = () => {
-    const newKey = { id: crypto.randomUUID(), name: "", value: "", isVisible: false }
+    const newKey = {
+      id: crypto.randomUUID(),
+      name: "",
+      value: "",
+      isVisible: false,
+    }
     setKeys([...keys, newKey])
   }
 

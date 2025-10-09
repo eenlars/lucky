@@ -62,7 +62,11 @@ const allNavigationItems: NavItemData[] = [
     icon: <Plug className="w-4 h-4" />,
     description: "Manage tools and connectors",
     submenus: [
-      { type: "connectors-marketplace", label: "Connectors", href: "/connectors" },
+      {
+        type: "connectors-marketplace",
+        label: "Connectors",
+        href: "/connectors",
+      },
       { type: "developer-tools", label: "Developers", href: "/tools" },
     ],
   },

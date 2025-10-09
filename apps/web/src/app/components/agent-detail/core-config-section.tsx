@@ -54,7 +54,11 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
         <select
           id="model-selector"
           value={node.data.modelName || ""}
-          onChange={e => updateNode(node.id, { modelName: e.target.value as AllowedModelName })}
+          onChange={e =>
+            updateNode(node.id, {
+              modelName: e.target.value as AllowedModelName,
+            })
+          }
           className="w-full h-9 px-3 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
         >
           <option value="">Select model...</option>

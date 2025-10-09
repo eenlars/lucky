@@ -5,7 +5,13 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 
 type Row = Record<string, number | string>
 
-export default function SequentialResultsChart({ data, chains }: { data: Row[]; chains: string[] }) {
+export default function SequentialResultsChart({
+  data,
+  chains,
+}: {
+  data: Row[]
+  chains: string[]
+}) {
   // Unified palette
   const palette = seriesPalette
 
