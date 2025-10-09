@@ -4,7 +4,10 @@ import { NextResponse } from "next/server"
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { provider, apiKey } = body as { provider: LuckyProvider; apiKey: string }
+    const { provider, apiKey } = body as {
+      provider: LuckyProvider
+      apiKey: string
+    }
 
     if (!provider || !apiKey) {
       return NextResponse.json({ error: "Missing provider or apiKey" }, { status: 400 })
@@ -31,7 +34,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: testResult.error }, { status: 401 })
     }
 
-    return NextResponse.json({ success: true, modelCount: testResult.modelCount })
+    return NextResponse.json({
+      success: true,
+      modelCount: testResult.modelCount,
+    })
   } catch (error) {
     console.error("Error testing provider connection:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

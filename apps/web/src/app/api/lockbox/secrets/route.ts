@@ -22,7 +22,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
   }
 
-  const { name, namespace, value } = (body ?? {}) as { name?: string; namespace?: string; value?: string }
+  const { name, namespace, value } = (body ?? {}) as {
+    name?: string
+    namespace?: string
+    value?: string
+  }
   if (!name || !value) {
     return NextResponse.json({ error: "Missing required fields: name, value" }, { status: 400 })
   }
@@ -137,7 +141,11 @@ export async function GET(req: NextRequest) {
 
   // Reveal: decrypt server-side and return plaintext; also update last_used_at
   try {
-    const value = decryptGCM({ ciphertext: data.ciphertext as any, iv: data.iv as any, authTag: data.auth_tag as any })
+    const value = decryptGCM({
+      ciphertext: data.ciphertext as any,
+      iv: data.iv as any,
+      authTag: data.auth_tag as any,
+    })
     const { error: updErr } = await supabase
       .schema("lockbox")
       .from("user_secrets")

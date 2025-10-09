@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { use, useEffect, useState } from "react"
+import { use, useMemo } from "react"
 
+import { useTraceQuery } from "@/hooks/queries/useTraceQuery"
 import { Timeline } from "@/trace-visualization/components/Timeline"
-import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
 import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import type { FullTraceEntry } from "@/trace-visualization/types"
-import { fetchWithRetry } from "@/utils/fetch-with-retry"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
 import PerformanceOverview from "./components/PerformanceOverview"
@@ -17,39 +16,29 @@ const SUPABASE_TABLES = {
   WorkflowInvocation: 17720,
 } as const
 
-export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_id: string }> }) {
+export default function TraceDetailPage({
+  params,
+}: {
+  params: Promise<{ wf_inv_id: string }>
+}) {
   const { wf_inv_id } = use(params)
-  const [workflow, setWorkflow] = useState<Tables<"WorkflowInvocation"> | null>(null)
-  const [workflowVersion, setWorkflowVersion] = useState<Tables<"WorkflowVersion"> | null>(null)
-  const [_workflowDetails, setWorkflowDetails] = useState<Tables<"Workflow"> | null>(null)
-  const [timeline, setTimeline] = useState<FullTraceEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [timelineLoading, setTimelineLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [dataFreshness, setDataFreshness] = useState<number>(0)
-  const [performanceMetrics, setPerformanceMetrics] = useState<{
-    totalDuration: number
-    bottleneckNode: string | null
-    totalNodes: number
-    totalCost: number
-  }>({
-    totalDuration: 0,
-    bottleneckNode: null,
-    totalNodes: 0,
-    totalCost: 0,
-  })
 
-  // Convert nodeInvocations to the format expected by Timeline component
-  const createTimelineEntries = (
-    nodeInvocations: NodeInvocationExtended[],
-    workflowVersion: Tables<"WorkflowVersion"> | null,
-  ): FullTraceEntry[] => {
-    return nodeInvocations.map((inv, idx) => {
+  // Use TanStack Query for data fetching with auto-refresh for running workflows
+  const { data, isLoading, error } = useTraceQuery(wf_inv_id)
+
+  const workflow = data?.workflowInvocation ?? null
+  const workflowVersion = data?.workflowVersion ?? null
+
+  // Convert nodeInvocations to timeline entries
+  const timeline = useMemo((): FullTraceEntry[] => {
+    if (!data?.nodeInvocations) return []
+
+    return data.nodeInvocations.map((inv, idx) => {
       // Find the first output message, if any
       let output = inv.outputs.length > 0 ? inv.outputs[0] : null
 
       // For the last node, if there's a direct output field, use that for full content
-      if (idx === nodeInvocations.length - 1 && inv.output) {
+      if (idx === data.nodeInvocations.length - 1 && inv.output) {
         // Create a Message object from the output field for compatibility
         output = {
           msg_id: "last-node-output",
@@ -86,10 +75,18 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
         output,
       }
     })
-  }
+  }, [data, workflowVersion])
 
   // Calculate performance metrics from workflow and timeline data
-  const calculatePerformanceMetrics = (workflow: Tables<"WorkflowInvocation">, timeline: FullTraceEntry[]) => {
+  const performanceMetrics = useMemo(() => {
+    if (!workflow || !timeline.length) {
+      return {
+        totalDuration: 0,
+        bottleneckNode: null,
+        totalNodes: 0,
+        totalCost: 0,
+      }
+    }
     // Calculate total duration in seconds
     const totalDuration = workflow.end_time
       ? (new Date(workflow.end_time).getTime() - new Date(workflow.start_time).getTime()) / 1000
@@ -125,109 +122,9 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
       totalNodes,
       totalCost,
     }
-  }
+  }, [workflow, timeline])
 
-  useEffect(() => {
-    const fetchBasicData = async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        // Fetch basic workflow info first for immediate display
-        const basic = await basicWorkflow(wf_inv_id)
-        if (!basic) {
-          setError("Trace not found")
-          setLoading(false)
-          setTimelineLoading(false)
-          return
-        }
-        const { workflowInvocation, workflowVersion, workflow } = basic
-        setWorkflow(workflowInvocation)
-        setWorkflowVersion(workflowVersion)
-        setWorkflowDetails(workflow)
-        setLoading(false)
-
-        // Then fetch detailed node data asynchronously (via API) with retry
-        setTimelineLoading(true)
-        const res = await fetchWithRetry(`/api/trace/${wf_inv_id}/node-invocations`, {
-          cache: "no-store",
-        })
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}))
-          throw new Error(err?.error || "Failed to fetch node invocations")
-        }
-        const { nodeInvocations: nodeInvocationData } = (await res.json()) as {
-          nodeInvocations: NodeInvocationExtended[]
-        }
-
-        // Convert nodeInvocations to timeline entries
-        const timelineEntries = createTimelineEntries(nodeInvocationData, workflowVersion)
-        setTimeline(timelineEntries)
-
-        // Calculate performance metrics
-        setPerformanceMetrics(calculatePerformanceMetrics(workflowInvocation, timelineEntries))
-        setTimelineLoading(false)
-        setDataFreshness(Date.now())
-      } catch (err) {
-        console.error("Error fetching trace data:", err)
-        setError(err instanceof Error ? err.message : "Failed to load trace data.")
-        setLoading(false)
-        setTimelineLoading(false)
-      }
-    }
-
-    fetchBasicData()
-  }, [wf_inv_id])
-
-  // Separate effect for auto-refresh to avoid dependency loop
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    if (workflow && (workflow.status === "running" || !workflow.end_time)) {
-      interval = setInterval(() => {
-        const timeSinceLastFetch = Date.now() - dataFreshness
-        if (timeSinceLastFetch > 8000) {
-          const refreshData = async () => {
-            try {
-              // Refresh basic data
-              const basic = await basicWorkflow(wf_inv_id)
-              if (!basic) {
-                setError("Trace not found")
-                return
-              }
-              const { workflowInvocation, workflowVersion, workflow } = basic
-              setWorkflow(workflowInvocation)
-              setWorkflowVersion(workflowVersion)
-              setWorkflowDetails(workflow)
-
-              // Refresh node data (via API) with retry
-              const res = await fetchWithRetry(`/api/trace/${wf_inv_id}/node-invocations`, { cache: "no-store" })
-              if (!res.ok) {
-                const err = await res.json().catch(() => ({}))
-                throw new Error(err?.error || "Failed to refresh node invocations")
-              }
-              const { nodeInvocations: nodeInvocationData } = (await res.json()) as {
-                nodeInvocations: NodeInvocationExtended[]
-              }
-              const timelineEntries = createTimelineEntries(nodeInvocationData, workflowVersion)
-              setTimeline(timelineEntries)
-
-              setPerformanceMetrics(calculatePerformanceMetrics(workflowInvocation, timelineEntries))
-              setDataFreshness(Date.now())
-            } catch (err) {
-              console.error("Error refreshing trace data:", err)
-            }
-          }
-          refreshData()
-        }
-      }, 10000)
-    }
-
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [workflow?.status, workflow?.end_time, dataFreshness, wf_inv_id, workflow])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
@@ -266,7 +163,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
   if (error) {
     return (
       <div className="p-6">
-        <p className="text-red-500 dark:text-red-400 mb-4 text-sm leading-relaxed">{error}</p>
+        <p className="text-red-500 dark:text-red-400 mb-4 text-sm leading-relaxed">{error.message}</p>
         <Link
           href="/invocations"
           className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-sidebar-primary dark:text-sidebar-primary hover:text-sidebar-primary/80 dark:hover:text-sidebar-primary/80 hover:bg-sidebar-accent dark:hover:bg-sidebar-accent rounded-lg transition-colors duration-200"
@@ -363,7 +260,7 @@ export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_i
         />
       )}
 
-      {timelineLoading ? (
+      {isLoading ? (
         <div className="w-full space-y-4">
           <div className="text-lg font-medium text-sidebar-foreground dark:text-sidebar-foreground">
             Timeline (loading...)

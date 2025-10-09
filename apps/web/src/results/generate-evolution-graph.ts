@@ -16,12 +16,17 @@ async function generateEvolutionGraph(invocationId: string) {
     process.exit(1)
   }
 
-  console.log(`✅ Successfully traced evolution with ${graph.allNodes.length} nodes`)
+  console.log(
+    `✅ Successfully traced evolution with ${graph.allNodes.length} nodes`
+  )
 
   const visualization = createEvolutionVisualizationData(graph)
 
   // save the complete data
-  const outputPath = join(process.cwd(), `src/results/evolution-graph-${invocationId}.json`)
+  const outputPath = join(
+    process.cwd(),
+    `src/results/evolution-graph-${invocationId}.json`
+  )
   writeFileSync(
     outputPath,
     JSON.stringify(
@@ -32,8 +37,8 @@ async function generateEvolutionGraph(invocationId: string) {
         visualization,
       },
       null,
-      2,
-    ),
+      2
+    )
   )
 
   console.log(`💾 Evolution graph saved to: ${outputPath}`)
@@ -69,7 +74,7 @@ generateEvolutionGraph(invocationId)
   .then(() => {
     console.log("\n🎉 Generation complete!")
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("❌ Generation failed:", err)
     process.exit(1)
   })

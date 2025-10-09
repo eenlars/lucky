@@ -11,7 +11,10 @@ export async function GET() {
     return NextResponse.json(features)
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to get feature status", details: error instanceof Error ? error.message : "Unknown error" },
+      {
+        error: "Failed to get feature status",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     )
   }

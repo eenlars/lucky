@@ -34,7 +34,9 @@ async function testEvolutionTracer() {
 
   console.log("\nAccuracy Progression (first 10):")
   graph.accuracyProgression.slice(0, 10).forEach((point, i) => {
-    console.log(`${i + 1}. ${point.invocationId}: ${point.accuracy}% at ${point.timestamp}`)
+    console.log(
+      `${i + 1}. ${point.invocationId}: ${point.accuracy}% at ${point.timestamp}`
+    )
   })
 
   // create visualization data
@@ -51,7 +53,10 @@ async function testEvolutionTracer() {
   })
 
   // save to JSON file for visualization
-  const outputPath = join(process.cwd(), "src/results/evolution-graph-b463376e.json")
+  const outputPath = join(
+    process.cwd(),
+    "src/results/evolution-graph-b463376e.json"
+  )
   writeFileSync(
     outputPath,
     JSON.stringify(
@@ -60,8 +65,8 @@ async function testEvolutionTracer() {
         visualization: vizData,
       },
       null,
-      2,
-    ),
+      2
+    )
   )
 
   console.log(`\nEvolution graph saved to: ${outputPath}`)
@@ -74,6 +79,6 @@ testEvolutionTracer()
   .then(() => {
     console.log("\n=== TEST COMPLETE ===")
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("Test failed:", err)
   })

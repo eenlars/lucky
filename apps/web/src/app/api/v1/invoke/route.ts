@@ -111,6 +111,8 @@ export async function POST(req: NextRequest) {
     )
   } catch (error) {
     console.error("MCP Invoke API Error:", error)
-    return NextResponse.json(formatInternalError(requestId ?? null, error), { status: 500 })
+    return NextResponse.json(formatInternalError(requestId ?? null, error), {
+      status: 500,
+    })
   }
 }
