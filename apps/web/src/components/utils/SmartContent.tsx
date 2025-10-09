@@ -18,11 +18,12 @@ const isJSON = (str: unknown): boolean => {
   }
 }
 import dynamic from "next/dynamic"
+import type { ReactJsonViewProps } from "react-json-view"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import remarkGfm from "remark-gfm"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
+const ReactJson = dynamic<ReactJsonViewProps>(() => import("react-json-view").then(mod => mod.default), { ssr: false })
 
 export interface SmartContentProps {
   value: unknown

@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.13",
+    "@typescript/native-preview": "^7.0.0-dev.20251009.1",
     "prettier": "^3.6.2",
     "rimraf": "^5.0.10",
     "tsup": "8.5.0",

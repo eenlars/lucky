@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.2.0",
+    "@typescript/native-preview": "^7.0.0-dev.20251009.1",
     "vite": "^7.0.6",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"

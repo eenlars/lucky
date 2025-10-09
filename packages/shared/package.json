@@ -84,7 +84,8 @@
     "@lucky/contracts": "workspace:*",
     "json5": "^2.2.3",
     "papaparse": "^5.5.3",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "@typescript/native-preview": "^7.0.0-dev.20251009.1"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.49.4",
