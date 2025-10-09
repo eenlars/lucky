@@ -1,3 +1,14 @@
+echo "[husky] formatting database types if modified..."
+if git diff --cached --name-only | grep -q "packages/shared/src/types/database.types.ts"; then
+  if [ -f "packages/shared/src/types/database.types.ts" ]; then
+    echo "  → database.types.ts is staged, ensuring it's formatted..."
+    biome format --write packages/shared/src/types/database.types.ts || exit 1
+    git add packages/shared/src/types/database.types.ts
+  else
+    echo "  → database.types.ts was deleted, skipping formatting"
+  fi
+fi
+
 echo "[husky] running lint-staged..."
 bunx lint-staged || exit 1
 
