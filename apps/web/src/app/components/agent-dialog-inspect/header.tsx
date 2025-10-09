@@ -56,7 +56,7 @@ export function AgentDetailHeader({ node, onClose }: AgentDetailHeaderProps) {
             className="text-base font-medium bg-transparent border-b border-blue-500 outline-none text-gray-900 dark:text-gray-100 px-0"
           />
         ) : (
-          <button onClick={() => setIsEditingName(true)} className="flex items-center gap-1.5 group">
+          <button type="button" onClick={() => setIsEditingName(true)} className="flex items-center gap-1.5 group">
             <h2 className="text-base font-medium text-gray-900 dark:text-gray-100">{node.id}</h2>
             <Edit2 className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
@@ -65,6 +65,7 @@ export function AgentDetailHeader({ node, onClose }: AgentDetailHeaderProps) {
 
       {/* Close button */}
       <button
+        type="button"
         onClick={onClose}
         className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400"
         aria-label="Close"

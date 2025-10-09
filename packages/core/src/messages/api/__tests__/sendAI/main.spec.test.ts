@@ -57,7 +57,11 @@ describe("sendAIRequest integration tests with expectedOutput", () => {
       }),
     })
 
-    const { success, data, error } = await sendAI({
+    const {
+      success,
+      data,
+      error: _error,
+    } = await sendAI({
       messages: [
         {
           role: "user",

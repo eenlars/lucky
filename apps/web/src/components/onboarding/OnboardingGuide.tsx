@@ -106,17 +106,15 @@ export function OnboardingGuide() {
   const isLastStep = currentStep === steps.length - 1
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="onboarding-title"
-      aria-describedby="onboarding-description"
-    >
-      <div
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+      <dialog
         className={`relative max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8 ${
           isClosing ? "animate-out fade-out zoom-out-95 duration-300" : "animate-in fade-in zoom-in-95 duration-300"
         }`}
+        aria-labelledby="onboarding-title"
+        aria-describedby="onboarding-description"
+        aria-modal="true"
+        open={isVisible}
       >
         <button
           type="button"
@@ -178,7 +176,7 @@ export function OnboardingGuide() {
             Use arrow keys to navigate • ESC to close
           </div>
         </div>
-      </div>
+      </dialog>
     </div>
   )
 }

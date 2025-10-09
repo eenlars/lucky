@@ -20,9 +20,11 @@ import JSONEditor from "./JSONEditor"
 import DatasetSelector from "@/components/DatasetSelector"
 // Eval mode (table) + run store
 import WorkflowIOTable from "@/components/WorkflowIOTable"
+import { useWorkflowSave } from "@/hooks/useWorkflowSave"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import WorkflowInvocationButton from "./WorkflowInvocationButton"
+import SaveModal from "./json-editor/SaveModal"
 
 async function loadFromDSLClientDisplay(dslConfig: any) {
   const response = await fetch("/api/workflow/verify", {
@@ -47,6 +49,10 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<EditMode>("graph")
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [commitMessage, setCommitMessage] = useState("")
+
+  const { save, isLoading, error: saveError } = useWorkflowSave({ workflowVersion })
 
   const {
     nodes: _nodes,
@@ -225,6 +231,56 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     router.push(`?${params.toString()}`)
   }
 
+  const handleSave = useCallback(async () => {
+    if (!commitMessage.trim()) return
+
+    try {
+      // Export current graph to JSON
+      const jsonString = exportToJSON()
+      const parsedWorkflow = JSON.parse(jsonString)
+
+      // Use the shared save hook
+      await save(parsedWorkflow, commitMessage)
+
+      // Close modal on success
+      setShowSaveModal(false)
+      setCommitMessage("")
+    } catch (error) {
+      // Error handling is done in the hook
+    }
+  }, [commitMessage, exportToJSON, save])
+
+  // Keyboard shortcuts for graph mode
+  useEffect(() => {
+    if (mode !== "graph") return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case "s":
+            e.preventDefault()
+            if (!isLoading) {
+              setShowSaveModal(true)
+            }
+            break
+          case "l":
+            e.preventDefault()
+            organizeLayout()
+            break
+        }
+      }
+
+      // Escape key to close save modal
+      if (e.key === "Escape" && showSaveModal) {
+        setShowSaveModal(false)
+        setCommitMessage("")
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [mode, isLoading, showSaveModal, organizeLayout])
+
   // Common actions for all modes (run functionality now in WorkflowPromptBar)
   const commonActions = null
 
@@ -244,14 +300,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
             Cmd+L
           </span>
         </Button>
-        <Button
-          onClick={() => {
-            // TODO: Implement save functionality
-          }}
-          variant="default"
-          size="sm"
-          data-testid="save-workflow-button"
-        >
+        <Button onClick={() => setShowSaveModal(true)} variant="default" size="sm" data-testid="save-workflow-button">
           Save
         </Button>
         {commonActions}
@@ -269,6 +318,18 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
             <Workflow workflowVersionId={workflowVersion?.wf_version_id} />
           </AppContextMenu>
         </SidebarLayout>
+        <SaveModal
+          open={showSaveModal}
+          onClose={() => {
+            setShowSaveModal(false)
+            setCommitMessage("")
+          }}
+          commitMessage={commitMessage}
+          setCommitMessage={setCommitMessage}
+          isLoading={isLoading}
+          onSave={handleSave}
+          saveError={saveError}
+        />
       </ReactFlowProvider>
     )
   }

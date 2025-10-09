@@ -1,5 +1,6 @@
 import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
 import { mkdirIfMissing } from "@core/utils/common/files"
+import { BrowserEnvironmentError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { isValidToolInformation } from "@core/utils/validation/workflow/toolInformation"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
@@ -54,7 +55,7 @@ export class WorkflowConfigHandler {
    */
   private async ensureSetupFolder(): Promise<string> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment")
+      throw new BrowserEnvironmentError("file operations")
     }
 
     const path = await import("node:path")
@@ -114,7 +115,7 @@ export class WorkflowConfigHandler {
    */
   private async createMissingSetupFile(originalFilePath: string): Promise<string> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment")
+      throw new BrowserEnvironmentError("file operations")
     }
 
     const path = await import("node:path")
@@ -152,7 +153,9 @@ export class WorkflowConfigHandler {
    */
   async loadSingleWorkflow(filePath: string = PATHS.setupFile): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment. Use API routes instead.")
+      throw new BrowserEnvironmentError("loadSingleWorkflow", {
+        suggestedAlternative: "API routes",
+      })
     }
 
     try {
@@ -321,7 +324,9 @@ export class WorkflowConfigHandler {
    */
   async loadFromFile(filename: string): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment. Use API routes instead.")
+      throw new BrowserEnvironmentError("loadFromFile", {
+        suggestedAlternative: "API routes",
+      })
     }
 
     try {
@@ -376,7 +381,7 @@ export class WorkflowConfigHandler {
    */
   private async writeJsonAtomic(filePath: string, data: WorkflowConfig): Promise<void> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment")
+      throw new BrowserEnvironmentError("writeJsonAtomic")
     }
 
     const fs = await import("node:fs")
@@ -390,7 +395,7 @@ export class WorkflowConfigHandler {
    */
   async saveWorkflowConfig(config: WorkflowConfig, filename = "setupfile.json", skipBackup = false): Promise<void> {
     if (typeof window !== "undefined") {
-      throw new Error("File operations not available in browser environment")
+      throw new BrowserEnvironmentError("saveWorkflowConfig")
     }
 
     const path = await import("node:path")

@@ -76,6 +76,7 @@ function WorkflowRow({
       {/* Actions */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
+          type="button"
           onClick={() => onRun(workflow)}
           disabled={!hasActiveVersion || isRunning}
           className={cn(
@@ -109,6 +110,7 @@ function WorkflowRow({
         </Link>
 
         <button
+          type="button"
           onClick={() => onDelete(workflow.wf_id)}
           className="inline-flex items-center gap-1.5 px-2 py-1.5 text-[12px] font-medium rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 transition-all duration-[80ms] ease-out active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500/70 focus:ring-offset-2"
         >
@@ -196,6 +198,7 @@ export default function WorkflowsPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => refetch()}
             disabled={isLoading}
             className="inline-flex items-center gap-2 p-2 text-muted-foreground hover:text-foreground transition-colors"

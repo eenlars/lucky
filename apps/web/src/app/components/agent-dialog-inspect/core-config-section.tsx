@@ -45,8 +45,14 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
     <div className="space-y-4">
       {/* Model Selector */}
       <div className="space-y-2">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Model</label>
+        <label
+          htmlFor="model-selector"
+          className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide"
+        >
+          Model
+        </label>
         <select
+          id="model-selector"
           value={node.data.modelName || ""}
           onChange={e =>
             updateNode(node.id, {
@@ -73,10 +79,14 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
 
       {/* FIX: Controlled component */}
       <div className="space-y-2">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+        <label
+          htmlFor="description-textarea"
+          className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide"
+        >
           Description
         </label>
         <textarea
+          id="description-textarea"
           value={description}
           onChange={e => {
             setDescription(e.target.value)

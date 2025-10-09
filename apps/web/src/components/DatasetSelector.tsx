@@ -97,6 +97,7 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
           ) : (
             <>
               <button
+                type="button"
                 onClick={() => {
                   onSelect("")
                   setShowDropdown(false)
@@ -108,6 +109,7 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
               </button>
               {datasets.map(dataset => (
                 <button
+                  type="button"
                   key={dataset.datasetId}
                   onClick={() => {
                     onSelect(dataset.datasetId)

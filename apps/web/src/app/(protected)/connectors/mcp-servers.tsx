@@ -187,8 +187,11 @@ function AddServerForm({
 
         {/* Name */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-foreground">Name</label>
+          <label htmlFor="mcp-name" className="block text-sm font-medium text-foreground">
+            Name
+          </label>
           <input
+            id="mcp-name"
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
@@ -201,8 +204,11 @@ function AddServerForm({
           <>
             {/* Server URL */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">Server URL</label>
+              <label htmlFor="mcp-server-url" className="block text-sm font-medium text-foreground">
+                Server URL
+              </label>
               <input
+                id="mcp-server-url"
                 type="url"
                 value={url}
                 onChange={e => setUrl(e.target.value)}
@@ -213,8 +219,11 @@ function AddServerForm({
 
             {/* Authentication */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">Authentication</label>
+              <label htmlFor="mcp-auth-type" className="block text-sm font-medium text-foreground">
+                Authentication
+              </label>
               <select
+                id="mcp-auth-type"
                 value={authType}
                 onChange={e => setAuthType(e.target.value as any)}
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
@@ -227,8 +236,11 @@ function AddServerForm({
             {/* API Key Input */}
             {authType === "apikey" && (
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">API Key</label>
+                <label htmlFor="mcp-api-key" className="block text-sm font-medium text-foreground">
+                  API Key
+                </label>
                 <input
+                  id="mcp-api-key"
                   type="password"
                   value={apiKey}
                   onChange={e => setApiKey(e.target.value)}
@@ -242,8 +254,11 @@ function AddServerForm({
           <>
             {/* Command */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">Command</label>
+              <label htmlFor="mcp-command" className="block text-sm font-medium text-foreground">
+                Command
+              </label>
               <input
+                id="mcp-command"
                 type="text"
                 value={command}
                 onChange={e => setCommand(e.target.value)}
@@ -254,8 +269,11 @@ function AddServerForm({
 
             {/* Options */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">Options</label>
+              <label htmlFor="mcp-options" className="block text-sm font-medium text-foreground">
+                Options
+              </label>
               <textarea
+                id="mcp-options"
                 value={args}
                 onChange={e => setArgs(e.target.value)}
                 placeholder={"-y\n@modelcontextprotocol/server-tavily"}
@@ -266,8 +284,11 @@ function AddServerForm({
 
             {/* Environment variables */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">Environment variables</label>
+              <label htmlFor="mcp-env-vars" className="block text-sm font-medium text-foreground">
+                Environment variables
+              </label>
               <textarea
+                id="mcp-env-vars"
                 value={envVars}
                 onChange={e => setEnvVars(e.target.value)}
                 placeholder={"TAVILY_API_KEY=${TAVILY_API_KEY}\nAPI_ENDPOINT=https://api.example.com"}

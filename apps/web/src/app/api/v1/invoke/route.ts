@@ -1,4 +1,5 @@
-import { requireAuth } from "@/lib/api-auth"
+import { authenticateRequest } from "@/lib/auth/principal"
+import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
   createInvocationInput,
   createSchemaValidationError,
@@ -10,10 +11,11 @@ import {
   formatWorkflowError,
   transformInvokeInput,
   validateAgainstSchema,
-  validateAuth,
   validateInvokeRequest,
 } from "@/lib/mcp-invoke"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**
@@ -39,36 +41,17 @@ export async function POST(req: NextRequest) {
     const rpcRequest = validationResult.data!
     requestId = rpcRequest.id
 
-    // Extract and validate bearer token
-    const headers = Object.fromEntries(req.headers.entries())
-    const authResult = validateAuth(headers, rpcRequest)
-    if (!authResult.success) {
-      return NextResponse.json(formatErrorResponse(requestId, authResult.error!), { status: 401 })
-    }
-
-    // TODO: Use bearerToken and idempotencyKey for validation
-    // const { bearerToken, idempotencyKey } = authResult
-
-    // Require user authentication (Next.js session)
-    const nextAuthResult = await requireAuth()
-    if (nextAuthResult instanceof NextResponse) {
+    // Unified authentication: API key or Clerk session
+    const principal = await authenticateRequest(req)
+    if (!principal) {
       return NextResponse.json(
         formatErrorResponse(requestId, {
-          code: -32000, // INVALID_AUTH
-          message: "Authentication required",
+          code: -32000,
+          message: "Authentication required. Provide a valid API key or sign in.",
         }),
         { status: 401 },
       )
     }
-
-    // TODO: Validate bearer token against workflow permissions
-    // await validateBearerToken(bearerToken!, rpcRequest.params.workflow_id)
-
-    // TODO: Check idempotency key for duplicate requests
-    // if (idempotencyKey) {
-    //   const cached = await checkIdempotencyCache(idempotencyKey)
-    //   if (cached) return cached response
-    // }
 
     // Load workflow configuration to get input schema
     const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id)
@@ -93,35 +76,25 @@ export async function POST(req: NextRequest) {
     }
 
     const transformed = transformResult.data!
-
-    // Add input schema to transformed data for the invocation
-    transformed.inputSchema = inputSchema
-
     const invocationInput = createInvocationInput(transformed)
 
-    // Call internal workflow invocation API
-    // Use configured base URL or request origin (works in production/serverless)
-    const baseUrl =
-      process.env.BASE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : req.nextUrl.origin)
-    const invokeResponse = await fetch(`${baseUrl}/api/workflow/invoke`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: req.headers.get("cookie") ?? "",
-      },
-      body: JSON.stringify(invocationInput),
+    // Create secret resolver for this user
+    const secrets = createSecretResolver(principal.clerk_id)
+
+    // Pre-fetch common provider keys for multi-provider workflows
+    const apiKeys = await secrets.getAll(["OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"])
+
+    // Execute workflow within execution context
+    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
+      return invokeWorkflow(invocationInput)
     })
 
     const finishedAt = new Date().toISOString()
 
-    if (!invokeResponse.ok) {
-      const errorData = await invokeResponse.json()
-      return NextResponse.json(formatWorkflowError(requestId, errorData), {
-        status: 500,
-      })
+    if (!result.success) {
+      return NextResponse.json(formatWorkflowError(requestId, result), { status: 500 })
     }
 
-    const result = await invokeResponse.json()
     const output = extractWorkflowOutput(result)
     const traceId = extractTraceId(result)
 

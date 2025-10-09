@@ -28,6 +28,7 @@ import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
+import { PopulationError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
@@ -164,7 +165,11 @@ export class Population {
    * @throws Error if population is empty
    */
   getValidGenomes(): Genome[] {
-    if (isNir(this.genomes)) throw new Error("Population is empty, could not get valid genomes.")
+    if (isNir(this.genomes))
+      throw new PopulationError("Cannot get valid genomes from an empty population.", {
+        operation: "getValidGenomes",
+        suggestion: "Initialize the population before accessing genomes.",
+      })
 
     return this.genomes.filter(genome => genome.isEvaluated)
   }
@@ -259,7 +264,11 @@ export class Population {
    * Marks all genomes as unevaluated and clears their fitness data
    */
   resetGenomes(): void {
-    if (isNir(this.genomes)) throw new Error("Population is empty, could not reset.")
+    if (isNir(this.genomes))
+      throw new PopulationError("Cannot reset an empty population.", {
+        operation: "resetGenomes",
+        suggestion: "Initialize the population before resetting.",
+      })
 
     for (const genome of this.genomes) genome.reset(this.runService.getEvolutionContext())
   }
@@ -268,7 +277,11 @@ export class Population {
    * Remove genomes that are not evaluated (likely a failed evaluation).
    */
   async removeUnevaluated(): Promise<void> {
-    if (isNir(this.genomes)) throw new Error("Population is empty, could not remove unevaluated genomes.")
+    if (isNir(this.genomes))
+      throw new PopulationError("Cannot remove unevaluated genomes from an empty population.", {
+        operation: "removeUnevaluated",
+        suggestion: "Initialize the population before filtering genomes.",
+      })
 
     const countBefore = this.genomes?.length ?? 0
 
@@ -307,14 +320,19 @@ export class Population {
     }
 
     if (isNir(this.genomes))
-      throw new Error(
-        `After removing unevaluated genomes, population is empty. ${countBefore} -> ${countAfter}. Consider increasing population size or adding retry logic.`,
-      )
+      throw new PopulationError("Population became empty after removing unevaluated genomes.", {
+        currentSize: 0,
+        operation: "removeUnevaluated",
+        suggestion: `Started with ${countBefore} genomes but all failed evaluation. Increase population size or check evaluation logic.`,
+      })
 
     if (this.genomes.length < 2) {
-      throw new Error(
-        `Population too small for evolution after filtering: ${this.genomes.length} genomes remaining (need at least 2 for crossover). Started with ${countBefore} genomes.`,
-      )
+      throw new PopulationError("Population too small for genetic operations after filtering.", {
+        currentSize: this.genomes.length,
+        requiredSize: 2,
+        operation: "removeUnevaluated",
+        suggestion: `Started with ${countBefore} genomes, ${countAfter} remain. Need at least 2 for crossover. Increase population size or adjust filtering criteria.`,
+      })
     }
 
     lgg.info(`[Population] Removed ${countBefore - countAfter} unevaluated genomes.`)
@@ -326,7 +344,11 @@ export class Population {
    */
   getUnevaluated(): Genome[] {
     const unevaluated: Genome[] = []
-    if (isNir(this.genomes)) throw new Error("Population is empty, could not get unevaluated genomes.")
+    if (isNir(this.genomes))
+      throw new PopulationError("Cannot get unevaluated genomes from an empty population.", {
+        operation: "getUnevaluated",
+        suggestion: "Initialize the population before accessing genomes.",
+      })
 
     for (const genome of this.genomes) if (!genome.isEvaluated) unevaluated.push(genome)
 
@@ -341,7 +363,11 @@ export class Population {
    */
   getEvaluated(): Genome[] {
     const evaluated: Genome[] = []
-    if (isNir(this.genomes)) throw new Error("Population is empty, could not get evaluated genomes.")
+    if (isNir(this.genomes))
+      throw new PopulationError("Cannot get evaluated genomes from an empty population.", {
+        operation: "getEvaluated",
+        suggestion: "Initialize the population before accessing genomes.",
+      })
 
     for (const genome of this.genomes) if (genome.isEvaluated) evaluated.push(genome)
 

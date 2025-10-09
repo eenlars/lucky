@@ -6,6 +6,7 @@ import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { type InvocationSummary, formatSummary } from "@core/messages/summaries/createSummary"
 import { truncater } from "@core/utils/common/llmify"
+import { ResponseFormatError } from "@core/utils/errors/api-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { isNir } from "@lucky/shared"
@@ -136,7 +137,9 @@ export const getResponseContent = (response: ProcessedResponse): string | null =
     default: {
       const _exhaustiveCheck: never = response
       void _exhaustiveCheck
-      throw new Error(`Unknown response type: keys:${Object.keys(response)}`)
+      throw new ResponseFormatError("Unrecognized response type in getResponseContent.", {
+        details: { availableKeys: Object.keys(response) },
+      })
     }
   }
 }

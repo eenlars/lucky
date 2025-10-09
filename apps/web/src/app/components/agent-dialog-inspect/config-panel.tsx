@@ -32,6 +32,7 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
   return (
     <div className="border-b border-gray-200 dark:border-gray-700">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "w-full px-6 py-4 flex items-center justify-between transition-all",
@@ -187,6 +188,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                 const isSelected = mcpTools.includes(key as MCPToolName)
                 return (
                   <button
+                    type="button"
                     key={key}
                     onClick={() => toggleTool(key, "mcp")}
                     className={cn(
@@ -245,6 +247,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                 const isSelected = codeTools.includes(key as CodeToolName)
                 return (
                   <button
+                    type="button"
                     key={key}
                     onClick={() => toggleTool(key, "code")}
                     className={cn(
@@ -295,8 +298,11 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
         <div className="space-y-4">
           {/* Model Provider Selection */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Model Provider</label>
+            <label htmlFor="model-provider" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Model Provider
+            </label>
             <select
+              id="model-provider"
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               defaultValue={PROVIDERS[0]}
             >
@@ -310,8 +316,11 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
           {/* Model Selection */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Model</label>
+            <label htmlFor="model-name" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Model
+            </label>
             <select
+              id="model-name"
               value={node.data.modelName || ""}
               onChange={e =>
                 updateNode(node.id, {

@@ -466,10 +466,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             .map(node => {
               // Remove UI-only fields, keep all WorkflowNodeConfig fields
               const {
-                label,
-                icon,
-                status,
-                messageCount,
+                label: _label,
+                icon: _icon,
+                status: _status,
+                messageCount: _messageCount,
                 nodeId: _nodeId,
                 description,
                 systemPrompt,

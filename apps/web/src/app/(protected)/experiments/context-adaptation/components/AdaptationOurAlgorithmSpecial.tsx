@@ -560,6 +560,7 @@ export default function AdaptationOurAlgorithmSpecial({
           <span className="text-gray-600">filter:</span>
           {Object.keys(scenarioColors).map(s => (
             <button
+              type="button"
               key={s}
               onClick={() => setEnabledScenarios(prev => ({ ...prev, [s]: !prev[s] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
@@ -574,6 +575,7 @@ export default function AdaptationOurAlgorithmSpecial({
           <span className="mx-2 h-4 w-px bg-gray-300" />
           {(["vague", "clear"] as Condition[]).map(c => (
             <button
+              type="button"
               key={c}
               onClick={() => setEnabledConditions(prev => ({ ...prev, [c]: !prev[c] }))}
               className={`px-2 py-0.5 rounded border text-xs ${
