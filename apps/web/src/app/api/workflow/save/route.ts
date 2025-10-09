@@ -20,11 +20,7 @@ export async function POST(request: NextRequest) {
     console.log("body", JSON.stringify(body, null, 2))
 
     const { parentId } = body as { parentId?: string }
-    let {
-      workflowId,
-      iterationBudget = 50,
-      timeBudgetSeconds = 3600,
-    } = body as {
+    let { workflowId, iterationBudget, timeBudgetSeconds } = body as {
       dsl: unknown
       commitMessage: string
       workflowId?: string
@@ -48,6 +44,10 @@ export async function POST(request: NextRequest) {
       if (iterationBudget === undefined || iterationBudget === null) iterationBudget = parent.iteration_budget
       if (timeBudgetSeconds === undefined || timeBudgetSeconds === null) timeBudgetSeconds = parent.time_budget_seconds
     }
+
+    // Apply defaults if not set by body or parent
+    if (iterationBudget === undefined || iterationBudget === null) iterationBudget = 50
+    if (timeBudgetSeconds === undefined || timeBudgetSeconds === null) timeBudgetSeconds = 3600
 
     // Validate workflowId after resolving parent
     if (!workflowId) {

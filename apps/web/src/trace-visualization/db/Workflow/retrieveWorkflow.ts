@@ -112,12 +112,24 @@ export const ensureWorkflowExists = async (description: string, workflowId: stri
   const { error: insertError } = await supabase.from("Workflow").insert(workflowInsertable)
   console.log("wf exists 2", insertError)
   if (insertError) {
-    // Unique violation means a row with this wf_id exists but is not visible due to RLS (e.g., NULL or different owner)
+    // Unique violation - could be ownership conflict OR concurrent insert by same user
     if (insertError.code === "23505") {
+      // Re-check visibility: if visible now, it's a harmless race (concurrent insert by same user)
+      const { data: existingWorkflow, error: recheckError } = await supabase
+        .from("Workflow")
+        .select("wf_id")
+        .eq("wf_id", workflowId)
+        .maybeSingle()
+
+      if (!recheckError && existingWorkflow) {
+        // Workflow exists and is visible to us - this is fine (concurrent insert succeeded elsewhere)
+        return
+      }
+
+      // Workflow exists but not visible - true ownership conflict
       const conflict = new Error(
         `WORKFLOW_OWNERSHIP_CONFLICT: A workflow with id ${workflowId} exists but is not accessible to the current user. This often indicates legacy data missing clerk_id.`,
       )
-      // Attach a flag for callers to handle gracefully
       ;(conflict as any).code = "WORKFLOW_OWNERSHIP_CONFLICT"
       throw conflict
     }
