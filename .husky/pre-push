@@ -1,3 +1,13 @@
+echo "[husky] formatting database types if modified..."
+if git diff --name-only HEAD @{push} 2>/dev/null | grep -q "packages/shared/src/types/database.types.ts"; then
+  echo "  → database.types.ts will be pushed, ensuring it's formatted..."
+  biome format --write packages/shared/src/types/database.types.ts || exit 1
+  if ! git diff --quiet packages/shared/src/types/database.types.ts; then
+    echo "  ⚠️  database.types.ts was reformatted. Please commit the changes and push again."
+    exit 1
+  fi
+fi
+
 echo "[husky] checking TypeScript types..."
 bun run tsc || exit 1
 
