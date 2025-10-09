@@ -2,7 +2,7 @@
 
 import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
-import { BarChart2, Boxes, Dna, Hammer, Home, Menu, Network, Plug, Settings, Wrench, X } from "lucide-react"
+import { BarChart2, Dna, Home, Menu, Network, Plug, Settings, Wrench, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -76,15 +76,6 @@ const allNavigationItems: NavItemData[] = [
     label: "History",
     icon: <BarChart2 className="w-4 h-4" />,
     description: "Past runs",
-  },
-  {
-    type: "structures",
-    href: "/structures",
-    label: "Structures",
-    icon: <Boxes className="w-4 h-4" />,
-    description: "Workflow structures",
-    enabled: false,
-    disabled: true,
   },
   {
     type: "evolution",
