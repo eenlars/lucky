@@ -11,9 +11,7 @@ export { validateAndCorrectWithSchema } from "./factory/validation"
 export {
   R,
   type RS,
-  type ToolExecutionContext,
   type InvocationContext,
-  type WorkflowFile,
   type OutputSchema,
 } from "./factory/types"
 export type {
@@ -48,12 +46,11 @@ export { getAllCodeToolNames } from "./registry/getAllCodeToolNames"
 // Config - Tool metadata and settings
 export {
   TOOLS,
-  DEFAULT_TOOL_CONFIG,
-  type ToolConfig,
+  DEFAULT_INACTIVE_TOOLS,
   type MCPToolName as ConfigMCPToolName,
   type CodeToolName as ConfigCodeToolName,
   type AllToolNames as ConfigAllToolNames,
-} from "./config/tools"
+} from "@lucky/shared/contracts/tools"
 
 // MCP - Model Context Protocol client
 export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
@@ -100,17 +97,13 @@ export {
   type WorkflowLocationData,
 } from "./schemas/location.types"
 
-// Runtime Config - Configurable paths and settings
-export {
-  getToolRuntimeConfig,
-  setToolRuntimeConfig,
-  PATHS,
-  MODELS,
-  CONFIG,
-  type ToolRuntimePaths,
-  type ToolRuntimeModels,
-  type ToolRuntimeConfig,
-} from "./config/runtime"
+// Tool execution context from contracts
+export type {
+  ToolExecutionContext,
+  ToolRegistry,
+  ITool,
+  WorkflowFile,
+} from "@lucky/shared/contracts/tools"
 
 // Utils - Schema detection and helpers
 export { isZodSchema, isVercelAIStructure } from "./utils/index"

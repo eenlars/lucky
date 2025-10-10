@@ -12,7 +12,8 @@ import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
-import { zodToJson } from "@core/utils/validation/zodToJson"
+// zodToJson no longer needed - outputSchema is JSON Schema, not Zod
+// import { zodToJson } from "@core/utils/validation/zodToJson"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import { type SimplifyOptions, workflowToString } from "@core/workflow/actions/generate/workflowToString"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
@@ -394,7 +395,9 @@ export class Workflow {
           configFiles: this.config.contextFile ? [this.config.contextFile] : [],
           workflowIOIndex: index,
         },
-        expectedOutputType: this.evaluationInput.outputSchema ? zodToJson(this.evaluationInput.outputSchema) : null,
+        expectedOutputType: this.evaluationInput.outputSchema
+          ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
+          : null,
         workflowInput: workflowIO.workflowInput as any,
         workflowOutput: workflowIO.workflowOutput as any,
       })

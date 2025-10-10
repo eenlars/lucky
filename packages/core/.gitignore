@@ -1,3 +1,6 @@
 # Logging folder - contains runtime logs and temporary files
 logging_folder/
 src/examples/logging_folder/
+# Temporary files and directories
+**/*.tmp
+**/.tmp/

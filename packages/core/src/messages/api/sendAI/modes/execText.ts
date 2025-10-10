@@ -27,6 +27,7 @@ import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import { isNir } from "@lucky/shared"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
@@ -57,7 +58,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
-  const modelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
+  const modelName: ModelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
   const model = await getLanguageModelWithReasoning(modelName, opts)
 

@@ -1,3 +1,4 @@
+import { MODELS } from "@core/core-config/compat"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -5,7 +6,6 @@ import type { ModelName } from "@core/utils/spending/models.types"
 import { zodToJson } from "@core/utils/validation/zodToJson"
 import { JSONN, Tools } from "@lucky/shared"
 import { type CodeToolResult, defineTool } from "@lucky/tools"
-import { MODELS } from "@lucky/tools/config/runtime"
 import { z } from "zod"
 /**
  * Simple tool for handling LLM requests with expected output validation

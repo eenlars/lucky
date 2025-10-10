@@ -1,8 +1,8 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
+import { PATHS } from "@core/core-config/compat"
 import { lgg } from "@core/utils/logging/Logger"
 import { defineTool } from "@lucky/tools"
-import { PATHS } from "@lucky/tools/config/runtime"
 import { nanoid } from "nanoid"
 import { z } from "zod"
 

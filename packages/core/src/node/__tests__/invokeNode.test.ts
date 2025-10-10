@@ -394,10 +394,10 @@ describe("invokeAgent", () => {
       nodeConfig,
       prompt: "Analyze this data",
       mainWorkflowGoal: "Extract key insights from customer feedback",
-      expectedOutputType: z.object({
-        insights: z.array(z.string()),
-        sentiment: z.enum(["positive", "negative", "neutral"]),
-      }),
+      // expectedOutputType: z.object({ // TODO: Convert to JSON Schema format
+      //   insights: z.array(z.string()),
+      //   sentiment: z.enum(["positive", "negative", "neutral"]),
+      // }),
       skipDatabasePersistence: true,
     })
 

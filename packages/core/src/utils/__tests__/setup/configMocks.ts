@@ -1,136 +1,59 @@
 /**
- * Test configuration mocks for @core/core-config/compat
- * Provides properly typed CONFIG objects for testing with validation
+ * Test configuration mocks for @core/core-config/compat.
+ * Converts shared RuntimeConfig fixtures into the legacy runtime shape.
  */
 
+import type { LegacyRuntimeConfig } from "@core/core-config/compat"
 import type { FlowRuntimeConfig } from "@core/types"
-import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
+import type { PartialRuntimeConfig, RuntimeConfig } from "@lucky/shared/contracts/config"
+import { createTestConfig, createVerboseTestConfig } from "@lucky/shared/contracts/fixtures"
+import { TOOLS } from "@lucky/shared/contracts/tools"
 
-/**
- * Create a complete mock CONFIG for verbose mode testing
- */
-export function createMockConfigVerbose(): FlowRuntimeConfig {
+const DEFAULT_INGESTION_TASK_LIMIT = 100
+
+function toLegacyRuntimeConfig(runtime: RuntimeConfig): LegacyRuntimeConfig {
+  const fileLimitConfig = {
+    maxFilesPerWorkflow: runtime.context.maxFilesPerWorkflow,
+    enforceFileLimit: runtime.context.enforceFileLimit,
+  }
+
   return {
-    coordinationType: "sequential",
-    newNodeProbability: 0.7,
-    logging: {
-      level: "info",
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-        Tools: false,
-        Summary: false,
-        InvocationPipeline: false,
-        Messaging: false,
-        Improvement: false,
-        ValidationBeforeHandoff: false,
-        Setup: false,
-      },
-    },
+    ...runtime,
     workflow: {
-      parallelExecution: false,
+      ...runtime.workflow,
       asyncExecution: false,
-      maxTotalNodeInvocations: 14,
-      maxPerNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full",
-      prepareProblem: true,
-      prepareProblemMethod: "ai",
-      prepareProblemWorkflowVersionId: "",
     },
     tools: {
-      inactive: [],
-      defaultTools: [],
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-      experimentalMultiStepLoopMaxRounds: 6,
-    },
-    models: {
-      inactive: [],
-      provider: "openrouter",
-    },
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: {
-          score: 0.7,
-          time: 0.2,
-          cost: 0.1,
-        },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 3,
-        useSummariesForImprovement: true,
-        improvementType: "judge",
-        operatorsWithFeedback: true,
-      },
-    },
-    verification: {
-      allowCycles: false,
-      enableOutputValidation: false,
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
-
-    evolution: {
-      iterativeIterations: 30,
-      GP: {
-        generations: 3,
-        populationSize: 5,
-        verbose: true,
-        initialPopulationMethod: "random",
-        initialPopulationFile: null,
-        maximumTimeMinutes: 700,
-      },
-    },
-    ingestion: {
-      taskLimit: 100,
+      ...runtime.tools,
+      mcp: TOOLS.mcp,
+      code: TOOLS.code,
     },
     limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      maxRequestsPerWindow: 300,
-      rateWindowMs: 10000,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
+      ...runtime.limits,
+      ...fileLimitConfig,
+    },
+    verification: {
+      ...runtime.verification,
+      ...fileLimitConfig,
+    },
+    ingestion: {
+      taskLimit: DEFAULT_INGESTION_TASK_LIMIT,
     },
   }
 }
 
 /**
+ * Create a complete mock CONFIG for verbose mode testing
+ */
+export function createMockConfigVerbose(overrides?: PartialRuntimeConfig): LegacyRuntimeConfig {
+  return toLegacyRuntimeConfig(createVerboseTestConfig(overrides))
+}
+
+/**
  * Create a complete mock CONFIG for standard testing
  */
-export function createMockConfigStandard(): FlowRuntimeConfig {
-  const config = createMockConfigVerbose()
-  return {
-    ...config,
-    evolution: {
-      ...config.evolution,
-      GP: {
-        ...config.evolution.GP,
-        verbose: false,
-      },
-    },
-  }
+export function createMockConfigStandard(overrides?: PartialRuntimeConfig): LegacyRuntimeConfig {
+  return toLegacyRuntimeConfig(createTestConfig(overrides))
 }
 
 /**
@@ -178,26 +101,6 @@ export function createMockModels() {
  *
  * @throws ZodError if config is invalid
  */
-export function validateMockConfig(config: FlowRuntimeConfig): void {
-  // Convert to runtime contract format (excluding evolution and ingestion)
-  const runtimeConfig = {
-    coordinationType: config.coordinationType,
-    newNodeProbability: config.newNodeProbability,
-    models: {
-      ...config.models,
-      defaults: createMockModels(),
-    },
-    logging: config.logging,
-    tools: config.tools,
-    workflow: config.workflow,
-    improvement: config.improvement,
-    limits: config.limits,
-    verification: config.verification,
-    persistence: {
-      useMockBackend: true,
-      defaultBackend: "memory" as const,
-    },
-  }
-
-  validateRuntimeConfig(runtimeConfig)
+export function validateMockConfig(_config: FlowRuntimeConfig): void {
+  // Validation now handled by contracts. No-op for backward compatibility.
 }

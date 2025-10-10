@@ -1,5 +1,5 @@
-import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, initCoreConfig } from "@core/core-config/coreConfig"
 import { tool, zodSchema } from "ai"
 import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -20,24 +20,20 @@ describe("Parameter Schema Visibility", () => {
     searchGoogleMaps: mockSearchGoogleMapsTool,
   }
 
-  let originalShowParameterSchemas: boolean
   let sendAISpy: MockInstance | undefined
 
   beforeEach(() => {
     vi.clearAllMocks()
-    // Keep module instance stable across imports so CONFIG toggles propagate
-    originalShowParameterSchemas = CONFIG.tools.showParameterSchemas
+    initCoreConfig()
   })
 
   afterEach(() => {
-    ;(CONFIG.tools as any).showParameterSchemas = originalShowParameterSchemas
+    initCoreConfig()
     sendAISpy?.mockRestore()
     sendAISpy = undefined
   })
 
   it("should include parameter schemas when enabled", async () => {
-    ;(CONFIG.tools as any).showParameterSchemas = true
-
     const sendAIModule = await import("@core/messages/api/sendAI/sendAI")
     sendAISpy = vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
       success: true,
@@ -75,7 +71,13 @@ describe("Parameter Schema Visibility", () => {
   })
 
   it("should hide parameter schemas when disabled", async () => {
-    ;(CONFIG.tools as any).showParameterSchemas = false
+    const currentTools = getCoreConfig().tools
+    initCoreConfig({
+      tools: {
+        ...currentTools,
+        showParameterSchemas: false,
+      },
+    })
 
     const sendAIModule = await import("@core/messages/api/sendAI/sendAI")
     sendAISpy = vi.spyOn(sendAIModule, "sendAI").mockResolvedValue({
@@ -112,8 +114,6 @@ describe("Parameter Schema Visibility", () => {
   })
 
   it("should work with complex tool parameter patterns", async () => {
-    ;(CONFIG.tools as any).showParameterSchemas = true
-
     const complexTool = tool({
       description: "Complex tool with various parameter types",
       inputSchema: zodSchema(

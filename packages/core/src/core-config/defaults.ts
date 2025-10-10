@@ -5,11 +5,13 @@
  */
 
 import path from "node:path"
-import type { CoreConfig } from "./types"
+import { DEFAULT_RUNTIME_CONFIG } from "@lucky/shared/contracts/config"
+import type { CoreConfig, CoreModelsConfig } from "./types"
 
 /**
  * Creates default core configuration with safe server defaults.
  * Uses ./.core-data as the root directory for all file operations.
+ * Runtime config values come from @lucky/contracts.
  */
 export function createDefaultCoreConfig(): CoreConfig {
   const cwd = process.cwd()
@@ -22,9 +24,6 @@ export function createDefaultCoreConfig(): CoreConfig {
    */
   function findExamplesDir(): string {
     const fallbackPath = path.resolve(cwd, "../examples")
-
-    // Always use fallback in this simplified version
-    // Actual filesystem lookup not needed for default config
     return fallbackPath
   }
 
@@ -32,9 +31,11 @@ export function createDefaultCoreConfig(): CoreConfig {
   const codeToolsPath = path.join(examplesRoot, "code_tools")
 
   return {
-    coordinationType: "sequential",
-    newNodeProbability: 0.7,
+    // Runtime values from contracts
+    coordinationType: DEFAULT_RUNTIME_CONFIG.coordinationType,
+    newNodeProbability: DEFAULT_RUNTIME_CONFIG.newNodeProbability,
 
+    // Paths (server-specific)
     paths: {
       root: coreDataRoot,
       app: path.join(coreDataRoot, "app"),
@@ -52,120 +53,25 @@ export function createDefaultCoreConfig(): CoreConfig {
       },
     },
 
-    models: {
-      provider: "openrouter",
-      inactive: ["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"],
-      defaults: {
-        summary: "google/gemini-2.5-flash-lite",
-        nano: "google/gemini-2.5-flash-lite",
-        low: "google/gemini-2.5-flash-lite",
-        medium: "openai/gpt-4.1-mini",
-        high: "openai/gpt-4.1",
-        default: "openai/gpt-4.1-nano",
-        fitness: "openai/gpt-4.1-mini",
-        reasoning: "openai/gpt-4.1-mini",
-        fallback: "switchpoint/router",
-      },
-    },
-
-    tools: {
-      inactive: [],
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      defaultTools: [],
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-      experimentalMultiStepLoopMaxRounds: 6,
-    },
-
-    logging: {
-      level: "info",
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-        Tools: false,
-        Summary: false,
-        InvocationPipeline: false,
-        Messaging: false,
-        Improvement: true,
-        ValidationBeforeHandoff: false,
-        Setup: false,
-      },
-    },
-
-    workflow: {
-      maxTotalNodeInvocations: 14,
-      maxPerNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full",
-      prepareProblem: true,
-      prepareProblemMethod: "ai",
-      prepareProblemWorkflowVersionId: "",
-      parallelExecution: false,
-    },
-
-    evolution: {
-      iterativeIterations: 30,
-      GP: {
-        generations: 3,
-        populationSize: 4,
-        verbose: false,
-        initialPopulationMethod: "random",
-        initialPopulationFile: null,
-        maximumTimeMinutes: 700,
-      },
-    },
-
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: {
-          score: 0.7,
-          time: 0.2,
-          cost: 0.1,
-        },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 4,
-        useSummariesForImprovement: true,
-        improvementType: "judge",
-        operatorsWithFeedback: true,
-      },
-    },
-
+    // All runtime config from contracts
+    models: DEFAULT_RUNTIME_CONFIG.models as CoreModelsConfig,
+    tools: DEFAULT_RUNTIME_CONFIG.tools,
+    logging: DEFAULT_RUNTIME_CONFIG.logging,
+    workflow: DEFAULT_RUNTIME_CONFIG.workflow,
+    evolution: DEFAULT_RUNTIME_CONFIG.evolution,
+    improvement: DEFAULT_RUNTIME_CONFIG.improvement,
     limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      maxRequestsPerWindow: 300,
-      rateWindowMs: 10000,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
+      ...DEFAULT_RUNTIME_CONFIG.limits,
+      maxFilesPerWorkflow: DEFAULT_RUNTIME_CONFIG.context.maxFilesPerWorkflow,
+      enforceFileLimit: DEFAULT_RUNTIME_CONFIG.context.enforceFileLimit,
     },
-
     verification: {
-      allowCycles: true,
-      enableOutputValidation: false,
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
+      ...DEFAULT_RUNTIME_CONFIG.verification,
+      maxFilesPerWorkflow: DEFAULT_RUNTIME_CONFIG.context.maxFilesPerWorkflow,
+      enforceFileLimit: DEFAULT_RUNTIME_CONFIG.context.enforceFileLimit,
     },
 
+    // Persistence with env var override
     persistence: {
       useMockBackend: process.env.USE_MOCK_PERSISTENCE === "true",
       defaultBackend: process.env.USE_MOCK_PERSISTENCE === "true" ? "memory" : "supabase",

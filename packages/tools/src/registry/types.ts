@@ -1,7 +1,13 @@
-import { type AllToolNames, type CodeToolName, DEFAULT_TOOL_CONFIG, type MCPToolName, TOOLS } from "../config/tools"
+import {
+  type AllToolNames,
+  type CodeToolName,
+  DEFAULT_INACTIVE_TOOLS,
+  type MCPToolName,
+  TOOLS,
+} from "@lucky/shared/contracts/tools"
 
-const INACTIVE_TOOLS = DEFAULT_TOOL_CONFIG.inactive
-const DEFAULT_TOOLS = DEFAULT_TOOL_CONFIG.defaultTools
+const INACTIVE_TOOLS = DEFAULT_INACTIVE_TOOLS
+const DEFAULT_TOOLS: AllToolNames[] = []
 
 export const getActiveTools = <T extends Record<string, any>>(tools: T, includeDefault = false): T => {
   if (INACTIVE_TOOLS.length === 0 && DEFAULT_TOOLS.length === 0) return tools

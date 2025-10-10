@@ -25,9 +25,8 @@ export {
 // Config metadata (no runtime code)
 export {
   TOOLS,
-  DEFAULT_TOOL_CONFIG,
-  type ToolConfig,
-} from "./config/tools"
+  DEFAULT_INACTIVE_TOOLS,
+} from "@lucky/shared/contracts/tools"
 
 // Tool factory types only (no runtime code - defineTool/commonSchemas pulled in @lucky/shared main bundle with Node.js deps)
 export type { ToolExecutionContext, InvocationContext } from "./factory/types"

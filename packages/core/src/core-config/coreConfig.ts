@@ -4,6 +4,7 @@
  */
 
 import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
+import type { TypedModelDefaults } from "./compat"
 import { createDefaultCoreConfig, mergeConfig } from "./defaults"
 import type { CoreConfig, CoreModelsConfig, CorePathsConfig } from "./types"
 import { toRuntimeContract } from "./validation"
@@ -75,8 +76,8 @@ export function getCoreModels(): CoreModelsConfig {
  * Get default model names as a convenient object.
  * This matches the signature of getDefaultModels() from runtime.
  */
-export function getDefaultModels() {
-  return getCoreConfig().models.defaults
+export function getDefaultModels(): TypedModelDefaults {
+  return getCoreConfig().models.defaults as TypedModelDefaults
 }
 
 /**

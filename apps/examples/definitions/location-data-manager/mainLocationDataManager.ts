@@ -2,7 +2,7 @@ import { lgg } from "@core/utils/logging/Logger" // core location data manager o
 
 import { promises as fs } from "node:fs"
 import { join } from "node:path"
-import { CONFIG, PATHS } from "@lucky/tools/config/runtime"
+import { CONFIG, PATHS } from "@core/core-config/compat"
 import type { LocationData, PartialLocationData, WorkflowLocationData } from "@lucky/tools/schemas/location.types"
 import { DataQuality } from "@lucky/tools/schemas/location.types"
 import { assessDataQuality } from "./assessQuality"

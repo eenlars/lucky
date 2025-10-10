@@ -101,7 +101,7 @@ const QUESTIONS = {
       "other_countries_of_operation",
     ],
 
-    outputSchema: OutputSchema,
+    // outputSchema: OutputSchema, // TODO: Convert Zod schema to JSON Schema format
     workflowId: "wf-b-corp-empty-response",
   },
   tonys: {
@@ -165,7 +165,7 @@ const QUESTIONS = {
       "website",
       "other_countries_of_operation",
     ],
-    outputSchema: OutputSchema,
+    // outputSchema: OutputSchema, // TODO: Convert Zod schema to JSON Schema format
     workflowId: "wf-b-corp-sample",
   },
   extremeCsv: {
@@ -193,7 +193,7 @@ const QUESTIONS = {
       "website",
       "other_countries_of_operation",
     ],
-    outputSchema: OutputSchema,
+    // outputSchema: OutputSchema, // TODO: Convert Zod schema to JSON Schema format
     workflowId: "wf-b-corp-sample",
   },
   promptOnly: {

@@ -4,7 +4,6 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     client: "src/client.ts",
-    "config/runtime": "src/config/runtime.ts",
   },
   format: ["esm"],
   dts: true,

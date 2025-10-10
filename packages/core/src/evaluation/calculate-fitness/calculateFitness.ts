@@ -10,7 +10,6 @@ import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { zodToJson } from "@core/utils/validation/zodToJson"
 import { R, type RS, isNir } from "@lucky/shared"
 
 async function calculateFitness({
@@ -37,7 +36,10 @@ async function calculateFitness({
     )
   }
 
-  const outputSchemaStr: string | undefined = outputSchema ? zodToJson(outputSchema) : undefined
+  // outputSchema is a JSON Schema object, not a Zod schema - just stringify it
+  const outputSchemaStr: string | undefined = outputSchema
+    ? JSON.stringify(outputSchema, null, 2).replace(/[\n\s]+/g, " ")
+    : undefined
 
   const outputStr = `${toolUsageToString(agentSteps)}\n\n${finalWorkflowOutput}`
 

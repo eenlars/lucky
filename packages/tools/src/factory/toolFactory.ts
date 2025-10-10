@@ -28,9 +28,9 @@
  */
 
 import { Tools } from "@lucky/shared"
+import { TOOLS } from "@lucky/shared/contracts/tools"
 import { type Tool, zodSchema } from "ai"
 import { type ZodSchema, type ZodTypeAny, z } from "zod"
-import { TOOLS } from "../config/tools"
 import type { CodeToolName } from "../registry/types"
 import { type InvocationContext, R, type RS, type ToolExecutionContext } from "./types"
 import { validateAndCorrectWithSchema } from "./validation"

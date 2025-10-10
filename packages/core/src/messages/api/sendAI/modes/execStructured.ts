@@ -20,6 +20,7 @@
 import { getDefaultModels } from "@core/core-config/compat"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import type { ModelName } from "@core/utils/spending/models.types"
 import pTimeout, { TimeoutError } from "p-timeout"
 import type { ZodTypeAny } from "zod"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
@@ -49,8 +50,8 @@ export async function execStructured<S extends ZodTypeAny>(
 
   // TODO: add request validation and preprocessing
   // TODO: implement schema complexity analysis for timeout adjustment
-  const requestedModel = modelIn ?? getDefaultModels().default
-  const model = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
+  const requestedModel: ModelName = modelIn ?? getDefaultModels().default
+  const model: ModelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
   try {
     const { genObject } = await import("@core/messages/api/genObject")

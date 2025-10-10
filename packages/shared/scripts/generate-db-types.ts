@@ -17,6 +17,11 @@ async function main() {
   }
 
   console.log("Generating Supabase types…")
+
+  const tempDir = resolve(import.meta.dir, "../.tmp/supabase")
+  if (!existsSync(tempDir)) {
+    mkdirSync(tempDir, { recursive: true })
+  }
   const args = [
     "x",
     "supabase@latest",
@@ -29,10 +34,29 @@ async function main() {
     "public,iam,lockbox,app",
   ]
 
-  const proc = Bun.spawn(["bun", ...args], { stdout: "pipe", stderr: "inherit" })
+  const proc = Bun.spawn(["bun", ...args], {
+    stdout: "pipe",
+    stderr: "pipe",
+    env: {
+      ...process.env,
+      TMPDIR: tempDir,
+      TEMP: tempDir,
+      TMP: tempDir,
+      BUN_INSTALL_CACHE: tempDir,
+      BUN_INSTALL_TMPDIR: tempDir,
+      XDG_CACHE_HOME: tempDir,
+    },
+  })
   const stdout = await new Response(proc.stdout).text()
+  const stderr = proc.stderr ? await new Response(proc.stderr).text() : ""
   const exitCode = await proc.exited
   if (exitCode !== 0) {
+    const combinedOutput = `${stdout}\n${stderr}`
+    if (/AccessDenied|EACCES/i.test(combinedOutput)) {
+      console.warn("Supabase CLI could not access its temp directory. Using committed types instead.")
+      return
+    }
+    console.error(stderr.trim() || stdout.trim())
     throw new Error(`supabase gen types failed with code ${exitCode}`)
   }
 
@@ -51,6 +75,11 @@ async function main() {
 }
 
 main().catch(err => {
+  if (err instanceof Error && /AccessDenied|EACCES/.test(err.message)) {
+    console.warn("Supabase type generation failed due to temp directory permissions. Using committed types instead.")
+    console.warn("Set SKIP_DB_TYPES_GENERATION=1 to disable generation explicitly if needed.")
+    return
+  }
   console.error("Failed to generate database types:", err)
   console.error("To skip generation and use committed types, set SKIP_DB_TYPES_GENERATION=1")
   process.exit(1)

@@ -72,6 +72,10 @@ export const CONFIG = {
     maxFilesPerWorkflow: 1,
     enforceFileLimit: true,
   },
+  context: {
+    maxFilesPerWorkflow: 1,
+    enforceFileLimit: true,
+  },
   evolution: {
     ...EVOLUTION_CONFIG,
   },
@@ -90,6 +94,10 @@ export const CONFIG = {
     enableParallelLimit: true,
     maxFilesPerWorkflow: 1,
     enforceFileLimit: true,
+  },
+  persistence: {
+    useMockBackend: true,
+    defaultBackend: "memory",
   },
 } as const satisfies Omit<FlowRuntimeConfig, "evolution"> & {
   evolution: Omit<FlowRuntimeConfig["evolution"], "GP"> & {

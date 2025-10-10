@@ -1,34 +1,23 @@
-// shared mock constants and default values for tests
+/**
+ * Shared mock constants and default values for tests
+ * RE-EXPORTS from @lucky/shared/contracts/fixtures
+ */
+
+import { TEST_IDS, TEST_VALUES } from "@lucky/shared/contracts/fixtures"
+
+// Re-export from contracts
 export const TEST_CONSTANTS = {
-  // common test IDs
-  WORKFLOW_ID: "test-workflow-id",
-  RUN_ID: "test-run-id",
-  GENERATION_ID: "test-generation-id",
-  GENOME_ID: "test-genome-id",
-  NODE_ID: "test-node-id",
-  INVOCATION_ID: "test-invocation-id",
-  VERSION_ID: "test-version-id",
+  // Common test IDs (from contracts)
+  ...TEST_IDS,
 
-  // common test values
-  COST_USD: 0.01,
-  TIME_SECONDS: 10,
-  FITNESS_SCORE: 0.8,
-  ACCURACY_SCORE: 0.8,
+  // Common test values (from contracts)
+  ...TEST_VALUES,
 
-  // common test strings
-  SYSTEM_PROMPT: "test system prompt",
-  DESCRIPTION: "test description",
-  GOAL: "test goal",
-  QUESTION: "test question",
-  ANSWER: "test answer",
-  EVALUATION: "test evaluation criteria",
-  ERROR_MESSAGE: "test error message",
-
-  // common test arrays
+  // Common test arrays
   EMPTY_ARRAY: [],
   EMPTY_OBJECT: {},
 
-  // common test paths
+  // Common test paths
   PATHS: {
     ROOT: "/test",
     APP: "/test/app",
@@ -37,29 +26,27 @@ export const TEST_CONSTANTS = {
     LOGGING: "src/examples/logging_folder",
   },
 
-  // common test timeouts
+  // Common test timeouts
   TIMEOUTS: {
     FAST: 1000,
     NORMAL: 5000,
     SLOW: 10000,
   },
 
-  // common test configs
+  // Common test configs
   EVOLUTION_CONFIG: {
     POPULATION_SIZE: 5,
     GENERATIONS: 3,
-    MAX_COST_USD: 1.0,
+    TOURNAMENT_SIZE: 3,
     ELITE_SIZE: 1,
-    TOURNAMENT_SIZE: 2,
-    CROSSOVER_RATE: 0.7,
-    MAX_EVALUATIONS_PER_HOUR: 100,
   },
 
-  // common tool execution context
-  TOOL_CONTEXT: {
-    WORKFLOW_INVOCATION_ID: "test-workflow-123",
-    WORKFLOW_FILES: [],
-    EXPECTED_OUTPUT_TYPE: undefined,
+  // Common test models
+  MODELS: {
+    DEFAULT: "google/gemini-2.5-flash-lite",
+    HIGH: "openai/gpt-4.1",
+    MEDIUM: "openai/gpt-4.1-mini",
+    LOW: "google/gemini-2.5-flash-lite",
   },
 
   // common database responses
@@ -191,3 +178,10 @@ export const TEST_CONSTANTS = {
     },
   },
 } as const
+
+// Legacy exports for backward compatibility
+export const WORKFLOW_ID = TEST_CONSTANTS.WORKFLOW_ID
+export const RUN_ID = TEST_CONSTANTS.RUN_ID
+export const GENERATION_ID = TEST_CONSTANTS.GENERATION_ID
+export const GENOME_ID = TEST_CONSTANTS.GENOME_ID
+export const NODE_ID = TEST_CONSTANTS.NODE_ID

@@ -26,6 +26,7 @@ import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
 import type { TResponse, ToolRequest } from "../types"
@@ -48,12 +49,14 @@ const spending = SpendingTracker.getInstance()
 // TODO: create tool execution security auditing
 export async function execTool(req: ToolRequest): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
-  const requestedModel = modelIn ?? getDefaultModels().default
+  const requestedModel: ModelName = modelIn ?? getDefaultModels().default
 
   try {
     // TODO: add tool compatibility validation for model
     // TODO: implement smart tool selection based on model capabilities
-    const modelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
+    const modelName: ModelName = shouldUseModelFallback(requestedModel)
+      ? getFallbackModel(requestedModel)
+      : requestedModel
 
     const model = await getLanguageModelWithReasoning(modelName, opts)
 

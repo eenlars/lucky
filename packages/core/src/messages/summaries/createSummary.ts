@@ -13,6 +13,7 @@ import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { JSONN } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import chalk from "chalk"
@@ -40,7 +41,7 @@ const BYTES_FOR_SUMMARY = 200
 const createAISummary = async (
   prompt: string,
   description: string,
-  model = getDefaultModels().summary,
+  model: ModelName = getDefaultModels().summary,
   schema?: z.ZodSchema,
 ): Promise<{ summary: string; usdCost: number } | null> => {
   try {

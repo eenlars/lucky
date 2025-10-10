@@ -110,3 +110,7 @@ resilience/
 /runtime
 .turbo
 .env*.local
+
+# Temporary files and directories
+**/*.tmp
+**/.tmp/

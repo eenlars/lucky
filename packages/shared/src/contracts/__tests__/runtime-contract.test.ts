@@ -3,110 +3,15 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { type RuntimeConfig, safeValidateRuntimeConfig, validateRuntimeConfig } from "../runtime"
+import {
+  DEFAULT_RUNTIME_CONFIG,
+  type RuntimeConfig,
+  safeValidateRuntimeConfig,
+  validateRuntimeConfig,
+} from "../runtime"
 
 describe("RuntimeConfig Schema Validation", () => {
-  const validConfig: RuntimeConfig = {
-    coordinationType: "sequential",
-    newNodeProbability: 0.7,
-    models: {
-      provider: "openrouter",
-      inactive: [],
-      defaults: {
-        summary: "google/gemini-2.5-flash-lite",
-        nano: "google/gemini-2.5-flash-lite",
-        low: "google/gemini-2.5-flash-lite",
-        medium: "openai/gpt-4.1-mini",
-        high: "openai/gpt-4.1",
-        default: "openai/gpt-4.1-nano",
-        fitness: "openai/gpt-4.1-mini",
-        reasoning: "openai/gpt-4.1-mini",
-        fallback: "switchpoint/router",
-      },
-    },
-    logging: {
-      level: "info",
-      override: {
-        API: false,
-        GP: false,
-        Database: false,
-        Tools: false,
-        Summary: false,
-        InvocationPipeline: false,
-        Messaging: false,
-        Improvement: false,
-        ValidationBeforeHandoff: false,
-        Setup: false,
-      },
-    },
-    tools: {
-      inactive: [],
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 3,
-      maxStepsVercel: 10,
-      defaultTools: [],
-      autoSelectTools: true,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: true,
-      showParameterSchemas: true,
-      experimentalMultiStepLoopMaxRounds: 6,
-    },
-    workflow: {
-      maxTotalNodeInvocations: 14,
-      maxPerNodeInvocations: 14,
-      maxNodes: 20,
-      handoffContent: "full",
-      prepareProblem: true,
-      prepareProblemMethod: "ai",
-      prepareProblemWorkflowVersionId: "",
-      parallelExecution: false,
-    },
-    improvement: {
-      fitness: {
-        timeThresholdSeconds: 300,
-        baselineTimeSeconds: 60,
-        baselineCostUsd: 0.005,
-        costThresholdUsd: 0.01,
-        weights: {
-          score: 0.7,
-          time: 0.2,
-          cost: 0.1,
-        },
-      },
-      flags: {
-        selfImproveNodes: false,
-        addTools: true,
-        analyzeWorkflow: true,
-        removeNodes: true,
-        editNodes: true,
-        maxRetriesForWorkflowRepair: 3,
-        useSummariesForImprovement: true,
-        improvementType: "judge",
-        operatorsWithFeedback: true,
-      },
-    },
-    limits: {
-      maxConcurrentWorkflows: 2,
-      maxConcurrentAIRequests: 30,
-      maxCostUsdPerRun: 30.0,
-      enableSpendingLimits: true,
-      maxRequestsPerWindow: 300,
-      rateWindowMs: 10000,
-      enableStallGuard: true,
-      enableParallelLimit: true,
-    },
-    verification: {
-      allowCycles: true,
-      enableOutputValidation: false,
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
-    persistence: {
-      useMockBackend: false,
-      defaultBackend: "supabase",
-    },
-  }
+  const validConfig: RuntimeConfig = DEFAULT_RUNTIME_CONFIG
 
   it("should validate a complete valid config", () => {
     expect(() => validateRuntimeConfig(validConfig)).not.toThrow()

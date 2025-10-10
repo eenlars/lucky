@@ -1,3 +1,4 @@
+import * as coreConfig from "@core/core-config/coreConfig"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -14,11 +15,48 @@ vi.mock("@examples/constants", () => ({
   },
 }))
 
-import { CONFIG } from "@core/core-config/compat"
 import { getDefaultModels } from "@core/core-config/compat"
 import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
 import { verifyNoCycles } from "../verifyDirectedGraph"
 import { getNodeRole, isOrchestrator, verifyHierarchicalStructure } from "../verifyHierarchical"
+
+const defaultCoreConfig = coreConfig.getCoreConfig()
+
+type ConfigOverrides = {
+  coordinationType?: "sequential" | "hierarchical"
+  allowCycles?: boolean
+}
+
+let configOverrides: ConfigOverrides = {}
+
+const buildCoreConfig = () => {
+  const hasCoordinationOverride = configOverrides.coordinationType !== undefined
+  const hasAllowCyclesOverride = configOverrides.allowCycles !== undefined
+
+  if (!hasCoordinationOverride && !hasAllowCyclesOverride) {
+    return defaultCoreConfig
+  }
+
+  return {
+    ...defaultCoreConfig,
+    coordinationType: hasCoordinationOverride ? configOverrides.coordinationType! : defaultCoreConfig.coordinationType,
+    verification: hasAllowCyclesOverride
+      ? { ...defaultCoreConfig.verification, allowCycles: configOverrides.allowCycles! }
+      : defaultCoreConfig.verification,
+  }
+}
+
+const getCoreConfigSpy = vi.spyOn(coreConfig, "getCoreConfig").mockImplementation(buildCoreConfig)
+
+const setCoordinationType = (coordinationType: "sequential" | "hierarchical") => {
+  configOverrides = { ...configOverrides, coordinationType }
+  getCoreConfigSpy.mockImplementation(buildCoreConfig)
+}
+
+const setAllowCycles = (allowCycles: boolean) => {
+  configOverrides = { ...configOverrides, allowCycles }
+  getCoreConfigSpy.mockImplementation(buildCoreConfig)
+}
 
 describe("verifyHierarchicalStructure", () => {
   // TODO: additional test coverage needed:
@@ -73,7 +111,13 @@ describe("verifyHierarchicalStructure", () => {
   }
 
   beforeEach(() => {
+    configOverrides = {}
     vi.clearAllMocks()
+    getCoreConfigSpy.mockImplementation(buildCoreConfig)
+  })
+
+  afterAll(() => {
+    getCoreConfigSpy.mockRestore()
   })
 
   it("should return empty array when coordinationType is sequential", async () => {
@@ -84,7 +128,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should validate hierarchical structure correctly in hierarchical mode", async () => {
     // Mock hierarchical mode
-    ;(CONFIG as any).coordinationType = "hierarchical"
+    setCoordinationType("hierarchical")
 
     const result = await verifyHierarchicalStructure(problemWorkflow)
     // Should pass with our new logic that supports worker chains
@@ -93,7 +137,7 @@ describe("verifyHierarchicalStructure", () => {
 
   it("should detect invalid handoffs to non-existent nodes", async () => {
     // Mock hierarchical mode
-    ;(CONFIG as any).coordinationType = "hierarchical"
+    setCoordinationType("hierarchical")
 
     const invalidHandoffWorkflow: WorkflowConfig = {
       entryNodeId: "orchestrator",
@@ -128,7 +172,7 @@ describe("verifyHierarchicalStructure", () => {
   // Test for circular dependencies
   it("should detect circular dependencies in workflow", () => {
     // Ensure cycles are not allowed for this test
-    ;(CONFIG.verification as any).allowCycles = false
+    setAllowCycles(false)
     const circularWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
       nodes: [
@@ -170,7 +214,7 @@ describe("verifyHierarchicalStructure", () => {
   // Test for self-referential nodes
   it("should detect self-referential nodes", () => {
     // Ensure cycles are not allowed for this test
-    ;(CONFIG.verification as any).allowCycles = false
+    setAllowCycles(false)
     const selfRefWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
       nodes: [
@@ -234,7 +278,7 @@ describe("verifyHierarchicalStructure", () => {
 
   // Test for multiple orchestrators (only entry should be orchestrator)
   it("should identify correct orchestrator in hierarchical mode", async () => {
-    ;(CONFIG as any).coordinationType = "hierarchical"
+    setCoordinationType("hierarchical")
 
     const workflow: WorkflowConfig = {
       entryNodeId: "main-orchestrator",
@@ -282,7 +326,7 @@ describe("verifyHierarchicalStructure", () => {
 
   // Test for complex branching hierarchies
   it("should handle complex branching hierarchies", async () => {
-    ;(CONFIG as any).coordinationType = "hierarchical"
+    setCoordinationType("hierarchical")
 
     const complexWorkflow: WorkflowConfig = {
       entryNodeId: "orchestrator",
@@ -447,7 +491,7 @@ describe("verifyHierarchicalStructure", () => {
 
   // Test when CONFIG allows cycles
   it("should skip cycle validation when allowCycles is true", () => {
-    ;(CONFIG.verification as any).allowCycles = true
+    setAllowCycles(true)
 
     const circularWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
