@@ -10,7 +10,7 @@ import { z } from "zod"
 const contextGet = defineTool({
   name: "contextGet",
   description:
-    "Retrieve a specific value from context store by key and scope. Returns null if not found. LIMITS: single key access only, no batch operations, requires exact key name, needs workflowInvocationId. YOU NEED TO KNOW THE KEY NAME TO USE THIS TOOL. YOU CANNOT USE THIS TOOL TO GET THE KEY NAME.",
+    "Retrieve a specific value from context store by key and scope. Returns the provided default value if specified, otherwise undefined when key is not found. LIMITS: single key access only, no batch operations, requires exact key name, needs workflowInvocationId. YOU NEED TO KNOW THE KEY NAME TO USE THIS TOOL. YOU CANNOT USE THIS TOOL TO GET THE KEY NAME.",
   params: z.object({
     scope: z
       .enum(["workflow", "node"])

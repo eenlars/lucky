@@ -22,8 +22,13 @@ addFormats(ajv2020)
  * Fallback to Draft 7 maintains backward compatibility.
  */
 function validateJsonSchema(val: unknown) {
+  // Boolean schemas (true/false) are valid in both draft-07 and 2020-12
+  if (typeof val === "boolean") {
+    return { ok: true }
+  }
+
   if (typeof val !== "object" || val === null) {
-    return { ok: false, errors: "Schema must be a non-null object" }
+    return { ok: false, errors: "Schema must be a boolean or non-null object" }
   }
 
   const obj = val as Record<string, unknown>

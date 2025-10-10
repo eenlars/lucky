@@ -246,7 +246,7 @@ export const RuntimeConfigSchema = z.object({
 /**
  * Partial runtime configuration for overrides
  */
-export const PartialRuntimeConfigSchema = RuntimeConfigSchema.partial()
+export const PartialRuntimeConfigSchema = RuntimeConfigSchema.deepPartial()
 
 // Type exports
 export type ModelProvider = z.infer<typeof ModelProviderSchema>

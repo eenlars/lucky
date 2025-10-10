@@ -158,7 +158,7 @@ export class Workflow {
     this.problemAnalysis = problemAnalysis
 
     // Update the WorkflowVersion with all WorkflowIO data (if persistence enabled)
-    if (isNir(this.workflowIO)) {
+    if (!isNir(this.workflowIO)) {
       if (this.persistence) {
         await this.persistence.updateWorkflowVersionWithIO(this.workflowVersionId, this.workflowIO)
       }
