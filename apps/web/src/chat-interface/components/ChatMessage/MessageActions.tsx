@@ -6,12 +6,12 @@
 
 "use client"
 
+import type { Message } from "@/chat-interface/types"
+import { copyToClipboard } from "@/chat-interface/utils/message-utils"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Copy, RotateCw, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useState } from "react"
-import type { Message } from "../../types"
-import { copyToClipboard } from "../../utils/message-utils"
 
 interface MessageActionsProps {
   message: Message

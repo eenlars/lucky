@@ -6,8 +6,8 @@
 
 "use client"
 
+import { formatTimestamp } from "@/chat-interface/utils/message-utils"
 import { cn } from "@/lib/utils"
-import { formatTimestamp } from "../../utils/message-utils"
 
 interface MessageTimestampProps {
   timestamp: Date
