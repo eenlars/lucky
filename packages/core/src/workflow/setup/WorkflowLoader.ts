@@ -6,8 +6,47 @@ import { isValidToolInformation } from "@core/utils/validation/workflow/toolInfo
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
+import { CURRENT_SCHEMA_VERSION } from "@lucky/contracts/workflow"
 import type { CodeToolName } from "@lucky/tools"
 import type { IPersistence } from "@together/adapter-supabase"
+
+/**
+ * Migrate workflow config from any version to current version.
+ * Called on every workflow load to ensure old workflows are upgraded.
+ *
+ * To add a new migration:
+ * 1. Increment CURRENT_SCHEMA_VERSION in @lucky/contracts/workflow
+ * 2. Add a new if-block below following the pattern
+ * 3. Test with old workflows to verify upgrade path
+ */
+function migrateWorkflowConfig(dsl: any): WorkflowConfig {
+  const version = dsl.__schema_version || 0
+  let migrated = { ...dsl }
+
+  // v0 -> v1: Add __schema_version field (legacy workflows)
+  if (version < 1) {
+    migrated = {
+      ...migrated,
+      __schema_version: 1,
+    }
+  }
+
+  // Future migrations: add new if-blocks here as schema evolves
+  // Example for v1 -> v2:
+  // if (version < 2) {
+  //   migrated = {
+  //     ...migrated,
+  //     __schema_version: 2,
+  //     nodes: migrated.nodes.map((node: any) => ({
+  //       ...node,
+  //       tools: node.mcpTools,  // Rename field
+  //       mcpTools: undefined,
+  //     })),
+  //   }
+  // }
+
+  return migrated as WorkflowConfig
+}
 
 class WorkflowConfigError extends Error {
   constructor(
@@ -205,8 +244,12 @@ export class WorkflowConfigHandler {
         throw new JSONParseError(actualFilePath, error as Error)
       }
 
+      // Migrate if needed
+      const migratedData = migrateWorkflowConfig(rawData)
+
       const workflowConfig: WorkflowConfig = {
-        nodes: rawData.nodes.map(
+        ...migratedData,
+        nodes: migratedData.nodes.map(
           (node: any): WorkflowNodeConfig => ({
             ...node,
             // Ensure memory is a properly typed Record<string, string>
@@ -284,6 +327,15 @@ export class WorkflowConfigHandler {
         throw new DatabaseError(`Workflow version ${workflowVersionId} not found`)
       }
 
+      // Migrate to current schema version
+      const version = (dsl as any).__schema_version || 0
+      if (version < CURRENT_SCHEMA_VERSION) {
+        lgg.log(`[WorkflowConfigHandler] Migrating workflow from schema v${version} to v${CURRENT_SCHEMA_VERSION}`)
+        const migrated = migrateWorkflowConfig(dsl)
+        const parsedConfig = WorkflowConfigSchema.parse(migrated)
+        return this.normalizeWorkflowConfig(parsedConfig)
+      }
+
       const parsedConfig = WorkflowConfigSchema.parse(dsl)
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
@@ -307,6 +359,15 @@ export class WorkflowConfigHandler {
 
       if (!dsl) {
         throw new DatabaseError(`Workflow version ${workflowVersionId} not found`)
+      }
+
+      // Migrate to current schema version
+      const version = (dsl as any).__schema_version || 0
+      if (version < CURRENT_SCHEMA_VERSION) {
+        lgg.log(`[WorkflowConfigHandler] Migrating workflow from schema v${version} to v${CURRENT_SCHEMA_VERSION}`)
+        const migrated = migrateWorkflowConfig(dsl)
+        const parsedConfig = WorkflowConfigSchemaDisplay.parse(migrated)
+        return this.normalizeWorkflowConfig(parsedConfig)
       }
 
       const parsedConfig = WorkflowConfigSchemaDisplay.parse(dsl)
@@ -344,6 +405,16 @@ export class WorkflowConfigHandler {
       }
 
       const fileData = JSON.parse(fileContent)
+
+      // Migrate if needed
+      const version = (fileData as any).__schema_version || 0
+      if (version < CURRENT_SCHEMA_VERSION) {
+        lgg.log(`[WorkflowConfigHandler] Migrating file workflow from schema v${version} to v${CURRENT_SCHEMA_VERSION}`)
+        const migrated = migrateWorkflowConfig(fileData)
+        const parsedConfig = WorkflowConfigSchema.parse(migrated)
+        return this.normalizeWorkflowConfig(parsedConfig)
+      }
+
       const parsedConfig = WorkflowConfigSchema.parse(fileData)
       return this.normalizeWorkflowConfig(parsedConfig)
     } catch (error) {
@@ -363,7 +434,11 @@ export class WorkflowConfigHandler {
 
       console.log("dslConfig", JSON.stringify(dslConfig, null, 2))
 
-      const parsedConfig = WorkflowConfigSchema.parse(dslConfig)
+      // Migrate if needed
+      const version = (dslConfig as any).__schema_version || 0
+      const configToValidate = version < CURRENT_SCHEMA_VERSION ? migrateWorkflowConfig(dslConfig) : dslConfig
+
+      const parsedConfig = WorkflowConfigSchema.parse(configToValidate)
       // Cast to WorkflowConfig - Zod schema validates structure, runtime validates model names
       const workflowConfig = parsedConfig as unknown as WorkflowConfig
       await verifyWorkflowConfig(workflowConfig, {
@@ -385,8 +460,15 @@ export class WorkflowConfigHandler {
     }
 
     const fs = await import("node:fs")
+
+    // Ensure schema version is set before saving
+    const dataWithVersion = {
+      ...data,
+      __schema_version: data.__schema_version ?? CURRENT_SCHEMA_VERSION,
+    }
+
     const tmp = `${filePath}.tmp`
-    fs.writeFileSync(tmp, JSON.stringify(data, null, 2))
+    fs.writeFileSync(tmp, JSON.stringify(dataWithVersion, null, 2))
     fs.renameSync(tmp, filePath) // atomic on POSIX filesystems
   }
 

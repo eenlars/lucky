@@ -28,6 +28,7 @@ export const WorkflowNodeConfigSchema = z.object({
 })
 
 export const WorkflowConfigSchema = z.object({
+  __schema_version: z.number().optional(),
   nodes: z.array(WorkflowNodeConfigSchema),
   entryNodeId: z.string(),
   contextFile: z.string().nullish(),
@@ -49,6 +50,7 @@ export const WorkflowNodeConfigSchemaDisplay = z.object({
 })
 
 export const WorkflowConfigSchemaDisplay = z.object({
+  __schema_version: z.number().optional(),
   nodes: z.array(WorkflowNodeConfigSchemaDisplay),
   entryNodeId: z.string(),
   contextFile: z.string().nullish(),
@@ -79,6 +81,7 @@ const agentDescriptionsWithToolsEasy = {
 } as const
 
 export const WorkflowConfigSchemaEasy = z.object({
+  __schema_version: z.number().optional(),
   nodes: z.array(withDescriptions(WorkflowNodeConfigSchemaEasy.shape, agentDescriptionsWithToolsEasy)),
   entryNodeId: z.string(),
 })
