@@ -16,6 +16,8 @@ const MemoryActionSchema = z
 
 export const tool = defineTool({
   name: "memoryManager",
+  description:
+    "Manage persistent memories using Mem0: add, get/search, getAll, or delete memories for context persistence in workflows.",
   params: MemoryActionSchema,
   execute: async (params, externalContext): Promise<CodeToolResult<any>> => {
     const { action, message, query, limit, memoryId } = params

@@ -95,6 +95,7 @@ const allNavigationItems: NavItemData[] = [
       { type: "settings-general", label: "General", href: "/settings" },
       { type: "settings-profile", label: "Profile", href: "/profile" },
       { type: "settings-providers", label: "Providers", href: "/providers" },
+      { type: "settings-payment", label: "Payment", href: "/payment" },
     ],
   },
 ]

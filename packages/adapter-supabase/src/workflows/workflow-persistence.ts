@@ -3,6 +3,7 @@
  * Handles workflow versions, invocations, and config management.
  */
 
+import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { DatasetRecordNotFoundError, PersistenceError, WorkflowNotFoundError } from "../errors/domain-errors"
 import type {
@@ -32,11 +33,14 @@ export class SupabaseWorkflowPersistence {
   async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {
     await this.ensureWorkflowExists(data.workflowId, data.commitMessage)
 
+    // Ensure DSL includes schema version
+    const dslWithVersion = this.ensureSchemaVersion(data.dsl)
+
     const workflowVersionInsertable = {
       wf_version_id: data.workflowVersionId,
       workflow_id: data.workflowId,
       commit_message: data.commitMessage,
-      dsl: data.dsl,
+      dsl: dslWithVersion,
       iteration_budget: 10,
       time_budget_seconds: 3600,
       generation_id: data.generationId || null,
@@ -51,6 +55,21 @@ export class SupabaseWorkflowPersistence {
 
     if (error) {
       throw new PersistenceError(`Failed to upsert workflow version: ${error.message}`, error)
+    }
+  }
+
+  /**
+   * Ensure workflow config has __schema_version set to current version.
+   * This is called when saving workflows to database.
+   */
+  private ensureSchemaVersion(dsl: any): any {
+    if (typeof dsl !== "object" || dsl === null) {
+      return dsl
+    }
+
+    return {
+      ...dsl,
+      __schema_version: dsl.__schema_version ?? CURRENT_SCHEMA_VERSION,
     }
   }
 
@@ -87,12 +106,15 @@ export class SupabaseWorkflowPersistence {
     // Ensure workflow exists first
     await this.ensureWorkflowExists(workflowId, goal)
 
+    // Ensure DSL includes schema version
+    const dslWithVersion = this.ensureSchemaVersion(workflowConfig)
+
     // Create workflow version
     const workflowVersionInsertable = {
       wf_version_id: workflowVersionId,
       workflow_id: workflowId,
       commit_message: `GP Best Genome wf_version_id: ${workflowVersionId} (Gen ${generationId})`,
-      dsl: workflowConfig,
+      dsl: dslWithVersion,
       iteration_budget: 10,
       time_budget_seconds: 3600,
       operation,
@@ -249,9 +271,12 @@ export class SupabaseWorkflowPersistence {
   }
 
   async updateWorkflowMemory(workflowVersionId: string, workflowConfig: unknown): Promise<void> {
+    // Ensure DSL includes schema version
+    const dslWithVersion = this.ensureSchemaVersion(workflowConfig)
+
     const { error } = await this.client
       .from("WorkflowVersion")
-      .update({ dsl: workflowConfig })
+      .update({ dsl: dslWithVersion })
       .eq("wf_version_id", workflowVersionId)
 
     if (error) {

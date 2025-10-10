@@ -4,7 +4,7 @@ import {
   DEFAULT_INACTIVE_TOOLS,
   type MCPToolName,
   TOOLS,
-} from "@lucky/contracts/tools"
+} from "@lucky/shared/contracts/tools"
 
 const INACTIVE_TOOLS = DEFAULT_INACTIVE_TOOLS
 const DEFAULT_TOOLS: AllToolNames[] = []

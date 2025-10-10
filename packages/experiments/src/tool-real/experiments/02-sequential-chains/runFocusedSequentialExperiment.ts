@@ -6,7 +6,7 @@ import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
+import type { AnyModelName } from "@lucky/shared"
 import { businessChainOrder, businessChainTools } from "../../shared/tools/sequential-chains/businessChain"
 import { documentChainOrder, documentChainTools } from "../../shared/tools/sequential-chains/documentChain"
 import { mathChainOrder, mathChainTools } from "../../shared/tools/sequential-chains/mathChain"
@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // focused experiment configuration - using OpenRouter models
-const TEST_MODELS: AllowedModelName<"openrouter">[] = [
+const TEST_MODELS: AnyModelName[] = [
   "google/gemini-2.5-flash-lite",
   "anthropic/claude-sonnet-4",
   // "google/gemini-2.5-pro-preview",

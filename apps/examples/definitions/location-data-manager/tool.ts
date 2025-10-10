@@ -35,6 +35,8 @@ const cleanLocationData = (data: any): any => {
  */
 const locationDataManager = defineTool({
   name: "locationDataManager",
+  description:
+    "PRIMARY tool for location data CRUD operations: insertLocations (add/save data), getLocations (retrieve raw data), removeLocations (delete), updateLocations (modify). Use when you need to store, modify, or retrieve the complete location dataset. LIMITS: JSON file-based storage, workflow-scoped only.",
   params: z.object({
     operation: z.enum(["insertLocations", "getLocations", "removeLocations", "updateLocations"]),
     locationData: locationDataSchema.array().nullish().default([]),

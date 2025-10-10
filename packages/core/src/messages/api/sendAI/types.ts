@@ -138,7 +138,6 @@ export interface ToolRequest extends RequestBase {
  * @template S - The schema type for output validation
  */
 // TODO: add schema validation error handling
-// TODO: implement schema evolution and versioning
 // TODO: add output post-processing hooks
 export interface StructuredRequest<S extends ZodTypeAny | Schema<any>> extends RequestBase {
   mode: "structured"

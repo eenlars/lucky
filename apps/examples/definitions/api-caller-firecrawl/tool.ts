@@ -17,6 +17,8 @@ const firecrawlSchema = z.object({
 
 const firecrawlTool = defineTool({
   name: "firecrawlAPI",
+  description:
+    "Extract structured data from websites using Firecrawl's AI. Provide URL, prompt, and schema for extraction. Best for static content extraction. LIMITS: requires API key, may fail on dynamic/JavaScript-heavy sites, rate limited, cannot handle authentication or complex interactions.",
   params: firecrawlSchema,
   async execute(params) {
     const options: ExtractParams = {

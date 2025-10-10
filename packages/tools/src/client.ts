@@ -26,7 +26,7 @@ export {
 export {
   TOOLS,
   DEFAULT_INACTIVE_TOOLS,
-} from "@lucky/contracts/tools"
+} from "@lucky/shared/contracts/tools"
 
 // Tool factory types only (no runtime code - defineTool/commonSchemas pulled in @lucky/shared main bundle with Node.js deps)
 export type { ToolExecutionContext, InvocationContext } from "./factory/types"

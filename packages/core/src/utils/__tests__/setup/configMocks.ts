@@ -1,10 +1,10 @@
 /**
  * Test configuration mocks for @core/core-config/compat
- * RE-EXPORTS from @lucky/contracts/fixtures for consistency
+ * RE-EXPORTS from @lucky/shared/contracts/fixtures for consistency
  */
 
 import type { FlowRuntimeConfig } from "@core/types"
-import { createTestConfig, createVerboseTestConfig } from "@lucky/contracts/fixtures"
+import { createTestConfig, createVerboseTestConfig } from "@lucky/shared/contracts/fixtures"
 
 /**
  * Create a complete mock CONFIG for verbose mode testing

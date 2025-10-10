@@ -77,6 +77,7 @@ Create 1 workflow configuration for: ${prompt}
     model: getDefaultModels().medium,
     mode: "structured",
     schema: withDescriptions(WorkflowConfigSchemaEasy.shape, {
+      __schema_version: "Schema version for migration (optional, defaults to 1)",
       nodes: "The nodes in the workflow",
       entryNodeId: "The entry node ID",
     }),

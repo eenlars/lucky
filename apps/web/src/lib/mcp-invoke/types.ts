@@ -1,4 +1,4 @@
-import type { InvokeRequest } from "@lucky/contracts/invoke"
+import type { InvokeRequest } from "@lucky/shared/contracts/invoke"
 
 export interface ValidatedInvokeRequest {
   rpcRequest: InvokeRequest

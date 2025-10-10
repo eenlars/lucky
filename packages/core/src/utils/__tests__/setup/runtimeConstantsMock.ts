@@ -1,9 +1,9 @@
 /**
  * Shared runtime constants mock for tests
- * RE-EXPORTS from @lucky/contracts/fixtures
+ * RE-EXPORTS from @lucky/shared/contracts/fixtures
  */
 
-import { createMinimalTestConfig } from "@lucky/contracts/fixtures"
+import { createMinimalTestConfig } from "@lucky/shared/contracts/fixtures"
 
 export const mockRuntimeConstants = () => {
   // Create fresh copy for each invocation to avoid test contamination

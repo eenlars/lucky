@@ -1,9 +1,8 @@
-import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
 import type {
   WorkflowConfig as WorkflowConfigBase,
   WorkflowNodeConfig as WorkflowNodeConfigBase,
-} from "@lucky/contracts/workflow"
+} from "@lucky/shared/contracts/workflow"
 import type { CodeToolName, MCPToolName } from "@lucky/tools"
 
 // Import SDK config type - can be removed cleanly when ejecting SDK
@@ -13,10 +12,12 @@ import type { ClaudeSDKConfig } from "@core/tools/claude-sdk/types"
 /**
  * Declarative configuration for a single workflow node.
  * Extends the base contract with specific types for models and tools.
+ * Note: Using string for modelName instead of AnyModelName to avoid TypeScript memory issues.
+ * Runtime validation is handled by Zod schemas in contracts package.
  */
 export interface WorkflowNodeConfig
   extends Omit<WorkflowNodeConfigBase, "modelName" | "mcpTools" | "codeTools" | "sdkConfig"> {
-  modelName: AnyModelName
+  modelName: string
   mcpTools: MCPToolName[]
   codeTools: CodeToolName[]
   sdkConfig?: ClaudeSDKConfig // SDK-specific configuration

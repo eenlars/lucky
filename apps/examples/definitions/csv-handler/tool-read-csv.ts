@@ -95,6 +95,8 @@ const execute = async (
  */
 const csvReaderTool = defineTool({
   name: "csvReader",
+  description:
+    "Extract column data from CSV files with pagination. Reads specific columns, supports page/limit params. FILE MUST: be provided via workflowFiles, be accessible via HTTPS URL (Supabase). LIMITS: loads entire file into memory, no streaming for huge files.",
   params,
   execute,
 })

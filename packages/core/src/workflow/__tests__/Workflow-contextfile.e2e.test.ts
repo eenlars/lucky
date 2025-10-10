@@ -87,6 +87,8 @@ if (typeof (vi as any).mock === "function")
       verification: {
         allowCycles: true,
         enableOutputValidation: false,
+        maxFilesPerWorkflow: 1,
+        enforceFileLimit: true,
       },
       context: {
         maxFilesPerWorkflow: 1,

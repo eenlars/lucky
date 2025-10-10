@@ -23,7 +23,7 @@ export type HumanHelpParams = {
 
 const humanHelp = defineTool({
   name: "humanHelp",
-  description: "Ask for human help or provide an answer",
+  description: "call a human for help. you can ask anything you want to improve.",
   params: z.object({
     action: z.enum(["question", "answer"]).describe("Action to perform: 'question' to ask, 'answer' to respond."),
     content: z.string().describe("The question or answer content."),

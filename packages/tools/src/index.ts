@@ -50,7 +50,7 @@ export {
   type MCPToolName as ConfigMCPToolName,
   type CodeToolName as ConfigCodeToolName,
   type AllToolNames as ConfigAllToolNames,
-} from "@lucky/contracts/tools"
+} from "@lucky/shared/contracts/tools"
 
 // MCP - Model Context Protocol client
 export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
@@ -103,7 +103,7 @@ export type {
   ToolRegistry,
   ITool,
   WorkflowFile,
-} from "@lucky/contracts/tools"
+} from "@lucky/shared/contracts/tools"
 
 // Utils - Schema detection and helpers
 export { isZodSchema, isVercelAIStructure } from "./utils/index"

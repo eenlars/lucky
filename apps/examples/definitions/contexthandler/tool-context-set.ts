@@ -11,6 +11,8 @@ import { z } from "zod"
  */
 const contextSet = defineTool({
   name: "contextSet",
+  description:
+    "Store a value in context by key and scope. Overwrites existing values. Supports any JSON-serializable data. LIMITS: no merge operations, overwrites existing data, no versioning/history, requires workflowInvocationId.",
   params: z.object({
     scope: z
       .enum(["workflow", "node"])

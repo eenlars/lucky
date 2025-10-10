@@ -14,7 +14,7 @@ import { getLocationData, getLocationDataMinimal } from "../location-data-manage
 const locationDataInfo = defineTool({
   name: "locationDataInfo",
   description:
-    "Analyze stored location data: count locations, list addresses, check data quality/completeness, generate summaries with statistics. LIMITS: read-only operations, requires existing location data, basic statistics only (no complex analytics)",
+    "ANALYSIS tool for location data insights: count (get totals), getLocations (formatted addresses), verify (quality checks), summary (statistics). Use when you need formatted output, quality analysis, or statistics from existing data. LIMITS: read-only, requires data from locationDataManager first.",
   params: z.object({
     action: z.enum(["count", "getLocations", "verify", "summary"], {
       invalid_type_error: "verification action to perform",

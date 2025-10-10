@@ -69,8 +69,6 @@ export const CONFIG = {
   verification: {
     allowCycles: true,
     enableOutputValidation: false,
-  },
-  context: {
     maxFilesPerWorkflow: 1,
     enforceFileLimit: true,
   },
@@ -90,6 +88,8 @@ export const CONFIG = {
     maxRequestsPerWindow: 300, // openrouter: 670 requests per 10 seconds
     enableStallGuard: true,
     enableParallelLimit: true,
+    maxFilesPerWorkflow: 1,
+    enforceFileLimit: true,
   },
 } as const satisfies Omit<FlowRuntimeConfig, "evolution"> & {
   evolution: Omit<FlowRuntimeConfig["evolution"], "GP"> & {

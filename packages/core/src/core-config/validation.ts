@@ -3,7 +3,7 @@
  * Maps internal core config to the public RuntimeConfig contract.
  */
 
-import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from "@lucky/contracts/config"
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from "@lucky/shared/contracts/config"
 import type { CoreConfig } from "./types"
 
 /**
@@ -46,9 +46,24 @@ export function toRuntimeContract(coreConfig: CoreConfig): RuntimeConfig {
     },
     evolution: coreConfig.evolution,
     improvement: coreConfig.improvement,
-    limits: coreConfig.limits,
-    context: coreConfig.context,
-    verification: coreConfig.verification,
+    limits: {
+      maxConcurrentWorkflows: coreConfig.limits.maxConcurrentWorkflows,
+      maxConcurrentAIRequests: coreConfig.limits.maxConcurrentAIRequests,
+      maxCostUsdPerRun: coreConfig.limits.maxCostUsdPerRun,
+      enableSpendingLimits: coreConfig.limits.enableSpendingLimits,
+      maxRequestsPerWindow: coreConfig.limits.maxRequestsPerWindow,
+      rateWindowMs: coreConfig.limits.rateWindowMs,
+      enableStallGuard: coreConfig.limits.enableStallGuard,
+      enableParallelLimit: coreConfig.limits.enableParallelLimit,
+    },
+    context: {
+      maxFilesPerWorkflow: coreConfig.limits.maxFilesPerWorkflow,
+      enforceFileLimit: coreConfig.limits.enforceFileLimit,
+    },
+    verification: {
+      allowCycles: coreConfig.verification.allowCycles,
+      enableOutputValidation: coreConfig.verification.enableOutputValidation,
+    },
     persistence: coreConfig.persistence,
   }
 }

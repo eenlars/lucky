@@ -5,7 +5,7 @@
  */
 
 import path from "node:path"
-import { DEFAULT_RUNTIME_CONFIG } from "@lucky/contracts/config"
+import { DEFAULT_RUNTIME_CONFIG } from "@lucky/shared/contracts/config"
 import type { CoreConfig, CoreModelsConfig } from "./types"
 
 /**
@@ -60,9 +60,16 @@ export function createDefaultCoreConfig(): CoreConfig {
     workflow: DEFAULT_RUNTIME_CONFIG.workflow,
     evolution: DEFAULT_RUNTIME_CONFIG.evolution,
     improvement: DEFAULT_RUNTIME_CONFIG.improvement,
-    limits: DEFAULT_RUNTIME_CONFIG.limits,
-    context: DEFAULT_RUNTIME_CONFIG.context,
-    verification: DEFAULT_RUNTIME_CONFIG.verification,
+    limits: {
+      ...DEFAULT_RUNTIME_CONFIG.limits,
+      maxFilesPerWorkflow: DEFAULT_RUNTIME_CONFIG.context.maxFilesPerWorkflow,
+      enforceFileLimit: DEFAULT_RUNTIME_CONFIG.context.enforceFileLimit,
+    },
+    verification: {
+      ...DEFAULT_RUNTIME_CONFIG.verification,
+      maxFilesPerWorkflow: DEFAULT_RUNTIME_CONFIG.context.maxFilesPerWorkflow,
+      enforceFileLimit: DEFAULT_RUNTIME_CONFIG.context.enforceFileLimit,
+    },
 
     // Persistence with env var override
     persistence: {

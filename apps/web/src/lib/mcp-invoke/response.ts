@@ -1,4 +1,4 @@
-import { ErrorCodes } from "@lucky/contracts/invoke"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { InvocationMetadata } from "./types"
 
 /**

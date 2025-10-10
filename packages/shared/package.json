@@ -26,6 +26,30 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./contracts/agent": {
+      "types": "./dist/contracts/agent.d.ts",
+      "import": "./dist/contracts/agent.js"
+    },
+    "./contracts/invoke": {
+      "types": "./dist/contracts/invoke.d.ts",
+      "import": "./dist/contracts/invoke.js"
+    },
+    "./contracts/messages": {
+      "types": "./dist/contracts/messages.d.ts",
+      "import": "./dist/contracts/messages.js"
+    },
+    "./contracts/runtime": {
+      "types": "./dist/contracts/runtime.d.ts",
+      "import": "./dist/contracts/runtime.js"
+    },
+    "./contracts/tools": {
+      "types": "./dist/contracts/tools.d.ts",
+      "import": "./dist/contracts/tools.js"
+    },
+    "./contracts/workflow": {
+      "types": "./dist/contracts/workflow.d.ts",
+      "import": "./dist/contracts/workflow.js"
+    },
     "./client": {
       "browser": {
         "types": "./dist/client.d.ts",
@@ -78,10 +102,15 @@
       "node": {
         "import": "./dist/utils/observability/obs.js"
       }
+    },
+    "./utils/validateJsonSchema": {
+      "types": "./dist/utils/validateJsonSchema.d.ts",
+      "import": "./dist/utils/validateJsonSchema.js"
     }
   },
   "dependencies": {
-    "@lucky/contracts": "workspace:*",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "json5": "^2.2.3",
     "papaparse": "^5.5.3",
     "zod": "^3.25.76",
@@ -90,6 +119,7 @@
   "devDependencies": {
     "@supabase/supabase-js": "^2.49.4",
     "@types/bun": "latest",
+    "@types/json-schema": "^7.0.15",
     "@types/node": "^18.19.0",
     "@types/papaparse": "^5.3.16",
     "prettier": "^3.4.2",

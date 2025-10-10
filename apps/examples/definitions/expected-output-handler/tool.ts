@@ -3,9 +3,8 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { zodToJson } from "@core/utils/zod/zodToJson"
-import { JSONN } from "@lucky/shared"
-import { Tools } from "@lucky/shared"
+import { zodToJson } from "@core/utils/validation/zodToJson"
+import { JSONN, Tools } from "@lucky/shared"
 import { type CodeToolResult, defineTool } from "@lucky/tools"
 import { z } from "zod"
 /**
@@ -14,6 +13,8 @@ import { z } from "zod"
  */
 const expectedOutputHandler = defineTool({
   name: "expectedOutputHandler",
+  description:
+    "Handle LLM requests with expected output validation. Sends prompt to AI model and validates response against provided schema. LIMITS: schema validation may fail with complex outputs, retries limited to 2 attempts.",
   params: z.object({
     dataToTransform: z.string().describe("All the data that needs to be transformed to the right format."),
     strictness: z.enum(["strict", "lenient"]).default("lenient"),

@@ -1,6 +1,6 @@
 import { providersV2 } from "@core/utils/spending/modelInfo"
-import type { ModelName, ModelPricingV2, StandardModels } from "@core/utils/spending/models.types"
-import type { LuckyProvider } from "@lucky/shared"
+import type { ModelName } from "@core/utils/spending/models.types"
+import type { LuckyProvider, StandardModels } from "@lucky/shared"
 
 // model runtime configuration
 export const MODEL_CONFIG = {
@@ -19,7 +19,7 @@ export const MODEL_CONFIG = {
 } as const
 
 /* ---------- DEFAULT MODELS ---------- */
-export const DEFAULT_MODELS = {
+export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   openrouter: {
     summary: "google/gemini-2.5-flash-lite",
     nano: "google/gemini-2.5-flash-lite",
@@ -53,13 +53,9 @@ export const DEFAULT_MODELS = {
     reasoning: "gpt-4.1-mini",
     fallback: "gpt-4.1-mini",
   },
-} satisfies {
-  [T in LuckyProvider]: StandardModels<T, "any">
 }
 
-type DEFAULT_MODELS_BY_CURRENT_PROVIDER = (typeof DEFAULT_MODELS)[typeof MODEL_CONFIG.provider]
-
-export const getDefaultModels = (): DEFAULT_MODELS_BY_CURRENT_PROVIDER => {
+export const getDefaultModels = (): StandardModels => {
   const provider = MODEL_CONFIG.provider
   return DEFAULT_MODELS[provider]
 }
@@ -104,4 +100,4 @@ export const experimentalModels = {
   moonshotKimiK2Instruct: providersV2[MODEL_CONFIG.provider]["moonshotai/kimi-k2-instruct"],
   llama318bInstruct: providersV2[MODEL_CONFIG.provider]["meta-llama/llama-3.1-8b-instruct"],
   gpt5: providersV2[MODEL_CONFIG.provider]["openai/gpt-5"],
-} as const satisfies Record<string, ModelPricingV2>
+}

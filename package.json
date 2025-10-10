@@ -4,9 +4,6 @@
   "private": true,
   "packageManager": "bun@1.2.22",
   "workspaces": ["apps/*", "packages/*"],
-  "dependencies": {
-    "ai": "^5.0.58"
-  },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@lucky/core": "workspace:*",
@@ -42,6 +39,7 @@
     "build:tools": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/tools",
     "build:app": "bun --env-file .env --env-file .env.local turbo run build --filter=together",
     "build:packages": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/shared --filter=@lucky/tools",
+    "build:examples": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/examples",
     "test": "bun --env-file .env --env-file .env.local turbo run test",
     "test:unit": "bun --env-file .env --env-file .env.local turbo run test:unit",
     "test:integration": "bun --env-file .env --env-file .env.local turbo run test:integration",

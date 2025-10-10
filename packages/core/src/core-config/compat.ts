@@ -1,18 +1,18 @@
 /**
  * Compatibility layer for core-config migration.
- * RE-EXPORTS from @lucky/contracts for backward compatibility.
+ * RE-EXPORTS from @lucky/shared/contracts for backward compatibility.
  *
- * MIGRATION: All imports now come from @lucky/contracts.
- * New code should import directly from '@lucky/contracts/*'
+ * MIGRATION: All imports now come from @lucky/shared/contracts.
+ * New code should import directly from '@lucky/shared/contracts/*'
  */
 
 import path from "node:path"
 import type { AnyModelName } from "@core/utils/spending/models.types"
-import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from "@lucky/contracts/config"
-import type { ModelDefaults } from "@lucky/contracts/config"
-import { createEvolutionSettings } from "@lucky/contracts/evolution"
-import type { EvaluationInput } from "@lucky/contracts/ingestion"
-import { type AllToolNames, DEFAULT_INACTIVE_TOOLS, TOOLS } from "@lucky/contracts/tools"
+import type { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from "@lucky/shared/contracts/config"
+import type { ModelDefaults } from "@lucky/shared/contracts/config"
+import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
+import type { EvaluationInput } from "@lucky/shared/contracts/ingestion"
+import { type AllToolNames, DEFAULT_INACTIVE_TOOLS, TOOLS } from "@lucky/shared/contracts/tools"
 
 // Import live core config to support runtime overrides
 import type { CoreConfig } from "./types"

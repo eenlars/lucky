@@ -20,6 +20,8 @@ type OutputType = {
  */
 const contextHandler = defineTool({
   name: "contextHandler",
+  description:
+    "Store/retrieve workflow or node-scoped data. Operations: get, set, list, delete. Persists across workflow executions. LIMITS: simple key-value storage only, no complex queries, delete operation sets to null (not true deletion), requires workflowInvocationId.",
   params: z.object({
     operation: z.enum(["get", "set", "list", "delete"]).describe("Operation to perform: get, set, list, or delete"),
 
