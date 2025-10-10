@@ -1,68 +1,64 @@
+"use client"
+
+import { ChatInterface } from "@/chat-interface"
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
-import { QuickStartCard } from "@/components/quick-start/QuickStartCard"
-import Link from "next/link"
+import { Sparkles } from "lucide-react"
+import { useState } from "react"
 
 export default function HomePage() {
+  const [hasStartedChat, setHasStartedChat] = useState(false)
+
+  const handleSendMessage = (message: string) => {
+    // Mark that chat has started (hide demo button)
+    if (!hasStartedChat) {
+      setHasStartedChat(true)
+    }
+    // In full implementation, this would send to backend
+    console.log("Message sent:", message)
+  }
+
+  const handleDemoClick = () => {
+    // Trigger demo workflow - navigate to editor with demo preset
+    window.location.href = "/edit?demo=customer-feedback"
+  }
+
   return (
-    <div className="min-h-screen bg-white pt-24">
+    <div className="flex flex-col h-screen bg-white">
       <OnboardingGuide />
-      <div className="max-w-4xl mx-auto px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-extralight text-black tracking-tight mb-6">AI Workflows That Learn</h1>
-          <p className="text-lg font-light text-black/60 tracking-wide">
-            Create workflows that automatically optimize themselves to solve your tasks better
-          </p>
+
+      {/* Demo Button - Shows before first message */}
+      {!hasStartedChat && (
+        <div className="border-b border-black/10 bg-gradient-to-b from-black/[0.02] to-transparent animate-in fade-in slide-in-from-top duration-500">
+          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+            <button
+              type="button"
+              onClick={handleDemoClick}
+              className="w-full group flex items-center justify-between p-4 sm:p-6 border-2 border-dashed border-black/20 rounded-2xl hover:border-black/40 hover:bg-black/[0.02] hover:shadow-sm transition-all duration-300 active:scale-[0.99]"
+            >
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center group-hover:from-black/10 group-hover:to-black/15 transition-all duration-300">
+                  <Sparkles size={18} className="sm:size-5 text-black/60 group-hover:text-black/80 transition-colors" />
+                </div>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-base sm:text-lg font-medium text-black mb-0.5 sm:mb-1 group-hover:text-black transition-colors">
+                    Try a demo workflow
+                  </h3>
+                  <p className="text-xs sm:text-sm font-light text-black/60 group-hover:text-black/70 transition-colors line-clamp-2">
+                    See how AI workflows can analyze customer feedback and generate insights
+                  </p>
+                </div>
+              </div>
+              <div className="text-xl sm:text-2xl text-black/40 group-hover:text-black/60 group-hover:translate-x-1 transition-all shrink-0 ml-2">
+                →
+              </div>
+            </button>
+          </div>
         </div>
+      )}
 
-        <div className="mb-16">
-          <QuickStartCard />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <Link
-            href="/edit"
-            className="group flex flex-col items-center p-8 transition-all duration-300 hover:translate-y-[-2px]"
-          >
-            <div className="w-16 h-16 mb-6 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors duration-300">
-              <span className="text-2xl">✎</span>
-            </div>
-            <h3 className="text-xl font-light text-black mb-2">Create</h3>
-            <p className="text-sm font-light text-black/50 text-center tracking-wide">Build your workflow</p>
-          </Link>
-
-          <Link
-            href="/invocations"
-            className="group flex flex-col items-center p-8 transition-all duration-300 hover:translate-y-[-2px]"
-          >
-            <div className="w-16 h-16 mb-6 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors duration-300">
-              <span className="text-2xl">●</span>
-            </div>
-            <h3 className="text-xl font-light text-black mb-2">History</h3>
-            <p className="text-sm font-light text-black/50 text-center tracking-wide">See past runs</p>
-          </Link>
-
-          <Link
-            href="/evolution"
-            className="group flex flex-col items-center p-8 transition-all duration-300 hover:translate-y-[-2px]"
-          >
-            <div className="w-16 h-16 mb-6 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors duration-300">
-              <span className="text-2xl">◊</span>
-            </div>
-            <h3 className="text-xl font-light text-black mb-2">Learning</h3>
-            <p className="text-sm font-light text-black/50 text-center tracking-wide">Watch workflows improve</p>
-          </Link>
-
-          <Link
-            href="/edit?mode=eval"
-            className="group flex flex-col items-center p-8 transition-all duration-300 hover:translate-y-[-2px]"
-          >
-            <div className="w-16 h-16 mb-6 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors duration-300">
-              <span className="text-2xl">⇪</span>
-            </div>
-            <h3 className="text-xl font-light text-black mb-2">Test</h3>
-            <p className="text-sm font-light text-black/50 text-center tracking-wide">Try with your data</p>
-          </Link>
-        </div>
+      {/* Chat Interface */}
+      <div className="flex-1 overflow-hidden">
+        <ChatInterface onSendMessage={handleSendMessage} placeholder="Ask me anything about workflows..." />
       </div>
     </div>
   )

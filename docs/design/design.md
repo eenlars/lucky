@@ -211,12 +211,55 @@ Page Layout/
 └── Action sections (quick actions, etc.)
 ```
 
+## Chat Interface Design System
+
+### Color System
+
+The chat interface uses semantic color tokens for consistent theming:
+
+```css
+/* Chat-specific color tokens */
+--chat-background: 0 0% 100%; /* Main background */
+--chat-foreground: 0 0% 9%; /* Primary text */
+--chat-border: 0 0% 89.8%; /* Border color */
+--chat-muted: 0 0% 40%; /* Secondary text (timestamps, placeholders) */
+--chat-accent: 0 0% 95.7%; /* Assistant message background */
+--chat-primary: 0 0% 0%; /* User message background (signal color) */
+```
+
+### Design Principles Applied
+
+**Monochrome First**: Following the vision "Color Is Information", the chat interface uses monochrome for structure with color only for signal (user messages in black).
+
+**Semantic Tokens**: All colors use CSS custom properties enabling theme switching and brand customization.
+
+**Timing Functions**: All transitions use `cubic-bezier(0.4, 0, 0.2, 1)` with 200ms duration per design system standards.
+
+### Component Styling
+
+#### ChatInput
+- Border: `border-chat-border`
+- Focus state: `focus:border-chat-foreground/40 focus:ring-chat-foreground/5`
+- Placeholder: `placeholder:text-chat-muted`
+- Background: `bg-chat-background`
+
+#### UserMessage
+- Background: `bg-chat-primary` (black - signal color)
+- Text: `text-white`
+- Timestamp: `text-chat-muted`
+
+#### AssistantMessage
+- Background: `bg-chat-accent`
+- Text: `text-chat-foreground`
+- Border: `border-chat-border`
+- Timestamp: `text-chat-muted`
+
 ## Future Extensibility
 
 ### Planned Brand Elements
 
+- [x] Brand color theming system
 - [ ] Custom logo integration
-- [ ] Brand color theming system
 - [ ] Typography scale refinement
 - [ ] Icon library standardization
 - [ ] Animation library expansion

@@ -52,6 +52,13 @@
   --color-sidebar-ring: hsl(var(--sidebar-ring));
   --color-sidebar-muted: hsl(var(--sidebar-muted));
 
+  --color-chat-background: hsl(var(--chat-background));
+  --color-chat-foreground: hsl(var(--chat-foreground));
+  --color-chat-border: hsl(var(--chat-border));
+  --color-chat-muted: hsl(var(--chat-muted));
+  --color-chat-accent: hsl(var(--chat-accent));
+  --color-chat-primary: hsl(var(--chat-primary));
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -155,6 +162,12 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --sidebar-muted: 0 0% 40%;
+    --chat-background: 0 0% 100%;
+    --chat-foreground: 0 0% 9%;
+    --chat-border: 0 0% 89.8%;
+    --chat-muted: 0 0% 40%;
+    --chat-accent: 0 0% 95.7%;
+    --chat-primary: 0 0% 0%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -190,6 +203,12 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --sidebar-muted: 0 0% 40%;
+    --chat-background: 0 0% 3.9%;
+    --chat-foreground: 0 0% 98%;
+    --chat-border: 0 0% 14.9%;
+    --chat-muted: 0 0% 63.9%;
+    --chat-accent: 0 0% 14.9%;
+    --chat-primary: 0 0% 100%;
   }
 }
 
