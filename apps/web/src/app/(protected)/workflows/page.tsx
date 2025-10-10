@@ -1,5 +1,6 @@
 "use client"
 
+import { AlertDialog } from "@/components/ui/alert-dialog"
 import { useInvokeWorkflow } from "@/hooks/queries/useInvocationMutations"
 import { useDeleteWorkflow } from "@/hooks/queries/useWorkflowMutations"
 import { useWorkflowsQuery } from "@/hooks/queries/useWorkflowsQuery"
@@ -139,11 +140,38 @@ function formatTimeAgo(date: Date): string {
 
 export default function WorkflowsPage() {
   const [runningWorkflows, setRunningWorkflows] = useState<Set<string>>(new Set())
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean
+    workflowId: string | null
+  }>({
+    open: false,
+    workflowId: null,
+  })
+  const [alertDialog, setAlertDialog] = useState<{
+    open: boolean
+    title: string
+    description: string
+    variant?: "default" | "error" | "success"
+  }>({
+    open: false,
+    title: "",
+    description: "",
+    variant: "default",
+  })
 
   // Use TanStack Query hooks
   const { data: workflows = [], isLoading, error, refetch } = useWorkflowsQuery()
   const invokeWorkflow = useInvokeWorkflow()
-  const deleteWorkflowMutation = useDeleteWorkflow()
+  const deleteWorkflowMutation = useDeleteWorkflow({
+    onError: (error: Error) => {
+      setAlertDialog({
+        open: true,
+        title: "Failed to delete workflow",
+        description: error.message || "An unknown error occurred while deleting the workflow.",
+        variant: "error",
+      })
+    },
+  })
 
   const handleRun = async (workflow: WorkflowWithVersions) => {
     if (!workflow.activeVersion) return
@@ -164,15 +192,23 @@ export default function WorkflowsPage() {
       })
 
       if (result.success) {
-        alert(
-          `Workflow completed successfully!\n\nOutput: ${JSON.stringify(result.data, null, 2)}\n\nCost: $${result.usdCost?.toFixed(4) || "0"}`,
-        )
+        setAlertDialog({
+          open: true,
+          title: "Workflow completed successfully",
+          description: `Output: ${JSON.stringify(result.data, null, 2)}\n\nCost: $${result.usdCost?.toFixed(4) || "0"}`,
+          variant: "success",
+        })
       } else {
         throw new Error(result.error || "Workflow execution failed")
       }
     } catch (error) {
       console.error("Failed to run workflow:", error)
-      alert(`Failed to run workflow: ${error instanceof Error ? error.message : "Unknown error"}`)
+      setAlertDialog({
+        open: true,
+        title: "Failed to run workflow",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "error",
+      })
     } finally {
       setRunningWorkflows(prev => {
         const next = new Set(prev)
@@ -182,9 +218,16 @@ export default function WorkflowsPage() {
     }
   }
 
-  const handleDelete = async (workflowId: string) => {
-    if (confirm("Are you sure you want to delete this workflow?")) {
-      await deleteWorkflowMutation.mutateAsync(workflowId)
+  const handleDelete = (workflowId: string) => {
+    setConfirmDialog({
+      open: true,
+      workflowId,
+    })
+  }
+
+  const confirmDelete = async () => {
+    if (confirmDialog.workflowId) {
+      await deleteWorkflowMutation.mutateAsync(confirmDialog.workflowId)
     }
   }
 
@@ -262,6 +305,27 @@ export default function WorkflowsPage() {
           {deleteWorkflowMutation.isPending && "Deleting..."}
         </div>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <AlertDialog
+        open={confirmDialog.open}
+        onOpenChange={open => setConfirmDialog(prev => ({ ...prev, open }))}
+        title="Delete workflow"
+        description="Are you sure you want to delete this workflow? This action cannot be undone."
+        variant="error"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+      />
+
+      {/* Alert Dialog */}
+      <AlertDialog
+        open={alertDialog.open}
+        onOpenChange={open => setAlertDialog(prev => ({ ...prev, open }))}
+        title={alertDialog.title}
+        description={alertDialog.description}
+        variant={alertDialog.variant}
+      />
     </div>
   )
 }
