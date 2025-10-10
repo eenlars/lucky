@@ -7,7 +7,7 @@
 
 "use client"
 
-import type { ChatMessageProps } from "../../types"
+import type { ChatMessageProps } from "@/chat-interface/types"
 import { AssistantMessage } from "./AssistantMessage"
 import { UserMessage } from "./UserMessage"
 

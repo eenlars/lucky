@@ -6,9 +6,9 @@
 
 "use client"
 
+import type { ChatMessageProps } from "@/chat-interface/types"
+import { ANIMATIONS } from "@/chat-interface/utils/animation-utils"
 import { cn } from "@/lib/utils"
-import type { ChatMessageProps } from "../../types"
-import { ANIMATIONS } from "../../utils/animation-utils"
 import { MessageActions } from "./MessageActions"
 import { MessageContent } from "./MessageContent"
 import { MessageTimestamp } from "./MessageTimestamp"
