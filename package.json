@@ -4,9 +4,6 @@
   "private": true,
   "packageManager": "bun@1.2.22",
   "workspaces": ["apps/*", "packages/*"],
-  "dependencies": {
-    "ai": "^5.0.58"
-  },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@lucky/core": "workspace:*",
