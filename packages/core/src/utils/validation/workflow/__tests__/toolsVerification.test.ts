@@ -1,4 +1,6 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { CONFIG, getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, initCoreConfig } from "@core/core-config/coreConfig"
+import type { CoreToolsConfig } from "@core/core-config/types"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -69,7 +71,11 @@ vi.mock("@core/tools/tool.types", () => ({
   INACTIVE_TOOLS: new Set(["readFileLegacy", "deprecatedTool"]),
 }))
 
-import { CONFIG } from "@core/core-config/compat"
+const applyToolOverrides = (overrides: Partial<CoreToolsConfig>) => {
+  const baseTools = getCoreConfig().tools
+  const nextTools = { ...baseTools, ...overrides } as CoreToolsConfig
+  initCoreConfig({ tools: nextTools })
+}
 
 const _validModel = getDefaultModels().medium
 const wrongExample: WorkflowConfig = {
@@ -193,8 +199,12 @@ const duplicateHandoffsExample: WorkflowConfig = {
 describe("verifyToolsUnique", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Ensure unique tools are enforced
-    ;(CONFIG.tools as any).uniqueToolsPerAgent = true
+    initCoreConfig()
+    applyToolOverrides({ uniqueToolsPerAgent: true })
+  })
+
+  afterEach(() => {
+    initCoreConfig()
   })
 
   it("should detect tools used by multiple nodes", async () => {
@@ -213,7 +223,7 @@ describe("verifyToolsUnique", () => {
   })
 
   it("should allow duplicate tools when uniqueToolsPerAgent is false", async () => {
-    ;(CONFIG.tools as any).uniqueToolsPerAgent = false
+    applyToolOverrides({ uniqueToolsPerAgent: false })
 
     const errors = await verifyToolsUnique(wrongExample)
     expect(errors).toEqual([])
@@ -414,7 +424,12 @@ describe("verifyAllToolsAreActive", () => {
 
 describe("verifyToolSetEachNodeIsUnique", () => {
   beforeEach(() => {
-    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = true
+    initCoreConfig()
+    applyToolOverrides({ uniqueToolSetsPerAgent: true })
+  })
+
+  afterEach(() => {
+    initCoreConfig()
   })
 
   it("should detect nodes with identical tool sets", async () => {
@@ -501,7 +516,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
   })
 
   it("should skip validation when uniqueToolSetsPerAgent is false", async () => {
-    ;(CONFIG.tools as any).uniqueToolSetsPerAgent = false
+    applyToolOverrides({ uniqueToolSetsPerAgent: false })
 
     const duplicateToolSetWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
