@@ -4,9 +4,10 @@ import { Card } from "@/components/ui/card"
 import { isNir } from "@lucky/shared/client"
 import { CheckCircle2, ChevronDown, ChevronUp, Copy } from "lucide-react"
 import dynamic from "next/dynamic"
+import type { ReactJsonViewProps } from "react-json-view"
 import { getReactJsonTheme, getStepIcon, getStepTheme } from "./utils"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
+const ReactJson = dynamic<ReactJsonViewProps>(() => import("react-json-view").then(mod => mod.default), { ssr: false })
 
 interface TerminateStepProps {
   index: number

@@ -3,6 +3,7 @@
  * Provides properly typed CONFIG objects for testing with validation
  */
 
+import { toRuntimeContract } from "@core/core-config/validation"
 import type { FlowRuntimeConfig } from "@core/types"
 import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 

@@ -40,8 +40,14 @@ export default function WorkflowInvocationButton({ workflowVersionId }: Workflow
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl max-w-3xl w-full mx-4 shadow-2xl transform transition-all">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="bg-white rounded-xl max-w-3xl w-full mx-4 shadow-2xl transform transition-all"
+            onClick={e => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">

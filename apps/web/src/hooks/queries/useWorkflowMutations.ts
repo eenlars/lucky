@@ -79,15 +79,38 @@ export function useUpdateWorkflowDescription() {
 }
 
 /**
- * Mutation hook to delete a workflow
+ * Mutation hook to delete a workflow with optimistic updates
  */
-export function useDeleteWorkflow() {
+export function useDeleteWorkflow(options?: { onError?: (error: Error) => void }) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (workflowId: string) => deleteWorkflow(workflowId),
-    onSuccess: (_, workflowId) => {
-      // Invalidate both the specific workflow detail and workflows list
+    onMutate: async workflowId => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.workflows.lists() })
+
+      // Snapshot previous value
+      const previousWorkflows = queryClient.getQueryData(queryKeys.workflows.lists())
+
+      // Optimistically update to filter out the deleted workflow
+      queryClient.setQueryData(queryKeys.workflows.lists(), (old: any) => {
+        if (!old) return old
+        return old.filter((w: any) => w.wf_id !== workflowId)
+      })
+
+      return { previousWorkflows }
+    },
+    onError: (err, workflowId, context) => {
+      // Rollback on error
+      if (context?.previousWorkflows) {
+        queryClient.setQueryData(queryKeys.workflows.lists(), context.previousWorkflows)
+      }
+      // Call custom error handler if provided
+      options?.onError?.(err as Error)
+    },
+    onSettled: (_, __, workflowId) => {
+      // Refetch to ensure consistency
       queryClient.invalidateQueries({
         queryKey: queryKeys.workflows.detail(workflowId),
       })

@@ -1,4 +1,6 @@
 import type { LuckyProvider } from "@lucky/shared"
+import type { LucideIcon } from "lucide-react"
+import { Bot, Globe, Zap } from "lucide-react"
 
 export interface ProviderConfig {
   name: string
@@ -6,7 +8,7 @@ export interface ProviderConfig {
   description: string
   apiKeyName: string
   apiKeyPrefix: string
-  icon: string
+  icon: LucideIcon
   docsUrl: string
   keysUrl: string
   defaultModelsCount: number
@@ -19,7 +21,7 @@ export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
     description: "Direct access to GPT models from OpenAI",
     apiKeyName: "OPENAI_API_KEY",
     apiKeyPrefix: "sk-",
-    icon: "🤖",
+    icon: Bot,
     docsUrl: "https://platform.openai.com/docs",
     keysUrl: "https://platform.openai.com/api-keys",
     defaultModelsCount: 8,
@@ -30,7 +32,7 @@ export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
     description: "Ultra-fast inference with Groq's LPU",
     apiKeyName: "GROQ_API_KEY",
     apiKeyPrefix: "gsk_",
-    icon: "⚡",
+    icon: Zap,
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
     defaultModelsCount: 12,
@@ -41,7 +43,7 @@ export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
     description: "Access to 100+ models from multiple providers",
     apiKeyName: "OPENROUTER_API_KEY",
     apiKeyPrefix: "sk-or-v1-",
-    icon: "🌐",
+    icon: Globe,
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
     defaultModelsCount: 150,
@@ -104,10 +106,6 @@ export async function testConnection(
   } catch (_error) {
     return { success: false, error: "Network error during connection test" }
   }
-}
-
-export function getEnabledModelsKey(provider: LuckyProvider): string {
-  return `${provider}_enabled_models`
 }
 
 export function getProviderStatus(

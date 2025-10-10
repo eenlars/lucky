@@ -20,8 +20,9 @@ import {
 } from "lucide-react"
 import dynamic from "next/dynamic"
 import { useEffect, useRef, useState } from "react"
+import type { ReactJsonViewProps } from "react-json-view"
 
-const ReactJson = dynamic(() => import("react-json-view"), { ssr: false })
+const ReactJson = dynamic<ReactJsonViewProps>(() => import("react-json-view").then(mod => mod.default), { ssr: false })
 
 // Helper function to get ReactJson theme based on current theme
 const getReactJsonTheme = () => {

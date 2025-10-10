@@ -25,11 +25,12 @@ import { executeRunMode } from "./run-mode-handler"
  *    - Calls /api/workflow/invoke
  */
 export function WorkflowPromptBar() {
-  const { exportToJSON, loadWorkflowFromData, organizeLayout } = useAppStore(
+  const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage } = useAppStore(
     useShallow(state => ({
       exportToJSON: state.exportToJSON,
       loadWorkflowFromData: state.loadWorkflowFromData,
       organizeLayout: state.organizeLayout,
+      addChatMessage: state.addChatMessage,
     })),
   )
 
@@ -41,9 +42,14 @@ export function WorkflowPromptBar() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const hideLogsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const addLog = useCallback((message: string) => {
-    setLogs(prev => [...prev, message])
-  }, [])
+  const addLog = useCallback(
+    (message: string) => {
+      setLogs(prev => [...prev, message])
+      // Also add to chat sidebar
+      addChatMessage(message, "system")
+    },
+    [addChatMessage],
+  )
 
   // Auto-resize textarea
   useEffect(() => {
@@ -91,7 +97,9 @@ export function WorkflowPromptBar() {
 
     if (isRunMode) {
       // Run Mode: Execute workflow with input
-      const result = await executeRunMode(prompt.trim(), exportToJSON, addLog)
+      const result = await executeRunMode(prompt.trim(), exportToJSON, addLog, (finalMessage: string) => {
+        addChatMessage(finalMessage, "result")
+      })
 
       if (result.success) {
         toast.success("Workflow completed")
@@ -99,6 +107,7 @@ export function WorkflowPromptBar() {
         // Keep logs visible in run mode so user can see output
       } else {
         toast.error(result.error || "Workflow execution failed")
+        addChatMessage(result.error || "Workflow execution failed", "error")
       }
     } else {
       // Edit Mode: Modify workflow structure with AI
@@ -120,7 +129,7 @@ export function WorkflowPromptBar() {
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, isRunMode, exportToJSON, loadWorkflowFromData, organizeLayout, addLog])
+  }, [prompt, isGenerating, isRunMode, exportToJSON, loadWorkflowFromData, organizeLayout, addLog, addChatMessage])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

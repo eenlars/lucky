@@ -8,15 +8,15 @@ This document tracks the critical path from "new user arrives" to "user gets rea
 
 ## The Five-Minute Journey (Current State)
 
-1. **Land on homepage** (0:00)
-   - See: "AI Workflows That Learn"
-   - Onboarding modal appears
-   - Decision: Skip or click through 3 steps
+1. **Sign in** (0:00)
+   - Land on homepage
+   - Clerk authentication (GitHub, Google, or email)
+   - Redirect to dashboard
 
-2. **Click "Create"** (0:30)
-   - Navigate to `/edit`
+2. **View existing workflows or create** (0:30)
+   - See: Workflow list with examples
+   - Click "Create" → Navigate to `/edit`
    - See: Empty workflow editor
-   - Need to: Configure nodes, set prompts, choose models
 
 3. **Configure first node** (1:00)
    - Write system prompt
@@ -25,27 +25,26 @@ This document tracks the critical path from "new user arrives" to "user gets rea
    - Set up handoffs
 
 4. **Test the workflow** (3:00)
-   - Click "Test"
+   - Click "Test" or "Run"
    - Enter input
    - Wait for execution
-   - See results
+   - See results in real-time
 
 5. **Get value** (4:30)
    - Workflow completes successfully
    - User sees useful output
-   - **OR** workflow fails and user gets clear error
+   - View execution trace and costs
+   - **OR** workflow fails with clear error message
 
 ## Current Blockers
 
 ### 1. Provider Configuration
-**Problem**: Users can't run workflows without API keys configured
+**Status**: ✅ **RESOLVED** - Workflows can now run without Supabase using `USE_MOCK_PERSISTENCE=true`
 
-**Impact**: Dead stop at step 4
-
-**Fix needed**:
-- Better error message pointing to `/settings`
-- Or: Use platform-provided keys for testing
-- Or: Pre-populate with test mode
+**Remaining improvements**:
+- Better error message pointing to `/settings` when API keys are missing
+- Clearer documentation about required environment variables
+- UI indicator showing which providers are configured
 
 ### 2. Tool-Use Reliability
 **Problem**: Tool calls fail or hallucinate parameters
@@ -78,14 +77,13 @@ This document tracks the critical path from "new user arrives" to "user gets rea
 - "Timeout" → Explain budget settings, how to adjust
 
 ### 5. First-Run Experience
-**Problem**: Empty state doesn't guide users
+**Status**: 🟡 **PARTIALLY RESOLVED** - Auth is working, examples exist
 
-**Impact**: Users stare at blank screen, bounce
-
-**Fix needed**:
-- Sample workflows that work immediately
+**Remaining improvements**:
+- More visible sample workflows on dashboard
+- Quick-start templates ("Customer Email Reply", "Research Summarizer")
 - Video/GIF showing a successful run
-- "Try this example" button
+- "Try this example" one-click workflow execution
 
 ## Success Metrics
 
@@ -119,14 +117,16 @@ Evolution comes later, after:
 ## The Test
 
 Can a developer who's never seen this before:
-- Clone the repo
-- Run `bun install && bun run dev`
-- Create and execute a working workflow
+- Clone the repo: `git clone https://github.com/eenlars/lucky.git`
+- Install: `bun install`
+- Configure: `cp .env.example .env.local` and add API keys
+- Run a workflow: `USE_MOCK_PERSISTENCE=true bun -C packages/core run once`
 - Get valuable output
 
 In under 5 minutes?
 
-If not, we're not done.
+**Current status**: ✅ Yes, for core workflows (no Supabase required)
+**Remaining work**: Streamline UI first-run experience
 
 ---
 

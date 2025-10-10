@@ -37,11 +37,11 @@ Prerequisites: Bun 1.2+, Node 18+, Git.
 
 ```bash
 # Clone and install dependencies at the repo root
-git clone <repository-url>
-cd together
+git clone https://github.com/eenlars/lucky.git
+cd lucky
 bun install  # This also builds required packages
 
-# Configure environment once at the repo root
+# Configure environment at the repo root
 cp .env.example .env.local
 # Fill in your API keys and settings in .env.local (and optionally .env)
 
@@ -89,7 +89,7 @@ Tip: If you prefer running `next dev` inside `apps/web` directly, create a symli
 ln -s ../../.env.local apps/web/.env.local
 ```
 - Path aliases: prefer `@core`, `@shared` in tests and code where available.
-- Formatting/Linting: Prettier config at `.prettierrc.yaml`; run `cd apps/web && bun run format` or `cd packages/core && bun run format`.
+- Formatting/Linting: Biome config at `biome.json`; run `bun run format` at the root to format all files, or `bun run format:check` to check formatting.
 
 ## How It Works
 
@@ -144,14 +144,15 @@ const addresses = await workflow.ask("Find all Tony Chocolonely stores")
 # Install dependencies (also builds shared packages)
 bun install
 
-# App environment
-cp apps/web/.env.example apps/web/.env
+# Configure environment
+cp .env.example .env.local
+# Fill in your API keys (OPENROUTER_API_KEY or OPENAI_API_KEY)
 
-# Run your first workflow:
-cd packages/core && bun once
+# Run your first workflow (without Supabase - uses in-memory storage):
+USE_MOCK_PERSISTENCE=true bun -C packages/core run once
 
-# Or train your first workflow (iteratively):
-cd packages/core && bun iterative
+# Or train your first workflow iteratively:
+USE_MOCK_PERSISTENCE=true bun -C packages/core run iterative
 ```
 
 ## Optimization Algorithms
@@ -175,11 +176,11 @@ Two complementary optimization strategies:
 
 ## Development Roadmap
 
-### Architectual/first-use Todos (HIGH PRIORITY)
+### Architectural/First-Use Todos (HIGH PRIORITY)
 
-- [ ] Running a workflow should be possible without supabase
-- [ ] Login for external users
-- [ ] Isolate core module
+- [x] Running a workflow should be possible without supabase (via `USE_MOCK_PERSISTENCE=true`)
+- [x] Login for external users (Clerk authentication integrated)
+- [x] Isolate core module (`@lucky/core` package with clean exports)
 - [ ] Isolate Evolutionary module
 
 ### System Robustness
