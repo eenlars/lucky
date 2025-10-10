@@ -119,6 +119,8 @@ export const TOOL_CONFIG = {
   usePrepareStepStrategy: false, // Use experimental_prepareStep instead of single toolChoice
   experimentalMultiStepLoop: true, // in kimi, it might be working with an auto-loop.... -> result: it does not work!
   showParameterSchemas: false, // Keep global default; expose selectively via prompts when needed
+  mcp: TOOLS.mcp,
+  code: TOOLS.code,
 } as const
 
 // tool-related improvement settings

@@ -9,14 +9,46 @@
 import path from "node:path"
 import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from "@lucky/shared/contracts/config"
-import type { ModelDefaults } from "@lucky/shared/contracts/config"
+import type { EvolutionSettings } from "@lucky/shared/contracts/evolution"
 import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
 import type { EvaluationInput } from "@lucky/shared/contracts/ingestion"
-import { type AllToolNames, DEFAULT_INACTIVE_TOOLS, TOOLS } from "@lucky/shared/contracts/tools"
+import { type AllToolNames, TOOLS } from "@lucky/shared/contracts/tools"
 
 // Import live core config to support runtime overrides
-import type { CoreConfig } from "./types"
+import type { CoreConfig, CorePathsConfig } from "./types"
 import { toRuntimeContract } from "./validation"
+
+type CompatToolDefinitions = typeof TOOLS
+
+type LegacyToolConfig = RuntimeConfig["tools"] & {
+  readonly mcp: CompatToolDefinitions["mcp"]
+  readonly code: CompatToolDefinitions["code"]
+}
+
+type LegacyWorkflowConfig = RuntimeConfig["workflow"] & {
+  readonly asyncExecution: boolean
+}
+
+type LegacyLimitsConfig = RuntimeConfig["limits"] & {
+  readonly maxFilesPerWorkflow: number
+  readonly enforceFileLimit: boolean
+}
+
+type LegacyVerificationConfig = RuntimeConfig["verification"] & {
+  readonly maxFilesPerWorkflow: number
+  readonly enforceFileLimit: boolean
+}
+
+type LegacyRuntimeConfig = Omit<RuntimeConfig, "tools" | "limits" | "verification"> & {
+  readonly tools: LegacyToolConfig
+  readonly persistence: RuntimeConfig["persistence"]
+  readonly workflow: LegacyWorkflowConfig
+  readonly limits: LegacyLimitsConfig
+  readonly verification: LegacyVerificationConfig
+  readonly ingestion: {
+    readonly taskLimit: number
+  }
+}
 
 // ============================================================================
 // CONFIGURATION RE-EXPORTS (Live Config Access)
@@ -39,11 +71,23 @@ function getLiveCoreConfig(): CoreConfig {
  * Lazy object that proxies access to live core config
  * This ensures CONFIG always reflects runtime overrides
  */
-const _configProxy = new Proxy({} as any, {
+const _configProxy = new Proxy({} as LegacyRuntimeConfig, {
   get: (_target, prop) => {
     const liveConfig = getLiveCoreConfig()
-    const legacyConfig = createLegacyFlowConfig(toRuntimeContract(liveConfig))
-    return legacyConfig[prop]
+    const legacyConfig = createLegacyFlowConfig(liveConfig)
+
+    if (typeof prop === "string") {
+      if (prop in legacyConfig) {
+        return legacyConfig[prop as keyof LegacyRuntimeConfig]
+      }
+      return undefined
+    }
+
+    if (typeof prop === "symbol") {
+      return (legacyConfig as Record<symbol, unknown>)[prop]
+    }
+
+    return undefined
   },
 })
 
@@ -51,12 +95,12 @@ const _configProxy = new Proxy({} as any, {
  * Runtime configuration (maps to RuntimeConfig)
  * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const CONFIG: any = _configProxy
+export const CONFIG: LegacyRuntimeConfig = _configProxy
 
 /**
  * Lazy object that proxies access to live core paths
  */
-const _pathsProxy = new Proxy({} as any, {
+const _pathsProxy = new Proxy({} as CorePathsConfig, {
   get: (_target, prop) => {
     return getLiveCoreConfig().paths[prop as keyof CoreConfig["paths"]]
   },
@@ -66,12 +110,12 @@ const _pathsProxy = new Proxy({} as any, {
  * Filesystem paths configuration
  * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const PATHS: any = _pathsProxy
+export const PATHS: CorePathsConfig = _pathsProxy
 
 /**
  * Lazy object that proxies access to live model defaults
  */
-const _modelsProxy = new Proxy({} as any, {
+const _modelsProxy = new Proxy({} as TypedModelDefaults, {
   get: (_target, prop) => {
     return getLiveCoreConfig().models.defaults[prop as keyof TypedModelDefaults]
   },
@@ -81,12 +125,14 @@ const _modelsProxy = new Proxy({} as any, {
  * Model defaults
  * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const MODELS: any = _modelsProxy
+export const MODELS: TypedModelDefaults = _modelsProxy
 
 /**
  * Lazy object that proxies access to live model config
  */
-const _modelConfigProxy = new Proxy({} as any, {
+type ModelConfigProxy = Pick<CoreConfig["models"], "provider" | "inactive">
+
+const _modelConfigProxy = new Proxy({} as ModelConfigProxy, {
   get: (_target, prop) => {
     const models = getLiveCoreConfig().models
     if (prop === "provider") return models.provider
@@ -99,7 +145,7 @@ const _modelConfigProxy = new Proxy({} as any, {
  * Model configuration (provider + inactive)
  * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const MODEL_CONFIG: any = _modelConfigProxy
+export const MODEL_CONFIG: ModelConfigProxy = _modelConfigProxy
 
 /**
  * Tool definitions with descriptions
@@ -148,7 +194,7 @@ export function isLoggingEnabled(component: keyof typeof DEFAULT_RUNTIME_CONFIG.
  * Create evolution settings with optional overrides
  * NOW SEEDS FROM LIVE CORE CONFIG to carry through configured defaults
  */
-export function createEvolutionSettingsWithConfig(overrides?: any) {
+export function createEvolutionSettingsWithConfig(overrides?: Partial<EvolutionSettings>) {
   const liveConfig = getLiveCoreConfig()
   const runtimeConfig = toRuntimeContract(liveConfig)
 
@@ -180,21 +226,16 @@ export const SELECTED_QUESTION: EvaluationInput = {
 /**
  * Map RuntimeConfig to legacy FlowRuntimeConfig format
  */
-function createLegacyFlowConfig(runtimeConfig: RuntimeConfig): any {
+function createLegacyFlowConfig(coreConfig: CoreConfig): LegacyRuntimeConfig {
+  const runtimeConfig = toRuntimeContract(coreConfig)
+
   return {
     coordinationType: runtimeConfig.coordinationType,
     newNodeProbability: runtimeConfig.newNodeProbability,
     logging: runtimeConfig.logging,
     workflow: {
-      parallelExecution: runtimeConfig.workflow.parallelExecution,
+      ...runtimeConfig.workflow,
       asyncExecution: false, // deprecated
-      maxTotalNodeInvocations: runtimeConfig.workflow.maxTotalNodeInvocations,
-      maxPerNodeInvocations: runtimeConfig.workflow.maxPerNodeInvocations,
-      maxNodes: runtimeConfig.workflow.maxNodes,
-      handoffContent: runtimeConfig.workflow.handoffContent,
-      prepareProblem: runtimeConfig.workflow.prepareProblem,
-      prepareProblemMethod: runtimeConfig.workflow.prepareProblemMethod,
-      prepareProblemWorkflowVersionId: runtimeConfig.workflow.prepareProblemWorkflowVersionId,
     },
     tools: {
       inactive: runtimeConfig.tools.inactive,
@@ -211,20 +252,28 @@ function createLegacyFlowConfig(runtimeConfig: RuntimeConfig): any {
       mcp: TOOLS.mcp,
       code: TOOLS.code,
     },
-    models: {
-      inactive: runtimeConfig.models.inactive,
-      provider: runtimeConfig.models.provider,
-    },
+    models: runtimeConfig.models,
+    persistence: runtimeConfig.persistence,
     improvement: runtimeConfig.improvement,
-    verification: runtimeConfig.verification,
+    verification: {
+      ...runtimeConfig.verification,
+      maxFilesPerWorkflow: coreConfig.verification.maxFilesPerWorkflow,
+      enforceFileLimit: coreConfig.verification.enforceFileLimit,
+    },
     context: runtimeConfig.context,
     evolution: runtimeConfig.evolution,
     ingestion: {
       taskLimit: 100,
     },
-    limits: runtimeConfig.limits,
+    limits: {
+      ...runtimeConfig.limits,
+      maxFilesPerWorkflow: coreConfig.limits.maxFilesPerWorkflow,
+      enforceFileLimit: coreConfig.limits.enforceFileLimit,
+    },
   }
 }
+
+export type { LegacyRuntimeConfig }
 
 /**
  * Create core paths (server-only, uses process.cwd())

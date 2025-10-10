@@ -2,22 +2,6 @@ import { providersV2 } from "@core/utils/spending/modelInfo"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { LuckyProvider, StandardModels } from "@lucky/shared"
 
-// model runtime configuration
-export const MODEL_CONFIG = {
-  provider: "openrouter" as const satisfies LuckyProvider,
-  inactive: [
-    "moonshotai/kimi-k2",
-    // "deepseek/deepseek-r1-0528:free", // timeouts
-    // "anthropic/claude-sonnet-4",
-    "x-ai/grok-4",
-    "qwen/qwq-32b:free",
-    // "moonshotai/kimi-k2-instruct",
-    // "google/gemini-2.5-pro-preview",
-    // "openai/gpt-4.1",
-    // "openai/gpt-4.1-mini",
-  ] as string[],
-} as const
-
 /* ---------- DEFAULT MODELS ---------- */
 export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   openrouter: {
@@ -54,6 +38,23 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
     fallback: "gpt-4.1-mini",
   },
 }
+
+// model runtime configuration
+export const MODEL_CONFIG = {
+  provider: "openrouter" as const satisfies LuckyProvider,
+  inactive: [
+    "moonshotai/kimi-k2",
+    // "deepseek/deepseek-r1-0528:free", // timeouts
+    // "anthropic/claude-sonnet-4",
+    "x-ai/grok-4",
+    "qwen/qwq-32b:free",
+    // "moonshotai/kimi-k2-instruct",
+    // "google/gemini-2.5-pro-preview",
+    // "openai/gpt-4.1",
+    // "openai/gpt-4.1-mini",
+  ] as string[],
+  defaults: DEFAULT_MODELS.openrouter,
+} as const
 
 export const getDefaultModels = (): StandardModels => {
   const provider = MODEL_CONFIG.provider
