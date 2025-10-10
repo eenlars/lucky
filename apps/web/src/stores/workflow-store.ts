@@ -16,11 +16,14 @@ interface WorkflowStore {
   selectedWorkflowId: string | null
   expandedSections: Set<string>
   viewMode: "list" | "grid"
+  deletingWorkflowIds: Set<string>
 
   // Actions for UI state
   setSelectedWorkflowId: (id: string | null) => void
   toggleSection: (sectionId: string) => void
   setViewMode: (mode: "list" | "grid") => void
+  addDeletingWorkflow: (id: string) => void
+  removeDeletingWorkflow: (id: string) => void
   reset: () => void
 }
 
@@ -31,6 +34,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
       selectedWorkflowId: null,
       expandedSections: new Set(),
       viewMode: "list",
+      deletingWorkflowIds: new Set(),
 
       // UI actions
       setSelectedWorkflowId: (id: string | null) => set({ selectedWorkflowId: id }),
@@ -48,11 +52,24 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
       setViewMode: (mode: "list" | "grid") => set({ viewMode: mode }),
 
+      addDeletingWorkflow: (id: string) =>
+        set(state => ({
+          deletingWorkflowIds: new Set(state.deletingWorkflowIds).add(id),
+        })),
+
+      removeDeletingWorkflow: (id: string) =>
+        set(state => {
+          const newSet = new Set(state.deletingWorkflowIds)
+          newSet.delete(id)
+          return { deletingWorkflowIds: newSet }
+        }),
+
       reset: () =>
         set({
           selectedWorkflowId: null,
           expandedSections: new Set(),
           viewMode: "list",
+          deletingWorkflowIds: new Set(),
         }),
     }),
     {
