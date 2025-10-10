@@ -5,37 +5,40 @@
 
 import { createMinimalTestConfig } from "@lucky/contracts/fixtures"
 
-const minimal = createMinimalTestConfig()
+export const mockRuntimeConstants = () => {
+  // Create fresh copy for each invocation to avoid test contamination
+  const minimal = createMinimalTestConfig()
 
-export const mockRuntimeConstants = () => ({
-  CONFIG: {
-    ...minimal,
-    // Add legacy fields that tests expect
-    tools: {
-      ...minimal.tools,
-      inactive: new Set(),
-      defaultTools: new Set(),
-    },
-    models: {
-      ...minimal.models,
-      inactive: new Set(),
-    },
-  } as any,
-  MODELS: minimal.models.defaults,
-  PATHS: {
-    root: "/test/root",
-    app: "/test/app",
-    runtime: "/test/runtime",
-    codeTools: "/test/codeTools",
-    setupFile: "/test/setup.json",
-    improver: "/test/improver",
-    node: {
-      logging: "/test/node/logging",
-      memory: {
-        root: "/test/memory/root",
-        workfiles: "/test/memory/workfiles",
+  return {
+    CONFIG: {
+      ...minimal,
+      // Add legacy fields that tests expect
+      tools: {
+        ...minimal.tools,
+        inactive: new Set(),
+        defaultTools: new Set(),
       },
-      error: "/test/node/error",
+      models: {
+        ...minimal.models,
+        inactive: new Set(),
+      },
+    } as any,
+    MODELS: minimal.models.defaults,
+    PATHS: {
+      root: "/test/root",
+      app: "/test/app",
+      runtime: "/test/runtime",
+      codeTools: "/test/codeTools",
+      setupFile: "/test/setup.json",
+      improver: "/test/improver",
+      node: {
+        logging: "/test/node/logging",
+        memory: {
+          root: "/test/memory/root",
+          workfiles: "/test/memory/workfiles",
+        },
+        error: "/test/node/error",
+      },
     },
-  },
-})
+  }
+}

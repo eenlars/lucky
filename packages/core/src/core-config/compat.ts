@@ -14,32 +14,92 @@ import { createEvolutionSettings } from "@lucky/contracts/evolution"
 import type { EvaluationInput } from "@lucky/contracts/ingestion"
 import { type AllToolNames, DEFAULT_INACTIVE_TOOLS, TOOLS } from "@lucky/contracts/tools"
 
+// Import live core config to support runtime overrides
+import type { CoreConfig } from "./types"
+import { toRuntimeContract } from "./validation"
+
 // ============================================================================
-// CONFIGURATION RE-EXPORTS
+// CONFIGURATION RE-EXPORTS (Live Config Access)
 // ============================================================================
+
+/**
+ * Lazy getter for live core config to avoid circular dependency
+ */
+let _getCoreConfigFn: (() => CoreConfig) | null = null
+function getLiveCoreConfig(): CoreConfig {
+  if (!_getCoreConfigFn) {
+    // Lazy import to avoid circular dependency
+    _getCoreConfigFn = require("./coreConfig").getCoreConfig
+  }
+  // Non-null assertion: we know it's set after the if check
+  return _getCoreConfigFn!()
+}
+
+/**
+ * Lazy object that proxies access to live core config
+ * This ensures CONFIG always reflects runtime overrides
+ */
+const _configProxy = new Proxy({} as any, {
+  get: (_target, prop) => {
+    const liveConfig = getLiveCoreConfig()
+    const legacyConfig = createLegacyFlowConfig(toRuntimeContract(liveConfig))
+    return legacyConfig[prop]
+  },
+})
 
 /**
  * Runtime configuration (maps to RuntimeConfig)
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const CONFIG = createLegacyFlowConfig(DEFAULT_RUNTIME_CONFIG)
+export const CONFIG: any = _configProxy
+
+/**
+ * Lazy object that proxies access to live core paths
+ */
+const _pathsProxy = new Proxy({} as any, {
+  get: (_target, prop) => {
+    return getLiveCoreConfig().paths[prop as keyof CoreConfig["paths"]]
+  },
+})
 
 /**
  * Filesystem paths configuration
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const PATHS = createCorePaths()
+export const PATHS: any = _pathsProxy
+
+/**
+ * Lazy object that proxies access to live model defaults
+ */
+const _modelsProxy = new Proxy({} as any, {
+  get: (_target, prop) => {
+    return getLiveCoreConfig().models.defaults[prop as keyof TypedModelDefaults]
+  },
+})
 
 /**
  * Model defaults
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const MODELS = DEFAULT_RUNTIME_CONFIG.models.defaults
+export const MODELS: any = _modelsProxy
+
+/**
+ * Lazy object that proxies access to live model config
+ */
+const _modelConfigProxy = new Proxy({} as any, {
+  get: (_target, prop) => {
+    const models = getLiveCoreConfig().models
+    if (prop === "provider") return models.provider
+    if (prop === "inactive") return models.inactive
+    return undefined
+  },
+})
 
 /**
  * Model configuration (provider + inactive)
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
-export const MODEL_CONFIG = {
-  provider: DEFAULT_RUNTIME_CONFIG.models.provider,
-  inactive: DEFAULT_RUNTIME_CONFIG.models.inactive,
-}
+export const MODEL_CONFIG: any = _modelConfigProxy
 
 /**
  * Tool definitions with descriptions
@@ -52,38 +112,54 @@ export { TOOLS }
 
 /**
  * Typed model defaults using AnyModelName for type safety
+ * All properties are readonly to prevent accidental mutation of shared config
  */
 export type TypedModelDefaults = {
-  summary: AnyModelName
-  nano: AnyModelName
-  low: AnyModelName
-  medium: AnyModelName
-  high: AnyModelName
-  default: AnyModelName
-  fitness: AnyModelName
-  reasoning: AnyModelName
-  fallback: AnyModelName
+  readonly summary: AnyModelName
+  readonly nano: AnyModelName
+  readonly low: AnyModelName
+  readonly medium: AnyModelName
+  readonly high: AnyModelName
+  readonly default: AnyModelName
+  readonly fitness: AnyModelName
+  readonly reasoning: AnyModelName
+  readonly fallback: AnyModelName
 }
 
 /**
  * Get default models configuration
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
 export function getDefaultModels(): TypedModelDefaults {
-  return DEFAULT_RUNTIME_CONFIG.models.defaults as TypedModelDefaults
+  return getLiveCoreConfig().models.defaults as TypedModelDefaults
 }
 
 /**
  * Check if logging is enabled for a specific component
+ * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
  */
 export function isLoggingEnabled(component: keyof typeof DEFAULT_RUNTIME_CONFIG.logging.override): boolean {
-  return DEFAULT_RUNTIME_CONFIG.logging.override[component]
+  const liveConfig = getLiveCoreConfig()
+  const runtimeConfig = toRuntimeContract(liveConfig)
+  return runtimeConfig.logging.override[component]
 }
 
 /**
  * Create evolution settings with optional overrides
+ * NOW SEEDS FROM LIVE CORE CONFIG to carry through configured defaults
  */
 export function createEvolutionSettingsWithConfig(overrides?: any) {
-  return createEvolutionSettings(overrides)
+  const liveConfig = getLiveCoreConfig()
+  const runtimeConfig = toRuntimeContract(liveConfig)
+
+  // Seed with live core config values (e.g., maxCostUSD from limits)
+  const baseSettings = {
+    mode: "GP" as const,
+    ...runtimeConfig.evolution.GP,
+    maxCostUSD: runtimeConfig.limits.maxCostUsdPerRun,
+  }
+
+  return createEvolutionSettings({ ...baseSettings, ...overrides })
 }
 
 /**

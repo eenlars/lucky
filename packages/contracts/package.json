@@ -18,7 +18,11 @@
     "./messages": "./src/messages.ts",
     "./tools": "./src/tools.ts",
     "./invoke": "./src/invoke.ts",
-    "./runtime": "./src/runtime.ts"
+    "./runtime": "./src/runtime.ts",
+    "./config": "./src/config.ts",
+    "./evolution": "./src/evolution.ts",
+    "./ingestion": "./src/ingestion.ts",
+    "./fixtures": "./src/__tests__/fixtures.ts"
   },
   "dependencies": {
     "zod": "^3.25.73"
