@@ -17,7 +17,7 @@ type OutputType = {
 const contextManage = defineTool({
   name: "contextManage",
   description:
-    "Advanced context operations: clear all data, copy between scopes, bulk operations. LIMITS: destructive operations (clear) cannot be undone, copy operations overwrite destination, requires workflowInvocationId.",
+    "Advanced context operations: clear all data, copy between scopes, bulk operations. LIMITS: destructive operations (clear) cannot be undone, copy operations require force:true to overwrite existing keys, requires workflowInvocationId.",
   params: z.object({
     operation: z
       .enum(["delete", "copy", "move", "clear", "exists", "backup"])

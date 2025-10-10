@@ -183,7 +183,10 @@ export function validateMockConfig(config: FlowRuntimeConfig): void {
   const runtimeConfig = {
     coordinationType: config.coordinationType,
     newNodeProbability: config.newNodeProbability,
-    models: config.models,
+    models: {
+      ...config.models,
+      defaults: createMockModels(),
+    },
     logging: config.logging,
     tools: config.tools,
     workflow: config.workflow,
