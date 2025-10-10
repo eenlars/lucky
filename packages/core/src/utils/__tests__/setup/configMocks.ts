@@ -3,9 +3,8 @@
  * Provides properly typed CONFIG objects for testing with validation
  */
 
-import { toRuntimeContract } from "@core/core-config/validation"
 import type { FlowRuntimeConfig } from "@core/types"
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 
 /**
  * Create a complete mock CONFIG for verbose mode testing
@@ -84,11 +83,10 @@ export function createMockConfigVerbose(): FlowRuntimeConfig {
     verification: {
       allowCycles: false,
       enableOutputValidation: false,
-    },
-    context: {
       maxFilesPerWorkflow: 1,
       enforceFileLimit: true,
     },
+
     evolution: {
       iterativeIterations: 30,
       GP: {
@@ -112,6 +110,8 @@ export function createMockConfigVerbose(): FlowRuntimeConfig {
       rateWindowMs: 10000,
       enableStallGuard: true,
       enableParallelLimit: true,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
   }
 }
@@ -183,13 +183,15 @@ export function validateMockConfig(config: FlowRuntimeConfig): void {
   const runtimeConfig = {
     coordinationType: config.coordinationType,
     newNodeProbability: config.newNodeProbability,
-    models: config.models,
+    models: {
+      ...config.models,
+      defaults: createMockModels(),
+    },
     logging: config.logging,
     tools: config.tools,
     workflow: config.workflow,
     improvement: config.improvement,
     limits: config.limits,
-    context: config.context,
     verification: config.verification,
     persistence: {
       useMockBackend: true,

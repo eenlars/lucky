@@ -9,6 +9,8 @@ const toolName = "urlToMarkdown"
  */
 const htmlToMarkdownTool = defineTool({
   name: "urlToMarkdown",
+  description:
+    "Convert URL content to clean markdown, removing ads/navigation/scripts. Preserves main content, links, images. Falls back to Jina AI if direct fetch fails. CANNOT: handle authentication-required pages, extract from PDFs/videos, preserve complex layouts/tables, or handle JavaScript-rendered content.",
   params: z.object({
     url: z.string().describe("The URL to convert to markdown"),
     preserveLinks: z.boolean().nullish().default(true).describe("Whether to preserve links in markdown"),

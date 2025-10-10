@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { CURRENT_SCHEMA_VERSION } from "@lucky/contracts/workflow"
+import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import { beforeEach, describe, expect, it } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 

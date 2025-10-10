@@ -6,7 +6,7 @@ import { isValidToolInformation } from "@core/utils/validation/workflow/toolInfo
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
-import { CURRENT_SCHEMA_VERSION } from "@lucky/contracts/workflow"
+import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { CodeToolName } from "@lucky/tools"
 import type { IPersistence } from "@together/adapter-supabase"
 
@@ -15,7 +15,7 @@ import type { IPersistence } from "@together/adapter-supabase"
  * Called on every workflow load to ensure old workflows are upgraded.
  *
  * To add a new migration:
- * 1. Increment CURRENT_SCHEMA_VERSION in @lucky/contracts/workflow
+ * 1. Increment CURRENT_SCHEMA_VERSION in @lucky/shared/contracts/workflow
  * 2. Add a new if-block below following the pattern
  * 3. Test with old workflows to verify upgrade path
  */

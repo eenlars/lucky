@@ -25,8 +25,6 @@
       "@core/*": ["../../packages/core/src/*"],
       "@core/core-config": ["../../packages/core/src/core-config/coreConfig.ts"],
       "@examples/*": ["../examples/*"],
-      "@lucky/contracts": ["../../packages/contracts/src"],
-      "@lucky/contracts/*": ["../../packages/contracts/src/*"],
       "@lucky/core": ["../../packages/core/src"],
       "@lucky/core/*": ["../../packages/core/src/*"],
       "@lucky/examples": ["../examples"],

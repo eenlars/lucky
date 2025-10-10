@@ -42,6 +42,8 @@ export const mockRuntimeConstants = () => ({
     verification: {
       allowCycles: false,
       enableOutputValidation: false,
+      maxFilesPerWorkflow: 10,
+      enforceFileLimit: false,
     },
     improvement: {
       flags: {

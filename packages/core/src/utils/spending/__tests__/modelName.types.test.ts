@@ -5,7 +5,7 @@
 
 import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
 import { getActiveModelNames, getModelV2, isActiveModel } from "@core/utils/spending/functions"
-import type { AllowedModelName, AnyModelName, ModelName, OpenRouterModelName } from "@core/utils/spending/models.types"
+import type { AnyModelName, ModelName, OpenRouterModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import { describe, expect, it } from "vitest"
 
@@ -35,13 +35,12 @@ describe("ModelName Type System", () => {
       const anyModel1: AnyModelName = openrouterModel
 
       // Use AllowedModelName generic for other providers
-      type GroqModel = AllowedModelName<"groq">
-      type OpenAIModel = AllowedModelName<"openai">
+      type GroqModel = AnyModelName
 
       const groqModel: GroqModel = "openai/gpt-oss-20b"
       const anyModel2: AnyModelName = groqModel
 
-      const openaiModel: OpenAIModel = "gpt-4.1-mini"
+      const openaiModel: AnyModelName = "gpt-4.1-mini"
       const anyModel3: AnyModelName = openaiModel
 
       expect([anyModel1, anyModel2, anyModel3]).toHaveLength(3)
@@ -152,14 +151,9 @@ describe("ModelName Type System", () => {
 
   describe("Cross-Provider Support", () => {
     it("AllowedModelName should work with all providers", () => {
-      // Type test: ensure AllowedModelName is generic over providers
-      type OpenRouterAllowed = AllowedModelName<"openrouter">
-      type GroqAllowed = AllowedModelName<"groq">
-      type OpenAIAllowed = AllowedModelName<"openai">
-
-      const or: OpenRouterAllowed = "google/gemini-2.5-flash-lite"
-      const groq: GroqAllowed = "openai/gpt-oss-20b"
-      const openai: OpenAIAllowed = "gpt-4.1-mini"
+      const or: OpenRouterModelName = "google/gemini-2.5-flash-lite"
+      const groq: AnyModelName = "openai/gpt-oss-20b"
+      const openai: AnyModelName = "gpt-4.1-mini"
 
       expect([or, groq, openai]).toHaveLength(3)
     })

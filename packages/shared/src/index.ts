@@ -47,10 +47,10 @@ export type {
 export { Tools } from "./types/tool.types"
 
 // Model types and data
+// Note: Most model types are now simplified to string. Runtime validation handles correctness.
 export type {
   LuckyProvider,
   ModelPricingV2,
-  ActiveKeys,
   AnyModelName,
   AllowedModelName,
   ModelName,

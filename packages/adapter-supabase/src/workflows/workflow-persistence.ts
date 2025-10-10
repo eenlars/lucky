@@ -3,7 +3,7 @@
  * Handles workflow versions, invocations, and config management.
  */
 
-import { CURRENT_SCHEMA_VERSION } from "@lucky/contracts/workflow"
+import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { DatasetRecordNotFoundError, PersistenceError, WorkflowNotFoundError } from "../errors/domain-errors"
 import type {

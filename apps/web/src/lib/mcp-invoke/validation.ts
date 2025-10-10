@@ -1,4 +1,4 @@
-import { ErrorCodes, JsonRpcInvokeRequest } from "@lucky/contracts/invoke"
+import { ErrorCodes, JsonRpcInvokeRequest } from "@lucky/shared/contracts/invoke"
 
 export interface ValidationResult {
   success: boolean

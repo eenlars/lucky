@@ -26,6 +26,8 @@ const toolsDescriptions = {
 // csv info tool for getting csv metadata and structure information
 const csvInfoTool = defineTool({
   name: TOOLNAME,
+  description:
+    "Get CSV file metadata: headers, column count, row count, sample values. FILE MUST: be provided via workflowFiles, be accessible via HTTPS URL. LIMITS: memory-based processing, samples only first rows.",
   params: z.object({
     action: z
       .enum(["readColumns", "getAllHeaders", "getStats"])

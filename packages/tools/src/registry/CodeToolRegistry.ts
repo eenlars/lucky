@@ -1,11 +1,11 @@
-import type { Tool, tool } from "ai"
+import type { Tool } from "ai"
 import { type ToolExecutionContext, toAITool } from "../factory/toolFactory"
 import type { CodeToolName } from "./types"
 
 // more flexible type for tool registration
 export type FlexibleToolDefinition = {
   name: string
-  description: string
+  description?: string
   // todo-typesafety: replace 'any' with proper parameter and return types - violates CLAUDE.md "we hate any"
   parameters: any
   execute: (params: any, externalContext?: any) => Promise<any>

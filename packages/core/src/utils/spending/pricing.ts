@@ -1,9 +1,9 @@
 import type { PricingLevel } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { getActiveModelNames, getModelV2 } from "@core/utils/spending/functions"
-import type { ActiveModelName, ModelName } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 
 // model utilities - use new providersV2 system
-const getActiveModels = (): ReadonlyArray<ActiveModelName> => {
+const getActiveModels = (): ReadonlyArray<string> => {
   return getActiveModelNames()
 }
 
@@ -13,7 +13,7 @@ const getActiveModelsWithInfo = (): string => {
     .join(";")
 }
 
-export const ACTIVE_MODEL_NAMES = getActiveModels() as [ActiveModelName, ...ActiveModelName[]]
+export const ACTIVE_MODEL_NAMES = getActiveModels() as [string, ...string[]]
 export const ACTIVE_MODEL_NAMES_WITH_INFO = getActiveModelsWithInfo()
 
 export const openaiModelsByLevel: Record<PricingLevel, ModelName> = {

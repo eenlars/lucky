@@ -16,7 +16,8 @@ const longDescription =
  */
 const todoRead = defineTool({
   name: "todoRead",
-  description: longDescription,
+  description:
+    "Read the current session's todo list. Returns array of todo items with their status, priority, and content. LIMITS: read-only operation, session-scoped only, no filtering or search capabilities.",
   params: z
     .object({})
     .describe(

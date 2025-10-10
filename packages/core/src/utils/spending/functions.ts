@@ -1,22 +1,20 @@
 import { MODEL_CONFIG } from "@core/core-config/compat"
 import { providersV2 } from "@core/utils/spending/modelInfo"
-import type { AllowedModelName, ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
+import type { ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import type { LuckyProvider } from "@lucky/shared"
 import { isNir } from "@lucky/shared/client"
 
 // Get all active models from provider structure
-export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T): AllowedModelName<T>[] => {
-  const provider = customProvider ?? (getCurrentProvider() as T)
+export const getActiveModelNames = (customProvider?: LuckyProvider): string[] => {
+  const provider = customProvider ?? getCurrentProvider()
   if (isNir(provider)) return []
 
-  return Object.keys(providersV2[provider])
-    .filter(modelName => isActiveModel(modelName as ModelName))
-    .map(modelName => modelName as AllowedModelName<T>)
+  return Object.keys(providersV2[provider]).filter(modelName => isActiveModel(modelName as ModelName))
 }
 
-// Type guard to check if a model is active
-export function isActiveModel(model: string): model is AllowedModelName {
+// Check if a model is active
+export function isActiveModel(model: string): boolean {
   const provider: LuckyProvider = getCurrentProvider()
   const models = providersV2[provider]
   const modelConfig = models?.[model as keyof typeof models] as ModelPricingV2 | undefined

@@ -96,13 +96,11 @@ describe("RuntimeConfig Schema Validation", () => {
       enableStallGuard: true,
       enableParallelLimit: true,
     },
-    context: {
-      maxFilesPerWorkflow: 1,
-      enforceFileLimit: true,
-    },
     verification: {
       allowCycles: true,
       enableOutputValidation: false,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
     persistence: {
       useMockBackend: false,

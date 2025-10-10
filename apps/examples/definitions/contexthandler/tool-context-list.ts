@@ -46,6 +46,8 @@ type OutputType = {
  */
 const contextList = defineTool({
   name: "contextList",
+  description:
+    "List keys in the persistent context store by scope (workflow/node). Supports wildcard filtering and optional metadata/value previews. Returns key names by default; when includeMetadata is true, also returns value types, previews, and sizes. LIMITS: requires workflowInvocationId.",
   params: z.object({
     scope: z
       .enum(["workflow", "node", "both"])

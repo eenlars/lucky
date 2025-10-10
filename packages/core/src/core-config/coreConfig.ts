@@ -3,13 +3,13 @@
  * This is the main entry point for configuration access in core.
  */
 
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 import { createDefaultCoreConfig, mergeConfig } from "./defaults"
 import type { CoreConfig, CoreModelsConfig, CorePathsConfig } from "./types"
 import { toRuntimeContract } from "./validation"
 
-export type { CoreConfig, CorePathsConfig, CoreModelsConfig } from "./types"
 export { createDefaultCoreConfig, mergeConfig } from "./defaults"
+export type { CoreConfig, CoreModelsConfig, CorePathsConfig } from "./types"
 export { toRuntimeContract } from "./validation"
 
 /**
@@ -29,11 +29,20 @@ export function initCoreConfig(override?: Partial<CoreConfig>): void {
   const defaults = createDefaultCoreConfig()
   const merged = override ? mergeConfig(defaults, override) : defaults
 
+  const normalized: CoreConfig = {
+    ...merged,
+    verification: {
+      ...merged.verification,
+      maxFilesPerWorkflow: merged.verification.maxFilesPerWorkflow,
+      enforceFileLimit: merged.verification.enforceFileLimit,
+    },
+  }
+
   // Validate runtime configuration subset against contract
-  const runtimeConfig = toRuntimeContract(merged)
+  const runtimeConfig = toRuntimeContract(normalized)
   validateRuntimeConfig(runtimeConfig)
 
-  globalConfig = merged
+  globalConfig = normalized
 }
 
 /**
