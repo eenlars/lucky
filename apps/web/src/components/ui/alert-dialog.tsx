@@ -30,14 +30,17 @@ export function AlertDialog({
   useEffect(() => {
     if (open) {
       setIsVisible(true)
+    } else if (isVisible) {
+      // Handle closing transition - wait for animation to complete
+      const timer = setTimeout(() => setIsVisible(false), 300)
+      return () => clearTimeout(timer)
     }
-  }, [open])
+  }, [open, isVisible])
 
   if (!isVisible) return null
 
   const handleClose = () => {
     onOpenChange(false)
-    setTimeout(() => setIsVisible(false), 200)
   }
 
   return (
