@@ -256,11 +256,11 @@ export class WorkflowConfigHandler {
             memory: node.memory ? { ...node.memory } : {},
           }),
         ),
-        entryNodeId: rawData.entryNodeId,
-        contextFile: rawData.contextFile,
+        entryNodeId: migratedData.entryNodeId,
+        contextFile: migratedData.contextFile,
         toolsInformation:
-          rawData.toolsInformation && isValidToolInformation(rawData.toolsInformation)
-            ? rawData.toolsInformation
+          migratedData.toolsInformation && isValidToolInformation(migratedData.toolsInformation)
+            ? migratedData.toolsInformation
             : undefined,
       }
 
