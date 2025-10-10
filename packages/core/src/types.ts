@@ -66,7 +66,7 @@ export type FlowRuntimeConfig = {
   }
   readonly models: {
     readonly inactive: string[]
-    readonly provider: FullFlowRuntimeConfig["MODELS"]["provider"]
+    readonly provider: FlowModelProvider
   }
   readonly improvement: {
     readonly fitness: {
@@ -95,8 +95,6 @@ export type FlowRuntimeConfig = {
   readonly verification: {
     readonly allowCycles: boolean
     readonly enableOutputValidation: boolean
-  }
-  readonly context: {
     readonly maxFilesPerWorkflow: number
     readonly enforceFileLimit: boolean
   }
@@ -123,6 +121,8 @@ export type FlowRuntimeConfig = {
     readonly rateWindowMs: number
     readonly enableStallGuard: boolean
     readonly enableParallelLimit: boolean
+    readonly maxFilesPerWorkflow: number
+    readonly enforceFileLimit: boolean
   }
 }
 
@@ -131,6 +131,8 @@ export type FullFlowRuntimeConfig = {
   PATHS: FlowPathsConfig
   MODELS: {
     inactive: string[]
-    provider: "openai" | "openrouter" | "groq"
+    provider: FlowModelProvider
   }
 }
+
+export type FlowModelProvider = "openai" | "openrouter" | "groq"

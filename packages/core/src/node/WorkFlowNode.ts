@@ -9,14 +9,14 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { genShortId } from "@lucky/shared"
 import type {
   IWorkflowNode,
   NodeInvocationResult as NodeInvocationResultBase,
   SelfImproving,
   SupportsCodeTools,
   SupportsMCPTools,
-} from "@lucky/contracts/agent"
-import { genShortId } from "@lucky/shared"
+} from "@lucky/shared/contracts/agent"
 import type { IPersistence } from "@together/adapter-supabase"
 import chalk from "chalk"
 import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"

@@ -18,12 +18,12 @@ let cachedProvider: LuckyProvider | null = null
  * Get all active models from provider structure.
  * Defaults to openrouter for browser contexts.
  */
-export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T): AllowedModelName<T>[] => {
+export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T): AllowedModelName[] => {
   const provider = customProvider ?? (BROWSER_DEFAULT_PROVIDER as T)
 
   // Return cached if available for same provider
   if (cachedModels && cachedProvider === provider) {
-    return cachedModels as AllowedModelName<T>[]
+    return cachedModels as AllowedModelName[]
   }
 
   // Synchronous API - throw error if called before cache is populated

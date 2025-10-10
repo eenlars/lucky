@@ -29,9 +29,8 @@ export function executeJavaScript(code: string, timeoutMs = 1000): unknown {
  */
 const jsExecutor = defineTool({
   name: "jsExecutor",
-  description: `Execute JavaScript code in a sandboxed VM context. Accepts code string and optional timeoutMs (default 1000). 
-    No access to Node APIs or external resources. no access to the filesystem. no access to the network. no access to the internet. 
-    no access to the database. no access to require, process, or the filesystem.`,
+  description:
+    "Execute JavaScript code in a sandboxed environment. Provide JavaScript code and optional timeoutMs (ms). No access to Node APIs, filesystem, or network. Execution limited to 1 second by default.",
   params: z.object({
     code: z
       .string()

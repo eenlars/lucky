@@ -7,10 +7,8 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { ModelName } from "@core/utils/spending/models.types"
-import { zodToJson } from "@core/utils/zod/zodToJson"
-import { JSONN } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { zodToJson } from "@core/utils/validation/zodToJson"
+import { JSONN, R, type RS, isNir } from "@lucky/shared"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
   return z.object({

@@ -58,6 +58,16 @@ export interface DefineToolConfig<TParams = any, TResult = any> {
   execute: (params: TParams, externalContext: ToolExecutionContext) => Promise<TResult> | TResult
 }
 
+export interface ToolDefinition<Schema extends ZodTypeAny, TResult> {
+  name: CodeToolName
+  description?: string
+  parameters: Schema
+  execute: (
+    params: z.input<Schema>,
+    externalContext: ToolExecutionContext,
+  ) => Promise<RS<Awaited<TResult>>> | RS<Awaited<TResult>>
+}
+
 /**
  * 🔧 The unified way to create tools with type safety and validation.
  *
@@ -90,7 +100,7 @@ export function defineTool<
     params: z.infer<Schema>, // already validated
     externalContext: ToolExecutionContext,
   ) => Promise<TResult> | TResult
-}) {
+}): ToolDefinition<Schema, TResult> {
   /* Helper aliases – purely for readability */
   type InputParams = z.input<Schema> // what callers pass in
   type OutputParams = z.infer<Schema> // what your handler sees
@@ -142,12 +152,15 @@ export function defineTool<
  * @returns AI framework compatible tool
  */
 export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
-  toolDef: ReturnType<typeof defineTool<ParamsSchema, TResult>>,
+  toolDef: ToolDefinition<ParamsSchema, TResult>,
   toolExecutionContext: ToolExecutionContext,
 ): Tool {
-  return tool({
+  const toFlexibleSchema = zodSchema as unknown as (schema: ZodSchema<unknown>) => any
+  const aiInputSchema = toFlexibleSchema(toolDef.parameters as unknown as ZodSchema<unknown>)
+
+  const aiToolConfig = {
     description: toolDef.description,
-    inputSchema: zodSchema(toolDef.parameters),
+    inputSchema: aiInputSchema,
     execute: async (params: z.infer<ParamsSchema>) => {
       // apply schema-based validation and auto-correction using the tool's own Zod schema
       const {
@@ -178,7 +191,9 @@ export function toAITool<ParamsSchema extends ZodTypeAny, TResult>(
       // Unwrap CodeToolResult for AI runtime: return only the tool output
       return Tools.isCodeToolResult(result.data) ? (result.data as { output: unknown }).output : result.data
     },
-  })
+  } as Tool
+
+  return aiToolConfig
 }
 
 /**

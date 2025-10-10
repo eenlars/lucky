@@ -74,8 +74,12 @@ vi.mock("@examples/settings/constants", () => {
         operatorsWithFeedback: false,
       },
     },
-    verification: { allowCycles: false, enableOutputValidation: false },
-    context: { maxFilesPerWorkflow: 1, enforceFileLimit: false },
+    verification: {
+      allowCycles: false,
+      enableOutputValidation: false,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: false,
+    },
     evolution: {
       iterativeIterations: 1,
       GP: {
@@ -97,6 +101,8 @@ vi.mock("@examples/settings/constants", () => {
       rateWindowMs: 1000,
       enableStallGuard: false,
       enableParallelLimit: false,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
   } as const satisfies import("@core/types").FlowRuntimeConfig
 

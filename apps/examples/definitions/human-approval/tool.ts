@@ -21,6 +21,8 @@ export interface ApprovalRequest {
 
 const humanApproval = defineTool({
   name: "humanApproval",
+  description:
+    "Request human approval during workflow execution. Displays message in terminal with clickable link, blocks until approval/rejection received. Supports custom messages, optional choices, and configurable timeout. LIMITS: requires manual intervention, blocks workflow execution, timeout default 5 minutes.",
   params: z.object({
     message: z.string().describe("The message to display to the human for approval"),
     options: z.array(z.string()).optional().describe("Optional list of choices for the human to select from"),

@@ -39,7 +39,7 @@ describe("SearchGoogleMaps Parameter Validation Fix", () => {
       maxResultCount: z.number().max(20).default(10),
     })
 
-    const { zodToJson } = await import("@core/utils/zod/zodToJson")
+    const { zodToJson } = await import("@core/utils/validation/zodToJson")
     const jsonSchema = zodToJson(schema)
 
     console.log("Generated JSON Schema:", jsonSchema)

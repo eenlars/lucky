@@ -7,6 +7,8 @@ import { z } from "zod"
  */
 const fileSaver = defineTool({
   name: "saveFileLegacy",
+  description:
+    "Save any data to a file at specified path, creates directories if needed. LIMITS: restricted to accessible filesystem paths, overwrites existing files without warning, no append mode",
   params: z.object({
     filePath: commonSchemas.filePath,
     data: commonSchemas.data,

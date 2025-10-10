@@ -70,6 +70,9 @@ vi.mock("@examples/settings/constants", () => ({
     },
     verification: {
       enableOutputValidation: false,
+      allowCycles: true,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
     tools: {
       maxStepsVercel: 10,

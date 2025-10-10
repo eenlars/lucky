@@ -31,7 +31,6 @@
     "./definitions/*": "./src/definitions/*"
   },
   "dependencies": {
-    "@lucky/contracts": "workspace:*",
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "ai": "^5.0.58",

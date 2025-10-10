@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url"
  * - Metrics: Selection accuracy, latency per tool call, failure type classification
  */
 import { lgg } from "@lucky/core/utils/logging/Logger"
-import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
+import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
 import { experimentalModels } from "@lucky/examples/settings/models"
 import { type FailureType, type RunOutcome, classifyFailure, evaluate } from "./evaluation"
 import { allToolSpecs, chatWithTools } from "./openaiRunner"
@@ -41,7 +41,7 @@ export type ToolCapacityResponse = {
 }
 
 // experiment configuration
-const TEST_MODELS: AllowedModelName<"openrouter">[] = [
+const TEST_MODELS: AnyModelName[] = [
   experimentalModels.gpt35turbo.id,
   experimentalModels.gpt41.id,
   experimentalModels.geminiLite.id,

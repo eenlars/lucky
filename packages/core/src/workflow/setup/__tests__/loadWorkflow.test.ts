@@ -80,11 +80,10 @@ vi.mock("@examples/settings/constants", () => ({
     verification: {
       allowCycles: true,
       enableOutputValidation: false,
-    },
-    context: {
       maxFilesPerWorkflow: 1,
       enforceFileLimit: true,
     },
+
     evolution: {
       iterativeIterations: 50,
       GP: {

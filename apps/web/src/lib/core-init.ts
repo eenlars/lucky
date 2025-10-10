@@ -30,7 +30,6 @@ export function initCore() {
     tools: CONFIG.tools,
     improvement: CONFIG.improvement,
     verification: CONFIG.verification,
-    context: CONFIG.context,
     evolution: CONFIG.evolution,
     limits: CONFIG.limits,
     persistence: {

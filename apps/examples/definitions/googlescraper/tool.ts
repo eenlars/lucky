@@ -43,6 +43,8 @@ const getCacheKey = (params: Params) => {
  */
 const googleMaps = defineTool({
   name: "searchGoogleMaps",
+  description:
+    "Search Google Maps for business information. Supports 'auto' mode (detects single/multiple results), 'multiple' mode (for listings), and 'url' mode (direct URL). Returns up to 120 results with business details, hours, contact info. you can filter by hostname (e.g. albertheijn.nl, ...), you can only use hostname.tld (two parts). CANNOT: interact with map elements, click buttons, or handle pages requiring authentication.",
   params: paramsSchema,
   async execute(params, _externalContext): Promise<CodeToolResult<StandardizedLocation[]>> {
     const { query, maxResultCount, domainFilter } = params

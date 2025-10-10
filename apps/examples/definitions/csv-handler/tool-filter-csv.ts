@@ -108,6 +108,8 @@ const csvFilterParams = z.object({
  */
 const csvFilterTool = defineTool({
   name: "csvFilter",
+  description:
+    "Filter CSV rows with conditions. Supports: simple filters, multiple values, numeric ranges, complex AND/OR logic, multiple operators (equals, contains, greater than, etc). FILE MUST: be provided via workflowFiles. LIMITS: processes entire file in memory, no SQL-like queries.",
   params: csvFilterParams,
 
   async execute(params, context) {

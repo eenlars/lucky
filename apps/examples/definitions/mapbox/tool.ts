@@ -7,6 +7,8 @@ import { type LocationData, geocodeLocation } from "./mapboxUse"
  */
 const mapboxTool = defineTool({
   name: "verifyLocation",
+  description:
+    "Geocode a list of addresses to get coordinates, place name, and context using Mapbox. Best with complete addresses. LIMITS: may return multiple results for ambiguous queries, less accurate with partial addresses",
   params: z.object({
     queries: z
       .array(z.string())

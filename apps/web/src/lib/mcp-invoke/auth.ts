@@ -1,5 +1,5 @@
-import { extractBearerToken, pickIdempotencyKey } from "@lucky/contracts/invoke"
-import type { InvokeRequest } from "@lucky/contracts/invoke"
+import { extractBearerToken, pickIdempotencyKey } from "@lucky/shared/contracts/invoke"
+import type { InvokeRequest } from "@lucky/shared/contracts/invoke"
 
 export interface AuthResult {
   success: boolean

@@ -52,6 +52,8 @@ const csvWriterParams = z.object({
  */
 const csvWriterTool = defineTool({
   name: "csvWriter",
+  description:
+    "Create or append to CSV files. Supports headers, custom delimiters, data validation. FILE MUST: be provided via workflowFiles. LIMITS: memory-based (entire file loaded), no streaming writes, validates all data before writing.",
   params: csvWriterParams,
   async execute(params, context): Promise<CodeToolResult<string>> {
     const { action, key, data, options = {} } = params
