@@ -198,19 +198,13 @@ export const LimitsConfigSchema = z.object({
 })
 
 /**
- * Context files configuration
- */
-export const ContextConfigSchema = z.object({
-  maxFilesPerWorkflow: z.number().int().positive(),
-  enforceFileLimit: z.boolean(),
-})
-
-/**
  * Verification settings
  */
 export const VerificationConfigSchema = z.object({
   allowCycles: z.boolean(),
   enableOutputValidation: z.boolean(),
+  maxFilesPerWorkflow: z.number().int().positive(),
+  enforceFileLimit: z.boolean(),
 })
 
 /**
@@ -243,8 +237,6 @@ export const RuntimeConfigSchema = z.object({
   improvement: ImprovementConfigSchema,
   /** Rate limits and cost controls */
   limits: LimitsConfigSchema,
-  /** Context files configuration */
-  context: ContextConfigSchema,
   /** Verification settings */
   verification: VerificationConfigSchema,
   /** Persistence configuration */
@@ -254,7 +246,7 @@ export const RuntimeConfigSchema = z.object({
 /**
  * Partial runtime configuration for overrides
  */
-export const PartialRuntimeConfigSchema = RuntimeConfigSchema.deepPartial()
+export const PartialRuntimeConfigSchema = RuntimeConfigSchema.partial()
 
 // Type exports
 export type ModelProvider = z.infer<typeof ModelProviderSchema>
@@ -274,7 +266,6 @@ export type FitnessConfig = z.infer<typeof FitnessConfigSchema>
 export type ImprovementFlags = z.infer<typeof ImprovementFlagsSchema>
 export type ImprovementConfig = z.infer<typeof ImprovementConfigSchema>
 export type LimitsConfig = z.infer<typeof LimitsConfigSchema>
-export type ContextConfig = z.infer<typeof ContextConfigSchema>
 export type VerificationConfig = z.infer<typeof VerificationConfigSchema>
 export type PersistenceConfig = z.infer<typeof PersistenceConfigSchema>
 

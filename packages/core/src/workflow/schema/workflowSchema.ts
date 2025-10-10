@@ -4,7 +4,7 @@ import { getDefaultModels } from "@core/core-config/compat"
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
-import type { AnyModelName, ModelName } from "@core/utils/spending/models.types"
+import type { ModelName } from "@core/utils/spending/models.types"
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { withDescriptions } from "@lucky/shared"
@@ -100,7 +100,7 @@ export const handleWorkflowCompletion = (
       const easyLevel: (typeof modelNames)[number] =
         partialNode.modelName === "low" || partialNode.modelName === "medium" || partialNode.modelName === "high"
           ? (partialNode.modelName as (typeof modelNames)[number])
-          : mapModelNameToEasyName(partialNode.modelName as unknown as AnyModelName)
+          : mapModelNameToEasyName(partialNode.modelName)
 
       modelName =
         easyLevel === "medium"

@@ -1,5 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { CONFIG, getDefaultModels } from "@core/core-config/compat"
 import {
   type FitnessFunctionInput,
   type FitnessOfWorkflow,
@@ -11,9 +10,8 @@ import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import { fitnessSystemPrompt, fitnessUserPrompt } from "@core/prompts/evaluator/fitness/fitnessPrompt"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { zodToJson } from "@core/utils/zod/zodToJson"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { zodToJson } from "@core/utils/validation/zodToJson"
+import { R, type RS, isNir } from "@lucky/shared"
 
 async function calculateFitness({
   agentSteps,

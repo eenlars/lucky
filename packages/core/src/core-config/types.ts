@@ -3,7 +3,6 @@
  * These types define the complete configuration surface for core.
  */
 
-import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { LuckyProvider } from "@lucky/shared"
 
 /**
@@ -36,6 +35,8 @@ export interface CorePathsConfig {
 
 /**
  * Models configuration
+ * Note: Using string instead of AnyModelName to avoid TypeScript memory issues.
+ * Runtime validation is handled by Zod schemas in contracts package.
  */
 export interface CoreModelsConfig {
   /** Model provider (openrouter, openai, groq) */
@@ -44,15 +45,15 @@ export interface CoreModelsConfig {
   readonly inactive: string[]
   /** Default models for different tiers */
   readonly defaults: {
-    readonly summary: AnyModelName
-    readonly nano: AnyModelName
-    readonly low: AnyModelName
-    readonly medium: AnyModelName
-    readonly high: AnyModelName
-    readonly default: AnyModelName
-    readonly fitness: AnyModelName
-    readonly reasoning: AnyModelName
-    readonly fallback: AnyModelName
+    readonly summary: string
+    readonly nano: string
+    readonly low: string
+    readonly medium: string
+    readonly high: string
+    readonly default: string
+    readonly fitness: string
+    readonly reasoning: string
+    readonly fallback: string
   }
 }
 
@@ -186,12 +187,6 @@ export interface CoreLimitsConfig {
   readonly rateWindowMs: number
   readonly enableStallGuard: boolean
   readonly enableParallelLimit: boolean
-}
-
-/**
- * Context files configuration
- */
-export interface CoreContextConfig {
   readonly maxFilesPerWorkflow: number
   readonly enforceFileLimit: boolean
 }
@@ -202,6 +197,8 @@ export interface CoreContextConfig {
 export interface CoreVerificationConfig {
   readonly allowCycles: boolean
   readonly enableOutputValidation: boolean
+  readonly maxFilesPerWorkflow: number
+  readonly enforceFileLimit: boolean
 }
 
 /**
@@ -245,7 +242,6 @@ export interface CoreConfig {
     readonly flags: CoreImprovementFlagsConfig
   }
   readonly limits: CoreLimitsConfig
-  readonly context: CoreContextConfig
   readonly verification: CoreVerificationConfig
   readonly persistence: CorePersistenceConfig
   readonly coordinationType: "sequential" | "hierarchical"

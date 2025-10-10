@@ -175,9 +175,8 @@ export const TEST_CONSTANTS = {
       },
     },
     verification: {
-      enableCycles: true,
-    },
-    context: {
+      allowCycles: true,
+      enableOutputValidation: false,
       maxFilesPerWorkflow: 1,
       enforceFileLimit: true,
     },

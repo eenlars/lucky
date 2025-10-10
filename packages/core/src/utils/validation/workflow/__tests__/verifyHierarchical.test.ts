@@ -7,6 +7,9 @@ vi.mock("@examples/constants", () => ({
     coordinationType: "sequential",
     verification: {
       allowCycles: false,
+      enableOutputValidation: false,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
   },
 }))

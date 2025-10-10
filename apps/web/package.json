@@ -17,7 +17,6 @@
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lint": "^6.8.5",
     "@codemirror/view": "^6.38.2",
-    "@lucky/contracts": "workspace:*",
     "@lucky/core": "workspace:*",
     "@lucky/examples": "workspace:*",
     "@lucky/experiments": "workspace:*",

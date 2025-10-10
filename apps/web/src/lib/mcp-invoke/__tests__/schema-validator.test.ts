@@ -1,4 +1,4 @@
-import type { JsonSchemaDefinition } from "@lucky/contracts/workflow"
+import type { JsonSchemaDefinition } from "@lucky/shared/contracts/workflow"
 import { describe, expect, it } from "vitest"
 import { createSchemaValidationError, formatValidationErrors, validateAgainstSchema } from "../schema-validator"
 

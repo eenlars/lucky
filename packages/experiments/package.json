@@ -8,7 +8,6 @@
     "./tool-real/*": "./src/tool-real/*"
   },
   "dependencies": {
-    "@lucky/contracts": "workspace:*",
     "@lucky/core": "workspace:*",
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",

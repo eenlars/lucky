@@ -1,7 +1,7 @@
-import { ErrorCodes } from "@lucky/contracts/invoke"
-import type { InvokeRequest } from "@lucky/contracts/invoke"
-import type { JsonSchemaDefinition } from "@lucky/contracts/workflow"
 import { genShortId } from "@lucky/shared/client"
+import type { InvokeRequest } from "@lucky/shared/contracts/invoke"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
+import type { JsonSchemaDefinition } from "@lucky/shared/contracts/workflow"
 import type { TransformedInvokeInput } from "./types"
 
 export interface TransformResult {

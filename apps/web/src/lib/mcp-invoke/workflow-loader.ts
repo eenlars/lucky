@@ -1,5 +1,5 @@
-import { ErrorCodes } from "@lucky/contracts/invoke"
-import type { JsonSchemaDefinition, WorkflowConfig } from "@lucky/contracts/workflow"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
+import type { JsonSchemaDefinition, WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 /**
  * Result of workflow config loading

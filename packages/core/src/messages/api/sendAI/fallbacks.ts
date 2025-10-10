@@ -23,10 +23,10 @@ import type { ModelName } from "@core/utils/spending/models.types"
 /**
  * Tracks timeout timestamps for each model.
  * Uses a rolling window to maintain recent performance history.
+ * Old entries are automatically cleaned up when new timeouts are tracked.
  */
 // TODO: implement persistent storage for fallback state across restarts
 // TODO: add timeout categorization (network vs model vs rate limit)
-// TODO: optimize memory usage by cleaning old entries
 const modelTimeouts = new Map<ModelName, number[]>()
 
 /**
@@ -90,7 +90,8 @@ export function getFallbackModel(_model: ModelName): ModelName {
  * Records a timeout event for a model in the tracking system.
  *
  * Adds the current timestamp to the model's timeout history for
- * use in future fallback decisions.
+ * use in future fallback decisions. Automatically cleans up old
+ * entries outside the tracking window to prevent memory leaks.
  *
  * @param model - The model that experienced a timeout
  */
@@ -100,6 +101,10 @@ export function getFallbackModel(_model: ModelName): ModelName {
 export function trackTimeoutForModel(model: ModelName): void {
   const now = Date.now()
   const existing = modelTimeouts.get(model) ?? []
-  existing.push(now)
-  modelTimeouts.set(model, existing)
+
+  // Filter out stale entries to prevent unbounded memory growth
+  const recentTimeouts = existing.filter(t => now - t <= TIMEOUT_WINDOW_MS)
+  recentTimeouts.push(now)
+
+  modelTimeouts.set(model, recentTimeouts)
 }

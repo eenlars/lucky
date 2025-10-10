@@ -13,7 +13,7 @@
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { validateRuntimeConfig } from "@lucky/contracts/runtime"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 import { getDefaultModels as coreGetDefaultModels, getCoreConfig, isLoggingEnabled } from "./coreConfig"
 import type { CoreConfig } from "./types"
 import { toRuntimeContract } from "./validation"
@@ -180,8 +180,11 @@ function mapCoreConfigToLegacy(coreConfig: CoreConfig): FlowRuntimeConfig {
       provider: coreConfig.models.provider,
     },
     improvement: coreConfig.improvement,
-    verification: coreConfig.verification,
-    context: coreConfig.context,
+    verification: {
+      ...coreConfig.verification,
+      maxFilesPerWorkflow: coreConfig.verification.maxFilesPerWorkflow,
+      enforceFileLimit: coreConfig.verification.enforceFileLimit,
+    },
     evolution: coreConfig.evolution,
     ingestion: {
       taskLimit: 100, // default value

@@ -1,8 +1,8 @@
+import { R, type RS } from "@lucky/shared"
 import type {
   ToolExecutionContext as ToolExecutionContextBase,
   WorkflowFile as WorkflowFileBase,
-} from "@lucky/contracts/tools"
-import { R, type RS } from "@lucky/shared"
+} from "@lucky/shared/contracts/tools"
 import type { ZodTypeAny } from "zod"
 
 /**
@@ -34,5 +34,5 @@ export interface ToolExecutionContext extends Omit<ToolExecutionContextBase, "ex
 export type InvocationContext = ToolExecutionContext
 
 // RS and R are now imported from @lucky/shared
-export type { RS }
 export { R }
+export type { RS }

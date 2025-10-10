@@ -1,6 +1,6 @@
 import { CONFIG } from "@core/core-config/compat"
 import { llmify } from "@core/utils/common/llmify"
-import { zodToJson } from "@core/utils/zod/zodToJson"
+import { zodToJson } from "@core/utils/validation/zodToJson"
 import { isNir } from "@lucky/shared"
 import { isVercelAIStructure, isZodSchema } from "@lucky/tools"
 import type { ToolSet } from "ai"

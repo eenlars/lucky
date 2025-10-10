@@ -1,5 +1,5 @@
-import { ErrorCodes } from "@lucky/contracts/invoke"
-import type { JsonSchemaDefinition } from "@lucky/contracts/workflow"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
+import type { JsonSchemaDefinition } from "@lucky/shared/contracts/workflow"
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv"
 
 const ajv = new Ajv({

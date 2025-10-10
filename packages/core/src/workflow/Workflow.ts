@@ -12,7 +12,7 @@ import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
-import { zodToJson } from "@core/utils/zod/zodToJson"
+import { zodToJson } from "@core/utils/validation/zodToJson"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import { type SimplifyOptions, workflowToString } from "@core/workflow/actions/generate/workflowToString"
 import type { EvaluationInput, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
@@ -21,11 +21,10 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { genShortId } from "@lucky/shared"
 import type { RS } from "@lucky/shared"
-import { R } from "@lucky/shared"
-import { INACTIVE_TOOLS } from "@lucky/tools"
+import { R, genShortId, isNir } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
+import { INACTIVE_TOOLS } from "@lucky/tools"
 // src/core/workflow/Workflow.ts
 import type { IPersistence } from "@together/adapter-supabase"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
@@ -95,6 +94,7 @@ export class Workflow {
       const allNodeTools = [...(node.codeTools || []), ...(node.mcpTools || [])]
 
       for (const tool of allNodeTools) {
+        // TODO: this must be dynamic.
         if (INACTIVE_TOOLS.includes(tool)) {
           inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
         }
@@ -158,7 +158,7 @@ export class Workflow {
     this.problemAnalysis = problemAnalysis
 
     // Update the WorkflowVersion with all WorkflowIO data (if persistence enabled)
-    if (this.workflowIO.length > 0) {
+    if (isNir(this.workflowIO)) {
       if (this.persistence) {
         await this.persistence.updateWorkflowVersionWithIO(this.workflowVersionId, this.workflowIO)
       }
@@ -539,7 +539,7 @@ export class Workflow {
    * Checks if a new workflow file can be created based on the configured limit.
    */
   canCreateWorkflowFile(): boolean {
-    return this.workflowFiles.size < CONFIG.context.maxFilesPerWorkflow
+    return this.workflowFiles.size < CONFIG.verification.maxFilesPerWorkflow
   }
 
   async improveNodesIteratively(params: {

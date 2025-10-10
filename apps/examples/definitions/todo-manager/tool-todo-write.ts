@@ -25,7 +25,8 @@ const todoItemSchema = z.object({
  */
 const todoWrite = defineTool({
   name: "todoWrite",
-  description: longDescription,
+  description:
+    "Create and manage structured task lists for coding sessions. Overwrites entire todo list, validates constraints (only one in_progress task, unique IDs). LIMITS: overwrites all todos, session-scoped only, no partial updates or merging.",
   params: z.object({
     todos: z.array(todoItemSchema).min(0, "Todos array is required"),
   }),

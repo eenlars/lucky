@@ -155,9 +155,6 @@ export function createDefaultCoreConfig(): CoreConfig {
       rateWindowMs: 10000,
       enableStallGuard: true,
       enableParallelLimit: true,
-    },
-
-    context: {
       maxFilesPerWorkflow: 1,
       enforceFileLimit: true,
     },
@@ -165,6 +162,8 @@ export function createDefaultCoreConfig(): CoreConfig {
     verification: {
       allowCycles: true,
       enableOutputValidation: false,
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
     },
 
     persistence: {

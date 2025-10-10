@@ -1,5 +1,5 @@
 import { getDefaultModels } from "@core/core-config/compat"
-import { zodToJson } from "@core/utils/zod/zodToJson"
+import { zodToJson } from "@core/utils/validation/zodToJson"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import { genObject } from "../genObject"

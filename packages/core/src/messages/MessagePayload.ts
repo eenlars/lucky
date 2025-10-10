@@ -2,14 +2,14 @@
  * Message payload types - re-exported from @lucky/shared for backwards compatibility
  */
 import type { TextContent } from "@core/messages/pipeline/mcp.types"
+import type { Enums } from "@lucky/shared"
 import type {
   AggregatedPayload as AggregatedPayloadBase,
   DelegationPayload as DelegationPayloadBase,
   Payload as PayloadBase,
   ReplyPayload as ReplyPayloadBase,
   SequentialPayload as SequentialPayloadBase,
-} from "@lucky/contracts/messages"
-import type { Enums } from "@lucky/shared"
+} from "@lucky/shared/contracts/messages"
 
 // collaboration Types
 

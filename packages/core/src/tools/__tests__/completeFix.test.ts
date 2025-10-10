@@ -100,7 +100,7 @@ describe("Complete Fix for SearchGoogleMaps Validation", () => {
     // and use these schemas. It should test the full flow of schema visibility to AI models,
     // including how the schemas are passed to the AI and whether they influence tool calls.
     // Import zodToJson to test schema conversion
-    const { zodToJson } = await import("@core/utils/zod/zodToJson")
+    const { zodToJson } = await import("@core/utils/validation/zodToJson")
 
     // Test with the actual commonSchemas.resultCount used by searchGoogleMaps
     const resultCountSchema = z.number().max(20).default(10).nullish()

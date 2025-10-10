@@ -17,31 +17,34 @@ export type ModelPricingV2 = {
   active: boolean
 } // per 1M tokens
 
-/* ───────── TYPE-SAFE MODEL SELECTION ───────── */
+/* ───────── MODEL SELECTION ───────── */
+// Simplified to use strings everywhere. Runtime validation handles correctness.
 
-// Keep only "active: true" model keys as strings
-export type ActiveKeys<T extends Record<string, { active: boolean }>> = Extract<
-  {
-    [K in keyof T]: T[K]["active"] extends true ? K : never
-  }[keyof T],
-  string
->
+/**
+ * Model name - any string representing a model.
+ * Runtime validation ensures the model exists and is active.
+ */
+export type ModelName = string
 
-export type AnyModelName = {
-  [P in LuckyProvider]: keyof (typeof providersV2)[P]
-}[LuckyProvider]
+/**
+ * @deprecated Use string instead. Kept for backwards compatibility.
+ */
+export type AllowedModelName = string
 
-type ModelNameV2<T extends LuckyProvider = LuckyProvider> = {
-  [P in LuckyProvider]: keyof (typeof providersV2)[P]
-}[T]
+/**
+ * @deprecated Use string instead. Kept for backwards compatibility.
+ */
+export type AnyModelName = string
 
-// Only allow ACTIVE models from a specific provider (for runtime validation)
-export type AllowedModelName<T extends LuckyProvider = LuckyProvider> = ActiveKeys<(typeof providersV2)[T]>
+/**
+ * @deprecated Use string instead. Kept for backwards compatibility.
+ */
+export type OpenRouterModelName = string
 
-// ModelName now accepts any model from any provider - validation happens at runtime
-export type ModelName = AnyModelName
-
-export type OpenRouterModelName = AllowedModelName<"openrouter">
+/**
+ * @deprecated Use string instead. Kept for backwards compatibility.
+ */
+export type ActiveModelName = string
 
 export interface TokenUsage {
   inputTokens: number
@@ -49,17 +52,20 @@ export interface TokenUsage {
   cachedInputTokens?: number
 }
 
-// open or closed for other providers, depending on the provider
-export type StandardModels<T extends LuckyProvider = LuckyProvider, M extends "any" | "onlyActive" = "any"> = {
-  summary: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  nano: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  low: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  medium: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  high: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  default: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  fitness: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  reasoning: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
-  fallback: M extends "any" ? ModelNameV2<T> : AllowedModelName<T>
+/**
+ * Standard model tier configuration.
+ * All model names are strings, validated at runtime.
+ */
+export type StandardModels = {
+  summary: string
+  nano: string
+  low: string
+  medium: string
+  high: string
+  default: string
+  fitness: string
+  reasoning: string
+  fallback: string
 }
 
 export interface ModelPool {
@@ -71,12 +77,10 @@ export interface ModelPool {
   provider: LuckyProvider
 }
 
-// Create type-safe active model subset - ActiveModelName should be assignable to ModelName
-export type ActiveModelName = AllowedModelName
-
 /* ───────── MODEL PRICING DATA ───────── */
 
-export const providersV2 = {
+// Simplified: aggressively typed to prevent TypeScript from inferring massive literal union types
+const providersV2Data = {
   // Direct OpenAI API
   openai: {
     "gpt-4.1-nano": {
@@ -330,7 +334,10 @@ export const providersV2 = {
       active: true,
     },
   },
-} as const satisfies Record<LuckyProvider, Record<string, ModelPricingV2>>
+}
+
+// Cast to lose all literal type information - prevents TypeScript memory issues
+export const providersV2 = providersV2Data as Record<LuckyProvider, Record<string, ModelPricingV2>>
 
 /**
  * Get all active models from a specific provider (pure function, no runtime deps)

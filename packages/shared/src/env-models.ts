@@ -16,7 +16,7 @@ export const jwt = z
   .refine(key => key.startsWith("eyJ"), "Key must be a valid JWT (start with 'eyJ')")
 
 // --- Provider enums
-export const Providers = ["openai", "google", "groq", "openrouter"] as const
+export const Providers = ["openai", "groq", "openrouter"] as const
 export type Provider = (typeof Providers)[number]
 
 // --- Supabase (server-side)
@@ -68,7 +68,21 @@ export const lockboxServer = z.object({
    * Accepts raw text, hex, or base64. For production, use a random 32-byte value.
    * REQUIRED: Lockbox API endpoints will fail with 500 errors if this is not set.
    */
-  LOCKBOX_KEK: z.string().min(1, "LOCKBOX_KEK is required for lockbox encryption"),
+  LOCKBOX_KEK: z
+    .string()
+    .min(1, "LOCKBOX_KEK is required for lockbox encryption")
+    .refine(
+      val => {
+        // Check if it's a valid 32-byte key in hex, base64, or raw format
+        if (val.length === 64 && /^[0-9a-fA-F]+$/.test(val)) return true // hex
+        if (val.length === 44 && /^[A-Za-z0-9+/]+=*$/.test(val)) return true // base64
+        if (val.length === 32) return true // raw 32 bytes
+        return false
+      },
+      {
+        message: "LOCKBOX_KEK must be a 32-byte key (64 hex chars, 44 base64 chars, or 32 raw chars)",
+      },
+    ),
 })
 
 // --- Clerk Auth (server-side)
