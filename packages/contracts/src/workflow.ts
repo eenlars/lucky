@@ -30,9 +30,15 @@ export interface JsonSchemaDefinition {
 }
 
 /**
+ * Current schema version - increment this when making breaking changes to WorkflowConfig
+ */
+export const CURRENT_SCHEMA_VERSION = 1
+
+/**
  * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
  */
 export interface WorkflowConfig {
+  __schema_version?: number // Schema version for migration (0 = legacy, 1+ = versioned)
   nodes: WorkflowNodeConfig[]
   entryNodeId: string
   contextFile?: string | null
