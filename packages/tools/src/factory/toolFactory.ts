@@ -27,10 +27,10 @@
  * @module tools/toolFactory
  */
 
+import { TOOLS } from "@lucky/contracts/tools"
 import { Tools } from "@lucky/shared"
 import { type Tool, tool, zodSchema } from "ai"
 import { type ZodSchema, type ZodTypeAny, z } from "zod"
-import { TOOLS } from "../config/tools"
 import type { CodeToolName } from "../registry/types"
 import { type InvocationContext, R, type RS, type ToolExecutionContext } from "./types"
 import { validateAndCorrectWithSchema } from "./validation"

@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { PATHS } from "@lucky/tools/config/runtime"
+import { PATHS } from "@core/core-config/compat"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { tool as humanApproval } from "../tool"
 

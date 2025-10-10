@@ -1,10 +1,10 @@
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { PATHS } from "@core/core-config/compat"
 // save.ts
 import { JSONN } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
-import { PATHS } from "@lucky/tools/config/runtime"
 import { nanoid } from "nanoid"
 
 function getCallerDir(): string {

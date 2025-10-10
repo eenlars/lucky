@@ -1,103 +1,27 @@
-// Shared runtime constants mock for tests
+/**
+ * Shared runtime constants mock for tests
+ * RE-EXPORTS from @lucky/contracts/fixtures
+ */
+
+import { createMinimalTestConfig } from "@lucky/contracts/fixtures"
+
+const minimal = createMinimalTestConfig()
+
 export const mockRuntimeConstants = () => ({
   CONFIG: {
-    coordinationType: "sequential" as const,
-    newNodeProbability: 0.7,
-    evolution: {
-      iterativeIterations: 3,
-      GP: {
-        verbose: false,
-        populationSize: 5,
-        generations: 3,
-        initialPopulationMethod: "random" as const,
-        initialPopulationFile: null,
-        maximumTimeMinutes: 10,
-      },
-    },
+    ...minimal,
+    // Add legacy fields that tests expect
     tools: {
+      ...minimal.tools,
       inactive: new Set(),
       defaultTools: new Set(),
-      uniqueToolsPerAgent: false,
-      uniqueToolSetsPerAgent: false,
-      maxToolsPerAgent: 6,
-      maxStepsVercel: 1,
-      autoSelectTools: false,
-      usePrepareStepStrategy: false,
-      experimentalMultiStepLoop: false,
-      showParameterSchemas: false,
     },
     models: {
+      ...minimal.models,
       inactive: new Set(),
-      provider: "openai" as const,
     },
-    workflow: {
-      maxTotalNodeInvocations: 14,
-      maxPerNodeInvocations: 14,
-      maxNodes: 100,
-      handoffContent: "summary" as const,
-      prepareProblem: true,
-      prepareProblemMethod: "ai" as const,
-      prepareProblemWorkflowVersionId: "test-version-id",
-    },
-    verification: {
-      allowCycles: false,
-      enableOutputValidation: false,
-    },
-    improvement: {
-      flags: {
-        maxRetriesForWorkflowRepair: 3,
-        selfImproveNodes: false,
-        addTools: false,
-        analyzeWorkflow: false,
-        removeNodes: false,
-        editNodes: false,
-        useSummariesForImprovement: false,
-        improvementType: "judge" as const,
-        operatorsWithFeedback: false,
-      },
-      fitness: {
-        timeThresholdSeconds: 70,
-        baselineTimeSeconds: 5,
-        baselineCostUsd: 0.1,
-        costThresholdUsd: 1.0,
-        weights: {
-          score: 0.6,
-          time: 0.2,
-          cost: 0.2,
-        },
-      },
-    },
-    context: {
-      maxFilesPerWorkflow: 10,
-      enforceFileLimit: false,
-    },
-    limits: {
-      maxCostUsdPerRun: 100,
-      enableSpendingLimits: false,
-      rateWindowMs: 1000,
-      maxRequestsPerWindow: 100,
-      maxConcurrentWorkflows: 10,
-      maxConcurrentAIRequests: 5,
-      enableStallGuard: false,
-      enableParallelLimit: false,
-    },
-    logging: {
-      level: "info" as const,
-      override: {
-        Database: true,
-        GP: true,
-        API: false,
-      },
-    },
-  },
-  MODELS: {
-    default: "openai/gpt-4.1-mini",
-    nano: "openai/gpt-4.1-mini",
-    medium: "openai/gpt-4.1-mini",
-    high: "openai/gpt-4.1-mini",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "openai/gpt-4.1-mini",
-  },
+  } as any,
+  MODELS: minimal.models.defaults,
   PATHS: {
     root: "/test/root",
     app: "/test/app",
