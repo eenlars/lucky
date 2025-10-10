@@ -17,9 +17,12 @@ export function RollingNumber({ value, className }: RollingNumberProps) {
       setIsAnimating(true)
       const timer = setTimeout(() => {
         setDisplayValue(value)
-        setTimeout(() => setIsAnimating(false), 500)
       }, 50)
-      return () => clearTimeout(timer)
+      const animTimer = setTimeout(() => setIsAnimating(false), 550)
+      return () => {
+        clearTimeout(timer)
+        clearTimeout(animTimer)
+      }
     }
   }, [value, displayValue])
 

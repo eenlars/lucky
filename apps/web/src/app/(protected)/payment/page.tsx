@@ -39,9 +39,10 @@ export default function PaymentPage() {
   const handleTopUp = async () => {
     if (!amount || Number.parseFloat(amount) <= 0) return
 
+    const amountToAdd = Number.parseFloat(amount)
     setIsProcessing(true)
     await new Promise(resolve => setTimeout(resolve, 2000))
-    setCurrentBalance(prev => prev + Number.parseFloat(amount))
+    setCurrentBalance(prev => prev + amountToAdd)
     setIsProcessing(false)
     setAmount("")
   }
