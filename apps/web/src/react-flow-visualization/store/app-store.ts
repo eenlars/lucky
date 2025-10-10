@@ -42,6 +42,13 @@ export type AppState = {
   // JSON editor state
   workflowJSON: string
   currentWorkflowId?: string
+  // Chat messages state
+  chatMessages: Array<{
+    id: string
+    text: string
+    timestamp: number
+    type: "system" | "result" | "error"
+  }>
 }
 
 /**
@@ -108,6 +115,8 @@ export type AppActions = {
   closeNodeDetails: () => void
   toggleDetailPanelExpanded: () => void
   updateNode: (nodeId: string, updates: Partial<WorkflowNodeData>) => void
+  addChatMessage: (text: string, type: "system" | "result" | "error") => void
+  clearChatMessages: () => void
 }
 
 export type AppStore = AppState & AppActions
@@ -127,6 +136,7 @@ export const defaultState: AppState = {
   detailPanelExpanded: false,
   workflowJSON: JSON.stringify({ nodes: [], entryNodeId: "" }, null, 2),
   currentWorkflowId: undefined,
+  chatMessages: [],
 }
 
 export const createAppStore = (initialState: AppState = defaultState) => {
@@ -634,6 +644,19 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             })
           }
         },
+
+        addChatMessage: (text, type) => {
+          const newMessage = {
+            id: `${Date.now()}-${Math.random()}`,
+            text,
+            timestamp: Date.now(),
+            type,
+          }
+          set(state => ({ chatMessages: [...state.chatMessages, newMessage] }))
+        },
+        clearChatMessages: () => {
+          set({ chatMessages: [] })
+        },
       })),
       {
         name: "workflow-editor-state",
@@ -646,6 +669,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           currentWorkflowId: state.currentWorkflowId,
           layout: state.layout,
           colorMode: state.colorMode,
+          // Exclude chatMessages from persistence
         }),
       },
     ),

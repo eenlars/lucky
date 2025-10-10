@@ -34,12 +34,14 @@ async function loadFromDSLClient(dslConfig: any) {
  * @param prompt - User input to execute the workflow with
  * @param exportToJSON - Function to export current workflow as JSON
  * @param onProgress - Optional callback for progress logging
+ * @param onComplete - Optional callback when workflow completes with final message
  * @returns Result containing the workflow execution output
  */
 export async function executeRunMode(
   prompt: string,
   exportToJSON: () => string,
   onProgress?: (log: string) => void,
+  onComplete?: (finalMessage: string) => void,
 ): Promise<RunModeResult> {
   try {
     onProgress?.("Starting workflow execution...")
@@ -85,11 +87,19 @@ export async function executeRunMode(
     if (result?.success) {
       const first = result?.data?.[0]
       const output = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
+      const finalOutput = output || "No response"
+
       onProgress?.("✅ Workflow completed successfully!")
-      onProgress?.(`Result: ${output || "No response"}`)
+      onProgress?.(`Result: ${finalOutput}`)
+
+      // Always call onComplete callback on success, even with empty output
+      if (onComplete) {
+        onComplete(finalOutput)
+      }
+
       return {
         success: true,
-        output: output || "No response",
+        output: finalOutput,
       }
     }
     const errorMsg = result?.error || "Unknown error"
