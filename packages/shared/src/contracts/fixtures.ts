@@ -5,9 +5,9 @@
  * USAGE: Import these instead of creating inline config in tests.
  */
 
-import { DEFAULT_RUNTIME_CONFIG, type PartialRuntimeConfig, type RuntimeConfig, mergeRuntimeConfig } from "../config"
-import { DEFAULT_EVOLUTION_SETTINGS, type EvolutionSettings } from "../evolution"
-import type { EvaluationInput } from "../ingestion"
+import { DEFAULT_RUNTIME_CONFIG, type PartialRuntimeConfig, type RuntimeConfig, mergeRuntimeConfig } from "./config"
+import { DEFAULT_EVOLUTION_SETTINGS, type EvolutionSettings } from "./evolution"
+import type { EvaluationInput } from "./ingestion"
 
 // ============================================================================
 // RUNTIME CONFIG FIXTURES
