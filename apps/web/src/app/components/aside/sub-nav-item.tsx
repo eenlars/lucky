@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type React from "react"
 
 interface SubNavItemProps {
@@ -9,7 +10,7 @@ interface SubNavItemProps {
 
 export function SubNavItem({ href, children, delay = 0, isActive = false }: SubNavItemProps) {
   return (
-    <a className="block group/child" href={href}>
+    <Link className="block group/child" href={href}>
       <div className="relative">
         <div
           className="ml-[35px] mr-[15px] h-[32px] flex items-center border-l border-[#DCDAD2] dark:border-[#2C2C2C] pl-3 transition-all duration-200 ease-out opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
@@ -24,6 +25,6 @@ export function SubNavItem({ href, children, delay = 0, isActive = false }: SubN
           </span>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

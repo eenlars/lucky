@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type React from "react"
 import { NavIcon } from "./nav-icon"
 
@@ -20,7 +21,7 @@ export function NavItem({
 }: NavItemProps) {
   return (
     <div className="group">
-      <a className="group" href={href}>
+      <Link className="group" href={href}>
         <div className="relative">
           <div
             className={`border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px] w-[40px] ${
@@ -31,7 +32,7 @@ export function NavItem({
             <NavIcon className={isActive ? "dark:!text-white" : ""}>{icon}</NavIcon>
           </div>
         </div>
-      </a>
+      </Link>
       {hasSubmenu && (
         <div className="transition-all duration-300 ease-out overflow-hidden max-h-0 group-hover:max-h-[500px]">
           {children}
