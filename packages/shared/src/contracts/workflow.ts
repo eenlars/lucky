@@ -28,9 +28,16 @@ export const WorkflowNodeConfigSchema = z.object({
 })
 
 /**
+ * Current schema version for workflow migrations.
+ * Increment this when making breaking changes to the workflow schema.
+ */
+export const CURRENT_SCHEMA_VERSION = 1
+
+/**
  * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
  */
 export const WorkflowConfigSchema = z.object({
+  __schema_version: z.number().optional(),
   nodes: z.array(WorkflowNodeConfigSchema),
   entryNodeId: z.string(),
   contextFile: z.string().nullable().optional(),
