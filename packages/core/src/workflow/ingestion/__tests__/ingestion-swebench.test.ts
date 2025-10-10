@@ -1,6 +1,7 @@
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { SWEBenchInput, SWEBenchInstance, WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
+import { TOOLS } from "@lucky/shared/contracts/tools"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock the SWEBenchLoader
@@ -49,10 +50,23 @@ vi.mock("@examples/settings/constants", () => {
       experimentalMultiStepLoop: false,
       showParameterSchemas: false,
       experimentalMultiStepLoopMaxRounds: 20,
+      mcp: TOOLS.mcp,
+      code: TOOLS.code,
     },
     models: {
       inactive: [],
       provider: "openai",
+      defaults: {
+        summary: "google/gemini-2.5-flash-lite",
+        nano: "google/gemini-2.5-flash-lite",
+        low: "google/gemini-2.5-flash-lite",
+        medium: "openai/gpt-4.1-mini",
+        high: "openai/gpt-4.1",
+        default: "openai/gpt-4.1-nano",
+        fitness: "openai/gpt-4.1-mini",
+        reasoning: "openai/gpt-4.1-mini",
+        fallback: "switchpoint/router",
+      },
     },
     improvement: {
       fitness: {
@@ -90,6 +104,14 @@ vi.mock("@examples/settings/constants", () => {
         initialPopulationFile: null,
         maximumTimeMinutes: 1,
       },
+    },
+    context: {
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: false,
+    },
+    persistence: {
+      useMockBackend: false,
+      defaultBackend: "supabase",
     },
     ingestion: { taskLimit: 10 },
     limits: {

@@ -9,7 +9,7 @@ import type { IPersistence, NodeVersionData } from "@together/adapter-supabase"
  * Manages persistence operations for workflow nodes.
  */
 export class NodePersistenceManager {
-  static verbose = isLoggingEnabled("Memory")
+  static verbose = isLoggingEnabled("Database")
   constructor(
     private readonly nodeId: string,
     private readonly config: WorkflowNodeConfig,

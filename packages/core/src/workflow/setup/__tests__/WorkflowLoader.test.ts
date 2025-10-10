@@ -20,6 +20,7 @@ vi.mock("@core/utils/env.mjs", () => ({
 import os from "node:os"
 import path from "node:path"
 import type { FlowPathsConfig, FlowRuntimeConfig, FullFlowRuntimeConfig } from "@core/types"
+import { TOOLS } from "@lucky/shared/contracts/tools"
 
 // Mock runtime constants - typed and safe temp paths
 vi.mock("@examples/settings/constants", () => {
@@ -92,10 +93,23 @@ vi.mock("@examples/settings/constants", () => {
       experimentalMultiStepLoop: true,
       showParameterSchemas: true,
       experimentalMultiStepLoopMaxRounds: 0,
+      mcp: TOOLS.mcp,
+      code: TOOLS.code,
     },
     models: {
       inactive: [],
       provider: MODELS_T.provider,
+      defaults: {
+        summary: "google/gemini-2.5-flash-lite",
+        nano: "google/gemini-2.5-flash-lite",
+        low: "google/gemini-2.5-flash-lite",
+        medium: "openai/gpt-4.1-mini",
+        high: "openai/gpt-4.1",
+        default: "openai/gpt-4.1-nano",
+        fitness: "openai/gpt-4.1-mini",
+        reasoning: "openai/gpt-4.1-mini",
+        fallback: "switchpoint/router",
+      },
     },
     improvement: {
       fitness: {
@@ -134,6 +148,14 @@ vi.mock("@examples/settings/constants", () => {
         initialPopulationFile: "",
         maximumTimeMinutes: 700,
       },
+    },
+    context: {
+      maxFilesPerWorkflow: 1,
+      enforceFileLimit: true,
+    },
+    persistence: {
+      useMockBackend: false,
+      defaultBackend: "supabase",
     },
     ingestion: {
       taskLimit: 100,

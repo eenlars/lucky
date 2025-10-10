@@ -1,23 +1,59 @@
 /**
- * Test configuration mocks for @core/core-config/compat
- * RE-EXPORTS from @lucky/shared/contracts/fixtures for consistency
+ * Test configuration mocks for @core/core-config/compat.
+ * Converts shared RuntimeConfig fixtures into the legacy runtime shape.
  */
 
+import type { LegacyRuntimeConfig } from "@core/core-config/compat"
 import type { FlowRuntimeConfig } from "@core/types"
+import type { PartialRuntimeConfig, RuntimeConfig } from "@lucky/shared/contracts/config"
 import { createTestConfig, createVerboseTestConfig } from "@lucky/shared/contracts/fixtures"
+import { TOOLS } from "@lucky/shared/contracts/tools"
+
+const DEFAULT_INGESTION_TASK_LIMIT = 100
+
+function toLegacyRuntimeConfig(runtime: RuntimeConfig): LegacyRuntimeConfig {
+  const fileLimitConfig = {
+    maxFilesPerWorkflow: runtime.context.maxFilesPerWorkflow,
+    enforceFileLimit: runtime.context.enforceFileLimit,
+  }
+
+  return {
+    ...runtime,
+    workflow: {
+      ...runtime.workflow,
+      asyncExecution: false,
+    },
+    tools: {
+      ...runtime.tools,
+      mcp: TOOLS.mcp,
+      code: TOOLS.code,
+    },
+    limits: {
+      ...runtime.limits,
+      ...fileLimitConfig,
+    },
+    verification: {
+      ...runtime.verification,
+      ...fileLimitConfig,
+    },
+    ingestion: {
+      taskLimit: DEFAULT_INGESTION_TASK_LIMIT,
+    },
+  }
+}
 
 /**
  * Create a complete mock CONFIG for verbose mode testing
  */
-export function createMockConfigVerbose(): any {
-  return createVerboseTestConfig() as any
+export function createMockConfigVerbose(overrides?: PartialRuntimeConfig): LegacyRuntimeConfig {
+  return toLegacyRuntimeConfig(createVerboseTestConfig(overrides))
 }
 
 /**
  * Create a complete mock CONFIG for standard testing
  */
-export function createMockConfigStandard(): any {
-  return createTestConfig() as any
+export function createMockConfigStandard(overrides?: PartialRuntimeConfig): LegacyRuntimeConfig {
+  return toLegacyRuntimeConfig(createTestConfig(overrides))
 }
 
 /**
@@ -65,7 +101,6 @@ export function createMockModels() {
  *
  * @throws ZodError if config is invalid
  */
-export function validateMockConfig(config: any): void {
-  // Validation now handled by contracts
-  // No-op for backward compatibility
+export function validateMockConfig(_config: FlowRuntimeConfig): void {
+  // Validation now handled by contracts. No-op for backward compatibility.
 }

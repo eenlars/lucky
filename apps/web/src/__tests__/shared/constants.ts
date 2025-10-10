@@ -1,9 +1,9 @@
 /**
  * Shared mock constants and default values for tests
- * RE-EXPORTS from @lucky/contracts/fixtures
+ * RE-EXPORTS from @lucky/shared/contracts/fixtures
  */
 
-import { TEST_IDS, TEST_VALUES } from "@lucky/contracts/fixtures"
+import { TEST_IDS, TEST_VALUES } from "@lucky/shared/contracts/fixtures"
 
 // Re-export from contracts
 export const TEST_CONSTANTS = {
