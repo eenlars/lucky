@@ -37,7 +37,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
         const { key, ctrl = false, shift = false, alt = false, meta = false, action } = shortcut
 
         // Check if all modifiers match
-        const ctrlMatch = ctrl === (event.ctrlKey || event.metaKey)
+        const ctrlMatch = ctrl === event.ctrlKey
         const shiftMatch = shift === event.shiftKey
         const altMatch = alt === event.altKey
         const metaMatch = meta === event.metaKey

@@ -6,8 +6,8 @@
 
 "use client"
 
+import type { ChatSuggestionsProps } from "@/chat-interface/types"
 import { cn } from "@/lib/utils"
-import type { ChatSuggestionsProps } from "../../types"
 import { SuggestionCard } from "./SuggestionCard"
 
 export function ChatSuggestions({ suggestions, onSelect, className }: ChatSuggestionsProps) {

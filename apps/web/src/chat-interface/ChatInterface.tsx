@@ -71,7 +71,7 @@ export function ChatInterface({
     enabled: true,
     shortcuts: [
       COMMON_SHORTCUTS.focusInput(() => {
-        const input = document.querySelector('textarea[placeholder*="message"]') as HTMLTextAreaElement
+        const input = document.querySelector("textarea[data-chat-input]") as HTMLTextAreaElement
         input?.focus()
       }),
       COMMON_SHORTCUTS.scrollToBottom(scrollToBottom),

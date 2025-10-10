@@ -203,9 +203,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     textArea.focus()
     textArea.select()
     try {
-      document.execCommand("copy")
+      const successful = document.execCommand("copy")
       textArea.remove()
-      return true
+      return successful
     } catch (error) {
       console.error("Failed to copy:", error)
       textArea.remove()

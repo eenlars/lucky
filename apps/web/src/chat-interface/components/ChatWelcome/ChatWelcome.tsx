@@ -6,8 +6,8 @@
 
 "use client"
 
+import type { ChatWelcomeProps } from "@/chat-interface/types"
 import { cn } from "@/lib/utils"
-import type { ChatWelcomeProps } from "../../types"
 
 export function ChatWelcome({
   title = "Start a conversation",
@@ -22,14 +22,15 @@ export function ChatWelcome({
 
       {/* Text */}
       <div className="space-y-2">
-        <h2 className="text-lg sm:text-xl font-light text-black/80">{title}</h2>
-        <p className="text-xs sm:text-sm font-light text-black/50 px-4 max-w-md mx-auto">{subtitle}</p>
+        <h2 className="text-lg sm:text-xl font-light text-chat-foreground/80">{title}</h2>
+        <p className="text-xs sm:text-sm font-light text-chat-muted px-4 max-w-md mx-auto">{subtitle}</p>
       </div>
 
       {/* Keyboard hint */}
-      <p className="text-xs font-light text-black/30 pt-2">
-        Press <kbd className="px-1.5 py-0.5 bg-black/5 border border-black/10 rounded text-[10px] font-mono">⌘K</kbd> to
-        focus
+      <p className="text-xs font-light text-chat-muted/75 pt-2">
+        Press{" "}
+        <kbd className="px-1.5 py-0.5 bg-chat-accent border border-chat-border rounded text-[10px] font-mono">⌘K</kbd>{" "}
+        to focus
       </p>
     </div>
   )

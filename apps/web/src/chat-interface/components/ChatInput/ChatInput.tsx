@@ -60,6 +60,7 @@ export function ChatInput({
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
+            data-chat-input
             value={value}
             onChange={e => onChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -69,7 +70,7 @@ export function ChatInput({
             className={cn(
               "w-full px-4 py-3",
               "border border-chat-border rounded-2xl",
-              "resize-none overflow-hidden",
+              "resize-none overflow-y-auto",
               "focus:outline-none focus:border-chat-foreground/40",
               "transition-all",
               "text-sm font-light",

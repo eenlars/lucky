@@ -6,8 +6,8 @@
 
 "use client"
 
+import { getStaggerStyle } from "@/chat-interface/utils/animation-utils"
 import { cn } from "@/lib/utils"
-import { getStaggerStyle } from "../../utils/animation-utils"
 
 interface SuggestionCardProps {
   suggestion: string

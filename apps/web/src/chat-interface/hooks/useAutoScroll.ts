@@ -10,8 +10,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 export interface UseAutoScrollOptions {
   /** Whether to enable auto-scroll */
   enabled?: boolean
-  /** Scroll behavior */
-  behavior?: ScrollBehavior
   /** Threshold in pixels from bottom to consider "at bottom" */
   threshold?: number
   /** Whether to smooth scroll */
@@ -33,7 +31,7 @@ export function useAutoScroll(
   dependencies: React.DependencyList = [],
   options: UseAutoScrollOptions = {},
 ): UseAutoScrollReturn {
-  const { enabled = true, behavior: _behavior = "smooth", threshold = 100, smooth = true } = options
+  const { enabled = true, threshold = 100, smooth = true } = options
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)

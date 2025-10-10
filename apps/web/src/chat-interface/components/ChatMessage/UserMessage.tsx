@@ -59,7 +59,15 @@ export function UserMessage({
         </div>
 
         {/* Error indicator */}
-        {hasError && <div className="text-xs text-red-500 mt-2">Failed to send • Click to retry</div>}
+        {hasError && (
+          <button
+            onClick={onRetry}
+            className="text-xs text-red-500 hover:text-red-600 mt-2 cursor-pointer transition-colors"
+            type="button"
+          >
+            Failed to send • Click to retry
+          </button>
+        )}
       </div>
     </div>
   )
