@@ -1,0 +1,220 @@
+import { requireAuth } from "@/lib/api-auth"
+import { getFacade } from "@lucky/models"
+import {
+  type UIMessage,
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamText,
+} from "ai"
+import { type NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
+
+// Allow streaming responses up to 60 seconds
+export const maxDuration = 60
+
+// Request validation schema
+// Note: Using looser validation to accommodate AI SDK's UIMessage type
+const ChatRequestSchema = z.object({
+  messages: z
+    .array(z.any()) // AI SDK's UIMessage has complex discriminated union types
+    .min(1, "At least one message is required")
+    .max(100, "Too many messages in conversation")
+    .refine(
+      msgs => {
+        // Basic validation: each message should have id, role, and parts
+        return msgs.every(
+          msg =>
+            msg &&
+            typeof msg === "object" &&
+            typeof msg.id === "string" &&
+            typeof msg.role === "string" &&
+            Array.isArray(msg.parts),
+        )
+      },
+      { message: "Invalid message format" },
+    ),
+  nodeId: z.string().min(1, "nodeId cannot be empty").max(200),
+  modelName: z.string().max(200).optional(),
+  systemPrompt: z.string().max(10000, "System prompt is too long").optional(),
+})
+
+// Sanitize system prompt to prevent common injection patterns
+function sanitizeSystemPrompt(prompt: string): string {
+  return prompt
+    .replace(/ignore\s+previous\s+instructions?/gi, "")
+    .replace(/disregard\s+(all\s+)?previous/gi, "")
+    .replace(/forget\s+everything/gi, "")
+    .trim()
+}
+
+// Map technical errors to user-friendly messages
+function getUserFriendlyError(error: unknown): string {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+
+  if (errorMessage.includes("API key") || errorMessage.includes("apiKey")) {
+    return "AI provider not configured. Please contact support."
+  }
+  if (errorMessage.includes("not found") || errorMessage.includes("Not found")) {
+    return "Selected model is not available. Try a different model."
+  }
+  if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
+    return "Too many requests. Please wait a moment and try again."
+  }
+  if (errorMessage.includes("quota") || errorMessage.includes("insufficient")) {
+    return "AI service quota exceeded. Please try again later."
+  }
+  if (errorMessage.includes("timeout")) {
+    return "Request timed out. Please try again."
+  }
+
+  return "Failed to process your request. Please try again."
+}
+
+/**
+ * POST /api/agent/chat
+ * Streaming chat endpoint for agent dialog testing
+ *
+ * Request body:
+ * - messages: UIMessage[] - Chat history
+ * - nodeId: string - Agent node ID
+ * - modelName?: string - Override model (format: "provider/model" or "tier:name")
+ * - systemPrompt?: string - System prompt for the agent
+ */
+export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+
+  try {
+    // Require authentication
+    const authResult = await requireAuth()
+    if (authResult instanceof NextResponse) return authResult
+
+    // Parse request body with error handling
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 })
+    }
+
+    // Validate request body with Zod
+    const validationResult = ChatRequestSchema.safeParse(body)
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0]
+      return NextResponse.json(
+        {
+          error: firstError?.message || "Invalid request data",
+          field: firstError?.path.join("."),
+        },
+        { status: 400 },
+      )
+    }
+
+    const { messages, nodeId, modelName, systemPrompt } = validationResult.data
+
+    // TODO: Add authorization check - verify user owns this nodeId
+    // const userId = authResult // Get user ID from auth
+    // const hasAccess = await verifyNodeAccess(userId, nodeId)
+    // if (!hasAccess) {
+    //   return NextResponse.json({ error: "Unauthorized access to this agent" }, { status: 403 })
+    // }
+
+    // Log request for debugging
+    console.log(`[Agent Chat] Starting stream for node=${nodeId}, model=${modelName || "default"}`)
+
+    // Get models facade (uses env vars for provider config)
+    const models = getFacade()
+
+    // Determine which model to use
+    // Default to OpenRouter's Claude if no model specified
+    const modelSpec = modelName || "openrouter/anthropic/claude-3.5-sonnet"
+
+    // Select and get AI SDK compatible model
+    let modelSelection: Awaited<ReturnType<typeof models.resolve>>
+    let model: Awaited<ReturnType<typeof models.getModel>>
+    try {
+      modelSelection = await models.resolve(modelSpec)
+      model = await models.getModel(modelSelection)
+    } catch (error) {
+      console.error("[Agent Chat] Failed to load model:", error)
+      const userError = getUserFriendlyError(error)
+      return NextResponse.json(
+        {
+          error: userError,
+          details:
+            process.env.NODE_ENV === "development"
+              ? error instanceof Error
+                ? error.message
+                : String(error)
+              : undefined,
+          modelSpec: process.env.NODE_ENV === "development" ? modelSpec : undefined,
+        },
+        { status: 500 },
+      )
+    }
+
+    // Sanitize and prepare system prompt
+    const basePrompt = "You are a helpful AI assistant. Be concise and clear in your responses."
+    const finalSystemPrompt = systemPrompt ? sanitizeSystemPrompt(systemPrompt) : basePrompt
+
+    // Log custom system prompts for audit
+    if (systemPrompt && systemPrompt !== basePrompt) {
+      console.log(`[Agent Chat] Custom system prompt used for node=${nodeId}`)
+    }
+
+    // Create streaming response with transient status updates
+    return createUIMessageStreamResponse({
+      stream: createUIMessageStream({
+        execute: async ({ writer }) => {
+          // Send transient "thinking" status
+          writer.write({
+            type: "data-status",
+            data: { message: "Generating response..." },
+            transient: true,
+          })
+
+          // Stream the AI response
+          const result = streamText({
+            model,
+            system: finalSystemPrompt,
+            messages: convertToModelMessages(messages),
+            temperature: 0.7,
+            onFinish: ({ finishReason, usage }) => {
+              const duration = Date.now() - startTime
+              console.log(
+                `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${modelSelection.modelId}`,
+              )
+            },
+            onError: error => {
+              console.error(`[Agent Chat] Streaming error for node=${nodeId}:`, error)
+            },
+          })
+
+          // Convert to UI message stream and forward all chunks
+          const uiStream = result.toUIMessageStream()
+          for await (const chunk of uiStream) {
+            writer.write(chunk)
+          }
+
+          // Signal completion
+          writer.write({ type: "finish" })
+        },
+      }),
+    })
+  } catch (error) {
+    const duration = Date.now() - startTime
+    console.error(`[Agent Chat] Error after ${duration}ms:`, error)
+
+    // Don't return JSON during streaming - if we're here, streaming hasn't started
+    const userError = getUserFriendlyError(error)
+    return NextResponse.json(
+      {
+        error: userError,
+        details:
+          process.env.NODE_ENV === "development" ? (error instanceof Error ? error.message : String(error)) : undefined,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 },
+    )
+  }
+}
