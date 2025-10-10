@@ -16,6 +16,7 @@ export default defineConfig([
       "contracts/runtime": "src/contracts/runtime.ts",
       "contracts/tools": "src/contracts/tools.ts",
       "contracts/workflow": "src/contracts/workflow.ts",
+      "contracts/__tests__/fixtures": "src/contracts/__tests__/fixtures.ts",
       "utils/validateJsonSchema": "src/utils/validateJsonSchema.ts",
     },
     format: ["esm"],

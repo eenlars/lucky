@@ -132,6 +132,7 @@ export const DEFAULT_INACTIVE_TOOLS: AllToolNames[] = [
 export interface ToolExecutionContext {
   workflowInvocationId: string
   workflowId: string
+  workflowVersionId: string
   workflowFiles?: WorkflowFile[]
   expectedOutputType?: any
   mainWorkflowGoal?: string

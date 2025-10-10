@@ -50,6 +50,10 @@
       "types": "./dist/contracts/workflow.d.ts",
       "import": "./dist/contracts/workflow.js"
     },
+    "./contracts/fixtures": {
+      "types": "./dist/contracts/__tests__/fixtures.d.ts",
+      "import": "./dist/contracts/__tests__/fixtures.js"
+    },
     "./client": {
       "browser": {
         "types": "./dist/client.d.ts",
