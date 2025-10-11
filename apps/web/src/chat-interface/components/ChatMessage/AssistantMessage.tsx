@@ -29,11 +29,11 @@ export function AssistantMessage({
 
   return (
     <div id={message.id} className={cn("flex justify-start group", ANIMATIONS.messageEntry, "duration-500")}>
-      <div className="flex flex-col items-start max-w-[75%]">
+      <div className="flex flex-col items-start max-w-[90%] sm:max-w-[75%]">
         {/* Message bubble */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-3",
+            "rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3",
             "bg-chat-accent text-chat-foreground border border-chat-border",
             "transition-all",
             isStreaming && "animate-pulse",

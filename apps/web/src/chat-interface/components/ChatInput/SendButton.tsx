@@ -22,7 +22,7 @@ export function SendButton({ onClick, disabled, isLoading }: SendButtonProps) {
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "h-11 w-11",
+        "h-10 w-10 sm:h-11 sm:w-11",
         "rounded-full",
         "bg-chat-primary hover:bg-chat-primary/90",
         "text-white",
@@ -37,7 +37,11 @@ export function SendButton({ onClick, disabled, isLoading }: SendButtonProps) {
       }}
       aria-label="Send message"
     >
-      {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+      {isLoading ? (
+        <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
+      ) : (
+        <Send className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+      )}
     </Button>
   )
 }

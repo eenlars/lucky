@@ -23,17 +23,17 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white pt-[env(safe-area-inset-top)]">
       <OnboardingGuide />
 
       {/* Demo Button - Shows before first message */}
       {!hasStartedChat && (
         <div className="border-b border-black/10 bg-gradient-to-b from-black/[0.02] to-transparent animate-in fade-in slide-in-from-top duration-500">
-          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="max-w-3xl mx-auto px-4 pt-6 pb-3 sm:py-4 md:py-6">
             <button
               type="button"
               onClick={handleDemoClick}
-              className="w-full group flex items-center justify-between p-4 sm:p-6 border-2 border-dashed border-black/20 rounded-2xl hover:border-black/40 hover:bg-black/[0.02] hover:shadow-sm transition-all duration-300 active:scale-[0.99]"
+              className="w-full group flex items-center justify-between p-3 sm:p-4 md:p-6 border-2 border-dashed border-black/20 rounded-2xl hover:border-black/40 hover:bg-black/[0.02] hover:shadow-sm transition-all duration-300 active:scale-[0.99]"
             >
               <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center group-hover:from-black/10 group-hover:to-black/15 transition-all duration-300">
