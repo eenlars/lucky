@@ -30,6 +30,18 @@
       "types": "./dist/contracts/agent.d.ts",
       "import": "./dist/contracts/agent.js"
     },
+    "./contracts/config": {
+      "types": "./dist/contracts/config.d.ts",
+      "import": "./dist/contracts/config.js"
+    },
+    "./contracts/evolution": {
+      "types": "./dist/contracts/evolution.d.ts",
+      "import": "./dist/contracts/evolution.js"
+    },
+    "./contracts/ingestion": {
+      "types": "./dist/contracts/ingestion.d.ts",
+      "import": "./dist/contracts/ingestion.js"
+    },
     "./contracts/invoke": {
       "types": "./dist/contracts/invoke.d.ts",
       "import": "./dist/contracts/invoke.js"
