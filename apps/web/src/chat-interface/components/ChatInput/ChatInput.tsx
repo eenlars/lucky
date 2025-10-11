@@ -44,13 +44,13 @@ export function ChatInput({
     const wasNonEmpty = prevValueRef.current.length > 0
     const isNowEmpty = value === ""
 
-    if (wasNonEmpty && isNowEmpty && !isLoading) {
+    if (wasNonEmpty && isNowEmpty) {
       // Use setTimeout to ensure focus happens after React update
       setTimeout(() => textarea.focus(), 0)
     }
 
     prevValueRef.current = value
-  }, [value, isLoading])
+  }, [value])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Send on Enter (without Shift)
