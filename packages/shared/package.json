@@ -62,18 +62,6 @@
       "types": "./dist/contracts/workflow.d.ts",
       "import": "./dist/contracts/workflow.js"
     },
-    "./contracts/evolution": {
-      "types": "./dist/contracts/evolution.d.ts",
-      "import": "./dist/contracts/evolution.js"
-    },
-    "./contracts/config": {
-      "types": "./dist/contracts/config.d.ts",
-      "import": "./dist/contracts/config.js"
-    },
-    "./contracts/ingestion": {
-      "types": "./dist/contracts/ingestion.d.ts",
-      "import": "./dist/contracts/ingestion.js"
-    },
     "./contracts/fixtures": {
       "types": "./dist/contracts/fixtures.d.ts",
       "import": "./dist/contracts/fixtures.js"
