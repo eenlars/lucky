@@ -81,8 +81,11 @@ export function ChatInterface({
   return (
     <div className={cn("flex flex-col h-full w-full bg-chat-background", className)} style={{ maxHeight }}>
       {/* Messages area */}
-      <ScrollArea ref={scrollRef} className="flex-1 px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <ScrollArea
+        ref={scrollRef}
+        className="flex-1 px-3 pt-8 pb-4 sm:px-4 sm:py-6 overflow-auto [-webkit-overflow-scrolling:touch]"
+      >
+        <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
           {/* Messages */}
           {messages.map((message, idx) => (
             <ChatMessage
@@ -118,7 +121,7 @@ export function ChatInterface({
 
       {/* Input area */}
       <div className="bg-chat-background">
-        <div className="max-w-3xl mx-auto px-4 py-4">
+        <div className="max-w-3xl mx-auto px-3 py-3 sm:px-4 sm:py-4">
           <ChatInput
             value={inputValue}
             onChange={setInputValue}

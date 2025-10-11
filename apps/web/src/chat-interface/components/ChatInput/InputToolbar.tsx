@@ -26,7 +26,7 @@ export function InputToolbar({ onAttach, onVoice, onAudio, disabled: _disabled =
         onClick={onAttach}
         disabled={true}
         className={cn(
-          "p-1.5 rounded-lg",
+          "p-2.5 sm:p-1.5 rounded-lg",
           "text-chat-muted hover:text-chat-foreground hover:bg-chat-accent",
           "transition-all",
           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -49,7 +49,7 @@ export function InputToolbar({ onAttach, onVoice, onAudio, disabled: _disabled =
         onClick={onVoice}
         disabled={true}
         className={cn(
-          "p-1.5 rounded-lg",
+          "p-2.5 sm:p-1.5 rounded-lg",
           "text-chat-muted hover:text-chat-foreground hover:bg-chat-accent",
           "transition-all",
           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -69,7 +69,7 @@ export function InputToolbar({ onAttach, onVoice, onAudio, disabled: _disabled =
         onClick={onAudio}
         disabled={true}
         className={cn(
-          "p-1.5 rounded-lg",
+          "p-2.5 sm:p-1.5 rounded-lg",
           "text-chat-muted hover:text-chat-foreground hover:bg-chat-accent",
           "transition-all",
           "disabled:opacity-50 disabled:cursor-not-allowed",
