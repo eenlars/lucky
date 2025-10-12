@@ -1,9 +1,18 @@
+import { readFile } from "node:fs/promises"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { createSecretResolver } from "@/lib/lockbox/secretResolver"
+import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import {
+  FALLBACK_PROVIDER_KEYS,
+  getRequiredProviderKeys,
+  validateProviderKeys,
+} from "@/lib/workflow/provider-validation"
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
+import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import { isNir } from "@lucky/shared/utils/common/isNir"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
@@ -44,32 +53,42 @@ export async function POST(req: NextRequest) {
 
     const secrets = createSecretResolver(principal.clerk_id)
 
-    // Pre-fetch common provider keys
-    const apiKeys = await secrets.getAll(["OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"])
-    console.log("[workflow/invoke] Pre-fetched API keys:", Object.keys(apiKeys))
-    console.log("[workflow/invoke] OPENROUTER_API_KEY present:", !!apiKeys.OPENROUTER_API_KEY)
-    console.log("[workflow/invoke] OPENAI_API_KEY present:", !!apiKeys.OPENAI_API_KEY)
+    // Extract workflow config to determine required providers
+    let workflowConfig: WorkflowConfig | null = null
+    try {
+      if (input.dslConfig) {
+        workflowConfig = input.dslConfig
+      } else if (input.filename) {
+        const fileContent = await readFile(input.filename, "utf-8")
+        workflowConfig = JSON.parse(fileContent)
+      } else if (input.workflowVersionId) {
+        const loadResult = await loadWorkflowConfig(input.workflowVersionId)
+        if (loadResult.success && loadResult.config) {
+          workflowConfig = loadResult.config
+        }
+      }
+    } catch (error) {
+      console.warn("[workflow/invoke] Failed to load workflow config for provider extraction:", error)
+    }
 
-    // For session auth (UI users), validate required API keys BEFORE running workflow
+    // Extract providers required by this workflow for targeted validation
+    const requiredProviderKeys = workflowConfig
+      ? getRequiredProviderKeys(workflowConfig, "workflow/invoke")
+      : [...FALLBACK_PROVIDER_KEYS]
+
+    // Pre-fetch required provider keys (only those actually needed by this workflow)
+    const apiKeys = await secrets.getAll(requiredProviderKeys)
+
+    // Validate all required keys are present for session-based auth
     if (principal.auth_method === "session") {
-      const missingKeys: string[] = []
+      const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
 
-      // Check which providers are actually needed (for now, check all common ones)
-      // TODO: Parse workflow to determine exact providers needed
-      // Session-auth users MUST have keys in their secrets (no process.env fallback)
-      if (!apiKeys.OPENROUTER_API_KEY) {
-        missingKeys.push("OPENROUTER_API_KEY")
-      }
-      if (!apiKeys.OPENAI_API_KEY) {
-        missingKeys.push("OPENAI_API_KEY")
-      }
-
-      if (missingKeys.length > 0) {
-        console.error("[workflow/invoke] ❌ Missing required API keys for UI user:", missingKeys)
+      if (!isNir(missingKeys)) {
+        console.error("[workflow/invoke] Missing required API keys:", missingKeys)
         return NextResponse.json(
           {
             error: "Missing API Keys",
-            message: `You need to configure API keys before running workflows: ${missingKeys.join(", ")}`,
+            message: `This workflow requires API keys that aren't configured: ${missingKeys.join(", ")}`,
             missingKeys,
             action: "Go to Settings > Provider Settings to add your API keys",
           },
