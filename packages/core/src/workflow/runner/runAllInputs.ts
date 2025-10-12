@@ -69,12 +69,12 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
         lgg.onlyIf(verbose, `[runAllIO] queueRun completed for invocation ${invocationId}`)
         return { workflowInvocationId: invocationId, queueRunResult }
       } catch (error) {
-        // Skip this IO on error, do not push anything to results
-        lgg.error(`[runAllIO] Failed to run queue for IO ${i + batchIndex}: ${error}`, {
-          workflow: workflow.getWorkflowVersionId(),
-          workflowIO,
-          error,
-        })
+        const errorMessage =
+          error instanceof Error ? `${error.message}${error.stack ? `\n${error.stack}` : ""}` : String(error)
+        lgg.error(
+          `[runAllIO] Failed to run workflow for IO ${i + batchIndex}:\n${errorMessage}\nWorkflow: ${workflow.getWorkflowVersionId()}\nInput: ${JSON.stringify(workflowIO.workflowInput).substring(0, 200)}`,
+        )
+        console.error("[runAllIO] Error details:", error)
         // No return, so this promise resolves to undefined and will be filtered out later
         return undefined
       }

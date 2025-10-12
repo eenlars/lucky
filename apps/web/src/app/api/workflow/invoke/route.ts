@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       const result = await invokeWorkflow(input)
 
       if (!result.success) {
+        console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
         return NextResponse.json({ error: result.error }, { status: 500 })
       }
 
@@ -48,12 +49,18 @@ export async function POST(req: NextRequest) {
     })
 
     if (!result.success) {
+      console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
       return NextResponse.json({ error: result.error }, { status: 500 })
     }
 
     return NextResponse.json(result, { status: 200 })
   } catch (error) {
-    console.error("Workflow Invocation API Error:", error)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    console.error("[/api/workflow/invoke] Unexpected error:", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal Server Error"
+    const errorStack = error instanceof Error ? error.stack : undefined
+    if (errorStack) {
+      console.error("[/api/workflow/invoke] Stack trace:", errorStack)
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
