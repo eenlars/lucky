@@ -56,6 +56,7 @@ export function getProviderKeyName(provider: string): string {
 
 /**
  * Map API key names to user-friendly provider display names
+ * For unknown keys, converts HUGGING_FACE_API_KEY -> "Hugging Face"
  */
 export function getProviderDisplayName(keyName: string): string {
   const mapping: Record<string, string> = {
@@ -64,5 +65,16 @@ export function getProviderDisplayName(keyName: string): string {
     ANTHROPIC_API_KEY: "Anthropic",
     GROQ_API_KEY: "Groq",
   }
-  return mapping[keyName] || keyName.replace(/_API_KEY$/, "").toLowerCase()
+
+  if (mapping[keyName]) {
+    return mapping[keyName]
+  }
+
+  // Fallback: convert HUGGING_FACE_API_KEY -> "Hugging Face"
+  // Remove _API_KEY suffix, split by underscore, capitalize each word, join with space
+  return keyName
+    .replace(/_API_KEY$/, "")
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
 }
