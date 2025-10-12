@@ -154,7 +154,6 @@ export async function GET(req: NextRequest) {
 
     if (updErr) {
       // Do not fail reveal if metadata update fails
-      // eslint-disable-next-line no-console
       console.warn("Failed to update last_used_at for secret", data.user_secret_id, updErr)
     }
 

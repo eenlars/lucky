@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "build:webpack": "next build",
     "start": "next start",
     "test": "bunx vitest",
     "test:integration": "bunx vitest run --config vite.integration.config.ts",

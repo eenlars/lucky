@@ -48,6 +48,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   useEffect(() => {
     loadConfiguration()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadConfiguration = async () => {

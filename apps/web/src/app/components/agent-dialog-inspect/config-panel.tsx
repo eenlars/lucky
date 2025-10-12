@@ -91,6 +91,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }, 500)
 
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [description]) // Only depend on description, not node.data
 
   // Auto-save system prompt after delay
@@ -103,6 +104,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }, 500)
 
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [systemPrompt]) // Only depend on systemPrompt, not node.data
 
   const toggleTool = useCallback(

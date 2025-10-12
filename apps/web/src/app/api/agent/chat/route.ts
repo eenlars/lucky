@@ -1,12 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { getFacade } from "@lucky/models"
-import {
-  type UIMessage,
-  convertToModelMessages,
-  createUIMessageStream,
-  createUIMessageStreamResponse,
-  streamText,
-} from "ai"
+import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 

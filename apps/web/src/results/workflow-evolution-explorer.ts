@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import { createStandaloneClient } from "@/lib/supabase/standalone"
 
 // test with the actual invocation ID to see what data we have

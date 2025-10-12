@@ -1,6 +1,5 @@
 import crypto from "node:crypto"
 import fs from "node:fs"
-/* eslint-disable no-restricted-imports */
 import { extractCountriesOperation } from "@/lib/scrape-countries-operation"
 import { slugifyBCorp, toDomain } from "@/lib/scraping/data-collection-scripts/utils"
 import { saveInLoc } from "@lucky/core/utils/fs/fileSaver"

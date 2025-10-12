@@ -17,6 +17,7 @@ import { InvocationsTable } from "./components/InvocationsTable"
 import { SummaryCards } from "./components/SummaryCards"
 import type { FilterState, SortField, SortOrder, WorkflowInvocationFilters } from "./lib/types"
 
+// initialize dayjs plugins
 dayjs.extend(relativeTime)
 
 export default function InvocationsPage() {

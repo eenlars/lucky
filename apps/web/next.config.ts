@@ -1,10 +1,6 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  devIndicators: {
-    appIsrStatus: false,
-    buildActivity: false,
-  },
   transpilePackages: ["@lucky/shared", "@lucky/tools", "@lucky/models"],
   outputFileTracingExcludes: {
     "/api/*": [".next/**"],
@@ -12,6 +8,11 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "bullmq",
     "glob",
+    "clone-deep",
+    "merge-deep",
+    "import-fresh",
+    "cosmiconfig",
+    "typescript",
     // Ensure puppeteer and stealth plugin resolve their internal dynamic requires at runtime
     "puppeteer",
     "puppeteer-extra",
@@ -20,52 +21,6 @@ const nextConfig: NextConfig = {
     // MCP stdio requires child_process (Node.js only)
     "ai/dist/mcp-stdio",
   ],
-  /* config options here */
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Suppress expected dynamic import warnings for config loader
-      // The config loader intentionally uses dynamic imports for user configs at runtime
-      config.module = config.module || {}
-      config.module.exprContextCritical = false
-    }
-
-    if (!isServer) {
-      // Don't resolve these Node.js modules on the client side
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        url: false,
-        module: false,
-        perf_hooks: false,
-        stream: false,
-        events: false,
-        crypto: false,
-        glob: false,
-        child_process: false,
-        // Handle node: protocol imports
-        "node:fs": false,
-        "node:fs/promises": false,
-        "node:path": false,
-        "node:url": false,
-      }
-    }
-
-    // Externalize problematic packages for server-side rendering
-    config.externals = config.externals || []
-    config.externals.push({
-      "clone-deep": "commonjs clone-deep",
-      "merge-deep": "commonjs merge-deep",
-      "puppeteer-extra-plugin-stealth": "commonjs puppeteer-extra-plugin-stealth",
-      "puppeteer-extra-plugin": "commonjs puppeteer-extra-plugin",
-      "import-fresh": "commonjs import-fresh",
-      cosmiconfig: "commonjs cosmiconfig",
-      puppeteer: "commonjs puppeteer",
-      typescript: "commonjs typescript",
-    })
-
-    return config
-  },
 }
 
 export default nextConfig

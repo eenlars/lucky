@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import { Panel } from "@xyflow/react"
-import { ArrowUp, AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
+import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
