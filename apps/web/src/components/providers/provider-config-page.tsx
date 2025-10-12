@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
 import {
   AlertCircle,
@@ -38,6 +39,14 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const config = PROVIDER_CONFIGS[provider]
   const Icon = config.icon
 
+  // Zustand store for model preferences
+  const {
+    loadPreferences,
+    getEnabledModels,
+    toggleModel: toggleModelInStore,
+    setProviderModels,
+  } = useModelPreferencesStore()
+
   const [apiKey, setApiKey] = useState("")
   const [isVisible, setIsVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -47,10 +56,19 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const [isConfigured, setIsConfigured] = useState(false)
   const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle")
   const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
-  const [enabledModels, setEnabledModels] = useState<Set<string>>(new Set())
   const [validationError, setValidationError] = useState<string | null>(null)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
+  // Get enabled models from store
+  const enabledModelIds = getEnabledModels(provider)
+  const enabledModels = new Set(enabledModelIds)
+
+  // Load preferences from store on mount
+  useEffect(() => {
+    loadPreferences()
+  }, [loadPreferences])
+
+  // Load configuration on mount
   useEffect(() => {
     loadConfiguration()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,12 +88,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         await loadModels(keyData.value)
       }
 
-      // Load provider settings
-      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
-      if (settingsResponse.ok) {
-        const settingsData = await settingsResponse.json()
-        setEnabledModels(new Set(settingsData.enabledModels || []))
-      }
+      // Note: Enabled models are now loaded via Zustand store (loadPreferences)
     } catch (error) {
       console.error("Failed to load configuration:", error)
       toast.error("Failed to load configuration")
@@ -102,14 +115,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       const data = await response.json()
       setAvailableModels(data.models || [])
 
-      // If no models are enabled yet, enable all by default
-      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
-      if (settingsResponse.ok) {
-        const settingsData = await settingsResponse.json()
-        if (!settingsData.enabledModels || settingsData.enabledModels.length === 0) {
-          setEnabledModels(new Set((data.models || []).map((m: EnrichedModelInfo) => m.name)))
-        }
-      }
+      // Note: Model preferences are now managed via Zustand store
     } catch (error) {
       console.error("Failed to load models:", error)
       toast.error("Failed to load available models")
@@ -187,20 +193,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         throw new Error("Failed to save API key")
       }
 
-      // Save provider settings
-      const settingsResponse = await fetch("/api/user/provider-settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider,
-          enabledModels: [...enabledModels],
-          isEnabled: true,
-        }),
-      })
-
-      if (!settingsResponse.ok) {
-        throw new Error("Failed to save provider settings")
-      }
+      // Note: Model preferences are now auto-saved via Zustand store
 
       setIsConfigured(true)
       setHasUnsavedChanges(false)
@@ -213,20 +206,15 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
-  const toggleModel = (modelName: string) => {
-    const newEnabledModels = new Set(enabledModels)
-    if (newEnabledModels.has(modelName)) {
-      newEnabledModels.delete(modelName)
-    } else {
-      newEnabledModels.add(modelName)
-    }
-    setEnabledModels(newEnabledModels)
-    setHasUnsavedChanges(true)
+  const handleToggleModel = (modelName: string) => {
+    // Use store's toggleModel - it handles optimistic updates and API calls
+    toggleModelInStore(provider, modelName)
   }
 
-  const toggleAllModels = (enable: boolean) => {
-    setEnabledModels(enable ? new Set(availableModels.map(m => m.name)) : new Set())
-    setHasUnsavedChanges(true)
+  const handleToggleAllModels = (enable: boolean) => {
+    // Use store's setProviderModels - it handles optimistic updates and API calls
+    const allModelNames = enable ? availableModels.map(m => m.name) : []
+    setProviderModels(provider, allModelNames)
   }
 
   const copyToClipboard = async (text: string) => {
@@ -419,7 +407,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleAllModels(false)}
+                        onClick={() => handleToggleAllModels(false)}
                         disabled={enabledModels.size === 0}
                       >
                         Disable All
@@ -427,7 +415,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleAllModels(true)}
+                        onClick={() => handleToggleAllModels(true)}
                         disabled={enabledModels.size === availableModels.length}
                       >
                         Enable All
@@ -490,7 +478,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                         </div>
                         <Switch
                           checked={enabledModels.has(model.name)}
-                          onCheckedChange={() => toggleModel(model.name)}
+                          onCheckedChange={() => handleToggleModel(model.name)}
                         />
                       </div>
                     ))}

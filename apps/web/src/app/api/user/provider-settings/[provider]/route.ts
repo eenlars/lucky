@@ -4,6 +4,12 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
+/**
+ * @deprecated Use /api/user/model-preferences instead
+ * This endpoint remains for backwards compatibility only.
+ * Will be removed in a future version.
+ */
+
 // GET /api/user/provider-settings/[provider]
 // Returns provider settings for a specific provider
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
