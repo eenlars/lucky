@@ -1,10 +1,12 @@
 "use client"
 
 import { ProviderOverviewSkeleton } from "@/components/providers/provider-skeleton"
+import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { LuckyProvider } from "@lucky/shared"
 import { AlertCircle, ArrowRight, CheckCircle2, Key } from "lucide-react"
 import Link from "next/link"
@@ -24,8 +26,13 @@ export default function ProvidersPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [configuredCount, setConfiguredCount] = useState(0)
 
+  // Model preferences sync status
+  const { lastSynced, isStale, forceRefresh, isLoading: isLoadingPrefs, loadPreferences } = useModelPreferencesStore()
+
   useEffect(() => {
     loadProviders()
+    loadPreferences()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadProviders = async () => {
@@ -116,10 +123,20 @@ export default function ProvidersPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-foreground mb-2">AI Providers</h1>
-        <p className="text-sm text-muted-foreground">
-          Configure your API keys and manage model access for each provider
-        </p>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground mb-2">AI Providers</h1>
+            <p className="text-sm text-muted-foreground">
+              Configure your API keys and manage model access for each provider
+            </p>
+          </div>
+          <SyncStatusBadge
+            lastSynced={lastSynced}
+            isStale={isStale()}
+            isLoading={isLoadingPrefs}
+            onRefresh={forceRefresh}
+          />
+        </div>
       </div>
 
       {/* Summary Cards */}

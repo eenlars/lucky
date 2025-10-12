@@ -31,6 +31,11 @@ interface ModelPreferencesState {
   setProviderModels: (provider: string, modelIds: ModelId[]) => Promise<void>
   syncFromServer: () => Promise<void>
   clearError: () => void
+
+  // Sync status helpers
+  isStale: () => boolean
+  getLastSyncedRelative: () => string | null
+  forceRefresh: () => Promise<void>
 }
 
 export const useModelPreferencesStore = create<ModelPreferencesState>()(
@@ -184,6 +189,32 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
 
       // Clear error
       clearError: () => set({ error: null }),
+
+      // Check if data is stale (> 5 minutes old)
+      isStale: () => {
+        const { lastSynced } = get()
+        if (!lastSynced) return true
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+        return lastSynced < fiveMinutesAgo
+      },
+
+      // Get relative time string (e.g., "2m ago", "just now")
+      getLastSyncedRelative: () => {
+        const { lastSynced } = get()
+        if (!lastSynced) return null
+
+        const secondsAgo = Math.floor((Date.now() - lastSynced.getTime()) / 1000)
+        if (secondsAgo < 60) return "just now"
+        if (secondsAgo < 3600) return `${Math.floor(secondsAgo / 60)}m ago`
+        return `${Math.floor(secondsAgo / 3600)}h ago`
+      },
+
+      // Force refresh by clearing cache and reloading from server
+      forceRefresh: async () => {
+        // Clear persisted cache and reload
+        set({ preferences: null, lastSynced: null })
+        await get().loadPreferences()
+      },
     }),
     {
       name: "model-preferences-storage",
