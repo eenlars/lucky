@@ -1,0 +1,24 @@
+{
+  "object": "event",
+  "type": "user.updated",
+  "instance_id": "ins_test123",
+  "timestamp": 1654012601835,
+  "data": {
+    "id": "user_2test123abc",
+    "object": "user",
+    "email_addresses": [
+      {
+        "id": "idn_2test123",
+        "email_address": "john.doe.updated@example.com",
+        "object": "email_address"
+      }
+    ],
+    "primary_email_address_id": "idn_2test123",
+    "first_name": "John",
+    "last_name": "Doe-Updated",
+    "image_url": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTUzNTA4NDczNC1kOGI1YzM4MTNiOWE_dz0xMDAwJmF1dG89Zm9ybWF0JmZpdD1jcm9wJnE9NjAmaXhsaWI9cmItNC4wLjMmaXhpZD1NM3d5TURmfDB8TUh4elpXRnlZMmh8TW54fGVufHdlYnwwfDB8fHwwfHww",
+    "username": "johndoe_updated",
+    "created_at": 1654012591514,
+    "updated_at": 1654012601835
+  }
+}

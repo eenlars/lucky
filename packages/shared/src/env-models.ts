@@ -24,7 +24,7 @@ export const supabaseServer = z.object({
   SUPABASE_URL: httpsUrl.optional(),
   SUPABASE_PROJECT_ID: z.string().optional(),
   SUPABASE_ANON_KEY: jwt.optional(),
-  SUPABASE_SERVICE_ROLE_KEY: jwt.optional(),
+  SUPABASE_SERVICE_ROLE_KEY: jwt, // Required for webhooks and admin operations
 })
 
 // --- Supabase (client-side)
@@ -296,7 +296,7 @@ export const docs: VarDoc[] = [
   },
   {
     key: "SUPABASE_SERVICE_ROLE_KEY",
-    required: false,
+    required: true,
     description: "Supabase service role key for admin operations (server-only)",
     example: "eyJhbGc...",
     section: "Supabase - Database configuration",
