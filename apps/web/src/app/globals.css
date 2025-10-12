@@ -245,4 +245,10 @@
   .react-flow .react-flow__edge.selected .react-flow__arrowhead {
     fill: hsl(var(--primary)) !important;
   }
+
+  /* Hide Next.js development toast by default (developers can override in code) */
+  [data-nextjs-toast="true"],
+  .nextjs-toast {
+    display: none !important;
+  }
 }
