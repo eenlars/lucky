@@ -6,7 +6,7 @@
 
 "use client"
 
-import type { ChatMessageProps } from "@/chat-interface/types"
+import type { ChatMessageProps } from "@/chat-interface/types/types"
 import { ANIMATIONS } from "@/chat-interface/utils/animation-utils"
 import { cn } from "@/lib/utils"
 import { MessageActions } from "./MessageActions"

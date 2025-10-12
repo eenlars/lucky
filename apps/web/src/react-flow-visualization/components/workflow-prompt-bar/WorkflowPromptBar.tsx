@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils"
 import { useAppStore } from "@/react-flow-visualization/store/store"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { Panel } from "@xyflow/react"
 import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
@@ -25,6 +27,7 @@ import { executeRunMode } from "./run-mode-handler"
  *    - Calls /api/workflow/invoke
  */
 export function WorkflowPromptBar() {
+  const router = useRouter()
   const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage } = useAppStore(
     useShallow(state => ({
       exportToJSON: state.exportToJSON,
@@ -141,12 +144,23 @@ export function WorkflowPromptBar() {
       setPrompt("")
       // Keep logs visible in run mode so user can see output
     } else {
-      toast.error(result.error || "Workflow execution failed")
+      // Check if error is MISSING_API_KEYS and show clickable link
+      if (result.errorCode === ErrorCodes.MISSING_API_KEYS) {
+        toast.error(result.error || "Missing API Keys", {
+          action: {
+            label: "Go to Settings",
+            onClick: () => router.push("/settings/providers"),
+          },
+          duration: 10000, // Show for 10 seconds to give user time to click
+        })
+      } else {
+        toast.error(result.error || "Workflow execution failed")
+      }
       addChatMessage(result.error || "Workflow execution failed", "error")
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage])
+  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, router])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

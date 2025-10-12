@@ -8,17 +8,9 @@ interface NavItemProps {
   isActive?: boolean
   hasSubmenu?: boolean
   children?: React.ReactNode
-  className?: string
 }
 
-export function NavItem({
-  href,
-  icon,
-  isActive = false,
-  hasSubmenu = false,
-  children,
-  className: _className = "",
-}: NavItemProps) {
+export function NavItem({ href, icon, isActive = false, hasSubmenu = false, children }: NavItemProps) {
   return (
     <div className="group">
       <Link className="group" href={href}>

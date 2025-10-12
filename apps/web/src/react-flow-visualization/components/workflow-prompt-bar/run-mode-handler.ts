@@ -1,4 +1,6 @@
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
+import type { z } from "zod"
 
 /**
  * Result from run mode handler
@@ -7,6 +9,8 @@ export interface RunModeResult {
   success: boolean
   error?: string
   output?: string
+  errorCode?: number // JSON-RPC error code
+  errorData?: unknown // Additional error data
 }
 
 /**
@@ -18,11 +22,20 @@ async function loadFromDSLClient(dslConfig: any) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ workflow: dslConfig, mode: "dsl" }),
   })
-  const result = await response.json()
-  if (!result.isValid) {
-    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  const result = (await response.json()) as z.infer<typeof JsonRpcInvokeResponse>
+
+  if ("error" in result) {
+    // JSON-RPC error response
+    const errorData = result.error.data as any
+    throw new Error(errorData?.errors?.[0] || result.error.message || "Invalid workflow configuration")
   }
-  return result.config
+
+  // JSON-RPC success response
+  const output = result.result.output as any
+  if (!output.isValid) {
+    throw new Error(output.errors?.[0] || "Invalid workflow configuration")
+  }
+  return output.config
 }
 
 /**
@@ -82,12 +95,12 @@ export async function executeRunMode(
     })
 
     onProgress?.("Processing response...")
-    const result = await response.json()
+    const result = (await response.json()) as z.infer<typeof JsonRpcInvokeResponse>
 
-    if (result?.success) {
-      const first = result?.data?.[0]
-      const output = first?.queueRunResult?.finalWorkflowOutput ?? first?.finalWorkflowOutputs
-      const finalOutput = output || "No response"
+    if ("result" in result) {
+      // JSON-RPC success response
+      const output = result.result.output
+      const finalOutput = typeof output === "string" ? output : JSON.stringify(output)
 
       onProgress?.("✅ Workflow completed successfully!")
       onProgress?.(`Result: ${finalOutput}`)
@@ -102,11 +115,14 @@ export async function executeRunMode(
         output: finalOutput,
       }
     }
-    const errorMsg = result?.error || "Unknown error"
+    // JSON-RPC error response
+    const errorMsg = result.error.message
     onProgress?.(`❌ Error: ${errorMsg}`)
     return {
       success: false,
       error: errorMsg,
+      errorCode: result.error.code,
+      errorData: result.error.data,
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Workflow execution failed"

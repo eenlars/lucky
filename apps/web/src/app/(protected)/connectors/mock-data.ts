@@ -37,6 +37,7 @@ export interface Connector {
   publisher: Publisher
   status?: "installed" | "available"
   health?: "healthy" | "warning" | "error"
+  enabled?: boolean
 }
 
 export const mockPublishers: Publisher[] = [
@@ -91,7 +92,7 @@ export const mockConnectors: Connector[] = [
       "The GitHub connector provides comprehensive access to GitHub's API, allowing you to manage repositories, create issues, review pull requests, and automate your development workflow. Perfect for CI/CD integration and project management automation.",
     homepage_url: "https://github.com",
     repo_url: "https://github.com/github/connector",
-    logo_url: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
+    logo_url: "/logos/github-image.png",
     visibility: "public",
     tags: [mockTags[4], mockTags[3]],
     publisher: mockPublishers[1],
@@ -141,6 +142,7 @@ export const mockConnectors: Connector[] = [
     ],
     status: "installed",
     health: "healthy",
+    enabled: true,
   },
   {
     conn_id: "conn_002",
@@ -186,6 +188,7 @@ export const mockConnectors: Connector[] = [
     ],
     status: "installed",
     health: "healthy",
+    enabled: false,
   },
   {
     conn_id: "conn_003",

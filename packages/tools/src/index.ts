@@ -106,4 +106,4 @@ export type {
 } from "@lucky/shared/contracts/tools"
 
 // Utils - Schema detection and helpers
-export { isZodSchema, isVercelAIStructure } from "./utils/index"
+export { isZodSchema, isVercelAIStructure } from "./utils/schemaDetection"

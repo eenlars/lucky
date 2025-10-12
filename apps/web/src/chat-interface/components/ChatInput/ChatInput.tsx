@@ -7,7 +7,7 @@
 
 "use client"
 
-import type { ChatInputProps } from "@/chat-interface/types"
+import type { ChatInputProps } from "@/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 import { InputToolbar } from "./InputToolbar"

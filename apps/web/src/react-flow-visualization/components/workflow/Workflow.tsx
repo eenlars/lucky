@@ -4,7 +4,7 @@ import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react"
 import { useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect"
+import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect/panel"
 import { WorkflowEdge } from "@/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/react-flow-visualization/components/nodes/nodes"
 import { WorkflowPromptBar } from "@/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"

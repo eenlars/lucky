@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
-import { MODEL_CATALOG, type ModelEntry } from "@lucky/models"
+import { MODEL_CATALOG } from "@lucky/models"
+import type { ModelEntry } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
