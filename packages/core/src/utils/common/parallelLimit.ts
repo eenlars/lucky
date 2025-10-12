@@ -1,7 +1,5 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
 
-const ENABLED = getCoreConfig().limits.enableParallelLimit
-
 /**
  * Run async tasks in parallel with a concurrency limit.
  * @param items Array of items to process
@@ -10,6 +8,7 @@ const ENABLED = getCoreConfig().limits.enableParallelLimit
  * @returns Promise of results in order
  */
 export async function parallelLimit<T, R>(items: T[], fn: (i: T) => Promise<R>, overrideLimit?: number): Promise<R[]> {
+  const ENABLED = getCoreConfig().limits.enableParallelLimit
   if (!ENABLED) {
     return Promise.all(items.map(item => fn(item)))
   }

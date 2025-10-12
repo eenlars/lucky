@@ -21,8 +21,6 @@ import { getCoreConfig } from "@core/core-config/coreConfig"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
 const spending = SpendingTracker.getInstance()
-const RATE_WINDOW_MS = getCoreConfig().limits.rateWindowMs
-const MAX_REQUESTS_PER_WINDOW = getCoreConfig().limits.maxRequestsPerWindow
 
 /**
  * Tracks request timestamps for rate limiting.
@@ -45,6 +43,9 @@ const hitTimestamps: number[] = []
 // TODO: implement exponential backoff recommendations
 // TODO: add rate limit exemptions for critical operations
 export function rateLimit(): string | null {
+  const config = getCoreConfig()
+  const RATE_WINDOW_MS = config.limits.rateWindowMs
+  const MAX_REQUESTS_PER_WINDOW = config.limits.maxRequestsPerWindow
   const now = Date.now()
 
   // remove expired timestamps from sliding window

@@ -1,5 +1,4 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
 import { lgg } from "@core/utils/logging/Logger"
 import { randomUserAgents } from "@examples/definitions/browser-automation/constants"
 import { saveInLoc } from "@examples/definitions/file-saver/save"
@@ -159,6 +158,7 @@ export async function networkMonitor(input: NetworkMonitorInput, proxy?: ProxyRe
     lgg.log("result", result)
 
     // save to file if requested
+    const config = getCoreConfig()
     saveInLoc(
       `${config.paths.runtime}/logging_folder/network/network-monitor-output-${sessionId}.json`,
       JSON.stringify(result, null, 2),
@@ -426,6 +426,7 @@ function saveResponseBody(
   requestUrl: string,
   body: string,
 ): string {
+  const config = getCoreConfig()
   const urlFolderName = urlToFolderName(mainUrl)
   const folderPath = `${config.paths.runtime}/logging_folder/network/responses/${urlFolderName}/${sessionId}`
 

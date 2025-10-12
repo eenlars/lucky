@@ -39,8 +39,6 @@ import { Genome } from "./Genome"
 import type { RunService } from "./RunService"
 import type { PopulationStats } from "./resources/gp.types"
 
-const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
-
 export class Population {
   private genomes: Genome[] = []
   private generationNumber = 0
@@ -74,6 +72,7 @@ export class Population {
 
     // TODO: refactor to eliminate code duplication between initialization methods
     // TODO: consider using factory pattern for population initialization strategies
+    const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
     switch (initialPopulationMethod as "random" | "baseWorkflow" | "prepared") {
       case "random": {
         const population1 = await this.initializePopulationHelper({
@@ -490,6 +489,7 @@ export class Population {
       return []
     }
 
+    const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
     const genomePromises: Promise<RS<Genome>>[] = []
     const evolutionContext = this.runService.getEvolutionContext()
 

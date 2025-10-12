@@ -1,5 +1,4 @@
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { BrowserEnvironmentError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
@@ -101,7 +100,8 @@ export class WorkflowConfigHandler {
     const path = await import("node:path")
     const fs = await import("node:fs")
 
-    const setupFolderPath = path.dirname(path.resolve(config.paths.setupFile))
+    const coreConfig = getCoreConfig()
+    const setupFolderPath = path.dirname(path.resolve(coreConfig.paths.setupFile))
     try {
       if (!fs.existsSync(setupFolderPath)) {
         fs.mkdirSync(setupFolderPath, { recursive: true })
@@ -191,12 +191,14 @@ export class WorkflowConfigHandler {
   /**
    * Load single workflow configuration from setupfile.json
    */
-  async loadSingleWorkflow(filePath: string = config.paths.setupFile): Promise<WorkflowConfig> {
+  async loadSingleWorkflow(filePath?: string): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
       throw new BrowserEnvironmentError("loadSingleWorkflow", {
         suggestedAlternative: "API routes",
       })
     }
+
+    const resolvedFilePath = filePath ?? getCoreConfig().paths.setupFile
 
     try {
       const path = await import("node:path")
@@ -205,25 +207,26 @@ export class WorkflowConfigHandler {
 
       // Normalize path to absolute examples/setup folder and build absolute file path
       const setupFolderPath = await this.ensureSetupFolder()
-      const filename = path.basename(filePath)
+      const filename = path.basename(resolvedFilePath)
       const normalizedPath = path.join(setupFolderPath, filename)
 
       // Determine source (default vs custom)
-      const defaultFilename = path.basename(config.paths.setupFile)
-      const isDefault = filename === defaultFilename || filePath === config.paths.setupFile
+      const coreConfig = getCoreConfig()
+      const defaultFilename = path.basename(coreConfig.paths.setupFile)
+      const isDefault = filename === defaultFilename || resolvedFilePath === coreConfig.paths.setupFile
 
       // Check if file exists, if not create it
       let actualFilePath = normalizedPath
       let wasCreated = false
       if (!fs.existsSync(normalizedPath)) {
-        actualFilePath = await this.createMissingSetupFile(filePath)
+        actualFilePath = await this.createMissingSetupFile(resolvedFilePath)
         wasCreated = true
       }
 
       // Clarify exactly what will be used
       lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Resolved workflow file", {
         source: isDefault ? "default" : "custom",
-        requested: filePath,
+        requested: resolvedFilePath,
         resolved: normalizedPath,
         used: actualFilePath,
         created: wasCreated,
@@ -266,8 +269,9 @@ export class WorkflowConfigHandler {
       }
 
       // Apply default tools from CONFIG if any are specified
-      if (config.tools.defaultTools.length > 0) {
-        const defaultCodeTools = config.tools.defaultTools as CodeToolName[]
+      const toolsConfig = getCoreConfig().tools
+      if (toolsConfig.defaultTools.length > 0) {
+        const defaultCodeTools = toolsConfig.defaultTools as CodeToolName[]
 
         workflowConfig.nodes = workflowConfig.nodes.map(node => {
           // Get unique tools by combining existing and defaults
@@ -288,7 +292,7 @@ export class WorkflowConfigHandler {
         })
 
         lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Applied default tools", {
-          defaultTools: config.tools.defaultTools,
+          defaultTools: toolsConfig.defaultTools,
           nodesTooLCount: workflowConfig.nodes?.map(n => ({
             nodeId: n.nodeId,
             toolCount: n.codeTools.length,
@@ -397,7 +401,8 @@ export class WorkflowConfigHandler {
       const path = await import("node:path")
       const fs = await import("node:fs")
 
-      const filePath = path.isAbsolute(filename) ? filename : path.join(config.paths.runtime, filename)
+      const coreConfig = getCoreConfig()
+      const filePath = path.isAbsolute(filename) ? filename : path.join(coreConfig.paths.runtime, filename)
 
       const fileContent = fs.readFileSync(filePath, "utf-8")
 

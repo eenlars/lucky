@@ -160,12 +160,12 @@ vi.mock("@core/clients/supabase/client", () => ({
 }))
 
 import { getCoreConfig } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 
 describe("loadWorkflow", () => {
   it("should load workflow setup asynchronously", async () => {
+    const config = getCoreConfig()
     const workflow = await WorkflowConfigHandler.getInstance().loadSingleWorkflow(config.paths.setupFile)
 
     expect(workflow).toBeDefined()
@@ -178,6 +178,7 @@ describe("loadWorkflow", () => {
   })
 
   it("should cache workflow setup on subsequent calls", async () => {
+    const config = getCoreConfig()
     const workflow1 = await WorkflowConfigHandler.getInstance().loadSingleWorkflow(config.paths.setupFile)
     const workflow2 = await WorkflowConfigHandler.getInstance().loadSingleWorkflow(config.paths.setupFile)
 
