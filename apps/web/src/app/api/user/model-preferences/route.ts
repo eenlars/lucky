@@ -51,13 +51,16 @@ export async function GET(_req: NextRequest) {
         // Validate against MODEL_CATALOG - only keep models that exist
         const validatedModels = normalizedModels.filter(modelId => MODEL_CATALOG.some(m => m.id === modelId))
 
+        // Convert timestamp to ISO format
+        const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
+
         return {
           provider: row.provider,
           enabledModels: validatedModels,
           isEnabled: row.is_enabled,
           metadata: {
             apiKeyConfigured: true, // TODO: Check actual API key status
-            lastUpdated: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
+            lastUpdated,
           },
         }
       })

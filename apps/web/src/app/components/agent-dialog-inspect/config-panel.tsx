@@ -403,6 +403,18 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               )}
             </select>
 
+            {/* Link to manage models */}
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              <a
+                href={`/providers/${selectedProvider}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Manage {selectedProvider} models →
+              </a>
+            </p>
+
             {/* Model Metadata Display */}
             {!isLoading &&
               node.data.modelName &&
