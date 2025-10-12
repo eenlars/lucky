@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import type {
   CredentialStatus as CoreCredentialStatus,
   FeatureStatus as CoreFeatureStatus,
@@ -39,6 +40,10 @@ export function useSystemHealth() {
         setHealth(data)
         setError(null)
       } catch (err) {
+        logException(err, {
+          location: "/lib/credential-status",
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         setError(err instanceof Error ? err.message : "Unknown error")
         setHealth(null)
       } finally {
@@ -74,6 +79,10 @@ export function useCredentialStatus() {
         setCredentials(data)
         setError(null)
       } catch (err) {
+        logException(err, {
+          location: "/lib/credential-status",
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         setError(err instanceof Error ? err.message : "Unknown error")
         setCredentials([])
       } finally {
@@ -109,6 +118,10 @@ export function useFeatureStatus() {
         setFeatures(data)
         setError(null)
       } catch (err) {
+        logException(err, {
+          location: "/lib/credential-status",
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         setError(err instanceof Error ? err.message : "Unknown error")
         setFeatures([])
       } finally {

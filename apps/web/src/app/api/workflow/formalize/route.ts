@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
@@ -29,6 +30,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/formalize",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     return NextResponse.json(
       {
         success: false,

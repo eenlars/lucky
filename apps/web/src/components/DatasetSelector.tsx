@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { logException } from "@/lib/error-logger"
 import { useEffect, useState } from "react"
 
 interface Dataset {
@@ -49,6 +50,10 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
         throw new Error(data.error || "Failed to load datasets")
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load datasets:", error)
       setError(error instanceof Error ? error.message : "Failed to load datasets")
       setDatasets([])

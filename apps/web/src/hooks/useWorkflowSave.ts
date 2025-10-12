@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { showToast } from "@/lib/toast-utils"
 import type { Tables } from "@lucky/shared/client"
 import { genShortId } from "@lucky/shared/client"
@@ -62,6 +63,10 @@ export function useWorkflowSave({ workflowVersion, onSuccess }: UseWorkflowSaveO
 
         return newWorkflowVersion
       } catch (err) {
+        logException(err, {
+          location: "/hook/useWorkflowSave",
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         const errorMessage = err instanceof Error ? err.message : "Failed to save workflow"
         setError(errorMessage)
         showToast.error.save(errorMessage)

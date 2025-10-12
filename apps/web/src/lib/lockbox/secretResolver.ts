@@ -1,4 +1,5 @@
 import { decryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 
 export type SecretResolver = {
@@ -72,6 +73,11 @@ export function createSecretResolver(clerk_id: string): SecretResolver {
           secrets[row.name] = plaintext
           secretIds.push(row.user_secret_id)
         } catch (e) {
+          logException(e, {
+            location: "/lib/lockbox/secretResolver",
+            env:
+              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+          })
           console.error(`Failed to decrypt secret ${row.name}:`, e)
         }
       }

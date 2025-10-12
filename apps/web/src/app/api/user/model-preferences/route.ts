@@ -4,6 +4,7 @@
  */
 
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { getAllProviders } from "@lucky/models"
@@ -80,6 +81,10 @@ export async function GET(_req: NextRequest) {
 
     return NextResponse.json(validated)
   } catch (e: unknown) {
+    logException(e, {
+      location: "/api/user/model-preferences/GET",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("[GET /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to fetch preferences"
     return NextResponse.json({ error: message }, { status: 500 })
@@ -197,6 +202,10 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(updatedPreferences)
   } catch (e: unknown) {
+    logException(e, {
+      location: "/api/user/model-preferences/PUT",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("[PUT /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to update preferences"
     return NextResponse.json({ error: message }, { status: 500 })

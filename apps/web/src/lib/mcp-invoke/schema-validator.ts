@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { JsonSchemaDefinition } from "@lucky/shared/contracts/workflow"
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv"
@@ -35,6 +36,10 @@ export function validateAgainstSchema(data: unknown, schema: JsonSchemaDefinitio
 
     return { valid: true }
   } catch (error) {
+    logException(error, {
+      location: "/lib/mcp-invoke/schema-validator",
+      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+    })
     return {
       valid: false,
       errorMessage: error instanceof Error ? error.message : "Schema compilation failed",

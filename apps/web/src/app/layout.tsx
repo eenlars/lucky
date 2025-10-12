@@ -1,3 +1,4 @@
+import { GlobalErrorHandler } from "@/app/_providers/GlobalErrorHandler"
 import { QueryProvider } from "@/app/_providers/QueryProvider"
 import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
 import { IntegratedSidebar } from "@/app/components/sidebar/integrated-sidebar"
@@ -44,6 +45,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <SupabaseTokenBridge />
+      <GlobalErrorHandler />
       <QueryProvider>
         <AppStoreProvider initialState={{ ...defaultState, colorMode: theme }}>
           <html lang="en" className={theme}>

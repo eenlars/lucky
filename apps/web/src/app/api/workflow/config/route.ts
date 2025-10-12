@@ -4,6 +4,7 @@ import {
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import {
   loadFromDatabaseForDisplay,
@@ -62,6 +63,10 @@ export async function GET(req: Request) {
     // Return only the workflow itself
     return NextResponse.json(workflowConfig)
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/config/GET",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Failed to load workflow config:", error)
 
     // Fallback: latest from DB (kept for resilience)
@@ -142,6 +147,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, ...result })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/config/POST",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Failed to save workflow config:", error)
     return NextResponse.json({ error: "Failed to save workflow configuration" }, { status: 500 })
   }

@@ -1,3 +1,5 @@
+import { logException } from "@/lib/error-logger"
+
 export interface EnvironmentKey {
   id: string
   name: string
@@ -30,6 +32,10 @@ export class EnvironmentKeysManager {
       const stored = localStorage.getItem(STORAGE_KEY)
       return stored ? JSON.parse(stored) : []
     } catch (error) {
+      logException(error, {
+        location: "/lib/environment-keys",
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load environment keys:", error)
       return []
     }
@@ -42,6 +48,10 @@ export class EnvironmentKeysManager {
       // Note: Keys are stored in localStorage in plaintext. Be mindful of XSS risks.
       localStorage.setItem(STORAGE_KEY, JSON.stringify(keys))
     } catch (error) {
+      logException(error, {
+        location: "/lib/environment-keys",
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to save environment keys:", error)
       throw error
     }

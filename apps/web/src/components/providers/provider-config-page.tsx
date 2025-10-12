@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { logException } from "@/lib/error-logger"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
@@ -102,6 +103,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         await loadModels(keyData.value)
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load configuration:", error)
       toast.error("Failed to load configuration")
     } finally {
@@ -131,6 +136,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       const data: { models: EnrichedModelInfo[] } = await response.json()
       setAvailableModels(data.models || [])
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load models:", error)
       toast.error("Failed to load available models")
     } finally {
@@ -174,6 +183,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         setValidationError(result.error || null)
       }
     } catch (_error) {
+      logException(_error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       setTestStatus("error")
       toast.error("Failed to test connection")
     } finally {
@@ -217,6 +230,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       setHasUnsavedKeyChanges(false)
       toast.success("Configuration saved successfully")
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to save configuration:", error)
       toast.error("Failed to save configuration")
     } finally {
@@ -246,6 +263,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       await navigator.clipboard.writeText(text)
       toast.success("Copied to clipboard")
     } catch (_error) {
+      logException(_error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       toast.error("Failed to copy to clipboard")
     }
   }

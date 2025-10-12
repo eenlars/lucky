@@ -1,4 +1,5 @@
 import { personalProfileSchema } from "@/features/profile/schemas/profile.schema"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
@@ -37,6 +38,10 @@ export async function GET() {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid profile data", details: error.errors }, { status: 400 })
     }
+    logException(error, {
+      location: "/api/user/profile/GET",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Profile GET error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
@@ -100,6 +105,10 @@ export async function PUT(req: Request) {
         { status: 400 },
       )
     }
+    logException(error, {
+      location: "/api/user/profile/PUT",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Profile PUT error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

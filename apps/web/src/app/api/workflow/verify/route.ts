@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import { formatErrorResponse, formatSuccessResponse } from "@/lib/mcp-invoke/response"
 import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/verifyWorkflow"
 import { clientWorkflowLoader } from "@lucky/core/workflow/setup/WorkflowLoader.client"
@@ -79,6 +80,10 @@ export async function POST(request: NextRequest) {
       }),
     )
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/verify",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Workflow verification error:", error)
     return NextResponse.json(
       formatErrorResponse(requestId, {

@@ -1,3 +1,5 @@
+import { logException } from "@/lib/error-logger"
+
 export async function fetchWithRetry(url: string, options?: RequestInit, maxAttempts = 3): Promise<Response> {
   let lastError: Error | null = null
 
@@ -27,6 +29,10 @@ export async function fetchWithRetry(url: string, options?: RequestInit, maxAtte
       if (isAbortError) {
         throw error instanceof Error ? error : new Error("The operation was aborted")
       }
+      logException(error, {
+        location: "/utils/fetch-with-retry",
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       lastError = error instanceof Error ? error : new Error("Network error")
     }
 

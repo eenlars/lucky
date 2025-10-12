@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 
@@ -29,6 +30,10 @@ export async function updateWorkflowInvocationScores(invocationId: string, score
       scores,
     })
   } catch (error) {
+    logException(error, {
+      location: "/trace-visualization/db/Workflow/updateWorkflowInvocation",
+      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+    })
     lgg.error("Error updating invocation scores:", error)
     throw error
   }

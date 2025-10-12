@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import type { LuckyProvider } from "@lucky/shared"
 import { NextResponse } from "next/server"
 
@@ -39,6 +40,10 @@ export async function POST(request: Request) {
       modelCount: testResult.modelCount,
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/providers/test-connection",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     console.error("Error testing provider connection:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

@@ -8,6 +8,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { logException } from "@/lib/error-logger"
 import { cn } from "@/lib/utils"
 import { ArrowRight, BookmarkPlus, Copy, Download, Eye, Sparkles } from "lucide-react"
 import { useState } from "react"
@@ -43,6 +44,10 @@ export function WorkflowResultCard({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to copy to clipboard:", error)
     }
   }

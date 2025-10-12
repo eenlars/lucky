@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { showToast } from "@/lib/toast-utils"
 import type { Database } from "@lucky/shared/client"
 import { create } from "zustand"
@@ -211,6 +212,11 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
           set({ hasMore: data.length === get().limit })
         } catch (err) {
+          logException(err, {
+            location: "/store/evolution-runs",
+            env:
+              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+          })
           const errorMessage = err instanceof Error ? err.message : "Failed to fetch evolution runs"
           set({ error: errorMessage })
           showToast.error.generic(errorMessage)

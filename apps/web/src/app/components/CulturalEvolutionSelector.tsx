@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { useEffect, useMemo, useState } from "react"
 import { type EvolutionRun, RunSelect } from "./RunSelect"
 
@@ -27,6 +28,10 @@ export function CulturalEvolutionSelector({
           setRuns(allRuns)
         }
       } catch (e) {
+        logException(e, {
+          location: window.location.pathname,
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         console.error("Error fetching evolution runs:", e)
         if (!cancelled) setRuns([])
       } finally {

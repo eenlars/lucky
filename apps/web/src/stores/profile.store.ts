@@ -1,4 +1,5 @@
 import { type PersonalProfile, personalProfileSchema } from "@/features/profile/schemas/profile.schema"
+import { logException } from "@/lib/error-logger"
 import { toast } from "sonner"
 import { create } from "zustand"
 
@@ -66,6 +67,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         toast.error("Failed to load profile")
       }
     } catch (error) {
+      logException(error, {
+        location: "/store/profile",
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load profile:", error)
       toast.error("Failed to load profile")
     } finally {
@@ -104,6 +109,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         toast.error(data.error || "Failed to save profile")
       }
     } catch (error) {
+      logException(error, {
+        location: "/store/profile",
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to save profile:", error)
       if (error instanceof Error) {
         toast.error(error.message)

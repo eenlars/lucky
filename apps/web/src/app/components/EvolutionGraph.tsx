@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import React, { useState, useEffect } from "react"
 import { FailedRunVisualization } from "./FailedRunVisualization"
 import { WorkflowEvolutionVisualization } from "./WorkflowEvolutionVisualization"
@@ -87,6 +88,10 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
         runId: runId,
       })
     } catch (err) {
+      logException(err, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load evolution data:", err)
       setError(err instanceof Error ? err.message : "Unknown error occurred")
     } finally {

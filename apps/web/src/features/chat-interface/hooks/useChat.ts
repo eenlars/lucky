@@ -5,6 +5,7 @@
  * Handles messages, sending, streaming, and error states
  */
 
+import { logException } from "@/lib/error-logger"
 import { useCallback, useRef, useState } from "react"
 import type { ChatActions, ChatState, Message, MessageRole, StreamingMessage } from "../types/types"
 import { createMessage } from "../utils/message-utils"
@@ -97,6 +98,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
         onMessageReceived?.(assistantMessage)
       } catch (err) {
+        logException(err, {
+          location: "/hook/useChat",
+          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+        })
         const error = err instanceof Error ? err : new Error("Failed to send message")
         setError(error)
         onError?.(error)

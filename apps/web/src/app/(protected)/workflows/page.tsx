@@ -3,6 +3,7 @@
 import { AlertDialog } from "@/components/ui/alert-dialog"
 import { useInvokeWorkflow } from "@/hooks/queries/useInvocationMutations"
 import { useDeleteWorkflow } from "@/hooks/queries/useWorkflowMutations"
+import { logException } from "@/lib/error-logger"
 import { cn } from "@/lib/utils"
 import type { WorkflowWithVersions } from "@/lib/workflows"
 import { useWorkflowStore } from "@/stores/workflow-store"
@@ -218,6 +219,10 @@ export default function WorkflowsPage() {
         throw new Error(result.error || "Workflow execution failed")
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to run workflow:", error)
       setAlertDialog({
         open: true,

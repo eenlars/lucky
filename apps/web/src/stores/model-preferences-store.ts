@@ -3,6 +3,7 @@
  * Centralized state management for user model preferences with optimistic updates
  */
 
+import { logException } from "@/lib/error-logger"
 import { MODEL_CATALOG } from "@lucky/models"
 import type { ModelId, UserModelPreferences } from "@lucky/shared"
 import {
@@ -67,6 +68,11 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             isLoading: false,
           })
         } catch (error) {
+          logException(error, {
+            location: "/store/model-preferences",
+            env:
+              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+          })
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
           console.error("[model-preferences-store] Error loading preferences:", error)
           set({
@@ -124,6 +130,11 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             isSaving: false,
           })
         } catch (error) {
+          logException(error, {
+            location: "/store/model-preferences",
+            env:
+              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+          })
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
           set({
@@ -171,6 +182,11 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           })
           toast.success("Preferences saved")
         } catch (error) {
+          logException(error, {
+            location: "/store/model-preferences",
+            env:
+              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+          })
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
           set({

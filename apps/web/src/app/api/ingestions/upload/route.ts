@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
+import { logException } from "@/lib/error-logger"
 import { createClient } from "@/lib/supabase/server"
 import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
@@ -213,6 +214,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, dataset: meta })
   } catch (error) {
+    logException(error, {
+      location: "/api/ingestions/upload",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

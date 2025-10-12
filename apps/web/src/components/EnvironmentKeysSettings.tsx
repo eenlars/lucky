@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { logException } from "@/lib/error-logger"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -64,6 +65,10 @@ export default function EnvironmentKeysSettings() {
         setKeys(keysWithValues)
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load environment keys:", error)
       toast.error("Failed to load environment keys")
     } finally {
@@ -81,6 +86,10 @@ export default function EnvironmentKeysSettings() {
         setIsFullKey(false) // GET only returns key ID, not full key
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to load API key:", error)
     } finally {
       setIsLoadingApiKey(false)
@@ -102,6 +111,10 @@ export default function EnvironmentKeysSettings() {
         toast.error("Failed to generate API key")
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to generate API key:", error)
       toast.error("Failed to generate API key")
     } finally {
@@ -122,6 +135,10 @@ export default function EnvironmentKeysSettings() {
         toast.error("Failed to roll API key")
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to roll API key:", error)
       toast.error("Failed to roll API key")
     } finally {
@@ -143,6 +160,10 @@ export default function EnvironmentKeysSettings() {
       // Store timeout ID in ref for cleanup
       copyTimeoutRef.current = setTimeout(() => setJustCopied(false), 2000)
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to copy to clipboard:", error)
       toast.error("Failed to copy to clipboard")
     }
@@ -167,6 +188,10 @@ export default function EnvironmentKeysSettings() {
       setKeys(newKeys)
       toast.success("Environment keys saved successfully")
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to save environment keys:", error)
       toast.error("Failed to save environment keys")
     } finally {
@@ -208,6 +233,10 @@ export default function EnvironmentKeysSettings() {
         toast.error("Failed to delete environment variable")
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to delete environment key:", error)
       toast.error("Failed to delete environment variable")
     }

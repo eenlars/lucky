@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { showToast } from "@/lib/toast-utils"
 import { loadFromDSL } from "@lucky/core/workflow/setup/WorkflowLoader"
 import { loadFromDSLClientDisplay } from "@lucky/core/workflow/setup/WorkflowLoader.client"
@@ -66,6 +67,10 @@ export default function WorkflowEditor({ workflowVersion }: WorkflowEditorProps)
       // Navigate to the new workflow version
       router.push(`/edit/${newWorkflowVersion.wf_version_id}`)
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to save workflow:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
       showToast.error.save(errorMessage)
@@ -115,6 +120,10 @@ export default function WorkflowEditor({ workflowVersion }: WorkflowEditorProps)
         showToast.error.run(errorMessage)
       }
     } catch (error) {
+      logException(error, {
+        location: window.location.pathname,
+        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+      })
       console.error("Failed to run workflow:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to run workflow"
       setRunError(errorMessage)

@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { getProviderInfo } from "@lucky/models"
 import type { LucideIcon } from "lucide-react"
 import { Bot } from "lucide-react"
@@ -151,6 +152,10 @@ export async function testConnection(
 
     return { success: true, modelCount: result.modelCount }
   } catch (_error) {
+    logException(_error, {
+      location: "/lib/providers/provider-utils",
+      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
+    })
     return { success: false, error: "Network error during connection test" }
   }
 }

@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
@@ -47,6 +48,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, results })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/run-many",
+      env: process.env.NODE_ENV === "production" ? "production" : "development",
+    })
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }
