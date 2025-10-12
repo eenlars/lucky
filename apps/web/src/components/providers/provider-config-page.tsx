@@ -35,11 +35,15 @@ interface ProviderConfigPageProps {
   provider: LuckyProvider
 }
 
+/**
+ * Provider configuration page for managing API keys and model preferences.
+ * Model preferences are auto-saved via Zustand store with optimistic updates.
+ */
 export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const config = PROVIDER_CONFIGS[provider]
   const Icon = config.icon
 
-  // Zustand store for model preferences
+  // Zustand store for model preferences (auto-saves on toggle)
   const {
     loadPreferences,
     getEnabledModels,
@@ -47,19 +51,26 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     setProviderModels,
   } = useModelPreferencesStore()
 
+  // API key state (saved manually via "Save Configuration" button)
   const [apiKey, setApiKey] = useState("")
   const [isVisible, setIsVisible] = useState(false)
+  const [isConfigured, setIsConfigured] = useState(false)
+  const [hasUnsavedKeyChanges, setHasUnsavedKeyChanges] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  // Test connection state
+  const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle")
+  const [isTesting, setIsTesting] = useState(false)
+
+  // Loading states
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [isTesting, setIsTesting] = useState(false)
   const [isLoadingModels, setIsLoadingModels] = useState(false)
-  const [isConfigured, setIsConfigured] = useState(false)
-  const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle")
-  const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
-  const [validationError, setValidationError] = useState<string | null>(null)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
-  // Get enabled models from store
+  // Available models from provider API (not user preferences)
+  const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
+
+  // Get enabled models from Zustand store (provider-specific model names like "gpt-4o")
   const enabledModelIds = getEnabledModels(provider)
   const enabledModels = new Set(enabledModelIds)
 
@@ -74,21 +85,21 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /**
+   * Load API key from lockbox and fetch available models from provider API.
+   * Note: Enabled model preferences are loaded separately via Zustand store.
+   */
   const loadConfiguration = async () => {
     setIsLoading(true)
     try {
-      // Load API key from lockbox
       const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
       if (keyResponse.ok) {
-        const keyData = await keyResponse.json()
+        const keyData: { value: string } = await keyResponse.json()
         setApiKey(keyData.value)
         setIsConfigured(true)
 
-        // Load models with the API key
         await loadModels(keyData.value)
       }
-
-      // Note: Enabled models are now loaded via Zustand store (loadPreferences)
     } catch (error) {
       console.error("Failed to load configuration:", error)
       toast.error("Failed to load configuration")
@@ -97,6 +108,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
+  /**
+   * Fetch available models from provider API using the API key.
+   * This shows what models the provider offers, not which ones are enabled.
+   */
   const loadModels = async (key: string) => {
     if (!key) return
 
@@ -112,10 +127,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         throw new Error("Failed to load models")
       }
 
-      const data = await response.json()
+      const data: { models: EnrichedModelInfo[] } = await response.json()
       setAvailableModels(data.models || [])
-
-      // Note: Model preferences are now managed via Zustand store
     } catch (error) {
       console.error("Failed to load models:", error)
       toast.error("Failed to load available models")
@@ -126,11 +139,15 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   const handleApiKeyChange = (value: string) => {
     setApiKey(value)
-    setHasUnsavedChanges(true)
+    setHasUnsavedKeyChanges(true)
     setTestStatus("idle")
     setValidationError(null)
   }
 
+  /**
+   * Test the API key by attempting to connect to the provider's API.
+   * On success, loads available models from the provider.
+   */
   const handleTestConnection = async () => {
     const validation = validateApiKey(provider, apiKey)
     if (!validation.valid) {
@@ -149,7 +166,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       if (result.success) {
         setTestStatus("success")
         toast.success(`Connection successful! ${result.modelCount} models available.`)
-        // Load models after successful test
         await loadModels(apiKey)
       } else {
         setTestStatus("error")
@@ -164,6 +180,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
+  /**
+   * Save API key to encrypted lockbox.
+   * Note: Model preferences are auto-saved immediately via Zustand store.
+   */
   const handleSave = async () => {
     const validation = validateApiKey(provider, apiKey)
     if (!validation.valid) {
@@ -179,7 +199,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      // Save API key to lockbox
       const keyResponse = await fetch("/api/user/env-keys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -193,10 +212,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         throw new Error("Failed to save API key")
       }
 
-      // Note: Model preferences are now auto-saved via Zustand store
-
       setIsConfigured(true)
-      setHasUnsavedChanges(false)
+      setHasUnsavedKeyChanges(false)
       toast.success("Configuration saved successfully")
     } catch (error) {
       console.error("Failed to save configuration:", error)
@@ -206,14 +223,20 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
+  /**
+   * Toggle a single model on/off. Auto-saves via Zustand store with optimistic updates.
+   * @param modelName Provider-specific model name (e.g., "gpt-4o", not "openai/gpt-4o")
+   */
   const handleToggleModel = (modelName: string) => {
-    // Use store's toggleModel - it handles optimistic updates and API calls
     toggleModelInStore(provider, modelName)
   }
 
+  /**
+   * Enable or disable all models at once. Auto-saves via Zustand store.
+   * @param enable true to enable all models, false to disable all
+   */
   const handleToggleAllModels = (enable: boolean) => {
-    // Use store's setProviderModels - it handles optimistic updates and API calls
-    const allModelNames = enable ? availableModels.map(m => m.name) : []
+    const allModelNames = enable ? availableModels.map(model => model.name) : []
     setProviderModels(provider, allModelNames)
   }
 
@@ -492,10 +515,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* Actions */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            {hasUnsavedChanges && (
+            {hasUnsavedKeyChanges && (
               <p className="text-sm text-yellow-600 flex items-center gap-2">
                 <AlertCircle className="size-4" />
-                You have unsaved changes
+                You have unsaved API key changes
               </p>
             )}
           </div>
@@ -504,16 +527,16 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
               variant="ghost"
               onClick={() => {
                 loadConfiguration()
-                setHasUnsavedChanges(false)
+                setHasUnsavedKeyChanges(false)
                 setValidationError(null)
                 setTestStatus("idle")
               }}
-              disabled={isSaving || !hasUnsavedChanges}
+              disabled={isSaving || !hasUnsavedKeyChanges}
               className="w-full sm:w-auto"
             >
               Reset
             </Button>
-            <Button onClick={handleSave} disabled={isSaving || !hasUnsavedChanges} className="w-full sm:w-auto">
+            <Button onClick={handleSave} disabled={isSaving || !hasUnsavedKeyChanges} className="w-full sm:w-auto">
               {isSaving ? (
                 <>
                   <Loader2 className="size-4 mr-2 animate-spin" />
