@@ -36,11 +36,15 @@ export function WorkflowResultCard({
 }: WorkflowResultCardProps) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     const text = typeof result.output === "string" ? result.output : JSON.stringify(result.output, null, 2)
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error)
+    }
   }
 
   const handleDownload = () => {

@@ -10,7 +10,7 @@ import {
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
 import { Paperclip } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type GeneralFeedbackDialogProps = {
@@ -21,22 +21,7 @@ type GeneralFeedbackDialogProps = {
 export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDialogProps) {
   const [feedbackText, setFeedbackText] = useState("")
 
-  // Handle keyboard shortcut ⌘↵ for submission
-  useEffect(() => {
-    if (!open) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-        e.preventDefault()
-        handleFeedbackSubmit()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [open, feedbackText])
-
-  const handleFeedbackSubmit = () => {
+  const handleFeedbackSubmit = useCallback(() => {
     if (!feedbackText.trim()) {
       toast.error("Please enter your feedback")
       return
@@ -51,7 +36,22 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
 
     // Show success toast
     toast.success("Feedback submitted successfully!")
-  }
+  }, [feedbackText, onOpenChange])
+
+  // Handle keyboard shortcut ⌘↵ for submission
+  useEffect(() => {
+    if (!open) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault()
+        handleFeedbackSubmit()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [open, handleFeedbackSubmit])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
