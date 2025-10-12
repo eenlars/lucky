@@ -1,5 +1,6 @@
 "use client"
 
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
@@ -11,7 +12,7 @@ import {
   type CodeToolName,
   type MCPToolName,
 } from "@lucky/tools/client"
-import { Wrench } from "lucide-react"
+import { Lock, Wrench } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { CollapsibleSection } from "./collapsible-section"
 import { ToolCheckbox } from "./components/tool-checkbox"
@@ -21,6 +22,7 @@ interface ToolsSectionProps {
 }
 
 export function ToolsSection({ node }: ToolsSectionProps) {
+  const mcpToolsEnabled = useFeatureFlag("MCP_TOOLS")
   const updateNode = useAppStore(state => state.updateNode)
   const [isToolsExpanded, setIsToolsExpanded] = useState(false)
 
@@ -58,10 +60,13 @@ export function ToolsSection({ node }: ToolsSectionProps) {
       const num = Number.parseInt(e.key)
       if (num >= 1 && num <= 9) {
         e.preventDefault()
-        const allToolNames = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES]
+
+        // Build tool list based on feature flags
+        const availableTools = [...(mcpToolsEnabled ? ACTIVE_MCP_TOOL_NAMES : []), ...ACTIVE_CODE_TOOL_NAMES]
+
         const toolIndex = num - 1
-        if (toolIndex < allToolNames.length) {
-          const tool = allToolNames[toolIndex]
+        if (toolIndex < availableTools.length) {
+          const tool = availableTools[toolIndex]
           const type = ACTIVE_MCP_TOOL_NAMES.includes(tool as MCPToolName) ? "mcp" : "code"
           toggleTool(tool, type)
         }
@@ -70,7 +75,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isToolsExpanded, toggleTool])
+  }, [isToolsExpanded, mcpToolsEnabled, toggleTool])
 
   return (
     <CollapsibleSection
@@ -141,19 +146,35 @@ export function ToolsSection({ node }: ToolsSectionProps) {
                 Collapse
               </button>
             </div>
-            <div className="space-y-0.5">
-              {ACTIVE_MCP_TOOL_NAMES.map((tool, idx) => (
-                <ToolCheckbox
-                  key={tool}
-                  tool={tool}
-                  isSelected={mcpTools.includes(tool)}
-                  onToggle={() => toggleTool(tool, "mcp")}
-                  description={ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
-                  shortcut={idx + 1}
-                  variant="blue"
-                />
-              ))}
-            </div>
+            {!mcpToolsEnabled ? (
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Lock className="size-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground mb-1">Coming Soon</p>
+                    <p className="text-xs text-muted-foreground">
+                      MCP tools are currently under development and will be available soon.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-0.5">
+                {ACTIVE_MCP_TOOL_NAMES.map((tool, idx) => (
+                  <ToolCheckbox
+                    key={tool}
+                    tool={tool}
+                    isSelected={mcpTools.includes(tool)}
+                    onToggle={() => toggleTool(tool, "mcp")}
+                    description={ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
+                    shortcut={idx + 1}
+                    variant="blue"
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Code Tools */}

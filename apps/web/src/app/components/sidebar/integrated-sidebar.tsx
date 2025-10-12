@@ -1,6 +1,7 @@
 "use client"
 
 import { useSidebar } from "@/contexts/SidebarContext"
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import { BarChart2, Dna, Home, Menu, Network, Plug, Settings, Wrench, X } from "lucide-react"
 import Link from "next/link"
@@ -267,15 +268,24 @@ function IntegratedNavItem({
 }
 
 export function IntegratedSidebar() {
+  const evolutionEnabled = useFeatureFlag("EVOLUTION")
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(new Set())
   const [isHovered, setIsHovered] = useState(false)
   const { isMobile } = useSidebar()
 
+  // Filter navigation items based on feature flags
+  const filteredNavigationItems = navigationItems.filter(item => {
+    if (item.type === "evolution" && !evolutionEnabled) {
+      return false
+    }
+    return true
+  })
+
   // Auto-expand submenus when on a submenu route
   useEffect(() => {
-    navigationItems.forEach(item => {
+    filteredNavigationItems.forEach(item => {
       if (item.submenus) {
         const isSubmenuActive = item.submenus.some(
           submenu => pathname === submenu.href || pathname?.startsWith(`${submenu.href}/`),
@@ -290,7 +300,7 @@ export function IntegratedSidebar() {
         }
       }
     })
-  }, [pathname])
+  }, [pathname, filteredNavigationItems])
 
   // Handle submenu toggle
   const toggleSubmenu = (href: string, e: React.MouseEvent) => {
@@ -346,7 +356,7 @@ export function IntegratedSidebar() {
         <div className="mt-6 w-full">
           <nav className="w-full">
             <div className="flex flex-col gap-2">
-              {navigationItems.map(item => {
+              {filteredNavigationItems.map(item => {
                 // Check if any submenu is active
                 const isSubmenuActive =
                   item.submenus?.some(
@@ -489,7 +499,7 @@ export function IntegratedSidebar() {
             {/* Mobile navigation */}
             <nav className="flex-1 px-2.5 py-3">
               <ul className="space-y-0.5">
-                {navigationItems.map(item => {
+                {filteredNavigationItems.map(item => {
                   const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
 
                   return (
