@@ -21,21 +21,38 @@ type GeneralFeedbackDialogProps = {
 export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDialogProps) {
   const [feedbackText, setFeedbackText] = useState("")
 
-  const handleFeedbackSubmit = useCallback(() => {
+  const handleFeedbackSubmit = useCallback(async () => {
     if (!feedbackText.trim()) {
       toast.error("Please enter your feedback")
       return
     }
 
-    // TODO: Implement actual feedback submission API
-    console.log("Feedback submitted:", feedbackText)
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: feedbackText,
+          context: window.location.pathname,
+        }),
+      })
 
-    // Reset form and close dialog
-    setFeedbackText("")
-    onOpenChange(false)
+      if (!response.ok) {
+        throw new Error("Failed to submit feedback")
+      }
 
-    // Show success toast
-    toast.success("Feedback submitted successfully!")
+      // Reset form and close dialog
+      setFeedbackText("")
+      onOpenChange(false)
+
+      // Show success toast
+      toast.success("Feedback submitted successfully!")
+    } catch (error) {
+      console.error("Failed to submit feedback:", error)
+      toast.error("Failed to submit feedback. Please try again.")
+    }
   }, [feedbackText, onOpenChange])
 
   // Handle keyboard shortcut ⌘↵ for submission
