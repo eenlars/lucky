@@ -129,8 +129,18 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
         setUserEnabledModels(enabledModels)
 
         // Filter to only show models the user has enabled
-        // If no models are enabled, show all models (provider not configured yet)
-        const filteredModels = enabledModels.size > 0 ? allModels.filter(m => enabledModels.has(m.id)) : allModels
+        // Note: enabled models might be stored as "gpt-4o" or "openai/gpt-4o"
+        // We need to check both formats for compatibility
+        const filteredModels =
+          enabledModels.size > 0
+            ? allModels.filter(m => {
+                // Check full ID (e.g., "openai/gpt-4o")
+                if (enabledModels.has(m.id)) return true
+                // Check model name only (e.g., "gpt-4o") for backwards compatibility
+                if (enabledModels.has(m.model)) return true
+                return false
+              })
+            : allModels
 
         setAvailableModels(filteredModels)
       } catch (error) {
