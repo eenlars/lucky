@@ -1,13 +1,13 @@
 /**
  * Unified Model Preferences API
- * Returns all provider settings with normalized model IDs and Zod validation
+ * Returns all provider settings with Zod validation
  */
 
 import { requireAuth } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { MODEL_CATALOG, getAllProviders } from "@lucky/models"
 import type { ModelId, UserModelPreferences } from "@lucky/shared"
-import { normalizeModelId, userModelPreferencesSchema } from "@lucky/shared"
+import { userModelPreferencesSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -42,21 +42,19 @@ export async function GET(_req: NextRequest) {
     // Create map of available providers for validation
     const validProviders = new Set(getAllProviders())
 
-    // Normalize and validate model IDs against MODEL_CATALOG
+    // Build provider settings - use model IDs as-is from database
     const providers = data
       .filter(row => validProviders.has(row.provider))
       .map(row => {
         const rawModels = (row.enabled_models as string[]) || []
         console.log(`[API] Provider ${row.provider} - Raw models from DB:`, rawModels)
 
-        // Normalize model IDs to "provider/model" format
-        const normalizedModels = rawModels.map(model => normalizeModelId(row.provider, model))
-        console.log(`[API] Provider ${row.provider} - Normalized:`, normalizedModels)
-
-        // Don't filter by MODEL_CATALOG - providers may have newer models not in our static catalog
-        // The catalog is for pricing/metadata, not for validation
-        const enabledModels = normalizedModels
-        console.log(`[API] Provider ${row.provider} - Enabled models:`, enabledModels)
+        // IMPORTANT: Do NOT normalize model IDs!
+        // OpenAI expects "gpt-5-nano", OpenRouter expects "openai/gpt-5-nano"
+        // The database stores whatever format the provider's API expects
+        // The MODEL_CATALOG's `model` field shows the correct format for each provider
+        const enabledModels = rawModels
+        console.log(`[API] Provider ${row.provider} - Enabled models (no normalization):`, enabledModels)
 
         // Convert timestamp to ISO format
         const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
