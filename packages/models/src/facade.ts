@@ -16,66 +16,14 @@
  * @module facade
  */
 
+import type { ModelEntry, ModelSelection } from "@lucky/shared"
 import type { LanguageModel } from "ai"
 import { getModelsInstance } from "./models-instance"
 import { getLogger, withPerformanceLogging } from "./observability/logger"
-import { MODEL_CATALOG, type ModelEntry } from "./pricing/catalog"
+import { MODEL_CATALOG } from "./pricing/catalog"
 import { getPricingService } from "./pricing/pricing-service"
 import { getRegistry } from "./registry/model-registry"
 import { getSelector } from "./selector/policy-selector"
-
-/**
- * Result of model selection
- *
- * Contains everything needed to:
- * - Use the model
- * - Understand why it was chosen
- * - Calculate costs accurately
- * - Debug selection issues
- */
-export interface ModelSelection {
-  /** Full model ID (e.g., "openai/gpt-4o-mini") */
-  modelId: string
-
-  /** Provider (e.g., "openai") */
-  provider: string
-
-  /** Model name (e.g., "gpt-4o-mini") */
-  model: string
-
-  /** Human-readable explanation of why this model was chosen */
-  reason: string
-
-  /** Pricing snapshot version used for this selection */
-  priceVersion: string
-
-  /** Estimated cost per 1M input tokens (USD) */
-  inputCostPer1M: number
-
-  /** Estimated cost per 1M output tokens (USD) */
-  outputCostPer1M: number
-
-  /** Model capabilities */
-  capabilities: {
-    contextLength: number
-    supportsTools: boolean
-    supportsJsonMode: boolean
-    supportsStreaming: boolean
-    supportsVision: boolean
-  }
-
-  /** Performance characteristics */
-  performance: {
-    speed: "fast" | "medium" | "slow"
-    intelligence: number
-  }
-
-  /** Alternative models considered (for debugging) */
-  alternatives?: string[]
-
-  /** Timestamp of selection */
-  timestamp: number
-}
 
 /**
  * Options for model selection
@@ -194,6 +142,9 @@ export class ModelsFacade {
           supportsJsonMode: model.supportsJsonMode,
           supportsStreaming: model.supportsStreaming,
           supportsVision: model.supportsVision,
+          supportsReasoning: model.supportsReasoning,
+          supportsAudio: model.supportsAudio,
+          supportsVideo: model.supportsVideo,
         },
         performance: {
           speed: model.speed,

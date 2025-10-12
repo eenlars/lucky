@@ -1,4 +1,5 @@
-import type { LuckyProvider } from "@lucky/shared"
+import { getModelsByProvider } from "@lucky/models"
+import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -8,18 +9,19 @@ const CACHE_DURATION_MS = 5 * 60 * 1000
 const modelCache = new Map<
   string,
   {
-    models: string[]
+    models: string[] | EnrichedModelInfo[]
     timestamp: number
   }
 >()
 
 // POST /api/providers/[provider]/models
-// Fetches available models from the provider's API
-// Body: { apiKey: string }
+// Fetches available models from the provider's API and enriches with catalog metadata
+// Body: { apiKey: string, includeMetadata?: boolean }
 export async function POST(req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params
   const body = await req.json()
   const apiKey = body.apiKey
+  const includeMetadata = body.includeMetadata ?? true
 
   // Validate provider
   const validProviders: LuckyProvider[] = ["openai", "openrouter", "groq"]
@@ -32,36 +34,82 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   }
 
   // Check cache
-  const cacheKey = `${provider}:${apiKey.substring(0, 10)}`
+  const cacheKey = `${provider}:${apiKey.substring(0, 10)}:${includeMetadata}`
   const cached = modelCache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
     return NextResponse.json({ models: cached.models })
   }
 
   try {
-    let models: string[]
+    let modelIds: string[]
 
     switch (provider) {
       case "openai":
-        models = await fetchOpenAIModels(apiKey)
+        modelIds = await fetchOpenAIModels(apiKey)
         break
       case "groq":
-        models = await fetchGroqModels(apiKey)
+        modelIds = await fetchGroqModels(apiKey)
         break
       case "openrouter":
-        models = await fetchOpenRouterModels(apiKey)
+        modelIds = await fetchOpenRouterModels(apiKey)
         break
       default:
         return NextResponse.json({ error: "Unsupported provider" }, { status: 400 })
     }
 
+    // Enrich with metadata from MODEL_CATALOG if requested
+    let result: string[] | EnrichedModelInfo[]
+    if (includeMetadata) {
+      const catalogModels = getModelsByProvider(provider)
+      const catalogMap = new Map(catalogModels.map(m => [m.model, m]))
+
+      result = modelIds
+        .map(modelId => {
+          const catalogEntry = catalogMap.get(modelId)
+          if (catalogEntry) {
+            return {
+              id: catalogEntry.id,
+              name: catalogEntry.model,
+              contextLength: catalogEntry.contextLength,
+              supportsTools: catalogEntry.supportsTools,
+              supportsVision: catalogEntry.supportsVision,
+              supportsReasoning: catalogEntry.supportsReasoning,
+              supportsAudio: catalogEntry.supportsAudio,
+              supportsVideo: catalogEntry.supportsVideo,
+              inputCostPer1M: catalogEntry.input,
+              outputCostPer1M: catalogEntry.output,
+              speed: catalogEntry.speed,
+              intelligence: catalogEntry.intelligence,
+            }
+          }
+          // Fallback for models not in catalog
+          return {
+            id: `${provider}/${modelId}`,
+            name: modelId,
+            contextLength: 0,
+            supportsTools: false,
+            supportsVision: false,
+            supportsReasoning: false,
+            supportsAudio: false,
+            supportsVideo: false,
+            inputCostPer1M: 0,
+            outputCostPer1M: 0,
+            speed: "medium" as const,
+            intelligence: 5,
+          }
+        })
+        .filter(Boolean) as EnrichedModelInfo[]
+    } else {
+      result = modelIds
+    }
+
     // Cache the result
     modelCache.set(cacheKey, {
-      models,
+      models: result,
       timestamp: Date.now(),
     })
 
-    return NextResponse.json({ models })
+    return NextResponse.json({ models: result })
   } catch (error) {
     console.error(`Error fetching models for ${provider}:`, error)
     return NextResponse.json(

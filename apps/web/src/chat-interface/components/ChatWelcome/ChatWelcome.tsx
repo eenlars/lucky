@@ -6,7 +6,7 @@
 
 "use client"
 
-import type { ChatWelcomeProps } from "@/chat-interface/types"
+import type { ChatWelcomeProps } from "@/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 
 export function ChatWelcome({

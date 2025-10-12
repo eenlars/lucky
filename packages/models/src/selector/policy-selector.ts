@@ -12,8 +12,8 @@
  * @module selector/policy-selector
  */
 
-import type { ModelSelection, SelectionOptions } from "../facade"
-import type { ModelEntry } from "../pricing/catalog"
+import type { ModelEntry, ModelSelection } from "@lucky/shared"
+import type { SelectionOptions } from "../facade"
 import type { ModelRegistry } from "../registry/model-registry"
 
 /**

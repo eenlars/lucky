@@ -8,40 +8,7 @@
  * @module pricing/catalog
  */
 
-/**
- * Complete model entry with pricing and capabilities
- */
-export interface ModelEntry {
-  // Identity
-  id: string // Full ID: "openai/gpt-4o-mini"
-  provider: string // Provider: "openai", "openrouter", "groq"
-  model: string // Model name: "gpt-4o-mini"
-
-  // Pricing (per 1M tokens in USD)
-  input: number
-  output: number
-  cachedInput: number | null
-
-  // Capabilities
-  contextLength: number
-  supportsTools: boolean
-  supportsJsonMode: boolean
-  supportsStreaming: boolean
-  supportsVision: boolean
-
-  // Performance & Quality
-  speed: "fast" | "medium" | "slow"
-  intelligence: number // 1-10 scale (from legacy "IQ")
-  pricingTier: "low" | "medium" | "high"
-
-  // Availability
-  active: boolean
-  regions?: string[]
-
-  // Metadata
-  description?: string
-  releaseDate?: string
-}
+import type { ModelEntry } from "@lucky/shared"
 
 /**
  * Model catalog - comprehensive list of all available models
@@ -65,6 +32,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
@@ -83,6 +53,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "medium",
@@ -101,6 +74,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
@@ -119,6 +95,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
@@ -137,6 +116,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "slow",
     intelligence: 8,
     pricingTier: "high",
@@ -155,6 +137,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "high",
@@ -173,6 +158,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: true,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -191,6 +179,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -213,6 +204,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
@@ -231,6 +225,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 7,
     pricingTier: "medium",
@@ -249,6 +246,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -267,6 +267,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -285,6 +288,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -303,6 +309,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "medium",
@@ -321,6 +330,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -339,6 +351,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
@@ -357,6 +372,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
@@ -375,6 +393,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
@@ -393,6 +414,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
@@ -411,6 +435,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
@@ -429,6 +456,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 6,
     pricingTier: "medium",
@@ -447,6 +477,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 6,
     pricingTier: "medium",
@@ -465,6 +498,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 7,
     pricingTier: "high",
@@ -483,6 +519,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
@@ -501,6 +540,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: true,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "medium",
     intelligence: 9,
     pricingTier: "medium",
@@ -523,6 +565,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
@@ -541,6 +586,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
     supportsJsonMode: true,
     supportsStreaming: true,
     supportsVision: false,
+    supportsReasoning: false,
+    supportsAudio: false,
+    supportsVideo: false,
     speed: "fast",
     intelligence: 9,
     pricingTier: "low",

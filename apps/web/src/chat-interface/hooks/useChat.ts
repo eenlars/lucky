@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useRef, useState } from "react"
-import type { ChatActions, ChatState, Message, MessageRole, StreamingMessage } from "../types"
+import type { ChatActions, ChatState, Message, MessageRole, StreamingMessage } from "../types/types"
 import { createMessage } from "../utils/message-utils"
 
 export interface UseChatOptions {

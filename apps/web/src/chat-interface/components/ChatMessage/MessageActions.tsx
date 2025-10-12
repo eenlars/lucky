@@ -6,7 +6,7 @@
 
 "use client"
 
-import type { Message } from "@/chat-interface/types"
+import type { Message } from "@/chat-interface/types/types"
 import { copyToClipboard } from "@/chat-interface/utils/message-utils"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

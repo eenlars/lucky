@@ -10,7 +10,7 @@
  * @module registry/model-registry
  */
 
-import type { ModelEntry } from "../pricing/catalog"
+import type { ModelEntry } from "@lucky/shared"
 
 /**
  * Query filters for finding models

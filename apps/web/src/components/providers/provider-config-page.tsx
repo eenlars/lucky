@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
-import type { LuckyProvider } from "@lucky/shared"
+import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
 import {
   AlertCircle,
   ArrowLeft,
@@ -17,9 +17,14 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  Image as ImageIcon,
   Loader2,
+  Mic,
   RefreshCw,
   Save,
+  Sparkles,
+  Video,
+  Zap,
 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -41,7 +46,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [isConfigured, setIsConfigured] = useState(false)
   const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle")
-  const [availableModels, setAvailableModels] = useState<string[]>([])
+  const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
   const [enabledModels, setEnabledModels] = useState<Set<string>>(new Set())
   const [validationError, setValidationError] = useState<string | null>(null)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -87,7 +92,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       const response = await fetch(`/api/providers/${provider}/models`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: key }),
+        body: JSON.stringify({ apiKey: key, includeMetadata: true }),
       })
 
       if (!response.ok) {
@@ -102,7 +107,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       if (settingsResponse.ok) {
         const settingsData = await settingsResponse.json()
         if (!settingsData.enabledModels || settingsData.enabledModels.length === 0) {
-          setEnabledModels(new Set(data.models || []))
+          setEnabledModels(new Set((data.models || []).map((m: EnrichedModelInfo) => m.name)))
         }
       }
     } catch (error) {
@@ -220,7 +225,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   }
 
   const toggleAllModels = (enable: boolean) => {
-    setEnabledModels(enable ? new Set(availableModels) : new Set())
+    setEnabledModels(enable ? new Set(availableModels.map(m => m.name)) : new Set())
     setHasUnsavedChanges(true)
   }
 
@@ -433,13 +438,60 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                   <div className="space-y-2 max-h-[500px] overflow-y-auto">
                     {availableModels.map(model => (
                       <div
-                        key={model}
-                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                        key={model.id}
+                        className="flex items-start justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                       >
-                        <div className="flex-1 min-w-0 mr-2">
-                          <span className="font-mono text-sm font-medium break-all">{model}</span>
+                        <div className="flex-1 min-w-0 mr-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-mono text-sm font-medium break-all">{model.name}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {model.speed}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {model.supportsTools && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                <Zap className="size-3" />
+                                Tools
+                              </Badge>
+                            )}
+                            {model.supportsVision && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                <ImageIcon className="size-3" />
+                                Vision
+                              </Badge>
+                            )}
+                            {model.supportsReasoning && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                <Sparkles className="size-3" />
+                                Reasoning
+                              </Badge>
+                            )}
+                            {model.supportsAudio && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                <Mic className="size-3" />
+                                Audio
+                              </Badge>
+                            )}
+                            {model.supportsVideo && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                <Video className="size-3" />
+                                Video
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                            <div>Context: {model.contextLength.toLocaleString()} tokens</div>
+                            <div>
+                              Cost: ${model.inputCostPer1M.toFixed(2)}/{model.outputCostPer1M.toFixed(2)} per 1M tokens
+                            </div>
+                            <div>Intelligence: {model.intelligence}/10</div>
+                          </div>
                         </div>
-                        <Switch checked={enabledModels.has(model)} onCheckedChange={() => toggleModel(model)} />
+                        <Switch
+                          checked={enabledModels.has(model.name)}
+                          onCheckedChange={() => toggleModel(model.name)}
+                        />
                       </div>
                     ))}
                   </div>
