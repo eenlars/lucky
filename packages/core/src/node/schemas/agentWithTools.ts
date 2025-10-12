@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { AGENT_KEY_EXPLANATIONS, baseWorkflowNodeConfigShape } from "@core/node/schemas/improvementSchema"
 import { withDescriptions } from "@lucky/shared"
 import { ACTIVE_CODE_TOOL_NAMES, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
@@ -13,8 +13,8 @@ export const agentDescriptionsWithTools = {
   nodeId: AGENT_KEY_EXPLANATIONS.nodeId,
   description: AGENT_KEY_EXPLANATIONS.description,
   modelName: AGENT_KEY_EXPLANATIONS.modelName,
-  mcpTools: `MCP external tools (${mcpToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
-  codeTools: `Code internal tools (${codeToolsList}). MAX ${CONFIG.tools.maxToolsPerAgent} tools`,
+  mcpTools: `MCP external tools (${mcpToolsList}). MAX ${getCoreConfig().tools.maxToolsPerAgent} tools`,
+  codeTools: `Code internal tools (${codeToolsList}). MAX ${getCoreConfig().tools.maxToolsPerAgent} tools`,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,
   handOffType: AGENT_KEY_EXPLANATIONS.handOffType,
   waitFor: AGENT_KEY_EXPLANATIONS.waitFor,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { hashWorkflow, hashWorkflowNode } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 

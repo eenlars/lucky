@@ -1,6 +1,6 @@
 // src/core/workflow/queueRun.ts
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { AggregatedPayload, MessageType } from "@core/messages/MessagePayload"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
@@ -67,7 +67,7 @@ import type { QueueRunParams, QueueRunResult } from "./types"
  * - Memory updates are batched and persisted at workflow completion
  */
 
-const coordinationType = CONFIG.coordinationType
+const coordinationType = getCoreConfig().coordinationType
 const verbose = false // Memory logging removed from config
 
 export async function queueRun({
@@ -101,8 +101,9 @@ export async function queueRun({
   // track invocations per node and globally
   const perNodeInvocationCounts = new Map<string, number>()
   let totalNodeInvocationsCount = 0
-  const maxTotalNodeInvocations = CONFIG.workflow.maxTotalNodeInvocations
-  const maxPerNodeInvocations = CONFIG.workflow.maxPerNodeInvocations ?? CONFIG.workflow.maxTotalNodeInvocations
+  const maxTotalNodeInvocations = getCoreConfig().workflow.maxTotalNodeInvocations
+  const maxPerNodeInvocations =
+    getCoreConfig().workflow.maxPerNodeInvocations ?? getCoreConfig().workflow.maxTotalNodeInvocations
   const summaries: InvocationSummary[] = []
   const startTime = Date.now()
   let lastNodeOutput = "" // tracks final output for workflow result

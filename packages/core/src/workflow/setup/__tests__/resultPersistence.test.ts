@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { PATHS, getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
@@ -24,33 +25,33 @@ describe("resultPersistence", () => {
   const testFileName = "test-persistence.json"
 
   // use a test-specific directory to avoid touching the real setup file
-  const TEST_DIR = path.join(PATHS.node.logging, "test-persistence")
+  const TEST_DIR = path.join(config.paths.node.logging, "test-persistence")
   const TEST_SETUP_FILE = path.join(TEST_DIR, "test-setupfile.json")
 
   // save original setupFile path
-  const originalSetupFile = PATHS.setupFile
+  const originalSetupFile = config.paths.setupFile
   // The actual directory where files are saved is computed inside persistWorkflow
   let actualOutDir: string
-  const actualBackupDir = path.join(PATHS.node.logging, "backups")
+  const actualBackupDir = path.join(config.paths.node.logging, "backups")
 
   beforeAll(async () => {
     // create test directory
     await fs.mkdir(TEST_DIR, { recursive: true })
 
-    // override PATHS.setupFile to point to test directory
-    Object.defineProperty(PATHS, "setupFile", {
+    // override config.paths.setupFile to point to test directory
+    Object.defineProperty(config.paths, "setupFile", {
       value: TEST_SETUP_FILE,
       writable: true,
       configurable: true,
     })
 
     // compute after override so expectations match runtime behavior
-    actualOutDir = path.dirname(PATHS.setupFile)
+    actualOutDir = path.dirname(config.paths.setupFile)
   })
 
   afterAll(async () => {
     // restore original setupFile path
-    Object.defineProperty(PATHS, "setupFile", {
+    Object.defineProperty(config.paths, "setupFile", {
       value: originalSetupFile,
       writable: true,
       configurable: true,

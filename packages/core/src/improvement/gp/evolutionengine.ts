@@ -26,8 +26,8 @@
  * @see EvolutionEvaluator - External genome evaluation interface
  */
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { createEvolutionSettingsWithConfig } from "@core/core-config/compat"
+import { createEvolutionSettingsWithConfig } from "@core/core-config/coreConfig"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { Population } from "@core/improvement/gp/Population"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"

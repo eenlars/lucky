@@ -1,7 +1,7 @@
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 // save.ts
 import { JSONN } from "@lucky/shared"
 import type { CodeToolResult } from "@lucky/tools"
@@ -109,7 +109,8 @@ export async function saveInLogging(data: any, filename?: string, fileExtension?
   const sanitizedFilename = baseFilename.replace(/[^a-zA-Z0-9-]/g, "-")
 
   // save in the logging folder
-  const folder = path.join(PATHS.node.logging, "saveInLogging")
+  const config = getCoreConfig()
+  const folder = path.join(config.paths.node.logging, "saveInLogging")
   fs.mkdirSync(folder, { recursive: true })
   const fullPath = path.join(folder, `${sanitizedFilename + (fileExtension ?? ".json")}`)
   fs.writeFileSync(fullPath, JSON.stringify(data, null, 2))

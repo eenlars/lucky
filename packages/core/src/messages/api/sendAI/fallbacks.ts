@@ -17,7 +17,7 @@
 // TODO: add model recovery detection to restore primary models
 // TODO: create per-operation fallback strategies (tools vs text vs structured)
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ModelName } from "@core/utils/spending/models.types"
 
 /**

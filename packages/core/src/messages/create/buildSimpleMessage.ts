@@ -1,4 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { type WorkflowFiles, contextFilePrompt } from "@core/tools/context/contextStore.types"
 import { MessageValidationError } from "@core/utils/errors/api-errors"
 import { lgg } from "@core/utils/logging/Logger"

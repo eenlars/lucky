@@ -24,7 +24,7 @@
  * @see EvolutionEngine - Orchestrates population evolution across generations
  */
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
@@ -38,8 +38,6 @@ import { isNir } from "@lucky/shared"
 import { Genome } from "./Genome"
 import type { RunService } from "./RunService"
 import type { PopulationStats } from "./resources/gp.types"
-
-const initialPopulationMethod = CONFIG.evolution.GP.initialPopulationMethod
 
 export class Population {
   private genomes: Genome[] = []
@@ -74,6 +72,7 @@ export class Population {
 
     // TODO: refactor to eliminate code duplication between initialization methods
     // TODO: consider using factory pattern for population initialization strategies
+    const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
     switch (initialPopulationMethod as "random" | "baseWorkflow" | "prepared") {
       case "random": {
         const population1 = await this.initializePopulationHelper({
@@ -490,6 +489,7 @@ export class Population {
       return []
     }
 
+    const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
     const genomePromises: Promise<RS<Genome>>[] = []
     const evolutionContext = this.runService.getEvolutionContext()
 

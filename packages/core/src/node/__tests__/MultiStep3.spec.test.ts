@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { describe, expect, it } from "vitest"
 import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"

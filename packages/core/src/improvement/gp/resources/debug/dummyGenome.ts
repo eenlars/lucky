@@ -1,7 +1,7 @@
-import { getDefaultModels } from "@core/core-config/compat"
-import { TOOLS } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import { TOOLS } from "@lucky/shared/contracts/tools"
 import { type CodeToolName, type MCPToolName, getActiveTools } from "@lucky/tools"
 
 // function to get a random element from an array

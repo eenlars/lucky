@@ -1,6 +1,6 @@
 // adapter to use AggregatedEvaluator in genetic programming
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import type { Genome } from "@core/improvement/gp/Genome"
 import { MockGPEvaluator } from "@core/improvement/gp/resources/debug/MockGPEvaluator"
@@ -41,6 +41,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
 
   async evaluate(genome: Genome, evolutionContext: EvolutionContext): ReturnType<EvolutionEvaluator["evaluate"]> {
     guard(evolutionContext, "Evolution context is required for GPEvaluation")
+    const config = getCoreConfig()
     const startTime = Date.now()
     const errors: string[] = []
 
@@ -56,7 +57,7 @@ export class GPEvaluatorAdapter implements EvolutionEvaluator {
     }
 
     // Use mock evaluator in verbose mode
-    if (CONFIG.evolution.GP.verbose) {
+    if (config.evolution.GP.verbose) {
       return this.mockEvaluator.evaluate(genome)
     }
 

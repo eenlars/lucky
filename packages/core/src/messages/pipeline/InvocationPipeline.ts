@@ -3,7 +3,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
 // @sdk-import - marker for easy removal when ejecting SDK
-import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { processResponseVercel } from "@core/messages/api/processResponse"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
@@ -29,7 +29,7 @@ import { JSONN, isNir } from "@lucky/shared"
 import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
-const maxRounds = CONFIG.tools.experimentalMultiStepLoopMaxRounds
+const maxRounds = getCoreConfig().tools.experimentalMultiStepLoopMaxRounds
 
 const verbose = isLoggingEnabled("InvocationPipeline")
 
@@ -135,6 +135,7 @@ export class InvocationPipeline {
     }
 
     this.executionState = PipelineState.PREPARED
+    const config = getCoreConfig()
 
     await this.toolManager.initializeTools()
     // Extract tool execution context from node invocation context
@@ -155,11 +156,11 @@ export class InvocationPipeline {
     await prepareIncomingMessage(this.ctx, this.tools, this.ctx.nodeMemory, this.agentSteps)
 
     // no need to prepare. this is handled in the multi-step loop.
-    if (CONFIG.tools.experimentalMultiStepLoop) return this
+    if (config.tools.experimentalMultiStepLoop) return this
 
     const hasOneTool = Object.keys(this.tools).length === 1
 
-    if (!hasOneTool && CONFIG.tools.usePrepareStepStrategy) {
+    if (!hasOneTool && config.tools.usePrepareStepStrategy) {
       this.toolChoice = "auto"
     }
 
@@ -211,12 +212,13 @@ export class InvocationPipeline {
     }
 
     this.executionState = PipelineState.EXECUTING
+    const config = getCoreConfig()
 
     try {
       // Check if this node should use Claude SDK
       if (this.ctx.nodeConfig.useClaudeSDK) {
         await this.runWithSDK()
-      } else if (CONFIG.tools.experimentalMultiStepLoop && Object.keys(this.tools)?.length > 0) {
+      } else if (config.tools.experimentalMultiStepLoop && Object.keys(this.tools)?.length > 0) {
         if (this.ctx.toolStrategyOverride === "v3") {
           await this.runMultiStepLoopV3()
         } else {
@@ -400,6 +402,7 @@ export class InvocationPipeline {
   }
 
   private async runSingleCall(): Promise<ProcessedResponse> {
+    const config = getCoreConfig()
     // Build messages from incoming payload's berichten instead of sdkMessages
     const incomingText = extractTextFromPayload(this.ctx.workflowMessageIncoming.payload)
     const messages = [
@@ -516,7 +519,7 @@ export class InvocationPipeline {
     if (verbose) {
       const ts = Date.now()
       saveInLoc(
-        `${PATHS.node.logging}/debug/response_after_processing_${ts}_${this.ctx.nodeConfig.nodeId}`,
+        `${config.paths.node.logging}/debug/response_after_processing_${ts}_${this.ctx.nodeConfig.nodeId}`,
         JSONN.show(processed),
       )
     }
@@ -574,6 +577,7 @@ export class InvocationPipeline {
   }
 
   private async finalizeSummary(processed: ProcessedResponse): Promise<ProcessedResponse> {
+    const config = getCoreConfig()
     // Generate summary if not already present
     const { summary, usdCost } = await createSummary(processed)
     this.addCost(usdCost)
@@ -588,7 +592,7 @@ export class InvocationPipeline {
     })
 
     // Store memory updates
-    if (learnings && !CONFIG.tools.experimentalMultiStepLoop) {
+    if (learnings && !config.tools.experimentalMultiStepLoop) {
       // the experimentalMultiStepLoop already updates the memory
       this.updatedMemory = learnings.updatedMemory
     }

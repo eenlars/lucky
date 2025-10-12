@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 /**
  * Shared test helper functions for API integration tests
  * Consolidates duplicate test patterns and eliminates verbose boilerplate

@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"

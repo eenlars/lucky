@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import type { ModelName } from "@core/utils/spending/models.types"
 import type { LocationData } from "@lucky/shared"

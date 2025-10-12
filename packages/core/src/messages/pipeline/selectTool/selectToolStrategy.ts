@@ -1,5 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { isNir } from "@lucky/shared"
@@ -45,7 +44,8 @@ export function createPrepareStepStrategy<T extends ToolSet>(
   | undefined
 > {
   return async ({ steps, stepNumber, model: _model }) => {
-    if (isNir(tools) || CONFIG.tools.autoSelectTools) {
+    const config = getCoreConfig()
+    if (isNir(tools) || config.tools.autoSelectTools) {
       return undefined // Use default settings
     }
 

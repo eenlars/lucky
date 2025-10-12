@@ -2,7 +2,7 @@ import type { ToolSet } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 // Integration test: use a valid Tool that always throws in execute to

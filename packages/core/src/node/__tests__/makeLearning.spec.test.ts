@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import * as sendAIModule from "@core/messages/api/sendAI/sendAI"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { makeLearning } from "../../prompts/makeLearning"

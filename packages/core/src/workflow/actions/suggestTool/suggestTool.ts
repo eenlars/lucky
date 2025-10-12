@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { Workflow } from "@core/workflow/Workflow"
 import { SuggestToolPrompts } from "@core/workflow/actions/suggestTool/suggestTool.p"

@@ -1,4 +1,4 @@
-import { MODELS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
@@ -31,7 +31,7 @@ const expectedOutputHandler = defineTool({
     }
 
     // select model
-    const selectedModel = MODELS.fitness as ModelName
+    const selectedModel = getCoreConfig().models.defaults.fitness as ModelName
 
     const systemPrompt =
       strictness === "strict"

@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { Genome } from "@core/improvement/gp/Genome"
 import { lgg } from "@core/utils/logging/Logger"
@@ -9,7 +9,7 @@ import { lgg } from "@core/utils/logging/Logger"
  */
 export class MockGPEvaluator implements EvolutionEvaluator {
   async evaluate(genome: Genome): ReturnType<EvolutionEvaluator["evaluate"]> {
-    if (!CONFIG.evolution.GP.verbose) {
+    if (!getCoreConfig().evolution.GP.verbose) {
       throw new Error("The mock evaluator should only be used in verbose mode")
     }
     lgg.log(`[MockGPEvaluator] Returning mock evaluation for ${genome.getWorkflowVersionId()}`)

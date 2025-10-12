@@ -1,6 +1,6 @@
 import fs from "node:fs"
 import path from "node:path"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { envi } from "@core/utils/env.mjs"
 import type { MCPToolName } from "@lucky/tools"
 import { type ToolSet, experimental_createMCPClient } from "ai"
@@ -51,11 +51,12 @@ interface MCPConfig {
 }
 
 function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
+  const config = getCoreConfig()
   try {
     // Prefer process.env for tests that set MCP_SECRET_PATH dynamically,
     // fallback to envi (mocked in tests), then to runtime default
     const configuredPath = process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
-    const configPath = configuredPath ? path.resolve(configuredPath) : path.join(PATHS.runtime, "mcp-secret.json")
+    const configPath = configuredPath ? path.resolve(configuredPath) : path.join(config.paths.runtime, "mcp-secret.json")
 
     if (!fs.existsSync(configPath)) {
       // Provide helpful setup guidance
@@ -72,10 +73,10 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     }
 
     const configContent = fs.readFileSync(configPath, "utf-8")
-    let config: MCPConfig
+    let mcpConfig: MCPConfig
 
     try {
-      config = JSON.parse(configContent)
+      mcpConfig = JSON.parse(configContent)
     } catch (parseError) {
       console.error("\n❌ Failed to parse mcp-secret.json")
       console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -89,7 +90,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
       return {}
     }
 
-    if (!config.mcpServers || typeof config.mcpServers !== "object") {
+    if (!mcpConfig.mcpServers || typeof mcpConfig.mcpServers !== "object") {
       console.error("\n❌ Invalid mcp-secret.json structure")
       console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
       console.error(`📁 File: ${configPath}`)
@@ -106,7 +107,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     const validatedServers: MCPConfig["mcpServers"] = {}
     const errors: string[] = []
 
-    for (const [name, serverConfig] of Object.entries(config.mcpServers)) {
+    for (const [name, serverConfig] of Object.entries(mcpConfig.mcpServers)) {
       if (!serverConfig.command || !Array.isArray(serverConfig.args)) {
         errors.push(`  ❌ ${name}: missing 'command' or 'args' (must be an array)`)
         continue
@@ -148,7 +149,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 
     if (Object.keys(validatedServers).length > 0) {
       console.log(`✅ Loaded MCP servers: ${Object.keys(validatedServers).join(", ")}\n`)
-    } else if (Object.keys(config.mcpServers).length > 0) {
+    } else if (Object.keys(mcpConfig.mcpServers).length > 0) {
       console.warn("⚠️  No valid MCP servers found (all configurations failed validation)\n")
     }
 
@@ -337,9 +338,10 @@ export function getMCPStatus(): {
   cachedClients: number
   configPath: string
 } {
+  const config = getCoreConfig()
   const createTools = getCreateTools()
   const configuredPath = process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
-  const configPath = configuredPath ? path.resolve(configuredPath) : path.join(PATHS.runtime, "mcp-secret.json")
+  const configPath = configuredPath ? path.resolve(configuredPath) : path.join(config.paths.runtime, "mcp-secret.json")
 
   return {
     configured: Object.keys(createTools).length > 0,

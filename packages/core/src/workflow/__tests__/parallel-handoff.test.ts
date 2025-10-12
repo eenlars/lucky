@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Workflow } from "@core/workflow/Workflow"

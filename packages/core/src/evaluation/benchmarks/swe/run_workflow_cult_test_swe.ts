@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 // Simple iterative evolution test on random SWE-bench evaluation
 
-import { CONFIG, PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { lgg } from "@core/utils/logging/Logger"
 import { Workflow } from "@core/workflow/Workflow"
@@ -29,14 +30,14 @@ async function runIterativeTest() {
   } as any
 
   lgg.log(`🎲 Testing SWE-bench ID: ${randomId}`)
-  lgg.log(`🧬 Running ${CONFIG.evolution.iterativeIterations} iterative iterations`)
+  lgg.log(`🧬 Running ${config.evolution.iterativeIterations} iterative iterations`)
 
   const evaluator = new AggregatedEvaluator()
-  let workflowPath = PATHS.setupFile
+  let workflowPath = config.paths.setupFile
   const results = []
 
-  for (let i = 1; i <= CONFIG.evolution.iterativeIterations; i++) {
-    lgg.log(`\n🔄 Iteration ${i}/${CONFIG.evolution.iterativeIterations}`)
+  for (let i = 1; i <= config.evolution.iterativeIterations; i++) {
+    lgg.log(`\n🔄 Iteration ${i}/${config.evolution.iterativeIterations}`)
 
     const setup = await loadSingleWorkflow(workflowPath)
     const workflow = Workflow.create({
@@ -58,7 +59,7 @@ async function runIterativeTest() {
     lgg.log(`✅ Fitness: ${fitness.score}, Cost: $${cost.toFixed(4)}`)
 
     // Save for next iteration
-    const nextPath = `${PATHS.node.logging}/iterative/workflow_${i}.json`
+    const nextPath = `${config.paths.node.logging}/iterative/workflow_${i}.json`
     await saveWorkflowConfig(workflow.getConfig(), nextPath)
     workflowPath = `output/${nextPath}`
   }

@@ -17,7 +17,7 @@
 // TODO: create schema-specific timeout configurations
 // TODO: implement structured output streaming for real-time updates
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import type { ModelName } from "@core/utils/spending/models.types"

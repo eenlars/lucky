@@ -6,7 +6,7 @@
  * prompting strategies and styles to improve node performance.
  */
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"

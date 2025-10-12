@@ -1,4 +1,4 @@
-import { CONFIG, getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import {
   type FitnessFunctionInput,
   type FitnessOfWorkflow,
@@ -22,6 +22,7 @@ async function calculateFitness({
   overrideModel,
   rubric,
 }: FitnessFunctionInput): Promise<RS<FitnessOfWorkflow>> {
+  const config = getCoreConfig()
   if (isNir(agentSteps) || isNir(finalWorkflowOutput)) {
     lgg.warn("No outputs found")
     // Gracefully handle missing outputs by assigning zero fitness without invoking AI
@@ -84,9 +85,9 @@ async function calculateFitness({
   const gatedCostBonus = normalizedCost * accuracyGate
 
   const finalFitness =
-    effectiveScore * CONFIG.improvement.fitness.weights.score +
-    gatedTimeBonus * CONFIG.improvement.fitness.weights.time +
-    gatedCostBonus * CONFIG.improvement.fitness.weights.cost
+    effectiveScore * config.improvement.fitness.weights.score +
+    gatedTimeBonus * config.improvement.fitness.weights.time +
+    gatedCostBonus * config.improvement.fitness.weights.cost
 
   // Cap at 100 to allow promising workflows higher scores
   const cappedFinalScore = Math.min(100, Math.round(finalFitness))

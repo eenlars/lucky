@@ -170,7 +170,7 @@ if (typeof (vi as any).mock === "function")
     },
   }))
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { buildMessages } from "@core/messages/create/buildMessages"
 import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"

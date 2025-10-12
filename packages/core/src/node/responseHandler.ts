@@ -1,6 +1,6 @@
 // src/core/node/response/responseHandler.ts
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import { getResponseContent } from "@core/messages/api/processResponse"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
@@ -51,6 +51,8 @@ export async function handleSuccess(
   if (workflowFiles) {
     filesUsed.push(...workflowFiles.map(file => file.filePath))
   }
+
+  const config = getCoreConfig()
 
   // Compute full output string for validation and storage
   const finalNodeInvocationOutput = getResponseContent(response) ?? ""
@@ -123,7 +125,7 @@ export async function handleSuccess(
     if (isParallelNode) {
       nextIds = nodeConfig.handOffs
       replyMessage = {
-        kind: CONFIG.coordinationType === "sequential" ? "sequential" : "delegation",
+        kind: config.coordinationType === "sequential" ? "sequential" : "delegation",
         prompt: baseTextForNext,
         context: "",
       }
@@ -137,7 +139,7 @@ export async function handleSuccess(
         systemPrompt: nodeConfig.systemPrompt,
         workflowMessage: context.workflowMessageIncoming,
         handOffs: nodeConfig.handOffs,
-        content: CONFIG.workflow.handoffContent === "full" ? baseTextForNext : truncater(baseTextForNext, 500),
+        content: config.workflow.handoffContent === "full" ? baseTextForNext : truncater(baseTextForNext, 500),
         agentSteps: agentSteps ?? undefined,
         workflowConfig: context.workflowConfig,
       })

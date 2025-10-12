@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { selectToolStrategyV2 } from "@core/messages/pipeline/selectTool/selectToolStrategyV2"
 import { type ToolSet, tool } from "ai"

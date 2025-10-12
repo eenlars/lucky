@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"

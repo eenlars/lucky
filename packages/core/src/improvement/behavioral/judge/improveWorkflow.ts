@@ -1,5 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { WorkflowEvolutionPrompts } from "@core/prompts/improveWorkflow.p"
@@ -59,7 +58,8 @@ export async function improveWorkflowUnified(params: UnifiedImprovementParams): 
 
   if (improvedConfig) {
     // add the default tools to the config
-    const defaultTools = Array.from(CONFIG.tools.defaultTools) as CodeToolName[]
+    const coreConfig = getCoreConfig()
+    const defaultTools = Array.from(coreConfig.tools.defaultTools) as CodeToolName[]
     improvedConfig.nodes.forEach(node => {
       node.codeTools = [...new Set([...node.codeTools, ...defaultTools])]
     })

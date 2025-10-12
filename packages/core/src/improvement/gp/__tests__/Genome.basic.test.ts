@@ -1,7 +1,7 @@
 // basic tests for genome class without complex mocking
 // TODO: despite title "basic tests", still has extensive mock setup
 // consider using actual test utilities instead of inline mocks
-import { CONFIG, getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { createMockEvaluationInputGeneric, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -261,8 +261,18 @@ describe("Genome Basic Tests", () => {
   describe("Static Methods", () => {
     it("should create random genome", async () => {
       // Enable verbose GP mode so createRandom takes the fast, deterministic dummy path
-      const prevVerbose = CONFIG.evolution.GP.verbose
-      ;(CONFIG.evolution.GP as any).verbose = true
+      const { initCoreConfig, getCoreConfig } = await import("@core/core-config/coreConfig")
+      const prevConfig = getCoreConfig()
+      initCoreConfig({
+        ...prevConfig,
+        evolution: {
+          ...prevConfig.evolution,
+          GP: {
+            ...prevConfig.evolution.GP,
+            verbose: true,
+          },
+        },
+      })
       const evaluationInput = createMockEvaluationInputGeneric()
 
       const genomeResult = await Genome.createRandom({
@@ -285,8 +295,8 @@ describe("Genome Basic Tests", () => {
       // which returns a Genome instance
       expect(genomeResult.data).toBeInstanceOf(Genome)
 
-      // restore previous verbose setting
-      ;(CONFIG.evolution.GP as any).verbose = prevVerbose
+      // restore previous config
+      initCoreConfig(prevConfig)
     })
 
     it("should convert genome to workflow config", () => {

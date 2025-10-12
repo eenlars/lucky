@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Workflow } from "@core/workflow/Workflow"
@@ -22,7 +22,7 @@ export async function improveNodesSelfImprovement(
   workflow: Workflow,
   params: NodeSelfImprovementParams,
 ): Promise<WorkflowNodeConfig[]> {
-  if (!CONFIG.improvement.flags.selfImproveNodes) {
+  if (!getCoreConfig().improvement.flags.selfImproveNodes) {
     return []
   }
 

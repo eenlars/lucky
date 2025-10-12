@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"

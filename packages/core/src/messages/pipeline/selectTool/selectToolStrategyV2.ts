@@ -1,4 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"
 import type { SelectToolStrategyOptions, StrategyResult } from "@core/messages/pipeline/selectTool/toolstrategy.types"

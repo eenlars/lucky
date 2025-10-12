@@ -1,4 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { truncater } from "@core/utils/common/llmify"
 import { WorkflowRepairError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
@@ -7,7 +7,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWork
 import { repairWorkflow } from "@core/workflow/actions/repair/repairWorkflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
-const MAX_RETRIES = CONFIG.improvement.flags.maxRetriesForWorkflowRepair
+const MAX_RETRIES = getCoreConfig().improvement.flags.maxRetriesForWorkflowRepair
 
 /**
  * Validates and optionally repairs a workflow configuration with customizable behavior.

@@ -1,7 +1,7 @@
 import type { ModelMessage } from "ai"
 import { z } from "zod"
 
-import { getDefaultModels, isLoggingEnabled } from "@core/core-config/compat"
+import { getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { repairAIRequest } from "@core/messages/api/repairAIRequest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify, truncater } from "@core/utils/common/llmify"

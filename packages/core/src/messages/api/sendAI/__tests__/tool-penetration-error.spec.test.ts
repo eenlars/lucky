@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 
 // Integration test that attempts to break tool handling and exercises

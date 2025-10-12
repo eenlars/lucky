@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { MultiStepLoopContext } from "@core/messages/pipeline/agentStepLoop/utils"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"

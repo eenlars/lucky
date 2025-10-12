@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import * as RandomizedFitness from "@core/evaluation/calculate-fitness/randomizedFitness"
 import { Workflow } from "@core/workflow/Workflow"

@@ -3,6 +3,7 @@
  * This is the main entry point for configuration access in core.
  */
 
+import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
 import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 import type { TypedModelDefaults } from "./compat"
 import { createDefaultCoreConfig, mergeConfig } from "./defaults"
@@ -110,4 +111,22 @@ export function isLoggingEnabled(component: string): boolean {
   const config = getCoreConfig()
   const override = config.logging.override[component as keyof typeof config.logging.override]
   return override === true
+}
+
+/**
+ * Create evolution settings with optional overrides
+ * Seeds from live core config to carry through configured defaults
+ */
+export function createEvolutionSettingsWithConfig(overrides?: any) {
+  const liveConfig = getCoreConfig()
+  const runtimeConfig = toRuntimeContract(liveConfig)
+
+  // Seed with live core config values (e.g., maxCostUSD from limits)
+  const baseSettings = {
+    mode: "GP" as const,
+    ...runtimeConfig.evolution.GP,
+    maxCostUSD: runtimeConfig.limits.maxCostUsdPerRun,
+  }
+
+  return createEvolutionSettings({ ...baseSettings, ...overrides })
 }

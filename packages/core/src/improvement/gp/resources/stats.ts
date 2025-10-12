@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Genome } from "../Genome"
@@ -115,9 +115,9 @@ export class StatsTracker {
 
     // Time limit check
     const elapsedMinutes = this.getElapsedMinutes()
-    if (elapsedMinutes > CONFIG.evolution.GP.maximumTimeMinutes) {
+    if (elapsedMinutes > getCoreConfig().evolution.GP.maximumTimeMinutes) {
       lgg.info(
-        `[StatsTracker] Reached time limit of ${CONFIG.evolution.GP.maximumTimeMinutes} minutes; stopping evolution.`,
+        `[StatsTracker] Reached time limit of ${getCoreConfig().evolution.GP.maximumTimeMinutes} minutes; stopping evolution.`,
       )
       return true
     }

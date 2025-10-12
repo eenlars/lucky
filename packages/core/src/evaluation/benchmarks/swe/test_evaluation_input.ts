@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
-import { PATHS, getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -42,7 +42,8 @@ async function downloadSWEBenchDataset(): Promise<void> {
 
   try {
     // Ensure downloads directory exists
-    const downloadsDir = join(PATHS.root, "..", "downloads")
+    const config = getCoreConfig()
+    const downloadsDir = join(config.paths.root, "..", "downloads")
     await mkdir(downloadsDir, { recursive: true })
 
     // Try to download from different repository names

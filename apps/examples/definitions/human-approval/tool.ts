@@ -1,13 +1,15 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { lgg } from "@core/utils/logging/Logger"
 import { defineTool } from "@lucky/tools"
 import { nanoid } from "nanoid"
 import { z } from "zod"
 
 // Centralize path with runtime constants to avoid CWD mismatches
-const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
+function getApprovalStoragePath() {
+  return path.join(getCoreConfig().paths.node.logging, "approvals")
+}
 
 export interface ApprovalRequest {
   id: string
@@ -31,9 +33,10 @@ const humanApproval = defineTool({
   async execute(params, context) {
     const approvalId = nanoid()
     const workflowInvocationId = context.workflowInvocationId
+    const approvalStoragePath = getApprovalStoragePath()
 
     // ensure approval storage directory exists
-    await fs.mkdir(APPROVAL_STORAGE_PATH, { recursive: true })
+    await fs.mkdir(approvalStoragePath, { recursive: true })
 
     // create approval request
     const approvalRequest: ApprovalRequest = {
@@ -46,7 +49,7 @@ const humanApproval = defineTool({
     }
 
     // save approval request to file
-    const requestFilePath = path.join(APPROVAL_STORAGE_PATH, `${approvalId}.json`)
+    const requestFilePath = path.join(approvalStoragePath, `${approvalId}.json`)
     await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
 
     // construct approval URL

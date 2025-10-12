@@ -23,7 +23,7 @@
 // TODO: add request deduplication to prevent duplicate API calls
 // TODO: create comprehensive audit logging for all AI interactions
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"

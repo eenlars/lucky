@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { DelegationPayload, Payload, SequentialPayload } from "@core/messages/MessagePayload"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
@@ -59,7 +59,7 @@ export class HandoffMessageHandler {
 
     // Determine payload kind
     const defaultKind: "sequential" | "delegation" =
-      kindOverride ?? (CONFIG.coordinationType === "sequential" ? "sequential" : "delegation")
+      kindOverride ?? (getCoreConfig().coordinationType === "sequential" ? "sequential" : "delegation")
 
     // Determine targets
     const useParallel = this.nodeConfig.handOffType === "parallel" && handOffs.length > 1 && !handOffs.includes("end")

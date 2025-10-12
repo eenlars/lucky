@@ -22,7 +22,7 @@
  * TODO: implement multi-parent crossover for complex trait combinations
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { Genome } from "@core/improvement/gp/Genome"
 import {
   getCrossoverVariability,
@@ -39,7 +39,7 @@ import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { R, type RS } from "@lucky/shared"
 import type { EvolutionContext } from "../../resources/types"
 
-const operatorsWithFeedback = CONFIG.improvement.flags.operatorsWithFeedback
+const operatorsWithFeedback = getCoreConfig().improvement.flags.operatorsWithFeedback
 
 export class Crossover {
   /**
@@ -173,7 +173,7 @@ Focus on creating a functional workflow rather than exact JSON structure.`
     const parentWorkflowVersionIds = parents.map(p => p.getWorkflowVersionId())
     const [parent1, parent2] = parents
 
-    if (CONFIG.evolution.GP.verbose || verbose) {
+    if (getCoreConfig().evolution.GP.verbose || verbose) {
       lgg.log(`Crossover between ${parentWorkflowVersionIds.join(", ")}`)
       return {
         success: true,

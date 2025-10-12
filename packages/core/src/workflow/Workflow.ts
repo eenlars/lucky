@@ -1,5 +1,5 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
 import { ENV_CONFIG } from "@core/core-config/constants"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/mainImprovement"
 import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
@@ -542,7 +542,8 @@ export class Workflow {
    * Checks if a new workflow file can be created based on the configured limit.
    */
   canCreateWorkflowFile(): boolean {
-    return this.workflowFiles.size < CONFIG.verification.maxFilesPerWorkflow
+    const config = getCoreConfig()
+    return this.workflowFiles.size < config.verification.maxFilesPerWorkflow
   }
 
   async improveNodesIteratively(params: {

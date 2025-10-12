@@ -28,7 +28,7 @@
  * TODO: implement multi-objective selection for complex fitness landscapes
  */
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome, createDummySurvivors } from "@core/improvement/gp/resources/debug/dummyGenome"
@@ -78,7 +78,8 @@ export class Select {
     population: Population
     config: EvolutionSettings
   }): Promise<Genome[]> {
-    if (CONFIG.evolution.GP.verbose) {
+    const coreConfig = getCoreConfig()
+    if (coreConfig.evolution.GP.verbose) {
       lgg.log("[Select] Verbose mode: skipping parent selection for selectParents")
       return [
         createDummyGenome([], {
@@ -172,7 +173,8 @@ export class Select {
     offspring: Genome[]
     config: EvolutionSettings
   }): Promise<Genome[]> {
-    if (CONFIG.evolution.GP.verbose) return createDummySurvivors(parents, offspring)
+    const coreConfig = getCoreConfig()
+    if (coreConfig.evolution.GP.verbose) return createDummySurvivors(parents, offspring)
 
     if (parents.length === 0 && offspring.length === 0) return []
 

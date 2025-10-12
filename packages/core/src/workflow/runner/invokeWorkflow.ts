@@ -12,7 +12,7 @@
  * @module workflow/runner/invokeWorkflow
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { WorkflowConfigurationError, WorkflowExecutionError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
@@ -112,8 +112,8 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     }
 
     // Initialize spending tracker if enabled
-    if (CONFIG.limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
+    if (getCoreConfig().limits.enableSpendingLimits) {
+      SpendingTracker.getInstance().initialize(getCoreConfig().limits.maxCostUsdPerRun)
     }
 
     // Strictly validate before creating workflow
@@ -128,7 +128,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     })
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
-    await workflow.prepareWorkflow(evalInput, CONFIG.workflow.prepareProblemMethod)
+    await workflow.prepareWorkflow(evalInput, getCoreConfig().workflow.prepareProblemMethod)
 
     const { success, error, data: runResults } = await workflow.run()
 

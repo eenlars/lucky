@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { askLLM } from "@core/messages/api/genObject"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolUsageToString } from "@core/messages/pipeline/agentStepLoop/utils"

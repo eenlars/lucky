@@ -17,12 +17,10 @@
 // TODO: add guard metrics and monitoring dashboards
 // TODO: create guard rule templates for different environments
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 
 const spending = SpendingTracker.getInstance()
-const RATE_WINDOW_MS = CONFIG.limits.rateWindowMs
-const MAX_REQUESTS_PER_WINDOW = CONFIG.limits.maxRequestsPerWindow
 
 /**
  * Tracks request timestamps for rate limiting.
@@ -45,6 +43,9 @@ const hitTimestamps: number[] = []
 // TODO: implement exponential backoff recommendations
 // TODO: add rate limit exemptions for critical operations
 export function rateLimit(): string | null {
+  const config = getCoreConfig()
+  const RATE_WINDOW_MS = config.limits.rateWindowMs
+  const MAX_REQUESTS_PER_WINDOW = config.limits.maxRequestsPerWindow
   const now = Date.now()
 
   // remove expired timestamps from sliding window
@@ -71,7 +72,7 @@ export function rateLimit(): string | null {
 // TODO: create spending limit escalation workflows
 // TODO: add cost prediction based on request complexity
 export function spendingGuard(): string | null {
-  if (!CONFIG.limits.enableSpendingLimits) return null
+  if (!getCoreConfig().limits.enableSpendingLimits) return null
   if (spending.canMakeRequest()) return null
 
   const { currentSpend, spendingLimit } = spending.getStatus()

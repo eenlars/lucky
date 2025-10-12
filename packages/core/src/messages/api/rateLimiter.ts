@@ -13,14 +13,14 @@
  * @module messages/api/rateLimiter
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import Bottleneck from "bottleneck"
 
 /**
  * Global rate limiter instance for AI API requests.
  *
  * @remarks
- * Configured via CONFIG.limits with:
+ * Configured via getCoreConfig().limits with:
  * - maxConcurrentAIRequests: Parallel request limit
  * - maxRequestsPerWindow: Requests allowed per time window
  * - rateWindowMs: Time window duration in milliseconds
@@ -30,8 +30,8 @@ import Bottleneck from "bottleneck"
  * await limiter.schedule(() => callAIModel(prompt))
  */
 export const limiter = new Bottleneck({
-  maxConcurrent: CONFIG.limits.maxConcurrentAIRequests,
-  reservoir: CONFIG.limits.maxRequestsPerWindow,
-  reservoirRefreshInterval: CONFIG.limits.rateWindowMs,
-  reservoirRefreshAmount: CONFIG.limits.maxRequestsPerWindow,
+  maxConcurrent: getCoreConfig().limits.maxConcurrentAIRequests,
+  reservoir: getCoreConfig().limits.maxRequestsPerWindow,
+  reservoirRefreshInterval: getCoreConfig().limits.rateWindowMs,
+  reservoirRefreshAmount: getCoreConfig().limits.maxRequestsPerWindow,
 })

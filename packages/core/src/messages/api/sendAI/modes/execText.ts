@@ -17,8 +17,7 @@
 // TODO: implement text generation templates and reusable patterns
 // TODO: add text output post-processing and formatting options
 
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
@@ -55,6 +54,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
   // Normalize opts to handle null/undefined - must be done before any property access
   const opts = rawOpts || {}
+  const config = getCoreConfig()
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
@@ -70,7 +70,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       messages,
       // Let the SDK retry thrown/transient errors once per attempt; we handle empty-response retries below
       maxRetries: Math.max(0, Math.min(retries, 1)),
-      stopWhen: stepCountIs(opts.maxSteps ?? CONFIG.tools.maxStepsVercel),
+      stopWhen: stepCountIs(opts.maxSteps ?? config.tools.maxStepsVercel),
     }
 
     const isReasoning = Boolean(opts.reasoning)

@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { getCoreConfig, initCoreConfig } from "@core/core-config/coreConfig"
 import { tool, zodSchema } from "ai"
 import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest"

@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { adjustWorkflowOneNode } from "@core/improvement/behavioral/judge/adjustWorkflowOneNode"
 import { improveNodesSelfImprovement } from "@core/improvement/behavioral/judge/improveNode"
@@ -47,8 +47,8 @@ export async function improveNodesIterativelyImpl(
   const parsedArgs = parseCliArguments(args)
 
   // Use CLI args if provided, otherwise fall back to CONFIG
-  const selfImproveNodes = parsedArgs.selfImproveNodes ?? CONFIG.improvement.flags.selfImproveNodes
-  const improvementType = parsedArgs.improvementType ?? CONFIG.improvement.flags.improvementType
+  const selfImproveNodes = parsedArgs.selfImproveNodes ?? getCoreConfig().improvement.flags.selfImproveNodes
+  const improvementType = parsedArgs.improvementType ?? getCoreConfig().improvement.flags.improvementType
 
   lgg.log("🚀 Starting iterative improvement process...")
 
