@@ -15,6 +15,7 @@ import {
   EyeOff,
   Github,
   Package,
+  Power,
   Search,
   Settings,
   Shield,
@@ -33,8 +34,13 @@ export default function ConnectorsPage() {
 
   const [selectedConnector, setSelectedConnector] = useState<Connector | null>(null)
   const [configuring, setConfiguring] = useState(false)
+  const [connectors, setConnectors] = useState(mockConnectors)
 
-  const installedConnectors = mockConnectors.filter(c => c.status === "installed")
+  const installedConnectors = connectors.filter(c => c.status === "installed")
+
+  const handleToggleEnabled = (connId: string) => {
+    setConnectors(prev => prev.map(c => (c.conn_id === connId ? { ...c, enabled: !c.enabled } : c)))
+  }
 
   // TODO: Replace with LLM-powered search API
   // The search should use an LLM to understand natural language queries like:
@@ -42,7 +48,7 @@ export default function ConnectorsPage() {
   // - "send messages" → matches Slack, Discord, etc.
   // - "database" → matches PostgreSQL, MySQL, etc.
   // This will provide intelligent, semantic search for connectors
-  const filteredMarketplace = mockConnectors.filter(
+  const filteredMarketplace = connectors.filter(
     c =>
       c.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.short_description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -156,6 +162,7 @@ export default function ConnectorsPage() {
                   <InstalledConnectorCard
                     key={connector.conn_id}
                     connector={connector}
+                    onToggleEnabled={() => handleToggleEnabled(connector.conn_id)}
                     onClick={() => {
                       setSelectedConnector(connector)
                       setConfiguring(true)
@@ -193,6 +200,7 @@ export default function ConnectorsPage() {
         <ConnectorDetailModal
           connector={selectedConnector}
           configuring={configuring}
+          onToggleEnabled={() => handleToggleEnabled(selectedConnector.conn_id)}
           onClose={() => {
             setSelectedConnector(null)
             setConfiguring(false)
@@ -277,15 +285,24 @@ function ConnectorCard({
 function InstalledConnectorCard({
   connector,
   onClick,
+  onToggleEnabled,
 }: {
   connector: Connector
   onClick: () => void
+  onToggleEnabled: () => void
 }) {
+  const isEnabled = connector.enabled !== false
+
   return (
-    <Card className="group cursor-pointer transition-all hover:shadow-md hover:border-primary/50" onClick={onClick}>
+    <Card
+      className={cn(
+        "group transition-all hover:shadow-md",
+        isEnabled ? "hover:border-primary/50" : "opacity-60 hover:border-muted-foreground/30",
+      )}
+    >
       <div className="p-6">
         <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 flex-1 cursor-pointer" onClick={onClick}>
             {connector.logo_url ? (
               <Image
                 src={connector.logo_url}
@@ -304,22 +321,42 @@ function InstalledConnectorCard({
               <p className="text-xs text-muted-foreground mt-0.5">{connector.tools.length} tools available</p>
             </div>
           </div>
-          <div
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation()
+              onToggleEnabled()
+            }}
             className={cn(
-              "size-2 rounded-full flex-shrink-0",
-              connector.health === "healthy" && "bg-green-500",
-              connector.health === "warning" && "bg-yellow-500",
-              connector.health === "error" && "bg-red-500",
+              "size-8 rounded-md flex items-center justify-center transition-colors flex-shrink-0",
+              isEnabled
+                ? "bg-green-500/10 text-green-700 hover:bg-green-500/20"
+                : "bg-muted text-muted-foreground hover:bg-muted-foreground/10",
             )}
-            title={connector.health}
-          />
+            title={isEnabled ? "Disable connector" : "Enable connector"}
+          >
+            <Power className="size-4" />
+          </button>
         </div>
 
         <p className="text-sm text-muted-foreground mt-4 line-clamp-2">{connector.short_description}</p>
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-          <span className="text-xs text-muted-foreground capitalize">{connector.health}</span>
-          <Button size="sm" variant="ghost" className="group-hover:text-primary">
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "size-2 rounded-full flex-shrink-0",
+                connector.health === "healthy" && "bg-green-500",
+                connector.health === "warning" && "bg-yellow-500",
+                connector.health === "error" && "bg-red-500",
+              )}
+              title={connector.health}
+            />
+            <span className="text-xs text-muted-foreground capitalize">
+              {isEnabled ? connector.health : "Disabled"}
+            </span>
+          </div>
+          <Button size="sm" variant="ghost" className="group-hover:text-primary" onClick={onClick}>
             <Settings className="size-4 mr-1" />
             Configure
           </Button>
@@ -332,10 +369,12 @@ function InstalledConnectorCard({
 function ConnectorDetailModal({
   connector,
   configuring,
+  onToggleEnabled,
   onClose,
 }: {
   connector: Connector
   configuring: boolean
+  onToggleEnabled: () => void
   onClose: () => void
 }) {
   const [activeSection, setActiveSection] = useState(configuring ? "config" : "overview")
@@ -348,6 +387,7 @@ function ConnectorDetailModal({
   const timeoutIdsRef = useRef<NodeJS.Timeout[]>([])
 
   const isInstalled = connector.status === "installed"
+  const isEnabled = connector.enabled !== false
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -526,16 +566,33 @@ function ConnectorDetailModal({
               {isInstalled && (
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-2">Status</h3>
-                  <div className="flex items-center gap-2">
-                    <div
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={cn(
+                          "size-2 rounded-full",
+                          connector.health === "healthy" && "bg-green-500",
+                          connector.health === "warning" && "bg-yellow-500",
+                          connector.health === "error" && "bg-red-500",
+                        )}
+                      />
+                      <span className="text-sm text-muted-foreground capitalize">
+                        {isEnabled ? connector.health : "Disabled"}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onToggleEnabled}
                       className={cn(
-                        "size-2 rounded-full",
-                        connector.health === "healthy" && "bg-green-500",
-                        connector.health === "warning" && "bg-yellow-500",
-                        connector.health === "error" && "bg-red-500",
+                        "px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5",
+                        isEnabled
+                          ? "bg-green-500/10 text-green-700 hover:bg-green-500/20"
+                          : "bg-muted text-muted-foreground hover:bg-muted-foreground/10",
                       )}
-                    />
-                    <span className="text-sm text-muted-foreground capitalize">{connector.health}</span>
+                    >
+                      <Power className="size-3" />
+                      {isEnabled ? "Enabled" : "Disabled"}
+                    </button>
                   </div>
                 </div>
               )}
