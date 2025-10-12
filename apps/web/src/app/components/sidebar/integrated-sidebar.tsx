@@ -124,7 +124,6 @@ interface IntegratedNavItemProps {
   item: NavItemData
   isActive: boolean
   isCollapsed: boolean
-  isMobile: boolean
   onClick: () => void
   openSubmenus: Set<string>
   onToggleSubmenu: (href: string, e: React.MouseEvent) => void
@@ -134,7 +133,6 @@ function IntegratedNavItem({
   item,
   isActive,
   isCollapsed,
-  isMobile: _isMobile,
   onClick,
   openSubmenus,
   onToggleSubmenu,
@@ -168,73 +166,91 @@ function IntegratedNavItem({
 
   return (
     <div className="group relative">
-      {/* Navigation Link - wraps only the clickable navigation area */}
-      <Link href={item.href} className="block" onClick={onClick}>
-        <div className="relative">
-          {/* Background div - changes width based on collapsed state */}
-          <div
-            className={cn(
-              "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
-              isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
-              isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
-            )}
-          />
-
-          {/* Icon - stays at same position */}
-          <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+      {/* Navigation - either Link (no submenus) or button (has submenus) */}
+      {hasSubmenus ? (
+        <button type="button" className="block w-full cursor-pointer" onClick={e => onToggleSubmenu(item.href, e)}>
+          <div className="relative">
+            {/* Background div - changes width based on collapsed state */}
             <div
               className={cn(
-                "transition-colors duration-200",
-                isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+                "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
+                isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
+                isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
               )}
-            >
-              {item.icon}
-            </div>
-          </div>
+            />
 
-          {/* Text label - only shown when expanded */}
-          {!isCollapsed && (
-            <div className="absolute top-0 left-[55px] right-[48px] h-[40px] flex items-center pointer-events-none">
-              <span
+            {/* Icon - stays at same position */}
+            <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+              <div
                 className={cn(
-                  "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden",
-                  isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
+                  "transition-colors duration-200",
+                  isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
                 )}
               >
-                {item.label}
-              </span>
+                {item.icon}
+              </div>
             </div>
-          )}
-        </div>
-      </Link>
 
-      {/* Chevron button - separate from Link, absolutely positioned */}
-      {!isCollapsed && hasSubmenus && (
-        <button
-          type="button"
-          className="absolute top-0 right-[15px] w-8 h-10 flex items-center justify-center transition-all duration-200 text-[#888] hover:text-primary hover:bg-sidebar-accent rounded-md z-10"
-          onClick={e => onToggleSubmenu(item.href, e)}
-        >
-          <svg
-            stroke="currentColor"
-            fill="currentColor"
-            strokeWidth="0"
-            viewBox="0 0 24 24"
-            height="16"
-            width="16"
-            xmlns="http://www.w3.org/2000/svg"
-            className={cn("transition-transform duration-200", isSubmenuOpen && "rotate-180")}
-          >
-            <path fill="none" d="M0 0h24v24H0z" />
-            <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z" />
-          </svg>
+            {/* Text label - only shown when expanded */}
+            {!isCollapsed && (
+              <div className="absolute top-0 left-[55px] right-[15px] h-[40px] flex items-center pointer-events-none">
+                <span
+                  className={cn(
+                    "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden",
+                    isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
+                  )}
+                >
+                  {item.label}
+                </span>
+              </div>
+            )}
+          </div>
         </button>
+      ) : (
+        <Link href={item.href} className="block" onClick={onClick}>
+          <div className="relative">
+            {/* Background div - changes width based on collapsed state */}
+            <div
+              className={cn(
+                "border h-[40px] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ml-[15px] mr-[15px]",
+                isActive ? "bg-sidebar-accent border-sidebar-border" : "border-transparent",
+                isCollapsed ? "w-[40px]" : "w-[calc(100%-30px)]",
+              )}
+            />
+
+            {/* Icon - stays at same position */}
+            <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+              <div
+                className={cn(
+                  "transition-colors duration-200",
+                  isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+                )}
+              >
+                {item.icon}
+              </div>
+            </div>
+
+            {/* Text label - only shown when expanded */}
+            {!isCollapsed && (
+              <div className="absolute top-0 left-[55px] right-[15px] h-[40px] flex items-center pointer-events-none">
+                <span
+                  className={cn(
+                    "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden",
+                    isActive ? "text-primary" : "text-[#666] group-hover:text-primary",
+                  )}
+                >
+                  {item.label}
+                </span>
+              </div>
+            )}
+          </div>
+        </Link>
       )}
     </div>
   )
 }
 
-export function IntegratedAside() {
+export function IntegratedSidebar() {
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(new Set())
@@ -283,7 +299,7 @@ export function IntegratedAside() {
   }
 
   const sidebarContent = (
-    <aside
+    <nav
       className={cn(
         "h-screen flex-shrink-0 flex-col justify-between fixed top-0 pb-4 items-center flex z-50 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] bg-sidebar border-r border-sidebar-border",
         isCollapsed ? "w-[70px]" : "w-[240px]",
@@ -329,7 +345,6 @@ export function IntegratedAside() {
                       item={item}
                       isActive={isActive}
                       isCollapsed={isCollapsed}
-                      isMobile={isMobile}
                       onClick={handleNavClick}
                       openSubmenus={openSubmenus}
                       onToggleSubmenu={toggleSubmenu}
@@ -396,7 +411,7 @@ export function IntegratedAside() {
 
       {/* User Profile */}
       <UserProfile initials="AW" />
-    </aside>
+    </nav>
   )
 
   return (

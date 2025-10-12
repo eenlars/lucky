@@ -1,6 +1,6 @@
 import { QueryProvider } from "@/app/_providers/QueryProvider"
 import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
-import { IntegratedAside } from "@/app/components/aside/integrated-aside"
+import { IntegratedSidebar } from "@/app/components/sidebar/integrated-sidebar"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import MainContent from "@/components/MainContent"
 import { CredentialStatusBanner } from "@/components/config/CredentialStatusBanner"
@@ -60,7 +60,7 @@ export default async function RootLayout({
                   <NextTopLoader />
                   <SignedIn>
                     <CredentialStatusBanner />
-                    <IntegratedAside />
+                    <IntegratedSidebar />
                   </SignedIn>
                   <MainContent>{children}</MainContent>
                   <SignedIn>

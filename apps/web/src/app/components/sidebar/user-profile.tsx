@@ -5,10 +5,9 @@ import React from "react"
 
 interface UserProfileProps {
   initials?: string
-  className?: string
 }
 
-export function UserProfile({ initials = "LA", className: _className = "" }: UserProfileProps) {
+export function UserProfile({ initials = "LA" }: UserProfileProps) {
   const { openUserProfile } = useClerk()
 
   return (

@@ -17,7 +17,7 @@ export function CollapsibleSection({ title, defaultOpen = true, children, badge,
 
   return (
     <div className="space-y-3">
-      {/* Section Header - matches aside nav item style */}
+      {/* Section Header - matches sidebar nav item style */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -42,7 +42,7 @@ export function CollapsibleSection({ title, defaultOpen = true, children, badge,
         />
       </button>
 
-      {/* Section Content - staggered animation like aside submenu */}
+      {/* Section Content - staggered animation like sidebar submenu */}
       <div
         className={cn(
           "transition-all duration-300 ease-out overflow-hidden",
