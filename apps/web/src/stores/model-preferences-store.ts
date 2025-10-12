@@ -77,7 +77,11 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       // Get enabled models for a provider (from local state)
       getEnabledModels: (provider: string) => {
         const { preferences } = get()
-        return getEnabledModelsForProvider(preferences, provider)
+        console.log(`[Zustand] getEnabledModels called for provider: ${provider}`)
+        console.log("[Zustand] Current preferences:", preferences)
+        const result = getEnabledModelsForProvider(preferences, provider)
+        console.log(`[Zustand] Returning enabled models for ${provider}:`, result)
+        return result
       },
 
       // Check if a model is enabled (from local state)

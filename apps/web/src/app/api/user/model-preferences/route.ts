@@ -36,6 +36,9 @@ export async function GET(_req: NextRequest) {
       return NextResponse.json({ error: `Failed to fetch preferences: ${error.message}` }, { status: 500 })
     }
 
+    // Log raw database data
+    console.log("[API] Raw database data:", JSON.stringify(data, null, 2))
+
     // Create map of available providers for validation
     const validProviders = new Set(getAllProviders())
 
@@ -44,12 +47,15 @@ export async function GET(_req: NextRequest) {
       .filter(row => validProviders.has(row.provider))
       .map(row => {
         const rawModels = (row.enabled_models as string[]) || []
+        console.log(`[API] Provider ${row.provider} - Raw models from DB:`, rawModels)
 
         // Normalize model IDs to "provider/model" format
         const normalizedModels = rawModels.map(model => normalizeModelId(row.provider, model))
+        console.log(`[API] Provider ${row.provider} - Normalized:`, normalizedModels)
 
         // Validate against MODEL_CATALOG - only keep models that exist
         const validatedModels = normalizedModels.filter(modelId => MODEL_CATALOG.some(m => m.id === modelId))
+        console.log(`[API] Provider ${row.provider} - Validated (in catalog):`, validatedModels)
 
         // Convert timestamp to ISO format
         const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
@@ -71,8 +77,12 @@ export async function GET(_req: NextRequest) {
       lastSynced: new Date().toISOString(),
     }
 
+    console.log("[API] Final response before Zod validation:", JSON.stringify(preferences, null, 2))
+
     // Validate with Zod
     const validated = userModelPreferencesSchema.parse(preferences)
+
+    console.log("[API] After Zod validation - sending to client")
 
     return NextResponse.json(validated)
   } catch (e: unknown) {
