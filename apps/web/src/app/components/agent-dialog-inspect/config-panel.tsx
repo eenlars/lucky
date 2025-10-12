@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
-import type { ModelEntry } from "@lucky/models"
+import { MODEL_CATALOG, type ModelEntry } from "@lucky/models"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -79,10 +79,12 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
   // Provider and model state
   const [selectedProvider, setSelectedProvider] = useState<string>(() => {
-    // Initialize provider from node's current modelName (e.g., "openai/gpt-4o" -> "openai")
+    // Look up model in catalog to get actual provider (don't parse model ID string!)
     if (node.data.modelName) {
-      const provider = node.data.modelName.split("/")[0]
-      return PROVIDERS.includes(provider) ? provider : PROVIDERS[0] || "openai"
+      const catalogEntry = MODEL_CATALOG.find(entry => entry.id === node.data.modelName)
+      if (catalogEntry && PROVIDERS.includes(catalogEntry.provider)) {
+        return catalogEntry.provider
+      }
     }
     return PROVIDERS[0] || "openai"
   })
