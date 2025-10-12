@@ -57,7 +57,7 @@ export type Database = {
         Row: {
           clerk_id: string | null
           content: string
-          context: string | null
+          context: Json | null
           created_at: string | null
           feedback_id: string
           status: string | null
@@ -65,7 +65,7 @@ export type Database = {
         Insert: {
           clerk_id?: string | null
           content: string
-          context?: string | null
+          context?: Json | null
           created_at?: string | null
           feedback_id?: string
           status?: string | null
@@ -73,7 +73,7 @@ export type Database = {
         Update: {
           clerk_id?: string | null
           content?: string
-          context?: string | null
+          context?: Json | null
           created_at?: string | null
           feedback_id?: string
           status?: string | null
