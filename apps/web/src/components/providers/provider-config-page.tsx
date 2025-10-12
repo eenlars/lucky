@@ -70,7 +70,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   // Available models from provider API (not user preferences)
   const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
 
-  // Get enabled models from Zustand store (provider-specific model names like "gpt-4o")
+  // Get enabled models from Zustand store (full model IDs like "openai/gpt-4o")
   const enabledModelIds = getEnabledModels(provider)
   const enabledModels = new Set(enabledModelIds)
 
@@ -225,10 +225,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   /**
    * Toggle a single model on/off. Auto-saves via Zustand store with optimistic updates.
-   * @param modelName Provider-specific model name (e.g., "gpt-4o", not "openai/gpt-4o")
+   * @param modelId Full model ID (e.g., "openai/gpt-4o")
    */
-  const handleToggleModel = (modelName: string) => {
-    toggleModelInStore(provider, modelName)
+  const handleToggleModel = (modelId: string) => {
+    toggleModelInStore(provider, modelId)
   }
 
   /**
@@ -236,8 +236,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
    * @param enable true to enable all models, false to disable all
    */
   const handleToggleAllModels = (enable: boolean) => {
-    const allModelNames = enable ? availableModels.map(model => model.name) : []
-    setProviderModels(provider, allModelNames)
+    const allModelIds = enable ? availableModels.map(model => model.id) : []
+    setProviderModels(provider, allModelIds)
   }
 
   const copyToClipboard = async (text: string) => {
@@ -500,8 +500,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                           </div>
                         </div>
                         <Switch
-                          checked={enabledModels.has(model.name)}
-                          onCheckedChange={() => handleToggleModel(model.name)}
+                          checked={enabledModels.has(model.id)}
+                          onCheckedChange={() => handleToggleModel(model.id)}
                         />
                       </div>
                     ))}
