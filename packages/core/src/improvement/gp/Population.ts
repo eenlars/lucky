@@ -24,7 +24,7 @@
  * @see EvolutionEngine - Orchestrates population evolution across generations
  */
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
@@ -39,7 +39,7 @@ import { Genome } from "./Genome"
 import type { RunService } from "./RunService"
 import type { PopulationStats } from "./resources/gp.types"
 
-const initialPopulationMethod = CONFIG.evolution.GP.initialPopulationMethod
+const initialPopulationMethod = getCoreConfig().evolution.GP.initialPopulationMethod
 
 export class Population {
   private genomes: Genome[] = []

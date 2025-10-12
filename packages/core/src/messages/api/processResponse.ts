@@ -1,4 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { VercelUsage } from "@core/messages/api/vercel/pricing/calculatePricing"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { type ProcessedResponse, isVercelTextResponse } from "@core/messages/api/vercel/processResponse.types"
@@ -152,6 +152,7 @@ export const getResponseContent = (response: ProcessedResponse): string | null =
 export const getFinalOutputNodeInvocation = (response: AgentStep[]): string | null => {
   if (isNir(response)) return null
 
+  const config = getCoreConfig()
   let lastContent: string | null = null
 
   const filterActionableSteps = response.filter(
@@ -166,13 +167,13 @@ export const getFinalOutputNodeInvocation = (response: AgentStep[]): string | nu
   const lastOutput = filterActionableSteps[filterActionableSteps.length - 1]
 
   //  terminate its summary is always about all the work that was done. (different from tool calls.)
-  if (lastOutput.type === "terminate" && lastOutput.summary && CONFIG.workflow.handoffContent === "summary") {
+  if (lastOutput.type === "terminate" && lastOutput.summary && config.workflow.handoffContent === "summary") {
     return lastOutput.summary
   }
 
   // based on settings in constants, return summary or full output
   // text have no summary, so we don't return it.
-  if (CONFIG.workflow.handoffContent === "summary" && lastOutput.type !== "text" && lastOutput.summary) {
+  if (config.workflow.handoffContent === "summary" && lastOutput.type !== "text" && lastOutput.summary) {
     lastContent = lastOutput.summary
   }
 

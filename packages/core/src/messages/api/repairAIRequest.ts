@@ -1,5 +1,4 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
