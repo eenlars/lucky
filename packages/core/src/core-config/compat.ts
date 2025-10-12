@@ -161,22 +161,9 @@ export type TypedModelDefaults = {
 }
 
 /**
- * Get default models configuration
- * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
+ * Re-export from coreConfig.ts
  */
-export function getDefaultModels(): TypedModelDefaults {
-  return getCoreConfig().models.defaults as TypedModelDefaults
-}
-
-/**
- * Check if logging is enabled for a specific component
- * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
- */
-export function isLoggingEnabled(component: keyof typeof DEFAULT_RUNTIME_CONFIG.logging.override): boolean {
-  const liveConfig = getCoreConfig()
-  const runtimeConfig = toRuntimeContract(liveConfig)
-  return runtimeConfig.logging.override[component]
-}
+export { getDefaultModels, isLoggingEnabled } from "./coreConfig"
 
 /**
  * Create evolution settings with optional overrides
