@@ -66,3 +66,21 @@ export { isDelegationPayload, isSequentialPayload, extractTextFromPayload } from
 
 // Workflow types (type-only, client-safe)
 export type { WorkflowFile, OutputSchema } from "./types/workflow"
+
+// Provider contracts (client-safe)
+export type {
+  ProviderKeyMapping,
+  ProviderSettings,
+  ProviderConfig,
+  ApiKeyValidation,
+  ProviderStatus,
+} from "./contracts/providers"
+export {
+  providerNameSchema,
+  apiKeySchema,
+  providerKeyMappingSchema,
+  providerSettingsSchema,
+  providerConfigSchema,
+  apiKeyValidationSchema,
+  providerStatusSchema,
+} from "./contracts/providers"

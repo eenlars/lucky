@@ -17,8 +17,18 @@ export type { ModelSelection, SelectionOptions } from "./facade"
 // Export Pricing
 export { PricingService, getPricingService, resetPricingService } from "./pricing/pricing-service"
 export type { PricingSnapshot, PricingOverride } from "./pricing/pricing-service"
-export { MODEL_CATALOG, getActiveModels, getModelsByProvider, findModelById, getCatalogStats } from "./pricing/catalog"
-export type { ModelEntry } from "./pricing/catalog"
+export {
+  MODEL_CATALOG,
+  getActiveModels,
+  getModelsByProvider,
+  findModelById,
+  getCatalogStats,
+  getAllProviders,
+  getActiveProviders,
+  getProviderInfo,
+  validateCatalogIntegrity,
+} from "./pricing/catalog"
+export type { ModelEntry, ProviderInfo } from "./pricing/catalog"
 
 // Export Registry
 export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"

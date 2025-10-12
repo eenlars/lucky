@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import type { LuckyProvider } from "@lucky/shared"
+import { getAllProviders } from "@lucky/models"
+import { providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -61,19 +62,36 @@ export async function POST(req: NextRequest) {
   }
 
   const { provider, enabledModels, isEnabled } = body as {
-    provider?: string
+    provider?: unknown
     enabledModels?: string[]
     isEnabled?: boolean
   }
 
-  if (!provider) {
-    return NextResponse.json({ error: "Missing required field: provider" }, { status: 400 })
+  // Validate provider with Zod
+  const providerValidation = providerNameSchema.safeParse(provider)
+  if (!providerValidation.success) {
+    return NextResponse.json(
+      {
+        error: "Invalid provider: must be a non-empty string",
+        details: providerValidation.error.errors,
+      },
+      { status: 400 },
+    )
   }
 
-  // Validate provider
-  const validProviders: LuckyProvider[] = ["openai", "openrouter", "groq"]
-  if (!validProviders.includes(provider as LuckyProvider)) {
-    return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
+  const validatedProvider = providerValidation.data.trim().toLowerCase()
+
+  // Validate provider against MODEL_CATALOG
+  const validProviders = getAllProviders()
+  if (!validProviders.includes(validatedProvider)) {
+    return NextResponse.json(
+      {
+        error: `Invalid provider: "${validatedProvider}"`,
+        hint: "Provider not found in model catalog",
+        validProviders,
+      },
+      { status: 400 },
+    )
   }
 
   try {
@@ -83,7 +101,7 @@ export async function POST(req: NextRequest) {
       .from("provider_settings")
       .select("provider_setting_id")
       .eq("clerk_id", clerkId)
-      .eq("provider", provider)
+      .eq("provider", validatedProvider)
       .maybeSingle()
 
     if (existing) {
@@ -121,7 +139,7 @@ export async function POST(req: NextRequest) {
       .insert([
         {
           clerk_id: clerkId,
-          provider,
+          provider: validatedProvider,
           enabled_models: enabledModels ?? [],
           is_enabled: isEnabled ?? true,
         },

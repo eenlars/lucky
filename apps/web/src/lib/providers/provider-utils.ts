@@ -1,10 +1,10 @@
-import type { LuckyProvider } from "@lucky/shared"
+import { getProviderInfo } from "@lucky/models"
 import type { LucideIcon } from "lucide-react"
 import { Bot, Globe, Zap } from "lucide-react"
 
 export interface ProviderConfig {
   name: string
-  slug: LuckyProvider
+  slug: string
   description: string
   apiKeyName: string
   apiKeyPrefix: string
@@ -15,53 +15,96 @@ export interface ProviderConfig {
   disabled?: boolean
 }
 
-export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
+/**
+ * Provider metadata - static configuration for each provider
+ * This is the only place where provider-specific metadata should be defined
+ */
+const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultModelsCount">> = {
   openai: {
     name: "OpenAI",
-    slug: "openai",
     description: "Direct access to GPT models from OpenAI",
     apiKeyName: "OPENAI_API_KEY",
     apiKeyPrefix: "sk-",
     icon: Bot,
     docsUrl: "https://platform.openai.com/docs",
     keysUrl: "https://platform.openai.com/api-keys",
-    defaultModelsCount: 8,
   },
   groq: {
     name: "Groq",
-    slug: "groq",
     description: "Ultra-fast inference with Groq's LPU",
     apiKeyName: "GROQ_API_KEY",
     apiKeyPrefix: "gsk_",
     icon: Zap,
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
-    defaultModelsCount: 12,
     disabled: true,
   },
   openrouter: {
     name: "OpenRouter",
-    slug: "openrouter",
     description: "Access to 100+ models from multiple providers",
     apiKeyName: "OPENROUTER_API_KEY",
     apiKeyPrefix: "sk-or-v1-",
     icon: Globe,
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
-    defaultModelsCount: 150,
     disabled: true,
   },
 }
 
-export function validateApiKey(provider: LuckyProvider, apiKey: string): { valid: boolean; error?: string } {
+/**
+ * Get provider configurations dynamically from MODEL_CATALOG
+ * This merges static metadata with dynamic model counts from the catalog
+ */
+export function getProviderConfigs(): Record<string, ProviderConfig> {
+  const providerInfo = getProviderInfo()
+  const configs: Record<string, ProviderConfig> = {}
+
+  for (const info of providerInfo) {
+    const metadata = PROVIDER_METADATA[info.name]
+    if (metadata) {
+      configs[info.name] = {
+        ...metadata,
+        slug: info.name,
+        defaultModelsCount: info.activeModels,
+      }
+    } else {
+      // Fallback for providers not in metadata
+      configs[info.name] = {
+        name: info.name.charAt(0).toUpperCase() + info.name.slice(1),
+        slug: info.name,
+        description: `${info.activeModels} models available`,
+        apiKeyName: `${info.name.toUpperCase()}_API_KEY`,
+        apiKeyPrefix: "",
+        icon: Bot,
+        docsUrl: "",
+        keysUrl: "",
+        defaultModelsCount: info.activeModels,
+      }
+    }
+  }
+
+  return configs
+}
+
+/**
+ * Legacy export for backwards compatibility
+ * @deprecated Use getProviderConfigs() instead for dynamic provider detection
+ */
+export const PROVIDER_CONFIGS = getProviderConfigs()
+
+export function validateApiKey(provider: string, apiKey: string): { valid: boolean; error?: string } {
   if (!apiKey || !apiKey.trim()) {
     return { valid: false, error: "API key cannot be empty" }
   }
 
   const config = PROVIDER_CONFIGS[provider]
 
-  // Check prefix
-  if (!apiKey.startsWith(config.apiKeyPrefix)) {
+  if (!config) {
+    return { valid: false, error: `Unknown provider: ${provider}` }
+  }
+
+  // Skip prefix check if provider has no prefix defined
+  if (config.apiKeyPrefix && !apiKey.startsWith(config.apiKeyPrefix)) {
     return {
       valid: false,
       error: `${config.name} API keys must start with "${config.apiKeyPrefix}"`,
@@ -69,7 +112,7 @@ export function validateApiKey(provider: LuckyProvider, apiKey: string): { valid
   }
 
   // Check minimum length
-  const minLength = config.apiKeyPrefix.length + 20
+  const minLength = config.apiKeyPrefix ? config.apiKeyPrefix.length + 20 : 20
   if (apiKey.length < minLength) {
     return {
       valid: false,
@@ -89,7 +132,7 @@ export function validateApiKey(provider: LuckyProvider, apiKey: string): { valid
 }
 
 export async function testConnection(
-  provider: LuckyProvider,
+  provider: string,
   apiKey: string,
 ): Promise<{ success: boolean; error?: string; modelCount?: number }> {
   try {

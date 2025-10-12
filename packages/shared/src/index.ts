@@ -82,6 +82,24 @@ export { isDelegationPayload, isSequentialPayload, extractTextFromPayload } from
 // Workflow types
 export type { WorkflowFile, OutputSchema } from "./types/workflow"
 
+// Provider contracts
+export type {
+  ProviderKeyMapping,
+  ProviderSettings,
+  ProviderConfig,
+  ApiKeyValidation,
+  ProviderStatus,
+} from "./contracts/providers"
+export {
+  providerNameSchema,
+  apiKeySchema,
+  providerKeyMappingSchema,
+  providerSettingsSchema,
+  providerConfigSchema,
+  apiKeyValidationSchema,
+  providerStatusSchema,
+} from "./contracts/providers"
+
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe
 // Access them via:
