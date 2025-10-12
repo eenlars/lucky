@@ -5,6 +5,18 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     "/api/*": [".next/**"],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
+    ],
+  },
   serverExternalPackages: [
     "bullmq",
     "glob",

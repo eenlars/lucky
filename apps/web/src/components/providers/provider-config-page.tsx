@@ -26,6 +26,7 @@ import {
   Video,
   Zap,
 } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -247,7 +248,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link
-          href="/providers"
+          href="/settings/providers"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-4" />
@@ -258,7 +259,17 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       {/* Header */}
       <div className="mb-8">
         <div className="flex flex-wrap items-center gap-4 mb-3">
-          <Icon className="size-10 text-sidebar-primary" />
+          {config.logo ? (
+            <Image
+              src={config.logo}
+              alt={`${config.name} logo`}
+              width={40}
+              height={40}
+              className="size-10 object-contain"
+            />
+          ) : Icon ? (
+            <Icon className="size-10 text-sidebar-primary" />
+          ) : null}
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-semibold text-foreground">{config.name} Configuration</h1>
             <p className="text-sm text-muted-foreground mt-1">{config.description}</p>

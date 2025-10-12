@@ -101,7 +101,7 @@ const allNavigationItems: NavItemData[] = [
     submenus: [
       { type: "settings-general", label: "General", href: "/settings" },
       { type: "settings-profile", label: "Profile", href: "/profile" },
-      { type: "settings-providers", label: "Providers", href: "/providers" },
+      { type: "settings-providers", label: "Providers", href: "/settings/providers" },
       { type: "settings-payment", label: "Payment", href: "/payment" },
     ],
   },
