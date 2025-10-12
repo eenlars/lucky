@@ -88,30 +88,60 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   })
   const [availableModels, setAvailableModels] = useState<ModelEntry[]>([])
   const [isLoadingModels, setIsLoadingModels] = useState(false)
+  const [userEnabledModels, setUserEnabledModels] = useState<Set<string>>(new Set())
 
-  // Fetch models for the selected provider
-  const fetchModels = useCallback(async (provider: string) => {
-    setIsLoadingModels(true)
+  // Fetch user's provider settings to get enabled models
+  const fetchProviderSettings = useCallback(async (provider: string) => {
     try {
-      const response = await fetch("/api/models", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getModelsByProvider", provider }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch models")
+      const response = await fetch(`/api/user/provider-settings/${provider}`)
+      if (response.ok) {
+        const data = await response.json()
+        return new Set<string>(data.enabledModels || [])
       }
-
-      const data = await response.json()
-      setAvailableModels(data.models || [])
+      return new Set<string>()
     } catch (error) {
-      console.error("Failed to fetch models:", error)
-      setAvailableModels([])
-    } finally {
-      setIsLoadingModels(false)
+      console.error("Failed to fetch provider settings:", error)
+      return new Set<string>()
     }
   }, [])
+
+  // Fetch models for the selected provider
+  const fetchModels = useCallback(
+    async (provider: string) => {
+      setIsLoadingModels(true)
+      try {
+        // Fetch all models for the provider from catalog
+        const modelsResponse = await fetch("/api/models", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "getModelsByProvider", provider }),
+        })
+
+        if (!modelsResponse.ok) {
+          throw new Error("Failed to fetch models")
+        }
+
+        const modelsData = await modelsResponse.json()
+        const allModels: ModelEntry[] = modelsData.models || []
+
+        // Fetch user's enabled models for this provider
+        const enabledModels = await fetchProviderSettings(provider)
+        setUserEnabledModels(enabledModels)
+
+        // Filter to only show models the user has enabled
+        // If no models are enabled, show all models (provider not configured yet)
+        const filteredModels = enabledModels.size > 0 ? allModels.filter(m => enabledModels.has(m.id)) : allModels
+
+        setAvailableModels(filteredModels)
+      } catch (error) {
+        console.error("Failed to fetch models:", error)
+        setAvailableModels([])
+      } finally {
+        setIsLoadingModels(false)
+      }
+    },
+    [fetchProviderSettings],
+  )
 
   // Fetch models when provider changes
   useEffect(() => {
@@ -379,7 +409,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               {isLoadingModels ? (
                 <option value="">Loading models...</option>
               ) : availableModels.length === 0 ? (
-                <option value="">No models available</option>
+                <option value="">No models enabled</option>
               ) : (
                 availableModels.map(model => (
                   <option key={model.id} value={model.id}>
@@ -388,6 +418,21 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                 ))
               )}
             </select>
+
+            {/* Help text when no models are enabled */}
+            {!isLoadingModels && availableModels.length === 0 && userEnabledModels.size === 0 && (
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                No models enabled for this provider.{" "}
+                <a
+                  href={`/providers/${selectedProvider}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Configure {selectedProvider.charAt(0).toUpperCase() + selectedProvider.slice(1)} →
+                </a>
+              </p>
+            )}
 
             {/* Model Metadata Display */}
             {!isLoadingModels &&

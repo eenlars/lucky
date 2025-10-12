@@ -1,25 +1,17 @@
 import { requireAuth } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import type { LuckyProvider } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
 // GET /api/user/provider-settings/[provider]
-// Returns settings for a specific provider
+// Returns provider settings for a specific provider
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
   const clerkId = authResult
 
   const { provider } = await params
-
-  // Validate provider
-  const validProviders: LuckyProvider[] = ["openai", "openrouter", "groq"]
-  if (!validProviders.includes(provider as LuckyProvider)) {
-    return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
-  }
-
   const supabase = await createRLSClient()
 
   try {
@@ -28,7 +20,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ pro
       .from("provider_settings")
       .select("provider_setting_id, provider, enabled_models, is_enabled, created_at, updated_at")
       .eq("clerk_id", clerkId)
-      .eq("provider", provider)
+      .eq("provider", provider.toLowerCase())
       .maybeSingle()
 
     if (error) {
@@ -36,8 +28,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ pro
       return NextResponse.json({ error: `Failed to fetch provider settings: ${error.message}` }, { status: 500 })
     }
 
+    // If no settings found, return empty enabled models
     if (!data) {
-      // Return default settings if not found
       return NextResponse.json({
         provider,
         enabledModels: [],
