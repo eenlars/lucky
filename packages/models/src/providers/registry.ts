@@ -4,8 +4,10 @@
  */
 
 import { createAnthropic } from "@ai-sdk/anthropic"
+import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import type { AiSdkModel, ModelSpec, ProviderConfig } from "../types"
 
 export class ProviderRegistry {
@@ -63,11 +65,20 @@ export class ProviderRegistry {
    * Initialize all providers
    */
   private initializeProviders(): void {
+    const configuredCount = Object.keys(this.configs).length
+    if (configuredCount === 0) {
+      console.warn("⚠️  No AI providers configured. Add API keys in Settings or .env file")
+      return
+    }
+
     for (const [id, config] of Object.entries(this.configs)) {
       if (config.enabled !== false) {
         this.initializeProvider(id, config)
       }
     }
+
+    const initializedProviders = Array.from(this.providers.keys())
+    console.log(`✓ Initialized ${initializedProviders.length} provider(s): [${initializedProviders.join(", ")}]`)
   }
 
   /**
@@ -92,6 +103,23 @@ export class ProviderRegistry {
           headers: config.headers,
         })
         break
+
+      case "openrouter":
+        provider = createOpenRouter({
+          apiKey: config.apiKey,
+          baseURL: config.baseUrl,
+          headers: config.headers,
+        })
+        break
+
+      case "groq":
+        provider = createGroq({
+          apiKey: config.apiKey,
+          baseURL: config.baseUrl,
+          headers: config.headers,
+        })
+        break
+
       default:
         // Use OpenAI-compatible for custom providers
         provider = createOpenAICompatible({
@@ -112,7 +140,24 @@ export class ProviderRegistry {
   private async createModel(spec: ModelSpec): Promise<AiSdkModel> {
     const provider = this.providers.get(spec.provider)
     if (!provider) {
-      throw new Error(`Provider ${spec.provider} not found or not initialized`)
+      const availableProviders = Array.from(this.providers.keys())
+      const configuredProviders = Object.keys(this.configs)
+
+      console.error(`❌ Provider '${spec.provider}' is not available`)
+      console.error(`   Configured providers: [${configuredProviders.join(", ") || "none"}]`)
+      console.error(`   Available providers: [${availableProviders.join(", ") || "none"}]`)
+
+      if (configuredProviders.length === 0) {
+        throw new Error(
+          `No AI providers configured. Provider '${spec.provider}' requires an API key.\nPlease add your API keys in Settings > Provider Settings or set them in your .env file.\nRequired: ${spec.provider.toUpperCase()}_API_KEY`,
+        )
+      }
+
+      throw new Error(
+        `Provider '${spec.provider}' not found or not initialized.\n` +
+          `Available providers: [${availableProviders.join(", ")}]\n` +
+          `Add ${spec.provider.toUpperCase()}_API_KEY in Settings > Provider Settings`,
+      )
     }
 
     // Get language model from provider

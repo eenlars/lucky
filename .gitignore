@@ -70,12 +70,14 @@ agents.md
 # Custom
 /resources
 /.cursor
-/apps/web/src/examples/logging_folder/*
-/packages/core/src/examples/logging_folder/*
-/logging_folder
 **/output*/**
 **setupfile.json
 **/.core-data
+
+# Logging folders - exclude all logging_folder directories anywhere in repo
+**/logging_folder/
+**/logging_folder/**
+logging_folder/
 
 # Downloads folder contents (but keep the folder)
 downloads/*
