@@ -15,7 +15,7 @@ import {
   type MCPToolName,
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 // Get available providers dynamically from PROVIDER_CONFIGS, excluding disabled ones
 const PROVIDERS = Object.keys(PROVIDER_CONFIGS).filter(provider => !PROVIDER_CONFIGS[provider].disabled)
@@ -94,6 +94,14 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     return PROVIDERS[0] || "openai"
   })
 
+  // Track the current provider to prevent race conditions when switching providers
+  const currentProviderRef = useRef(selectedProvider)
+
+  // Update ref when provider changes
+  useEffect(() => {
+    currentProviderRef.current = selectedProvider
+  }, [selectedProvider])
+
   // Load preferences on mount
   useEffect(() => {
     if (!preferences) {
@@ -103,11 +111,17 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
   // Compute available models based on user preferences and selected provider
   const availableModels = useMemo(() => {
+    // Guard: Only compute if this is still the current provider (prevents race conditions)
+    const providerToFetch = selectedProvider
+    if (providerToFetch !== currentProviderRef.current) {
+      return []
+    }
+
     // Get all models for the provider from catalog
-    const allModels = getModelsByProvider(selectedProvider).filter(m => m.active)
+    const allModels = getModelsByProvider(providerToFetch).filter(m => m.active)
 
     // Get user's enabled models for this provider
-    const enabledModelIds = getEnabledModels(selectedProvider)
+    const enabledModelIds = getEnabledModels(providerToFetch)
 
     // If user has enabled specific models, filter to only show those
     if (enabledModelIds.length > 0) {
