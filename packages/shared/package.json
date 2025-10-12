@@ -66,6 +66,10 @@
       "types": "./dist/contracts/fixtures.d.ts",
       "import": "./dist/contracts/fixtures.js"
     },
+    "./contracts/feedback": {
+      "types": "./dist/contracts/feedback.d.ts",
+      "import": "./dist/contracts/feedback.js"
+    },
     "./client": {
       "browser": {
         "types": "./dist/client.d.ts",
