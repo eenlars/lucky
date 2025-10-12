@@ -429,21 +429,6 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               )}
             </select>
 
-            {/* Help text when no models are enabled */}
-            {!isLoadingModels && availableModels.length === 0 && userEnabledModels.size === 0 && (
-              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                No models enabled for this provider.{" "}
-                <a
-                  href={`/providers/${selectedProvider}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Configure {selectedProvider.charAt(0).toUpperCase() + selectedProvider.slice(1)} →
-                </a>
-              </p>
-            )}
-
             {/* Model Metadata Display */}
             {!isLoadingModels &&
               node.data.modelName &&
@@ -494,6 +479,27 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                 )
               })()}
           </div>
+
+          {/* Warning when no models are enabled */}
+          {!isLoadingModels && availableModels.length === 0 && (
+            <div className="mt-4 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-1">
+                No models enabled for {selectedProvider}
+              </p>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                Enable models in{" "}
+                <a
+                  href={`/providers/${selectedProvider}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-yellow-900 dark:hover:text-yellow-100"
+                >
+                  provider settings
+                </a>{" "}
+                to use this agent.
+              </p>
+            </div>
+          )}
         </div>
       </CollapsibleSection>
     </div>
