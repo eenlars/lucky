@@ -1,5 +1,5 @@
 import { openrouter } from "@core/clients/openrouter/openrouterClient"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { JSONN } from "@lucky/shared"
 import { generateText, stepCountIs, tool, zodSchema } from "ai"

@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 // Genome test utilities without problematic vi.mock calls
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"

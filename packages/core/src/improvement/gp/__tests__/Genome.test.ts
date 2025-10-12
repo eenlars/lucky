@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 // comprehensive tests for genome class
 import {
   createMockEvaluationInputGeneric,

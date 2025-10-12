@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ModelName } from "@core/utils/spending/models.types"
 import { describe, expect, it } from "vitest"
 import { processStepsV2 } from "../vercel/vercelStepProcessor"

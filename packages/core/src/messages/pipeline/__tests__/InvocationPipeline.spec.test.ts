@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { extractTextFromPayload } from "@core/messages/MessagePayload"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
 import { describe, expect, it } from "vitest"

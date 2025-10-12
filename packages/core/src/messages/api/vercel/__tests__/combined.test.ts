@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { ModelName } from "@core/utils/spending/models.types"

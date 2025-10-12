@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"

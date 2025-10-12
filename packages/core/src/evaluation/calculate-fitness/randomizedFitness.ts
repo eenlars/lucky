@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessFunctionInput, FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { R, type RS } from "@lucky/shared"

@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 // TODO: Refactor test to use adapter pattern

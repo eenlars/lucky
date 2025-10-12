@@ -1,5 +1,5 @@
 // core test utilities and mocks - consolidated mock file
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"

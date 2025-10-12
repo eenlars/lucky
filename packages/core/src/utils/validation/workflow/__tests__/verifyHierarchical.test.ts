@@ -15,7 +15,7 @@ vi.mock("@examples/constants", () => ({
   },
 }))
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { everyNodeIsConnectedToStartNode, startNodeIsConnectedToEndNode } from "../connectionVerification"
 import { verifyNoCycles } from "../verifyDirectedGraph"
 import { getNodeRole, isOrchestrator, verifyHierarchicalStructure } from "../verifyHierarchical"

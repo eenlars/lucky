@@ -42,7 +42,7 @@ vi.mock("@core/core-config/coreConfig", async importOriginal => {
   }
 })
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 
 describe("formalizeWorkflow sanitization (core defaults)", () => {

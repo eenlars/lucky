@@ -65,7 +65,7 @@ vi.mock("@lucky/tools/definitions/file-saver/save", () => ({
   saveInLoc: vi.fn(),
 }))
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 // Import after mocks so modules receive mocked versions
 import { genObject } from "@core/messages/api/genObject"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"

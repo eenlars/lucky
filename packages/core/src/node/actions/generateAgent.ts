@@ -1,6 +1,6 @@
 // /core/node/generate/from-text.ts
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { AgentDescriptionsWithToolsSchema } from "@core/node/schemas/agentWithTools"

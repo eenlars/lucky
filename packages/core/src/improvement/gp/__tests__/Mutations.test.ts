@@ -95,7 +95,7 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
 }))
 
 // isNir is used from real implementation; no mocking
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"

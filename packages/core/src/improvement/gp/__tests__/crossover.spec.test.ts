@@ -4,7 +4,7 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { describe, expect, test } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 // Import the parent setup files
 import parentSetup1 from "@core/improvement/gp/__tests__/setup/setupfile-parent-1.json"
 import parentSetup2 from "@core/improvement/gp/__tests__/setup/setupfile-parent-2.json"

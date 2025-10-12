@@ -1,5 +1,5 @@
 // Use standardized test setup
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { StateManagementError } from "@core/utils/errors/WorkflowErrors"

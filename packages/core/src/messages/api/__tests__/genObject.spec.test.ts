@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { zodToJson } from "@core/utils/validation/zodToJson"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"

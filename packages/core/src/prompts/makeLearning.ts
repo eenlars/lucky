@@ -1,4 +1,4 @@
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { llmify } from "@core/utils/common/llmify"

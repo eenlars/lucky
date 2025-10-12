@@ -200,7 +200,7 @@ vi.mock("@core/clients/supabase/client", () => ({
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/compat"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { StructuredRequest, TResponse, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
