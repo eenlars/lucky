@@ -6,170 +6,143 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
-  app: {
+  iam: {
     Tables: {
-      feedback: {
+      org_invites: {
         Row: {
-          clerk_id: string | null
-          content: string
-          context: string | null
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          invite_id: string
+          invited_by: string | null
+          org_id: string
+          role: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          invite_id?: string
+          invited_by?: string | null
+          org_id?: string
+          role?: Database["iam"]["Enums"]["org_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_invites_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      org_memberships: {
+        Row: {
+          clerk_id: string
           created_at: string | null
-          feedback_id: string
-          status: string | null
-        }
-        Insert: {
-          clerk_id?: string | null
-          content: string
-          context?: string | null
-          created_at?: string | null
-          feedback_id?: string
-          status?: string | null
-        }
-        Update: {
-          clerk_id?: string | null
-          content?: string
-          context?: string | null
-          created_at?: string | null
-          feedback_id?: string
-          status?: string | null
-        }
-        Relationships: []
-      }
-      provider_settings: {
-        Row: {
-          clerk_id: string
-          created_at: string
-          enabled_models: Json
-          is_enabled: boolean
-          provider: string
-          provider_setting_id: string
-          updated_at: string
+          org_id: string
+          role: string
         }
         Insert: {
           clerk_id: string
-          created_at?: string
-          enabled_models?: Json
-          is_enabled?: boolean
-          provider: string
-          provider_setting_id?: string
-          updated_at?: string
+          created_at?: string | null
+          org_id: string
+          role?: string
         }
         Update: {
           clerk_id?: string
-          created_at?: string
-          enabled_models?: Json
-          is_enabled?: boolean
-          provider?: string
-          provider_setting_id?: string
-          updated_at?: string
+          created_at?: string | null
+          org_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_memberships_clerk_id_fkey"
+            columns: ["clerk_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["clerk_id"]
+          },
+          {
+            foreignKeyName: "org_memberships_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      orgs: {
+        Row: {
+          created_at: string | null
+          name: string
+          org_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          name: string
+          org_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          name?: string
+          org_id?: string
         }
         Relationships: []
       }
-      user_onboarding: {
+      users: {
         Row: {
-          approval_rules: Json
-          autonomy: string
-          completed_at: string | null
+          avatar_url: string | null
+          clerk_id: string
           created_at: string
-          data_sources: string[]
-          experience: string
-          industry: string | null
-          ip_address: string | null
-          locale: string | null
-          marketing_opt_in: boolean
-          notify_channels: string[]
-          org_id: string | null
-          preferred_apps: string[]
-          primary_goal: string | null
-          privacy_accepted_at: string | null
-          role: string | null
-          status: string
-          success_metric: string | null
-          team_size: number | null
-          time_budget_min_per_week: number | null
-          timezone: string | null
-          top_tasks: string[]
-          tos_accepted_at: string | null
+          display_name: string | null
+          email: string | null
+          metadata: Json
+          status: Database["iam"]["Enums"]["user_status"]
           updated_at: string
-          user_id: string
         }
         Insert: {
-          approval_rules?: Json
-          autonomy?: string
-          completed_at?: string | null
-          created_at?: string
-          data_sources?: string[]
-          experience?: string
-          industry?: string | null
-          ip_address?: string | null
-          locale?: string | null
-          marketing_opt_in?: boolean
-          notify_channels?: string[]
-          org_id?: string | null
-          preferred_apps?: string[]
-          primary_goal?: string | null
-          privacy_accepted_at?: string | null
-          role?: string | null
-          status?: string
-          success_metric?: string | null
-          team_size?: number | null
-          time_budget_min_per_week?: number | null
-          timezone?: string | null
-          top_tasks?: string[]
-          tos_accepted_at?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          approval_rules?: Json
-          autonomy?: string
-          completed_at?: string | null
-          created_at?: string
-          data_sources?: string[]
-          experience?: string
-          industry?: string | null
-          ip_address?: string | null
-          locale?: string | null
-          marketing_opt_in?: boolean
-          notify_channels?: string[]
-          org_id?: string | null
-          preferred_apps?: string[]
-          primary_goal?: string | null
-          privacy_accepted_at?: string | null
-          role?: string | null
-          status?: string
-          success_metric?: string | null
-          team_size?: number | null
-          time_budget_min_per_week?: number | null
-          timezone?: string | null
-          top_tasks?: string[]
-          tos_accepted_at?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_profile: {
-        Row: {
-          about: string | null
-          clerk_id: string
-          created_at: string
-          goals: string | null
-          user_profile_id: string
-        }
-        Insert: {
-          about?: string | null
+          avatar_url?: string | null
           clerk_id: string
           created_at?: string
-          goals?: string | null
-          user_profile_id?: string
+          display_name?: string | null
+          email?: string | null
+          metadata?: Json
+          status?: Database["iam"]["Enums"]["user_status"]
+          updated_at?: string
         }
         Update: {
-          about?: string | null
+          avatar_url?: string | null
           clerk_id?: string
           created_at?: string
-          goals?: string | null
-          user_profile_id?: string
+          display_name?: string | null
+          email?: string | null
+          metadata?: Json
+          status?: Database["iam"]["Enums"]["user_status"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -178,13 +151,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_clerk_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_org_admin: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { p_org_id: string }
+        Returns: boolean
+      }
       sub: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
     }
     Enums: {
-      [_ in never]: never
+      org_role: "owner" | "admin" | "member"
+      user_status: "active" | "disabled" | "invited"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -304,7 +290,10 @@ export type CompositeTypes<
 export type Constants = typeof _Constants
 
 const _Constants = {
-  app: {
-    Enums: {},
+  iam: {
+    Enums: {
+      org_role: ["owner", "admin", "member"],
+      user_status: ["active", "disabled", "invited"],
+    },
   },
 } as const

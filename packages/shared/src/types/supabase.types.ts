@@ -1,15 +1,26 @@
 /**
  * Combined Supabase database types from all schemas
- * This merges public, iam, lockbox, app, and mcp schemas into a single Database type
+ * Each schema is exported individually for granular imports
  */
 
-import type { Database as AppDatabase } from "./app.types"
-import type { Database as CoreDatabase } from "./database.types"
-import type { Database as MCPDatabase } from "./mcp.types"
+// Export each schema's Database type with a distinct name
+export type { Database as PublicDatabase } from "./public.types"
+export type { Database as IamDatabase } from "./iam.types"
+export type { Database as LockboxDatabase } from "./lockbox.types"
+export type { Database as AppDatabase } from "./app.types"
+export type { Database as MCPDatabase } from "./mcp.types"
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+// Export Json type from public
+export type { Json } from "./public.types"
 
-export type Database = CoreDatabase & AppDatabase & MCPDatabase
+import type { Database as AppDB } from "./app.types"
+import type { Database as IamDB } from "./iam.types"
+import type { Database as LockboxDB } from "./lockbox.types"
+import type { Database as MCPDB } from "./mcp.types"
+// Combined database type (intersection of all schemas)
+import type { Database as PublicDB } from "./public.types"
 
-// Re-export helper types from database.types
-export type { Enums, Tables, TablesInsert, TablesUpdate } from "./database.types"
+export type Database = PublicDB & IamDB & LockboxDB & AppDB & MCPDB
+
+// Helper types that work with the merged Database type
+export type { Enums, Tables, TablesInsert, TablesUpdate } from "./public.types"

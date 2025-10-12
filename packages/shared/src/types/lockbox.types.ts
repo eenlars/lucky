@@ -6,170 +6,116 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
-  app: {
+  lockbox: {
     Tables: {
-      feedback: {
-        Row: {
-          clerk_id: string | null
-          content: string
-          context: string | null
-          created_at: string | null
-          feedback_id: string
-          status: string | null
-        }
-        Insert: {
-          clerk_id?: string | null
-          content: string
-          context?: string | null
-          created_at?: string | null
-          feedback_id?: string
-          status?: string | null
-        }
-        Update: {
-          clerk_id?: string | null
-          content?: string
-          context?: string | null
-          created_at?: string | null
-          feedback_id?: string
-          status?: string | null
-        }
-        Relationships: []
-      }
-      provider_settings: {
+      secret_keys: {
         Row: {
           clerk_id: string
           created_at: string
-          enabled_models: Json
-          is_enabled: boolean
-          provider: string
-          provider_setting_id: string
+          created_by: string | null
+          environment: string
+          expires_at: string | null
+          key_id: string
+          last_used_at: string | null
+          name: string
+          rate_limit_pm: number | null
+          revoked_at: string | null
+          scopes: Json
+          secret_hash: string
+          secret_id: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           clerk_id: string
           created_at?: string
-          enabled_models?: Json
-          is_enabled?: boolean
-          provider: string
-          provider_setting_id?: string
+          created_by?: string | null
+          environment?: string
+          expires_at?: string | null
+          key_id: string
+          last_used_at?: string | null
+          name: string
+          rate_limit_pm?: number | null
+          revoked_at?: string | null
+          scopes?: Json
+          secret_hash: string
+          secret_id?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           clerk_id?: string
           created_at?: string
-          enabled_models?: Json
-          is_enabled?: boolean
-          provider?: string
-          provider_setting_id?: string
+          created_by?: string | null
+          environment?: string
+          expires_at?: string | null
+          key_id?: string
+          last_used_at?: string | null
+          name?: string
+          rate_limit_pm?: number | null
+          revoked_at?: string | null
+          scopes?: Json
+          secret_hash?: string
+          secret_id?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
-      user_onboarding: {
+      user_secrets: {
         Row: {
-          approval_rules: Json
-          autonomy: string
-          completed_at: string | null
+          auth_tag: string
+          ciphertext: string
+          clerk_id: string
           created_at: string
-          data_sources: string[]
-          experience: string
-          industry: string | null
-          ip_address: string | null
-          locale: string | null
-          marketing_opt_in: boolean
-          notify_channels: string[]
-          org_id: string | null
-          preferred_apps: string[]
-          primary_goal: string | null
-          privacy_accepted_at: string | null
-          role: string | null
-          status: string
-          success_metric: string | null
-          team_size: number | null
-          time_budget_min_per_week: number | null
-          timezone: string | null
-          top_tasks: string[]
-          tos_accepted_at: string | null
+          created_by: string | null
+          deleted_at: string | null
+          is_current: boolean
+          iv: string
+          last_used_at: string | null
+          name: string
+          namespace: string
+          scope: Json
           updated_at: string
-          user_id: string
+          updated_by: string | null
+          user_secret_id: string
+          version: number
         }
         Insert: {
-          approval_rules?: Json
-          autonomy?: string
-          completed_at?: string | null
-          created_at?: string
-          data_sources?: string[]
-          experience?: string
-          industry?: string | null
-          ip_address?: string | null
-          locale?: string | null
-          marketing_opt_in?: boolean
-          notify_channels?: string[]
-          org_id?: string | null
-          preferred_apps?: string[]
-          primary_goal?: string | null
-          privacy_accepted_at?: string | null
-          role?: string | null
-          status?: string
-          success_metric?: string | null
-          team_size?: number | null
-          time_budget_min_per_week?: number | null
-          timezone?: string | null
-          top_tasks?: string[]
-          tos_accepted_at?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          approval_rules?: Json
-          autonomy?: string
-          completed_at?: string | null
-          created_at?: string
-          data_sources?: string[]
-          experience?: string
-          industry?: string | null
-          ip_address?: string | null
-          locale?: string | null
-          marketing_opt_in?: boolean
-          notify_channels?: string[]
-          org_id?: string | null
-          preferred_apps?: string[]
-          primary_goal?: string | null
-          privacy_accepted_at?: string | null
-          role?: string | null
-          status?: string
-          success_metric?: string | null
-          team_size?: number | null
-          time_budget_min_per_week?: number | null
-          timezone?: string | null
-          top_tasks?: string[]
-          tos_accepted_at?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_profile: {
-        Row: {
-          about: string | null
-          clerk_id: string
-          created_at: string
-          goals: string | null
-          user_profile_id: string
-        }
-        Insert: {
-          about?: string | null
+          auth_tag: string
+          ciphertext: string
           clerk_id: string
           created_at?: string
-          goals?: string | null
-          user_profile_id?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          is_current?: boolean
+          iv: string
+          last_used_at?: string | null
+          name: string
+          namespace?: string
+          scope?: Json
+          updated_at?: string
+          updated_by?: string | null
+          user_secret_id?: string
+          version?: number
         }
         Update: {
-          about?: string | null
+          auth_tag?: string
+          ciphertext?: string
           clerk_id?: string
           created_at?: string
-          goals?: string | null
-          user_profile_id?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          is_current?: boolean
+          iv?: string
+          last_used_at?: string | null
+          name?: string
+          namespace?: string
+          scope?: Json
+          updated_at?: string
+          updated_by?: string | null
+          user_secret_id?: string
+          version?: number
         }
         Relationships: []
       }
@@ -304,7 +250,7 @@ export type CompositeTypes<
 export type Constants = typeof _Constants
 
 const _Constants = {
-  app: {
+  lockbox: {
     Enums: {},
   },
 } as const

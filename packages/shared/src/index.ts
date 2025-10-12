@@ -21,12 +21,17 @@ export { R } from "./types/result.types"
 // Types
 export type {
   Database,
+  PublicDatabase,
+  IamDatabase,
+  LockboxDatabase,
+  AppDatabase,
+  MCPDatabase,
   Enums,
   Json,
   Tables,
   TablesInsert,
   TablesUpdate,
-} from "./types/database.types"
+} from "./types/supabase.types"
 export type {
   StandardizedLocation,
   LocationData,

@@ -1,7 +1,7 @@
 "use server"
 import { createClient } from "@/lib/supabase/server"
 import { clerkClient } from "@clerk/nextjs/server"
-import type { TablesUpdate } from "@lucky/shared/client"
+import type { IamDatabase } from "@lucky/shared/client"
 
 /**
  * Ensures there is a row in iam.users for the given Clerk user.
@@ -30,7 +30,7 @@ export async function syncIamUser(clerkUserId: string) {
     avatar_url: avatarUrl,
     status: "active" as const,
     updated_at: new Date().toISOString(),
-  } satisfies TablesUpdate<{ schema: "iam" }, "users">
+  } satisfies IamDatabase["iam"]["Tables"]["users"]["Update"]
 
   // Upsert into iam.users by user_id
   const { error } = await supabase.schema("iam").from("users").upsert(upsertable, { onConflict: "clerk_id" })

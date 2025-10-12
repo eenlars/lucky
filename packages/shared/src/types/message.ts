@@ -1,4 +1,4 @@
-import type { Enums } from "./database.types"
+import type { Enums } from "./supabase.types"
 
 /**
  * Optional annotations for the client. The client can use annotations to inform how objects are used or displayed

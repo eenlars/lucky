@@ -25,6 +25,11 @@ export type {
 // Export combined database types that include all schemas (public, iam, lockbox, app, mcp)
 export type {
   Database,
+  PublicDatabase,
+  IamDatabase,
+  LockboxDatabase,
+  AppDatabase,
+  MCPDatabase,
   Enums,
   Json,
   Tables,

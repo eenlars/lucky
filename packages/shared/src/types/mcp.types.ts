@@ -774,7 +774,9 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
-export const Constants = {
+export type Constants = typeof _Constants
+
+const _Constants = {
   mcp: {
     Enums: {},
   },
