@@ -21,6 +21,9 @@ function isLocalhost(): boolean {
  * Feature flags - set to true to enable on localhost
  */
 const FEATURE_FLAGS = {
+  /** Enable connectors marketplace page */
+  CONNECTORS: true,
+
   /** Enable MCP tools functionality */
   MCP_TOOLS: true,
 

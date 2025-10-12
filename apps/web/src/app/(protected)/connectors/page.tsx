@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import { useConnectorsUIStore } from "@/stores/connectors-ui-store"
 import {
@@ -28,6 +29,7 @@ import { MCPServersConfig } from "./mcp-servers"
 import { type Connector, mockConnectors } from "./mock-data"
 
 export default function ConnectorsPage() {
+  const connectorsEnabled = useFeatureFlag("CONNECTORS")
   const activeTab = useConnectorsUIStore(state => state.activeTab)
   const setActiveTab = useConnectorsUIStore(state => state.setActiveTab)
   const searchQuery = useConnectorsUIStore(state => state.searchQuery)
@@ -62,180 +64,332 @@ export default function ConnectorsPage() {
       c.short_description.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
-  // Coming Soon UI
-  return (
-    <div className="flex h-full bg-background relative">
-      {/* Blurred Background Content */}
-      <div className="flex h-full w-full blur-[8px] pointer-events-none">
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Header with Search */}
-          <div className="border-b border-border px-8 py-8 bg-gradient-to-b from-background to-muted/20">
-            <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-3xl font-semibold text-foreground mb-3">What do you want to connect?</h1>
-              <p className="text-sm text-muted-foreground mb-6">
-                Search by name, capability, or describe what you want to do
-              </p>
-
-              {/* Large Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder='Try "email tool", "send messages", "database", or "GitHub"...'
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm hover:shadow-md"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Tabs */}
+  // Show Coming Soon UI only when feature flag is disabled
+  if (!connectorsEnabled) {
+    return (
+      <div className="flex h-full bg-background relative">
+        {/* Blurred Background Content */}
+        <div className="flex h-full w-full blur-[8px] pointer-events-none">
+          {/* Main Content */}
           <div className="flex-1 flex flex-col">
-            <Tabs
-              value={activeTab}
-              onValueChange={tab => setActiveTab(tab as "marketplace" | "my-connectors" | "mcp-servers")}
-              className="flex-1 flex flex-col"
-            >
-              <div className="border-b border-border px-8">
-                <TabsList className="bg-transparent border-0 p-0 h-auto">
-                  <TabsTrigger
-                    value="marketplace"
-                    className={cn(
-                      "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
-                      "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
-                      "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    Marketplace
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="my-connectors"
-                    className={cn(
-                      "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
-                      "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
-                      "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    My Connectors
-                    {installedConnectors.length > 0 && (
-                      <Badge variant="secondary" className="ml-2">
-                        {installedConnectors.length}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="mcp-servers"
-                    className={cn(
-                      "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
-                      "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
-                      "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    MCP Servers
-                  </TabsTrigger>
-                </TabsList>
+            {/* Header with Search */}
+            <div className="border-b border-border px-8 py-8 bg-gradient-to-b from-background to-muted/20">
+              <div className="max-w-3xl mx-auto text-center">
+                <h1 className="text-3xl font-semibold text-foreground mb-3">What do you want to connect?</h1>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Search by name, capability, or describe what you want to do
+                </p>
+
+                {/* Large Search Bar */}
+                <div className="relative">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder='Try "email tool", "send messages", "database", or "GitHub"...'
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm hover:shadow-md"
+                  />
+                </div>
               </div>
+            </div>
 
-              {/* Marketplace Tab */}
-              <TabsContent value="marketplace" className="flex-1 m-0 p-8 overflow-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredMarketplace.map(connector => (
-                    <ConnectorCard
-                      key={connector.conn_id}
-                      connector={connector}
-                      onClick={() => setSelectedConnector(connector)}
-                    />
-                  ))}
-                </div>
-                {filteredMarketplace.length === 0 && (
-                  <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                      <Package className="size-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-sm text-muted-foreground">No connectors found</p>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* My Connectors Tab */}
-              <TabsContent value="my-connectors" className="flex-1 m-0 p-8 overflow-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredInstalled.map(connector => (
-                    <InstalledConnectorCard
-                      key={connector.conn_id}
-                      connector={connector}
-                      onToggleEnabled={() => handleToggleEnabled(connector.conn_id)}
-                      onClick={() => {
-                        setSelectedConnector(connector)
-                        setConfiguring(true)
-                      }}
-                    />
-                  ))}
-                </div>
-                {filteredInstalled.length === 0 && (
-                  <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                      <Package className="size-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-sm text-muted-foreground">
-                        {searchQuery ? "No installed connectors found" : "No connectors installed yet"}
-                      </p>
-                      {!searchQuery && (
-                        <Button
-                          onClick={() => setActiveTab("marketplace")}
-                          variant="outline"
-                          className="mt-4"
-                          size="sm"
-                        >
-                          Browse Marketplace
-                        </Button>
+            {/* Tabs */}
+            <div className="flex-1 flex flex-col">
+              <Tabs
+                value={activeTab}
+                onValueChange={tab => setActiveTab(tab as "marketplace" | "my-connectors" | "mcp-servers")}
+                className="flex-1 flex flex-col"
+              >
+                <div className="border-b border-border px-8">
+                  <TabsList className="bg-transparent border-0 p-0 h-auto">
+                    <TabsTrigger
+                      value="marketplace"
+                      className={cn(
+                        "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                        "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                        "text-muted-foreground hover:text-foreground",
                       )}
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
+                    >
+                      Marketplace
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="my-connectors"
+                      className={cn(
+                        "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                        "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                        "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      My Connectors
+                      {installedConnectors.length > 0 && (
+                        <Badge variant="secondary" className="ml-2">
+                          {installedConnectors.length}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="mcp-servers"
+                      className={cn(
+                        "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                        "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                        "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      MCP Servers
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-              {/* MCP Servers Tab */}
-              <TabsContent value="mcp-servers" className="flex-1 m-0 p-8 overflow-auto">
-                <MCPServersConfig />
-              </TabsContent>
-            </Tabs>
+                {/* Marketplace Tab */}
+                <TabsContent value="marketplace" className="flex-1 m-0 p-8 overflow-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredMarketplace.map(connector => (
+                      <ConnectorCard
+                        key={connector.conn_id}
+                        connector={connector}
+                        onClick={() => setSelectedConnector(connector)}
+                      />
+                    ))}
+                  </div>
+                  {filteredMarketplace.length === 0 && (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="text-center">
+                        <Package className="size-12 text-muted-foreground mx-auto mb-3" />
+                        <p className="text-sm text-muted-foreground">No connectors found</p>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* My Connectors Tab */}
+                <TabsContent value="my-connectors" className="flex-1 m-0 p-8 overflow-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredInstalled.map(connector => (
+                      <InstalledConnectorCard
+                        key={connector.conn_id}
+                        connector={connector}
+                        onToggleEnabled={() => handleToggleEnabled(connector.conn_id)}
+                        onClick={() => {
+                          setSelectedConnector(connector)
+                          setConfiguring(true)
+                        }}
+                      />
+                    ))}
+                  </div>
+                  {filteredInstalled.length === 0 && (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="text-center">
+                        <Package className="size-12 text-muted-foreground mx-auto mb-3" />
+                        <p className="text-sm text-muted-foreground">
+                          {searchQuery ? "No installed connectors found" : "No connectors installed yet"}
+                        </p>
+                        {!searchQuery && (
+                          <Button
+                            onClick={() => setActiveTab("marketplace")}
+                            variant="outline"
+                            className="mt-4"
+                            size="sm"
+                          >
+                            Browse Marketplace
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* MCP Servers Tab */}
+                <TabsContent value="mcp-servers" className="flex-1 m-0 p-8 overflow-auto">
+                  <MCPServersConfig />
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
+
+          {/* Connector Detail Modal */}
+          {selectedConnector && (
+            <ConnectorDetailModal
+              connector={selectedConnector}
+              configuring={configuring}
+              onToggleEnabled={() => handleToggleEnabled(selectedConnector.conn_id)}
+              onClose={() => {
+                setSelectedConnector(null)
+                setConfiguring(false)
+              }}
+            />
+          )}
         </div>
 
-        {/* Connector Detail Modal */}
-        {selectedConnector && (
-          <ConnectorDetailModal
-            connector={selectedConnector}
-            configuring={configuring}
-            onToggleEnabled={() => handleToggleEnabled(selectedConnector.conn_id)}
-            onClose={() => {
-              setSelectedConnector(null)
-              setConfiguring(false)
-            }}
-          />
-        )}
-      </div>
-
-      {/* Coming Soon Overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="text-center max-w-md px-6 pointer-events-auto">
-          <div className="size-20 rounded-2xl bg-background/95 backdrop-blur-sm border border-border flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <Lock className="size-10 text-muted-foreground" />
-          </div>
-          <div className="bg-background/95 backdrop-blur-sm border border-border rounded-2xl p-8 shadow-xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
-            <p className="text-muted-foreground mb-6">
-              Connectors are currently under development. This feature will be available soon.
-            </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
-              <Lock className="size-4" />
-              Feature in Development
+        {/* Coming Soon Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center max-w-md px-6 pointer-events-auto">
+            <div className="size-20 rounded-2xl bg-background/95 backdrop-blur-sm border border-border flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <Lock className="size-10 text-muted-foreground" />
+            </div>
+            <div className="bg-background/95 backdrop-blur-sm border border-border rounded-2xl p-8 shadow-xl">
+              <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
+              <p className="text-muted-foreground mb-6">
+                Connectors are currently under development. This feature will be available soon.
+              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+                <Lock className="size-4" />
+                Feature in Development
+              </div>
             </div>
           </div>
         </div>
       </div>
+    )
+  }
+
+  // Normal functional UI when feature flag is enabled (localhost)
+  return (
+    <div className="flex h-full bg-background">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header with Search */}
+        <div className="border-b border-border px-8 py-8 bg-gradient-to-b from-background to-muted/20">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-3xl font-semibold text-foreground mb-3">What do you want to connect?</h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              Search by name, capability, or describe what you want to do
+            </p>
+
+            {/* Large Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder='Try "email tool", "send messages", "database", or "GitHub"...'
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm hover:shadow-md"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex-1 flex flex-col">
+          <Tabs
+            value={activeTab}
+            onValueChange={tab => setActiveTab(tab as "marketplace" | "my-connectors" | "mcp-servers")}
+            className="flex-1 flex flex-col"
+          >
+            <div className="border-b border-border px-8">
+              <TabsList className="bg-transparent border-0 p-0 h-auto">
+                <TabsTrigger
+                  value="marketplace"
+                  className={cn(
+                    "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                    "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                    "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Marketplace
+                </TabsTrigger>
+                <TabsTrigger
+                  value="my-connectors"
+                  className={cn(
+                    "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                    "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                    "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  My Connectors
+                  {installedConnectors.length > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {installedConnectors.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="mcp-servers"
+                  className={cn(
+                    "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium transition-all",
+                    "data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                    "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  MCP Servers
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Marketplace Tab */}
+            <TabsContent value="marketplace" className="flex-1 m-0 p-8 overflow-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredMarketplace.map(connector => (
+                  <ConnectorCard
+                    key={connector.conn_id}
+                    connector={connector}
+                    onClick={() => setSelectedConnector(connector)}
+                  />
+                ))}
+              </div>
+              {filteredMarketplace.length === 0 && (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <Package className="size-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">No connectors found</p>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* My Connectors Tab */}
+            <TabsContent value="my-connectors" className="flex-1 m-0 p-8 overflow-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredInstalled.map(connector => (
+                  <InstalledConnectorCard
+                    key={connector.conn_id}
+                    connector={connector}
+                    onToggleEnabled={() => handleToggleEnabled(connector.conn_id)}
+                    onClick={() => {
+                      setSelectedConnector(connector)
+                      setConfiguring(true)
+                    }}
+                  />
+                ))}
+              </div>
+              {filteredInstalled.length === 0 && (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <Package className="size-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      {searchQuery ? "No installed connectors found" : "No connectors installed yet"}
+                    </p>
+                    {!searchQuery && (
+                      <Button onClick={() => setActiveTab("marketplace")} variant="outline" className="mt-4" size="sm">
+                        Browse Marketplace
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* MCP Servers Tab */}
+            <TabsContent value="mcp-servers" className="flex-1 m-0 p-8 overflow-auto">
+              <MCPServersConfig />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Connector Detail Modal */}
+      {selectedConnector && (
+        <ConnectorDetailModal
+          connector={selectedConnector}
+          configuring={configuring}
+          onToggleEnabled={() => handleToggleEnabled(selectedConnector.conn_id)}
+          onClose={() => {
+            setSelectedConnector(null)
+            setConfiguring(false)
+          }}
+        />
+      )}
     </div>
   )
 }
