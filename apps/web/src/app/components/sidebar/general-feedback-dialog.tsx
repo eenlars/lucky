@@ -28,6 +28,23 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
     }
 
     try {
+      // Collect rich context for debugging
+      const context = {
+        url: window.location.href,
+        pathname: window.location.pathname,
+        search: window.location.search,
+        userAgent: navigator.userAgent,
+        screen: {
+          width: window.screen.width,
+          height: window.screen.height,
+        },
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+        timestamp: new Date().toISOString(),
+      }
+
       const response = await fetch("/api/feedback", {
         method: "POST",
         headers: {
@@ -35,7 +52,7 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
         },
         body: JSON.stringify({
           content: feedbackText,
-          context: window.location.pathname,
+          context: JSON.stringify(context),
         }),
       })
 
