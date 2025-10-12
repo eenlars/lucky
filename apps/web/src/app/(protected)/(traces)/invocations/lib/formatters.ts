@@ -25,8 +25,8 @@ export const formatDuration = (startTime: string, endTime: string | null) => {
   const duration = (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000
   if (duration < 60) return `${duration.toFixed(1)}s`
   const minutes = Math.floor(duration / 60)
-  const seconds = duration % 60
-  return `${minutes}m ${seconds.toFixed(0)}s`
+  const seconds = Math.floor(duration % 60)
+  return `${minutes}m ${seconds}s`
 }
 
 export const extractGoalFromInput = (workflowInput: unknown): string => {

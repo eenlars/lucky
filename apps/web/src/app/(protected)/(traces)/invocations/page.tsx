@@ -76,6 +76,7 @@ export default function InvocationsPage() {
   const totalCount = data?.totalCount ?? 0
   const totalPages = Math.ceil(totalCount / itemsPerPage)
   const totalItems = totalCount
+  const aggregates = data?.aggregates ?? { totalSpent: 0, avgAccuracy: null, failedCount: 0 }
 
   const deleteInvocationsMutation = useDeleteInvocations()
 
@@ -231,7 +232,7 @@ export default function InvocationsPage() {
         {error && <div className="mt-2 text-red-500">{error.message}</div>}
 
         {/* Summary Cards */}
-        {invocations.length > 0 && <SummaryCards invocations={invocations} totalItems={totalItems} />}
+        {invocations.length > 0 && <SummaryCards aggregates={aggregates} totalItems={totalItems} />}
 
         {/* Active Filters Indicator */}
         {hasActiveFilters && (

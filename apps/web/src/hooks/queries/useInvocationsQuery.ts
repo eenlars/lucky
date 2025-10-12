@@ -91,6 +91,11 @@ export function useInvocationsQuery({
       return {
         data: result.data as WorkflowInvocationWithScores[],
         totalCount: result.totalCount as number,
+        aggregates: result.aggregates as {
+          totalSpent: number
+          avgAccuracy: number | null
+          failedCount: number
+        },
       }
     },
     staleTime: 10_000, // 10 seconds
