@@ -52,7 +52,6 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load datasets:", error)
       setError(error instanceof Error ? error.message : "Failed to load datasets")

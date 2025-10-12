@@ -167,7 +167,6 @@ export async function migrateFitnessToColumns() {
       } catch (error) {
         logException(error, {
           location: "/lib/migrations",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         console.error(`Error processing row ${row.wf_invocation_id}:`, error)
         errors++
@@ -178,7 +177,6 @@ export async function migrateFitnessToColumns() {
   } catch (error) {
     logException(error, {
       location: "/lib/migrations",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     console.error("Migration failed:", error)
     throw error

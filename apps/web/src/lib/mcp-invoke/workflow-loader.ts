@@ -63,7 +63,6 @@ export async function loadWorkflowConfig(workflowVersionId: string): Promise<Wor
   } catch (error) {
     logException(error, {
       location: "/lib/mcp-invoke/workflow-loader",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     return {
       success: false,

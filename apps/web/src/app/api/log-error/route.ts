@@ -73,12 +73,15 @@ export async function POST(request: NextRequest) {
     const input = await request.json()
     const data = ErrorReportSchema.parse(input)
 
+    // Map 'warning' to 'warn' to match database enum
+    const dbSeverity = data.severity === "warning" ? "warn" : data.severity
+
     const hash = computeHash({
       location: data.location,
       env: data.env,
       error: data.error ?? null,
       message: data.message,
-      severity: data.severity,
+      severity: dbSeverity,
     })
 
     const supabase = await createClient()
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
           error: toJson(data.error),
           message: data.message,
           stack: data.stack ?? null,
-          severity: data.severity,
+          severity: dbSeverity,
           clerk_id: data.clerkId ?? null,
           hash: hash,
           // These will be used on insert, ignored on update:

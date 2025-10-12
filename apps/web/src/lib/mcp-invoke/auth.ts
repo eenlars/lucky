@@ -31,7 +31,6 @@ export function validateAuth(
   } catch (err) {
     logException(err, {
       location: "/lib/mcp-invoke/auth",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     return {
       success: false,

@@ -69,7 +69,6 @@ export default function WorkflowEditor({ workflowVersion }: WorkflowEditorProps)
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to save workflow:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to save workflow"
@@ -122,7 +121,6 @@ export default function WorkflowEditor({ workflowVersion }: WorkflowEditorProps)
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to run workflow:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to run workflow"

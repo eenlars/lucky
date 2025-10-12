@@ -210,7 +210,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     } catch (error) {
       logException(error, {
         location: "/chat-interface/utils/message-utils",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to copy:", error)
       textArea.remove()
@@ -219,7 +218,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   } catch (error) {
     logException(error, {
       location: "/chat-interface/utils/message-utils",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     console.error("Failed to copy to clipboard:", error)
     return false

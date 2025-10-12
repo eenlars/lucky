@@ -30,7 +30,6 @@ export function GPEvolutionSelector({
       } catch (e) {
         logException(e, {
           location: window.location.pathname,
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         console.error("Error fetching evolution runs:", e)
         if (!cancelled) setRuns([])

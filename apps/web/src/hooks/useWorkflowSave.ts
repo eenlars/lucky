@@ -65,7 +65,6 @@ export function useWorkflowSave({ workflowVersion, onSuccess }: UseWorkflowSaveO
       } catch (err) {
         logException(err, {
           location: "/hook/useWorkflowSave",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         const errorMessage = err instanceof Error ? err.message : "Failed to save workflow"
         setError(errorMessage)

@@ -42,7 +42,6 @@ export function useSystemHealth() {
       } catch (err) {
         logException(err, {
           location: "/lib/credential-status",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         setError(err instanceof Error ? err.message : "Unknown error")
         setHealth(null)
@@ -81,7 +80,6 @@ export function useCredentialStatus() {
       } catch (err) {
         logException(err, {
           location: "/lib/credential-status",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         setError(err instanceof Error ? err.message : "Unknown error")
         setCredentials([])
@@ -120,7 +118,6 @@ export function useFeatureStatus() {
       } catch (err) {
         logException(err, {
           location: "/lib/credential-status",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         setError(err instanceof Error ? err.message : "Unknown error")
         setFeatures([])

@@ -36,7 +36,6 @@ export function useAsyncAction<T = any>(options?: UseAsyncActionOptions<T>) {
       } catch (err) {
         logException(err, {
           location: "/hook/useAsyncAction",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         const errorMessage = getErrorMessage(err)
         setState({ isLoading: false, error: errorMessage, data: null })

@@ -30,7 +30,6 @@ export function getRequiredProviderKeys(config: WorkflowConfig, context: string)
   } catch (error) {
     logException(error, {
       location: "/lib/workflow/provider-validation",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     console.error(`[${context}] Failed to extract providers:`, error)
     return [...FALLBACK_PROVIDER_KEYS]

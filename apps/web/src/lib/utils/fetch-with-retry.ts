@@ -31,7 +31,6 @@ export async function fetchWithRetry(url: string, options?: RequestInit, maxAtte
       }
       logException(error, {
         location: "/utils/fetch-with-retry",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       lastError = error instanceof Error ? error : new Error("Network error")
     }

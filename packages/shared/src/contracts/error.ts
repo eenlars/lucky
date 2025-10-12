@@ -9,7 +9,7 @@ import { z } from "zod"
 // ERROR REPORTING
 // ============================================================================
 
-export const SeverityLevelSchema = z.enum(["info", "warn", "error"]).default("error")
+export const SeverityLevelSchema = z.enum(["info", "warn", "warning", "error"]).default("error")
 
 export const ErrorReportSchema = z.object({
   location: z.string().min(1),

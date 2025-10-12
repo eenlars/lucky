@@ -34,7 +34,6 @@ export class EnvironmentKeysManager {
     } catch (error) {
       logException(error, {
         location: "/lib/environment-keys",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load environment keys:", error)
       return []
@@ -50,7 +49,6 @@ export class EnvironmentKeysManager {
     } catch (error) {
       logException(error, {
         location: "/lib/environment-keys",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to save environment keys:", error)
       throw error

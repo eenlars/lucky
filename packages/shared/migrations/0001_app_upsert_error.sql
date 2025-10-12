@@ -6,8 +6,9 @@
 CREATE OR REPLACE FUNCTION app.auto_increment_error_count()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- If this is an UPDATE (conflict resolution), increment the counter
-  IF TG_OP = 'UPDATE' THEN
+  -- If this is an UPDATE from a conflict resolution (same hash, total_count=1 in NEW)
+  -- then increment the counter. This guards against regular UPDATEs that edit other fields.
+  IF TG_OP = 'UPDATE' AND NEW.hash = OLD.hash AND NEW.total_count = 1 THEN
     NEW.total_count := OLD.total_count + 1;
     NEW.last_seen := now();
   END IF;

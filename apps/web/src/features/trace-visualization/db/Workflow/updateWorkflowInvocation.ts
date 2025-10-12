@@ -32,7 +32,6 @@ export async function updateWorkflowInvocationScores(invocationId: string, score
   } catch (error) {
     logException(error, {
       location: "/trace-visualization/db/Workflow/updateWorkflowInvocation",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     lgg.error("Error updating invocation scores:", error)
     throw error

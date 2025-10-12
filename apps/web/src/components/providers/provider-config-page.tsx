@@ -105,7 +105,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load configuration:", error)
       toast.error("Failed to load configuration")
@@ -138,7 +137,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load models:", error)
       toast.error("Failed to load available models")
@@ -185,7 +183,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     } catch (_error) {
       logException(_error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       setTestStatus("error")
       toast.error("Failed to test connection")
@@ -232,7 +229,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to save configuration:", error)
       toast.error("Failed to save configuration")
@@ -265,7 +261,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     } catch (_error) {
       logException(_error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       toast.error("Failed to copy to clipboard")
     }

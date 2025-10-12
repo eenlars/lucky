@@ -67,7 +67,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load environment keys:", error)
       toast.error("Failed to load environment keys")
@@ -88,7 +87,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load API key:", error)
     } finally {
@@ -113,7 +111,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to generate API key:", error)
       toast.error("Failed to generate API key")
@@ -137,7 +134,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to roll API key:", error)
       toast.error("Failed to roll API key")
@@ -162,7 +158,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to copy to clipboard:", error)
       toast.error("Failed to copy to clipboard")
@@ -190,7 +185,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to save environment keys:", error)
       toast.error("Failed to save environment keys")
@@ -235,7 +229,6 @@ export default function EnvironmentKeysSettings() {
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to delete environment key:", error)
       toast.error("Failed to delete environment variable")

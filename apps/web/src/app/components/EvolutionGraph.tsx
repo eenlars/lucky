@@ -90,7 +90,6 @@ export function EvolutionGraph({ runId, className = "" }: EvolutionGraphProps) {
     } catch (err) {
       logException(err, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load evolution data:", err)
       setError(err instanceof Error ? err.message : "Unknown error occurred")

@@ -69,7 +69,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     } catch (error) {
       logException(error, {
         location: "/store/profile",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to load profile:", error)
       toast.error("Failed to load profile")
@@ -111,7 +110,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     } catch (error) {
       logException(error, {
         location: "/store/profile",
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       console.error("Failed to save profile:", error)
       if (error instanceof Error) {

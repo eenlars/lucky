@@ -214,8 +214,6 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
         } catch (err) {
           logException(err, {
             location: "/store/evolution-runs",
-            env:
-              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
           })
           const errorMessage = err instanceof Error ? err.message : "Failed to fetch evolution runs"
           set({ error: errorMessage })

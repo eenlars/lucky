@@ -67,7 +67,6 @@ export async function executeEditMode(
   } catch (error) {
     logException(error, {
       location: typeof window !== "undefined" ? window.location.pathname : "unknown",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     const errorMessage = error instanceof Error ? error.message : "Failed to update workflow"
     onProgress?.(`❌ Error: ${errorMessage}`)

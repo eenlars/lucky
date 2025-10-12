@@ -69,7 +69,6 @@ export function TestSection({ node }: TestSectionProps) {
     } catch (err) {
       logException(err, {
         location: window.location.pathname,
-        env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
       })
       setError(err instanceof Error ? err.message : "Failed to run test")
     } finally {

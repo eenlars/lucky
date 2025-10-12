@@ -38,7 +38,6 @@ export function validateAgainstSchema(data: unknown, schema: JsonSchemaDefinitio
   } catch (error) {
     logException(error, {
       location: "/lib/mcp-invoke/schema-validator",
-      env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
     })
     return {
       valid: false,

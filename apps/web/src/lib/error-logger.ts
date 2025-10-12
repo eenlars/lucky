@@ -21,8 +21,38 @@ function detectEnv(): "production" | "development" {
 }
 
 /**
+ * Constructs the absolute URL for the error logging endpoint
+ * Required for server-side (Node.js) fetch calls
+ */
+function getErrorLogUrl(): string {
+  // Client-side: relative URL works fine
+  if (typeof window !== "undefined") {
+    return "/api/log-error"
+  }
+
+  // Server-side: need absolute URL
+  // Try various environment variables for the base URL
+  const baseUrl =
+    process.env.NEXT_PUBLIC_VERCEL_URL ||
+    process.env.VERCEL_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.APP_URL
+
+  if (baseUrl) {
+    // Ensure baseUrl has protocol
+    const url = baseUrl.startsWith("http") ? baseUrl : `https://${baseUrl}`
+    return `${url}/api/log-error`
+  }
+
+  // Fallback for local development
+  const port = process.env.PORT || "3000"
+  return `http://localhost:${port}/api/log-error`
+}
+
+/**
  * Safe helper to report errors from anywhere in the app
  * NEVER throws - swallows all errors to prevent cascading failures
+ * Works on both client and server (Node.js API routes)
  */
 export async function logError(input: ErrorReportInput): Promise<void> {
   try {
@@ -33,13 +63,16 @@ export async function logError(input: ErrorReportInput): Promise<void> {
       return
     }
 
-    await fetch("/api/log-error", {
+    const url = getErrorLogUrl()
+
+    await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(parsed.data),
       keepalive: true, // helps during unload/navigation
-    }).catch(() => {
-      // Swallow to avoid cascading failure in UI paths
+    }).catch(err => {
+      // Log fetch failure to console for debugging, but don't throw
+      console.error("Failed to send error log:", err)
     })
   } catch {
     // Never throw from error logger

@@ -75,8 +75,6 @@ export function createSecretResolver(clerk_id: string): SecretResolver {
         } catch (e) {
           logException(e, {
             location: "/lib/lockbox/secretResolver",
-            env:
-              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
           })
           console.error(`Failed to decrypt secret ${row.name}:`, e)
         }

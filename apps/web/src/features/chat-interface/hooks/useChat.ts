@@ -100,7 +100,6 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       } catch (err) {
         logException(err, {
           location: "/hook/useChat",
-          env: typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
         })
         const error = err instanceof Error ? err : new Error("Failed to send message")
         setError(error)
