@@ -53,16 +53,17 @@ export async function GET(_req: NextRequest) {
         const normalizedModels = rawModels.map(model => normalizeModelId(row.provider, model))
         console.log(`[API] Provider ${row.provider} - Normalized:`, normalizedModels)
 
-        // Validate against MODEL_CATALOG - only keep models that exist
-        const validatedModels = normalizedModels.filter(modelId => MODEL_CATALOG.some(m => m.id === modelId))
-        console.log(`[API] Provider ${row.provider} - Validated (in catalog):`, validatedModels)
+        // Don't filter by MODEL_CATALOG - providers may have newer models not in our static catalog
+        // The catalog is for pricing/metadata, not for validation
+        const enabledModels = normalizedModels
+        console.log(`[API] Provider ${row.provider} - Enabled models:`, enabledModels)
 
         // Convert timestamp to ISO format
         const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
 
         return {
           provider: row.provider,
-          enabledModels: validatedModels,
+          enabledModels,
           isEnabled: row.is_enabled,
           metadata: {
             apiKeyConfigured: true, // TODO: Check actual API key status
