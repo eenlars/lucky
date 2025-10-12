@@ -48,37 +48,37 @@ export default async function RootLayout({
         <AppStoreProvider initialState={{ ...defaultState, colorMode: theme }}>
           <html lang="en" className={theme}>
             <body className="h-screen">
-              <ErrorBoundary>
-                <SidebarProvider>
-                  {/* Skip link for accessibility */}
-                  <a
-                    href="#main-content"
-                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-sidebar-accent focus:px-3 focus:py-2 focus:text-sidebar-accent-foreground"
-                  >
-                    Skip to content
-                  </a>
-                  <NextTopLoader />
-                  <SignedIn>
-                    <CredentialStatusBanner />
-                    <IntegratedSidebar />
-                  </SignedIn>
+              <SidebarProvider>
+                {/* Skip link for accessibility */}
+                <a
+                  href="#main-content"
+                  className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-sidebar-accent focus:px-3 focus:py-2 focus:text-sidebar-accent-foreground"
+                >
+                  Skip to content
+                </a>
+                <NextTopLoader />
+                <SignedIn>
+                  <CredentialStatusBanner />
+                  <IntegratedSidebar />
+                </SignedIn>
+                <ErrorBoundary>
                   <MainContent>{children}</MainContent>
-                  <SignedIn>
-                    <KeyboardShortcuts />
-                  </SignedIn>
-                  <Toaster
-                    position="bottom-right"
-                    toastOptions={{
-                      duration: 4000,
-                      style: {
-                        background: theme === "dark" ? "#1a1a1a" : "#fff",
-                        color: theme === "dark" ? "#fff" : "#000",
-                        border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
-                      },
-                    }}
-                  />
-                </SidebarProvider>
-              </ErrorBoundary>
+                </ErrorBoundary>
+                <SignedIn>
+                  <KeyboardShortcuts />
+                </SignedIn>
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: theme === "dark" ? "#1a1a1a" : "#fff",
+                      color: theme === "dark" ? "#fff" : "#000",
+                      border: theme === "dark" ? "1px solid #333" : "1px solid #e5e5e5",
+                    },
+                  }}
+                />
+              </SidebarProvider>
             </body>
           </html>
         </AppStoreProvider>

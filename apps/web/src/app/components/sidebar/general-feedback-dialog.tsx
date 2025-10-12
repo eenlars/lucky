@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+import type { FeedbackContext } from "@lucky/shared/contracts/feedback"
 import { Paperclip } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -21,21 +22,55 @@ type GeneralFeedbackDialogProps = {
 export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDialogProps) {
   const [feedbackText, setFeedbackText] = useState("")
 
-  const handleFeedbackSubmit = useCallback(() => {
+  const handleFeedbackSubmit = useCallback(async () => {
     if (!feedbackText.trim()) {
       toast.error("Please enter your feedback")
       return
     }
 
-    // TODO: Implement actual feedback submission API
-    console.log("Feedback submitted:", feedbackText)
+    try {
+      // Collect rich context for debugging
+      const context: FeedbackContext = {
+        url: window.location.href,
+        pathname: window.location.pathname,
+        search: window.location.search,
+        userAgent: navigator.userAgent,
+        screen: {
+          width: window.screen.width,
+          height: window.screen.height,
+        },
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+        timestamp: new Date().toISOString(),
+      }
 
-    // Reset form and close dialog
-    setFeedbackText("")
-    onOpenChange(false)
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: feedbackText,
+          context: JSON.stringify(context),
+        }),
+      })
 
-    // Show success toast
-    toast.success("Feedback submitted successfully!")
+      if (!response.ok) {
+        throw new Error("Failed to submit feedback")
+      }
+
+      // Reset form and close dialog
+      setFeedbackText("")
+      onOpenChange(false)
+
+      // Show success toast
+      toast.success("Feedback submitted successfully!")
+    } catch (error) {
+      console.error("Failed to submit feedback:", error)
+      toast.error("Failed to submit feedback. Please try again.")
+    }
   }, [feedbackText, onOpenChange])
 
   // Handle keyboard shortcut ⌘↵ for submission
