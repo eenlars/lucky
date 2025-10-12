@@ -12,7 +12,7 @@ export { ProviderRegistry } from "./providers/registry"
 
 // Export Facade (primary public API)
 export { ModelsFacade, getFacade, resetFacade } from "./facade"
-export type { ModelSelection, SelectionOptions } from "./facade"
+export type { SelectionOptions } from "./facade"
 
 // Export Pricing
 export { PricingService, getPricingService, resetPricingService } from "./pricing/pricing-service"
@@ -28,7 +28,7 @@ export {
   getProviderInfo,
   validateCatalogIntegrity,
 } from "./pricing/catalog"
-export type { ModelEntry, ProviderInfo } from "./pricing/catalog"
+export type { ProviderInfo } from "./pricing/catalog"
 
 // Export Registry
 export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"

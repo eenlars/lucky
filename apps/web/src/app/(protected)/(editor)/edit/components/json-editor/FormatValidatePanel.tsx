@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { WORKFLOW_TEMPLATES } from "../workflow-templates"
+import { WORKFLOW_TEMPLATES } from "../workflow-templates/templates"
 
 type VerificationResult = {
   isValid: boolean

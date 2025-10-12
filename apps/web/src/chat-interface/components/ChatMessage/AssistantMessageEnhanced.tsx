@@ -12,7 +12,7 @@
 
 "use client"
 
-import type { Message } from "@/chat-interface/types"
+import type { Message } from "@/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { Bot } from "lucide-react"
 import { WorkflowGenerationCard } from "../WorkflowGeneration/WorkflowGenerationCard"

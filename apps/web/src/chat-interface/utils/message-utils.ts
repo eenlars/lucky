@@ -4,7 +4,7 @@
  * Helper functions for message manipulation, formatting, and validation
  */
 
-import type { Message, MessageRole } from "../types"
+import type { Message, MessageRole } from "../types/types"
 
 // ============================================================================
 // Message Creation

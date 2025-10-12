@@ -16,7 +16,7 @@ import { TypingIndicator } from "./components/TypingIndicator/TypingIndicator"
 import { useAutoScroll } from "./hooks/useAutoScroll"
 import { useChat } from "./hooks/useChat"
 import { COMMON_SHORTCUTS, useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts"
-import type { ChatInterfaceProps } from "./types"
+import type { ChatInterfaceProps } from "./types/types"
 
 export function ChatInterface({
   initialMessages = [],

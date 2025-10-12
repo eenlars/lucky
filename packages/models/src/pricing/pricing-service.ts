@@ -10,7 +10,8 @@
  * @module pricing/pricing-service
  */
 
-import { MODEL_CATALOG, type ModelEntry } from "./catalog"
+import type { ModelEntry } from "@lucky/shared"
+import { MODEL_CATALOG } from "./catalog"
 
 /**
  * Immutable pricing snapshot for billing and auditability

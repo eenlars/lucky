@@ -6,7 +6,7 @@
 
 "use client"
 
-import type { ChatSuggestionsProps } from "@/chat-interface/types"
+import type { ChatSuggestionsProps } from "@/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { SuggestionCard } from "./SuggestionCard"
 

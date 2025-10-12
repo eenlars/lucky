@@ -1,18 +1,16 @@
 import { authenticateRequest } from "@/lib/auth/principal"
 import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
-  createInvocationInput,
-  createSchemaValidationError,
   extractTraceId,
   extractWorkflowOutput,
   formatErrorResponse,
   formatInternalError,
   formatSuccessResponse,
   formatWorkflowError,
-  transformInvokeInput,
-  validateAgainstSchema,
-  validateInvokeRequest,
-} from "@/lib/mcp-invoke"
+} from "@/lib/mcp-invoke/response"
+import { createSchemaValidationError, validateAgainstSchema } from "@/lib/mcp-invoke/schema-validator"
+import { createInvocationInput, transformInvokeInput } from "@/lib/mcp-invoke/transform"
+import { validateInvokeRequest } from "@/lib/mcp-invoke/validation"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import {
   FALLBACK_PROVIDER_KEYS,

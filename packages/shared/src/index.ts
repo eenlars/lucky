@@ -100,6 +100,26 @@ export {
   providerStatusSchema,
 } from "./contracts/providers"
 
+// Model contracts
+export type {
+  ModelSpeed,
+  ModelPricingTier,
+  ModelCapabilities,
+  ModelPricing,
+  ModelEntry,
+  EnrichedModelInfo,
+  ModelSelection,
+} from "./contracts/models"
+export {
+  modelSpeedSchema,
+  modelPricingTierSchema,
+  modelCapabilitiesSchema,
+  modelPricingSchema,
+  modelEntrySchema,
+  enrichedModelInfoSchema,
+  modelSelectionSchema,
+} from "./contracts/models"
+
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe
 // Access them via:
