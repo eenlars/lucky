@@ -3,12 +3,12 @@
 import { AlertDialog } from "@/components/ui/alert-dialog"
 import { useInvokeWorkflow } from "@/hooks/queries/useInvocationMutations"
 import { useDeleteWorkflow } from "@/hooks/queries/useWorkflowMutations"
-import { useWorkflowsQuery } from "@/hooks/queries/useWorkflowsQuery"
 import { cn } from "@/lib/utils"
 import type { WorkflowWithVersions } from "@/lib/workflows"
+import { useWorkflowStore } from "@/stores/workflow-store"
 import { Pencil, Play, Plus, RefreshCw, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 function WorkflowRow({
   workflow,
@@ -159,8 +159,20 @@ export default function WorkflowsPage() {
     variant: "default",
   })
 
-  // Use TanStack Query hooks
-  const { data: workflows = [], isLoading, error, refetch } = useWorkflowsQuery()
+  // Use Zustand store for optimistic loading
+  const { workflows, loading: isLoading, error, loadWorkflows, removeWorkflow } = useWorkflowStore()
+
+  // Load workflows on mount - use ref to prevent dependency issues
+  const hasLoadedRef = useRef(false)
+  useEffect(() => {
+    if (!hasLoadedRef.current) {
+      hasLoadedRef.current = true
+      loadWorkflows()
+    }
+  }, [loadWorkflows])
+
+  const refetch = () => loadWorkflows({ showLoading: true })
+
   const invokeWorkflow = useInvokeWorkflow()
   const deleteWorkflowMutation = useDeleteWorkflow({
     onError: (error: Error) => {
@@ -228,6 +240,9 @@ export default function WorkflowsPage() {
   const confirmDelete = async () => {
     if (confirmDialog.workflowId) {
       await deleteWorkflowMutation.mutateAsync(confirmDialog.workflowId)
+      // Optimistically remove from store
+      removeWorkflow(confirmDialog.workflowId)
+      setConfirmDialog({ open: false, workflowId: null })
     }
   }
 
@@ -262,7 +277,7 @@ export default function WorkflowsPage() {
       {/* Error state */}
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-200 text-red-700 rounded-md dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400">
-          {error.message}
+          {error}
         </div>
       )}
 
