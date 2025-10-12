@@ -85,7 +85,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
+    let query = supabase.from("WorkflowInvocation").select(
+      `
+      *,
+      WorkflowVersion!inner(
+        wf_version_id,
+        Workflow!inner(
+          wf_id,
+          description
+        )
+      )
+    `,
+      { count: "exact" },
+    )
 
     // Apply filters
     if (filters.status) {

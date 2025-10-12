@@ -5,6 +5,13 @@ import { useQuery } from "@tanstack/react-query"
 type WorkflowInvocationWithScores = Database["public"]["Tables"]["WorkflowInvocation"]["Row"] & {
   accuracy?: number | null
   fitness_score?: number | null
+  WorkflowVersion?: {
+    wf_version_id: string
+    Workflow?: {
+      wf_id: string
+      description: string
+    }
+  }
 }
 
 interface WorkflowInvocationFilters {
