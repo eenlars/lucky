@@ -21,8 +21,17 @@ function isLocalhost(): boolean {
  * Feature flags - set to true to enable on localhost
  */
 const FEATURE_FLAGS = {
+  /** Enable connectors marketplace page */
+  CONNECTORS: true,
+
   /** Enable MCP tools functionality */
   MCP_TOOLS: true,
+
+  /** Enable eval/run mode in workflow editor */
+  EVAL_MODE: true,
+
+  /** Enable evolution/learning runs page */
+  EVOLUTION: true,
 
   /** Toggle to disable tool use in workflow execution */
   DISABLE_TOOLS_TOGGLE: true,
