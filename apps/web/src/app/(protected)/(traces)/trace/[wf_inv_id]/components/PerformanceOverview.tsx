@@ -2,7 +2,7 @@
 
 import { SmartContent } from "@/components/utils/SmartContent"
 import type { Tables } from "@lucky/shared/client"
-import { ChevronDown, FileText, Files } from "lucide-react"
+import { ChevronDown, FileText } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"

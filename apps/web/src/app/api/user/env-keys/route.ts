@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
-import { decryptGCM, encryptGCM } from "@/lib/crypto/lockbox"
+import { encryptGCM } from "@/lib/crypto/lockbox"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 

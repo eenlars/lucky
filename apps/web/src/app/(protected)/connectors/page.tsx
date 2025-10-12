@@ -20,6 +20,7 @@ import {
   Shield,
   X,
 } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { MCPServersConfig } from "./mcp-servers"
 import { type Connector, mockConnectors } from "./mock-data"
@@ -214,9 +215,11 @@ function ConnectorCard({
       <div className="p-6">
         <div className="flex items-start gap-4">
           {connector.logo_url ? (
-            <img
+            <Image
               src={connector.logo_url}
               alt={connector.display_name}
+              width={48}
+              height={48}
               className="size-12 rounded-lg object-contain flex-shrink-0"
             />
           ) : (
@@ -284,9 +287,11 @@ function InstalledConnectorCard({
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
             {connector.logo_url ? (
-              <img
+              <Image
                 src={connector.logo_url}
                 alt={connector.display_name}
+                width={48}
+                height={48}
                 className="size-12 rounded-lg object-contain flex-shrink-0"
               />
             ) : (
@@ -395,9 +400,11 @@ function ConnectorDetailModal({
         <div className="flex items-start justify-between p-6 border-b border-border">
           <div className="flex items-start gap-4 flex-1">
             {connector.logo_url ? (
-              <img
+              <Image
                 src={connector.logo_url}
                 alt={connector.display_name}
+                width={64}
+                height={64}
                 className="size-16 rounded-lg object-contain flex-shrink-0"
               />
             ) : (

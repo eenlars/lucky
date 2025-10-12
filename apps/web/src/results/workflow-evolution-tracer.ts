@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 "use server"
 
 import { createClient } from "@/lib/supabase/server"

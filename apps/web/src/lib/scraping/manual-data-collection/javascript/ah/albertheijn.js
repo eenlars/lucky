@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 ;(() => {
   // --- CONFIGURE SELECTORS ---
   const containerSelector = ".search_list__C45Tu"

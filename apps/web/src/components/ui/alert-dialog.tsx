@@ -2,7 +2,6 @@
 
 import { AlertCircle, CheckCircle, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Button } from "./button"
 
 interface AlertDialogProps {
   open: boolean

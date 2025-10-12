@@ -5,7 +5,6 @@ import {
   extractCoordinates,
   transformLocationData,
 } from "@lucky/examples/definitions/googlescraper/convert"
-/* eslint-disable no-restricted-imports */
 import type { GoogleMapsBusiness } from "@lucky/examples/definitions/googlescraper/main/types/GoogleMapsBusiness"
 import { toDomain } from "../utils"
 

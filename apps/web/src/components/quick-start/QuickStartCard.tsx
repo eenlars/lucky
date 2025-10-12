@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { ArrowRight, Sparkles } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
