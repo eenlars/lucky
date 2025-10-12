@@ -4,8 +4,9 @@
  */
 
 import { requireAuth } from "@/lib/api-auth"
+import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { MODEL_CATALOG, getAllProviders } from "@lucky/models"
+import { getAllProviders } from "@lucky/models"
 import type { ModelId, UserModelPreferences } from "@lucky/shared"
 import { userModelPreferencesSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
@@ -39,29 +40,34 @@ export async function GET(_req: NextRequest) {
     // Create map of available providers for validation
     const validProviders = new Set(getAllProviders())
 
+    // Filter to valid providers
+    const validData = data.filter(row => validProviders.has(row.provider))
+
+    // Check API key status for all providers in parallel
+    const providerNames = validData.map(row => row.provider)
+    const keyStatusMap = await checkMultipleProviderKeys(clerkId, providerNames)
+
     // Build provider settings - use model IDs as-is from database
-    const providers = data
-      .filter(row => validProviders.has(row.provider))
-      .map(row => {
-        // IMPORTANT: Do NOT normalize model IDs!
-        // OpenAI expects "gpt-5-nano", OpenRouter expects "openai/gpt-5-nano"
-        // The database stores whatever format the provider's API expects
-        // The MODEL_CATALOG's `model` field shows the correct format for each provider
-        const enabledModels = (row.enabled_models as string[]) || []
+    const providers = validData.map(row => {
+      // IMPORTANT: Do NOT normalize model IDs!
+      // OpenAI expects "gpt-5-nano", OpenRouter expects "openai/gpt-5-nano"
+      // The database stores whatever format the provider's API expects
+      // The MODEL_CATALOG's `model` field shows the correct format for each provider
+      const enabledModels = (row.enabled_models as string[]) || []
 
-        // Convert timestamp to ISO format
-        const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
+      // Convert timestamp to ISO format
+      const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
 
-        return {
-          provider: row.provider,
-          enabledModels,
-          isEnabled: row.is_enabled,
-          metadata: {
-            apiKeyConfigured: true, // TODO: Check actual API key status
-            lastUpdated,
-          },
-        }
-      })
+      return {
+        provider: row.provider,
+        enabledModels,
+        isEnabled: row.is_enabled,
+        metadata: {
+          apiKeyConfigured: keyStatusMap.get(row.provider) ?? false,
+          lastUpdated,
+        },
+      }
+    })
 
     // Build UserModelPreferences response
     const preferences: UserModelPreferences = {
