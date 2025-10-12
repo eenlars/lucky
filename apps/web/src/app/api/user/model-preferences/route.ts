@@ -36,9 +36,6 @@ export async function GET(_req: NextRequest) {
       return NextResponse.json({ error: `Failed to fetch preferences: ${error.message}` }, { status: 500 })
     }
 
-    // Log raw database data
-    console.log("[API] Raw database data:", JSON.stringify(data, null, 2))
-
     // Create map of available providers for validation
     const validProviders = new Set(getAllProviders())
 
@@ -46,15 +43,11 @@ export async function GET(_req: NextRequest) {
     const providers = data
       .filter(row => validProviders.has(row.provider))
       .map(row => {
-        const rawModels = (row.enabled_models as string[]) || []
-        console.log(`[API] Provider ${row.provider} - Raw models from DB:`, rawModels)
-
         // IMPORTANT: Do NOT normalize model IDs!
         // OpenAI expects "gpt-5-nano", OpenRouter expects "openai/gpt-5-nano"
         // The database stores whatever format the provider's API expects
         // The MODEL_CATALOG's `model` field shows the correct format for each provider
-        const enabledModels = rawModels
-        console.log(`[API] Provider ${row.provider} - Enabled models (no normalization):`, enabledModels)
+        const enabledModels = (row.enabled_models as string[]) || []
 
         // Convert timestamp to ISO format
         const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
@@ -76,12 +69,8 @@ export async function GET(_req: NextRequest) {
       lastSynced: new Date().toISOString(),
     }
 
-    console.log("[API] Final response before Zod validation:", JSON.stringify(preferences, null, 2))
-
     // Validate with Zod
     const validated = userModelPreferencesSchema.parse(preferences)
-
-    console.log("[API] After Zod validation - sending to client")
 
     return NextResponse.json(validated)
   } catch (e: unknown) {
@@ -126,7 +115,7 @@ export async function PUT(req: NextRequest) {
   const validProviders = new Set(getAllProviders())
 
   try {
-    // Validate all models against MODEL_CATALOG
+    // Validate providers (but not models - provider API is source of truth)
     for (const providerSettings of preferences.providers) {
       if (!validProviders.has(providerSettings.provider)) {
         return NextResponse.json(
@@ -138,27 +127,8 @@ export async function PUT(req: NextRequest) {
         )
       }
 
-      for (const modelId of providerSettings.enabledModels) {
-        const catalogEntry = MODEL_CATALOG.find(m => m.id === modelId)
-        if (!catalogEntry) {
-          return NextResponse.json(
-            {
-              error: `Model not found in catalog: ${modelId}`,
-            },
-            { status: 400 },
-          )
-        }
-
-        // Verify the model actually uses the specified provider API
-        if (catalogEntry.provider !== providerSettings.provider) {
-          return NextResponse.json(
-            {
-              error: `Model ${modelId} uses ${catalogEntry.provider} API, not ${providerSettings.provider}`,
-            },
-            { status: 400 },
-          )
-        }
-      }
+      // Note: We don't validate models against MODEL_CATALOG because the provider's API
+      // is the source of truth. Our catalog is just for enrichment with pricing/metadata.
     }
 
     // Update each provider's settings

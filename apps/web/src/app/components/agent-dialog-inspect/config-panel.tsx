@@ -117,26 +117,44 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
     // Get all models for the provider from catalog
     const allModels = getModelsByProvider(providerToFetch).filter(m => m.active)
+    const catalogMap = new Map(allModels.map(m => [m.model, m]))
 
     // Get user's enabled models for this provider
     const enabledModelIds = getEnabledModels(providerToFetch)
 
-    console.log(`[config-panel] Provider: ${providerToFetch}`)
-    console.log(`[config-panel] Total active models in catalog: ${allModels.length}`)
-    console.log("[config-panel] User enabled model IDs:", enabledModelIds)
-
-    // If user has enabled specific models, filter to only show those
+    // If user has enabled specific models, show those (even if not in catalog)
     if (enabledModelIds.length > 0) {
-      const filtered = allModels.filter(m => enabledModelIds.includes(m.id))
-      console.log(
-        "[config-panel] Filtered models:",
-        filtered.map(m => m.id),
-      )
-      return filtered
+      // IMPORTANT: enabledModelIds contains provider-specific model names (e.g., "gpt-5-nano")
+      // We must match by m.model, not m.id (which is "openai/gpt-5-nano")
+      const result = enabledModelIds.map(modelName => {
+        const catalogEntry = catalogMap.get(modelName)
+        if (catalogEntry) {
+          return catalogEntry
+        }
+        // Model not in catalog - create a minimal entry so it can still be selected
+        // This handles new provider models not yet added to our static catalog
+        return {
+          id: `${providerToFetch}/${modelName}`,
+          model: modelName,
+          provider: providerToFetch,
+          active: true,
+          contextLength: 0,
+          intelligence: 5,
+          speed: "medium" as const,
+          input: 0,
+          output: 0,
+          supportsTools: false,
+          supportsVision: false,
+          supportsReasoning: false,
+          supportsAudio: false,
+          supportsVideo: false,
+          cachedInput: null,
+        }
+      })
+      return result
     }
 
-    // Otherwise show all models
-    console.log("[config-panel] No enabled models filter, showing all")
+    // Otherwise show all catalog models
     return allModels
   }, [selectedProvider, preferences, getEnabledModels])
 

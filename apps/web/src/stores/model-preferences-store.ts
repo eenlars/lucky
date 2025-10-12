@@ -48,7 +48,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         set({ isLoading: true, error: null })
 
         try {
-          console.log("[model-preferences-store] Loading preferences from server...")
           const response = await fetch("/api/user/model-preferences")
 
           if (!response.ok) {
@@ -56,7 +55,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           }
 
           const data = await response.json()
-          console.log("[model-preferences-store] Loaded preferences:", data)
 
           set({
             preferences: data,
@@ -77,11 +75,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       // Get enabled models for a provider (from local state)
       getEnabledModels: (provider: string) => {
         const { preferences } = get()
-        console.log(`[Zustand] getEnabledModels called for provider: ${provider}`)
-        console.log("[Zustand] Current preferences:", preferences)
-        const result = getEnabledModelsForProvider(preferences, provider)
-        console.log(`[Zustand] Returning enabled models for ${provider}:`, result)
-        return result
+        return getEnabledModelsForProvider(preferences, provider)
       },
 
       // Check if a model is enabled (from local state)
@@ -99,20 +93,8 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           return
         }
 
-        // Validate model exists in catalog
-        const catalogEntry = MODEL_CATALOG.find(m => m.id === modelId)
-        if (!catalogEntry) {
-          toast.error(`Model ${modelId} not found in catalog`)
-          return
-        }
-
-        // Verify the actual provider matches (don't parse "/" from ID!)
-        if (catalogEntry.provider !== provider) {
-          toast.error(
-            `Model ${modelId} uses ${catalogEntry.provider} API, not ${provider}. Use ${catalogEntry.provider} settings.`,
-          )
-          return
-        }
+        // Note: We don't validate against MODEL_CATALOG because the provider's API is the source of truth
+        // Our catalog is just for enrichment with pricing/metadata, not for gatekeeping
 
         // Optimistic update
         const previousPreferences = preferences
@@ -157,18 +139,8 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           return
         }
 
-        // Validate all models exist in catalog and use correct provider
-        for (const modelId of modelIds) {
-          const catalogEntry = MODEL_CATALOG.find(m => m.id === modelId)
-          if (!catalogEntry) {
-            toast.error(`Model ${modelId} not found in catalog`)
-            return
-          }
-          if (catalogEntry.provider !== provider) {
-            toast.error(`Model ${modelId} uses ${catalogEntry.provider}, not ${provider}`)
-            return
-          }
-        }
+        // Note: We don't validate against MODEL_CATALOG because the provider's API is the source of truth
+        // Our catalog is just for enrichment with pricing/metadata, not for gatekeeping
 
         // Optimistic update
         const previousPreferences = preferences
