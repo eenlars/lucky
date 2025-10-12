@@ -2,7 +2,8 @@
 // Drop this anywhere; call persist(finalConfig, analysisResult?)
 
 import path from "node:path"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { mkdirIfMissing, writeJsonAtomic } from "@core/utils/common/files"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -20,8 +21,8 @@ export async function persistWorkflow(
   skipBackup = false,
 ): Promise<void> {
   // compute directories at runtime to respect test overrides
-  const OUT_DIR = path.dirname(path.resolve(PATHS.setupFile))
-  const BACKUP_DIR = path.join(PATHS.node.logging, "backups")
+  const OUT_DIR = path.dirname(path.resolve(config.paths.setupFile))
+  const BACKUP_DIR = path.join(config.paths.node.logging, "backups")
 
   await mkdirIfMissing(OUT_DIR)
   await mkdirIfMissing(BACKUP_DIR)

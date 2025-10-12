@@ -1,6 +1,6 @@
 // src/core/node/persistence/nodePersistence.ts
 
-import { isLoggingEnabled } from "@core/core-config/compat"
+import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { IPersistence, NodeVersionData } from "@together/adapter-supabase"

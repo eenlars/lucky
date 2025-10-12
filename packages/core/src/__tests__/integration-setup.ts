@@ -12,9 +12,10 @@ import path from "node:path"
 import dotenv from "dotenv"
 
 // Load environment variables from repo root using PATHS
-import { PATHS } from "@core/core-config/compat"
-dotenv.config({ path: path.join(PATHS.root, ".env") })
-dotenv.config({ path: path.join(PATHS.root, ".env.local") })
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
+dotenv.config({ path: path.join(config.paths.root, ".env") })
+dotenv.config({ path: path.join(config.paths.root, ".env.local") })
 
 // Ensure required environment variables are set - error if missing
 const requiredEnvVars = ["GOOGLE_API_KEY", "OPENAI_API_KEY", "SUPABASE_ANON_KEY", "SUPABASE_PROJECT_ID"]
