@@ -113,12 +113,12 @@ export default function ProvidersPage() {
                     Currently Unavailable
                   </Button>
                 ) : (
-                  <Link href={`/settings/providers/${config.slug}`}>
-                    <Button variant="outline" size="sm" className="w-full group">
+                  <Button variant="outline" size="sm" className="w-full group" asChild>
+                    <Link href={`/settings/providers/${config.slug}`}>
                       {providerData.hasApiKey ? "Manage" : "Configure"}
                       <ArrowRight className="size-4 ml-auto group-hover:translate-x-0.5 transition-transform" />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 )}
               </CardContent>
             </Card>
