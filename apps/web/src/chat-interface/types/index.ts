@@ -36,6 +36,8 @@ export interface MessageMetadata {
   hasCode?: boolean
   /** Whether this message contains markdown */
   hasMarkdown?: boolean
+  /** Workflow data for workflow-enabled messages */
+  workflowData?: WorkflowMessageData
 }
 
 export interface Source {
@@ -43,6 +45,30 @@ export interface Source {
   title: string
   url?: string
   excerpt?: string
+}
+
+export interface WorkflowMessageData {
+  /** Type of workflow message */
+  type: "generation" | "execution" | "result"
+  /** Current status */
+  status?: "generating" | "running" | "complete" | "error"
+  /** Workflow ID */
+  workflowId?: string
+  /** Workflow name */
+  workflowName?: string
+  /** Number of nodes in workflow */
+  nodeCount?: number
+  /** Current node being executed */
+  currentNode?: string
+  /** Execution progress (0-100) */
+  progress?: number
+  /** Result data */
+  result?: {
+    output: string | Record<string, unknown>
+    cost?: number
+    duration?: number
+    nodeCount?: number
+  }
 }
 
 // ============================================================================
