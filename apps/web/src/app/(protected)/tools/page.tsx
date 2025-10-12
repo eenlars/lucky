@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import {
   ArrowRight,
@@ -10,6 +11,7 @@ import {
   Database,
   Github,
   HardDrive,
+  Lock,
   Mail,
   Play,
   Search,
@@ -127,6 +129,7 @@ const tools: MCPTool[] = [
 ]
 
 export default function ToolsPage() {
+  const mcpToolsEnabled = useFeatureFlag("MCP_TOOLS")
   const [selectedTool, setSelectedTool] = useState<MCPTool>(tools[0])
   const [input, setInput] = useState(JSON.stringify(tools[0].example, null, 2))
   const [output, setOutput] = useState("")
@@ -197,6 +200,52 @@ export default function ToolsPage() {
     } catch {
       return false
     }
+  }
+
+  // Disabled state UI (shown when feature flag is off)
+  if (!mcpToolsEnabled) {
+    return (
+      <div className="flex h-full bg-background">
+        {/* Sidebar */}
+        <div className="w-64 border-r border-border bg-sidebar/30">
+          <div className="p-6 border-b border-border">
+            <h1 className="text-lg font-semibold text-foreground">MCP Tools</h1>
+            <p className="text-xs text-muted-foreground mt-1">Test your connections</p>
+          </div>
+
+          <div className="p-3 opacity-50">
+            {tools.map(tool => (
+              <button
+                type="button"
+                key={tool.id}
+                disabled
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-not-allowed text-muted-foreground"
+              >
+                <div className="p-1.5 rounded-md bg-muted/50">{tool.icon}</div>
+                <span className="font-medium">{tool.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Content - Coming Soon */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-md px-6">
+            <div className="size-20 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-6">
+              <Lock className="size-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
+            <p className="text-muted-foreground mb-6">
+              MCP Tools testing is currently under development. This feature will be available soon.
+            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+              <Lock className="size-4" />
+              Feature in Development
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
