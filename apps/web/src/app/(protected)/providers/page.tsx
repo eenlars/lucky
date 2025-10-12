@@ -19,6 +19,16 @@ interface ProviderCardData {
   hasApiKey: boolean
 }
 
+interface EnvKey {
+  name: string
+}
+
+interface ProviderPreference {
+  provider: string
+  enabledModels: string[]
+  isEnabled: boolean
+}
+
 export default function ProvidersPage() {
   const [providers, setProviders] = useState<ProviderCardData[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -28,20 +38,24 @@ export default function ProvidersPage() {
     loadProviders()
   }, [])
 
+  /**
+   * Load provider configurations and preferences.
+   * Fetches API key status and enabled models for all providers.
+   */
   const loadProviders = async () => {
     setIsLoading(true)
     try {
       // Load all env keys
       const keysResponse = await fetch("/api/user/env-keys")
-      const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
-      const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
+      const keysData: { keys: EnvKey[] } = keysResponse.ok ? await keysResponse.json() : { keys: [] }
+      const keyNames = new Set(keysData.keys.map(k => k.name))
 
-      // Load all provider settings
-      const settingsResponse = await fetch("/api/user/provider-settings")
-      const settingsData = settingsResponse.ok ? await settingsResponse.json() : { settings: [] }
-      const settingsMap = new Map<string, { provider: string; enabledModels: string[] }>(
-        settingsData.settings.map((s: { provider: string; enabledModels: string[] }) => [s.provider, s]),
-      )
+      // Load all provider preferences from unified API
+      const preferencesResponse = await fetch("/api/user/model-preferences")
+      const preferencesData: { providers: ProviderPreference[] } = preferencesResponse.ok
+        ? await preferencesResponse.json()
+        : { providers: [] }
+      const settingsMap = new Map<string, ProviderPreference>(preferencesData.providers.map(p => [p.provider, p]))
 
       const providerData: ProviderCardData[] = (Object.keys(PROVIDER_CONFIGS) as LuckyProvider[]).map(provider => {
         const config = PROVIDER_CONFIGS[provider]
