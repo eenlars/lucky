@@ -758,6 +758,7 @@ export type Database = {
         | "result-error"
         | "aggregated"
         | "sequential"
+      severity_level: "info" | "warn" | "error" | "debug" | "fatal"
       WorkflowOperation: "init" | "crossover" | "mutation" | "immigrant"
     }
     CompositeTypes: {
@@ -895,6 +896,7 @@ const _Constants = {
         "aggregated",
         "sequential",
       ],
+      severity_level: ["info", "warn", "error", "debug", "fatal"],
       WorkflowOperation: ["init", "crossover", "mutation", "immigrant"],
     },
   },

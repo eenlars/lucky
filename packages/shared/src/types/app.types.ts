@@ -8,6 +8,51 @@ export type Database = {
   }
   app: {
     Tables: {
+      errors: {
+        Row: {
+          clerk_id: string | null
+          created_at: string
+          env: string
+          error: Json | null
+          hash: string
+          id: number
+          last_seen: string
+          location: string
+          message: string
+          severity: Database["app"]["Enums"]["severity_level"]
+          stack: string | null
+          total_count: number
+        }
+        Insert: {
+          clerk_id?: string | null
+          created_at?: string
+          env: string
+          error?: Json | null
+          hash: string
+          id?: number
+          last_seen?: string
+          location: string
+          message: string
+          severity?: Database["app"]["Enums"]["severity_level"]
+          stack?: string | null
+          total_count?: number
+        }
+        Update: {
+          clerk_id?: string | null
+          created_at?: string
+          env?: string
+          error?: Json | null
+          hash?: string
+          id?: number
+          last_seen?: string
+          location?: string
+          message?: string
+          severity?: Database["app"]["Enums"]["severity_level"]
+          stack?: string | null
+          total_count?: number
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           clerk_id: string | null
@@ -184,7 +229,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      severity_level: "info" | "warn" | "error" | "debug" | "fatal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -305,6 +350,8 @@ export type Constants = typeof _Constants
 
 const _Constants = {
   app: {
-    Enums: {},
+    Enums: {
+      severity_level: ["info", "warn", "error", "debug", "fatal"],
+    },
   },
 } as const

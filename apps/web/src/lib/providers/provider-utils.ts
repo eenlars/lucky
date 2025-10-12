@@ -1,6 +1,6 @@
 import { getProviderInfo } from "@lucky/models"
 import type { LucideIcon } from "lucide-react"
-import { Bot, Globe, Zap } from "lucide-react"
+import { Bot } from "lucide-react"
 
 export interface ProviderConfig {
   name: string
@@ -8,7 +8,8 @@ export interface ProviderConfig {
   description: string
   apiKeyName: string
   apiKeyPrefix: string
-  icon: LucideIcon
+  icon?: LucideIcon
+  logo?: string
   docsUrl: string
   keysUrl: string
   defaultModelsCount: number
@@ -25,7 +26,7 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     description: "Direct access to GPT models from OpenAI",
     apiKeyName: "OPENAI_API_KEY",
     apiKeyPrefix: "sk-",
-    icon: Bot,
+    logo: "/logos/openai.png",
     docsUrl: "https://platform.openai.com/docs",
     keysUrl: "https://platform.openai.com/api-keys",
   },
@@ -34,7 +35,7 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     description: "Ultra-fast inference with Groq's LPU",
     apiKeyName: "GROQ_API_KEY",
     apiKeyPrefix: "gsk_",
-    icon: Zap,
+    logo: "/logos/groq.png",
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
     disabled: true,
@@ -44,7 +45,7 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     description: "Access to 100+ models from multiple providers",
     apiKeyName: "OPENROUTER_API_KEY",
     apiKeyPrefix: "sk-or-v1-",
-    icon: Globe,
+    logo: "/logos/openrouter.svg",
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
     disabled: true,
