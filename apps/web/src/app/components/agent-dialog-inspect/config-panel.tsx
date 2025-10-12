@@ -4,8 +4,9 @@ import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
-import { MODEL_CATALOG } from "@lucky/models"
+import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
 import type { ModelEntry } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
@@ -14,7 +15,7 @@ import {
   type MCPToolName,
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 // Get available providers dynamically from PROVIDER_CONFIGS, excluding disabled ones
 const PROVIDERS = Object.keys(PROVIDER_CONFIGS).filter(provider => !PROVIDER_CONFIGS[provider].disabled)
@@ -73,6 +74,9 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
+  // Zustand store for model preferences
+  const { preferences, isLoading, loadPreferences, getEnabledModels } = useModelPreferencesStore()
+
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
   const mcpTools = node.data.mcpTools || []
@@ -89,77 +93,30 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }
     return PROVIDERS[0] || "openai"
   })
-  const [availableModels, setAvailableModels] = useState<ModelEntry[]>([])
-  const [isLoadingModels, setIsLoadingModels] = useState(false)
-  const [userEnabledModels, setUserEnabledModels] = useState<Set<string>>(new Set())
 
-  // Fetch user's provider settings to get enabled models
-  const fetchProviderSettings = useCallback(async (provider: string) => {
-    try {
-      const response = await fetch(`/api/user/provider-settings/${provider}`)
-      if (response.ok) {
-        const data = await response.json()
-        return new Set<string>(data.enabledModels || [])
-      }
-      return new Set<string>()
-    } catch (error) {
-      console.error("Failed to fetch provider settings:", error)
-      return new Set<string>()
-    }
-  }, [])
-
-  // Fetch models for the selected provider
-  const fetchModels = useCallback(
-    async (provider: string) => {
-      setIsLoadingModels(true)
-      try {
-        // Fetch all models for the provider from catalog
-        const modelsResponse = await fetch("/api/models", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "getModelsByProvider", provider }),
-        })
-
-        if (!modelsResponse.ok) {
-          throw new Error("Failed to fetch models")
-        }
-
-        const modelsData = await modelsResponse.json()
-        const allModels: ModelEntry[] = modelsData.models || []
-
-        // Fetch user's enabled models for this provider
-        const enabledModels = await fetchProviderSettings(provider)
-        setUserEnabledModels(enabledModels)
-
-        // Filter to only show models the user has enabled
-        // Note: enabled models might be stored as "gpt-4o" or "openai/gpt-4o"
-        // We need to check both formats for compatibility
-        const filteredModels =
-          enabledModels.size > 0
-            ? allModels.filter(m => {
-                // Check full ID (e.g., "openai/gpt-4o")
-                if (enabledModels.has(m.id)) return true
-                // Check model name only (e.g., "gpt-4o") for backwards compatibility
-                if (enabledModels.has(m.model)) return true
-                return false
-              })
-            : allModels
-
-        setAvailableModels(filteredModels)
-      } catch (error) {
-        console.error("Failed to fetch models:", error)
-        setAvailableModels([])
-      } finally {
-        setIsLoadingModels(false)
-      }
-    },
-    [fetchProviderSettings],
-  )
-
-  // Fetch models when provider changes
+  // Load preferences on mount
   useEffect(() => {
-    fetchModels(selectedProvider)
-  }, [selectedProvider, fetchModels])
+    if (!preferences) {
+      loadPreferences()
+    }
+  }, [preferences, loadPreferences])
+
+  // Compute available models based on user preferences and selected provider
+  const availableModels = useMemo(() => {
+    // Get all models for the provider from catalog
+    const allModels = getModelsByProvider(selectedProvider).filter(m => m.active)
+
+    // Get user's enabled models for this provider
+    const enabledModelIds = getEnabledModels(selectedProvider)
+
+    // If user has enabled specific models, filter to only show those
+    if (enabledModelIds.length > 0) {
+      return allModels.filter(m => enabledModelIds.includes(m.id))
+    }
+
+    // Otherwise show all models
+    return allModels
+  }, [selectedProvider, preferences, getEnabledModels])
 
   // Sync state when node changes
   useEffect(() => {
@@ -416,10 +373,10 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                   modelName: e.target.value as AnyModelName,
                 })
               }
-              disabled={isLoadingModels}
+              disabled={isLoading}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoadingModels ? (
+              {isLoading ? (
                 <option value="">Loading models...</option>
               ) : availableModels.length === 0 ? (
                 <option value="">No models enabled</option>
@@ -433,7 +390,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             </select>
 
             {/* Model Metadata Display */}
-            {!isLoadingModels &&
+            {!isLoading &&
               node.data.modelName &&
               availableModels.length > 0 &&
               (() => {
@@ -484,7 +441,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
           </div>
 
           {/* Warning when no models are enabled */}
-          {!isLoadingModels && availableModels.length === 0 && (
+          {!isLoading && availableModels.length === 0 && (
             <div className="mt-4 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
               <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-1">
                 No models enabled for {selectedProvider}

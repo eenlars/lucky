@@ -75,3 +75,40 @@ export type ApiKeyValidation = z.infer<typeof apiKeyValidationSchema>
 export const providerStatusSchema = z.enum(["configured", "partial", "unconfigured", "disabled"])
 
 export type ProviderStatus = z.infer<typeof providerStatusSchema>
+
+/**
+ * Model ID schema - validates model IDs match MODEL_CATALOG format
+ * Format: "provider/model-name" (e.g., "openai/gpt-4o", "anthropic/claude-sonnet-4")
+ * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG
+ */
+export const modelIdSchema = z.string().min(3)
+
+export type ModelId = z.infer<typeof modelIdSchema>
+
+/**
+ * Enhanced user provider settings with metadata
+ */
+export const userProviderSettingsSchema = z.object({
+  provider: providerNameSchema,
+  enabledModels: z.array(modelIdSchema),
+  isEnabled: z.boolean(),
+  metadata: z
+    .object({
+      apiKeyConfigured: z.boolean(),
+      lastUpdated: z.string().datetime(),
+    })
+    .optional(),
+})
+
+export type UserProviderSettings = z.infer<typeof userProviderSettingsSchema>
+
+/**
+ * Complete user model preferences across all providers
+ */
+export const userModelPreferencesSchema = z.object({
+  providers: z.array(userProviderSettingsSchema),
+  defaultProvider: providerNameSchema.optional(),
+  lastSynced: z.string().datetime(),
+})
+
+export type UserModelPreferences = z.infer<typeof userModelPreferencesSchema>
