@@ -55,10 +55,11 @@ export async function POST(req: NextRequest) {
 
       // Check which providers are actually needed (for now, check all common ones)
       // TODO: Parse workflow to determine exact providers needed
-      if (!apiKeys.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY) {
+      // Session-auth users MUST have keys in their secrets (no process.env fallback)
+      if (!apiKeys.OPENROUTER_API_KEY) {
         missingKeys.push("OPENROUTER_API_KEY")
       }
-      if (!apiKeys.OPENAI_API_KEY && !process.env.OPENAI_API_KEY) {
+      if (!apiKeys.OPENAI_API_KEY) {
         missingKeys.push("OPENAI_API_KEY")
       }
 
