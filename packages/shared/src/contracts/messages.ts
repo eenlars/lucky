@@ -1,4 +1,4 @@
-import type { Json } from "../types/database.types"
+import type { Json } from "../types/supabase.types"
 
 /**
  * Optional annotations for text content

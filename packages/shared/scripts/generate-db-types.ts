@@ -7,32 +7,23 @@ const isCI = env.CI === "1" || env.CI === "true"
 const isVercel = env.VERCEL === "1" || env.VERCEL === "true"
 const skipGeneration = env.SKIP_DB_TYPES_GENERATION === "1" || env.SKIP_DB_TYPES_GENERATION === "true"
 
-const outPath = resolve(import.meta.dir, "../src/types/database.types.ts")
+// Define all schemas to generate - each schema gets its own file
+const schemas = [
+  { name: "public", filename: "public.types.ts" },
+  { name: "iam", filename: "iam.types.ts" },
+  { name: "lockbox", filename: "lockbox.types.ts" },
+  { name: "app", filename: "app.types.ts" },
+  { name: "mcp", filename: "mcp.types.ts" },
+]
 
-async function main() {
-  // Skip generation in CI/Vercel builds to use committed types
-  if (skipGeneration || isCI || isVercel) {
-    console.log("Using committed database types (Vercel/CI build)")
-    return
-  }
+const projectId = "qnvprftdorualkdyogka"
 
-  console.log("Generating Supabase types…")
+async function generateSchemaTypes(schemaName: string, outputFilename: string, tempDir: string) {
+  const outPath = resolve(import.meta.dir, `../src/types/${outputFilename}`)
 
-  const tempDir = resolve(import.meta.dir, "../.tmp/supabase")
-  if (!existsSync(tempDir)) {
-    mkdirSync(tempDir, { recursive: true })
-  }
-  const args = [
-    "x",
-    "supabase@latest",
-    "gen",
-    "types",
-    "typescript",
-    "--project-id",
-    "qnvprftdorualkdyogka",
-    "--schema",
-    "public,iam,lockbox,app",
-  ]
+  console.log(`Generating ${schemaName} schema types…`)
+
+  const args = ["x", "supabase@latest", "gen", "types", "typescript", "--project-id", projectId, "--schema", schemaName]
 
   const proc = Bun.spawn(["bun", ...args], {
     stdout: "pipe",
@@ -47,31 +38,56 @@ async function main() {
       XDG_CACHE_HOME: tempDir,
     },
   })
+
   const stdout = await new Response(proc.stdout).text()
   const stderr = proc.stderr ? await new Response(proc.stderr).text() : ""
   const exitCode = await proc.exited
+
   if (exitCode !== 0) {
     const combinedOutput = `${stdout}\n${stderr}`
     if (/AccessDenied|EACCES/i.test(combinedOutput)) {
-      console.warn("Supabase CLI could not access its temp directory. Using committed types instead.")
-      return
+      console.warn(`${schemaName} schema: Supabase CLI could not access temp directory. Skipping.`)
+      return false
     }
     console.error(stderr.trim() || stdout.trim())
-    throw new Error(`supabase gen types failed with code ${exitCode}`)
+    throw new Error(`supabase gen types for ${schemaName} failed with code ${exitCode}`)
   }
 
-  // Ensure directory exists and write file
+  // Ensure directory exists
   const dir = dirname(outPath)
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-  writeFileSync(outPath, stdout, "utf-8")
 
-  // Apply local fix equivalent to scripts/fix-db-types.ts to avoid a second spawn
+  // Apply fix for Constants export if present
   const fixed = stdout.replace(
     /export const Constants = \{/,
     "export type Constants = typeof _Constants\n\nconst _Constants = {",
   )
+
   writeFileSync(outPath, fixed, "utf-8")
-  console.log("✓ Supabase types generated and fixed at", outPath)
+  console.log(`✓ ${schemaName} schema types generated at ${outPath}`)
+  return true
+}
+
+async function main() {
+  // Skip generation in CI/Vercel builds to use committed types
+  if (skipGeneration || isCI || isVercel) {
+    console.log("Using committed database types (Vercel/CI build)")
+    return
+  }
+
+  console.log("Generating Supabase types for all schemas…")
+
+  const tempDir = resolve(import.meta.dir, "../.tmp/supabase")
+  if (!existsSync(tempDir)) {
+    mkdirSync(tempDir, { recursive: true })
+  }
+
+  // Generate all schema types
+  for (const schema of schemas) {
+    await generateSchemaTypes(schema.name, schema.filename, tempDir)
+  }
+
+  console.log("\n✓ All schema types generated successfully")
 }
 
 main().catch(err => {
