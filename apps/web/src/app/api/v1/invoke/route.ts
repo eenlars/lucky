@@ -14,8 +14,14 @@ import {
   validateInvokeRequest,
 } from "@/lib/mcp-invoke"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import {
+  FALLBACK_PROVIDER_KEYS,
+  getRequiredProviderKeys,
+  validateProviderKeys,
+} from "@/lib/workflow/provider-validation"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
+import { isNir } from "@lucky/shared/utils/common/isNir"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**
@@ -59,7 +65,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
     }
 
-    const { inputSchema } = workflowLoadResult
+    const { inputSchema, config } = workflowLoadResult
 
     // Validate input against workflow's input schema (if defined)
     if (inputSchema) {
@@ -81,8 +87,28 @@ export async function POST(req: NextRequest) {
     // Create secret resolver for this user
     const secrets = createSecretResolver(principal.clerk_id)
 
-    // Pre-fetch common provider keys for multi-provider workflows
-    const apiKeys = await secrets.getAll(["OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"])
+    // Extract providers required by this workflow for targeted validation
+    const requiredProviderKeys = config ? getRequiredProviderKeys(config, "v1/invoke") : [...FALLBACK_PROVIDER_KEYS]
+
+    // Pre-fetch required provider keys (only those actually needed by this workflow)
+    const apiKeys = await secrets.getAll(requiredProviderKeys)
+
+    // Validate all required keys are present for session-based auth
+    if (principal.auth_method === "session") {
+      const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
+
+      if (!isNir(missingKeys)) {
+        console.error("[v1/invoke] Missing required API keys:", missingKeys)
+        return NextResponse.json(
+          formatErrorResponse(requestId, {
+            code: -32000,
+            message: `This workflow requires API keys that aren't configured: ${missingKeys.join(", ")}. Go to Settings > Provider Settings to add your API keys.`,
+            data: { missingKeys },
+          }),
+          { status: 400 },
+        )
+      }
+    }
 
     // Execute workflow within execution context
     const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
