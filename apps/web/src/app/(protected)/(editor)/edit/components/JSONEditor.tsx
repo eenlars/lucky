@@ -1,8 +1,8 @@
 "use client"
 
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 // Using API route instead of server actions
 import { showToast } from "@/lib/toast-utils"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import { type Tables, genShortId } from "@lucky/shared/client"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"

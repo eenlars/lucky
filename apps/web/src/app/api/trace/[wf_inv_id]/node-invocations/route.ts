@@ -1,6 +1,6 @@
+import { nodeInvocations } from "@/features/trace-visualization/db/Workflow/nodeInvocations"
 import { requireAuth } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { nodeInvocations } from "@/trace-visualization/db/Workflow/nodeInvocations"
 import { NextResponse } from "next/server"
 
 export async function GET(_request: Request, { params }: { params: Promise<{ wf_inv_id: string }> }) {

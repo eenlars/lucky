@@ -1,7 +1,7 @@
 "use client"
 
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { ArrowRight } from "lucide-react"
 import { useMemo } from "react"
 import { useShallow } from "zustand/react/shallow"

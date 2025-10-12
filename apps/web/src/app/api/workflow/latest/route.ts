@@ -1,5 +1,5 @@
+import { retrieveLatestWorkflowVersions } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
-import { retrieveLatestWorkflowVersions } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {

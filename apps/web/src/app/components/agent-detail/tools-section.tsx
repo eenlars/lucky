@@ -1,9 +1,9 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import {
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,

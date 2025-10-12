@@ -1,6 +1,6 @@
 "use client"
 
-import { isMarkdownContent } from "@/trace-visualization/components/utils/markdown"
+import { isMarkdownContent } from "@/features/trace-visualization/components/utils/markdown"
 // Client-side JSON validation utility
 const isJSON = (str: unknown): boolean => {
   try {

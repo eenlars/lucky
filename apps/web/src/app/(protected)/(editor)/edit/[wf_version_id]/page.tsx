@@ -1,8 +1,8 @@
 "use client"
 
+import { AppStoreProvider } from "@/features/react-flow-visualization/store/store"
 import { useWorkflowQuery } from "@/hooks/queries/useWorkflowQuery"
 import { useWorkflowVersionQuery } from "@/hooks/queries/useWorkflowVersionQuery"
-import { AppStoreProvider } from "@/react-flow-visualization/store/store"
 import { notFound, useRouter } from "next/navigation"
 import { use, useEffect } from "react"
 import EditModeSelector from "../components/EditModeSelector"

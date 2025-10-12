@@ -1,5 +1,5 @@
+import { personalProfileSchema } from "@/features/profile/schemas/profile.schema"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { personalProfileSchema } from "@/schemas/profile.schema"
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
