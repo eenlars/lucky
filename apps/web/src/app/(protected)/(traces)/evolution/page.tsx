@@ -90,8 +90,11 @@ export default function EvolutionPage() {
   const fetchRuns = useEvolutionRunsStore(s => s.fetchRuns)
 
   useEffect(() => {
-    fetchRuns({ showLoading: true, reset: true })
-  }, [statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns, limit, fetchRuns])
+    // Only fetch if evolution feature is enabled
+    if (evolutionEnabled) {
+      fetchRuns({ showLoading: true, reset: true })
+    }
+  }, [evolutionEnabled, statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns, limit, fetchRuns])
 
   const getSortValue = (run: EvolutionRunWithStats, field: keyof EvolutionRunWithStats) => {
     if (field === "config") return run.evolution_type || run.config?.mode || ""

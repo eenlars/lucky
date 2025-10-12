@@ -181,17 +181,21 @@ export function ToolsSection({ node }: ToolsSectionProps) {
           <div className="space-y-2">
             <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400">Code & Files</h4>
             <div className="space-y-0.5">
-              {ACTIVE_CODE_TOOL_NAMES.map((tool, idx) => (
-                <ToolCheckbox
-                  key={tool}
-                  tool={tool}
-                  isSelected={codeTools.includes(tool)}
-                  onToggle={() => toggleTool(tool, "code")}
-                  description={ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
-                  shortcut={ACTIVE_MCP_TOOL_NAMES.length + idx + 1}
-                  variant="green"
-                />
-              ))}
+              {ACTIVE_CODE_TOOL_NAMES.map((tool, idx) => {
+                // Calculate shortcut offset: only include MCP tools count if they're enabled
+                const shortcutOffset = mcpToolsEnabled ? ACTIVE_MCP_TOOL_NAMES.length : 0
+                return (
+                  <ToolCheckbox
+                    key={tool}
+                    tool={tool}
+                    isSelected={codeTools.includes(tool)}
+                    onToggle={() => toggleTool(tool, "code")}
+                    description={ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
+                    shortcut={shortcutOffset + idx + 1}
+                    variant="green"
+                  />
+                )
+              })}
             </div>
           </div>
         </div>

@@ -300,7 +300,8 @@ export function IntegratedSidebar() {
         }
       }
     })
-  }, [pathname, filteredNavigationItems])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   // Handle submenu toggle
   const toggleSubmenu = (href: string, e: React.MouseEvent) => {
