@@ -1,7 +1,7 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { History, Play } from "lucide-react"
 import { useState } from "react"
 

@@ -3,9 +3,9 @@
 import Link from "next/link"
 import { use, useMemo } from "react"
 
+import { Timeline } from "@/features/trace-visualization/components/Timeline"
+import type { FullTraceEntry } from "@/features/trace-visualization/types"
 import { useTraceQuery } from "@/hooks/queries/useTraceQuery"
-import { Timeline } from "@/trace-visualization/components/Timeline"
-import type { FullTraceEntry } from "@/trace-visualization/types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { Tables } from "@lucky/shared/client"
 import PerformanceOverview from "./components/PerformanceOverview"

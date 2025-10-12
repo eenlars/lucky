@@ -1,10 +1,10 @@
-import { requireAuth } from "@/lib/api-auth"
 import {
   createWorkflow,
   deleteWorkflow,
   retrieveWorkflowVersion,
   saveWorkflowVersion,
-} from "@/trace-visualization/db/Workflow/retrieveWorkflow"
+} from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
+import { requireAuth } from "@/lib/api-auth"
 import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
 

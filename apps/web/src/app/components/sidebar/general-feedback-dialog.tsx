@@ -7,8 +7,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/react-flow-visualization/components/ui/dialog"
-import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+} from "@/features/react-flow-visualization/components/ui/dialog"
+import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
 import type { FeedbackContext } from "@lucky/shared/contracts/feedback"
 import { Paperclip } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"

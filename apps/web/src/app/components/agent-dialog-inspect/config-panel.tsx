@@ -1,9 +1,9 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
 import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"

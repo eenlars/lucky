@@ -1,4 +1,4 @@
-import { AppStoreProvider } from "@/react-flow-visualization/store/store"
+import { AppStoreProvider } from "@/features/react-flow-visualization/store/store"
 import EditModeSelector from "./components/EditModeSelector"
 
 export default async function WorkflowBuilder() {

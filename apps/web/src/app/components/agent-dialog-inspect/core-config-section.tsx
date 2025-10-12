@@ -1,8 +1,8 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedUpdate } from "./hooks/use-debounced-update"

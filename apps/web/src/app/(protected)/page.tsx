@@ -1,7 +1,7 @@
 "use client"
 
-import { ChatInterface } from "@/chat-interface/ChatInterface"
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
+import { ChatInterface } from "@/features/chat-interface/ChatInterface"
 import { Sparkles } from "lucide-react"
 import { useState } from "react"
 

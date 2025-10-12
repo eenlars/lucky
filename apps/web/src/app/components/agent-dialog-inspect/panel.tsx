@@ -1,7 +1,7 @@
 "use client"
 
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 import { ConfigPanel } from "./config-panel"
