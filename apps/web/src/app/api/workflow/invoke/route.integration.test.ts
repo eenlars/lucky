@@ -1,3 +1,4 @@
+import { FALLBACK_PROVIDER_KEYS } from "@/lib/workflow/provider-validation"
 import { extractRequiredProviders, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { describe, expect, it } from "vitest"
@@ -222,13 +223,15 @@ describe("Workflow Invoke API - Provider Validation", () => {
 
   describe("Fallback behavior", () => {
     it("should use fallback keys when workflow config is malformed", () => {
-      // Simulate the fallback scenario in the API route
-      const fallbackKeys = ["OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GROQ_API_KEY"]
+      // Test uses the real FALLBACK_PROVIDER_KEYS constant from provider-validation
+      // This ensures the test fails if the fallback list drifts
+      const fallbackKeys = [...FALLBACK_PROVIDER_KEYS]
 
       expect(fallbackKeys).toContain("OPENROUTER_API_KEY")
       expect(fallbackKeys).toContain("OPENAI_API_KEY")
       expect(fallbackKeys).toContain("ANTHROPIC_API_KEY")
       expect(fallbackKeys).toContain("GROQ_API_KEY")
+      expect(fallbackKeys).toHaveLength(4)
     })
   })
 })
