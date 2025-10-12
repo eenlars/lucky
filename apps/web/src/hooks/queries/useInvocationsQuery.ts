@@ -5,6 +5,13 @@ import { useQuery } from "@tanstack/react-query"
 type WorkflowInvocationWithScores = Database["public"]["Tables"]["WorkflowInvocation"]["Row"] & {
   accuracy?: number | null
   fitness_score?: number | null
+  WorkflowVersion?: {
+    wf_version_id: string
+    Workflow?: {
+      wf_id: string
+      description: string
+    }
+  }
 }
 
 interface WorkflowInvocationFilters {
@@ -84,6 +91,11 @@ export function useInvocationsQuery({
       return {
         data: result.data as WorkflowInvocationWithScores[],
         totalCount: result.totalCount as number,
+        aggregates: result.aggregates as {
+          totalSpent: number
+          avgAccuracy: number | null
+          failedCount: number
+        },
       }
     },
     staleTime: 10_000, // 10 seconds

@@ -85,7 +85,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let query = supabase.from("WorkflowInvocation").select("*", { count: "exact" })
+    let query = supabase.from("WorkflowInvocation").select(
+      `
+      *,
+      WorkflowVersion!inner(
+        wf_version_id,
+        Workflow!inner(
+          wf_id,
+          description
+        )
+      )
+    `,
+      { count: "exact" },
+    )
 
     // Apply filters
     if (filters.status) {
@@ -158,11 +170,105 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Compute aggregate statistics for the entire filtered dataset
+    let aggregateQuery = supabase.from("WorkflowInvocation").select(
+      `
+      usd_cost,
+      status,
+      WorkflowVersion!inner(
+        wf_version_id,
+        Workflow!inner(
+          wf_id
+        )
+      )
+    `,
+      { count: "exact" },
+    )
+
+    // Apply the same filters to the aggregate query
+    if (filters.status) {
+      if (typeof filters.status === "string") {
+        aggregateQuery = aggregateQuery.eq("status", filters.status)
+      } else if (Array.isArray(filters.status) && filters.status.length > 0) {
+        aggregateQuery = aggregateQuery.in("status", filters.status)
+      }
+    }
+    if (filters.runId) {
+      aggregateQuery = aggregateQuery.eq("run_id", filters.runId)
+    }
+    if (filters.generationId) {
+      aggregateQuery = aggregateQuery.eq("generation_id", filters.generationId)
+    }
+    if (filters.wfVersionId) {
+      aggregateQuery = aggregateQuery.eq("wf_version_id", filters.wfVersionId)
+    }
+    if (filters.dateRange) {
+      aggregateQuery = aggregateQuery
+        .gte("start_time", filters.dateRange.start)
+        .lte("start_time", filters.dateRange.end)
+    }
+    if (filters.dateFrom) {
+      aggregateQuery = aggregateQuery.gte("start_time", filters.dateFrom)
+    }
+    if (filters.dateTo) {
+      aggregateQuery = aggregateQuery.lte("start_time", filters.dateTo)
+    }
+    if (filters.minCost !== undefined) {
+      aggregateQuery = aggregateQuery.gte("usd_cost", filters.minCost)
+    }
+    if (filters.maxCost !== undefined) {
+      aggregateQuery = aggregateQuery.lte("usd_cost", filters.maxCost)
+    }
+    if (filters.minAccuracy !== undefined) {
+      aggregateQuery = aggregateQuery.gte("accuracy", filters.minAccuracy)
+    }
+    if (filters.maxAccuracy !== undefined) {
+      aggregateQuery = aggregateQuery.lte("accuracy", filters.maxAccuracy)
+    }
+    if (filters.minFitness !== undefined) {
+      aggregateQuery = aggregateQuery.gte("fitness", filters.minFitness)
+    }
+    if (filters.maxFitness !== undefined) {
+      aggregateQuery = aggregateQuery.lte("fitness", filters.maxFitness)
+    }
+    if (filters.hasFitnessScore === true) {
+      aggregateQuery = aggregateQuery.not("fitness", "is", null)
+    }
+    if (filters.hasFitnessScore === false) {
+      aggregateQuery = aggregateQuery.is("fitness", null)
+    }
+    if (filters.hasAccuracy === true) {
+      aggregateQuery = aggregateQuery.not("accuracy", "is", null)
+    }
+    if (filters.hasAccuracy === false) {
+      aggregateQuery = aggregateQuery.is("accuracy", null)
+    }
+
+    const { data: aggregateData, error: aggregateError } = await aggregateQuery
+
+    if (aggregateError) {
+      console.error("Error fetching aggregate data:", aggregateError)
+      // Don't fail the request if aggregates fail, just return empty aggregates
+    }
+
+    // Compute aggregates from the data
+    const aggregates = (() => {
+      const totalSpent = aggregateData?.reduce((sum, inv) => sum + inv.usd_cost, 0) || 0
+      const failedCount = aggregateData?.filter(inv => inv.status === "failed").length || 0
+      // Note: accuracy is not available in WorkflowInvocation table directly
+      // It would require joining with WorkflowInvocationEval table
+      // For now, setting to null as it's an optional metric
+      const avgAccuracy = null
+
+      return { totalSpent, avgAccuracy, failedCount }
+    })()
+
     return NextResponse.json({
       data: data || [],
       totalCount: count || 0,
       page,
       pageSize,
+      aggregates,
     })
   } catch (error) {
     console.error("Error fetching workflow invocations:", error)
