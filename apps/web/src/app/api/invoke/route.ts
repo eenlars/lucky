@@ -44,13 +44,16 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(input),
     })
 
-    if (!invokeResponse.ok) {
-      const errorData = await invokeResponse.json()
-      return NextResponse.json({ error: errorData.error }, { status: invokeResponse.status })
+    const result = await invokeResponse.json()
+
+    // Handle JSON-RPC 2.0 response format
+    if ("error" in result) {
+      // JSON-RPC error response
+      return NextResponse.json({ error: result.error.message }, { status: invokeResponse.status })
     }
 
-    const result = await invokeResponse.json()
-    return NextResponse.json(result.data, { status: 200 })
+    // JSON-RPC success response - extract output from result
+    return NextResponse.json(result.result.output, { status: 200 })
   } catch (error) {
     console.error("Prompt-only API Error:", error)
     return NextResponse.json({ error: "Failed to process prompt-only request" }, { status: 500 })
