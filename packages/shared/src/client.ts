@@ -22,6 +22,7 @@ export type {
 } from "./types/tool.types"
 
 // Types only (no runtime code)
+// Export combined database types that include all schemas (public, iam, lockbox, app, mcp)
 export type {
   Database,
   Enums,
@@ -29,7 +30,7 @@ export type {
   Tables,
   TablesInsert,
   TablesUpdate,
-} from "./types/database.types"
+} from "./types/supabase.types"
 
 // Model types (type-only, client-safe)
 // Note: Most model types are now simplified to string. Runtime validation handles correctness.
