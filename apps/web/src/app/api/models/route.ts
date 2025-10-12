@@ -1,4 +1,5 @@
 import { getActiveModelNames, getModelV2 } from "@lucky/core/utils/spending/functions"
+import { getActiveModels, getModelsByProvider } from "@lucky/models"
 import type { LuckyProvider } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -22,7 +23,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ model: modelInfo })
     }
 
-    return NextResponse.json({ error: "Invalid action. Use 'getActiveModelNames' or 'getModelV2'" }, { status: 400 })
+    if (action === "getModelsByProvider") {
+      if (!provider) {
+        // Return all active models if no provider specified
+        const models = getActiveModels()
+        return NextResponse.json({ models })
+      }
+      // Return models for specific provider
+      const models = getModelsByProvider(provider).filter(m => m.active)
+      return NextResponse.json({ models })
+    }
+
+    return NextResponse.json(
+      { error: "Invalid action. Use 'getActiveModelNames', 'getModelV2', or 'getModelsByProvider'" },
+      { status: 400 },
+    )
   } catch (error) {
     console.error("Models API error:", error)
     return NextResponse.json(

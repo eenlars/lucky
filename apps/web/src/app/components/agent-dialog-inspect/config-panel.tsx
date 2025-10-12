@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
+import type { ModelEntry } from "@lucky/models"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -75,6 +76,47 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
   const mcpTools = node.data.mcpTools || []
   const codeTools = node.data.codeTools || []
+
+  // Provider and model state
+  const [selectedProvider, setSelectedProvider] = useState<string>(() => {
+    // Initialize provider from node's current modelName (e.g., "openai/gpt-4o" -> "openai")
+    if (node.data.modelName) {
+      const provider = node.data.modelName.split("/")[0]
+      return PROVIDERS.includes(provider) ? provider : PROVIDERS[0] || "openai"
+    }
+    return PROVIDERS[0] || "openai"
+  })
+  const [availableModels, setAvailableModels] = useState<ModelEntry[]>([])
+  const [isLoadingModels, setIsLoadingModels] = useState(false)
+
+  // Fetch models for the selected provider
+  const fetchModels = useCallback(async (provider: string) => {
+    setIsLoadingModels(true)
+    try {
+      const response = await fetch("/api/models", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getModelsByProvider", provider }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch models")
+      }
+
+      const data = await response.json()
+      setAvailableModels(data.models || [])
+    } catch (error) {
+      console.error("Failed to fetch models:", error)
+      setAvailableModels([])
+    } finally {
+      setIsLoadingModels(false)
+    }
+  }, [])
+
+  // Fetch models when provider changes
+  useEffect(() => {
+    fetchModels(selectedProvider)
+  }, [selectedProvider, fetchModels])
 
   // Sync state when node changes
   useEffect(() => {
@@ -306,8 +348,9 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             </label>
             <select
               id="model-provider"
+              value={selectedProvider}
+              onChange={e => setSelectedProvider(e.target.value)}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-              defaultValue={PROVIDERS[0] || "openai"}
             >
               {PROVIDERS.map(provider => (
                 <option key={provider} value={provider}>
@@ -330,14 +373,71 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                   modelName: e.target.value as AnyModelName,
                 })
               }
-              className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              disabled={isLoadingModels}
+              className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="openai/gpt-4o">GPT-4o</option>
-              <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-              <option value="anthropic/claude-3-opus">Claude 3 Opus</option>
-              <option value="anthropic/claude-3-sonnet">Claude 3 Sonnet</option>
-              <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+              {isLoadingModels ? (
+                <option value="">Loading models...</option>
+              ) : availableModels.length === 0 ? (
+                <option value="">No models available</option>
+              ) : (
+                availableModels.map(model => (
+                  <option key={model.id} value={model.id}>
+                    {model.model}
+                  </option>
+                ))
+              )}
             </select>
+
+            {/* Model Metadata Display */}
+            {!isLoadingModels &&
+              node.data.modelName &&
+              availableModels.length > 0 &&
+              (() => {
+                const selectedModel = availableModels.find(m => m.id === node.data.modelName)
+                if (!selectedModel) return null
+
+                return (
+                  <div className="mt-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {selectedModel.supportsTools && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                          Tools
+                        </span>
+                      )}
+                      {selectedModel.supportsVision && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                          Vision
+                        </span>
+                      )}
+                      {selectedModel.speed === "fast" && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                          Fast
+                        </span>
+                      )}
+                      {selectedModel.speed === "slow" && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                          Slow
+                        </span>
+                      )}
+                      {selectedModel.intelligence >= 8 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                          High IQ
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+                      <div>{selectedModel.contextLength.toLocaleString()} tokens context</div>
+                      <div>
+                        ${selectedModel.input.toFixed(2)} / ${selectedModel.output.toFixed(2)} per 1M tokens
+                        {selectedModel.cachedInput !== null && (
+                          <span className="ml-1 text-gray-500">(cached: ${selectedModel.cachedInput.toFixed(2)})</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })()}
           </div>
         </div>
       </CollapsibleSection>
