@@ -19,7 +19,7 @@
  */
 
 import crypto from "node:crypto"
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { Mutations } from "@core/improvement/gp/operators/Mutations"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
@@ -157,18 +157,19 @@ export class Genome extends Workflow {
     evolutionMode: FlowEvolutionMode
   }): Promise<RS<Genome>> {
     try {
+      const config = getCoreConfig()
       // apply poisson distribution for mutation aggression randomness
       // poisson(1, 4, 5) generates values between 1-5 with bias towards lower values
       const randomness = EvolutionUtils.poisson(1, 4, 5)
 
       // in verbose mode, skip expensive workflow generation for testing
-      if (CONFIG.evolution.GP.verbose) {
+      if (config.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createRandom")
         return R.success(createDummyGenome(parentWorkflowVersionIds, _evolutionContext), 0)
       }
 
       // baseWorkflow method: start from existing workflow and mutate it
-      if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
+      if (config.evolution.GP.initialPopulationMethod === "baseWorkflow") {
         if (!baseWorkflow) {
           return R.error("Base workflow required for baseWorkflow initialization method", 0)
         }
@@ -253,8 +254,9 @@ export class Genome extends Workflow {
     problemAnalysis: string
   }): Promise<RS<Genome>> {
     try {
+      const config = getCoreConfig()
       const randomness = EvolutionUtils.poisson(1, 4, 5)
-      if (CONFIG.evolution.GP.verbose) {
+      if (config.evolution.GP.verbose) {
         lgg.log("verbose mode: skipping workflow generation for createPrepared")
         return R.success(createDummyGenome(parentWorkflowVersionIds, _evolutionContext), 0)
       }

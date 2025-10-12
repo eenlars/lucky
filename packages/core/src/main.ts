@@ -44,8 +44,8 @@
  * - Database tracking of evolution runs
  */
 
-import { CONFIG, PATHS } from "@core/core-config/compat"
 import { SELECTED_QUESTION } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { AggregatedEvaluator } from "@core/evaluation/evaluators/AggregatedEvaluator"
 import { GPEvaluatorAdapter } from "@core/evaluation/evaluators/GPEvaluatorAdapter"
 import { prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
@@ -101,7 +101,7 @@ const {
     GP: { generations: configGenerations, populationSize: configPopulationSize },
     iterativeIterations: ITERATIVE_EVOLUTION_ITERATIONS,
   },
-} = CONFIG
+} = getCoreConfig()
 
 const GP_GENERATIONS = cliGenerations ?? configGenerations
 const GP_POPULATION_SIZE = cliPopulationSize ?? configPopulationSize
@@ -172,6 +172,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
    * ITERATIVE IMPROVEMENT
    * ------------------------------------------------------------------ */
   if (mode === "iterative") {
+    const config = getCoreConfig()
     const runService = new RunService(true, mode, undefined, persistence)
 
     // create iterative evolution config
@@ -185,12 +186,12 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     await runService.createRun(SELECTED_QUESTION.goal, iterativeConfig)
 
     // initialize spending tracker
-    if (CONFIG.limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
-      lgg.log(`spending limit: $${CONFIG.limits.maxCostUsdPerRun}`)
+    if (config.limits.enableSpendingLimits) {
+      SpendingTracker.getInstance().initialize(config.limits.maxCostUsdPerRun)
+      lgg.log(`spending limit: $${config.limits.maxCostUsdPerRun}`)
     }
 
-    let setup = await loadSingleWorkflow(cliSetupFile ?? PATHS.setupFile)
+    let setup = await loadSingleWorkflow(cliSetupFile ?? config.paths.setupFile)
     guard(setup, "Setup not found")
 
     let totalCost = 0
@@ -263,7 +264,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
             workflowVersionId: wfVersionId,
           })
 
-          await runner.prepareWorkflow(SELECTED_QUESTION, CONFIG.workflow.prepareProblemMethod)
+          await runner.prepareWorkflow(SELECTED_QUESTION, config.workflow.prepareProblemMethod)
           const { success, error, data: evaluationResult } = await aggregatedEvaluator.evaluate(runner)
 
           if (!success) {
@@ -302,7 +303,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
           lastSuccessfulConfig = newConfig
 
           // Save updated configuration after each successful iteration
-          const targetFile = cliSetupFile ?? PATHS.setupFile
+          const targetFile = cliSetupFile ?? config.paths.setupFile
           await persistWorkflow(
             newConfig,
             targetFile,
@@ -377,7 +378,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
 
     // Always save final configuration to setupfile after iterative evolution run
     if (lastSuccessfulConfig) {
-      const targetFile = cliSetupFile ?? PATHS.setupFile
+      const targetFile = cliSetupFile ?? config.paths.setupFile
       await persistWorkflow(
         lastSuccessfulConfig,
         targetFile,
@@ -394,15 +395,16 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
   /* ------------------------------------------------------------------
    * 🧬  GENETIC PROGRAMMING EVOLUTION
    * ------------------------------------------------------------------ */
+  const config = getCoreConfig()
   const allRunResults: GeneticResult["results"] = []
   let totalCostAllRuns = 0
 
   lgg.log(`\n🧬 Starting Genetic Programming with ${SELECTED_QUESTION.type} workflow cases`)
 
   // initialize spending tracker for GP
-  if (CONFIG.limits.enableSpendingLimits) {
-    SpendingTracker.getInstance().initialize(CONFIG.limits.maxCostUsdPerRun)
-    lgg.log(`spending limit: $${CONFIG.limits.maxCostUsdPerRun}`)
+  if (config.limits.enableSpendingLimits) {
+    SpendingTracker.getInstance().initialize(config.limits.maxCostUsdPerRun)
+    lgg.log(`spending limit: $${config.limits.maxCostUsdPerRun}`)
   }
 
   // create evolution config for aggregated evaluation
@@ -410,7 +412,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
     populationSize: GP_POPULATION_SIZE,
     generations: GP_GENERATIONS,
     offspringCount: Math.floor(GP_POPULATION_SIZE * 0.8),
-    maxCostUSD: CONFIG.limits.maxCostUsdPerRun,
+    maxCostUSD: config.limits.maxCostUsdPerRun,
     maxEvaluationsPerHour: 500,
     immigrantRate: 3,
     immigrantInterval: 5,
@@ -418,7 +420,7 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
 
   const { problemAnalysis, workflowIO, newGoal } = await prepareProblem(
     SELECTED_QUESTION,
-    CONFIG.workflow.prepareProblemMethod,
+    config.workflow.prepareProblemMethod,
   )
 
   // create evaluator with all workflow cases, and evaluate.
@@ -430,8 +432,8 @@ async function runEvolution(): Promise<IterativeResult | GeneticResult> {
 
   // Determine optional base workflow for GP mode using the Loader (centralized logging)
   let baseWorkflowForGP: ReturnType<typeof loadSingleWorkflow> extends Promise<infer T> ? T | undefined : undefined
-  if (CONFIG.evolution.GP.initialPopulationMethod === "baseWorkflow") {
-    const requestedGPFile = cliSetupFile ?? CONFIG.evolution.GP.initialPopulationFile
+  if (config.evolution.GP.initialPopulationMethod === "baseWorkflow") {
+    const requestedGPFile = cliSetupFile ?? config.evolution.GP.initialPopulationFile
     baseWorkflowForGP = await loadSingleWorkflow(requestedGPFile ?? undefined)
   }
 

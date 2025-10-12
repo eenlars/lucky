@@ -199,7 +199,8 @@ vi.mock("@core/clients/supabase/client", () => ({
   },
 }))
 
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler, loadSingleWorkflow } from "../WorkflowLoader"
 
@@ -223,7 +224,7 @@ describe("WorkflowConfigHandler", () => {
   })
 
   it("should export convenience function", async () => {
-    const workflow = await loadSingleWorkflow(PATHS.setupFile)
+    const workflow = await loadSingleWorkflow(config.paths.setupFile)
 
     expect(workflow).toBeDefined()
     expect(workflow.entryNodeId).toBeDefined()

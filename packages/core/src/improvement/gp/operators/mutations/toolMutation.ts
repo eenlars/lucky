@@ -6,8 +6,7 @@
  * perform actions, making tool mutations critical for capability evolution.
  */
 
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
@@ -23,7 +22,7 @@ import z from "zod"
 import type { Genome } from "../../Genome"
 import type { MutationOperator } from "./mutation.types"
 
-const OPERATORS_WITH_FEEDBACK = CONFIG.improvement.flags.operatorsWithFeedback
+const OPERATORS_WITH_FEEDBACK = getCoreConfig().improvement.flags.operatorsWithFeedback
 
 /**
  * Mutates tool assignments across workflow nodes.

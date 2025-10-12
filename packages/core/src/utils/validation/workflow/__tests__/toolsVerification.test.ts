@@ -1,5 +1,4 @@
-import { CONFIG, getDefaultModels } from "@core/core-config/compat"
-import { getCoreConfig, initCoreConfig } from "@core/core-config/coreConfig"
+import { getCoreConfig, getDefaultModels, initCoreConfig } from "@core/core-config/coreConfig"
 import type { CoreToolsConfig } from "@core/core-config/types"
 import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -625,7 +624,14 @@ describe("verifyMaxToolsPerAgent", () => {
 describe("verifyModelsAreActive", () => {
   it("should detect inactive models", async () => {
     // Add model to inactive array temporarily
-    CONFIG.models.inactive.push("inactive-model")
+    const prevConfig = getCoreConfig()
+    initCoreConfig({
+      ...prevConfig,
+      models: {
+        ...prevConfig.models,
+        inactive: [...prevConfig.models.inactive, "inactive-model"],
+      },
+    })
 
     const inactiveModelWorkflow: WorkflowConfig = {
       entryNodeId: "node1",
@@ -649,8 +655,7 @@ describe("verifyModelsAreActive", () => {
     expect(errors[0]).toContain("node1")
 
     // Clean up
-    const index = CONFIG.models.inactive.indexOf("inactive-model")
-    if (index > -1) CONFIG.models.inactive.splice(index, 1)
+    initCoreConfig(prevConfig)
   })
 
   it("should allow active models", async () => {

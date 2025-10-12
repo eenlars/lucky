@@ -1,4 +1,5 @@
-import { CONFIG, PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { getSelfImprovePrompt } from "@core/improvement/behavioral/self-improve/node/selfImprovement.p"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
@@ -32,7 +33,7 @@ export async function selfImproveHelper({
   // use summaries instead of raw transcript when enabled
   let executionData: string
 
-  if (CONFIG.improvement.flags.useSummariesForImprovement) {
+  if (config.improvement.flags.useSummariesForImprovement) {
     try {
       if (!persistence) {
         lgg.warn(`no persistence adapter available for node ${n.nodeId}, skipping summaries`)
@@ -99,7 +100,7 @@ export async function selfImproveHelper({
   }
 
   saveInLoc(
-    `${PATHS.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
+    `${config.paths.node.logging}/learn/self_improvement_${n.nodeId}_${new Date().toISOString()}.json`,
     JSON.stringify({ updated_node_config, learn_points, improve_points, usdCost }, null, 2),
   )
 

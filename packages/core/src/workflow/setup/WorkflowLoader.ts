@@ -1,4 +1,5 @@
-import { CONFIG, PATHS, isLoggingEnabled } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { mkdirIfMissing } from "@core/utils/common/files"
 import { BrowserEnvironmentError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
@@ -100,7 +101,7 @@ export class WorkflowConfigHandler {
     const path = await import("node:path")
     const fs = await import("node:fs")
 
-    const setupFolderPath = path.dirname(path.resolve(PATHS.setupFile))
+    const setupFolderPath = path.dirname(path.resolve(config.paths.setupFile))
     try {
       if (!fs.existsSync(setupFolderPath)) {
         fs.mkdirSync(setupFolderPath, { recursive: true })
@@ -190,7 +191,7 @@ export class WorkflowConfigHandler {
   /**
    * Load single workflow configuration from setupfile.json
    */
-  async loadSingleWorkflow(filePath: string = PATHS.setupFile): Promise<WorkflowConfig> {
+  async loadSingleWorkflow(filePath: string = config.paths.setupFile): Promise<WorkflowConfig> {
     if (typeof window !== "undefined") {
       throw new BrowserEnvironmentError("loadSingleWorkflow", {
         suggestedAlternative: "API routes",
@@ -208,8 +209,8 @@ export class WorkflowConfigHandler {
       const normalizedPath = path.join(setupFolderPath, filename)
 
       // Determine source (default vs custom)
-      const defaultFilename = path.basename(PATHS.setupFile)
-      const isDefault = filename === defaultFilename || filePath === PATHS.setupFile
+      const defaultFilename = path.basename(config.paths.setupFile)
+      const isDefault = filename === defaultFilename || filePath === config.paths.setupFile
 
       // Check if file exists, if not create it
       let actualFilePath = normalizedPath
@@ -265,8 +266,8 @@ export class WorkflowConfigHandler {
       }
 
       // Apply default tools from CONFIG if any are specified
-      if (CONFIG.tools.defaultTools.length > 0) {
-        const defaultCodeTools = CONFIG.tools.defaultTools as CodeToolName[]
+      if (config.tools.defaultTools.length > 0) {
+        const defaultCodeTools = config.tools.defaultTools as CodeToolName[]
 
         workflowConfig.nodes = workflowConfig.nodes.map(node => {
           // Get unique tools by combining existing and defaults
@@ -287,7 +288,7 @@ export class WorkflowConfigHandler {
         })
 
         lgg.onlyIf(this.verbose, "[WorkflowConfigHandler] Applied default tools", {
-          defaultTools: CONFIG.tools.defaultTools,
+          defaultTools: config.tools.defaultTools,
           nodesTooLCount: workflowConfig.nodes?.map(n => ({
             nodeId: n.nodeId,
             toolCount: n.codeTools.length,
@@ -396,7 +397,7 @@ export class WorkflowConfigHandler {
       const path = await import("node:path")
       const fs = await import("node:fs")
 
-      const filePath = path.isAbsolute(filename) ? filename : path.join(PATHS.runtime, filename)
+      const filePath = path.isAbsolute(filename) ? filename : path.join(config.paths.runtime, filename)
 
       const fileContent = fs.readFileSync(filePath, "utf-8")
 
@@ -482,7 +483,8 @@ export class WorkflowConfigHandler {
 
     const path = await import("node:path")
     const setupFolderPath = await this.ensureSetupFolder()
-    const backupDir = path.join(PATHS.node.logging, "backups")
+    const coreConfig = getCoreConfig()
+    const backupDir = path.join(coreConfig.paths.node.logging, "backups")
     mkdirIfMissing(backupDir)
 
     const stamp = new Date().toISOString().replace(/[:.]/g, "-")
@@ -509,8 +511,9 @@ export class WorkflowConfigHandler {
   async saveWorkflowConfigToOutput(config: WorkflowConfig, filename: string): Promise<void> {
     const fs = await import("node:fs/promises")
     const path = await import("node:path")
+    const coreConfig = getCoreConfig()
 
-    const filepath = path.join(PATHS.node.logging, "output", filename)
+    const filepath = path.join(coreConfig.paths.node.logging, "output", filename)
     await fs.mkdir(path.dirname(filepath), { recursive: true })
     await fs.writeFile(filepath, JSON.stringify(config, null, 2))
 

@@ -1,5 +1,5 @@
 import { join } from "node:path"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 
 interface FailureStats {
   mutationFailures: number
@@ -22,6 +22,7 @@ class FailureTracker {
   private outputPath: string
 
   constructor() {
+    const config = getCoreConfig()
     this.sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
     this.stats = {
       mutationFailures: 0,
@@ -38,8 +39,8 @@ class FailureTracker {
       sessionId: this.sessionId,
     }
 
-    // Use runtime logging path from PATHS
-    this.outputPath = join(PATHS.node.logging, `gp_failure_tracking_${this.sessionId}.json`)
+    // Use runtime logging path from config
+    this.outputPath = join(config.paths.node.logging, `gp_failure_tracking_${this.sessionId}.json`)
     console.log(`[FailureTracker] Tracking file will be saved to: ${this.outputPath}`)
 
     // Create initial file to verify it works

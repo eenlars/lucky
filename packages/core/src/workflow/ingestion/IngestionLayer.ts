@@ -1,4 +1,5 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { CONFIG } from "@core/core-config/compat"
+import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { GAIALoader } from "@core/evaluation/benchmarks/gaia/GAIALoader"
 import { SWEBenchLoader } from "@core/evaluation/benchmarks/swe/SWEBenchLoader"
 import { truncater } from "@core/utils/common/llmify"

@@ -1,5 +1,5 @@
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
@@ -32,6 +32,7 @@ export const prepareProblem = async (
   workflowIO: WorkflowIO[]
   problemAnalysis: string
 }> => {
+  const config = getCoreConfig()
   lgg.info("[prepareProblem] Processing evaluation input", {
     type: task.type,
     goal: task.goal,
@@ -52,7 +53,7 @@ export const prepareProblem = async (
   // New workflow invocation method
   if (method === "workflow") {
     lgg.info("[prepareProblem] Using workflow version ID for problem analysis", {
-      workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+      workflowVersionId: config.workflow.prepareProblemWorkflowVersionId,
       method,
     })
 
@@ -61,7 +62,7 @@ export const prepareProblem = async (
 
     // Invoke the workflow with the specified version ID
     const invocationInput: InvocationInput = {
-      workflowVersionId: CONFIG.workflow.prepareProblemWorkflowVersionId,
+      workflowVersionId: config.workflow.prepareProblemWorkflowVersionId,
       evalInput: {
         type: "prompt-only", // no need to evaluate this.
         goal: task.goal,

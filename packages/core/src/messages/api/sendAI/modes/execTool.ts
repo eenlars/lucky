@@ -17,8 +17,7 @@
 // TODO: implement tool execution retry strategies with backoff
 // TODO: add tool execution workflow orchestration
 
-import { CONFIG } from "@core/core-config/compat"
-import { getDefaultModels } from "@core/core-config/compat"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
@@ -50,6 +49,7 @@ const spending = SpendingTracker.getInstance()
 export async function execTool(req: ToolRequest): Promise<TResponse<GenerateTextResult<ToolSet, any>>> {
   const { messages, model: modelIn, retries = 2, opts } = req
   const requestedModel: ModelName = modelIn ?? getDefaultModels().default
+  const config = getCoreConfig()
 
   try {
     // TODO: add tool compatibility validation for model
@@ -68,7 +68,7 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
       maxRetries: retries,
       tools: opts.tools,
       toolChoice: opts.toolChoice,
-      stopWhen: stepCountIs(opts.maxSteps ?? CONFIG.tools.maxStepsVercel),
+      stopWhen: stepCountIs(opts.maxSteps ?? config.tools.maxStepsVercel),
     }
 
     // TODO: implement adaptive timeouts based on tool complexity
