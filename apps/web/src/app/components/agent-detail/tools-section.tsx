@@ -60,10 +60,13 @@ export function ToolsSection({ node }: ToolsSectionProps) {
       const num = Number.parseInt(e.key)
       if (num >= 1 && num <= 9) {
         e.preventDefault()
-        const allToolNames = [...ACTIVE_MCP_TOOL_NAMES, ...ACTIVE_CODE_TOOL_NAMES]
+
+        // Build tool list based on feature flags
+        const availableTools = [...(mcpToolsEnabled ? ACTIVE_MCP_TOOL_NAMES : []), ...ACTIVE_CODE_TOOL_NAMES]
+
         const toolIndex = num - 1
-        if (toolIndex < allToolNames.length) {
-          const tool = allToolNames[toolIndex]
+        if (toolIndex < availableTools.length) {
+          const tool = availableTools[toolIndex]
           const type = ACTIVE_MCP_TOOL_NAMES.includes(tool as MCPToolName) ? "mcp" : "code"
           toggleTool(tool, type)
         }
@@ -72,7 +75,7 @@ export function ToolsSection({ node }: ToolsSectionProps) {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isToolsExpanded, toggleTool])
+  }, [isToolsExpanded, mcpToolsEnabled, toggleTool])
 
   return (
     <CollapsibleSection

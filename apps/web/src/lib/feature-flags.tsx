@@ -8,9 +8,10 @@
  * - production: Flags disabled (stable experience)
  */
 
+import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 
-/** Check if we're running on localhost */
+/** Check if we're running on localhost (client-side only) */
 function isLocalhost(): boolean {
   if (typeof window === "undefined") return false
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -45,8 +46,18 @@ export function isFeatureEnabled(flag: FeatureFlagKey): boolean {
 
 /**
  * Hook for React components
+ * Defers localhost check until after mount to avoid SSR/CSR hydration mismatch
  */
 export function useFeatureFlag(flag: FeatureFlagKey): boolean {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // During SSR and initial render, return false
+  // After mount, check if we're on localhost
+  if (!isClient) return false
   return isFeatureEnabled(flag)
 }
 
