@@ -1,10 +1,10 @@
 "use client"
 
+import { ModelGrid } from "@/components/providers/model-selection/ModelGrid"
 import { ProviderConfigSkeleton } from "@/components/providers/provider-skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { Input } from "@/react-flow-visualization/components/ui/input"
 import { Label } from "@/react-flow-visualization/components/ui/label"
@@ -17,14 +17,9 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
-  Image as ImageIcon,
   Loader2,
-  Mic,
   RefreshCw,
   Save,
-  Sparkles,
-  Video,
-  Zap,
 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -59,6 +54,19 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const loadConfiguration = async () => {
     setIsLoading(true)
     try {
+      // Load provider settings first
+      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
+      const loadedEnabledModels = new Set<string>()
+      if (settingsResponse.ok) {
+        const settingsData = await settingsResponse.json()
+        const enabled = settingsData.enabledModels || []
+        setEnabledModels(new Set(enabled))
+        loadedEnabledModels.clear()
+        for (const model of enabled) {
+          loadedEnabledModels.add(model)
+        }
+      }
+
       // Load API key from lockbox
       const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
       if (keyResponse.ok) {
@@ -67,14 +75,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         setIsConfigured(true)
 
         // Load models with the API key
-        await loadModels(keyData.value)
-      }
-
-      // Load provider settings
-      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
-      if (settingsResponse.ok) {
-        const settingsData = await settingsResponse.json()
-        setEnabledModels(new Set(settingsData.enabledModels || []))
+        await loadModels(keyData.value, loadedEnabledModels)
       }
     } catch (error) {
       console.error("Failed to load configuration:", error)
@@ -84,7 +85,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     }
   }
 
-  const loadModels = async (key: string) => {
+  const loadModels = async (key: string, existingEnabledModels: Set<string>) => {
     if (!key) return
 
     setIsLoadingModels(true)
@@ -102,13 +103,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       const data = await response.json()
       setAvailableModels(data.models || [])
 
-      // If no models are enabled yet, enable all by default
-      const settingsResponse = await fetch(`/api/user/provider-settings/${provider}`)
-      if (settingsResponse.ok) {
-        const settingsData = await settingsResponse.json()
-        if (!settingsData.enabledModels || settingsData.enabledModels.length === 0) {
-          setEnabledModels(new Set((data.models || []).map((m: EnrichedModelInfo) => m.name)))
-        }
+      // If no models were previously enabled, enable all by default
+      if (existingEnabledModels.size === 0) {
+        setEnabledModels(new Set((data.models || []).map((m: EnrichedModelInfo) => m.name)))
       }
     } catch (error) {
       console.error("Failed to load models:", error)
@@ -142,9 +139,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
       if (result.success) {
         setTestStatus("success")
-        toast.success(`Connection successful! ${result.modelCount} models available.`)
+        toast.success("Connection successful")
         // Load models after successful test
-        await loadModels(apiKey)
+        await loadModels(apiKey, enabledModels)
       } else {
         setTestStatus("error")
         toast.error(result.error || "Connection failed")
@@ -173,6 +170,12 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
+      // Filter enabled models to only those that exist in availableModels
+      const validModelNames = new Set(availableModels.map(m => m.name))
+      const modelsToSave = [...enabledModels].filter(name => validModelNames.has(name))
+
+      console.log(`Saving ${modelsToSave.length} models for ${provider}`)
+
       // Save API key to lockbox
       const keyResponse = await fetch("/api/user/env-keys", {
         method: "POST",
@@ -193,7 +196,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           provider,
-          enabledModels: [...enabledModels],
+          enabledModels: modelsToSave,
           isEnabled: true,
         }),
       })
@@ -202,6 +205,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         throw new Error("Failed to save provider settings")
       }
 
+      // Update local state to match what was saved
+      setEnabledModels(new Set(modelsToSave))
       setIsConfigured(true)
       setHasUnsavedChanges(false)
       toast.success("Configuration saved successfully")
@@ -224,8 +229,16 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     setHasUnsavedChanges(true)
   }
 
-  const toggleAllModels = (enable: boolean) => {
-    setEnabledModels(enable ? new Set(availableModels.map(m => m.name)) : new Set())
+  const bulkToggleModels = (modelNames: string[], enable: boolean) => {
+    const newEnabledModels = new Set(enabledModels)
+    for (const modelName of modelNames) {
+      if (enable) {
+        newEnabledModels.add(modelName)
+      } else {
+        newEnabledModels.delete(modelName)
+      }
+    }
+    setEnabledModels(newEnabledModels)
     setHasUnsavedChanges(true)
   }
 
@@ -389,115 +402,17 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* Model Selection */}
         <Card>
           <CardHeader>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <CardTitle className="text-lg">Model Selection</CardTitle>
-                <CardDescription>Choose which models are available in your workflows</CardDescription>
-              </div>
-              <Badge variant="outline">
-                {enabledModels.size} / {availableModels.length} enabled
-              </Badge>
-            </div>
+            <CardTitle className="text-lg">Model Selection</CardTitle>
+            <CardDescription>Choose which models are available in your workflows</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {isLoadingModels ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Loader2 className="size-8 animate-spin mx-auto mb-2" />
-                  <p className="text-sm">Loading available models...</p>
-                </div>
-              ) : availableModels.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <AlertCircle className="size-8 mx-auto mb-2" />
-                  <p className="text-sm">Test your connection first to load available models</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex flex-wrap items-center justify-between pb-3 border-b gap-2">
-                    <p className="text-sm text-muted-foreground">Select models to enable</p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleAllModels(false)}
-                        disabled={enabledModels.size === 0}
-                      >
-                        Disable All
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleAllModels(true)}
-                        disabled={enabledModels.size === availableModels.length}
-                      >
-                        Enable All
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                    {availableModels.map(model => (
-                      <div
-                        key={model.id}
-                        className="flex items-start justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="flex-1 min-w-0 mr-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-sm font-medium break-all">{model.name}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {model.speed}
-                            </Badge>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {model.supportsTools && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Zap className="size-3" />
-                                Tools
-                              </Badge>
-                            )}
-                            {model.supportsVision && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <ImageIcon className="size-3" />
-                                Vision
-                              </Badge>
-                            )}
-                            {model.supportsReasoning && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Sparkles className="size-3" />
-                                Reasoning
-                              </Badge>
-                            )}
-                            {model.supportsAudio && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Mic className="size-3" />
-                                Audio
-                              </Badge>
-                            )}
-                            {model.supportsVideo && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Video className="size-3" />
-                                Video
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                            <div>Context: {model.contextLength.toLocaleString()} tokens</div>
-                            <div>
-                              Cost: ${model.inputCostPer1M.toFixed(2)}/{model.outputCostPer1M.toFixed(2)} per 1M tokens
-                            </div>
-                            <div>Intelligence: {model.intelligence}/10</div>
-                          </div>
-                        </div>
-                        <Switch
-                          checked={enabledModels.has(model.name)}
-                          onCheckedChange={() => toggleModel(model.name)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <ModelGrid
+              models={availableModels}
+              enabledModels={enabledModels}
+              onToggleModel={toggleModel}
+              onBulkToggleModels={bulkToggleModels}
+              isLoading={isLoadingModels}
+            />
           </CardContent>
         </Card>
 
