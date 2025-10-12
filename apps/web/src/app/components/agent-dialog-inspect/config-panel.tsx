@@ -307,7 +307,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <select
               id="model-provider"
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-              defaultValue="openai"
+              defaultValue={PROVIDERS[0] || "openai"}
             >
               {PROVIDERS.map(provider => (
                 <option key={provider} value={provider}>

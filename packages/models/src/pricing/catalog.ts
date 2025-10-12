@@ -675,6 +675,12 @@ export function validateCatalogIntegrity(): { valid: boolean; errors: string[] }
   }
 
   for (const model of MODEL_CATALOG) {
+    // Check required fields first to avoid null/undefined errors in subsequent checks
+    if (!model.provider || !model.model || !model.id) {
+      errors.push(`Model ${model.id || "unknown"} is missing required fields`)
+      continue // Skip other checks if required fields are missing
+    }
+
     // Check provider is lowercase
     if (model.provider !== model.provider.toLowerCase()) {
       errors.push(`Model ${model.id} has non-lowercase provider: ${model.provider}`)
@@ -683,11 +689,6 @@ export function validateCatalogIntegrity(): { valid: boolean; errors: string[] }
     // Check ID format includes provider prefix
     if (!model.id.includes("/")) {
       errors.push(`Model ${model.id} has invalid ID format (missing '/' separator)`)
-    }
-
-    // Check required fields
-    if (!model.provider || !model.model || !model.id) {
-      errors.push(`Model ${model.id || "unknown"} is missing required fields`)
     }
 
     // Check pricing values are valid
