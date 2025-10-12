@@ -1,14 +1,22 @@
 "use client"
 
-import { useClerk } from "@clerk/nextjs"
+import { useClerk, useUser } from "@clerk/nextjs"
 import React from "react"
 
 interface UserProfileProps {
   initials?: string
 }
 
-export function UserProfile({ initials = "LA" }: UserProfileProps) {
+export function UserProfile({ initials: providedInitials }: UserProfileProps) {
   const { openUserProfile } = useClerk()
+  const { user } = useUser()
+
+  // Use provided initials or calculate from user data
+  const displayInitials =
+    providedInitials ||
+    (user?.firstName && user?.lastName
+      ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+      : user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "U")
 
   return (
     <div className="relative h-[32px]">
@@ -25,7 +33,7 @@ export function UserProfile({ initials = "LA" }: UserProfileProps) {
           >
             <span className="relative flex shrink-0 overflow-hidden w-[32px] h-[32px] rounded-none border border-[#DCDAD2] dark:border-[#2C2C2C] cursor-pointer hover:opacity-80 transition-opacity">
               <span className="flex items-center justify-center bg-accent rounded-none w-[32px] h-[32px]">
-                <span className="text-xs">{initials}</span>
+                <span className="text-xs">{displayInitials}</span>
               </span>
             </span>
           </div>

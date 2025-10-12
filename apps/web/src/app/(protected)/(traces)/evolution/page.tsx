@@ -3,11 +3,12 @@
 import { EmptyState } from "@/components/empty-states/EmptyState"
 import { HelpTooltip, helpContent } from "@/components/help/HelpTooltip"
 import { Button } from "@/components/ui/button"
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { type EvolutionRunWithStats, useEvolutionRunsStore } from "@/stores/evolution-runs-store"
 import type { Database } from "@lucky/shared/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { Sparkles } from "lucide-react"
+import { Lock, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -61,6 +62,7 @@ const isStaleRun = (run: Tables<"EvolutionRun">) => {
 // Use shared type from store
 
 export default function EvolutionPage() {
+  const evolutionEnabled = useFeatureFlag("EVOLUTION")
   const [_, setTimeUpdate] = useState(0)
   const [_isNavigating, _setIsNavigating] = useState(false)
 
@@ -88,8 +90,11 @@ export default function EvolutionPage() {
   const fetchRuns = useEvolutionRunsStore(s => s.fetchRuns)
 
   useEffect(() => {
-    fetchRuns({ showLoading: true, reset: true })
-  }, [statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns, limit, fetchRuns])
+    // Only fetch if evolution feature is enabled
+    if (evolutionEnabled) {
+      fetchRuns({ showLoading: true, reset: true })
+    }
+  }, [evolutionEnabled, statusFilter, modeFilter, searchTerm, dateFilter, hideEmptyRuns, limit, fetchRuns])
 
   const getSortValue = (run: EvolutionRunWithStats, field: keyof EvolutionRunWithStats) => {
     if (field === "config") return run.evolution_type || run.config?.mode || ""
@@ -139,6 +144,53 @@ export default function EvolutionPage() {
 
     return () => clearInterval(interval)
   }, [])
+
+  // Coming Soon UI when feature flag is disabled
+  if (!evolutionEnabled) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+        {/* Blurred Background */}
+        <div className="blur-[8px] pointer-events-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="mb-8">
+              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Learning Runs</h1>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Watch your workflows learn and improve automatically through evolution
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+              <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded" />
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+              <div className="space-y-4">
+                <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
+                <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-1/2" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Coming Soon Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center max-w-md px-6 pointer-events-auto">
+            <div className="size-20 rounded-2xl bg-background/95 backdrop-blur-sm border border-border flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <Lock className="size-10 text-muted-foreground" />
+            </div>
+            <div className="bg-background/95 backdrop-blur-sm border border-border rounded-2xl p-8 shadow-xl">
+              <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
+              <p className="text-muted-foreground mb-6">
+                Evolution and learning runs are currently under development. This feature will be available soon.
+              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+                <Lock className="size-4" />
+                Feature in Development
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

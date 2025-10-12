@@ -205,42 +205,50 @@ export default function ToolsPage() {
   // Disabled state UI (shown when feature flag is off)
   if (!mcpToolsEnabled) {
     return (
-      <div className="flex h-full bg-background">
-        {/* Sidebar */}
-        <div className="w-64 border-r border-border bg-sidebar/30">
-          <div className="p-6 border-b border-border">
-            <h1 className="text-lg font-semibold text-foreground">MCP Tools</h1>
-            <p className="text-xs text-muted-foreground mt-1">Test your connections</p>
+      <div className="flex h-full bg-background relative">
+        {/* Blurred Background Content */}
+        <div className="flex h-full w-full blur-[8px] pointer-events-none">
+          {/* Sidebar */}
+          <div className="w-64 border-r border-border bg-sidebar/30">
+            <div className="p-6 border-b border-border">
+              <h1 className="text-lg font-semibold text-foreground">MCP Tools</h1>
+              <p className="text-xs text-muted-foreground mt-1">Test your connections</p>
+            </div>
+
+            <div className="p-3">
+              {tools.map(tool => (
+                <button
+                  type="button"
+                  key={tool.id}
+                  disabled
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-not-allowed text-muted-foreground"
+                >
+                  <div className="p-1.5 rounded-md bg-muted/50">{tool.icon}</div>
+                  <span className="font-medium">{tool.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="p-3 opacity-50">
-            {tools.map(tool => (
-              <button
-                type="button"
-                key={tool.id}
-                disabled
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-not-allowed text-muted-foreground"
-              >
-                <div className="p-1.5 rounded-md bg-muted/50">{tool.icon}</div>
-                <span className="font-medium">{tool.name}</span>
-              </button>
-            ))}
-          </div>
+          {/* Main Content Placeholder */}
+          <div className="flex-1" />
         </div>
 
-        {/* Main Content - Coming Soon */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center max-w-md px-6">
-            <div className="size-20 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-6">
+        {/* Coming Soon Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center max-w-md px-6 pointer-events-auto">
+            <div className="size-20 rounded-2xl bg-background/95 backdrop-blur-sm border border-border flex items-center justify-center mx-auto mb-6 shadow-xl">
               <Lock className="size-10 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
-            <p className="text-muted-foreground mb-6">
-              MCP Tools testing is currently under development. This feature will be available soon.
-            </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
-              <Lock className="size-4" />
-              Feature in Development
+            <div className="bg-background/95 backdrop-blur-sm border border-border rounded-2xl p-8 shadow-xl">
+              <h2 className="text-2xl font-semibold text-foreground mb-3">Coming Soon</h2>
+              <p className="text-muted-foreground mb-6">
+                MCP Tools testing is currently under development. This feature will be available soon.
+              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+                <Lock className="size-4" />
+                Feature in Development
+              </div>
             </div>
           </div>
         </div>

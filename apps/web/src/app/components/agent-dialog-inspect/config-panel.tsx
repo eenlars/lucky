@@ -432,7 +432,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             {/* Link to manage models */}
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               <a
-                href={`/providers/${selectedProvider}`}
+                href={`/settings/providers/${selectedProvider}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -501,7 +501,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               <p className="text-xs text-yellow-700 dark:text-yellow-300">
                 Enable models in{" "}
                 <a
-                  href={`/providers/${selectedProvider}`}
+                  href={`/settings/providers/${selectedProvider}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-yellow-900 dark:hover:text-yellow-100"
