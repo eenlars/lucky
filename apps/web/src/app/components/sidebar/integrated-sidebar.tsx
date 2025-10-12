@@ -2,7 +2,8 @@
 
 import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
-import { BarChart2, Dna, Home, Menu, Network, Plug, Settings, Wrench, X } from "lucide-react"
+import { useUser } from "@clerk/nextjs"
+import { BarChart2, Dna, Home, Menu, Network, Plug, Settings, Sparkles, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -42,18 +43,30 @@ const allNavigationItems: NavItemData[] = [
     description: "Start here",
   },
   {
+    type: "editor",
+    href: "/edit",
+    label: "Create",
+    icon: <Sparkles className="w-4 h-4 text-orange-500" />,
+    description: "Build workflows",
+  },
+  {
     type: "workflows",
     href: "/workflows",
     label: "Workflows",
     icon: <Network className="w-4 h-4" />,
     description: "Your workflows",
-  },
-  {
-    type: "editor",
-    href: "/edit",
-    label: "Create",
-    icon: <Wrench className="w-4 h-4" />,
-    description: "Build workflows",
+    submenus: [
+      {
+        type: "workflows-list",
+        label: "Workflows",
+        href: "/workflows",
+      },
+      {
+        type: "past-runs",
+        label: "Past runs",
+        href: "/invocations",
+      },
+    ],
   },
   {
     type: "connectors",
@@ -69,13 +82,6 @@ const allNavigationItems: NavItemData[] = [
       },
       { type: "developer-tools", label: "Developers", href: "/tools" },
     ],
-  },
-  {
-    type: "invocations",
-    href: "/invocations",
-    label: "History",
-    icon: <BarChart2 className="w-4 h-4" />,
-    description: "Past runs",
   },
   {
     type: "evolution",
@@ -180,11 +186,16 @@ function IntegratedNavItem({
             />
 
             {/* Icon - stays at same position */}
-            <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+            <div
+              className={cn(
+                "absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center transition-colors duration-200 pointer-events-none",
+                item.type !== "editor" && "text-sidebar-foreground/70 group-hover:text-sidebar-primary",
+              )}
+            >
               <div
                 className={cn(
                   "transition-colors duration-200",
-                  isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+                  item.type !== "editor" && (isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary"),
                 )}
               >
                 {item.icon}
@@ -211,7 +222,7 @@ function IntegratedNavItem({
                   width="16"
                   xmlns="http://www.w3.org/2000/svg"
                   className={cn(
-                    "transition-transform duration-300 ease-out text-[#888]",
+                    "transition-transform duration-300 ease-out text-[#888] mr-2",
                     isSubmenuOpen && "rotate-180",
                   )}
                 >
@@ -235,11 +246,16 @@ function IntegratedNavItem({
             />
 
             {/* Icon - stays at same position */}
-            <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center text-sidebar-foreground/70 group-hover:text-sidebar-primary transition-colors duration-200 pointer-events-none">
+            <div
+              className={cn(
+                "absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center transition-colors duration-200 pointer-events-none",
+                item.type !== "editor" && "text-sidebar-foreground/70 group-hover:text-sidebar-primary",
+              )}
+            >
               <div
                 className={cn(
                   "transition-colors duration-200",
-                  isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary",
+                  item.type !== "editor" && (isActive ? "text-sidebar-primary" : "group-hover:text-sidebar-primary"),
                 )}
               >
                 {item.icon}
@@ -272,6 +288,13 @@ export function IntegratedSidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(new Set())
   const [isHovered, setIsHovered] = useState(false)
   const { isMobile } = useSidebar()
+  const { user } = useUser()
+
+  // Get user initials
+  const userInitials =
+    user?.firstName && user?.lastName
+      ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+      : user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "AW"
 
   // Auto-expand submenus when on a submenu route
   useEffect(() => {
@@ -336,7 +359,7 @@ export function IntegratedSidebar() {
           onClick={handleNavClick}
         >
           <div className="w-7 h-7 rounded bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-sm">AW</span>
+            <span className="text-sidebar-primary-foreground font-bold text-sm">{userInitials}</span>
           </div>
         </Link>
       </div>
@@ -426,7 +449,7 @@ export function IntegratedSidebar() {
       <FeedbackButton />
 
       {/* User Profile */}
-      <UserProfile initials="AW" />
+      <UserProfile initials={userInitials} />
     </nav>
   )
 
