@@ -6,6 +6,14 @@ export const PROFILE_FIELD_LIMITS = {
 } as const
 
 export const personalProfileSchema = z.object({
+  firstName: z
+    .string()
+    .nullish()
+    .transform(val => val?.trim() || undefined),
+  lastName: z
+    .string()
+    .nullish()
+    .transform(val => val?.trim() || undefined),
   about: z
     .string()
     .max(PROFILE_FIELD_LIMITS.about, `About must be ${PROFILE_FIELD_LIMITS.about} characters or less`)
