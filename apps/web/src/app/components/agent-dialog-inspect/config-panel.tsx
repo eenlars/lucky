@@ -1,10 +1,10 @@
 "use client"
 
+import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
-import type { LuckyProvider } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -14,7 +14,8 @@ import {
 import { ChevronDown } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
-const PROVIDERS: LuckyProvider[] = ["openai", "openrouter", "groq"]
+// Get available providers dynamically from PROVIDER_CONFIGS, excluding disabled ones
+const PROVIDERS = Object.keys(PROVIDER_CONFIGS).filter(provider => !PROVIDER_CONFIGS[provider].disabled)
 
 interface ConfigPanelProps {
   node: AppNode
@@ -306,7 +307,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <select
               id="model-provider"
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-              defaultValue={PROVIDERS[0]}
+              defaultValue={PROVIDERS[0] || "openai"}
             >
               {PROVIDERS.map(provider => (
                 <option key={provider} value={provider}>

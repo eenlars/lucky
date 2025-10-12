@@ -570,22 +570,137 @@ export function findModelById(id: string): ModelEntry | undefined {
 }
 
 /**
+ * Helper: Get all unique providers from the catalog
+ * @throws {Error} If MODEL_CATALOG contains no providers
+ */
+export function getAllProviders(): string[] {
+  if (MODEL_CATALOG.length === 0) {
+    console.warn("[getAllProviders] MODEL_CATALOG is empty")
+    throw new Error("MODEL_CATALOG contains no models")
+  }
+
+  const providers = new Set<string>()
+  for (const model of MODEL_CATALOG) {
+    providers.add(model.provider)
+  }
+
+  const result = Array.from(providers).sort()
+
+  if (result.length === 0) {
+    throw new Error("MODEL_CATALOG contains no valid providers")
+  }
+
+  return result
+}
+
+/**
+ * Helper: Get all providers that have at least one active model
+ */
+export function getActiveProviders(): string[] {
+  const providers = new Set<string>()
+  for (const model of MODEL_CATALOG) {
+    if (model.active) {
+      providers.add(model.provider)
+    }
+  }
+  return Array.from(providers).sort()
+}
+
+/**
+ * Helper: Get provider configuration with model counts
+ */
+export interface ProviderInfo {
+  name: string
+  totalModels: number
+  activeModels: number
+  models: ModelEntry[]
+}
+
+export function getProviderInfo(): ProviderInfo[] {
+  const providerMap = new Map<string, ModelEntry[]>()
+
+  // Group models by provider
+  for (const model of MODEL_CATALOG) {
+    if (!providerMap.has(model.provider)) {
+      providerMap.set(model.provider, [])
+    }
+    providerMap.get(model.provider)!.push(model)
+  }
+
+  // Build provider info
+  return Array.from(providerMap.entries())
+    .map(([name, models]) => ({
+      name,
+      totalModels: models.length,
+      activeModels: models.filter(m => m.active).length,
+      models,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+/**
  * Helper: Get catalog statistics
  */
 export function getCatalogStats() {
   const active = getActiveModels()
+  const providers = getAllProviders()
+  const byProvider: Record<string, number> = {}
+
+  for (const provider of providers) {
+    byProvider[provider] = getModelsByProvider(provider).filter(m => m.active).length
+  }
+
   return {
     total: MODEL_CATALOG.length,
     active: active.length,
-    byProvider: {
-      openai: getModelsByProvider("openai").filter(m => m.active).length,
-      openrouter: getModelsByProvider("openrouter").filter(m => m.active).length,
-      groq: getModelsByProvider("groq").filter(m => m.active).length,
-    },
+    byProvider,
     byPricingTier: {
       low: active.filter(m => m.pricingTier === "low").length,
       medium: active.filter(m => m.pricingTier === "medium").length,
       high: active.filter(m => m.pricingTier === "high").length,
     },
   }
+}
+
+/**
+ * Helper: Validate catalog integrity
+ * Checks for common issues like non-lowercase providers, invalid ID formats, etc.
+ */
+export function validateCatalogIntegrity(): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+
+  if (MODEL_CATALOG.length === 0) {
+    errors.push("MODEL_CATALOG is empty")
+    return { valid: false, errors }
+  }
+
+  for (const model of MODEL_CATALOG) {
+    // Check required fields first to avoid null/undefined errors in subsequent checks
+    if (!model.provider || !model.model || !model.id) {
+      errors.push(`Model ${model.id || "unknown"} is missing required fields`)
+      continue // Skip other checks if required fields are missing
+    }
+
+    // Check provider is lowercase
+    if (model.provider !== model.provider.toLowerCase()) {
+      errors.push(`Model ${model.id} has non-lowercase provider: ${model.provider}`)
+    }
+
+    // Check ID format includes provider prefix
+    if (!model.id.includes("/")) {
+      errors.push(`Model ${model.id} has invalid ID format (missing '/' separator)`)
+    }
+
+    // Check pricing values are valid
+    if (model.input < 0 || model.output < 0) {
+      errors.push(`Model ${model.id} has negative pricing values`)
+    }
+
+    // Check context length is positive
+    if (model.contextLength <= 0) {
+      errors.push(`Model ${model.id} has invalid context length: ${model.contextLength}`)
+    }
+  }
+
+  return { valid: errors.length === 0, errors }
 }
