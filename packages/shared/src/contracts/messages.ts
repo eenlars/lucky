@@ -1,3 +1,5 @@
+import type { Json } from "../types/database.types"
+
 /**
  * Optional annotations for text content
  */
@@ -145,7 +147,7 @@ export type AgentStep<TOOL_CALL_OUTPUT_TYPE = unknown> =
       type: "debug"
       name?: never
       args?: never
-      return: any
+      return: Json
     }
 
 /**

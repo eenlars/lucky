@@ -9,6 +9,7 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
 import type { AiSdkModel, ModelSpec, ProviderConfig } from "../types"
 
 export class ProviderRegistry {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private providers = new Map<string, any>()
   private modelCache = new Map<string, AiSdkModel>()
   private configs: Record<string, ProviderConfig>
@@ -74,6 +75,7 @@ export class ProviderRegistry {
    * Initialize a single provider
    */
   private initializeProvider(id: string, config: ProviderConfig): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let provider: any
 
     switch (id) {

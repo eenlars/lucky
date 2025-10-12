@@ -9,7 +9,7 @@ export type CodeToolName = string
 
 interface ToolError {
   location: string
-  error?: any
+  error?: unknown
 }
 
 // Represents a failed code tool execution

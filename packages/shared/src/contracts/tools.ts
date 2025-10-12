@@ -134,7 +134,8 @@ export interface ToolExecutionContext {
   workflowId: string
   workflowVersionId: string
   workflowFiles?: WorkflowFile[]
-  expectedOutputType?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  expectedOutputType?: any // Overridden by tools package with ZodTypeAny
   mainWorkflowGoal?: string
 }
 
@@ -155,7 +156,11 @@ export interface WorkflowFile {
 /**
  * Base interface for tool implementations
  */
-export interface ITool<TInput = unknown, TOutput = unknown> {
+export interface ITool<
+  TInput = unknown,
+  TOutput = unknown,
+  TContext extends ToolExecutionContext = ToolExecutionContext,
+> {
   /** Unique name identifying this tool */
   name: string
 
@@ -163,12 +168,12 @@ export interface ITool<TInput = unknown, TOutput = unknown> {
   description?: string
 
   /** JSON schema for input parameters */
-  inputSchema?: any
+  inputSchema?: Record<string, unknown>
 
   /**
    * Execute the tool with given input and context
    */
-  call(input: TInput, ctx: ToolExecutionContext): Promise<TOutput>
+  call(input: TInput, ctx: TContext): Promise<TOutput>
 }
 
 /**
