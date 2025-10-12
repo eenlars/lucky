@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+import type { FeedbackContext } from "@lucky/shared/contracts/feedback"
 import { Paperclip } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -29,7 +30,7 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
 
     try {
       // Collect rich context for debugging
-      const context = {
+      const context: FeedbackContext = {
         url: window.location.href,
         pathname: window.location.pathname,
         search: window.location.search,
