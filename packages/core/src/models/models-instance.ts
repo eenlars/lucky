@@ -4,6 +4,7 @@
  */
 
 import { getApiKey } from "@core/context/executionContext"
+import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
@@ -72,14 +73,15 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
 
   console.log(`[buildProviderConfig] Configured providers: [${Object.keys(providers).join(", ")}]`)
   if (missingKeys.length > 0) {
+    const missingProviders = missingKeys.map(getProviderDisplayName)
     const { getExecutionContext } = await import("@core/context/executionContext")
     const ctx = getExecutionContext()
     if (ctx?.principal.auth_method === "session") {
-      console.error(`❌ Missing required API keys for session auth: [${missingKeys.join(", ")}]`)
-      console.error("   → Go to Settings > Provider Settings to add your API keys")
+      console.error(`❌ Missing required provider API keys: ${missingProviders.join(", ")}`)
+      console.error("   → Configure them in Settings → Providers")
     } else {
-      console.warn(`⚠️  Missing API keys: [${missingKeys.join(", ")}]`)
-      console.warn("   Add them in Settings > Provider Settings or set them in your .env file")
+      console.warn(`⚠️  Missing provider API keys: ${missingProviders.join(", ")}`)
+      console.warn("   Add them in Settings → Providers or set them in your .env file")
     }
   }
 

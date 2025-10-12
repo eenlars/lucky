@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     }
 
     if (!provider || !apiKey) {
-      return NextResponse.json({ error: "Missing provider or apiKey" }, { status: 400 })
+      return NextResponse.json({ error: "Provider and API key are required" }, { status: 400 })
     }
 
     // Test connection based on provider
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
         testResult = await testOpenRouterConnection(apiKey)
         break
       default:
-        return NextResponse.json({ error: "Unknown provider" }, { status: 400 })
+        return NextResponse.json({ error: `Unsupported provider: ${provider}` }, { status: 400 })
     }
 
     if (!testResult.success) {

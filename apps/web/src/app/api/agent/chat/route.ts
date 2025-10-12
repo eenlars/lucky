@@ -42,27 +42,58 @@ function sanitizeSystemPrompt(prompt: string): string {
     .trim()
 }
 
-// Map technical errors to user-friendly messages
+// Map technical errors to user-friendly messages with provider-specific guidance
 function getUserFriendlyError(error: unknown): string {
   const errorMessage = error instanceof Error ? error.message : String(error)
 
-  if (errorMessage.includes("API key") || errorMessage.includes("apiKey")) {
-    return "AI provider not configured. Please contact support."
+  // Check for missing API key errors with provider detection
+  if (errorMessage.includes("API key") || errorMessage.includes("apiKey") || errorMessage.includes("Authentication")) {
+    // Try to extract provider name from error message
+    let provider = "AI provider"
+    if (errorMessage.toLowerCase().includes("openai")) provider = "OpenAI"
+    else if (errorMessage.toLowerCase().includes("openrouter")) provider = "OpenRouter"
+    else if (errorMessage.toLowerCase().includes("groq")) provider = "Groq"
+    else if (errorMessage.toLowerCase().includes("anthropic")) provider = "Anthropic"
+
+    return `${provider} API key not configured. Please add it in Settings → Providers.`
   }
-  if (errorMessage.includes("not found") || errorMessage.includes("Not found")) {
-    return "Selected model is not available. Try a different model."
+
+  // Model not found or unavailable
+  if (errorMessage.includes("not found") || errorMessage.includes("Not found") || errorMessage.includes("404")) {
+    return "Selected model is not available. Try a different model or check your provider settings."
   }
+
+  // Rate limiting
   if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
     return "Too many requests. Please wait a moment and try again."
   }
-  if (errorMessage.includes("quota") || errorMessage.includes("insufficient")) {
-    return "AI service quota exceeded. Please try again later."
-  }
-  if (errorMessage.includes("timeout")) {
-    return "Request timed out. Please try again."
+
+  // Quota/credits issues
+  if (errorMessage.includes("quota") || errorMessage.includes("insufficient") || errorMessage.includes("402")) {
+    return "AI service quota exceeded or insufficient credits. Please check your provider account."
   }
 
-  return "Failed to process your request. Please try again."
+  // Access/permission issues
+  if (errorMessage.includes("403") || errorMessage.includes("Access denied") || errorMessage.includes("forbidden")) {
+    return "Access denied. The model may not be available for your account."
+  }
+
+  // Timeout issues
+  if (errorMessage.includes("timeout") || errorMessage.includes("timed out") || errorMessage.includes("408")) {
+    return "Request timed out. Please try again with a shorter prompt."
+  }
+
+  // Service unavailable
+  if (
+    errorMessage.includes("500") ||
+    errorMessage.includes("502") ||
+    errorMessage.includes("503") ||
+    errorMessage.includes("unavailable")
+  ) {
+    return "AI service is temporarily unavailable. Please try again in a moment."
+  }
+
+  return "Failed to process your request. Please try again or contact support if the issue persists."
 }
 
 /**

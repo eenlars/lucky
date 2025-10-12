@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks"
+import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 
 export type Principal = {
   clerk_id: string
@@ -61,8 +62,11 @@ export async function getApiKey(name: string): Promise<string | undefined> {
 
     // Session auth (UI users) REQUIRE their own configured keys - no fallback
     if (ctx.principal.auth_method === "session") {
-      console.error(`[getApiKey] ❌ ${name} not configured for user (session auth - no fallback allowed)`)
-      console.error(`   User must add ${name} in Settings > Provider Settings`)
+      const providerName = getProviderDisplayName(name)
+      console.error(
+        `[getApiKey] ❌ ${providerName} API key not configured for user (session auth - no fallback allowed)`,
+      )
+      console.error(`   User must add ${providerName} in Settings → Providers`)
       return undefined
     }
 

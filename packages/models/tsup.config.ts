@@ -5,6 +5,7 @@ export default defineConfig({
     index: "src/index.ts",
     "middleware/index": "src/middleware/index.ts",
     "config/define": "src/config/define.ts",
+    "pricing/catalog": "src/pricing/catalog.ts",
   },
   format: ["esm"],
   platform: "node",
