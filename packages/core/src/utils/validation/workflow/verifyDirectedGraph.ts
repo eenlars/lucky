@@ -1,9 +1,9 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { VerificationErrors } from "./verify.types"
 
 export function verifyNoCycles(config: WorkflowConfig): VerificationErrors {
-  if (CONFIG.verification.allowCycles) {
+  if (getCoreConfig().verification.allowCycles) {
     return []
   }
 

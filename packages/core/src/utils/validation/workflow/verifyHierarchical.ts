@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
@@ -11,7 +11,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
  */
 export const verifyHierarchicalStructure = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   // Only validate if coordination type is hierarchical
-  if (CONFIG.coordinationType !== "hierarchical") return []
+  if (getCoreConfig().coordinationType !== "hierarchical") return []
 
   const errors: string[] = []
   const orchestratorId = config.entryNodeId
@@ -52,13 +52,13 @@ export const verifyHierarchicalStructure = async (config: WorkflowConfig): Promi
  * In hierarchical mode, the orchestrator is always the entry node
  */
 export const isOrchestrator = (nodeId: string, config: WorkflowConfig): boolean => {
-  return CONFIG.coordinationType === "hierarchical" && nodeId === config.entryNodeId
+  return getCoreConfig().coordinationType === "hierarchical" && nodeId === config.entryNodeId
 }
 
 /**
  * Helper function to get the implicit role of a node
  */
 export const getNodeRole = (nodeId: string, config: WorkflowConfig): "orchestrator" | "worker" | null => {
-  if (CONFIG.coordinationType !== "hierarchical") return null
+  if (getCoreConfig().coordinationType !== "hierarchical") return null
   return nodeId === config.entryNodeId ? "orchestrator" : "worker"
 }

@@ -1,7 +1,7 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 
 export const normalizeTime = (timeMs: number): number => {
-  const { timeThresholdSeconds, baselineTimeSeconds } = CONFIG.improvement.fitness
+  const { timeThresholdSeconds, baselineTimeSeconds } = getCoreConfig().improvement.fitness
   const timeThresholdMs = timeThresholdSeconds * 1000
   const baselineTimeMs = baselineTimeSeconds * 1000
 
@@ -18,7 +18,7 @@ export const normalizeTime = (timeMs: number): number => {
 }
 
 export const normalizeCost = (costUsd: number): number => {
-  const { costThresholdUsd, baselineCostUsd } = CONFIG.improvement.fitness
+  const { costThresholdUsd, baselineCostUsd } = getCoreConfig().improvement.fitness
 
   // 1) no penalty region
   if (costUsd <= costThresholdUsd) return 100

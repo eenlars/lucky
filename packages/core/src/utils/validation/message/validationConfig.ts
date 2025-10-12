@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 
 export interface ValidationConfig {
   enabled: boolean
@@ -15,7 +15,7 @@ export interface ValidationConfig {
 }
 
 export const DEFAULT_VALIDATION_CONFIG: ValidationConfig = {
-  enabled: CONFIG.verification.enableOutputValidation,
+  enabled: getCoreConfig().verification.enableOutputValidation,
   thresholds: {
     proceedMinScore: 7,
     retryMinScore: 4,

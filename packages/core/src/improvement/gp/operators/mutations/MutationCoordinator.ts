@@ -13,7 +13,7 @@
  * and preserve memory from parent genomes.
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
@@ -57,7 +57,7 @@ export class MutationCoordinator {
   static async mutateWorkflowGenome(options: MutationOptions): Promise<RS<Genome>> {
     const { parent, intensity = 0.5, evolutionMode } = options
 
-    if (CONFIG.evolution.GP.verbose) {
+    if (getCoreConfig().evolution.GP.verbose) {
       return {
         success: true,
         data: createDummyGenome([parent.getWorkflowVersionId()], parent.getEvolutionContext()),

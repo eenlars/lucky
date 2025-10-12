@@ -12,7 +12,7 @@
  * @module workflow/runner/runAllInputs
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { calculateAverageFitness, calculateFeedbackGrouped } from "@core/evaluation/calculate-fitness/average"
 import { evaluateQueueRun } from "@core/evaluation/evaluateQueueRun"
 import { lgg } from "@core/utils/logging/Logger"
@@ -37,7 +37,7 @@ const verbose = false
  * @returns Result containing array of run results for each IO case
  *
  * @remarks
- * - Processes IO cases in batches of CONFIG.limits.maxConcurrentWorkflows
+ * - Processes IO cases in batches of getCoreConfig().limits.maxConcurrentWorkflows
  * - Creates invocations for tracking each execution
  * - Handles failures gracefully by skipping failed IOs
  * - Returns only successful results in output array
@@ -48,7 +48,7 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
 
   lgg.onlyIf(verbose, `[runAllIO] Starting for ${workflow.getWorkflowVersionId()} with ${workflowIo.length} IO cases`)
 
-  const batchSize = CONFIG.limits.maxConcurrentWorkflows
+  const batchSize = getCoreConfig().limits.maxConcurrentWorkflows
   const results: RunResult[] = []
 
   for (let i = 0; i < workflowIo.length; i += batchSize) {
@@ -158,7 +158,7 @@ export async function evaluateRuns(workflow: Workflow, runResults: RunResult[]):
  *
  * @remarks
  * Uses calculateAverageFitness for weighted averaging.
- * Feedback aggregation is controlled by CONFIG.improvement.flags.operatorsWithFeedback.
+ * Feedback aggregation is controlled by getCoreConfig().improvement.flags.operatorsWithFeedback.
  */
 export async function aggregateResults(evals: EvaluationResult[]): Promise<RS<AggregateEvaluationResult>> {
   guard(evals.length > 0, "No evaluation results")
@@ -170,8 +170,8 @@ export async function aggregateResults(evals: EvaluationResult[]): Promise<RS<Ag
   const evalFeedback = evals.map(r => r.feedback)
   guard(evalFeedback.length > 0, "No feedback to average")
   lgg.log("[aggregateResults] Individual feedback from evaluations:", evalFeedback)
-  lgg.log("[aggregateResults] operatorsWithFeedback flag:", CONFIG.improvement.flags.operatorsWithFeedback)
-  if (CONFIG.improvement.flags.operatorsWithFeedback) {
+  lgg.log("[aggregateResults] operatorsWithFeedback flag:", getCoreConfig().improvement.flags.operatorsWithFeedback)
+  if (getCoreConfig().improvement.flags.operatorsWithFeedback) {
     const { success, data, error } = await calculateFeedbackGrouped(evalFeedback)
     if (!success) {
       lgg.error(`Failed to calculate average feedback: ${error}`)

@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { calculateFeedback } from "@core/evaluation/calculate-fitness/calculateFeedback"
 import { calculateFitness } from "@core/evaluation/calculate-fitness/randomizedFitness"
 import { updateWorkflowInvocationInDatabase } from "@core/utils/persistence/workflow/registerWorkflow"
@@ -33,7 +33,7 @@ export const evaluateQueueRun = async ({
   })
 
   let feedbackResult: RS<string> | null = null
-  if (CONFIG.improvement.flags.operatorsWithFeedback) {
+  if (getCoreConfig().improvement.flags.operatorsWithFeedback) {
     feedbackResult = await calculateFeedback({
       agentSteps: queueRunResult.agentSteps,
       evaluation: evaluation,

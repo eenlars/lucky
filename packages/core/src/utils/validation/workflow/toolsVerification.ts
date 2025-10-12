@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { VerificationErrors } from "@core/utils/validation/workflow/verify.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { isNir } from "@lucky/shared"
@@ -44,7 +44,7 @@ export const verifyToolsUnique = async (config: WorkflowConfig): Promise<Verific
   })
 
   // Return error messages instead of throwing
-  if (duplicateTools.length > 0 && CONFIG.tools.uniqueToolsPerAgent) {
+  if (duplicateTools.length > 0 && getCoreConfig().tools.uniqueToolsPerAgent) {
     return [`setup verification failed. each tool must be unique to one node:\n${duplicateTools.join("\n")}`]
   }
 
@@ -65,7 +65,7 @@ export const verifyAllToolsAreActive = async (config: WorkflowConfig): Promise<V
     for (const tool of allNodeTools) {
       if (INACTIVE_TOOLS.includes(tool)) {
         inactiveToolsUsed.push(`node "${node.nodeId}" uses inactive tool "${tool}"`)
-      } else if (CONFIG.tools.defaultTools.includes(tool)) {
+      } else if (getCoreConfig().tools.defaultTools.includes(tool)) {
         // skip default tools, they are always active, but do not appear on the all active tools list,
         // because they shouldn't be assigned while creating a workflow. (they are assigned by default)
       } else if (!ALL_ACTIVE_TOOL_NAMES.includes(tool)) {
@@ -89,7 +89,7 @@ export const verifyAllToolsAreActive = async (config: WorkflowConfig): Promise<V
 
 // check that each node has a unique tool set
 export const verifyToolSetEachNodeIsUnique = async (config: WorkflowConfig): Promise<VerificationErrors> => {
-  if (!CONFIG.tools.uniqueToolSetsPerAgent) return [] // skip if disabled
+  if (!getCoreConfig().tools.uniqueToolSetsPerAgent) return [] // skip if disabled
 
   const nodes = config.nodes
   const toolSetUsage = new Map<string, string[]>()
@@ -129,20 +129,20 @@ export const verifyToolSetEachNodeIsUnique = async (config: WorkflowConfig): Pro
 export const verifyMaxToolsPerAgent = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: VerificationErrors = []
 
-  const defaultToolsCount = CONFIG.tools.defaultTools.length
+  const defaultToolsCount = getCoreConfig().tools.defaultTools.length
   for (const node of config.nodes) {
     const mcpToolsCount = node.mcpTools?.length ?? 0
     const codeToolsCount = node.codeTools?.length ?? 0
 
-    if (mcpToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
+    if (mcpToolsCount > getCoreConfig().tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
+        `node "${node.nodeId}" has ${mcpToolsCount} mcp tools, exceeding the limit of ${getCoreConfig().tools.maxToolsPerAgent}`,
       )
     }
 
-    if (codeToolsCount > CONFIG.tools.maxToolsPerAgent + defaultToolsCount) {
+    if (codeToolsCount > getCoreConfig().tools.maxToolsPerAgent + defaultToolsCount) {
       errors.push(
-        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${CONFIG.tools.maxToolsPerAgent}`,
+        `node "${node.nodeId}" has ${codeToolsCount} code tools, exceeding the limit of ${getCoreConfig().tools.maxToolsPerAgent}`,
       )
     }
   }

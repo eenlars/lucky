@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { llmify } from "@core/utils/common/llmify"
 import { zodToJson } from "@core/utils/validation/zodToJson"
 import { isNir } from "@lucky/shared"
@@ -11,7 +11,7 @@ export function explainTools(tools: ToolSet): string {
   }
 
   // Read configuration at call-time so tests can toggle it between runs
-  const argsEnabled = CONFIG.tools.showParameterSchemas
+  const argsEnabled = getCoreConfig().tools.showParameterSchemas
   // Always include description per tests/UX
   const descriptionEnabled = true
 

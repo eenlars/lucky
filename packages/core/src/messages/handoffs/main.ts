@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 
@@ -22,16 +22,18 @@ export interface ChooseHandoffOpts {
 }
 
 export async function chooseHandoff(opts: ChooseHandoffOpts): Promise<HandoffResult> {
-  switch (CONFIG.coordinationType) {
+  const coordinationType = getCoreConfig().coordinationType
+
+  switch (coordinationType) {
     case "sequential":
       return chooseHandoffSequential(opts)
     case "hierarchical":
       return chooseHandoffHierarchical(opts)
     default: {
-      const _exhaustiveCheck: never = CONFIG.coordinationType
+      const _exhaustiveCheck: never = coordinationType
       void _exhaustiveCheck
-      throw new CoordinationError(`Unsupported coordination type: ${CONFIG.coordinationType}`, {
-        coordinationType: CONFIG.coordinationType,
+      throw new CoordinationError(`Unsupported coordination type: ${coordinationType}`, {
+        coordinationType,
         supportedTypes: ["sequential", "hierarchical"],
       })
     }

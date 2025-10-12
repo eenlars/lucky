@@ -1,4 +1,4 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { getModelV2 } from "@core/utils/spending/functions"
 import {
   everyNodeIsConnectedToStartNode,
@@ -58,7 +58,7 @@ export const verifyNoDuplicateHandoffs = async (config: WorkflowConfig): Promise
 export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (node.modelName && CONFIG.models.inactive.includes(node.modelName)) {
+    if (node.modelName && getCoreConfig().models.inactive.includes(node.modelName)) {
       errors.push(`Node '${node.nodeId}' uses inactive model: ${node.modelName}`)
     }
   }

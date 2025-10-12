@@ -1,6 +1,6 @@
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 
-const ENABLED = CONFIG.limits.enableParallelLimit
+const ENABLED = getCoreConfig().limits.enableParallelLimit
 
 /**
  * Run async tasks in parallel with a concurrency limit.
@@ -14,7 +14,7 @@ export async function parallelLimit<T, R>(items: T[], fn: (i: T) => Promise<R>, 
     return Promise.all(items.map(item => fn(item)))
   }
 
-  const limit = overrideLimit ?? CONFIG.limits.maxConcurrentWorkflows
+  const limit = overrideLimit ?? getCoreConfig().limits.maxConcurrentWorkflows
   const ret: R[] = []
   let idx = 0
   const pool: Promise<void>[] = []

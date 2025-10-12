@@ -10,7 +10,7 @@
  * @module messages/api/stallGuard
  */
 
-import { CONFIG } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { type StepResult, generateText } from "ai"
 import pTimeout from "p-timeout"
 
@@ -28,7 +28,7 @@ import pTimeout from "p-timeout"
  * @throws Error on overall timeout or stall detection
  *
  * @remarks
- * - Disabled when CONFIG.limits.enableStallGuard is false
+ * - Disabled when getCoreConfig().limits.enableStallGuard is false
  * - Resets stall timer on each token/step completion
  * - Aborts request on stall detection
  *
@@ -54,7 +54,7 @@ export async function runWithStallGuard<R>(
     stallTimeoutMs: number
   },
 ): Promise<R> {
-  if (!CONFIG.limits.enableStallGuard) {
+  if (!getCoreConfig().limits.enableStallGuard) {
     return (await generateText(base)) as R
   }
 
