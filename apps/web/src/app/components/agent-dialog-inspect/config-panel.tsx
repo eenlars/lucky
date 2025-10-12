@@ -102,12 +102,10 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     currentProviderRef.current = selectedProvider
   }, [selectedProvider])
 
-  // Load preferences on mount
+  // Load preferences on mount - always refresh to get latest from server
   useEffect(() => {
-    if (!preferences) {
-      loadPreferences()
-    }
-  }, [preferences, loadPreferences])
+    loadPreferences()
+  }, [loadPreferences])
 
   // Compute available models based on user preferences and selected provider
   const availableModels = useMemo(() => {
@@ -123,12 +121,22 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     // Get user's enabled models for this provider
     const enabledModelIds = getEnabledModels(providerToFetch)
 
+    console.log(`[config-panel] Provider: ${providerToFetch}`)
+    console.log(`[config-panel] Total active models in catalog: ${allModels.length}`)
+    console.log("[config-panel] User enabled model IDs:", enabledModelIds)
+
     // If user has enabled specific models, filter to only show those
     if (enabledModelIds.length > 0) {
-      return allModels.filter(m => enabledModelIds.includes(m.id))
+      const filtered = allModels.filter(m => enabledModelIds.includes(m.id))
+      console.log(
+        "[config-panel] Filtered models:",
+        filtered.map(m => m.id),
+      )
+      return filtered
     }
 
     // Otherwise show all models
+    console.log("[config-panel] No enabled models filter, showing all")
     return allModels
   }, [selectedProvider, preferences, getEnabledModels])
 

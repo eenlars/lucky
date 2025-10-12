@@ -48,6 +48,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         set({ isLoading: true, error: null })
 
         try {
+          console.log("[model-preferences-store] Loading preferences from server...")
           const response = await fetch("/api/user/model-preferences")
 
           if (!response.ok) {
@@ -55,6 +56,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           }
 
           const data = await response.json()
+          console.log("[model-preferences-store] Loaded preferences:", data)
 
           set({
             preferences: data,
@@ -63,6 +65,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           })
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
+          console.error("[model-preferences-store] Error loading preferences:", error)
           set({
             error: errorMessage,
             isLoading: false,
