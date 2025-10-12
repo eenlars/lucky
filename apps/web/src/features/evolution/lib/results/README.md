@@ -40,10 +40,10 @@ For workflow invocation `b463376e` which achieved **70% accuracy**:
 
 ```bash
 # Generate for your workflow
-bun run src/results/generate-evolution-graph.ts b463376e
+bun run src/features/evolution/lib/results/generate-evolution-graph.ts b463376e
 
 # Generate for any workflow invocation ID
-bun run src/results/generate-evolution-graph.ts <invocation-id>
+bun run src/features/evolution/lib/results/generate-evolution-graph.ts <invocation-id>
 ```
 
 ### View Visualization
@@ -51,7 +51,7 @@ bun run src/results/generate-evolution-graph.ts <invocation-id>
 The React component can be imported and used in any Next.js page:
 
 ```tsx
-import { WorkflowEvolutionVisualization } from "@/features/evolution/lib/results/WorkflowEvolutionVisualization"
+import { WorkflowEvolutionVisualization } from "@/app/components/WorkflowEvolutionVisualization"
 import evolutionData from "@/features/evolution/lib/results/evolution-graph-b463376e.json"
 
 export default function Page() {

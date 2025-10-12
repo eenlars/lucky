@@ -20,7 +20,7 @@ async function generateEvolutionGraph(invocationId: string) {
   const visualization = createEvolutionVisualizationData(graph)
 
   // save the complete data
-  const outputPath = join(process.cwd(), `src/results/evolution-graph-${invocationId}.json`)
+  const outputPath = join(process.cwd(), `src/features/evolution/lib/results/evolution-graph-${invocationId}.json`)
   writeFileSync(
     outputPath,
     JSON.stringify(

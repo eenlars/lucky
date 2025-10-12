@@ -27,7 +27,6 @@
       "@/features/trace-visualization/*": ["./src/features/trace-visualization/*"],
       "@/features/evolution/*": ["./src/features/evolution/*"],
       "@/features/profile/*": ["./src/features/profile/*"],
-      "@/shared/*": ["./src/shared/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/app/*": ["./src/app/*"],
       "@core/*": ["../../packages/core/src/*"],
