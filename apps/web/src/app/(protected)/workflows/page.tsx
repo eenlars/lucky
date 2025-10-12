@@ -6,6 +6,7 @@ import { useDeleteWorkflow } from "@/hooks/queries/useWorkflowMutations"
 import { cn } from "@/lib/utils"
 import type { WorkflowWithVersions } from "@/lib/workflows"
 import { useWorkflowStore } from "@/stores/workflow-store"
+import { useAuth } from "@clerk/nextjs"
 import { Pencil, Play, Plus, RefreshCw, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
@@ -159,17 +160,20 @@ export default function WorkflowsPage() {
     variant: "default",
   })
 
+  // Check auth state before loading workflows
+  const { isLoaded, isSignedIn } = useAuth()
+
   // Use Zustand store for optimistic loading
   const { workflows, loading: isLoading, error, loadWorkflows, removeWorkflow } = useWorkflowStore()
 
-  // Load workflows on mount - use ref to prevent dependency issues
+  // Load workflows only when auth is ready - prevents empty results
   const hasLoadedRef = useRef(false)
   useEffect(() => {
-    if (!hasLoadedRef.current) {
+    if (isLoaded && isSignedIn && !hasLoadedRef.current) {
       hasLoadedRef.current = true
       loadWorkflows()
     }
-  }, [loadWorkflows])
+  }, [isLoaded, isSignedIn, loadWorkflows])
 
   const refetch = () => loadWorkflows({ showLoading: true })
 
