@@ -36,7 +36,6 @@ export function WorkflowPromptBar() {
 
   const [prompt, setPrompt] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
-  const [isRunMode, setIsRunMode] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
   const [showLogs, setShowLogs] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -82,8 +81,10 @@ export function WorkflowPromptBar() {
     }
   }, [])
 
-  const handleSubmit = useCallback(async () => {
+  const handleEdit = useCallback(async () => {
     if (!prompt.trim() || isGenerating) return
+
+    console.log("🔵 EDIT MODE: Modifying workflow structure")
 
     // Clear any pending hide timeout from previous runs
     if (hideLogsTimeoutRef.current) {
@@ -95,46 +96,63 @@ export function WorkflowPromptBar() {
     setLogs([])
     setShowLogs(true)
 
-    if (isRunMode) {
-      // Run Mode: Execute workflow with input
-      const result = await executeRunMode(prompt.trim(), exportToJSON, addLog, (finalMessage: string) => {
-        addChatMessage(finalMessage, "result")
-      })
+    // Edit Mode: Modify workflow structure with AI
+    const result = await executeEditMode(prompt.trim(), exportToJSON, addLog)
 
-      if (result.success) {
-        toast.success("Workflow completed")
-        setPrompt("")
-        // Keep logs visible in run mode so user can see output
-      } else {
-        toast.error(result.error || "Workflow execution failed")
-        addChatMessage(result.error || "Workflow execution failed", "error")
-      }
+    if (result.success && result.workflowConfig) {
+      await loadWorkflowFromData(result.workflowConfig)
+      await organizeLayout()
+      setPrompt("")
+      toast.success("Workflow updated")
+      // Hide logs after edit mode completes (user doesn't need to see technical details)
+      hideLogsTimeoutRef.current = setTimeout(() => {
+        setShowLogs(false)
+        hideLogsTimeoutRef.current = null
+      }, 2000)
     } else {
-      // Edit Mode: Modify workflow structure with AI
-      const result = await executeEditMode(prompt.trim(), exportToJSON, addLog)
-
-      if (result.success && result.workflowConfig) {
-        await loadWorkflowFromData(result.workflowConfig)
-        await organizeLayout()
-        setPrompt("")
-        toast.success("Workflow updated")
-        // Hide logs after edit mode completes (user doesn't need to see technical details)
-        hideLogsTimeoutRef.current = setTimeout(() => {
-          setShowLogs(false)
-          hideLogsTimeoutRef.current = null
-        }, 2000)
-      } else {
-        toast.error(result.error || "Failed to update workflow")
-      }
+      toast.error(result.error || "Failed to update workflow")
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, isRunMode, exportToJSON, loadWorkflowFromData, organizeLayout, addLog, addChatMessage])
+  }, [prompt, isGenerating, exportToJSON, loadWorkflowFromData, organizeLayout, addLog])
+
+  const handleRun = useCallback(async () => {
+    if (!prompt.trim() || isGenerating) return
+
+    console.log("🟢 RUN MODE: Executing workflow with input")
+
+    // Clear any pending hide timeout from previous runs
+    if (hideLogsTimeoutRef.current) {
+      clearTimeout(hideLogsTimeoutRef.current)
+      hideLogsTimeoutRef.current = null
+    }
+
+    setIsGenerating(true)
+    setLogs([])
+    setShowLogs(true)
+
+    // Run Mode: Execute workflow with input
+    const result = await executeRunMode(prompt.trim(), exportToJSON, addLog, (finalMessage: string) => {
+      addChatMessage(finalMessage, "result")
+    })
+
+    if (result.success) {
+      toast.success("Workflow completed")
+      setPrompt("")
+      // Keep logs visible in run mode so user can see output
+    } else {
+      toast.error(result.error || "Workflow execution failed")
+      addChatMessage(result.error || "Workflow execution failed", "error")
+    }
+
+    setIsGenerating(false)
+  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
-      handleSubmit()
+      // Default to edit mode on keyboard shortcut
+      handleEdit()
     }
   }
 
@@ -149,7 +167,7 @@ export function WorkflowPromptBar() {
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isRunMode ? "Enter input for the workflow" : "Tell me how to change this"}
+          placeholder="Tell me how to change this, or provide input to run"
           disabled={isGenerating}
           className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-[15px] leading-[22px] resize-none outline-none disabled:opacity-50 px-5 pt-4 pb-1"
           rows={3}
@@ -181,73 +199,62 @@ export function WorkflowPromptBar() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setIsRunMode(!isRunMode)
-                setLogs([])
-                setShowLogs(false)
-              }}
-              className={cn(
-                "flex items-center gap-1.5 px-2.5 h-8 rounded-lg transition-colors",
-                isRunMode
-                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
-              )}
-              aria-label="Toggle run mode"
-            >
-              <Play className="size-3.5" />
-              <span className="text-sm">run workflow with input</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
               className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
               aria-label="Audio"
             >
               <AudioWaveform className="size-4" />
             </button>
+          </div>
+
+          <div className="flex items-center gap-2">
             {isGenerating ? (
-              <div
-                className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full relative overflow-hidden",
-                  isRunMode ? "bg-green-600" : "bg-blue-600",
-                )}
-              >
+              <div className="flex items-center justify-center gap-2 px-3 h-9 rounded-lg relative overflow-hidden bg-blue-600">
                 {/* Stripe-like animated gradient overlay */}
                 <div
                   className="absolute inset-0 opacity-40"
                   style={{
-                    background: isRunMode
-                      ? "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)"
-                      : "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)",
+                    background:
+                      "linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.3) 75%)",
                     backgroundSize: "20px 20px",
                     animation: "stripe-slide 0.6s linear infinite",
                   }}
                 />
                 <Loader2 className="size-4 text-white animate-spin relative z-10" />
+                <span className="text-sm text-white relative z-10">Working...</span>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!prompt.trim()}
-                className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full transition-all",
-                  prompt.trim()
-                    ? isRunMode
-                      ? "bg-green-600 dark:bg-green-500 text-white hover:opacity-80"
-                      : "bg-blue-600 dark:bg-blue-500 text-white hover:opacity-80"
-                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed",
-                )}
-                aria-label="Submit"
-              >
-                {isRunMode ? (
-                  <Play className="size-4 ml-0.5" strokeWidth={2.5} />
-                ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  disabled={!prompt.trim()}
+                  className={cn(
+                    "flex items-center gap-2 px-3 h-9 rounded-lg transition-all text-sm",
+                    prompt.trim()
+                      ? "bg-blue-600 dark:bg-blue-500 text-white hover:opacity-80"
+                      : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed",
+                  )}
+                  aria-label="Edit workflow"
+                >
                   <Pencil className="size-4" strokeWidth={2.5} />
-                )}
-              </button>
+                  <span>Edit</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRun}
+                  disabled={!prompt.trim()}
+                  className={cn(
+                    "flex items-center gap-2 px-3 h-9 rounded-lg transition-all text-sm",
+                    prompt.trim()
+                      ? "bg-green-600 dark:bg-green-500 text-white hover:opacity-80"
+                      : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed",
+                  )}
+                  aria-label="Run workflow"
+                >
+                  <Play className="size-4" strokeWidth={2.5} />
+                  <span>Run</span>
+                </button>
+              </>
             )}
           </div>
         </div>
