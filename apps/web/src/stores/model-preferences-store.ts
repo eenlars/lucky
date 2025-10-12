@@ -194,8 +194,12 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       isStale: () => {
         const { lastSynced } = get()
         if (!lastSynced) return true
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-        return lastSynced < fiveMinutesAgo
+
+        // Handle both Date objects and serialized strings from localStorage
+        const lastSyncedDate = lastSynced instanceof Date ? lastSynced : new Date(lastSynced)
+        const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
+
+        return lastSyncedDate.getTime() < fiveMinutesAgo
       },
 
       // Get relative time string (e.g., "2m ago", "just now")
@@ -203,7 +207,10 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         const { lastSynced } = get()
         if (!lastSynced) return null
 
-        const secondsAgo = Math.floor((Date.now() - lastSynced.getTime()) / 1000)
+        // Handle both Date objects and serialized strings from localStorage
+        const lastSyncedDate = lastSynced instanceof Date ? lastSynced : new Date(lastSynced)
+        const secondsAgo = Math.floor((Date.now() - lastSyncedDate.getTime()) / 1000)
+
         if (secondsAgo < 60) return "just now"
         if (secondsAgo < 3600) return `${Math.floor(secondsAgo / 60)}m ago`
         return `${Math.floor(secondsAgo / 3600)}h ago`
@@ -222,6 +229,12 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         preferences: state.preferences,
         lastSynced: state.lastSynced,
       }),
+      onRehydrateStorage: () => state => {
+        // Convert serialized date strings back to Date objects after hydration
+        if (state?.lastSynced && typeof state.lastSynced === "string") {
+          state.lastSynced = new Date(state.lastSynced)
+        }
+      },
     },
   ),
 )

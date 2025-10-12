@@ -14,7 +14,11 @@ interface SyncStatusBadgeProps {
 export function SyncStatusBadge({ lastSynced, isStale, isLoading, onRefresh }: SyncStatusBadgeProps) {
   const getRelativeTime = () => {
     if (!lastSynced) return null
-    const secondsAgo = Math.floor((Date.now() - lastSynced.getTime()) / 1000)
+
+    // Handle both Date objects and string timestamps (defensive programming)
+    const date = lastSynced instanceof Date ? lastSynced : new Date(lastSynced)
+    const secondsAgo = Math.floor((Date.now() - date.getTime()) / 1000)
+
     if (secondsAgo < 60) return "just now"
     if (secondsAgo < 3600) return `${Math.floor(secondsAgo / 60)}m ago`
     return `${Math.floor(secondsAgo / 3600)}h ago`
