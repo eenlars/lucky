@@ -57,7 +57,7 @@ export async function GET(_req: NextRequest) {
           isEnabled: row.is_enabled,
           metadata: {
             apiKeyConfigured: true, // TODO: Check actual API key status
-            lastUpdated: row.updated_at || new Date().toISOString(),
+            lastUpdated: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
           },
         }
       })
