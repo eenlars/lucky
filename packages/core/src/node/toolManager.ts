@@ -1,6 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/tools/toolManager.ts
 
-import { CONFIG, isLoggingEnabled } from "@core/core-config/compat"
+import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { setupMCPForNode } from "@core/tools/mcp/mcp"
 import { isNir } from "@lucky/shared/client"
 import { setupCodeToolsForNode } from "@lucky/tools"

@@ -1,4 +1,5 @@
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
+const config = getCoreConfig()
 import { lgg } from "@core/utils/logging/Logger"
 import { randomUserAgents } from "@examples/definitions/browser-automation/constants"
 import { saveInLoc } from "@examples/definitions/file-saver/save"
@@ -159,7 +160,7 @@ export async function networkMonitor(input: NetworkMonitorInput, proxy?: ProxyRe
 
     // save to file if requested
     saveInLoc(
-      `${PATHS.runtime}/logging_folder/network/network-monitor-output-${sessionId}.json`,
+      `${config.paths.runtime}/logging_folder/network/network-monitor-output-${sessionId}.json`,
       JSON.stringify(result, null, 2),
     )
 
@@ -426,7 +427,7 @@ function saveResponseBody(
   body: string,
 ): string {
   const urlFolderName = urlToFolderName(mainUrl)
-  const folderPath = `${PATHS.runtime}/logging_folder/network/responses/${urlFolderName}/${sessionId}`
+  const folderPath = `${config.paths.runtime}/logging_folder/network/responses/${urlFolderName}/${sessionId}`
 
   // create safe filename from request url
   const safeUrl = requestUrl

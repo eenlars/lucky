@@ -2,14 +2,16 @@
 // core/scripts/runOnce.ts
 
 import { resolve } from "node:path"
-import { PATHS, SELECTED_QUESTION } from "@core/core-config/compat"
+import { SELECTED_QUESTION } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { lgg } from "@core/utils/logging/Logger"
 import { invokeWorkflow } from "@core/workflow/runner/invokeWorkflow"
 import chalk from "chalk"
 
 async function runOnce(setupFilePath?: string) {
   try {
-    const setupPath = setupFilePath ? resolve(setupFilePath) : PATHS.setupFile
+    const config = getCoreConfig()
+    const setupPath = setupFilePath ? resolve(setupFilePath) : config.paths.setupFile
     lgg.log(chalk.green(`🚀 Running workflow once${setupPath ? ` with ${setupPath}` : ""}`))
 
     const {
@@ -40,7 +42,7 @@ async function runOnce(setupFilePath?: string) {
     lgg.log(`Full trace: ${chalk.blue(`http://flowgenerator.vercel.app/trace/${workflowInvocationId}`)}`)
 
     // save minimal results
-    const resultsPath = `${PATHS.node.logging}/runOnce/runOnce_results.json`
+    const resultsPath = `${config.paths.node.logging}/runOnce/runOnce_results.json`
     await lgg.logAndSave(resultsPath, {
       fitness: firstResult.fitness,
       cost: usdCost || 0,

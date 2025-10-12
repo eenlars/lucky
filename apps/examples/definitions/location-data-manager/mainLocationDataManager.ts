@@ -2,13 +2,13 @@ import { lgg } from "@core/utils/logging/Logger" // core location data manager o
 
 import { promises as fs } from "node:fs"
 import { join } from "node:path"
-import { CONFIG, PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { LocationData, PartialLocationData, WorkflowLocationData } from "@lucky/tools/schemas/location.types"
 import { DataQuality } from "@lucky/tools/schemas/location.types"
 import { assessDataQuality } from "./assessQuality"
 
 export class LocationDataManagerError extends Error {
-  static verbose = CONFIG.logging.override.Tools
+  static verbose = getCoreConfig().logging.override.Tools
   constructor(
     message: string,
     public cause?: Error,
@@ -60,7 +60,9 @@ function normalizeLocation(data: PartialLocationData): LocationData {
 }
 
 export class LocationDataManager {
-  private readonly dataDir = `${PATHS.node.memory.workfiles}/location-data`
+  private get dataDir() {
+    return `${getCoreConfig().paths.node.memory.workfiles}/location-data`
+  }
 
   async insertLocations(
     fileName: string,

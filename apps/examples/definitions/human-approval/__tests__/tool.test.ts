@@ -1,24 +1,26 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { PATHS } from "@core/core-config/compat"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { tool as humanApproval } from "../tool"
 
-const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
+function getApprovalStoragePath() {
+  return path.join(getCoreConfig().paths.node.logging, "approvals")
+}
 
 describe("humanApproval tool", () => {
   beforeEach(async () => {
     // ensure clean test environment
-    await fs.mkdir(APPROVAL_STORAGE_PATH, { recursive: true })
+    await fs.mkdir(getApprovalStoragePath(), { recursive: true })
   })
 
   afterEach(async () => {
     // cleanup test files
     try {
-      const files = await fs.readdir(APPROVAL_STORAGE_PATH)
+      const files = await fs.readdir(getApprovalStoragePath())
       for (const file of files) {
         if (file.endsWith(".json")) {
-          await fs.unlink(path.join(APPROVAL_STORAGE_PATH, file))
+          await fs.unlink(path.join(getApprovalStoragePath(), file))
         }
       }
     } catch (_error) {
@@ -71,12 +73,12 @@ describe("humanApproval tool", () => {
     await new Promise(resolve => setTimeout(resolve, 100))
 
     // check that approval file was created
-    const files = await fs.readdir(APPROVAL_STORAGE_PATH)
+    const files = await fs.readdir(getApprovalStoragePath())
     const approvalFiles = files.filter(f => f.endsWith(".json"))
     expect(approvalFiles.length).toBe(1)
 
     // read the approval request
-    const requestData = await fs.readFile(path.join(APPROVAL_STORAGE_PATH, approvalFiles[0]), "utf-8")
+    const requestData = await fs.readFile(path.join(getApprovalStoragePath(), approvalFiles[0]), "utf-8")
     const request = JSON.parse(requestData)
 
     expect(request.workflowInvocationId).toBe("test-workflow-123")
@@ -115,11 +117,11 @@ describe("humanApproval tool", () => {
     await new Promise(resolve => setTimeout(resolve, 100))
 
     // find and update the approval file
-    const files = await fs.readdir(APPROVAL_STORAGE_PATH)
+    const files = await fs.readdir(getApprovalStoragePath())
     const approvalFile = files.find(f => f.endsWith(".json"))
     expect(approvalFile).toBeDefined()
 
-    const filePath = path.join(APPROVAL_STORAGE_PATH, approvalFile!)
+    const filePath = path.join(getApprovalStoragePath(), approvalFile!)
     const requestData = await fs.readFile(filePath, "utf-8")
     const request = JSON.parse(requestData)
 
