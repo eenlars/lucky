@@ -409,15 +409,27 @@ export const ToolCallsDisplay = ({ agentSteps, expandAll }: ToolCallsDisplayProp
                           }}
                           className="overflow-hidden"
                         >
-                          <ReactJson
-                            src={typeof returnData === "string" ? { result: returnData } : returnData}
-                            theme={getReactJsonTheme()}
-                            collapsed={1}
-                            displayObjectSize={false}
-                            displayDataTypes={false}
-                            enableClipboard={true}
-                            style={{ fontSize: "12px" }}
-                          />
+                          {!isNir(returnData) && typeof returnData === "object" ? (
+                            <ReactJson
+                              src={returnData as any}
+                              theme={getReactJsonTheme()}
+                              collapsed={1}
+                              displayObjectSize={false}
+                              displayDataTypes={false}
+                              enableClipboard={true}
+                              style={{ fontSize: "12px" }}
+                            />
+                          ) : (
+                            <ReactJson
+                              src={{ result: returnData }}
+                              theme={getReactJsonTheme()}
+                              collapsed={1}
+                              displayObjectSize={false}
+                              displayDataTypes={false}
+                              enableClipboard={true}
+                              style={{ fontSize: "12px" }}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
