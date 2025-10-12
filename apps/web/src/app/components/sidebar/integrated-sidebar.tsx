@@ -191,9 +191,9 @@ function IntegratedNavItem({
               </div>
             </div>
 
-            {/* Text label - only shown when expanded */}
+            {/* Text label with chevron - only shown when expanded */}
             {!isCollapsed && (
-              <div className="absolute top-0 left-[55px] right-[15px] h-[40px] flex items-center pointer-events-none">
+              <div className="absolute top-0 left-[55px] right-[15px] h-[40px] flex items-center justify-between pointer-events-none">
                 <span
                   className={cn(
                     "text-sm font-medium transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden",
@@ -202,6 +202,22 @@ function IntegratedNavItem({
                 >
                   {item.label}
                 </span>
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  viewBox="0 0 24 24"
+                  height="16"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={cn(
+                    "transition-transform duration-300 ease-out text-[#888]",
+                    isSubmenuOpen && "rotate-180",
+                  )}
+                >
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z" />
+                </svg>
               </div>
             )}
           </div>
