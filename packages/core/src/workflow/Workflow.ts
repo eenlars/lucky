@@ -386,21 +386,29 @@ export class Workflow {
     const workflowInvocationId = genShortId()
 
     if (this.persistence) {
-      await this.persistence.createWorkflowInvocation({
-        workflowInvocationId,
-        workflowVersionId: this.workflowVersionId,
-        runId: this.evolutionContext?.runId,
-        generationId: this.evolutionContext?.generationId,
-        metadata: {
-          configFiles: this.config.contextFile ? [this.config.contextFile] : [],
-          workflowIOIndex: index,
-        },
-        expectedOutputType: this.evaluationInput.outputSchema
-          ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
-          : null,
-        workflowInput: workflowIO.workflowInput as any,
-        workflowOutput: workflowIO.workflowOutput as any,
-      })
+      try {
+        await this.persistence.createWorkflowInvocation({
+          workflowInvocationId,
+          workflowVersionId: this.workflowVersionId,
+          runId: this.evolutionContext?.runId,
+          generationId: this.evolutionContext?.generationId,
+          metadata: {
+            configFiles: this.config.contextFile ? [this.config.contextFile] : [],
+            workflowIOIndex: index,
+          },
+          expectedOutputType: this.evaluationInput.outputSchema
+            ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
+            : null,
+          workflowInput: workflowIO.workflowInput as any,
+          workflowOutput: workflowIO.workflowOutput as any,
+        })
+      } catch (error) {
+        lgg.error(
+          `[Workflow] Failed to create workflow invocation ${workflowInvocationId} for version ${this.workflowVersionId}`,
+          error,
+        )
+        throw new Error(`Failed to save workflow invocation: ${error instanceof Error ? error.message : String(error)}`)
+      }
     }
 
     this.workflowInvocationIds.set(index, workflowInvocationId)
