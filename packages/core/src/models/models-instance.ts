@@ -7,7 +7,7 @@ import { getApiKey } from "@core/context/executionContext"
 import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
-let modelsInstance: Models | null = null
+let _modelsInstance: Models | null = null
 
 /**
  * Build provider configuration from core config and environment.
@@ -18,9 +18,11 @@ let modelsInstance: Models | null = null
  * Checks execution context first for user-specific keys, falls back to process.env.
  */
 async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
+  console.log("[buildProviderConfig] Starting to build provider config")
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
 
   const providers: Record<string, ProviderConfig> = {}
+  const missingKeys: string[] = []
 
   // Configure all available providers (not just the current one)
   // This allows code to use any model from any provider (e.g., openai/gpt-4, openrouter/...)
@@ -35,6 +37,9 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
       apiKey: openaiKey,
       enabled: true,
     }
+    console.log("✓ OpenAI provider configured")
+  } else {
+    missingKeys.push("OPENAI_API_KEY")
   }
 
   // OpenRouter
@@ -46,6 +51,9 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
       baseUrl: "https://openrouter.ai/api/v1",
       enabled: true,
     }
+    console.log("✓ OpenRouter provider configured")
+  } else {
+    missingKeys.push("OPENROUTER_API_KEY")
   }
 
   // Groq
@@ -56,6 +64,22 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
       apiKey: groqKey,
       baseUrl: "https://api.groq.com/openai/v1",
       enabled: true,
+    }
+    console.log("✓ Groq provider configured")
+  } else {
+    missingKeys.push("GROQ_API_KEY")
+  }
+
+  console.log(`[buildProviderConfig] Configured providers: [${Object.keys(providers).join(", ")}]`)
+  if (missingKeys.length > 0) {
+    const { getExecutionContext } = await import("@core/context/executionContext")
+    const ctx = getExecutionContext()
+    if (ctx?.principal.auth_method === "session") {
+      console.error(`❌ Missing required API keys for session auth: [${missingKeys.join(", ")}]`)
+      console.error("   → Go to Settings > Provider Settings to add your API keys")
+    } else {
+      console.warn(`⚠️  Missing API keys: [${missingKeys.join(", ")}]`)
+      console.warn("   Add them in Settings > Provider Settings or set them in your .env file")
     }
   }
 
@@ -70,8 +94,10 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
  * The instance is lightweight and caches model metadata internally.
  */
 export async function getModelsInstance(): Promise<Models> {
+  const providers = await buildProviderConfig()
+
   const modelsConfig: ModelsConfig = {
-    providers: await buildProviderConfig(),
+    providers,
     tiers: buildTierConfigFromDefaults(),
     defaultTier: "default",
     trackPerformance: true,
@@ -86,5 +112,5 @@ export async function getModelsInstance(): Promise<Models> {
  * @deprecated No longer uses singleton pattern - kept for backward compatibility
  */
 export function resetModelsInstance(): void {
-  modelsInstance = null
+  _modelsInstance = null
 }

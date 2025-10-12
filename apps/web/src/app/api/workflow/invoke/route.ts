@@ -39,10 +39,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
+    console.log("[workflow/invoke] Principal auth_method:", principal.auth_method)
+    console.log("[workflow/invoke] Principal clerk_id:", principal.clerk_id)
+
     const secrets = createSecretResolver(principal.clerk_id)
 
     // Pre-fetch common provider keys
     const apiKeys = await secrets.getAll(["OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY"])
+    console.log("[workflow/invoke] Pre-fetched API keys:", Object.keys(apiKeys))
+    console.log("[workflow/invoke] OPENROUTER_API_KEY present:", !!apiKeys.OPENROUTER_API_KEY)
+    console.log("[workflow/invoke] OPENAI_API_KEY present:", !!apiKeys.OPENAI_API_KEY)
+
+    // For session auth (UI users), validate required API keys BEFORE running workflow
+    if (principal.auth_method === "session") {
+      const missingKeys: string[] = []
+
+      // Check which providers are actually needed (for now, check all common ones)
+      // TODO: Parse workflow to determine exact providers needed
+      // Session-auth users MUST have keys in their secrets (no process.env fallback)
+      if (!apiKeys.OPENROUTER_API_KEY) {
+        missingKeys.push("OPENROUTER_API_KEY")
+      }
+      if (!apiKeys.OPENAI_API_KEY) {
+        missingKeys.push("OPENAI_API_KEY")
+      }
+
+      if (missingKeys.length > 0) {
+        console.error("[workflow/invoke] ❌ Missing required API keys for UI user:", missingKeys)
+        return NextResponse.json(
+          {
+            error: "Missing API Keys",
+            message: `You need to configure API keys before running workflows: ${missingKeys.join(", ")}`,
+            missingKeys,
+            action: "Go to Settings > Provider Settings to add your API keys",
+          },
+          { status: 400 },
+        )
+      }
+    }
 
     const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
       return invokeWorkflow(input)

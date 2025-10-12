@@ -39,31 +39,34 @@ function getKEK(): Buffer {
 }
 
 export function encryptGCM(plaintext: string): {
-  ciphertext: Uint8Array
-  iv: Uint8Array
-  authTag: Uint8Array
+  ciphertext: string
+  iv: string
+  authTag: string
 } {
   const key = getKEK()
   const iv = crypto.randomBytes(12) // 96-bit nonce for GCM
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv)
   const enc = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()])
   const tag = cipher.getAuthTag()
+  // PostgREST expects bytea as \x prefixed hex strings
   return {
-    ciphertext: new Uint8Array(enc),
-    iv: new Uint8Array(iv),
-    authTag: new Uint8Array(tag),
+    ciphertext: `\\x${enc.toString("hex")}`,
+    iv: `\\x${iv.toString("hex")}`,
+    authTag: `\\x${tag.toString("hex")}`,
   }
 }
 
 export function decryptGCM(params: {
-  ciphertext: ArrayBuffer | Uint8Array
-  iv: ArrayBuffer | Uint8Array
-  authTag: ArrayBuffer | Uint8Array
+  ciphertext: string
+  iv: string
+  authTag: string
 }): string {
   const key = getKEK()
-  const iv = Buffer.from(params.iv as Uint8Array)
-  const tag = Buffer.from(params.authTag as Uint8Array)
-  const data = Buffer.from(params.ciphertext as Uint8Array)
+  // PostgREST returns bytea as \x prefixed hex strings, strip the prefix
+  const stripPrefix = (s: string) => (s.startsWith("\\x") ? s.slice(2) : s)
+  const iv = Buffer.from(stripPrefix(params.iv), "hex")
+  const tag = Buffer.from(stripPrefix(params.authTag), "hex")
+  const data = Buffer.from(stripPrefix(params.ciphertext), "hex")
   const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv)
   decipher.setAuthTag(tag)
   const dec = Buffer.concat([decipher.update(data), decipher.final()])

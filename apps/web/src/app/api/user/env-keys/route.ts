@@ -81,6 +81,29 @@ export async function POST(req: NextRequest) {
     // Encrypt the value
     const { ciphertext, iv, authTag } = encryptGCM(value)
 
+    // Log encryption output for debugging
+    console.log("[POST /api/user/env-keys] Encryption output:")
+    console.log("  ciphertext length (with \\x prefix):", ciphertext.length)
+    console.log("  iv length (with \\x prefix):", iv.length)
+    console.log("  authTag length (with \\x prefix):", authTag.length)
+
+    // Strip \x prefix and decode hex
+    const stripPrefix = (s: string) => (s.startsWith("\\x") ? s.slice(2) : s)
+    const authTagBytes = Buffer.from(stripPrefix(authTag), "hex")
+    const ivBytes = Buffer.from(stripPrefix(iv), "hex")
+
+    console.log("  authTag decoded byte length:", authTagBytes.length)
+    console.log("  iv decoded byte length:", ivBytes.length)
+
+    // Validate auth_tag is exactly 16 bytes
+    if (authTagBytes.length !== 16) {
+      console.error(`[POST /api/user/env-keys] Invalid auth_tag length: ${authTagBytes.length} bytes (expected 16)`)
+      return NextResponse.json(
+        { error: `Encryption error: auth_tag is ${authTagBytes.length} bytes, expected 16` },
+        { status: 500 },
+      )
+    }
+
     // Check for existing variable
     const { data: existing } = await supabase
       .schema("lockbox")
@@ -108,28 +131,37 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert new version
+    const insertPayload = {
+      clerk_id: clerkId,
+      name,
+      namespace: ENV_NAMESPACE,
+      version: nextVersion,
+      ciphertext,
+      iv,
+      auth_tag: authTag,
+      is_current: true,
+      created_by: clerkId,
+      updated_by: clerkId,
+    }
+
+    console.log("[POST /api/user/env-keys] About to insert:")
+    console.log("  clerk_id:", clerkId)
+    console.log("  name:", name)
+    console.log("  namespace:", ENV_NAMESPACE)
+    console.log("  version:", nextVersion)
+    console.log("  auth_tag type:", typeof authTag)
+    console.log("  auth_tag value (first 20 chars):", authTag.substring(0, 20))
+
     const { data, error } = await supabase
       .schema("lockbox")
       .from("user_secrets")
-      .insert([
-        {
-          clerk_id: clerkId,
-          name,
-          namespace: ENV_NAMESPACE,
-          version: nextVersion,
-          ciphertext,
-          iv,
-          auth_tag: authTag,
-          is_current: true,
-          created_by: clerkId,
-          updated_by: clerkId,
-        } as any,
-      ])
+      .insert([insertPayload as any])
       .select("user_secret_id, name, created_at")
       .single()
 
     if (error) {
       console.error("[POST /api/user/env-keys] Insert error:", error)
+      console.error("[POST /api/user/env-keys] Error details:", JSON.stringify(error, null, 2))
       return NextResponse.json({ error: `Failed to save environment key: ${error.message}` }, { status: 500 })
     }
 
