@@ -2,6 +2,14 @@ import { readFile } from "node:fs/promises"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { createSecretResolver } from "@/lib/lockbox/secretResolver"
+import {
+  extractTraceId,
+  extractWorkflowOutput,
+  formatErrorResponse,
+  formatInternalError,
+  formatSuccessResponse,
+  formatWorkflowError,
+} from "@/lib/mcp-invoke/response"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import {
   FALLBACK_PROVIDER_KEYS,
@@ -12,20 +20,31 @@ import {
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
+import { genShortId, isNir } from "@lucky/shared"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
-import { isNir } from "@lucky/shared/utils/common/isNir"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Ensure core is initialized
   ensureCoreInit()
 
+  // Generate synthetic request ID for JSON-RPC response (not a real RPC request)
+  const requestId = `workflow-invoke-${genShortId()}`
+  const startedAt = new Date().toISOString()
+
   try {
     const body = await req.json()
     const input = body as InvocationInput
 
     if (!input) {
-      return NextResponse.json({ error: "Invalid invocation input" }, { status: 400 })
+      return NextResponse.json(
+        formatErrorResponse(requestId, {
+          code: ErrorCodes.INVALID_REQUEST,
+          message: "Invalid invocation input",
+        }),
+        { status: 400 },
+      )
     }
 
     // Check if we already have execution context (from upstream caller like /api/v1/invoke)
@@ -37,16 +56,35 @@ export async function POST(req: NextRequest) {
 
       if (!result.success) {
         console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
-        return NextResponse.json({ error: result.error }, { status: 500 })
+        return NextResponse.json(formatWorkflowError(requestId, result), { status: 500 })
       }
 
-      return NextResponse.json(result, { status: 200 })
+      const finishedAt = new Date().toISOString()
+      const output = extractWorkflowOutput(result)
+      const traceId = extractTraceId(result)
+
+      return NextResponse.json(
+        formatSuccessResponse(requestId, output, {
+          requestId: result.data?.[0]?.workflowInvocationId || requestId,
+          workflowId: input.workflowVersionId || input.filename || "dsl-config",
+          startedAt,
+          finishedAt,
+          traceId,
+        }),
+        { status: 200 },
+      )
     }
 
     // No context set, this is a direct call - authenticate and create context
     const principal = await authenticateRequest(req)
     if (!principal) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        formatErrorResponse(requestId, {
+          code: ErrorCodes.INVALID_AUTH,
+          message: "Authentication required",
+        }),
+        { status: 401 },
+      )
     }
 
     console.log("[workflow/invoke] Principal auth_method:", principal.auth_method)
@@ -88,12 +126,11 @@ export async function POST(req: NextRequest) {
         const missingProviders = formatMissingProviders(missingKeys)
         console.error("[workflow/invoke] Missing required API keys:", missingKeys)
         return NextResponse.json(
-          {
-            error: "Missing API Keys",
+          formatErrorResponse(requestId, {
+            code: ErrorCodes.MISSING_API_KEYS,
             message: `This workflow requires ${missingProviders.join(", ")} ${missingProviders.length === 1 ? "API key" : "API keys"} to run. Please configure ${missingProviders.length === 1 ? "it" : "them"} in Settings → Providers.`,
-            missingProviders,
-            action: "configure_providers",
-          },
+            data: { missingProviders, action: "configure_providers" },
+          }),
           { status: 400 },
         )
       }
@@ -103,19 +140,28 @@ export async function POST(req: NextRequest) {
       return invokeWorkflow(input)
     })
 
+    const finishedAt = new Date().toISOString()
+
     if (!result.success) {
       console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
-      return NextResponse.json({ error: result.error }, { status: 500 })
+      return NextResponse.json(formatWorkflowError(requestId, result), { status: 500 })
     }
 
-    return NextResponse.json(result, { status: 200 })
+    const output = extractWorkflowOutput(result)
+    const traceId = extractTraceId(result)
+
+    return NextResponse.json(
+      formatSuccessResponse(requestId, output, {
+        requestId: result.data?.[0]?.workflowInvocationId || requestId,
+        workflowId: input.workflowVersionId || input.filename || "dsl-config",
+        startedAt,
+        finishedAt,
+        traceId,
+      }),
+      { status: 200 },
+    )
   } catch (error) {
     console.error("[/api/workflow/invoke] Unexpected error:", error)
-    const errorMessage = error instanceof Error ? error.message : "Internal Server Error"
-    const errorStack = error instanceof Error ? error.stack : undefined
-    if (errorStack) {
-      console.error("[/api/workflow/invoke] Stack trace:", errorStack)
-    }
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return NextResponse.json(formatInternalError(requestId, error), { status: 500 })
   }
 }

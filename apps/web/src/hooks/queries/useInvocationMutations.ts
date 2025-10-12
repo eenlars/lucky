@@ -60,12 +60,17 @@ export function useInvokeWorkflow() {
         }),
       })
 
+      const result = await response.json()
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to run workflow")
+        // Handle JSON-RPC 2.0 error response
+        if ("error" in result) {
+          throw new Error(result.error.message || "Failed to run workflow")
+        }
+        throw new Error("Failed to run workflow")
       }
 
-      return response.json()
+      return result
     },
     onSuccess: (_, variables) => {
       // Invalidate invocations list to show new invocation

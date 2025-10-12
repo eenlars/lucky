@@ -1,10 +1,16 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { formatErrorResponse, formatSuccessResponse } from "@/lib/mcp-invoke/response"
 import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/verifyWorkflow"
 import { clientWorkflowLoader } from "@lucky/core/workflow/setup/WorkflowLoader.client"
+import { genShortId } from "@lucky/shared"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
+  const requestId = `workflow-verify-${genShortId()}`
+  const startedAt = new Date().toISOString()
+
   try {
     // Require authentication
     const authResult = await requireAuth()
@@ -16,7 +22,13 @@ export async function POST(request: NextRequest) {
     const { workflow, mode } = await request.json()
 
     if (!workflow) {
-      return NextResponse.json({ error: "Workflow configuration is required" }, { status: 400 })
+      return NextResponse.json(
+        formatErrorResponse(requestId, {
+          code: ErrorCodes.INVALID_REQUEST,
+          message: "Workflow configuration is required",
+        }),
+        { status: 400 },
+      )
     }
 
     // Handle different validation modes
@@ -27,13 +39,26 @@ export async function POST(request: NextRequest) {
           mode === "dsl-display"
             ? await clientWorkflowLoader.loadFromDSLDisplay(workflow)
             : await clientWorkflowLoader.loadFromDSL(workflow)
-        return NextResponse.json({ isValid: true, config: validated })
+        const finishedAt = new Date().toISOString()
+        return NextResponse.json(
+          formatSuccessResponse(
+            requestId,
+            { isValid: true, config: validated },
+            {
+              requestId,
+              workflowId: "verify",
+              startedAt,
+              finishedAt,
+            },
+          ),
+        )
       } catch (error) {
         return NextResponse.json(
-          {
-            isValid: false,
-            errors: [error instanceof Error ? error.message : "Invalid DSL configuration"],
-          },
+          formatErrorResponse(requestId, {
+            code: ErrorCodes.INPUT_VALIDATION_FAILED,
+            message: error instanceof Error ? error.message : "Invalid DSL configuration",
+            data: { isValid: false, errors: [error instanceof Error ? error.message : "Invalid DSL configuration"] },
+          }),
           { status: 400 },
         )
       }
@@ -44,15 +69,26 @@ export async function POST(request: NextRequest) {
       throwOnError: false,
     })
 
-    return NextResponse.json(result)
+    const finishedAt = new Date().toISOString()
+    return NextResponse.json(
+      formatSuccessResponse(requestId, result, {
+        requestId,
+        workflowId: "verify",
+        startedAt,
+        finishedAt,
+      }),
+    )
   } catch (error) {
     console.error("Workflow verification error:", error)
-
     return NextResponse.json(
-      {
-        isValid: false,
-        errors: [error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"],
-      },
+      formatErrorResponse(requestId, {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message: error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error",
+        data: {
+          isValid: false,
+          errors: [error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"],
+        },
+      }),
       { status: 500 },
     )
   }
