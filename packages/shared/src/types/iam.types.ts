@@ -120,6 +120,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
+          is_test_env: boolean
           metadata: Json
           status: Database["iam"]["Enums"]["user_status"]
           updated_at: string
@@ -130,6 +131,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          is_test_env?: boolean
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string
@@ -140,6 +142,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          is_test_env?: boolean
           metadata?: Json
           status?: Database["iam"]["Enums"]["user_status"]
           updated_at?: string

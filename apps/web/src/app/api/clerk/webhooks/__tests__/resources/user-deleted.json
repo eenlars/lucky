@@ -1,0 +1,11 @@
+{
+  "object": "event",
+  "type": "user.deleted",
+  "instance_id": "ins_test123",
+  "timestamp": 1654012611835,
+  "data": {
+    "id": "user_2test123abc",
+    "object": "user",
+    "deleted": true
+  }
+}
