@@ -33,7 +33,7 @@ export interface StandardizedLocation {
     | undefined
   owner_imgs: string[]
   metadata: {
-    [key: string]: any
+    [key: string]: unknown
   }
   domain: string | null
 }
@@ -93,7 +93,7 @@ export const locationDataSchema = z.object({
   owner_imgs: z.array(z.string()).default([]),
   metadata: z
     .object({
-      original_data: z.any().nullish(),
+      original_data: z.unknown().nullish(),
       category: z.string().nullish(),
       status: z.string().nullish(),
       googleUrl: z.string().nullish(),

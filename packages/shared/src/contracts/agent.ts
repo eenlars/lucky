@@ -5,7 +5,7 @@ import type { WorkflowNodeConfig } from "./workflow"
 /**
  * Result returned from a single node invocation
  */
-export interface NodeInvocationResult<TPayload = any, TSummary = any> {
+export interface NodeInvocationResult<TPayload = unknown, TSummary = unknown> {
   nodeInvocationId: string
   nodeInvocationFinalOutput: string
   summaryWithInfo: TSummary
@@ -27,7 +27,7 @@ export interface NodeInvocationResult<TPayload = any, TSummary = any> {
  * Core interface that all workflow node implementations must satisfy
  * Minimal API - additional capabilities exposed via optional capability interfaces below
  */
-export interface IWorkflowNode<TPayload = any, TSummary = any, TConfig = WorkflowNodeConfig> {
+export interface IWorkflowNode<TPayload = unknown, TSummary = unknown, TConfig = WorkflowNodeConfig> {
   /** Unique identifier for this node */
   readonly nodeId: string
 
@@ -51,14 +51,14 @@ export interface IWorkflowNode<TPayload = any, TSummary = any, TConfig = Workflo
  * Optional capability: Node supports MCP tools
  */
 export interface SupportsMCPTools {
-  getMCPTools(): Record<string, any>
+  getMCPTools(): Record<string, unknown>
 }
 
 /**
  * Optional capability: Node supports code tools
  */
 export interface SupportsCodeTools {
-  getCodeTools(): Record<string, any>
+  getCodeTools(): Record<string, unknown>
 }
 
 /**
@@ -67,8 +67,8 @@ export interface SupportsCodeTools {
 export interface SelfImproving<TConfig = WorkflowNodeConfig> {
   selfImprove(params: {
     workflowInvocationId: string
-    fitness: any
-    setup: any
+    fitness: unknown
+    setup: unknown
     goal: string
   }): Promise<TConfig>
 }
@@ -76,36 +76,37 @@ export interface SelfImproving<TConfig = WorkflowNodeConfig> {
 /**
  * Factory function type for creating workflow nodes
  */
-export type NodeFactory<TPayload = any, TSummary = any, TConfig = WorkflowNodeConfig> = (
+export type NodeFactory<TPayload = unknown, TSummary = unknown, TConfig = WorkflowNodeConfig> = (
   config: TConfig,
   workflowVersionId: string,
   skipDatabasePersistence?: boolean,
-  persistence?: any,
+  persistence?: unknown,
 ) => Promise<IWorkflowNode<TPayload, TSummary, TConfig>>
 
 /**
  * Execution context passed to a node's invoke method
  */
-export interface NodeInvocationCallContext<_TPayload = any, TConfig = WorkflowNodeConfig> {
+export interface NodeInvocationCallContext<_TPayload = unknown, TConfig = WorkflowNodeConfig> {
   startTime: string
   workflowVersionId: string
   workflowId: string
   workflowInvocationId: string
 
-  workflowMessageIncoming: any // Will be properly typed in messages
+  workflowMessageIncoming: unknown
 
   nodeConfig: TConfig
   nodeMemory: Record<string, string>
 
   workflowFiles?: WorkflowFile[]
-  expectedOutputType?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  expectedOutputType?: any // Overridden by tools package with ZodTypeAny
   mainWorkflowGoal?: string
 
   // workflowConfig is used for hierarchical role inference
-  workflowConfig?: any // Will be properly typed in workflow
+  workflowConfig?: unknown
 
   // persistence for database operations
-  persistence?: any
+  persistence?: unknown
   skipDatabasePersistence?: boolean
 
   // Optional tool strategy override

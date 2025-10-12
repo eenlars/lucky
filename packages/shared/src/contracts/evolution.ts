@@ -87,7 +87,7 @@ export function evolutionSettingsToString(settings: EvolutionSettings): string {
 export interface IterativeConfig {
   mode: "iterative"
   iterations: number
-  question: any // EvaluationInput - circular dep, keep as any
+  question: unknown // EvaluationInput - avoid circular dependency
 }
 
 /**

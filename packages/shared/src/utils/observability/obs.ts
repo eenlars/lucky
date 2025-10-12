@@ -6,25 +6,25 @@ export type Attrs = Record<string, Attr>
 export type Ctx = { wfId?: string; nodeId?: string; nodeInvocationId?: string }
 
 export interface Sink {
-  event(rec: any): void
+  event(rec: Record<string, unknown>): void
 }
 
 export class StdoutSink implements Sink {
-  event(rec: any) {
+  event(rec: Record<string, unknown>) {
     try {
       console.log(JSON.stringify(rec))
     } catch {}
   }
 }
 export class MemorySink implements Sink {
-  events: any[] = []
-  event(rec: any) {
+  events: Record<string, unknown>[] = []
+  event(rec: Record<string, unknown>) {
     this.events.push(rec)
   }
 }
 export class TeeSink implements Sink {
   constructor(private sinks: Sink[]) {}
-  event(rec: any) {
+  event(rec: Record<string, unknown>) {
     for (const s of this.sinks) s.event(rec)
   }
 }
@@ -35,9 +35,9 @@ export function setSink(s: Sink) {
 }
 
 // AsyncLocalStorage for correlation context
-const als = new AsyncLocalStorage<Record<string, any>>()
+const als = new AsyncLocalStorage<Record<string, unknown>>()
 
-function currentCtx(): Record<string, any> {
+function currentCtx(): Record<string, unknown> {
   return als.getStore() ?? {}
 }
 
@@ -66,10 +66,11 @@ export async function withSpan<T>(ctx: Ctx | undefined, name: string, attrs: Att
       duration_ms: Math.round(performance.now() - t0),
     })
     return out
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : String(e)
     emit(ctx, `${name}:end`, {
       status: "error",
-      reason: String(e?.message ?? e),
+      reason: errorMessage,
       duration_ms: Math.round(performance.now() - t0),
     })
     throw e
@@ -78,16 +79,16 @@ export async function withSpan<T>(ctx: Ctx | undefined, name: string, attrs: Att
 
 // ALS-first API: no ctx threading
 export const obs = {
-  scope<T>(values: Record<string, any>, fn: () => Promise<T> | T): Promise<T> | T {
+  scope<T>(values: Record<string, unknown>, fn: () => Promise<T> | T): Promise<T> | T {
     const parent = currentCtx()
     const merged = { ...parent, ...values }
     return als.run(merged, fn)
   },
-  set(key: string, value: any): void {
+  set(key: string, value: unknown): void {
     const store = als.getStore()
     if (store) store[key] = value
   },
-  get<T = any>(key: string): T | undefined {
+  get<T = unknown>(key: string): T | undefined {
     const store = als.getStore()
     return (store ? store[key] : undefined) as T | undefined
   },

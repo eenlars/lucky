@@ -423,7 +423,7 @@ export class ModelsFacade {
   /**
    * Configure logger
    */
-  configureLogger(config: any): void {
+  configureLogger(config: Record<string, unknown>): void {
     this.logger.configure(config)
   }
 }

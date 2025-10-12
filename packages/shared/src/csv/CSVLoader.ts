@@ -38,7 +38,7 @@ export class CSVLoader {
     }
   }
 
-  async loadAsJSON<T = Record<string, any>>(): Promise<T[]> {
+  async loadAsJSON<T = Record<string, unknown>>(): Promise<T[]> {
     try {
       const csvContent = await this.loadContent()
 
@@ -56,7 +56,7 @@ export class CSVLoader {
             .filter(index => !Number.isNaN(index))
 
           if (columnIndices.length > 0) {
-            data = data.map(row => columnIndices.map(index => (row as any[])[index])) as T[]
+            data = data.map(row => columnIndices.map(index => (row as unknown[])[index])) as T[]
           }
         }
 
@@ -64,7 +64,7 @@ export class CSVLoader {
       }
 
       return (parsed.data as T[])
-        .map(row => this.mapColumns(row as Record<string, any>))
+        .map(row => this.mapColumns(row as Record<string, unknown>))
         .map(row => this.filterColumns(row))
         .filter(item => this.isValidRow(item)) as T[]
     } catch (error) {
@@ -72,19 +72,19 @@ export class CSVLoader {
     }
   }
 
-  private mapColumns(row: Record<string, any>): Record<string, any> {
+  private mapColumns(row: Record<string, unknown>): Record<string, unknown> {
     if (!this.options.columnMappings) {
       return row
     }
 
-    const mapped: Record<string, any> = {}
+    const mapped: Record<string, unknown> = {}
 
     for (const [targetField, possibleNames] of Object.entries(this.options.columnMappings)) {
       let value = ""
 
       for (const name of possibleNames) {
         if (row[name] !== undefined && row[name] !== null && row[name] !== "") {
-          value = row[name]
+          value = row[name] as string
           break
         }
       }
@@ -95,12 +95,12 @@ export class CSVLoader {
     return mapped
   }
 
-  private filterColumns(row: Record<string, any>): Record<string, any> {
+  private filterColumns(row: Record<string, unknown>): Record<string, unknown> {
     if (!this.options.onlyIncludeInputColumns) {
       return row
     }
 
-    const filtered: Record<string, any> = {}
+    const filtered: Record<string, unknown> = {}
 
     for (const column of this.options.onlyIncludeInputColumns) {
       if (row[column] !== undefined) {
@@ -111,7 +111,7 @@ export class CSVLoader {
     return filtered
   }
 
-  private isValidRow(item: Record<string, any>): boolean {
+  private isValidRow(item: Record<string, unknown>): boolean {
     if (!this.options.columnMappings) {
       return true
     }

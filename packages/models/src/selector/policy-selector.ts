@@ -507,7 +507,7 @@ export class PolicySelector {
   /**
    * Convert SelectionOptions to ModelQuery
    */
-  private optionsToQuery(options: SelectionOptions): any {
+  private optionsToQuery(options: SelectionOptions): Record<string, unknown> {
     // Convert maxLatency to speed (ModelRegistry expects "speed", not "maxLatency")
     let speed: "fast" | "medium" | "slow" | undefined
     if (options.maxLatency === "fast") {

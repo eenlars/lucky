@@ -147,8 +147,24 @@ export const show = (obj: unknown, indent = 2, depth = 0): string => {
 
     // if it's an object, check if any values need recursive processing
     if (typeof obj === "object" && obj !== null) {
-      const processed: any = Array.isArray(obj) ? [] : {}
+      if (Array.isArray(obj)) {
+        const processed: unknown[] = []
+        for (const [key, value] of Object.entries(obj)) {
+          if (typeof value === "string" && isJSON(value)) {
+            try {
+              const extracted = extractJSON(value)
+              processed[key as unknown as number] = JSON.parse(show(extracted, 0, depth + 1))
+            } catch {
+              processed[key as unknown as number] = value
+            }
+          } else {
+            processed[key as unknown as number] = value
+          }
+        }
+        return JSON.stringify(processed, null, indent)
+      }
 
+      const processed: Record<string, unknown> = {}
       for (const [key, value] of Object.entries(obj)) {
         if (typeof value === "string" && isJSON(value)) {
           // recursively process stringified json values
