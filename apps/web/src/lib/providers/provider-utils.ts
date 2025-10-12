@@ -12,6 +12,7 @@ export interface ProviderConfig {
   docsUrl: string
   keysUrl: string
   defaultModelsCount: number
+  disabled?: boolean
 }
 
 export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
@@ -36,6 +37,7 @@ export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
     defaultModelsCount: 12,
+    disabled: true,
   },
   openrouter: {
     name: "OpenRouter",
@@ -47,6 +49,7 @@ export const PROVIDER_CONFIGS: Record<LuckyProvider, ProviderConfig> = {
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
     defaultModelsCount: 150,
+    disabled: true,
   },
 }
 

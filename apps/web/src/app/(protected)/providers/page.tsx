@@ -175,8 +175,12 @@ export default function ProvidersPage() {
         {providers.map(providerData => {
           const config = PROVIDER_CONFIGS[providerData.provider]
           const Icon = config.icon
+          const isDisabled = config.disabled
           return (
-            <Card key={providerData.provider} className="hover:shadow-md transition-shadow">
+            <Card
+              key={providerData.provider}
+              className={`transition-shadow ${isDisabled ? "opacity-60" : "hover:shadow-md"}`}
+            >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -193,7 +197,13 @@ export default function ProvidersPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Status</span>
-                    {getStatusBadge(providerData.status)}
+                    {isDisabled ? (
+                      <Badge variant="outline" className="bg-muted text-muted-foreground">
+                        Disabled
+                      </Badge>
+                    ) : (
+                      getStatusBadge(providerData.status)
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -201,7 +211,7 @@ export default function ProvidersPage() {
                     <span className="text-sm font-medium">{providerData.enabledModels}</span>
                   </div>
 
-                  {providerData.status === "partial" && (
+                  {providerData.status === "partial" && !isDisabled && (
                     <div className="flex items-start gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
                       <AlertCircle className="size-4 text-yellow-600 mt-0.5 shrink-0" />
                       <p className="text-xs text-yellow-700">API key configured but no models enabled</p>
@@ -209,22 +219,29 @@ export default function ProvidersPage() {
                   )}
 
                   <div className="pt-2">
-                    <Link href={`/providers/${config.slug}`}>
-                      <Button variant="outline" size="sm" className="w-full group">
-                        {providerData.status === "unconfigured" ? (
-                          <>
-                            <Key className="size-4 mr-2" />
-                            Configure Provider
-                          </>
-                        ) : (
-                          <>
-                            <Key className="size-4 mr-2" />
-                            Manage Settings
-                          </>
-                        )}
-                        <ArrowRight className="size-4 ml-auto group-hover:translate-x-0.5 transition-transform" />
+                    {isDisabled ? (
+                      <Button variant="outline" size="sm" className="w-full" disabled>
+                        <Key className="size-4 mr-2" />
+                        Currently Unavailable
                       </Button>
-                    </Link>
+                    ) : (
+                      <Link href={`/providers/${config.slug}`}>
+                        <Button variant="outline" size="sm" className="w-full group">
+                          {providerData.status === "unconfigured" ? (
+                            <>
+                              <Key className="size-4 mr-2" />
+                              Configure Provider
+                            </>
+                          ) : (
+                            <>
+                              <Key className="size-4 mr-2" />
+                              Manage Settings
+                            </>
+                          )}
+                          <ArrowRight className="size-4 ml-auto group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -251,12 +268,6 @@ export default function ProvidersPage() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/providers/openai">
                   <Button variant="outline">Configure OpenAI</Button>
-                </Link>
-                <Link href="/providers/groq">
-                  <Button variant="outline">Configure Groq</Button>
-                </Link>
-                <Link href="/providers/openrouter">
-                  <Button variant="outline">Configure OpenRouter</Button>
                 </Link>
               </div>
             </div>
