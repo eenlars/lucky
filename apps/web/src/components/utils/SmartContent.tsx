@@ -60,7 +60,7 @@ export function SmartContent({
   stringifySpacing = 2,
   jsonTheme = "auto",
 }: SmartContentProps) {
-  if (value && typeof value === "object") {
+  if (value != null && typeof value === "object") {
     if (showExpanders) {
       return (
         <div className={className}>
@@ -106,7 +106,7 @@ export function SmartContent({
 
               if (looksJson) {
                 const parsed = tryParseJson(raw)
-                if (parsed != null) {
+                if (parsed != null && typeof parsed === "object") {
                   if (showExpanders) {
                     return (
                       <ReactJson
@@ -147,7 +147,7 @@ export function SmartContent({
 
   if (isJSON(text)) {
     const parsed = tryParseJson(text)
-    if (parsed != null) {
+    if (parsed != null && typeof parsed === "object") {
       if (showExpanders) {
         return (
           <div className={className}>

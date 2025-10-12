@@ -130,15 +130,27 @@ export const TerminateStep = ({
               <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-2">
                 <div className={`text-sm font-medium mb-2 ${theme.contentClass}`}>Complete Result:</div>
                 <div ref={setResultRef ?? undefined} className="overflow-hidden">
-                  <ReactJson
-                    src={typeof returnData === "string" ? { result: returnData } : (returnData as any)}
-                    theme={getReactJsonTheme()}
-                    collapsed={1}
-                    displayObjectSize={false}
-                    displayDataTypes={false}
-                    enableClipboard={true}
-                    style={{ fontSize: "12px" }}
-                  />
+                  {!isNir(returnData) && typeof returnData === "object" ? (
+                    <ReactJson
+                      src={returnData as any}
+                      theme={getReactJsonTheme()}
+                      collapsed={1}
+                      displayObjectSize={false}
+                      displayDataTypes={false}
+                      enableClipboard={true}
+                      style={{ fontSize: "12px" }}
+                    />
+                  ) : (
+                    <ReactJson
+                      src={{ result: returnData }}
+                      theme={getReactJsonTheme()}
+                      collapsed={1}
+                      displayObjectSize={false}
+                      displayDataTypes={false}
+                      enableClipboard={true}
+                      style={{ fontSize: "12px" }}
+                    />
+                  )}
                 </div>
               </div>
             </div>

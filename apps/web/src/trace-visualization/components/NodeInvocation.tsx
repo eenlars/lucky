@@ -655,22 +655,42 @@ export const NodeInvocation = ({ entry }: NodeInvocationProps) => {
                     {selectedTool.startsWith("terminate-") ? "Terminal Output" : selectedTool}
                   </h4>
                   <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                    <ReactJson
-                      src={(() => {
+                    {(() => {
+                      const data = (() => {
                         if (selectedTool.startsWith("terminate-")) {
                           const stepIndex = Number.parseInt(selectedTool.replace("terminate-", ""))
                           const terminateStep = agentSteps?.[stepIndex]
                           return terminateStep || {}
                         }
                         return allToolOutputs.find(t => t.name === selectedTool) || {}
-                      })()}
-                      theme={getReactJsonTheme()}
-                      collapsed={1}
-                      displayObjectSize={false}
-                      displayDataTypes={false}
-                      enableClipboard={true}
-                      style={{ fontSize: "12px" }}
-                    />
+                      })()
+
+                      if (isNir(data) || typeof data !== "object") {
+                        return (
+                          <ReactJson
+                            src={{ value: data }}
+                            theme={getReactJsonTheme()}
+                            collapsed={1}
+                            displayObjectSize={false}
+                            displayDataTypes={false}
+                            enableClipboard={true}
+                            style={{ fontSize: "12px" }}
+                          />
+                        )
+                      }
+
+                      return (
+                        <ReactJson
+                          src={data}
+                          theme={getReactJsonTheme()}
+                          collapsed={1}
+                          displayObjectSize={false}
+                          displayDataTypes={false}
+                          enableClipboard={true}
+                          style={{ fontSize: "12px" }}
+                        />
+                      )
+                    })()}
                   </div>
                 </div>
               ) : (
