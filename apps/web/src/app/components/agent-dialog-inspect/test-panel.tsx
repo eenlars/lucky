@@ -1,8 +1,8 @@
 "use client"
 
 import { AnimatedStatusText } from "@/components/ui/animated-status-text"
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { AIDevtools } from "@ai-sdk-tools/devtools"
 import { useChat } from "@ai-sdk-tools/store"
 import { DefaultChatTransport } from "ai"

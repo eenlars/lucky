@@ -1,7 +1,7 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { AlertCircle, CheckCircle, Play } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
 

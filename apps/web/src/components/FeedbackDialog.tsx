@@ -9,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/react-flow-visualization/components/ui/dialog"
-import { Textarea } from "@/react-flow-visualization/components/ui/textarea"
+} from "@/features/react-flow-visualization/components/ui/dialog"
+import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
 import { useState } from "react"
 import { toast } from "sonner"
 import type { FeedbackData, Metrics } from "./types/evaluation"

@@ -1,6 +1,9 @@
+import {
+  retrieveLatestWorkflowVersions,
+  saveWorkflowVersion,
+} from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
-import { retrieveLatestWorkflowVersions, saveWorkflowVersion } from "@/trace-visualization/db/Workflow/retrieveWorkflow"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import {
   loadFromDatabaseForDisplay,
