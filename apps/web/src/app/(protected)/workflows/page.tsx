@@ -286,7 +286,7 @@ export default function WorkflowsPage() {
       )}
 
       {/* Content */}
-      {isLoading && workflows.length === 0 ? (
+      {!isLoaded || (isLoading && workflows.length === 0) ? (
         <div className="flex justify-center py-16">
           <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
