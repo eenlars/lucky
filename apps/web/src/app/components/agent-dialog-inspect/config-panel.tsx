@@ -1,5 +1,6 @@
 "use client"
 
+import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
@@ -75,7 +76,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
   // Zustand store for model preferences
-  const { preferences, isLoading, loadPreferences, getEnabledModels } = useModelPreferencesStore()
+  const { preferences, isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } =
+    useModelPreferencesStore()
 
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
@@ -381,6 +383,17 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
       {/* Advanced Configuration - Collapsed by default */}
       <CollapsibleSection title="Advanced Configuration" defaultOpen={false}>
         <div className="space-y-4">
+          {/* Sync Status */}
+          <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Model preferences sync status</p>
+            <SyncStatusBadge
+              lastSynced={lastSynced}
+              isStale={isStale()}
+              isLoading={isLoading}
+              onRefresh={forceRefresh}
+            />
+          </div>
+
           {/* Model Provider Selection */}
           <div>
             <label htmlFor="model-provider" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
