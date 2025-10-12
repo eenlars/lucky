@@ -4,7 +4,10 @@ import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
 import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/react-flow-visualization/store/store"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
+import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
+import type { ModelEntry } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -12,7 +15,7 @@ import {
   type MCPToolName,
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 // Get available providers dynamically from PROVIDER_CONFIGS, excluding disabled ones
 const PROVIDERS = Object.keys(PROVIDER_CONFIGS).filter(provider => !PROVIDER_CONFIGS[provider].disabled)
@@ -71,10 +74,89 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
+  // Zustand store for model preferences
+  const { preferences, isLoading, loadPreferences, getEnabledModels } = useModelPreferencesStore()
+
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
   const mcpTools = node.data.mcpTools || []
   const codeTools = node.data.codeTools || []
+
+  // Provider and model state
+  const [selectedProvider, setSelectedProvider] = useState<string>(() => {
+    // Look up model in catalog to get actual provider (don't parse model ID string!)
+    if (node.data.modelName) {
+      const catalogEntry = MODEL_CATALOG.find(entry => entry.id === node.data.modelName)
+      if (catalogEntry && PROVIDERS.includes(catalogEntry.provider)) {
+        return catalogEntry.provider
+      }
+    }
+    return PROVIDERS[0] || "openai"
+  })
+
+  // Track the current provider to prevent race conditions when switching providers
+  const currentProviderRef = useRef(selectedProvider)
+
+  // Update ref when provider changes
+  useEffect(() => {
+    currentProviderRef.current = selectedProvider
+  }, [selectedProvider])
+
+  // Load preferences on mount - always refresh to get latest from server
+  useEffect(() => {
+    loadPreferences()
+  }, [loadPreferences])
+
+  // Compute available models based on user preferences and selected provider
+  const availableModels = useMemo(() => {
+    // Guard: Only compute if this is still the current provider (prevents race conditions)
+    const providerToFetch = selectedProvider
+    if (providerToFetch !== currentProviderRef.current) {
+      return []
+    }
+
+    // Get all models for the provider from catalog
+    const allModels = getModelsByProvider(providerToFetch).filter(m => m.active)
+    const catalogMap = new Map(allModels.map(m => [m.model, m]))
+
+    // Get user's enabled models for this provider
+    const enabledModelIds = getEnabledModels(providerToFetch)
+
+    // If user has enabled specific models, show those (even if not in catalog)
+    if (enabledModelIds.length > 0) {
+      // IMPORTANT: enabledModelIds contains provider-specific model names (e.g., "gpt-5-nano")
+      // We must match by m.model, not m.id (which is "openai/gpt-5-nano")
+      const result = enabledModelIds.map(modelName => {
+        const catalogEntry = catalogMap.get(modelName)
+        if (catalogEntry) {
+          return catalogEntry
+        }
+        // Model not in catalog - create a minimal entry so it can still be selected
+        // This handles new provider models not yet added to our static catalog
+        return {
+          id: `${providerToFetch}/${modelName}`,
+          model: modelName,
+          provider: providerToFetch,
+          active: true,
+          contextLength: 0,
+          intelligence: 5,
+          speed: "medium" as const,
+          input: 0,
+          output: 0,
+          supportsTools: false,
+          supportsVision: false,
+          supportsReasoning: false,
+          supportsAudio: false,
+          supportsVideo: false,
+          cachedInput: null,
+        }
+      })
+      return result
+    }
+
+    // Otherwise show all catalog models
+    return allModels
+  }, [selectedProvider, preferences, getEnabledModels])
 
   // Sync state when node changes
   useEffect(() => {
@@ -306,8 +388,9 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             </label>
             <select
               id="model-provider"
+              value={selectedProvider}
+              onChange={e => setSelectedProvider(e.target.value)}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-              defaultValue={PROVIDERS[0] || "openai"}
             >
               {PROVIDERS.map(provider => (
                 <option key={provider} value={provider}>
@@ -330,15 +413,105 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                   modelName: e.target.value as AnyModelName,
                 })
               }
-              className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              disabled={isLoading}
+              className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="openai/gpt-4o">GPT-4o</option>
-              <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-              <option value="anthropic/claude-3-opus">Claude 3 Opus</option>
-              <option value="anthropic/claude-3-sonnet">Claude 3 Sonnet</option>
-              <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+              {isLoading ? (
+                <option value="">Loading models...</option>
+              ) : availableModels.length === 0 ? (
+                <option value="">No models enabled</option>
+              ) : (
+                availableModels.map(model => (
+                  <option key={model.id} value={model.id}>
+                    {model.model}
+                  </option>
+                ))
+              )}
             </select>
+
+            {/* Link to manage models */}
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              <a
+                href={`/providers/${selectedProvider}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Manage {selectedProvider} models →
+              </a>
+            </p>
+
+            {/* Model Metadata Display */}
+            {!isLoading &&
+              node.data.modelName &&
+              availableModels.length > 0 &&
+              (() => {
+                const selectedModel = availableModels.find(m => m.id === node.data.modelName)
+                if (!selectedModel) return null
+
+                return (
+                  <div className="mt-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {selectedModel.supportsTools && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                          Tools
+                        </span>
+                      )}
+                      {selectedModel.supportsVision && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                          Vision
+                        </span>
+                      )}
+                      {selectedModel.speed === "fast" && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                          Fast
+                        </span>
+                      )}
+                      {selectedModel.speed === "slow" && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                          Slow
+                        </span>
+                      )}
+                      {selectedModel.intelligence >= 8 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                          High IQ
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+                      <div>{selectedModel.contextLength.toLocaleString()} tokens context</div>
+                      <div>
+                        ${selectedModel.input.toFixed(2)} / ${selectedModel.output.toFixed(2)} per 1M tokens
+                        {selectedModel.cachedInput !== null && (
+                          <span className="ml-1 text-gray-500">(cached: ${selectedModel.cachedInput.toFixed(2)})</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })()}
           </div>
+
+          {/* Warning when no models are enabled */}
+          {!isLoading && availableModels.length === 0 && (
+            <div className="mt-4 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-1">
+                No models enabled for {selectedProvider}
+              </p>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                Enable models in{" "}
+                <a
+                  href={`/providers/${selectedProvider}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-yellow-900 dark:hover:text-yellow-100"
+                >
+                  provider settings
+                </a>{" "}
+                to use this agent.
+              </p>
+            </div>
+          )}
         </div>
       </CollapsibleSection>
     </div>

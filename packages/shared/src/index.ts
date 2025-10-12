@@ -9,6 +9,7 @@ export * from "./utils/common/isNir"
 export * from "./utils/common/id"
 export * from "./utils/common/array"
 export * from "./utils/zod/withDescriptions"
+export * from "./utils/model-preferences"
 
 // Supabase credentials - import via subpath exports:
 //   - @lucky/shared/supabase-credentials.server (server-only)
@@ -94,6 +95,9 @@ export type {
   ProviderConfig,
   ApiKeyValidation,
   ProviderStatus,
+  ModelId,
+  UserProviderSettings,
+  UserModelPreferences,
 } from "./contracts/providers"
 export {
   providerNameSchema,
@@ -103,6 +107,9 @@ export {
   providerConfigSchema,
   apiKeyValidationSchema,
   providerStatusSchema,
+  modelIdSchema,
+  userProviderSettingsSchema,
+  userModelPreferencesSchema,
 } from "./contracts/providers"
 
 // Model contracts
