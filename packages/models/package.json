@@ -30,6 +30,10 @@
     "./middleware": {
       "types": "./dist/middleware/index.d.ts",
       "import": "./dist/middleware/index.js"
+    },
+    "./pricing/catalog": {
+      "types": "./dist/pricing/catalog.d.ts",
+      "import": "./dist/pricing/catalog.js"
     }
   },
   "dependencies": {

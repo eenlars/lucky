@@ -53,3 +53,16 @@ export function getProviderKeyName(provider: string): string {
   }
   return mapping[provider] || `${provider.toUpperCase()}_API_KEY`
 }
+
+/**
+ * Map API key names to user-friendly provider display names
+ */
+export function getProviderDisplayName(keyName: string): string {
+  const mapping: Record<string, string> = {
+    OPENAI_API_KEY: "OpenAI",
+    OPENROUTER_API_KEY: "OpenRouter",
+    ANTHROPIC_API_KEY: "Anthropic",
+    GROQ_API_KEY: "Groq",
+  }
+  return mapping[keyName] || keyName.replace(/_API_KEY$/, "").toLowerCase()
+}

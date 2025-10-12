@@ -16,6 +16,7 @@ import {
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import {
   FALLBACK_PROVIDER_KEYS,
+  formatMissingProviders,
   getRequiredProviderKeys,
   validateProviderKeys,
 } from "@/lib/workflow/provider-validation"
@@ -98,12 +99,13 @@ export async function POST(req: NextRequest) {
       const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
 
       if (!isNir(missingKeys)) {
+        const missingProviders = formatMissingProviders(missingKeys)
         console.error("[v1/invoke] Missing required API keys:", missingKeys)
         return NextResponse.json(
           formatErrorResponse(requestId, {
             code: -32000,
-            message: `This workflow requires API keys that aren't configured: ${missingKeys.join(", ")}. Go to Settings > Provider Settings to add your API keys.`,
-            data: { missingKeys },
+            message: `This workflow requires ${missingProviders.join(", ")} ${missingProviders.length === 1 ? "API key" : "API keys"} to run. Please configure ${missingProviders.length === 1 ? "it" : "them"} in Settings → Providers.`,
+            data: { missingProviders, action: "configure_providers" },
           }),
           { status: 400 },
         )

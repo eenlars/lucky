@@ -1,4 +1,8 @@
-import { extractRequiredProviders, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import {
+  extractRequiredProviders,
+  getProviderDisplayName,
+  getProviderKeyName,
+} from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 /**
@@ -34,4 +38,12 @@ export function getRequiredProviderKeys(config: WorkflowConfig, context: string)
  */
 export function validateProviderKeys(requiredKeys: string[], apiKeys: Record<string, string | undefined>): string[] {
   return requiredKeys.filter(keyName => !apiKeys[keyName])
+}
+
+/**
+ * Convert array of missing API key names to user-friendly provider display names
+ * e.g., ["OPENAI_API_KEY", "GROQ_API_KEY"] -> ["OpenAI", "Groq"]
+ */
+export function formatMissingProviders(missingKeys: string[]): string[] {
+  return missingKeys.map(getProviderDisplayName)
 }
