@@ -32,7 +32,7 @@
       "warnings": [],
       "request": {
         "body": {
-          "model": "gpt-4.1-nano",
+          "model": "gpt-4o-mini",
           "messages": [
             {
               "role": "user",
@@ -64,7 +64,7 @@
       "response": {
         "id": "gen-1758637320-qrbg0f6BQAc0jShXL0cd",
         "timestamp": "2025-09-23T14:21:59.895Z",
-        "modelId": "gpt-4.1-nano",
+        "modelId": "gpt-4o-mini",
         "headers": {
           "access-control-allow-origin": "*",
           "cf-ray": "983ab1151c8937c0-AMS",
