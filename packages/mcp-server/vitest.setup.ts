@@ -1,11 +1,11 @@
-import FirecrawlApp from "@mendable/firecrawl-js"
+import { beforeEach, vi } from "vitest"
+import LuckyApp from "./src/lucky-client.js"
 import type {
   BatchScrapeResponse,
   BatchScrapeStatusResponse,
-  FirecrawlDocument,
+  LuckyDocument,
   SearchResponse,
-} from "@mendable/firecrawl-js"
-import { beforeEach, vi } from "vitest"
+} from "./src/lucky-client.js"
 
 // Create mock responses
 const mockSearchResponse: SearchResponse = {
@@ -18,7 +18,7 @@ const mockSearchResponse: SearchResponse = {
       markdown: "# Test Content",
       actions: null as never,
     },
-  ] as FirecrawlDocument<undefined, never>[], // FirecrawlDocument is from external library
+  ] as LuckyDocument[], // LuckyDocument from our own client
 }
 
 const mockBatchScrapeResponse: BatchScrapeResponse = {
@@ -41,7 +41,7 @@ const mockBatchStatusResponse: BatchScrapeStatusResponse = {
       markdown: "# Test Content",
       actions: null as never,
     },
-  ] as FirecrawlDocument<undefined, never>[], // FirecrawlDocument is from external library
+  ] as LuckyDocument[], // LuckyDocument from our own client
 }
 
 // Create mock instance methods
@@ -58,7 +58,7 @@ const mockInstance = {
   checkBatchScrapeStatus: mockCheckBatchScrapeStatus,
 }
 
-// Mock the external firecrawl library
-vi.mock("@mendable/firecrawl-js", () => ({
+// Mock the Lucky client
+vi.mock("./src/lucky-client.js", () => ({
   default: vi.fn().mockImplementation(() => mockInstance),
 }))

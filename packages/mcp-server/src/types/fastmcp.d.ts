@@ -1,4 +1,4 @@
-declare module "lucky-fastmcp" {
+declare module "fastmcp" {
   import type { IncomingHttpHeaders } from "node:http"
 
   export interface Logger {

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import type { IncomingHttpHeaders } from "node:http"
-import FirecrawlApp from "@mendable/firecrawl-js"
 import dotenv from "dotenv"
 import { FastMCP, type Logger } from "fastmcp"
 import { z } from "zod"
+import LuckyApp from "./lucky-client.js"
 
 dotenv.config({ debug: false, quiet: true })
 
@@ -105,7 +105,7 @@ const server = new FastMCP<SessionData>({
   },
 })
 
-function createClient(apiKey?: string): FirecrawlApp {
+function createClient(apiKey?: string): LuckyApp {
   const config: any = {
     ...(process.env.LUCKY_API_URL && {
       apiUrl: process.env.LUCKY_API_URL,
@@ -117,7 +117,7 @@ function createClient(apiKey?: string): FirecrawlApp {
     config.apiKey = apiKey
   }
 
-  return new FirecrawlApp(config)
+  return new LuckyApp(config)
 }
 
 const ORIGIN = "mcp-lucky"
@@ -125,7 +125,7 @@ const ORIGIN = "mcp-lucky"
 // Safe mode is enabled by default for cloud service to comply with ChatGPT safety requirements
 const SAFE_MODE = process.env.CLOUD_SERVICE === "true"
 
-function getClient(session?: SessionData): FirecrawlApp {
+function getClient(session?: SessionData): LuckyApp {
   // For cloud service, API key is required
   if (process.env.CLOUD_SERVICE === "true") {
     if (!session || !session.luckyApiKey) {

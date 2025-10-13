@@ -108,14 +108,6 @@ env HTTP_STREAMABLE_SERVER=true LUCKY_API_KEY=fc-YOUR_API_KEY npx -y lucky-mcp
 
 Use the url: http://localhost:3000/mcp
 
-### Installing via Smithery (Legacy)
-
-To install Lucky for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@mendableai/mcp-server-lucky):
-
-```bash
-npx -y @smithery/cli install @mendableai/mcp-server-lucky --client claude
-```
-
 ### Running on VS Code
 
 For one-click installation, click one of the install buttons below...
