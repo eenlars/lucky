@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/api-auth"
+import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState } from "@/lib/redis/workflow-state"
 import { activeWorkflows } from "@/lib/workflow/active-workflows"
@@ -18,9 +18,9 @@ import { type NextRequest, NextResponse } from "next/server"
  *   cancelRequestedAt?: number
  * }
  */
-export async function GET(_req: NextRequest, { params }: { params: { invocationId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { invocationId: string } }) {
   try {
-    const authResult = await requireAuth()
+    const authResult = await requireAuthWithApiKey(req)
     if (authResult instanceof NextResponse) return authResult
 
     const { invocationId } = params

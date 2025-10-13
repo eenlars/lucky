@@ -1,12 +1,12 @@
-import { requireAuth } from "@/lib/api-auth"
+import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ wf_version_id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ wf_version_id: string }> }) {
   // Require authentication
-  const authResult = await requireAuth()
+  const authResult = await requireAuthWithApiKey(req)
   if (authResult instanceof NextResponse) return authResult
 
   const supabase = await createRLSClient()
