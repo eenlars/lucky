@@ -20,28 +20,20 @@ import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/ve
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODEL_CATALOG } from "@lucky/models/pricing/catalog"
+import { findModelByName } from "@lucky/models"
 import { isNir } from "@lucky/shared"
 
 // verify that each node has a modelname that exists
-// Uses MODEL_CATALOG (same as execution flow) to support both prefixed and unprefixed formats
 export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
     if (!node.modelName) {
       errors.push(`Node '${node.nodeId}' is missing a modelName`)
     } else {
-      const modelId = node.modelName
+      const modelName = node.modelName
 
-      // Look up model in MODEL_CATALOG (same logic as extractRequiredProviders)
-      // Handle both prefixed ("openai/gpt-4") and unprefixed ("gpt-4") model names
-      let catalogEntry = MODEL_CATALOG.find(entry => entry.id === modelId)
-
-      // If not found and model doesn't have a prefix, try adding openai prefix
-      // (OpenAI is the default provider and models may be stored unprefixed in configs)
-      if (!catalogEntry && !modelId.includes("/")) {
-        catalogEntry = MODEL_CATALOG.find(entry => entry.id === `openai/${modelId}`)
-      }
+      // Look up model by API name (workflows store API-format model names)
+      const catalogEntry = findModelByName(modelName)
 
       if (!catalogEntry) {
         errors.push(`Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`)

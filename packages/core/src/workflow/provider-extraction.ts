@@ -1,35 +1,31 @@
-import { MODEL_CATALOG } from "@lucky/models/pricing/catalog"
+import { findModelByName } from "@lucky/models"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 export type RequiredProviders = {
   providers: Set<string> // e.g., ["openai", "openrouter"]
-  models: Map<string, string[]> // provider -> model IDs
+  models: Map<string, string[]> // provider -> model names
 }
 
 /**
- * Extract all providers required by a workflow by analyzing node configs
- * Looks up each model in the catalog to determine which provider API it uses
+ * Extract all providers required by a workflow by analyzing node configs.
+ * Looks up each model in the catalog to determine which provider API it uses.
+ *
+ * NOTE: Workflows store model names in API format (e.g., "gpt-4o-mini", "anthropic/claude-sonnet-4"),
+ * not catalog IDs. We look up by the `model` field, not the `id` field.
  */
 export function extractRequiredProviders(config: WorkflowConfig): RequiredProviders {
   const providers = new Set<string>()
   const models = new Map<string, string[]>()
 
   for (const nodeConfig of config.nodes) {
-    const modelId = nodeConfig.modelName
-    if (!modelId) continue
+    const modelName = nodeConfig.modelName
+    if (!modelName) continue
 
-    // Look up model in catalog to find which provider API it uses
-    // Handle both prefixed ("openai/gpt-4") and unprefixed ("gpt-4") model names
-    let catalogEntry = MODEL_CATALOG.find(entry => entry.id === modelId)
-
-    // If not found and model doesn't have a prefix, try adding openai prefix
-    // (OpenAI is the default provider and models may be stored unprefixed in configs)
-    if (!catalogEntry && !modelId.includes("/")) {
-      catalogEntry = MODEL_CATALOG.find(entry => entry.id === `openai/${modelId}`)
-    }
+    // Look up model by its API name (the `model` field in catalog)
+    const catalogEntry = findModelByName(modelName)
 
     if (!catalogEntry) {
-      console.warn(`[extractProviders] Model not found in catalog: ${modelId} (node: ${nodeConfig.nodeId})`)
+      console.warn(`[extractProviders] Model not found in catalog: ${modelName} (node: ${nodeConfig.nodeId})`)
       continue
     }
 
@@ -41,7 +37,7 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
     }
     const providerModels = models.get(provider)
     if (providerModels) {
-      providerModels.push(modelId)
+      providerModels.push(modelName)
     }
   }
 

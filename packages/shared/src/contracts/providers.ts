@@ -77,13 +77,38 @@ export const providerStatusSchema = z.enum(["configured", "partial", "unconfigur
 export type ProviderStatus = z.infer<typeof providerStatusSchema>
 
 /**
- * Model ID schema - validates model IDs match MODEL_CATALOG format
- * Format: "provider/model-name" (e.g., "openai/gpt-4o", "anthropic/claude-sonnet-4")
- * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG
+ * Model ID schema - for user model preferences (stores API-format model names)
+ * Examples: "gpt-4o-mini", "anthropic/claude-sonnet-4", "openai/gpt-oss-20b"
+ * These are NOT catalog IDs - they're what gets sent to the provider APIs
  */
 export const modelIdSchema = z.string().min(3)
 
 export type ModelId = z.infer<typeof modelIdSchema>
+
+/**
+ * Catalog ID type - enforces vendor:X;model:Y format for internal catalog lookups
+ * This format distinguishes catalog lookup keys from API-format model names
+ * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG
+ *
+ * @example
+ * ```ts
+ * "vendor:openai;model:gpt-4.1-mini" // ✓ correct catalog ID
+ * "vendor:anthropic;model:claude-sonnet-4" // ✓ correct (uses openrouter provider!)
+ * "gpt-4.1-mini" // ✗ this is an API format name, not a catalog ID
+ * "openai/gpt-4.1-mini" // ✗ old format
+ * ```
+ */
+export type CatalogId = `vendor:${string};model:${string}`
+
+/**
+ * Catalog ID schema - validates catalog IDs match vendor:X;model:Y format
+ */
+export const catalogIdSchema = z
+  .string()
+  .min(3)
+  .refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
+    message: "Catalog ID must follow format 'vendor:X;model:Y'",
+  })
 
 /**
  * Enhanced user provider settings with metadata

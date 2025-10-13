@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod"
+import type { CatalogId } from "./providers"
 
 /**
  * Model speed tier schema
@@ -70,8 +71,13 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
  */
 export const modelEntrySchema = z.object({
   // Identity
-  /** Catalog lookup ID (always prefixed) - DO NOT use for API calls! */
-  id: z.string().min(1),
+  /** Catalog lookup ID (vendor:X;model:Y format) - DO NOT use for API calls! */
+  id: z
+    .string()
+    .min(1)
+    .refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
+      message: "Catalog ID must follow format 'vendor:X;model:Y'",
+    }),
   /** Provider name (determines which API endpoint to use) */
   provider: z.string().min(1),
   /** Model identifier in provider-specific format - USE THIS for API calls! */
@@ -114,7 +120,9 @@ export type ModelEntry = z.infer<typeof modelEntrySchema>
  * Subset of ModelEntry with fields most relevant for UI
  */
 export const enrichedModelInfoSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
+    message: "Catalog ID must follow format 'vendor:X;model:Y'",
+  }),
   name: z.string(),
   contextLength: z.number().int().positive(),
   supportsTools: z.boolean(),

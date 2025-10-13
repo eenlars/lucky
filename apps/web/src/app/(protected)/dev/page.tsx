@@ -163,7 +163,7 @@ export default function DevPage() {
     if (!selectedStore && stores.length > 0) {
       setSelectedStore(stores[0])
     }
-  }, [])
+  }, [selectedStore, stores])
 
   // Process store data - separate state from actions
   const processStoreData = (data: unknown): ProcessedStoreData => {
@@ -533,7 +533,7 @@ export default function DevPage() {
                                       <summary className="cursor-pointer hover:text-foreground">Examples</summary>
                                       <div className="mt-2 space-y-1 pl-2 border-l-2 border-border">
                                         <div>
-                                          String: <code className="bg-muted px-1 rounded">"text"</code>
+                                          String: <code className="bg-muted px-1 rounded">&quot;text&quot;</code>
                                         </div>
                                         <div>
                                           Number: <code className="bg-muted px-1 rounded">42</code>
@@ -549,7 +549,9 @@ export default function DevPage() {
                                         </div>
                                         <div>
                                           Multiple:{" "}
-                                          <code className="bg-muted px-1 rounded">"arg1", {"{opt: true}"}</code>
+                                          <code className="bg-muted px-1 rounded">
+                                            &quot;arg1&quot;, {"{opt: true}"}
+                                          </code>
                                         </div>
                                       </div>
                                     </details>
