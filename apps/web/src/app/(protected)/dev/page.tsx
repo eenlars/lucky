@@ -542,7 +542,8 @@ export default function DevPage() {
                                           Boolean: <code className="bg-muted px-1 rounded">true</code>
                                         </div>
                                         <div>
-                                          Object: <code className="bg-muted px-1 rounded">{`{key: "value"}`}</code>
+                                          Object:{" "}
+                                          <code className="bg-muted px-1 rounded">{"{key: &quot;value&quot;}"}</code>
                                         </div>
                                         <div>
                                           Array: <code className="bg-muted px-1 rounded">[1, 2, 3]</code>
