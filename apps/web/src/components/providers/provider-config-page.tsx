@@ -395,12 +395,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                 </p>
               </div>
 
-              {testStatus === "success" && (
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <p className="text-xs text-muted-foreground">Connection successful</p>
-                </div>
-              )}
-
               <div className="p-3 rounded-lg bg-muted/50">
                 <p className="text-xs text-muted-foreground">Your key is stored securely</p>
               </div>
