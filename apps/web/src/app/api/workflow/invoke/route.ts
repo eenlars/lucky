@@ -12,6 +12,8 @@ import {
   formatWorkflowError,
 } from "@/lib/mcp-invoke/response"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import { deleteWorkflowState, setWorkflowState, subscribeToCancellation } from "@/lib/redis/workflow-state"
+import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import {
   FALLBACK_PROVIDER_KEYS,
   formatMissingProviders,
@@ -31,8 +33,12 @@ export async function POST(req: NextRequest) {
   ensureCoreInit()
 
   // Generate synthetic request ID for JSON-RPC response (not a real RPC request)
+  // This ID is used as the cancellation token for the /api/workflow/cancel endpoint
   const requestId = `workflow-invoke-${genShortId()}`
   const startedAt = new Date().toISOString()
+
+  // Initialize unsubscribe as no-op, will be replaced with real function if subscription succeeds
+  const unsubscribe: () => Promise<void> = async () => {}
 
   try {
     const body = await req.json()
@@ -48,12 +54,51 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Create abort controller for cancellation support
+    // The requestId serves as the cancellation token
+    const controller = new AbortController()
+    const now = Date.now()
+
+    activeWorkflows.set(requestId, {
+      controller,
+      createdAt: now,
+      state: "running",
+    })
+
+    // Store workflow state in Redis (with memory fallback)
+    await setWorkflowState(requestId, {
+      state: "running",
+      desired: "running",
+      createdAt: now,
+      startedAt: now,
+    })
+
+    // Subscribe to Redis pub/sub for distributed cancellation
+    // When cancel signal arrives from another server, trigger local abort controller
+    const unsubscribe = await subscribeToCancellation(requestId, () => {
+      console.log(`[workflow/invoke] Received Redis cancel signal for ${requestId}`)
+      const entry = activeWorkflows.get(requestId)
+      if (entry) {
+        entry.state = "cancelling"
+        entry.cancelRequestedAt = Date.now()
+        entry.controller.abort()
+      }
+    })
+
     // Check if we already have execution context (from upstream caller like /api/v1/invoke)
     const existingContext = getExecutionContext()
 
     if (existingContext) {
       // Context already set, just invoke
-      const result = await invokeWorkflow(input)
+      const result = await invokeWorkflow({
+        ...input,
+        abortSignal: controller.signal,
+      })
+
+      // Cleanup: remove from active workflows map and Redis, unsubscribe from pub/sub
+      activeWorkflows.delete(requestId)
+      await deleteWorkflowState(requestId)
+      await unsubscribe()
 
       if (!result.success) {
         console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
@@ -138,10 +183,18 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
-      return invokeWorkflow(input)
+      return invokeWorkflow({
+        ...input,
+        abortSignal: controller.signal,
+      })
     })
 
     const finishedAt = new Date().toISOString()
+
+    // Cleanup: remove from active workflows map and Redis, unsubscribe from pub/sub
+    activeWorkflows.delete(requestId)
+    await deleteWorkflowState(requestId)
+    await unsubscribe()
 
     if (!result.success) {
       console.error("[/api/workflow/invoke] Workflow invocation failed:", result.error)
@@ -162,6 +215,11 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     )
   } catch (error) {
+    // Cleanup on error: remove from active workflows map and Redis, unsubscribe from pub/sub
+    activeWorkflows.delete(requestId)
+    await deleteWorkflowState(requestId)
+    await unsubscribe()
+
     logException(error, {
       location: "/api/workflow/invoke",
     })

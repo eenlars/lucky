@@ -136,6 +136,13 @@ export {
 export type { SeverityLevel, ErrorReportInput } from "./contracts/error"
 export { SeverityLevelSchema, ErrorReportSchema } from "./contracts/error"
 
+// Workflow progress contracts
+export type { WorkflowProgressEvent, WorkflowEventHandler } from "./contracts/workflow-progress"
+export {
+  workflowProgressEventSchema,
+  WORKFLOW_PROGRESS_SCHEMA_VERSION,
+} from "./contracts/workflow-progress"
+
 // Extended app database types for custom functions
 export type {
   UpsertErrorParams,

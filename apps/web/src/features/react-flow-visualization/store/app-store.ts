@@ -53,6 +53,8 @@ export type AppState = {
   }>
   // Execution logs panel state
   logPanelOpen: boolean
+  // Hydration state
+  _hasHydrated: boolean
 }
 
 /**
@@ -110,7 +112,7 @@ export type AppActions = {
   setDraggedPaletteNodeType: (type?: AppNodeType) => void
   loadWorkflowConfig: (mode?: "cultural" | "genetic") => Promise<void>
   loadWorkflowVersion: (workflowVersionId: string) => Promise<void>
-  loadWorkflowFromData: (workflowData: WorkflowConfig) => Promise<void>
+  loadWorkflowFromData: (workflowData: WorkflowConfig, workflowVersionId?: string) => Promise<void>
   exportToJSON: () => string
   updateWorkflowJSON: (json: string) => void
   syncJSONToGraph: () => Promise<void>
@@ -146,6 +148,7 @@ export const defaultState: AppState = {
   currentWorkflowId: undefined,
   chatMessages: [],
   logPanelOpen: false,
+  _hasHydrated: false,
 }
 
 export const createAppStore = (initialState: AppState = defaultState) => {
@@ -405,17 +408,45 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             const setup = toFrontendWorkflowConfig(workflowConfig)
             console.log("Initial setup config:", setup)
 
-            // apply layout to position nodes properly
-            console.log("Applying layout to nodes...")
-            const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
-            console.log("Layout applied, positioned nodes:", layoutedNodes.length)
+            // Check if workflow has saved layout positions
+            if (workflowConfig.ui?.layout?.nodes && workflowConfig.ui.layout.nodes.length > 0) {
+              console.log("Restoring saved layout positions...")
+              // Restore positions from saved layout
+              const layoutMap = new Map(workflowConfig.ui.layout.nodes.map((n: any) => [n.nodeId, { x: n.x, y: n.y }]))
 
-            set({
-              nodes: layoutedNodes,
-              edges: setup.edges,
-              workflowLoading: false,
-            })
-            console.log("Workflow config loading completed")
+              const nodesWithPositions = setup.nodes.map(node => {
+                const savedPosition = layoutMap.get(node.id)
+                if (savedPosition) {
+                  return {
+                    ...node,
+                    position: savedPosition,
+                  } as AppNode
+                }
+                return {
+                  ...node,
+                  position: { x: 0, y: 0 },
+                } as AppNode
+              })
+
+              set({
+                nodes: nodesWithPositions,
+                edges: setup.edges,
+                workflowLoading: false,
+              })
+              console.log("Saved layout positions restored")
+            } else {
+              // Legacy workflow without layout - use auto-layout
+              console.log("No saved layout found, applying auto-layout...")
+              const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+              console.log("Layout applied, positioned nodes:", layoutedNodes.length)
+
+              set({
+                nodes: layoutedNodes,
+                edges: setup.edges,
+                workflowLoading: false,
+              })
+              console.log("Workflow config loading completed")
+            }
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
@@ -442,15 +473,42 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             const workflowConfig = await response.json()
             const setup = toFrontendWorkflowConfig(workflowConfig)
 
-            // apply layout to position nodes properly
-            const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+            // Check if workflow has saved layout positions
+            if (workflowConfig.ui?.layout?.nodes && workflowConfig.ui.layout.nodes.length > 0) {
+              // Restore positions from saved layout
+              const layoutMap = new Map(workflowConfig.ui.layout.nodes.map((n: any) => [n.nodeId, { x: n.x, y: n.y }]))
 
-            set({
-              nodes: layoutedNodes,
-              edges: setup.edges,
-              workflowLoading: false,
-              currentWorkflowId: workflowVersionId, // Set workflow ID for saving
-            })
+              const nodesWithPositions = setup.nodes.map(node => {
+                const savedPosition = layoutMap.get(node.id)
+                if (savedPosition) {
+                  return {
+                    ...node,
+                    position: savedPosition,
+                  } as AppNode
+                }
+                return {
+                  ...node,
+                  position: { x: 0, y: 0 },
+                } as AppNode
+              })
+
+              set({
+                nodes: nodesWithPositions,
+                edges: setup.edges,
+                workflowLoading: false,
+                currentWorkflowId: workflowVersionId,
+              })
+            } else {
+              // Legacy workflow without layout - use auto-layout
+              const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+
+              set({
+                nodes: layoutedNodes,
+                edges: setup.edges,
+                workflowLoading: false,
+                currentWorkflowId: workflowVersionId,
+              })
+            }
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
@@ -463,20 +521,58 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           }
         },
 
-        loadWorkflowFromData: async (workflowData: WorkflowConfig) => {
+        loadWorkflowFromData: async (workflowData: WorkflowConfig, workflowVersionId?: string) => {
           set({ workflowLoading: true, workflowError: undefined })
 
           try {
+            console.log("🟢 loadWorkflowFromData: Received workflowData with ui:", workflowData.ui)
             const setup = toFrontendWorkflowConfig(workflowData)
 
-            // apply layout to position nodes properly
-            const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+            // Check if workflow has saved layout positions
+            if (workflowData.ui?.layout?.nodes && workflowData.ui.layout.nodes.length > 0) {
+              console.log(
+                "🟢 loadWorkflowFromData: Found saved layout with",
+                workflowData.ui.layout.nodes.length,
+                "nodes",
+              )
+              // Restore positions from saved layout
+              const layoutMap = new Map(workflowData.ui.layout.nodes.map(n => [n.nodeId, { x: n.x, y: n.y }]))
 
-            set({
-              nodes: layoutedNodes,
-              edges: setup.edges,
-              workflowLoading: false,
-            })
+              const nodesWithPositions = setup.nodes.map(node => {
+                const savedPosition = layoutMap.get(node.id)
+                if (savedPosition) {
+                  console.log(`🟢 loadWorkflowFromData: Restoring position for ${node.id}:`, savedPosition)
+                  return {
+                    ...node,
+                    position: savedPosition,
+                  }
+                }
+                console.log(`⚠️ loadWorkflowFromData: No saved position for ${node.id}, using default (0, 0)`)
+                return {
+                  ...node,
+                  position: { x: 0, y: 0 },
+                }
+              })
+
+              console.log("🟢 loadWorkflowFromData: Restored positions for all nodes")
+              set({
+                nodes: nodesWithPositions,
+                edges: setup.edges,
+                workflowLoading: false,
+                ...(workflowVersionId && { currentWorkflowId: workflowVersionId }),
+              })
+            } else {
+              console.log("🟠 loadWorkflowFromData: No saved layout found, using auto-layout")
+              // Legacy workflow without layout - use auto-layout
+              const layoutedNodes = await layoutGraph(setup.nodes, setup.edges)
+
+              set({
+                nodes: layoutedNodes,
+                edges: setup.edges,
+                workflowLoading: false,
+                ...(workflowVersionId && { currentWorkflowId: workflowVersionId }),
+              })
+            }
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
@@ -546,10 +642,26 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             }
           })
 
+          // Extract layout positions from ALL visual nodes (including start/end)
+          const layoutNodes = nodes.map(node => ({
+            nodeId: node.id,
+            x: node.position.x,
+            y: node.position.y,
+          }))
+
+          console.log("🔵 exportToJSON: Extracted layout positions for nodes:", layoutNodes)
+
           const workflow: WorkflowConfig = {
             nodes: workflowNodesWithConnections,
             entryNodeId: entryEdge?.target || "",
+            ui: {
+              layout: {
+                nodes: layoutNodes,
+              },
+            },
           }
+
+          console.log("🔵 exportToJSON: Created workflow with ui.layout:", workflow.ui)
 
           const jsonString = JSON.stringify(workflow, null, 2)
 
@@ -705,6 +817,20 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           colorMode: state.colorMode,
           // Exclude chatMessages from persistence
         }),
+        onRehydrateStorage: () => {
+          console.log("💾 Zustand: Starting hydration from localStorage")
+          return (state, error) => {
+            if (error) {
+              console.error("💾 Zustand: Hydration failed:", error)
+            } else {
+              console.log("💾 Zustand: Hydration complete, nodes:", state?.nodes?.length || 0)
+              // Mark as hydrated
+              if (state) {
+                state._hasHydrated = true
+              }
+            }
+          }
+        },
       },
     ),
   )
