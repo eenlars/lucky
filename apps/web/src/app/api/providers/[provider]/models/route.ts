@@ -69,7 +69,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
           const catalogEntry = catalogMap.get(modelId)
           if (catalogEntry && !catalogEntry.disabled) {
             return {
-              id: catalogEntry.id,
+              // IMPORTANT: Use catalogEntry.model (not .id) as the ID
+              // This is the format the provider's API expects:
+              // - OpenAI: "gpt-5-mini" (unprefixed)
+              // - OpenRouter: "openai/gpt-5-mini" (prefixed)
+              // The catalog.id is always prefixed ("openai/gpt-5-mini"), but
+              // the catalog.model field contains the provider-specific format
+              id: catalogEntry.model,
               name: catalogEntry.model,
               contextLength: catalogEntry.contextLength,
               supportsTools: catalogEntry.supportsTools,
