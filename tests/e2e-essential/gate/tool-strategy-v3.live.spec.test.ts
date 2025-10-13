@@ -46,8 +46,8 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
 
   const runner = hasRealApiKey ? it : it.skip
 
-  // Temporarily skipped due to AI SDK v5 model specification version mismatch
-  // Error: "Unsupported model version v1... AI SDK 5 only supports models that implement specification version v2"
+  // Test still fails after AI SDK v2 upgrade - needs further investigation
+  // Error: strategyResult.type returns 'error' instead of 'tool'
   runner.skip(
     "selects the 'sum' tool (live)",
     async () => {
