@@ -39,7 +39,7 @@ function createRedisClient(): Redis | null {
       port,
       password,
       // Limit retry attempts to avoid indefinite reconnection
-      retryStrategy(times) {
+      retryStrategy(times: number) {
         connectionAttempts++
 
         if (times > MAX_CONNECTION_ATTEMPTS) {
@@ -77,7 +77,7 @@ function createRedisClient(): Redis | null {
       console.log("[Redis] ✓ Client ready for commands")
     })
 
-    client.on("error", error => {
+    client.on("error", (error: Error) => {
       // Suppress noisy timeout errors once we know connection failed
       if (!connectionFailed) {
         console.error(`[Redis] Connection error: ${error.message}`)
