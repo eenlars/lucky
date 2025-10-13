@@ -28,12 +28,13 @@ import { executeRunMode } from "./run-mode-handler"
  */
 export function WorkflowPromptBar() {
   const router = useRouter()
-  const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage } = useAppStore(
+  const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage, logPanelOpen } = useAppStore(
     useShallow(state => ({
       exportToJSON: state.exportToJSON,
       loadWorkflowFromData: state.loadWorkflowFromData,
       organizeLayout: state.organizeLayout,
       addChatMessage: state.addChatMessage,
+      logPanelOpen: state.logPanelOpen,
     })),
   )
 
@@ -171,7 +172,11 @@ export function WorkflowPromptBar() {
   }
 
   return (
-    <Panel position="bottom-center" className="!pointer-events-none" style={{ marginBottom: "80px" }}>
+    <Panel
+      position="bottom-center"
+      className="!pointer-events-none"
+      style={{ marginBottom: logPanelOpen ? "calc(30vh + 80px)" : "80px" }}
+    >
       <div
         className="pointer-events-auto flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg w-[720px]"
         style={{ zIndex: 50 }}

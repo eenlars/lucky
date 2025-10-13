@@ -286,7 +286,7 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[oklch(0.15_0_0)] border-t border-gray-200 dark:border-white/10 shadow-lg z-40"
+      className="fixed bottom-0 left-[70px] right-0 bg-white dark:bg-[oklch(0.15_0_0)] border-t border-gray-200 dark:border-white/10 shadow-lg z-40"
       style={{
         height: "30vh",
         minHeight: "200px",
