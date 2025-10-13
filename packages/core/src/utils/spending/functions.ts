@@ -1,7 +1,7 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
 import type { ModelName, ModelPricingV2 } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
-import { findModel, getActiveModelIds, getActiveModelsByProvider } from "@lucky/models"
+import { findModel, findModelByName, getActiveModelIds, getActiveModelsByProvider } from "@lucky/models"
 import type { LuckyProvider } from "@lucky/shared"
 import { isNir } from "@lucky/shared/client"
 
@@ -18,11 +18,18 @@ export const getActiveModelNames = (customProvider?: LuckyProvider): string[] =>
 
 // Check if a model is active
 export function isActiveModel(model: string): boolean {
-  // Look up in MODEL_CATALOG (model must be prefixed)
-  const modelEntry = findModel(model)
+  // Try catalog ID lookup first (e.g., "vendor:openai;model:gpt-5-nano")
+  let modelEntry = findModel(model)
+
+  // Fallback to API name lookup (e.g., "gpt-5-nano")
+  if (!modelEntry) {
+    modelEntry = findModelByName(model)
+  }
 
   // Check both the catalog active flag AND the getCoreConfig().models.inactive array
-  return Boolean(modelEntry?.active === true && !getCoreConfig().models.inactive.includes(model))
+  // Use the catalog ID for inactive check (if found) or the original model string
+  const idToCheck = modelEntry?.id ?? model
+  return Boolean(modelEntry?.active === true && !getCoreConfig().models.inactive.includes(idToCheck))
 }
 
 /**
