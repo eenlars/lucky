@@ -29,7 +29,7 @@ async function testRedis() {
     host,
     port,
     password,
-    retryStrategy(times) {
+    retryStrategy(times: number) {
       if (times > 3) {
         return null // Stop retrying
       }
@@ -77,7 +77,7 @@ async function testRedis() {
 
     // Set up message handler
     const messagePromise = new Promise<void>(resolve => {
-      subscriber.on("message", (ch, msg) => {
+      subscriber.on("message", (ch: string, msg: string) => {
         if (ch === channel && msg === "test") {
           console.log(`✓ Received message: ${msg}`)
           resolve()
