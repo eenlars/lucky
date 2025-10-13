@@ -401,14 +401,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                 </div>
               )}
 
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <AlertCircle className="size-5 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-foreground">Security Notice</p>
-                  <p className="text-xs text-muted-foreground">
-                    Your API key is encrypted and stored securely using AES-256-GCM encryption. Never share it publicly.
-                  </p>
-                </div>
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="text-xs text-muted-foreground">Your key is stored securely</p>
               </div>
             </div>
           </CardContent>
