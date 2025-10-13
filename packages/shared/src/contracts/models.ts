@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod"
+import type { CatalogId } from "./providers"
 
 /**
  * Model speed tier schema
@@ -51,7 +52,12 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
  */
 export const modelEntrySchema = z.object({
   // Identity
-  id: z.string().min(1),
+  id: z
+    .string()
+    .min(1)
+    .refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
+      message: "Catalog ID must follow format 'vendor:X;model:Y'",
+    }),
   provider: z.string().min(1),
   model: z.string().min(1),
 
@@ -92,7 +98,9 @@ export type ModelEntry = z.infer<typeof modelEntrySchema>
  * Subset of ModelEntry with fields most relevant for UI
  */
 export const enrichedModelInfoSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
+    message: "Catalog ID must follow format 'vendor:X;model:Y'",
+  }),
   name: z.string(),
   contextLength: z.number().int().positive(),
   supportsTools: z.boolean(),

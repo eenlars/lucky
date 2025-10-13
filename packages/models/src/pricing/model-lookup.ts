@@ -2,20 +2,20 @@
  * Model Lookup Utilities
  *
  * Provides simple lookups in MODEL_CATALOG.
- * All model IDs in the catalog use structured format: "vendor:X;model:Y"
+ * All catalog IDs use structured format: "vendor:X;model:Y"
  * This format makes it IMPOSSIBLE to confuse with API identifiers.
  *
- * IMPORTANT: Never parse model ID strings to determine provider.
+ * IMPORTANT: Never parse catalog ID strings to determine provider.
  * Always look up the `provider` field in the catalog entry.
  */
 
-import type { ModelEntry } from "@lucky/shared"
+import type { CatalogId, ModelEntry } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
 
 /**
- * Find a model in the catalog by its exact ID.
+ * Find a model in the catalog by its exact catalog ID.
  *
- * @param modelId - Model identifier (format: "vendor:X;model:Y")
+ * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
  * @returns ModelEntry if found, undefined otherwise
  *
  * @example
@@ -26,8 +26,8 @@ import { MODEL_CATALOG } from "./catalog"
  * findModel("openai/gpt-4.1-mini") // ✗ wrong - old format
  * ```
  */
-export function findModel(modelId: string): ModelEntry | undefined {
-  return MODEL_CATALOG.find(m => m.id === modelId)
+export function findModel(catalogId: CatalogId | string): ModelEntry | undefined {
+  return MODEL_CATALOG.find(m => m.id === catalogId)
 }
 
 /**
@@ -49,14 +49,14 @@ export function findModelByName(modelName: string): ModelEntry | undefined {
 }
 
 /**
- * Get a model from the catalog by ID. Throws if not found.
+ * Get a model from the catalog by catalog ID. Throws if not found.
  *
- * @param modelId - Model identifier (format: "vendor:X;model:Y")
+ * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
  * @throws Error if model not found
  * @returns ModelEntry
  */
-export function getModel(modelId: string): ModelEntry {
-  const entry = findModel(modelId)
+export function getModel(catalogId: CatalogId | string): ModelEntry {
+  const entry = findModel(catalogId)
 
   if (!entry) {
     const availableModels = MODEL_CATALOG.filter(m => m.active)
@@ -65,7 +65,7 @@ export function getModel(modelId: string): ModelEntry {
       .join(", ")
 
     throw new Error(
-      `Model "${modelId}" not found in catalog. Model IDs must use format "vendor:X;model:Y" (e.g., "vendor:openai;model:gpt-4.1-mini"). Available models (first 10): ${availableModels}...`,
+      `Model "${catalogId}" not found in catalog. Catalog IDs must use format "vendor:X;model:Y" (e.g., "vendor:openai;model:gpt-4.1-mini"). Available models (first 10): ${availableModels}...`,
     )
   }
 
@@ -75,11 +75,11 @@ export function getModel(modelId: string): ModelEntry {
 /**
  * Check if a model is active in the catalog.
  *
- * @param modelId - Model identifier (format: "vendor:X;model:Y")
+ * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
  * @returns true if model exists and is active, false otherwise
  */
-export function isModelActive(modelId: string): boolean {
-  const entry = findModel(modelId)
+export function isModelActive(catalogId: CatalogId | string): boolean {
+  const entry = findModel(catalogId)
   return entry?.active === true
 }
 
@@ -87,7 +87,7 @@ export function isModelActive(modelId: string): boolean {
  * Get all active models from a specific provider.
  *
  * NOTE: The provider parameter here refers to which API the models use,
- * NOT the vendor prefix in the model ID. Use the catalog's provider field.
+ * NOT the vendor prefix in the catalog ID. Use the catalog's provider field.
  *
  * @param provider - Provider name (e.g., "openai", "openrouter", "groq")
  * @returns Array of active ModelEntry objects
@@ -97,10 +97,10 @@ export function getActiveModelsByProvider(provider: string): ModelEntry[] {
 }
 
 /**
- * Get all active model IDs (structured format: "vendor:X;model:Y").
+ * Get all active catalog IDs (structured format: "vendor:X;model:Y").
  *
- * @returns Array of active model IDs
+ * @returns Array of active catalog IDs
  */
-export function getActiveModelIds(): string[] {
-  return MODEL_CATALOG.filter(m => m.active).map(m => m.id)
+export function getActiveModelIds(): CatalogId[] {
+  return MODEL_CATALOG.filter(m => m.active).map(m => m.id) as CatalogId[]
 }

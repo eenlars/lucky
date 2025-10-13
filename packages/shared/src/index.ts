@@ -96,6 +96,7 @@ export type {
   ApiKeyValidation,
   ProviderStatus,
   ModelId,
+  CatalogId,
   UserProviderSettings,
   UserModelPreferences,
 } from "./contracts/providers"
@@ -108,6 +109,7 @@ export {
   apiKeyValidationSchema,
   providerStatusSchema,
   modelIdSchema,
+  catalogIdSchema,
   userProviderSettingsSchema,
   userModelPreferencesSchema,
 } from "./contracts/providers"
