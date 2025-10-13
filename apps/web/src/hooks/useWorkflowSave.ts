@@ -37,7 +37,6 @@ export function useWorkflowSave({ workflowVersion, onSuccess }: UseWorkflowSaveO
           iterationBudget: workflowVersion?.iteration_budget ?? 50,
           timeBudgetSeconds: workflowVersion?.time_budget_seconds ?? 3600,
         }
-        console.log("🔴 useWorkflowSave: Sending payload with dsl.ui:", payload.dsl?.ui)
         const response = await fetch("/api/workflow/save", {
           method: "POST",
           headers: {

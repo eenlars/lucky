@@ -207,12 +207,6 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       return
     }
 
-    // Wait for Zustand to hydrate from localStorage before making decisions
-    if (!_hasHydrated) {
-      console.log("🟣 EditModeSelector: Waiting for Zustand hydration...")
-      return
-    }
-
     if (
       workflowVersion?.dsl &&
       typeof workflowVersion.dsl === "object" &&
@@ -223,8 +217,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       const sessionKey = `editing-session-${workflowVersion.wf_version_id}`
       const isActiveSession = typeof window !== "undefined" && sessionStorage.getItem(sessionKey) === "true"
 
-      // Also check if localStorage has matching data (now guaranteed to be hydrated)
-      const hasLocalData = currentWorkflowId === workflowVersion.wf_version_id && _nodes.length > 0
+      // Only check localStorage if hydration succeeded (otherwise fallback to DB)
+      const hasLocalData = _hasHydrated && currentWorkflowId === workflowVersion.wf_version_id && _nodes.length > 0
 
       const shouldUseLocalStorage = isActiveSession && hasLocalData
 
@@ -238,7 +232,11 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
         const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
         updateWorkflowJSON(jsonString)
       } else {
-        console.log("🟣 EditModeSelector: Loading workflow from DB (fresh session or different workflow)")
+        if (!_hasHydrated) {
+          console.log("🟣 EditModeSelector: Hydration incomplete or failed, loading from DB as fallback")
+        } else {
+          console.log("🟣 EditModeSelector: Loading workflow from DB (fresh session or different workflow)")
+        }
         const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
         updateWorkflowJSON(jsonString)
         const dslConfig = workflowVersion.dsl as unknown as WorkflowConfig
