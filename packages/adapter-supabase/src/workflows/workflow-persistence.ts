@@ -4,6 +4,7 @@
  */
 
 import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
+import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { DatasetRecordNotFoundError, PersistenceError, WorkflowNotFoundError } from "../errors/domain-errors"
 import type {
@@ -18,7 +19,7 @@ export class SupabaseWorkflowPersistence {
   constructor(private client: SupabaseClient) {}
 
   async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
-    const workflowInsertable = {
+    const workflowInsertable: TablesInsert<"Workflow"> = {
       wf_id: workflowId,
       description,
     }
@@ -36,7 +37,7 @@ export class SupabaseWorkflowPersistence {
     // Ensure DSL includes schema version
     const dslWithVersion = this.ensureSchemaVersion(data.dsl)
 
-    const workflowVersionInsertable = {
+    const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
       wf_version_id: data.workflowVersionId,
       workflow_id: data.workflowId,
       commit_message: data.commitMessage,
@@ -110,14 +111,14 @@ export class SupabaseWorkflowPersistence {
     const dslWithVersion = this.ensureSchemaVersion(workflowConfig)
 
     // Create workflow version
-    const workflowVersionInsertable = {
+    const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
       wf_version_id: workflowVersionId,
       workflow_id: workflowId,
       commit_message: `GP Best Genome wf_version_id: ${workflowVersionId} (Gen ${generationId})`,
       dsl: dslWithVersion,
       iteration_budget: 10,
       time_budget_seconds: 3600,
-      operation,
+      operation: operation as TablesInsert<"WorkflowVersion">["operation"],
       generation_id: generationId,
     }
 
@@ -164,23 +165,21 @@ export class SupabaseWorkflowPersistence {
   }
 
   async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
-    const workflowInvocationInsertable = {
+    const workflowInvocationInsertable: TablesInsert<"WorkflowInvocation"> = {
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       status: "running",
       start_time: new Date().toISOString(),
       end_time: null,
       usd_cost: 0,
-      extras: {},
-      metadata: data.metadata || {},
+      extras: {} as any,
       run_id: data.runId || null,
       generation_id: data.generationId || null,
-      fitness: data.fitness || null,
-      evaluation_inputs: null,
-      expected_output_type: data.expectedOutputType || null,
-      workflow_input: data.workflowInput || null,
+      fitness: (data.fitness || null) as any,
+      workflow_input: (data.workflowInput || null) as any,
       expected_output:
         typeof data.workflowOutput === "string" ? data.workflowOutput : JSON.stringify(data.workflowOutput) || null,
+      expected_output_type: (data.expectedOutputType || null) as any,
     }
 
     const { error } = await this.client.from("WorkflowInvocation").insert(workflowInvocationInsertable)

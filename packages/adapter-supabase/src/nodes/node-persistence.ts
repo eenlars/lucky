@@ -2,6 +2,7 @@
  * Node persistence implementation for Supabase.
  */
 
+import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { InvalidInputError, NodeVersionMissingError, PersistenceError } from "../errors/domain-errors"
 import type {
@@ -23,13 +24,13 @@ export class SupabaseNodePersistence implements INodePersistence {
    * @returns The generated nodeInvocationId for later updates
    */
   async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
-    const insertable = {
+    const insertable: TablesInsert<"NodeInvocation"> = {
       node_id: data.nodeId,
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       start_time: data.startTime,
       model: data.model,
-      status: "running" as const,
+      status: "running",
       attempt_no: data.attemptNo ?? 1,
       output: null,
       summary: "",
@@ -116,7 +117,7 @@ export class SupabaseNodePersistence implements INodePersistence {
     // Extract config fields
     const { modelName, systemPrompt, mcpTools = [], codeTools = [], description, memory, handOffs } = config as any
 
-    const insertable = {
+    const insertable: TablesInsert<"NodeVersion"> = {
       node_id: nodeId,
       wf_version_id: workflowVersionId,
       version: nextVersion,
@@ -150,19 +151,19 @@ export class SupabaseNodePersistence implements INodePersistence {
     if (data.updatedMemory) extras.updatedMemory = data.updatedMemory
 
     // Manually build insertable with snake_case fields (fields going to extras are excluded)
-    const insertable = {
+    const insertable: TablesInsert<"NodeInvocation"> = {
       node_id: data.nodeId,
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       start_time: data.startTime,
       end_time: data.endTime,
       usd_cost: data.usdCost,
-      output: data.output,
+      output: data.output as any,
       summary: data.summary,
       files: data.files,
       model: data.model,
       status: "completed",
-      extras,
+      extras: extras as any,
       metadata: {},
     }
 

@@ -3,6 +3,7 @@
  * Handles run and generation tracking.
  */
 
+import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { PersistenceError } from "../errors/domain-errors"
 import type {
@@ -18,10 +19,10 @@ export class SupabaseEvolutionPersistence implements IEvolutionPersistence {
   constructor(private client: SupabaseClient) {}
 
   async createRun(data: RunData): Promise<string> {
-    const runData = {
+    const runData: TablesInsert<"EvolutionRun"> = {
       goal_text: data.goalText,
-      config: data.config,
-      status: data.status,
+      config: data.config as any,
+      status: data.status as TablesInsert<"EvolutionRun">["status"],
       start_time: new Date().toISOString(),
       evolution_type: data.evolutionType,
       notes: data.notes,
@@ -50,7 +51,7 @@ export class SupabaseEvolutionPersistence implements IEvolutionPersistence {
   }
 
   async createGeneration(data: GenerationData): Promise<string> {
-    const generationData = {
+    const generationData: TablesInsert<"Generation"> = {
       number: data.generationNumber,
       run_id: data.runId,
       start_time: new Date().toISOString(),
