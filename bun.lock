@@ -132,6 +132,7 @@
         "@modelcontextprotocol/server-filesystem": "^2025.8.21",
         "@tailwindcss/postcss": "^4.1.13",
         "@tanstack/react-query-devtools": "^5.62.11",
+        "@types/ioredis": "^5.0.0",
         "@types/node": "^24.5.0",
         "@types/react": "^19.1.13",
         "@types/react-dom": "^19.1.9",
@@ -237,7 +238,7 @@
         "@ai-sdk/openai-compatible": "^1.0.22",
         "@lucky/shared": "workspace:*",
         "@openrouter/ai-sdk-provider": "^1.2.0",
-        "ai": "^5.0.0",
+        "ai": "^5.0.58",
         "yaml": "^2.3.4",
         "zod": "^3.22.0",
       },
@@ -1050,6 +1051,8 @@
     "@types/glob": ["@types/glob@9.0.0", "", { "dependencies": { "glob": "*" } }, "sha512-00UxlRaIUvYm4R4W9WYkN8/J+kV8fmOQ7okeH6YFtGWFMt3odD45tpG5yA5wnL7HE6lLgjaTW5n14ju2hl2NNA=="],
 
     "@types/hast": ["@types/hast@3.0.4", "", { "dependencies": { "@types/unist": "*" } }, "sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ=="],
+
+    "@types/ioredis": ["@types/ioredis@5.0.0", "", { "dependencies": { "ioredis": "*" } }, "sha512-zJbJ3FVE17CNl5KXzdeSPtdltc4tMT3TzC6fxQS0sQngkbFZ6h+0uTafsRqu+eSLIugf6Yb0Ea0SUuRr42Nk9g=="],
 
     "@types/istanbul-lib-coverage": ["@types/istanbul-lib-coverage@2.0.6", "", {}, "sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w=="],
 

@@ -180,7 +180,7 @@ export async function subscribeToCancellation(
     await subscriber.subscribe(channel)
     console.log(`[WorkflowState] Subscribed to channel: ${channel}`)
 
-    subscriber.on("message", (ch, message) => {
+    subscriber.on("message", (ch: string, message: string) => {
       if (ch === channel && message === "cancel") {
         console.log(`[WorkflowState] Received cancel signal for ${invocationId}`)
         onCancel()

@@ -43,7 +43,7 @@
     "@ai-sdk/openai-compatible": "^1.0.22",
     "@lucky/shared": "workspace:*",
     "@openrouter/ai-sdk-provider": "^1.2.0",
-    "ai": "^5.0.0",
+    "ai": "^5.0.58",
     "yaml": "^2.3.4",
     "zod": "^3.22.0"
   },
