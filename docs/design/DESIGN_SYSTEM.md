@@ -368,6 +368,12 @@ To capture this aesthetic:
 
 ---
 
+## Rams Principles
+
+This design system is guided by Dieter Rams' philosophy of **ruthless reduction to essence**. For principles on building with discipline, subtraction over addition, and timeless design decisions, see [DESIGN_RAMS.md](./DESIGN_RAMS.md).
+
+---
+
 ## Implementation
 
 For technical specifications, code patterns, CSS values, and component examples, see [DESIGN_CODE.md](./DESIGN_CODE.md).

@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/features/react-flow-visualization/components/ui/select"
+import { Switch } from "@/features/react-flow-visualization/components/ui/switch"
 import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
@@ -357,6 +358,58 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                 <span>Input {formatDollars(selectedModelPricing.input)}/1M</span>
                 <span className="mx-2">•</span>
                 <span>Output {formatDollars(selectedModelPricing.output)}/1M</span>
+              </div>
+            )}
+
+            {/* Human-in-the-loop gate toggle */}
+            <div className="flex items-center gap-3 pt-2">
+              <label htmlFor="requires-approval" className="text-sm text-gray-700 w-20">
+                Gate
+              </label>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="requires-approval"
+                  checked={data.requiresApproval ?? false}
+                  onCheckedChange={checked =>
+                    setData(prev => ({
+                      ...prev,
+                      requiresApproval: checked,
+                    }))
+                  }
+                />
+                <span className="text-xs text-gray-600">Require approval before continuing</span>
+              </div>
+            </div>
+
+            {/* Gate configuration - only shown when gate is enabled */}
+            {data.requiresApproval && (
+              <div className="space-y-3 pl-20 pt-2 pb-2 border-l-2 border-amber-200 dark:border-amber-800">
+                <div className="space-y-2">
+                  <label htmlFor="approval-prompt" className="text-sm text-gray-700 font-medium">
+                    Instructions
+                  </label>
+                  <Textarea
+                    id="approval-prompt"
+                    value={data.approvalPrompt || ""}
+                    onChange={e =>
+                      setData(prev => ({
+                        ...prev,
+                        approvalPrompt: e.target.value,
+                      }))
+                    }
+                    placeholder="What should the human review?"
+                    className="min-h-[60px] resize-none border-amber-200 text-sm leading-relaxed px-3 py-2 [text-indent:0] focus:border-amber-400"
+                  />
+                </div>
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>When agent completes:</p>
+                  <ul className="list-disc list-inside space-y-0.5 ml-2">
+                    <li>Workflow pauses</li>
+                    <li>Human reviews output</li>
+                    <li>Approve → continues to next node</li>
+                    <li>Reject → provide new instructions to this agent</li>
+                  </ul>
+                </div>
               </div>
             )}
 

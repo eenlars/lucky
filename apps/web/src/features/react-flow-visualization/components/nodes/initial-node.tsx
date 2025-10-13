@@ -1,6 +1,7 @@
 "use client"
 
 import { NodeHeaderDeleteAction } from "@/features/react-flow-visualization/components/node-header"
+import { Rocket } from "lucide-react"
 import { useState } from "react"
 import nodesConfig, { COMPACT_NODE_SIZE, type WorkflowNodeProps } from "./nodes"
 import { AppHandle } from "./workflow-node/app-handle"
@@ -62,17 +63,16 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
             transition-all duration-300
             ${
               isExpanded
-                ? "bg-white border-emerald-500"
-                : "bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400/80"
+                ? "bg-white border-green-500"
+                : "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800"
             }
           `}
           >
-            <div
-              className="text-xs font-bold tracking-wide text-white uppercase transition-opacity duration-100"
-              style={{ opacity: isExpanded ? 0 : 1 }}
-            >
-              Start
-            </div>
+            {!isExpanded && (
+              <div className="p-2 rounded-lg bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400">
+                <Rocket className="size-5" />
+              </div>
+            )}
           </div>
         </div>
 

@@ -25,6 +25,9 @@ export const WorkflowNodeConfigSchema = z.object({
   handOffType: HandoffTypeSchema.optional(),
   useClaudeSDK: z.boolean().optional(), // Enable Claude Code SDK for this node
   sdkConfig: z.any().optional(), // ClaudeSDKConfig - any for now to avoid circular deps
+  requiresApproval: z.boolean().optional(), // Human-in-the-loop gate for this node
+  approvalPrompt: z.string().optional(), // Prompt shown to human reviewer
+  connectors: z.array(z.string()).optional(), // External connectors attached to this node
 })
 
 /**
