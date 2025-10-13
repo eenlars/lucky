@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect/panel"
+import { ExecutionLogsPanel } from "@/features/cli-inspection/components/ExecutionLogsPanel"
 import { WorkflowEdge } from "@/features/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { WorkflowPromptBar } from "@/features/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
@@ -50,6 +51,7 @@ export default function Workflow({
     workflowError,
     selectedNodeId: _selectedNodeId,
     nodeDetailsOpen: _nodeDetailsOpen,
+    logPanelOpen,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -59,6 +61,7 @@ export default function Workflow({
     loadWorkflowVersion,
     closeNodeDetails: _closeNodeDetails,
     updateNode: _updateNode,
+    setLogPanelOpen,
   } = useAppStore(
     useShallow(state => ({
       nodes: state.nodes,
@@ -68,6 +71,7 @@ export default function Workflow({
       workflowError: state.workflowError,
       selectedNodeId: state.selectedNodeId,
       nodeDetailsOpen: state.nodeDetailsOpen,
+      logPanelOpen: state.logPanelOpen,
       onNodesChange: state.onNodesChange,
       onEdgesChange: state.onEdgesChange,
       onConnect: state.onConnect,
@@ -77,6 +81,7 @@ export default function Workflow({
       loadWorkflowVersion: state.loadWorkflowVersion,
       closeNodeDetails: state.closeNodeDetails,
       updateNode: state.updateNode,
+      setLogPanelOpen: state.setLogPanelOpen,
     })),
   )
 
@@ -183,6 +188,9 @@ export default function Workflow({
 
       {/* Steve Jobs-inspired Inspector Panel */}
       <AgentDialogInspect />
+
+      {/* Execution Logs Panel */}
+      <ExecutionLogsPanel isOpen={logPanelOpen} onClose={() => setLogPanelOpen(false)} />
     </>
   )
 }

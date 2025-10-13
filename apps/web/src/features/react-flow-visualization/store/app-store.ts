@@ -51,6 +51,8 @@ export type AppState = {
     timestamp: number
     type: "system" | "result" | "error"
   }>
+  // Execution logs panel state
+  logPanelOpen: boolean
   // Hydration state
   _hasHydrated: boolean
 }
@@ -122,6 +124,8 @@ export type AppActions = {
   updateNode: (nodeId: string, updates: Partial<WorkflowNodeData>) => void
   addChatMessage: (text: string, type: "system" | "result" | "error") => void
   clearChatMessages: () => void
+  toggleLogPanel: () => void
+  setLogPanelOpen: (open: boolean) => void
 }
 
 export type AppStore = AppState & AppActions
@@ -143,6 +147,7 @@ export const defaultState: AppState = {
   workflowJSON: JSON.stringify({ nodes: [], entryNodeId: "" }, null, 2),
   currentWorkflowId: undefined,
   chatMessages: [],
+  logPanelOpen: false,
   _hasHydrated: false,
 }
 
@@ -791,6 +796,12 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         },
         clearChatMessages: () => {
           set({ chatMessages: [] })
+        },
+        toggleLogPanel: () => {
+          set(state => ({ logPanelOpen: !state.logPanelOpen }))
+        },
+        setLogPanelOpen: open => {
+          set({ logPanelOpen: open })
         },
       })),
       {

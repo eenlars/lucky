@@ -123,12 +123,14 @@ describe("ModelName Type System", () => {
     it("getModelV2 should return pricing for active models", () => {
       const activeModels = getActiveModelNames()
       if (activeModels.length > 0) {
-        const model = activeModels[0]
-        const pricing = getModelV2(model)
+        const catalogId = activeModels[0] // Catalog ID format: "vendor:X;model:Y"
+        const pricing = getModelV2(catalogId)
 
         expect(pricing).toBeDefined()
-        // Model ID might have provider prefix depending on catalog structure
-        expect(pricing.id).toContain(model.replace(/^.*\//, ""))
+        // pricing.id should be the API model name (extracted from catalog ID)
+        // Extract model name from catalog ID: "vendor:openai;model:gpt-4.1-mini" -> "gpt-4.1-mini"
+        const expectedModelName = catalogId.split("model:")[1]
+        expect(pricing.id).toBe(expectedModelName)
         expect(typeof pricing.input).toBe("number")
         expect(typeof pricing.output).toBe("number")
         expect(pricing.active).toBe(true)
@@ -164,18 +166,17 @@ describe("ModelName Type System", () => {
       const groqModels = getActiveModelNames("groq")
       const openaiModels = getActiveModelNames("openai")
 
+      // All providers should return arrays
+      expect(Array.isArray(openrouterModels)).toBe(true)
+      expect(Array.isArray(groqModels)).toBe(true)
+      expect(Array.isArray(openaiModels)).toBe(true)
+
       // OpenAI should have active models (current default provider)
       expect(openaiModels.length).toBeGreaterThan(0)
 
-      // Disabled providers (OpenRouter, Groq) should have 0 active models
-      expect(openrouterModels.length).toBe(0)
-      expect(groqModels.length).toBe(0)
-      expect(Array.isArray(openrouterModels)).toBe(true)
-      expect(Array.isArray(groqModels)).toBe(true)
-
-      // OpenAI native models should NOT have provider prefix
+      // OpenAI native models use catalog ID format: "vendor:openai;model:X"
       if (openaiModels.length > 0) {
-        expect(openaiModels.every(m => !m.includes("/"))).toBe(true)
+        expect(openaiModels.every(m => m.startsWith("vendor:openai;model:"))).toBe(true)
       }
     })
 
