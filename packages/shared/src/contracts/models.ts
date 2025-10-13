@@ -77,6 +77,7 @@ export const modelEntrySchema = z.object({
 
   // Availability
   active: z.boolean(),
+  disabled: z.boolean().optional(),
   regions: z.array(z.string()).optional(),
 
   // Metadata

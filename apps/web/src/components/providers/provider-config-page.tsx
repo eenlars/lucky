@@ -1,10 +1,10 @@
 "use client"
 
+import { ModelGrid } from "@/components/providers/model-selection/ModelGrid"
 import { ProviderConfigSkeleton } from "@/components/providers/provider-skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
 import { logException } from "@/lib/error-logger"
@@ -19,14 +19,9 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
-  Image as ImageIcon,
   Loader2,
-  Mic,
   RefreshCw,
   Save,
-  Sparkles,
-  Video,
-  Zap,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -173,7 +168,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
       if (result.success) {
         setTestStatus("success")
-        toast.success(`Connection successful! ${result.modelCount} models available.`)
+        toast.success("Connection successful")
         await loadModels(apiKey)
       } else {
         setTestStatus("error")
@@ -246,12 +241,23 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   }
 
   /**
-   * Enable or disable all models at once. Auto-saves via Zustand store.
-   * @param enable true to enable all models, false to disable all
+   * Bulk toggle models. Auto-saves via Zustand store.
+   * @param modelIds Array of full model IDs (e.g., ["openai/gpt-4o", "openai/gpt-4o-mini"])
+   * @param enable true to enable models, false to disable them
    */
-  const handleToggleAllModels = (enable: boolean) => {
-    const allModelIds = enable ? availableModels.map(model => model.id) : []
-    setProviderModels(provider, allModelIds)
+  const handleBulkToggleModels = (modelIds: string[], enable: boolean) => {
+    if (enable) {
+      // Add models to existing enabled set
+      const currentEnabled = getEnabledModels(provider)
+      const newEnabled = Array.from(new Set([...currentEnabled, ...modelIds]))
+      setProviderModels(provider, newEnabled)
+    } else {
+      // Remove models from enabled set
+      const currentEnabled = getEnabledModels(provider)
+      const toDisable = new Set(modelIds)
+      const newEnabled = currentEnabled.filter(id => !toDisable.has(id))
+      setProviderModels(provider, newEnabled)
+    }
   }
 
   const copyToClipboard = async (text: string) => {
@@ -301,12 +307,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
             <h1 className="text-3xl font-semibold text-foreground">{config.name} Configuration</h1>
             <p className="text-sm text-muted-foreground mt-1">{config.description}</p>
           </div>
-          {isConfigured && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
-              <CheckCircle2 className="size-3 mr-1" />
-              Configured
-            </Badge>
-          )}
         </div>
       </div>
 
@@ -314,8 +314,18 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* API Key Configuration */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">API Key</CardTitle>
-            <CardDescription>Your {config.name} API key for accessing models</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">API Key</CardTitle>
+                <CardDescription>Your {config.name} API key for accessing models</CardDescription>
+              </div>
+              {isConfigured && (
+                <span className="text-xs text-green-600 flex items-center gap-1">
+                  <CheckCircle2 className="size-3" />
+                  Connected
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -401,24 +411,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                 </p>
               </div>
 
-              {testStatus === "success" && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="size-5 text-green-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-green-900">Connection Successful</p>
-                    <p className="text-xs text-green-700">Your API key is valid and working correctly.</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <AlertCircle className="size-5 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-foreground">Security Notice</p>
-                  <p className="text-xs text-muted-foreground">
-                    Your API key is encrypted and stored securely using AES-256-GCM encryption. Never share it publicly.
-                  </p>
-                </div>
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="text-xs text-muted-foreground">Your key is stored securely</p>
               </div>
             </div>
           </CardContent>
@@ -427,128 +421,23 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* Model Selection */}
         <Card>
           <CardHeader>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <CardTitle className="text-lg">Model Selection</CardTitle>
-                <CardDescription>Choose which models are available in your workflows</CardDescription>
-              </div>
-              <Badge variant="outline">
-                {enabledModels.size} / {availableModels.length} enabled
-              </Badge>
-            </div>
+            <CardTitle className="text-lg">Model Selection</CardTitle>
+            <CardDescription>Choose which models are available in your workflows</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {isLoadingModels ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Loader2 className="size-8 animate-spin mx-auto mb-2" />
-                  <p className="text-sm">Loading available models...</p>
-                </div>
-              ) : availableModels.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <AlertCircle className="size-8 mx-auto mb-2" />
-                  <p className="text-sm">Test your connection first to load available models</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex flex-wrap items-center justify-between pb-3 border-b gap-2">
-                    <p className="text-sm text-muted-foreground">Select models to enable</p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleToggleAllModels(false)}
-                        disabled={enabledModels.size === 0}
-                      >
-                        Disable All
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleToggleAllModels(true)}
-                        disabled={enabledModels.size === availableModels.length}
-                      >
-                        Enable All
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                    {availableModels.map(model => (
-                      <div
-                        key={model.id}
-                        className="flex items-start justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="flex-1 min-w-0 mr-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-sm font-medium break-all">{model.name}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {model.speed}
-                            </Badge>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {model.supportsTools && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Zap className="size-3" />
-                                Tools
-                              </Badge>
-                            )}
-                            {model.supportsVision && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <ImageIcon className="size-3" />
-                                Vision
-                              </Badge>
-                            )}
-                            {model.supportsReasoning && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Sparkles className="size-3" />
-                                Reasoning
-                              </Badge>
-                            )}
-                            {model.supportsAudio && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Mic className="size-3" />
-                                Audio
-                              </Badge>
-                            )}
-                            {model.supportsVideo && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <Video className="size-3" />
-                                Video
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                            <div>Context: {model.contextLength.toLocaleString()} tokens</div>
-                            <div>
-                              Cost: ${model.inputCostPer1M.toFixed(2)}/{model.outputCostPer1M.toFixed(2)} per 1M tokens
-                            </div>
-                            <div>Intelligence: {model.intelligence}/10</div>
-                          </div>
-                        </div>
-                        <Switch
-                          checked={enabledModels.has(model.id)}
-                          onCheckedChange={() => handleToggleModel(model.id)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <ModelGrid
+              models={availableModels}
+              enabledModels={enabledModels}
+              onToggleModel={handleToggleModel}
+              onBulkToggleModels={handleBulkToggleModels}
+              isLoading={isLoadingModels}
+            />
           </CardContent>
         </Card>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>
-            {hasUnsavedKeyChanges && (
-              <p className="text-sm text-yellow-600 flex items-center gap-2">
-                <AlertCircle className="size-4" />
-                You have unsaved API key changes
-              </p>
-            )}
-          </div>
+          <div>{hasUnsavedKeyChanges && <p className="text-sm text-muted-foreground">Unsaved changes</p>}</div>
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="ghost"
@@ -570,10 +459,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                   Saving...
                 </>
               ) : (
-                <>
-                  <Save className="size-4 mr-2" />
-                  Save Configuration
-                </>
+                "Save"
               )}
             </Button>
           </div>

@@ -40,7 +40,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
   },
   MODELS: {
-    default: "openai/gpt-4.1-mini",
+    default: "gpt-4.1-mini",
   },
   PATHS: {},
 }))

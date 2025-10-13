@@ -60,18 +60,28 @@ export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 // MODELS CONFIGURATION
 // ============================================================================
 
-export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openrouter")
+/**
+ * Provider availability configuration - single source of truth.
+ * Providers marked as disabled will not be initialized even if API keys are present.
+ */
+export const PROVIDER_AVAILABILITY = {
+  openai: true,
+  openrouter: false, // Disabled
+  groq: false, // Disabled
+} as const
+
+export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
 
 export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("google/gemini-2.5-flash-lite"),
-  nano: z.string().default("google/gemini-2.5-flash-lite"),
-  low: z.string().default("google/gemini-2.5-flash-lite"),
-  medium: z.string().default("openai/gpt-4.1-mini"),
-  high: z.string().default("openai/gpt-4.1"),
-  default: z.string().default("openai/gpt-4.1-nano"),
-  fitness: z.string().default("openai/gpt-4.1-mini"),
-  reasoning: z.string().default("openai/gpt-4.1-mini"),
-  fallback: z.string().default("switchpoint/router"),
+  summary: z.string().default("gpt-4.1-nano"),
+  nano: z.string().default("gpt-4.1-nano"),
+  low: z.string().default("gpt-4.1-mini"),
+  medium: z.string().default("gpt-4.1-mini"),
+  high: z.string().default("gpt-4.1-mini"),
+  default: z.string().default("gpt-4.1-mini"),
+  fitness: z.string().default("gpt-4.1-mini"),
+  reasoning: z.string().default("gpt-4.1-mini"),
+  fallback: z.string().default("gpt-4.1-mini"),
 })
 
 export const ModelsConfigSchema = z.object({

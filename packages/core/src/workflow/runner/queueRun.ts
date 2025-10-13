@@ -8,10 +8,8 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
-import { WORKFLOW_PROGRESS_SCHEMA_VERSION } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import chalk from "chalk"
-import { safeEmit, sanitizeEventText, truncateOutput } from "./event-utils"
 import type { QueueRunParams, QueueRunResult } from "./types"
 
 // Types are centralized in ./types to avoid circular imports and keep the API surface stable.
@@ -32,6 +30,24 @@ import type { QueueRunParams, QueueRunResult } from "./types"
  * 3. **Node Invocation**: Each message triggers target node execution
  * 4. **Message Routing**: Nodes produce new messages for downstream nodes
  * 5. **Termination**: Execution ends when queue is empty or "end" node is reached
+ *
+ * ## Cancellation Support
+ *
+ * Workflows can be gracefully cancelled via an AbortSignal. The cancellation check
+ * occurs at node boundaries (before each node invocation), ensuring:
+ * - Current node completes its work before stopping
+ * - Partial results and costs are tracked
+ * - No mid-execution interruption of model calls
+ *
+ * ## Progress Events
+ *
+ * The optional onProgress callback receives typed events throughout execution:
+ * - workflow_started: Workflow begins execution
+ * - node_started: Before each node invocation
+ * - node_completed: After each node completes (includes cost, duration)
+ * - workflow_completed: All nodes finished successfully
+ * - workflow_cancelled: Execution stopped by AbortSignal
+ * - workflow_failed: Execution failed with error
  *
  * ## Message Aggregation
  *
@@ -60,6 +76,7 @@ import type { QueueRunParams, QueueRunResult } from "./types"
  * - Error messages are propagated downstream as error payloads
  * - Max invocation limits prevent infinite loops
  * - Memory persistence failures are logged but don't fail the run
+ * - Event handler errors are caught and logged to prevent workflow failures
  *
  * ## Performance Considerations
  *
@@ -72,11 +89,33 @@ import type { QueueRunParams, QueueRunResult } from "./types"
 const coordinationType = getCoreConfig().coordinationType
 const verbose = false // Memory logging removed from config
 
+/**
+ * Helper to safely emit progress events without throwing.
+ * Catches and logs any errors from event handlers to prevent workflow failures.
+ *
+ * @param handler - Optional event handler function
+ * @param event - The workflow progress event to emit
+ * @param context - Context string for error logging
+ */
+async function safeEmit(
+  handler: import("@lucky/shared").WorkflowEventHandler | undefined,
+  event: import("@lucky/shared").WorkflowProgressEvent,
+  context: string,
+): Promise<void> {
+  if (!handler) return
+  try {
+    await handler(event)
+  } catch (error) {
+    lgg.error(`[queueRun] Error emitting ${context} event:`, error)
+  }
+}
+
 export async function queueRun({
   workflow,
   workflowInput,
   workflowInvocationId,
   onProgress,
+  abortSignal,
 }: QueueRunParams): Promise<QueueRunResult> {
   lgg.log(`[queueRun] Starting for workflow ${workflow.getWorkflowVersionId()}, invocation ${workflowInvocationId}`)
 
@@ -144,10 +183,58 @@ export async function queueRun({
   messageQueue.push(initialMessage)
   lgg.onlyIf(verbose, "[queueRun] Initial message queued, starting processing loop")
 
+  // Emit workflow started event
+  await safeEmit(
+    onProgress,
+    {
+      type: "workflow_started",
+      schemaVersion: 1,
+      timestamp: Date.now(),
+      workflowInvocationId,
+    },
+    "workflow_started",
+  )
+
   // Process messages until queue is empty
   while (messageQueue.length > 0) {
     let currentMessage = messageQueue.shift()!
     lgg.onlyIf(verbose, `[queueRun] Processing message to node ${currentMessage.toNodeId}`)
+
+    // Check for cancellation BEFORE starting next node
+    if (abortSignal?.aborted) {
+      const partialResults = {
+        completedNodes: summaries.length,
+        totalCost,
+        totalDuration: Date.now() - startTime,
+      }
+
+      // Emit workflow_cancelled event with cancellation timestamp
+      await safeEmit(
+        onProgress,
+        {
+          type: "workflow_cancelled",
+          schemaVersion: 1,
+          cancelledAt: currentMessage.toNodeId,
+          cancelRequestedAt: Date.now(), // When the signal was detected
+          reason: "user_requested",
+          partialResults,
+          timestamp: Date.now(),
+          workflowInvocationId,
+        },
+        "workflow_cancelled",
+      )
+
+      lgg.log(`[queueRun] Workflow cancelled by user at node ${currentMessage.toNodeId}`)
+
+      return {
+        success: false,
+        error: "Workflow cancelled by user",
+        agentSteps,
+        totalTime: Date.now() - startTime,
+        totalCost,
+        finalWorkflowOutput: lastNodeOutput,
+      }
+    }
 
     // Check global and per-node max invocations limits
     if (totalNodeInvocationsCount >= maxTotalNodeInvocations) {
@@ -263,18 +350,20 @@ export async function queueRun({
 
     lgg.onlyIf(verbose, `[queueRun] Starting node invocation for ${targetNode.nodeId}`)
 
-    // Emit node_started event
+    // Emit node started event
     const nodeStartTime = Date.now()
     const nodeStartTimeISO = new Date().toISOString()
-    const nodeStartedEvent = {
-      type: "node_started" as const,
-      schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
-      nodeId: sanitizeEventText(targetNode.nodeId),
-      nodeName: sanitizeEventText(targetNode.nodeId),
-      timestamp: nodeStartTime,
-      workflowInvocationId,
-    }
-    await safeEmit(onProgress, nodeStartedEvent, "queueRun")
+    await safeEmit(
+      onProgress,
+      {
+        type: "node_started",
+        schemaVersion: 1,
+        nodeId: targetNode.nodeId,
+        timestamp: nodeStartTime,
+        workflowInvocationId,
+      },
+      "node_started",
+    )
 
     // Create NodeInvocation record with status='running' for real-time tracking
     // This enables SSE clients to poll for workflow progress via updated_at
@@ -321,46 +410,27 @@ export async function queueRun({
       nodeInvocationId: currentNodeInvocationId, // Pass invocation ID for lifecycle tracking
     })
 
+    // Emit node completed event
+    await safeEmit(
+      onProgress,
+      {
+        type: "node_completed",
+        schemaVersion: 1,
+        nodeId: targetNode.nodeId,
+        cost: usdCost,
+        duration: Date.now() - nodeStartTime,
+        timestamp: Date.now(),
+        workflowInvocationId,
+      },
+      "node_completed",
+    )
+
     lastNodeOutput = nodeInvocationFinalOutput
 
     lgg.onlyIf(
       verbose,
       `[queueRun] Node invocation completed for ${targetNode.nodeId}, nodeInvocationId: ${nodeInvocationId}`,
     )
-
-    // Emit node_completed or node_failed event
-    const nodeEndTime = Date.now()
-    if (error) {
-      // Sanitize error message to prevent information disclosure
-      const sanitizedError =
-        error instanceof Error
-          ? sanitizeEventText(error.message.replace(/\/[^\s]+/g, "[path]")) // Remove file paths
-          : "Node execution failed"
-
-      const nodeFailedEvent = {
-        type: "node_failed" as const,
-        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
-        nodeId: sanitizeEventText(targetNode.nodeId),
-        nodeName: sanitizeEventText(targetNode.nodeId),
-        error: sanitizedError,
-        timestamp: nodeEndTime,
-        workflowInvocationId,
-      }
-      await safeEmit(onProgress, nodeFailedEvent, "queueRun")
-    } else {
-      const nodeCompletedEvent = {
-        type: "node_completed" as const,
-        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
-        nodeId: sanitizeEventText(targetNode.nodeId),
-        nodeName: sanitizeEventText(targetNode.nodeId),
-        output: truncateOutput(nodeInvocationFinalOutput, 200),
-        durationMs: nodeEndTime - nodeStartTime,
-        costUsd: usdCost,
-        timestamp: nodeEndTime,
-        workflowInvocationId,
-      }
-      await safeEmit(onProgress, nodeCompletedEvent, "queueRun")
-    }
 
     if (error) {
       lgg.error(`[queueRun] Node invocation error for ${targetNode.nodeId}`, error)
@@ -505,6 +575,21 @@ export async function queueRun({
   }
 
   lgg.onlyIf(verbose, `[queueRun] Completed successfully for ${workflow.getWorkflowVersionId()}`)
+
+  // Emit workflow completed event
+  await safeEmit(
+    onProgress,
+    {
+      type: "workflow_completed",
+      schemaVersion: 1,
+      totalCost,
+      totalDuration: Date.now() - startTime,
+      completedNodes: summaries.length,
+      timestamp: Date.now(),
+      workflowInvocationId,
+    },
+    "workflow_completed",
+  )
 
   return {
     success: true,

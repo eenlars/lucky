@@ -52,5 +52,8 @@
     "check": "biome check --write .",
     "clean": "bun --env-file .env --env-file .env.local turbo run clean",
     "install:ci": "bun install --ignore-scripts"
+  },
+  "dependencies": {
+    "ioredis": "^5.8.1"
   }
 }

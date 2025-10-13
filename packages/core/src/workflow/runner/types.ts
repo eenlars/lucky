@@ -4,13 +4,7 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { WorkflowProgressEvent } from "@lucky/shared"
-
-/**
- * Callback invoked when workflow execution progress occurs.
- * Can be sync or async to support various consumers (SSE, logging, persistence).
- */
-export type WorkflowEventHandler = (event: WorkflowProgressEvent) => void | Promise<void>
+import type { WorkflowEventHandler } from "@lucky/shared"
 
 /**
  * Parameters for a basic in-memory queue-based workflow run.
@@ -22,8 +16,10 @@ export interface QueueRunParams {
   workflowInput: string
   /** Unique id for this run (used for tracing/persistence) */
   workflowInvocationId: string
-  /** Optional callback to receive progress events during execution */
+  /** Optional progress event handler */
   onProgress?: WorkflowEventHandler
+  /** Optional abort signal for graceful cancellation */
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -90,8 +86,10 @@ export interface RunResult {
  */
 export type InvocationInput = {
   evalInput: EvaluationInput
-  /** Optional callback to receive progress events during execution */
+  /** Optional progress event handler */
   onProgress?: WorkflowEventHandler
+  /** Optional abort signal for graceful cancellation */
+  abortSignal?: AbortSignal
 } & (
   | { workflowVersionId: string; filename?: never; dslConfig?: never }
   | { filename: string; workflowVersionId?: never; dslConfig?: never }

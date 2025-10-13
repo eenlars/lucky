@@ -69,7 +69,6 @@ describe("safeEmit", () => {
       type: "node_started",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -84,7 +83,6 @@ describe("safeEmit", () => {
       type: "node_started",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -106,10 +104,8 @@ describe("safeEmit", () => {
       type: "node_completed",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
-      output: "result",
-      durationMs: 100,
-      costUsd: 0.001,
+      cost: 0.001,
+      duration: 100,
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -124,11 +120,11 @@ describe("safeEmit", () => {
     })
 
     const event: WorkflowProgressEvent = {
-      type: "node_failed",
+      type: "workflow_failed",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
-      nodeId: "test",
-      nodeName: "Test Node",
-      error: "Node error",
+      error: "Workflow error",
+      totalCost: 0.001,
+      totalDuration: 1000,
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -147,7 +143,6 @@ describe("safeEmit", () => {
       type: "node_started",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -163,7 +158,6 @@ describe("safeEmit", () => {
       type: "node_started",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
@@ -172,20 +166,18 @@ describe("safeEmit", () => {
       type: "node_completed",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
       nodeId: "test",
-      nodeName: "Test Node",
-      output: "result",
-      durationMs: 100,
-      costUsd: 0.001,
+      cost: 0.001,
+      duration: 100,
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }
 
     const failedEvent: WorkflowProgressEvent = {
-      type: "node_failed",
+      type: "workflow_failed",
       schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
-      nodeId: "test",
-      nodeName: "Test Node",
       error: "Error message",
+      totalCost: 0.001,
+      totalDuration: 1000,
       timestamp: Date.now(),
       workflowInvocationId: "test-inv",
     }

@@ -140,16 +140,19 @@ export {
 export type { SeverityLevel, ErrorReportInput } from "./contracts/error"
 export { SeverityLevelSchema, ErrorReportSchema } from "./contracts/error"
 
+// Workflow progress contracts
+export type { WorkflowProgressEvent, WorkflowEventHandler } from "./contracts/workflow-progress"
+export {
+  workflowProgressEventSchema,
+  WORKFLOW_PROGRESS_SCHEMA_VERSION,
+} from "./contracts/workflow-progress"
+
 // Extended app database types for custom functions
 export type {
   UpsertErrorParams,
   UpsertErrorResult,
   DatabaseWithAppFunctions,
 } from "./types/app-functions.types"
-
-// Workflow progress events
-export type { WorkflowProgressEvent } from "./contracts/workflow-progress"
-export { WorkflowProgressEventSchema, WORKFLOW_PROGRESS_SCHEMA_VERSION } from "./contracts/workflow-progress"
 
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe

@@ -18,7 +18,7 @@
       "warnings": [],
       "request": {
         "body": {
-          "model": "openai/gpt-4.1-nano",
+          "model": "gpt-4.1-nano",
           "messages": [
             {
               "role": "user",
@@ -30,7 +30,7 @@
       "response": {
         "id": "gen-1758637317-QKvRrASgLrWqJVc05EOK",
         "timestamp": "2025-09-23T14:21:58.152Z",
-        "modelId": "openai/gpt-4.1-nano",
+        "modelId": "gpt-4.1-nano",
         "headers": {
           "access-control-allow-origin": "*",
           "cf-ray": "983ab103bc8c37c0-AMS",

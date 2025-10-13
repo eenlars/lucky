@@ -18,6 +18,7 @@ export function useLayout(shouldFitView = false) {
   const { getNodes, getEdges, setNodes, setEdges } = useAppStore(useShallow(selector))
 
   return useCallback(async () => {
+    console.log("⚡ useLayout: Running layout algorithm on", getNodes().length, "nodes")
     const nodes = getNodes()
     const edges = getEdges()
 

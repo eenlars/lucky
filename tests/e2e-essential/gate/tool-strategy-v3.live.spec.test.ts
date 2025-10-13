@@ -1,13 +1,24 @@
 import { selectToolStrategyV3 } from "@core/messages/pipeline/selectTool/selectToolStrategyV3"
-import { getDefaultModels } from "@examples/settings/models"
+import { MODEL_CONFIG, getDefaultModels } from "@examples/settings/models"
 import type { ToolSet } from "ai"
 import { zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-// Helper: detect placeholder envs from tests/setup/env.ts
-const hasRealOpenRouterKey =
-  typeof process.env.OPENROUTER_API_KEY === "string" && !process.env.OPENROUTER_API_KEY.startsWith("test-")
+// Helper: detect placeholder envs from tests/setup/env.ts - check for the current provider
+const hasRealApiKey = (() => {
+  const provider = MODEL_CONFIG.provider
+  if (provider === "openai") {
+    return typeof process.env.OPENAI_API_KEY === "string" && !process.env.OPENAI_API_KEY.startsWith("test-")
+  }
+  if (provider === "openrouter") {
+    return typeof process.env.OPENROUTER_API_KEY === "string" && !process.env.OPENROUTER_API_KEY.startsWith("test-")
+  }
+  if (provider === "groq") {
+    return typeof process.env.GROQ_API_KEY === "string" && !process.env.GROQ_API_KEY.startsWith("test-")
+  }
+  return false
+})()
 
 // Use a cheap/fast default model via our runtime config
 const MODEL = getDefaultModels().default
@@ -33,7 +44,7 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
 
   const systemMessage = "Choose the correct tool for the user request."
 
-  const runner = hasRealOpenRouterKey ? it : it.skip
+  const runner = hasRealApiKey ? it : it.skip
 
   runner(
     "selects the 'sum' tool (live)",

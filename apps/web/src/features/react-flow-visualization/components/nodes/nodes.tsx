@@ -6,6 +6,8 @@ import type { WorkflowNodeConfig } from "@lucky/core/workflow/schema/workflow.ty
 import { MODELS } from "@lucky/examples/settings/constants.client"
 
 import { BranchNode } from "./branch-node"
+import { ConnectorNode } from "./connector-node"
+import { HumanNode } from "./human-node"
 import { InitialNode } from "./initial-node"
 import { JoinNode } from "./join-node"
 import { OutputNode } from "./output-node"
@@ -142,6 +144,46 @@ const nodesConfig: Record<AppNodeType, NodeConfig> = {
     ],
     icon: "CheckCheck",
   },
+  "human-node": {
+    id: "human-node",
+    displayName: "Human Node",
+    status: "initial",
+    handles: [
+      {
+        type: "target",
+        position: Position.Left,
+        x: 0,
+        y: COMPACT_NODE_SIZE.height * 0.5,
+      },
+      {
+        type: "source",
+        position: Position.Right,
+        x: COMPACT_NODE_SIZE.width,
+        y: COMPACT_NODE_SIZE.height * 0.5,
+      },
+    ],
+    icon: "User",
+  },
+  "connector-node": {
+    id: "connector-node",
+    displayName: "Connector Node",
+    status: "initial",
+    handles: [
+      {
+        type: "target",
+        position: Position.Left,
+        x: 0,
+        y: COMPACT_NODE_SIZE.height * 0.5,
+      },
+      {
+        type: "source",
+        position: Position.Right,
+        x: COMPACT_NODE_SIZE.width,
+        y: COMPACT_NODE_SIZE.height * 0.5,
+      },
+    ],
+    icon: "Plug",
+  },
 }
 
 export const nodeTypes = {
@@ -150,6 +192,8 @@ export const nodeTypes = {
   "transform-node": TransformNode,
   "branch-node": BranchNode,
   "join-node": JoinNode,
+  "human-node": HumanNode,
+  "connector-node": ConnectorNode,
 }
 
 export function createNodeByType({
@@ -166,7 +210,8 @@ export function createNodeByType({
   const node = nodesConfig[type]
 
   const nodeId = id ?? nanoid()
-  const isCompact = type === "initial-node" || type === "output-node"
+  const isCompact =
+    type === "initial-node" || type === "output-node" || type === "human-node" || type === "connector-node"
   const size = isCompact ? COMPACT_NODE_SIZE : NODE_SIZE
   const newNode: AppNode = {
     id: nodeId,
@@ -202,6 +247,8 @@ export type AppNode =
   | Node<WorkflowNodeData, "join-node">
   | Node<WorkflowNodeData, "branch-node">
   | Node<WorkflowNodeData, "output-node">
+  | Node<WorkflowNodeData, "human-node">
+  | Node<WorkflowNodeData, "connector-node">
 
 export type AppNodeType = NonNullable<AppNode["type"]>
 

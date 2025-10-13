@@ -28,7 +28,7 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   },
   openai: {
     summary: "gpt-4.1-nano",
-    nano: "gpt-4.1-mini",
+    nano: "gpt-4.1-nano",
     low: "gpt-4.1-mini",
     medium: "gpt-4.1-mini",
     high: "gpt-4.1-mini",
@@ -41,7 +41,7 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
 
 // model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openrouter" as const satisfies LuckyProvider,
+  provider: "openai" as const satisfies LuckyProvider,
   inactive: [
     "moonshotai/kimi-k2",
     // "deepseek/deepseek-r1-0528:free", // timeouts
@@ -53,7 +53,7 @@ export const MODEL_CONFIG = {
     // "openai/gpt-4.1",
     // "openai/gpt-4.1-mini",
   ] as string[],
-  defaults: DEFAULT_MODELS.openrouter,
+  defaults: DEFAULT_MODELS.openai,
 } as const
 
 export const getDefaultModels = (): StandardModels => {
@@ -86,19 +86,37 @@ export const getCheapestActiveModelId = (): ModelName => {
   return cheapestId
 }
 
+/**
+ * Helper to get model from catalog accounting for provider-specific key formats.
+ * OpenAI provider uses unprefixed keys (e.g., "gpt-4o"), others use prefixed (e.g., "openai/gpt-4o").
+ */
+function getModel(modelId: string) {
+  const provider = MODEL_CONFIG.provider
+  const catalog = providersV2[provider]
+
+  // For openai provider, strip the provider prefix if present
+  if (provider === "openai" && modelId.includes("/")) {
+    const unprefixed = modelId.split("/")[1]
+    return catalog[unprefixed]
+  }
+
+  // For other providers (openrouter, groq), use the full prefixed id
+  return catalog[modelId]
+}
+
 export const experimentalModels = {
-  gpt35turbo: providersV2[MODEL_CONFIG.provider]["openai/gpt-3.5-turbo"],
-  gpt41: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1"],
-  gpt41mini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-mini"],
-  gpt41nano: providersV2[MODEL_CONFIG.provider]["openai/gpt-4.1-nano"],
-  gpt4o: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o"],
-  gpt4oMini: providersV2[MODEL_CONFIG.provider]["openai/gpt-4o-mini"],
-  mistral: providersV2[MODEL_CONFIG.provider]["mistralai/mistral-small-3.2-24b-instruct"],
-  gemini25pro: providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-pro-preview"],
-  geminiLite: providersV2[MODEL_CONFIG.provider]["google/gemini-2.5-flash-lite"],
-  claude35haiku: providersV2[MODEL_CONFIG.provider]["anthropic/claude-3-5-haiku"],
-  claudesonnet4: providersV2[MODEL_CONFIG.provider]["anthropic/claude-sonnet-4"],
-  moonshotKimiK2Instruct: providersV2[MODEL_CONFIG.provider]["moonshotai/kimi-k2-instruct"],
-  llama318bInstruct: providersV2[MODEL_CONFIG.provider]["meta-llama/llama-3.1-8b-instruct"],
-  gpt5: providersV2[MODEL_CONFIG.provider]["openai/gpt-5"],
+  gpt35turbo: getModel("openai/gpt-3.5-turbo"),
+  gpt41: getModel("openai/gpt-4.1"),
+  gpt41mini: getModel("openai/gpt-4.1-mini"),
+  gpt41nano: getModel("openai/gpt-4.1-nano"),
+  gpt4o: getModel("openai/gpt-4o"),
+  gpt4oMini: getModel("openai/gpt-4o-mini"),
+  mistral: getModel("mistralai/mistral-small-3.2-24b-instruct"),
+  gemini25pro: getModel("google/gemini-2.5-pro-preview"),
+  geminiLite: getModel("google/gemini-2.5-flash-lite"),
+  claude35haiku: getModel("anthropic/claude-3-5-haiku"),
+  claudesonnet4: getModel("anthropic/claude-sonnet-4"),
+  moonshotKimiK2Instruct: getModel("moonshotai/kimi-k2-instruct"),
+  llama318bInstruct: getModel("meta-llama/llama-3.1-8b-instruct"),
+  gpt5: getModel("openai/gpt-5"),
 }

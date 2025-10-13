@@ -1,6 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import type { WorkflowProgressEvent } from "@lucky/shared"
-import type { WorkflowEventHandler } from "./types"
+import type { WorkflowEventHandler, WorkflowProgressEvent } from "@lucky/shared"
 
 /**
  * Sanitizes text for safe inclusion in events (prevents XSS, log injection).

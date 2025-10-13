@@ -25,6 +25,9 @@ export const WorkflowNodeConfigSchema = z.object({
   handOffType: HandoffTypeSchema.optional(),
   useClaudeSDK: z.boolean().optional(), // Enable Claude Code SDK for this node
   sdkConfig: z.any().optional(), // ClaudeSDKConfig - any for now to avoid circular deps
+  requiresApproval: z.boolean().optional(), // Human-in-the-loop gate for this node
+  approvalPrompt: z.string().optional(), // Prompt shown to human reviewer
+  connectors: z.array(z.string()).optional(), // External connectors attached to this node
 })
 
 /**
@@ -32,6 +35,31 @@ export const WorkflowNodeConfigSchema = z.object({
  * Increment this when making breaking changes to the workflow schema.
  */
 export const CURRENT_SCHEMA_VERSION = 1
+
+/**
+ * Layout position for visual editor nodes
+ */
+export const NodeLayoutSchema = z.object({
+  nodeId: z.string(),
+  x: z.number(),
+  y: z.number(),
+})
+
+/**
+ * Layout metadata for visual workflow editor
+ */
+export const WorkflowLayoutSchema = z.object({
+  nodes: z.array(NodeLayoutSchema),
+  // Future: viewport zoom, pan, etc.
+})
+
+/**
+ * UI metadata for visual workflow editor
+ */
+export const WorkflowUISchema = z.object({
+  layout: WorkflowLayoutSchema.optional(),
+  // Future: viewport, theme, collapsed panels, etc.
+})
 
 /**
  * WorkflowConfig defines workflow structure with nodes, handoffs and metadata.
@@ -45,9 +73,13 @@ export const WorkflowConfigSchema = z.object({
   toolsInformation: z.any().optional(),
   inputSchema: JsonSchemaZ.optional(),
   outputSchema: JsonSchemaZ.optional(),
+  ui: WorkflowUISchema.optional(), // UI-specific metadata
 })
 
 export type WorkflowNodeConfig = z.infer<typeof WorkflowNodeConfigSchema>
 export type WorkflowConfig = z.infer<typeof WorkflowConfigSchema>
 export type HandoffType = z.infer<typeof HandoffTypeSchema>
 export type JsonSchemaDefinition = JSONSchema7
+export type NodeLayout = z.infer<typeof NodeLayoutSchema>
+export type WorkflowLayout = z.infer<typeof WorkflowLayoutSchema>
+export type WorkflowUI = z.infer<typeof WorkflowUISchema>

@@ -10,7 +10,7 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "openai/gpt-4.1-nano",
+          modelName: "gpt-4.1-nano",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -20,7 +20,7 @@ describe("extractRequiredProviders", () => {
     }
     const result = extractRequiredProviders(config)
     expect(result.providers).toEqual(new Set(["openai"]))
-    expect(result.models.get("openai")).toEqual(["openai/gpt-4.1-nano"])
+    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano"])
   })
 
   it("should extract multiple providers from catalog", () => {
@@ -30,7 +30,7 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "openai/gpt-4.1-nano",
+          modelName: "gpt-4.1-nano",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -50,7 +50,7 @@ describe("extractRequiredProviders", () => {
     const result = extractRequiredProviders(config)
     // anthropic/claude-sonnet-4 uses openrouter provider!
     expect(result.providers).toEqual(new Set(["openai", "openrouter"]))
-    expect(result.models.get("openai")).toEqual(["openai/gpt-4.1-nano"])
+    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano"])
     expect(result.models.get("openrouter")).toEqual(["anthropic/claude-sonnet-4"])
   })
 
@@ -99,7 +99,7 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "openai/gpt-4.1-nano",
+          modelName: "gpt-4.1-nano",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -108,7 +108,7 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent2",
           description: "test",
           systemPrompt: "test",
-          modelName: "openai/gpt-4.1-mini",
+          modelName: "gpt-4.1-mini",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -118,7 +118,7 @@ describe("extractRequiredProviders", () => {
     }
     const result = extractRequiredProviders(config)
     expect(result.providers).toEqual(new Set(["openai"]))
-    expect(result.models.get("openai")).toEqual(["openai/gpt-4.1-nano", "openai/gpt-4.1-mini"])
+    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano", "gpt-4.1-mini"])
   })
 
   it("should correctly identify groq provider for groq models", () => {
