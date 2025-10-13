@@ -8,6 +8,11 @@ import type { FilterPreset, ModelFiltersProps } from "./types"
 export function ModelFilters({ searchQuery, onSearchChange, activePreset, onPresetChange }: ModelFiltersProps) {
   const [searchInput, setSearchInput] = useState(searchQuery)
 
+  // Sync local state with prop when it changes externally (e.g., clear filters)
+  useEffect(() => {
+    setSearchInput(searchQuery)
+  }, [searchQuery])
+
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
