@@ -2,10 +2,11 @@
 
 import { useExecutionStore } from "@/features/react-flow-visualization/store/execution-store"
 import { ArrowDown, PlayCircle } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useAutoScroll } from "../hooks/use-auto-scroll"
 import { useLogEngine } from "../hooks/use-log-engine"
 import { useSessionManager } from "../hooks/use-session-manager"
+import { filterLogs, getAvailableNodes, searchLogs } from "../lib/log-engine"
 import type { LogEntry as LogEntryType, LogType } from "../types"
 import { LogEntry } from "./LogEntry"
 import { LogFilters } from "./LogFilters"
@@ -34,26 +35,47 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
     searchQuery,
   })
 
-  // Auto-scroll behavior
-  const scroll = useAutoScroll(engine.filteredLogs.length, searchQuery !== "")
-
   // Session persistence
   const session = useSessionManager(workflowId, currentInvocationId, engine.logs, isExecuting, setLocalLogs)
 
-  // Use local logs if a historical session is selected, otherwise use live logs
-  const displayLogs =
-    session.currentSessionId === currentInvocationId || !session.currentSessionId ? engine.filteredLogs : localLogs
+  // Determine if viewing historical session
+  const isViewingHistory = session.currentSessionId !== currentInvocationId && session.currentSessionId !== null
+
+  // Apply filters and search to historical logs if viewing history
+  const historicalFilteredLogs = useMemo(() => {
+    if (!isViewingHistory) return []
+    return filterLogs(localLogs, { nodes: selectedNodes, types: selectedTypes })
+  }, [isViewingHistory, localLogs, selectedNodes, selectedTypes])
+
+  const historicalSearchResult = useMemo(() => {
+    if (!isViewingHistory) return { filteredLogs: [], matches: [] }
+    return searchLogs(historicalFilteredLogs, searchQuery)
+  }, [isViewingHistory, historicalFilteredLogs, searchQuery])
+
+  const historicalAvailableNodes = useMemo(() => {
+    if (!isViewingHistory) return []
+    return getAvailableNodes(localLogs)
+  }, [isViewingHistory, localLogs])
+
+  // Use historical data if viewing history, otherwise use engine (live) data
+  const displayLogs = isViewingHistory ? historicalSearchResult.filteredLogs : engine.filteredLogs
+  const searchMatches = isViewingHistory ? historicalSearchResult.matches : engine.searchMatches
+  const availableNodes = isViewingHistory ? historicalAvailableNodes : engine.availableNodes
+  const isEmpty = isViewingHistory ? localLogs.length === 0 : engine.isEmpty
+
+  // Auto-scroll behavior
+  const scroll = useAutoScroll(displayLogs.length, searchQuery !== "")
 
   // Auto-scroll to current search match
   useEffect(() => {
-    if (engine.searchMatches.length > 0 && scroll.scrollContainerRef.current) {
-      const matchIndex = engine.searchMatches[currentMatchIndex]
+    if (searchMatches.length > 0 && scroll.scrollContainerRef.current) {
+      const matchIndex = searchMatches[currentMatchIndex]
       const matchElement = scroll.scrollContainerRef.current.children[0]?.children[matchIndex] as HTMLElement
       if (matchElement) {
         matchElement.scrollIntoView({ behavior: "smooth", block: "center" })
       }
     }
-  }, [currentMatchIndex, engine.searchMatches, scroll.scrollContainerRef])
+  }, [currentMatchIndex, searchMatches, scroll.scrollContainerRef])
 
   // Handle Escape key (clear search or close panel)
   useEffect(() => {
@@ -103,7 +125,7 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
         <LogFilters
           selectedNodes={selectedNodes}
           selectedTypes={selectedTypes}
-          availableNodes={engine.availableNodes}
+          availableNodes={availableNodes}
           onNodesChange={setSelectedNodes}
           onTypesChange={setSelectedTypes}
           onClearAll={() => {
@@ -117,9 +139,9 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
           query={searchQuery}
           onQueryChange={setSearchQuery}
           currentMatch={currentMatchIndex}
-          totalMatches={engine.searchMatches.length}
-          onPrevMatch={() => setCurrentMatchIndex(prev => (prev > 0 ? prev - 1 : engine.searchMatches.length - 1))}
-          onNextMatch={() => setCurrentMatchIndex(prev => (prev < engine.searchMatches.length - 1 ? prev + 1 : 0))}
+          totalMatches={searchMatches.length}
+          onPrevMatch={() => setCurrentMatchIndex(prev => (prev > 0 ? prev - 1 : searchMatches.length - 1))}
+          onNextMatch={() => setCurrentMatchIndex(prev => (prev < searchMatches.length - 1 ? prev + 1 : 0))}
           onClear={() => setSearchQuery("")}
         />
       </div>
@@ -135,18 +157,18 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
           <div className="flex flex-col items-center justify-center h-full text-center">
             <PlayCircle className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              {engine.isEmpty ? "No execution logs yet" : "No logs match filters"}
+              {isEmpty ? "No execution logs yet" : "No logs match filters"}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {engine.isEmpty ? "Run your workflow to see what happens" : "Try adjusting your filters"}
+              {isEmpty ? "Run your workflow to see what happens" : "Try adjusting your filters"}
             </p>
           </div>
         ) : (
           <>
             <div className="divide-y divide-gray-100 dark:divide-white/5">
               {displayLogs.map((log, index) => {
-                const isMatch = engine.searchMatches.includes(index)
-                const isCurrentMatch = engine.searchMatches[currentMatchIndex] === index
+                const isMatch = searchMatches.includes(index)
+                const isCurrentMatch = searchMatches[currentMatchIndex] === index
                 return (
                   <div
                     key={log.id}

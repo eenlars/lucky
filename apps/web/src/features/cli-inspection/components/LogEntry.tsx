@@ -55,7 +55,15 @@ export function LogEntry({ log }: { log: LogEntryType }) {
   const config = LOG_TYPE_CONFIG[log.type]
   const Icon = config.icon
 
-  const hasExpandableContent = !!(log.input || log.output || log.model || log.stackTrace)
+  const hasExpandableContent = !!(
+    log.input ||
+    log.output ||
+    log.model ||
+    log.stackTrace ||
+    log.duration != null ||
+    log.tokens != null ||
+    log.cost != null
+  )
 
   const handleCopy = async () => {
     const logData = {
@@ -164,19 +172,19 @@ export function LogEntry({ log }: { log: LogEntryType }) {
             )}
 
             {/* Metadata */}
-            {(log.model || log.duration || log.tokens || log.cost) && (
+            {(log.model || log.duration != null || log.tokens != null || log.cost != null) && (
               <div className="text-[11px] text-gray-500 dark:text-gray-400 flex flex-wrap items-center gap-x-4 gap-y-1">
                 {log.model && <span>Model: {log.model}</span>}
-                {log.duration && <span>Duration: {formatDuration(log.duration)}</span>}
+                {log.duration != null && <span>Duration: {formatDuration(log.duration)}</span>}
                 {log.tokens && (
                   <span>
                     Tokens: {log.tokens.total}
-                    {log.tokens.prompt &&
-                      log.tokens.completion &&
+                    {log.tokens.prompt != null &&
+                      log.tokens.completion != null &&
                       ` (prompt: ${log.tokens.prompt}, completion: ${log.tokens.completion})`}
                   </span>
                 )}
-                {log.cost && <span>Cost: {formatCost(log.cost)}</span>}
+                {log.cost != null && <span>Cost: {formatCost(log.cost)}</span>}
               </div>
             )}
 
