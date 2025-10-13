@@ -13,7 +13,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
           nodeId: "step-1",
           description: "desc",
           systemPrompt: "sp",
-          modelName: "openai/gpt-4.1-mini",
+          modelName: "gpt-4.1-mini",
           mcpTools: [],
           codeTools: ["todoWrite"],
           handOffs: ["end"],

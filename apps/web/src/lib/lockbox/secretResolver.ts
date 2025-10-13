@@ -46,6 +46,10 @@ export function createSecretResolver(clerk_id: string): SecretResolver {
       const ns = normalizeNamespace(namespace)
       const supabase = await createRLSClient()
 
+      console.log(
+        `[secretResolver.getAll] Fetching secrets for clerk_id=${clerk_id}, names=${names.join(", ")}, namespace=${ns}`,
+      )
+
       const { data, error } = await supabase
         .schema("lockbox")
         .from("user_secrets")
@@ -56,9 +60,17 @@ export function createSecretResolver(clerk_id: string): SecretResolver {
         .eq("is_current", true)
         .is("deleted_at", null)
 
-      if (error || !data) {
+      if (error) {
+        console.error("[secretResolver.getAll] Supabase error:", error)
         return {}
       }
+
+      if (!data || data.length === 0) {
+        console.warn(`[secretResolver.getAll] No secrets found for names: ${names.join(", ")}`)
+        return {}
+      }
+
+      console.log(`[secretResolver.getAll] Found ${data.length} secret(s): ${data.map(d => d.name).join(", ")}`)
 
       const secrets: Record<string, string> = {}
       const secretIds: string[] = []

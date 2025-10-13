@@ -103,12 +103,12 @@ vi.mock("@examples/settings/constants", () => ({
     },
   },
   MODELS: {
-    default: "openai/gpt-4.1-mini",
-    nano: "openai/gpt-4.1-mini",
-    medium: "openai/gpt-4.1-mini",
-    high: "openai/gpt-4.1-mini",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "openai/gpt-4.1-mini",
+    default: "gpt-4.1-mini",
+    nano: "gpt-4.1-mini",
+    medium: "gpt-4.1-mini",
+    high: "gpt-4.1-mini",
+    fitness: "gpt-4.1-mini",
+    reasoning: "gpt-4.1-mini",
   },
   PATHS: {
     root: "/test/root",

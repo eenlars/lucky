@@ -161,9 +161,9 @@ export async function runMultiToolOurAlgorithm(
 if (import.meta.url === `file://${process.argv[1]}`) {
   const demo = async () => {
     const model =
-      CONFIG.models.provider === "openrouter"
-        ? ("openai/gpt-4.1-mini" as ModelName)
-        : ("gpt-4.1-mini" as unknown as ModelName)
+      CONFIG.models.provider === "openai"
+        ? ("gpt-4.1-mini" as ModelName)
+        : ("openai/gpt-4.1-mini" as unknown as ModelName)
     const userTask = "Fetch 5 objects with the query 'item' and combine results."
     const systemPrompt =
       "You are a helpful assistant with tools. If a tool fails, retry with adjusted parameters to reach the requested item count."

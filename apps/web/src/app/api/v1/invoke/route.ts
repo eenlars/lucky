@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     const requiredProviderKeys = config ? getRequiredProviderKeys(config, "v1/invoke") : [...FALLBACK_PROVIDER_KEYS]
 
     // Pre-fetch required provider keys (only those actually needed by this workflow)
-    const apiKeys = await secrets.getAll(requiredProviderKeys)
+    const apiKeys = await secrets.getAll(requiredProviderKeys, "environment-variables")
 
     // Validate all required keys are present for session-based auth
     if (principal.auth_method === "session") {

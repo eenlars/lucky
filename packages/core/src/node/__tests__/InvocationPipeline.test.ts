@@ -102,13 +102,13 @@ vi.mock("@examples/settings/constants", () => ({
   MODELS: {
     summary: "google/gemini-2.0-flash-001",
     nano: "google/gemini-2.0-flash-001",
-    default: "openai/gpt-4.1-mini",
+    default: "gpt-4.1-mini",
     free: "qwen/qwq-32b:free",
     free2: "deepseek/deepseek-r1-0528:free",
-    low: "openai/gpt-4.1-nano",
-    medium: "openai/gpt-4.1-mini",
+    low: "gpt-4.1-nano",
+    medium: "gpt-4.1-mini",
     high: "anthropic/claude-sonnet-4",
-    fitness: "openai/gpt-4.1-mini",
+    fitness: "gpt-4.1-mini",
     reasoning: "anthropic/claude-sonnet-4",
     fallbackOpenRouter: "switchpoint/router",
   },
@@ -150,7 +150,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
     },
     usdCost: 0.01,
   }),
-  normalizeModelName: vi.fn().mockReturnValue("openai/gpt-4.1-mini"),
+  normalizeModelName: vi.fn().mockReturnValue("gpt-4.1-mini"),
 }))
 
 // Align processResponse mock with actual exported names and shapes

@@ -224,9 +224,9 @@ vi.mock("@examples/settings/constants", () => ({
   },
   MODELS: {
     nano: "google/gemini-2.0-flash-001",
-    medium: "openai/gpt-4.1-mini",
+    medium: "gpt-4.1-mini",
     high: "anthropic/claude-sonnet-4",
-    default: "openai/gpt-4.1-mini",
+    default: "gpt-4.1-mini",
   },
 }))
 
