@@ -7,8 +7,9 @@ import type { AllowedModelName, LuckyProvider, ModelPricingV2 } from "@lucky/sha
 /**
  * Browser default provider (hardcoded since runtime config requires Node.js).
  * Server-side code should use getCurrentProvider() from @lucky/shared.
+ * MUST match the provider configured in apps/examples/settings/models.ts
  */
-const BROWSER_DEFAULT_PROVIDER: LuckyProvider = "openrouter"
+const BROWSER_DEFAULT_PROVIDER: LuckyProvider = "openai"
 
 // Cache for active model names to avoid repeated API calls
 let cachedModels: AllowedModelName[] | null = null

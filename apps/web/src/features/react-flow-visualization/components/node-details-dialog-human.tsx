@@ -216,11 +216,12 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
       .catch(() => setSelectedModelPricing(null))
   }, [data?.modelName])
 
-  // show raw model id (e.g., openai/gpt-4.1-mini)
+  // show raw model id (e.g., gpt-4.1-mini for openai provider)
   const formatModelDisplayName = (modelName?: string) => modelName || ""
 
-  // Provider is hardcoded to "openrouter" in client (see client-utils.ts)
-  const providerId = "openrouter"
+  // Provider is hardcoded to "openai" in client (see client-utils.ts)
+  // MUST match BROWSER_DEFAULT_PROVIDER in client-utils.ts
+  const providerId = "openai"
 
   // Keep helpers in case we reintroduce richer display; unused for simple dropdown
   const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
