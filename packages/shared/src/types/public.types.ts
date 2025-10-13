@@ -746,7 +746,7 @@ export type Database = {
     Enums: {
       EvolutionRunStatus: "running" | "completed" | "failed" | "interrupted"
       FitnessMetric: "success_rate" | "usd_cost" | "custom"
-      InvocationStatus: "running" | "completed" | "failed" | "rolled_back"
+      InvocationStatus: "running" | "completed" | "failed" | "rolled_back" | "queued"
       MessageRole:
         | "delegation"
         | "result"
@@ -883,7 +883,7 @@ const _Constants = {
     Enums: {
       EvolutionRunStatus: ["running", "completed", "failed", "interrupted"],
       FitnessMetric: ["success_rate", "usd_cost", "custom"],
-      InvocationStatus: ["running", "completed", "failed", "rolled_back"],
+      InvocationStatus: ["running", "completed", "failed", "rolled_back", "queued"],
       MessageRole: [
         "delegation",
         "result",
