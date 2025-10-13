@@ -21,7 +21,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing help ID" }, { status: 400 })
   }
 
-  const requestFilePath = path.join(HELP_STORAGE_PATH, `${helpId}.json`)
+  // SECURITY: Sanitize helpId to prevent path traversal attacks
+  const sanitizedHelpId = path.basename(helpId).replace(/[^a-zA-Z0-9_-]/g, "")
+  if (!sanitizedHelpId || sanitizedHelpId !== helpId) {
+    return NextResponse.json({ error: "Invalid help ID format" }, { status: 400 })
+  }
+
+  const requestFilePath = path.join(HELP_STORAGE_PATH, `${sanitizedHelpId}.json`)
 
   try {
     const requestData = await fs.readFile(requestFilePath, "utf-8")
@@ -42,21 +48,28 @@ export async function POST(request: NextRequest) {
     if (!id || typeof response !== "string") {
       return NextResponse.json({ error: "Missing id or response" }, { status: 400 })
     }
-    console.log(`[Help API] Received POST for helpId: ${id}`)
 
-    const requestFilePath = path.join(HELP_STORAGE_PATH, `${id}.json`)
+    // SECURITY: Sanitize id to prevent path traversal attacks
+    const sanitizedId = path.basename(id).replace(/[^a-zA-Z0-9_-]/g, "")
+    if (!sanitizedId || sanitizedId !== id) {
+      return NextResponse.json({ error: "Invalid help ID format" }, { status: 400 })
+    }
+
+    console.log(`[Help API] Received POST for helpId: ${sanitizedId}`)
+
+    const requestFilePath = path.join(HELP_STORAGE_PATH, `${sanitizedId}.json`)
 
     let helpRequest: HelpRequest
     try {
       const requestData = await fs.readFile(requestFilePath, "utf-8")
       helpRequest = JSON.parse(requestData)
     } catch (error) {
-      console.error(`[Help API] Error reading help file for id ${id}:`, error)
+      console.error(`[Help API] Error reading help file for id ${sanitizedId}:`, error)
       return NextResponse.json({ error: "Help request not found" }, { status: 404 })
     }
 
     if (helpRequest.status !== "pending") {
-      console.log(`[Help API] Request ${id} already processed. Status: ${helpRequest.status}`)
+      console.log(`[Help API] Request ${sanitizedId} already processed. Status: ${helpRequest.status}`)
       return NextResponse.json({ error: "Request already processed" }, { status: 400 })
     }
 
@@ -65,9 +78,9 @@ export async function POST(request: NextRequest) {
 
     try {
       await fs.writeFile(requestFilePath, JSON.stringify(helpRequest, null, 2))
-      console.log(`[Help API] Successfully updated helpId ${id} to status 'answered'`)
+      console.log(`[Help API] Successfully updated helpId ${sanitizedId} to status 'answered'`)
     } catch (error) {
-      console.error(`[Help API] Error writing help file for id ${id}:`, error)
+      console.error(`[Help API] Error writing help file for id ${sanitizedId}:`, error)
       return NextResponse.json({ success: false, error: "Failed to save response" }, { status: 500 })
     }
 

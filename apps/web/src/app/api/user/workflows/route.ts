@@ -1,5 +1,6 @@
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
+import { getDemoWorkflow } from "@/lib/mcp-invoke/workflow-loader"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
@@ -59,8 +60,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    if (!data) {
-      return NextResponse.json([])
+    // If user has no workflows, return demo workflow so they can get started
+    if (!data || data.length === 0) {
+      const demo = getDemoWorkflow()
+      return NextResponse.json([
+        {
+          workflow_id: "wf_demo",
+          name: "Demo Workflow (Getting Started)",
+          description:
+            "A simple AI assistant workflow to help you get started. Try asking it a question! You can create your own custom workflows using the workflow builder.",
+          inputSchema: demo.inputSchema,
+          outputSchema: demo.outputSchema,
+          created_at: new Date().toISOString(),
+        },
+      ])
     }
 
     // Transform data to include latest version's schemas
