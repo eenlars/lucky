@@ -35,6 +35,7 @@ export type AppState = {
   draggedNodes: Map<string, AppNode>
   connectionSites: Map<string, PotentialConnection>
   potentialConnection?: PotentialConnection
+  draggedPaletteNodeType?: AppNodeType
   workflowLoading: boolean
   workflowError?: string
   selectedNodeId?: string
@@ -104,6 +105,7 @@ export type AppActions = {
     options?: { exclude?: string[]; type?: "source" | "target" },
   ) => void
   resetPotentialConnection: () => void
+  setDraggedPaletteNodeType: (type?: AppNodeType) => void
   loadWorkflowConfig: (mode?: "cultural" | "genetic") => Promise<void>
   loadWorkflowVersion: (workflowVersionId: string) => Promise<void>
   loadWorkflowFromData: (workflowData: WorkflowConfig) => Promise<void>
@@ -130,6 +132,7 @@ export const defaultState: AppState = {
   draggedNodes: new Map(),
   connectionSites: new Map(),
   potentialConnection: undefined,
+  draggedPaletteNodeType: undefined,
   workflowLoading: false,
   workflowError: undefined,
   selectedNodeId: undefined,
@@ -353,6 +356,10 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
         resetPotentialConnection: () => {
           set({ potentialConnection: undefined })
+        },
+
+        setDraggedPaletteNodeType: type => {
+          set({ draggedPaletteNodeType: type })
         },
 
         onNodeDragStart: (_, node) => {

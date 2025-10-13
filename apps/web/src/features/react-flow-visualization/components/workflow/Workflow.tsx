@@ -11,6 +11,7 @@ import { WorkflowPromptBar } from "@/features/react-flow-visualization/component
 import { useLayout } from "@/features/react-flow-visualization/hooks/use-layout"
 // runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
+import { NodePalette } from "./NodePalette"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
 
@@ -93,9 +94,8 @@ export default function Workflow({
   if (workflowLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4" />
-          <p>Loading workflow configuration...</p>
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <p className="text-sm">Loading</p>
         </div>
       </div>
     )
@@ -104,15 +104,14 @@ export default function Workflow({
   if (workflowError) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center text-red-600">
-          <p className="mb-2">Failed to load workflow configuration</p>
-          <p className="text-sm">{workflowError}</p>
+        <div className="text-center space-y-4 max-w-md">
+          <p className="text-sm text-gray-600 dark:text-gray-400">{workflowError}</p>
           <button
             type="button"
             onClick={() => (workflowVersionId ? loadWorkflowVersion(workflowVersionId) : loadWorkflowConfig())}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="text-sm text-gray-900 dark:text-gray-100 underline underline-offset-4"
           >
-            Retry
+            Try again
           </button>
         </div>
       </div>
@@ -141,6 +140,26 @@ export default function Workflow({
         proOptions={proOptions}
       >
         <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
+        <NodePalette />
+
+        {/* Empty state - guide users to drag from palette */}
+        {nodes.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
+            <div className="text-center text-gray-400 dark:text-gray-600 select-none">
+              <svg className="size-16 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+                />
+              </svg>
+              <p className="text-lg font-medium mb-2">Drag a node from the left to start</p>
+              <p className="text-sm">or describe your workflow below</p>
+            </div>
+          </div>
+        )}
+
         <WorkflowControls />
         <WorkflowPromptBar />
       </ReactFlow>
