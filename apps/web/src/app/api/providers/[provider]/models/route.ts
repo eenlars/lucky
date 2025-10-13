@@ -63,6 +63,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
       const catalogModels = getModelsByProvider(provider)
       const catalogMap = new Map(catalogModels.map(m => [m.model, m]))
 
+      // Only return models that exist in catalog - filter out models with missing/stale data
       result = modelIds
         .map(modelId => {
           const catalogEntry = catalogMap.get(modelId)
@@ -82,21 +83,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
               intelligence: catalogEntry.intelligence,
             }
           }
-          // Fallback for models not in catalog
-          return {
-            id: `${provider}/${modelId}`,
-            name: modelId,
-            contextLength: 0,
-            supportsTools: false,
-            supportsVision: false,
-            supportsReasoning: false,
-            supportsAudio: false,
-            supportsVideo: false,
-            inputCostPer1M: 0,
-            outputCostPer1M: 0,
-            speed: "medium" as const,
-            intelligence: 5,
-          }
+          // Don't return models not in catalog - avoids showing stale/incorrect data
+          return null
         })
         .filter(Boolean) as EnrichedModelInfo[]
     } else {
