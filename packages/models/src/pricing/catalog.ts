@@ -1353,7 +1353,10 @@ export function getCatalogStats() {
  * Helper: Validate catalog integrity
  * Checks for common issues like non-lowercase providers, invalid ID formats, etc.
  */
-export function validateCatalogIntegrity(): { valid: boolean; errors: string[] } {
+export function validateCatalogIntegrity(): {
+  valid: boolean
+  errors: string[]
+} {
   const errors: string[] = []
 
   if (MODEL_CATALOG.length === 0) {

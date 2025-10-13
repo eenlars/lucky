@@ -56,16 +56,10 @@ vi.mock("@examples/settings/constants", () => {
     models: {
       inactive: [],
       provider: "openai",
-      defaults: {
-        summary: "google/gemini-2.5-flash-lite",
-        nano: "google/gemini-2.5-flash-lite",
-        low: "google/gemini-2.5-flash-lite",
-        medium: "gpt-4.1-mini",
-        high: "gpt-4.1",
-        default: "gpt-4.1-nano",
-        fitness: "gpt-4.1-mini",
-        reasoning: "gpt-4.1-mini",
-        fallback: "switchpoint/router",
+      availability: {
+        openai: true,
+        openrouter: true,
+        groq: true,
       },
     },
     improvement: {

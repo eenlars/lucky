@@ -3,7 +3,7 @@
  * These types define the complete configuration surface for core.
  */
 
-import type { LuckyProvider } from "@lucky/shared"
+import type { LuckyProvider, ProviderAvailability } from "@lucky/shared"
 
 /**
  * Filesystem paths configuration.
@@ -37,24 +37,15 @@ export interface CorePathsConfig {
  * Models configuration
  * Note: Using string instead of AnyModelName to avoid TypeScript memory issues.
  * Runtime validation is handled by Zod schemas in contracts package.
+ * Model tier defaults are now defined in @lucky/models/config/defaults.ts
  */
 export interface CoreModelsConfig {
   /** Model provider (openrouter, openai, groq) */
   readonly provider: LuckyProvider
+  /** Provider availability overrides */
+  readonly availability: ProviderAvailability
   /** Inactive models that should not be used */
   readonly inactive: string[]
-  /** Default models for different tiers */
-  readonly defaults: {
-    readonly summary: string
-    readonly nano: string
-    readonly low: string
-    readonly medium: string
-    readonly high: string
-    readonly default: string
-    readonly fitness: string
-    readonly reasoning: string
-    readonly fallback: string
-  }
 }
 
 /**

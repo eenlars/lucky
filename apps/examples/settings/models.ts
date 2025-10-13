@@ -42,6 +42,11 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
 // model runtime configuration
 export const MODEL_CONFIG = {
   provider: "openai" as const satisfies LuckyProvider,
+  availability: {
+    openai: true,
+    openrouter: true,
+    groq: true,
+  },
   inactive: [
     "moonshotai/kimi-k2",
     // "deepseek/deepseek-r1-0528:free", // timeouts

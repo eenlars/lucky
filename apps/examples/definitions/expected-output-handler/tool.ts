@@ -31,7 +31,8 @@ const expectedOutputHandler = defineTool({
     }
 
     // select model
-    const selectedModel = getCoreConfig().models.defaults.fitness as ModelName
+    const { getDefaultModels } = await import("@core/core-config/coreConfig")
+    const selectedModel = getDefaultModels().fitness as ModelName
 
     const systemPrompt =
       strictness === "strict"

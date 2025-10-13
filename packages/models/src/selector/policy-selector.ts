@@ -298,19 +298,31 @@ export class PolicySelector {
     return candidates.filter(model => {
       for (const feature of features) {
         if (feature === "tools" && !model.supportsTools) {
-          rejections.push({ modelId: model.id, reason: "Missing feature: tools" })
+          rejections.push({
+            modelId: model.id,
+            reason: "Missing feature: tools",
+          })
           return false
         }
         if (feature === "json-mode" && !model.supportsJsonMode) {
-          rejections.push({ modelId: model.id, reason: "Missing feature: json-mode" })
+          rejections.push({
+            modelId: model.id,
+            reason: "Missing feature: json-mode",
+          })
           return false
         }
         if (feature === "streaming" && !model.supportsStreaming) {
-          rejections.push({ modelId: model.id, reason: "Missing feature: streaming" })
+          rejections.push({
+            modelId: model.id,
+            reason: "Missing feature: streaming",
+          })
           return false
         }
         if (feature === "vision" && !model.supportsVision) {
-          rejections.push({ modelId: model.id, reason: "Missing feature: vision" })
+          rejections.push({
+            modelId: model.id,
+            reason: "Missing feature: vision",
+          })
           return false
         }
       }
@@ -357,7 +369,10 @@ export class PolicySelector {
 
     return candidates.filter(model => {
       if (!allowed.includes(model.speed)) {
-        rejections.push({ modelId: model.id, reason: `Too slow: ${model.speed} > ${maxLatency}` })
+        rejections.push({
+          modelId: model.id,
+          reason: `Too slow: ${model.speed} > ${maxLatency}`,
+        })
         return false
       }
       return true
@@ -394,7 +409,10 @@ export class PolicySelector {
   ): ModelEntry[] {
     return candidates.filter(model => {
       if (model.intelligence < minIntel) {
-        rejections.push({ modelId: model.id, reason: `Intelligence too low: ${model.intelligence} < ${minIntel}` })
+        rejections.push({
+          modelId: model.id,
+          reason: `Intelligence too low: ${model.intelligence} < ${minIntel}`,
+        })
         return false
       }
       return true

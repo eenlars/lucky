@@ -4,10 +4,15 @@
  */
 
 import { getApiKey } from "@core/context/executionContext"
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
-import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
-import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
-import { buildTierConfigFromDefaults } from "./tier-config-builder"
+import {
+  type Models,
+  type ModelsConfig,
+  type ProviderConfig,
+  createModels,
+  getDefaultModelTiersForProvider,
+} from "@lucky/models"
 
 let _modelsInstance: Models | null = null
 
@@ -25,12 +30,14 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
 
   const providers: Record<string, ProviderConfig> = {}
   const missingKeys: string[] = []
+  const coreConfig = getCoreConfig()
+  const availability = coreConfig.models.availability
 
-  // Configure all ENABLED providers (respects PROVIDER_AVAILABILITY flags)
+  // Configure all ENABLED providers (respects runtime availability flags)
   // This allows code to use any model from any enabled provider (e.g., openai/gpt-4)
 
   // OpenAI
-  if (PROVIDER_AVAILABILITY.openai) {
+  if (availability.openai) {
     const openaiKey = (await getApiKey("OPENAI_API_KEY")) || (isTest ? "test-key" : undefined)
     if (openaiKey) {
       providers.openai = {
@@ -44,8 +51,8 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
     }
   }
 
-  // OpenRouter (currently disabled)
-  if (PROVIDER_AVAILABILITY.openrouter) {
+  // OpenRouter
+  if (availability.openrouter) {
     const openrouterKey = (await getApiKey("OPENROUTER_API_KEY")) || (isTest ? "test-key" : undefined)
     if (openrouterKey) {
       providers.openrouter = {
@@ -60,8 +67,8 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
     }
   }
 
-  // Groq (currently disabled)
-  if (PROVIDER_AVAILABILITY.groq) {
+  // Groq
+  if (availability.groq) {
     const groqKey = (await getApiKey("GROQ_API_KEY")) || (isTest ? "test-key" : undefined)
     if (groqKey) {
       providers.groq = {
@@ -101,11 +108,26 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
  * The instance is lightweight and caches model metadata internally.
  */
 export async function getModelsInstance(): Promise<Models> {
+  const coreConfig = getCoreConfig()
   const providers = await buildProviderConfig()
+  const { provider: defaultProvider, availability } = coreConfig.models
+
+  if (!availability[defaultProvider]) {
+    throw new Error(
+      `Provider "${defaultProvider}" is selected as the default provider but is disabled via models.availability. Enable it in runtime configuration or choose a different default provider.`,
+    )
+  }
+
+  if (!providers[defaultProvider]) {
+    throw new Error(
+      `Provider "${defaultProvider}" is selected as the default provider but no API key was found. ` +
+        `Add ${defaultProvider.toUpperCase()}_API_KEY via Settings → Providers or your environment before running workflows.`,
+    )
+  }
 
   const modelsConfig: ModelsConfig = {
     providers,
-    tiers: buildTierConfigFromDefaults(),
+    tiers: getDefaultModelTiersForProvider(defaultProvider),
     defaultTier: "default",
     trackPerformance: true,
     trackCost: true,

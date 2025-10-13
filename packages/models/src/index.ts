@@ -10,13 +10,30 @@ export { defineConfig, defineConfigUnsafe } from "./config/define"
 export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
 
+// Export default tier configuration
+export {
+  DEFAULT_MODEL_TIERS,
+  PROVIDER_MODEL_TIERS,
+  getDefaultModelTiersForProvider,
+  getTierModelName,
+  hasTier,
+  getAllTierNames,
+} from "./config/defaults"
+
 // Export Facade (primary public API)
 export { ModelsFacade, getFacade, resetFacade } from "./facade"
 export type { SelectionOptions } from "./facade"
 
 // Export Pricing
-export { PricingService, getPricingService, resetPricingService } from "./pricing/pricing-service"
-export type { PricingSnapshot, PricingOverride } from "./pricing/pricing-service"
+export {
+  PricingService,
+  getPricingService,
+  resetPricingService,
+} from "./pricing/pricing-service"
+export type {
+  PricingSnapshot,
+  PricingOverride,
+} from "./pricing/pricing-service"
 export {
   MODEL_CATALOG,
   getActiveModels,
@@ -41,15 +58,28 @@ export {
 } from "./pricing/model-lookup"
 
 // Export Registry
-export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"
+export {
+  ModelRegistry,
+  getRegistry,
+  resetRegistry,
+} from "./registry/model-registry"
 export type { ModelQuery, RegistryStats } from "./registry/model-registry"
 
 // Export Selector
-export { PolicySelector, getSelector, resetSelector } from "./selector/policy-selector"
+export {
+  PolicySelector,
+  getSelector,
+  resetSelector,
+} from "./selector/policy-selector"
 export type { SelectionReason } from "./selector/policy-selector"
 
 // Export Observability
-export { ModelLogger, getLogger, resetLogger, withPerformanceLogging } from "./observability/logger"
+export {
+  ModelLogger,
+  getLogger,
+  resetLogger,
+  withPerformanceLogging,
+} from "./observability/logger"
 export type {
   LogLevel,
   LogEntry,

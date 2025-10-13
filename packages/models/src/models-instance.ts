@@ -5,22 +5,57 @@
  * Configured with environment variables.
  */
 
-import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
+import {
+  DEFAULT_PROVIDER_AVAILABILITY,
+  type ProviderAvailability,
+  resolveProviderAvailability,
+} from "@lucky/shared/contracts/config"
 import { Models } from "./models"
 import type { ModelsConfig, ProviderConfig } from "./types"
 
 let modelsInstance: Models | null = null
 
+function parseBooleanEnv(value: string | undefined): boolean | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+
+  const normalized = value.trim().toLowerCase()
+  if (["1", "true", "yes", "on"].includes(normalized)) return true
+  if (["0", "false", "no", "off"].includes(normalized)) return false
+  return undefined
+}
+
+function getProviderAvailability(): ProviderAvailability {
+  const overrides: Partial<ProviderAvailability> = {}
+
+  const openai = parseBooleanEnv(process.env.MODELS_PROVIDER_OPENAI_ENABLED)
+  if (openai !== undefined) overrides.openai = openai
+
+  const openrouter = parseBooleanEnv(process.env.MODELS_PROVIDER_OPENROUTER_ENABLED)
+  if (openrouter !== undefined) overrides.openrouter = openrouter
+
+  const groq = parseBooleanEnv(process.env.MODELS_PROVIDER_GROQ_ENABLED)
+  if (groq !== undefined) overrides.groq = groq
+
+  if (Object.keys(overrides).length === 0) {
+    return DEFAULT_PROVIDER_AVAILABILITY
+  }
+
+  return resolveProviderAvailability(overrides)
+}
+
 /**
  * Build provider configuration from environment variables
- * Only configures ENABLED providers (respects PROVIDER_AVAILABILITY flags)
+ * Only configures ENABLED providers (respects runtime availability flags)
  */
 function buildProviderConfig(): Record<string, ProviderConfig> {
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
   const providers: Record<string, ProviderConfig> = {}
+  const availability = getProviderAvailability()
 
   // OpenAI
-  if (PROVIDER_AVAILABILITY.openai) {
+  if (availability.openai) {
     const openaiKey = process.env.OPENAI_API_KEY || (isTest ? "test-key" : undefined)
     if (openaiKey) {
       providers.openai = {
@@ -31,8 +66,8 @@ function buildProviderConfig(): Record<string, ProviderConfig> {
     }
   }
 
-  // OpenRouter (currently disabled)
-  if (PROVIDER_AVAILABILITY.openrouter) {
+  // OpenRouter
+  if (availability.openrouter) {
     const openrouterKey = process.env.OPENROUTER_API_KEY || (isTest ? "test-key" : undefined)
     if (openrouterKey) {
       providers.openrouter = {
@@ -44,8 +79,8 @@ function buildProviderConfig(): Record<string, ProviderConfig> {
     }
   }
 
-  // Groq (currently disabled)
-  if (PROVIDER_AVAILABILITY.groq) {
+  // Groq
+  if (availability.groq) {
     const groqKey = process.env.GROQ_API_KEY || (isTest ? "test-key" : undefined)
     if (groqKey) {
       providers.groq = {

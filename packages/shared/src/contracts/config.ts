@@ -62,36 +62,45 @@ export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 
 /**
  * Provider availability configuration - single source of truth.
- * Providers marked as disabled will not be initialized even if API keys are present.
+ * Providers default to enabled and can be overridden at runtime.
  */
-export const PROVIDER_AVAILABILITY = {
-  openai: true,
-  openrouter: false, // Disabled
-  groq: false, // Disabled
-} as const
+export const ProviderAvailabilitySchema = z.object({
+  openai: z.boolean().default(true),
+  openrouter: z.boolean().default(true),
+  groq: z.boolean().default(true),
+})
+
+export type ProviderAvailability = z.infer<typeof ProviderAvailabilitySchema>
+
+export const DEFAULT_PROVIDER_AVAILABILITY: ProviderAvailability = ProviderAvailabilitySchema.parse({})
+
+/**
+ * Backwards-compatible export. Prefer resolveProviderAvailability() for overrides.
+ */
+export const PROVIDER_AVAILABILITY = DEFAULT_PROVIDER_AVAILABILITY
+
+export function resolveProviderAvailability(overrides?: Partial<ProviderAvailability> | null): ProviderAvailability {
+  if (!overrides || Object.keys(overrides).length === 0) {
+    return DEFAULT_PROVIDER_AVAILABILITY
+  }
+
+  return ProviderAvailabilitySchema.parse({
+    ...DEFAULT_PROVIDER_AVAILABILITY,
+    ...overrides,
+  })
+}
 
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
 
-export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("gpt-4o-mini"),
-  nano: z.string().default("gpt-4o-mini"),
-  low: z.string().default("gpt-4o-mini"),
-  medium: z.string().default("gpt-4o"),
-  high: z.string().default("gpt-4o"),
-  default: z.string().default("gpt-4o-mini"),
-  fitness: z.string().default("gpt-4o-mini"),
-  reasoning: z.string().default("gpt-4o"),
-  fallback: z.string().default("gpt-4o-mini"),
-})
-
 export const ModelsConfigSchema = z.object({
   provider: ModelProviderSchema,
+  availability: ProviderAvailabilitySchema.default({}),
   inactive: z.array(z.string()).default(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
-  defaults: ModelDefaultsSchema.default({}),
+  // Note: Model tier defaults are now defined in @lucky/models/config/defaults.ts
+  // This contract only handles provider selection and inactive model lists
 })
 
 export type ModelProvider = z.infer<typeof ModelProviderSchema>
-export type ModelDefaults = z.infer<typeof ModelDefaultsSchema>
 export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 
 // ============================================================================

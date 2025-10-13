@@ -102,29 +102,37 @@ export const PATHS: CorePathsConfig = _pathsProxy
 
 /**
  * Lazy object that proxies access to live model defaults
+ * @deprecated Use DEFAULT_MODEL_TIERS from @lucky/models directly
  */
 const _modelsProxy = new Proxy({} as TypedModelDefaults, {
   get: (_target, prop) => {
-    return getCoreConfig().models.defaults[prop as keyof TypedModelDefaults]
+    // Import dynamically to avoid circular dependencies
+    const { getDefaultModelTiersForProvider } = require("@lucky/models")
+    const tierName = prop as string
+    const provider = getCoreConfig().models.provider
+    const tiers = getDefaultModelTiersForProvider(provider)
+    return tiers[tierName]?.models[0]?.model
   },
 })
 
 /**
  * Model defaults
- * NOW READS FROM LIVE CORE CONFIG to reflect runtime overrides
+ * @deprecated Use DEFAULT_MODEL_TIERS from @lucky/models directly
+ * This will be removed in v2.0
  */
 export const MODELS: TypedModelDefaults = _modelsProxy
 
 /**
  * Lazy object that proxies access to live model config
  */
-type ModelConfigProxy = Pick<CoreConfig["models"], "provider" | "inactive">
+type ModelConfigProxy = Pick<CoreConfig["models"], "provider" | "inactive" | "availability">
 
 const _modelConfigProxy = new Proxy({} as ModelConfigProxy, {
   get: (_target, prop) => {
     const models = getCoreConfig().models
     if (prop === "provider") return models.provider
     if (prop === "inactive") return models.inactive
+    if (prop === "availability") return models.availability
     return undefined
   },
 })
@@ -249,37 +257,6 @@ function createLegacyFlowConfig(coreConfig: CoreConfig): LegacyRuntimeConfig {
 }
 
 export type { LegacyRuntimeConfig }
-
-/**
- * Create core paths (server-only, uses process.cwd())
- */
-function createCorePaths() {
-  const cwd = process.cwd()
-  const coreDataRoot = path.join(cwd, ".core-data")
-  const loggingDir = path.join(coreDataRoot, "logs")
-  const memoryRoot = path.join(coreDataRoot, "memory")
-
-  // Find examples directory
-  const examplesRoot = path.resolve(cwd, "../examples")
-  const codeToolsPath = path.join(examplesRoot, "code_tools")
-
-  return {
-    root: coreDataRoot,
-    app: path.join(coreDataRoot, "app"),
-    runtime: examplesRoot,
-    codeTools: codeToolsPath,
-    setupFile: path.join(coreDataRoot, "setup", "setupfile.json"),
-    improver: path.join(coreDataRoot, "setup", "improve.json"),
-    node: {
-      logging: loggingDir,
-      memory: {
-        root: memoryRoot,
-        workfiles: path.join(memoryRoot, "workfiles"),
-      },
-      error: path.join(loggingDir, "error"),
-    },
-  }
-}
 
 // ============================================================================
 // PLACEHOLDER TOOLS (for test compatibility)

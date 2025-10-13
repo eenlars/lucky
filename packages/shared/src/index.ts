@@ -68,6 +68,10 @@ export type {
 } from "./types/models"
 export { providersV2 } from "./types/models"
 
+// Runtime model configuration helpers
+export type { ProviderAvailability } from "./contracts/config"
+export { DEFAULT_PROVIDER_AVAILABILITY, resolveProviderAvailability } from "./contracts/config"
+
 // Memory schemas
 export * from "./utils/memory/memorySchema"
 

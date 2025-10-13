@@ -45,16 +45,18 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
 }
 
 /**
- * Map provider names to their API key environment variable names
+ * Map provider names to their API key environment variable names.
+ * Follows the convention: {PROVIDER}_API_KEY (e.g., OPENAI_API_KEY, GROQ_API_KEY)
+ *
+ * Add entries to the exceptions mapping ONLY if a provider deviates from this pattern.
  */
 export function getProviderKeyName(provider: string): string {
-  const mapping: Record<string, string> = {
-    openai: "OPENAI_API_KEY",
-    openrouter: "OPENROUTER_API_KEY",
-    anthropic: "ANTHROPIC_API_KEY",
-    groq: "GROQ_API_KEY",
+  // Hardcode only exceptions to the standard pattern
+  const exceptions: Record<string, string> = {
+    // Add exceptions here if needed (e.g., "huggingface": "HF_API_KEY")
   }
-  return mapping[provider] || `${provider.toUpperCase()}_API_KEY`
+
+  return exceptions[provider] || `${provider.toUpperCase()}_API_KEY`
 }
 
 /**

@@ -19,7 +19,7 @@ export {
   HandoffContentSchema,
   PrepareProblemMethodSchema,
   ImprovementTypeSchema,
-  ModelDefaultsSchema,
+  // Note: ModelDefaultsSchema removed - model defaults now in @lucky/models
   ModelsConfigSchema,
   LoggingConfigSchema,
   ToolsConfigSchema,

@@ -4,21 +4,22 @@
  * to the tier: format expected by @lucky/models.
  */
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ModelName } from "@core/utils/spending/models.types"
+import { getCurrentProvider } from "@core/utils/spending/provider"
+import { getAllTierNames, getDefaultModelTiersForProvider } from "@lucky/models"
 
 /**
- * All available tier names in the system.
+ * All available tier names in the system for the active provider.
  */
-const TIER_NAMES = ["nano", "low", "medium", "high", "default", "fitness", "reasoning", "summary", "fallback"] as const
-
-export type TierName = (typeof TIER_NAMES)[number]
+export type TierName = string
 
 /**
  * Check if a string is a tier name.
  */
 export function isTierName(name: string): name is TierName {
-  return TIER_NAMES.includes(name as TierName)
+  const provider = getCurrentProvider()
+  const tierNames = getAllTierNames(provider) as readonly string[]
+  return tierNames.includes(name)
 }
 
 /**
@@ -51,8 +52,14 @@ export function resolveTierOrModel(input: ModelName | string): string {
  * Useful for logging and debugging.
  */
 export function getTierModel(tierName: TierName): ModelName {
-  const models = getDefaultModels()
-  return models[tierName]
+  const provider = getCurrentProvider()
+  const tiers = getDefaultModelTiersForProvider(provider)
+  const tierConfig = tiers[tierName as keyof typeof tiers]
+  if (!tierConfig) {
+    const available = getAllTierNames(provider)
+    throw new Error(`Unknown tier: ${tierName}. Available tiers for ${provider}: ${available.join(", ")}`)
+  }
+  return tierConfig.models[0].model as ModelName
 }
 
 /**

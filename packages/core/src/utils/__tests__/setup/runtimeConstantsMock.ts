@@ -23,7 +23,18 @@ export const mockRuntimeConstants = () => {
         inactive: new Set(),
       },
     } as any,
-    MODELS: minimal.models.defaults,
+    // Mock model defaults for tests (no longer in runtime config)
+    MODELS: {
+      summary: "gpt-4o-mini",
+      nano: "gpt-5-nano",
+      low: "gpt-4o-mini",
+      medium: "gpt-4o",
+      high: "gpt-4o",
+      default: "gpt-5-nano",
+      fitness: "gpt-4o-mini",
+      reasoning: "gpt-4o",
+      fallback: "gpt-4o-mini",
+    },
     PATHS: {
       root: "/test/root",
       app: "/test/app",

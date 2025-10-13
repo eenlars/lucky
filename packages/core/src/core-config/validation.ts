@@ -16,8 +16,9 @@ export function toRuntimeContract(coreConfig: CoreConfig): RuntimeConfig {
     newNodeProbability: coreConfig.newNodeProbability,
     models: {
       provider: coreConfig.models.provider,
+      availability: coreConfig.models.availability,
       inactive: coreConfig.models.inactive,
-      defaults: coreConfig.models.defaults,
+      // Note: Model defaults removed from config, now in @lucky/models
     },
     logging: coreConfig.logging,
     tools: {

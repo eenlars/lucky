@@ -20,8 +20,9 @@ export function initCore() {
     paths: PATHS,
     models: {
       provider: CONFIG.models.provider,
-      defaults: MODELS,
+      availability: CONFIG.models.availability,
       inactive: CONFIG.models.inactive,
+      // Note: Model defaults now come from @lucky/models, not config
     },
     coordinationType: CONFIG.coordinationType,
     newNodeProbability: CONFIG.newNodeProbability,

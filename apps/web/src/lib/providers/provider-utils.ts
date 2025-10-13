@@ -1,5 +1,6 @@
 import { logException } from "@/lib/error-logger"
 import { getProviderInfo } from "@lucky/models"
+import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
 import type { LucideIcon } from "lucide-react"
 import { Bot } from "lucide-react"
 
@@ -39,7 +40,6 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     logo: "/logos/groq.svg",
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
-    disabled: true,
   },
   openrouter: {
     name: "OpenRouter",
@@ -49,13 +49,13 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     logo: "/logos/openrouter.svg",
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
-    disabled: true,
   },
 }
 
 /**
  * Get provider configurations dynamically from MODEL_CATALOG
  * This merges static metadata with dynamic model counts from the catalog
+ * and disabled state from PROVIDER_AVAILABILITY
  */
 export function getProviderConfigs(): Record<string, ProviderConfig> {
   const providerInfo = getProviderInfo()
@@ -63,11 +63,14 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
 
   for (const info of providerInfo) {
     const metadata = PROVIDER_METADATA[info.name]
+    const isDisabled = !PROVIDER_AVAILABILITY[info.name as keyof typeof PROVIDER_AVAILABILITY]
+
     if (metadata) {
       configs[info.name] = {
         ...metadata,
         slug: info.name,
         defaultModelsCount: info.activeModels,
+        disabled: isDisabled,
       }
     } else {
       // Fallback for providers not in metadata
@@ -81,6 +84,7 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
         docsUrl: "",
         keysUrl: "",
         defaultModelsCount: info.activeModels,
+        disabled: isDisabled,
       }
     }
   }

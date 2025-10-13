@@ -75,10 +75,37 @@ export function getCoreModels(): CoreModelsConfig {
 
 /**
  * Get default model names as a convenient object.
- * This matches the signature of getDefaultModels() from runtime.
+ * @deprecated Use DEFAULT_MODEL_TIERS from @lucky/models directly.
+ * This function is kept for backwards compatibility but will be removed in v2.0.
+ *
+ * @example
+ * ```ts
+ * // Old (deprecated):
+ * import { getDefaultModels } from '@core/core-config'
+ * const model = getDefaultModels().medium
+ *
+ * // New:
+ * import { DEFAULT_MODEL_TIERS } from '@lucky/models'
+ * const model = DEFAULT_MODEL_TIERS.medium.models[0].model
+ * ```
  */
 export function getDefaultModels(): TypedModelDefaults {
-  return getCoreConfig().models.defaults as TypedModelDefaults
+  // Import dynamically to avoid circular dependencies
+  const { getDefaultModelTiersForProvider } = require("@lucky/models")
+  const provider = getCoreConfig().models.provider
+  const tiers = getDefaultModelTiersForProvider(provider)
+
+  return {
+    summary: tiers.summary.models[0].model,
+    nano: tiers.nano.models[0].model,
+    low: tiers.low.models[0].model,
+    medium: tiers.medium.models[0].model,
+    high: tiers.high.models[0].model,
+    default: tiers.default.models[0].model,
+    fitness: tiers.fitness.models[0].model,
+    reasoning: tiers.reasoning.models[0].model,
+    fallback: tiers.fallback.models[0].model,
+  } as TypedModelDefaults
 }
 
 /**
