@@ -97,10 +97,6 @@ export const useWorkflowStore = create<WorkflowStore>()(
           } catch (err) {
             logException(err, {
               location: "/store/workflow",
-              env:
-                typeof window !== "undefined" && window.location.hostname === "localhost"
-                  ? "development"
-                  : "production",
             })
             const errorMessage = err instanceof Error ? err.message : "Failed to load workflows"
             set({ error: errorMessage })
@@ -206,10 +202,6 @@ export const useWorkflowStore = create<WorkflowStore>()(
             } catch (error) {
               logException(error, {
                 location: "/store/workflow",
-                env:
-                  typeof window !== "undefined" && window.location.hostname === "localhost"
-                    ? "development"
-                    : "production",
               })
               console.error("Failed to read from localStorage:", error)
               return null
@@ -221,10 +213,6 @@ export const useWorkflowStore = create<WorkflowStore>()(
             } catch (error) {
               logException(error, {
                 location: "/store/workflow",
-                env:
-                  typeof window !== "undefined" && window.location.hostname === "localhost"
-                    ? "development"
-                    : "production",
               })
               console.error("Failed to write to localStorage:", error)
               // Clear storage if quota exceeded
@@ -243,10 +231,6 @@ export const useWorkflowStore = create<WorkflowStore>()(
             } catch (error) {
               logException(error, {
                 location: "/store/workflow",
-                env:
-                  typeof window !== "undefined" && window.location.hostname === "localhost"
-                    ? "development"
-                    : "production",
               })
               console.error("Failed to remove from localStorage:", error)
             }

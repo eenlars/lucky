@@ -54,7 +54,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/run",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json(
       {

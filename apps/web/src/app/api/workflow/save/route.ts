@@ -107,7 +107,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/save",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Error saving workflow version:", error)
     return NextResponse.json(

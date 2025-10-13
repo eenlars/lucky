@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/latest",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Failed to retrieve latest workflows:", error)
     return NextResponse.json({ error: "Failed to retrieve workflows" }, { status: 500 })

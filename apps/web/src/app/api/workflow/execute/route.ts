@@ -54,7 +54,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/execute",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json(
       {
@@ -115,7 +114,6 @@ async function executeWorkflowAsync(
   } catch (error) {
     logException(error, {
       location: "/api/workflow/execute/async",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     const execution = asyncExecutions.get(invocationId)
     if (execution) {
@@ -154,7 +152,6 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/execute/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json(
       {

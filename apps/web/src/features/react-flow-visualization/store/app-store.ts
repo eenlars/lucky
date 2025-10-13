@@ -14,7 +14,6 @@ import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middl
 
 import { setColorModeCookie } from "@/features/react-flow-visualization/components/actions/cookies"
 import { type AppEdge, createEdge } from "@/features/react-flow-visualization/components/edges/edges"
-import { logException } from "@/lib/error-logger"
 import nodesConfig, {
   createNodeByType,
   type AppNode,
@@ -24,6 +23,7 @@ import nodesConfig, {
 import { CITY_NAMES } from "@/features/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/features/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/features/react-flow-visualization/store/edge-validation"
+import { logException } from "@/lib/error-logger"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
@@ -407,10 +407,6 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
-              env:
-                typeof window !== "undefined" && window.location.hostname === "localhost"
-                  ? "development"
-                  : "production",
             })
             console.error("Error loading workflow config:", error)
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
@@ -446,10 +442,6 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
-              env:
-                typeof window !== "undefined" && window.location.hostname === "localhost"
-                  ? "development"
-                  : "production",
             })
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
@@ -476,10 +468,6 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
-              env:
-                typeof window !== "undefined" && window.location.hostname === "localhost"
-                  ? "development"
-                  : "production",
             })
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
@@ -570,10 +558,6 @@ export const createAppStore = (initialState: AppState = defaultState) => {
           } catch (error) {
             logException(error, {
               location: "/store/app-store",
-              env:
-                typeof window !== "undefined" && window.location.hostname === "localhost"
-                  ? "development"
-                  : "production",
             })
             console.error("Error syncing JSON to graph:", error)
           }
@@ -671,10 +655,6 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             }).catch(error => {
               logException(error, {
                 location: "/store/app-store",
-                env:
-                  typeof window !== "undefined" && window.location.hostname === "localhost"
-                    ? "development"
-                    : "production",
               })
               console.error("Failed to save node update:", error)
             })

@@ -70,8 +70,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         } catch (error) {
           logException(error, {
             location: "/store/model-preferences",
-            env:
-              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
           })
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
           console.error("[model-preferences-store] Error loading preferences:", error)
@@ -132,8 +130,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         } catch (error) {
           logException(error, {
             location: "/store/model-preferences",
-            env:
-              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
           })
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
@@ -184,8 +180,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         } catch (error) {
           logException(error, {
             location: "/store/model-preferences",
-            env:
-              typeof window !== "undefined" && window.location.hostname === "localhost" ? "development" : "production",
           })
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : "Unknown error"

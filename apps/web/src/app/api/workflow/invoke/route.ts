@@ -164,7 +164,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/invoke",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("[/api/workflow/invoke] Unexpected error:", error)
     return NextResponse.json(formatInternalError(requestId, error), { status: 500 })

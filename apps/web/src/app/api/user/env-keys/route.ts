@@ -44,7 +44,6 @@ export async function GET(_req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Failed to fetch environment keys" }, { status: 500 })
   }
@@ -178,7 +177,6 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/POST",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Failed to save environment key" }, { status: 500 })
   }
@@ -221,7 +219,6 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/DELETE",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Failed to delete environment key" }, { status: 500 })
   }

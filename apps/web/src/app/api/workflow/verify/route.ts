@@ -82,7 +82,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/verify",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Workflow verification error:", error)
     return NextResponse.json(

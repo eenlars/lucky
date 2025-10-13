@@ -78,7 +78,6 @@ export async function POST(_req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key/generate",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Failed to generate API key" }, { status: 500 })
   }

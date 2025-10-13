@@ -55,7 +55,6 @@ export async function GET(_req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Failed to fetch API key" }, { status: 500 })
   }

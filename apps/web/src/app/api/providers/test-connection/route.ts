@@ -42,7 +42,6 @@ export async function POST(request: Request) {
   } catch (error) {
     logException(error, {
       location: "/api/providers/test-connection",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Error testing provider connection:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

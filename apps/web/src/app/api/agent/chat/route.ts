@@ -230,7 +230,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/agent/chat",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     const duration = Date.now() - startTime
     console.error(`[Agent Chat] Error after ${duration}ms:`, error)

@@ -274,7 +274,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/invocations/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Error fetching workflow invocations:", error)
     return NextResponse.json({ error: "Failed to fetch invocations" }, { status: 500 })
@@ -306,7 +305,6 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/invocations/DELETE",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Error deleting workflow invocations:", error)
     return NextResponse.json(

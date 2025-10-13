@@ -65,7 +65,6 @@ export async function GET(req: Request) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/config/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Failed to load workflow config:", error)
 
@@ -149,7 +148,6 @@ export async function POST(req: Request) {
   } catch (error) {
     logException(error, {
       location: "/api/workflow/config/POST",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Failed to save workflow config:", error)
     return NextResponse.json({ error: "Failed to save workflow configuration" }, { status: 500 })

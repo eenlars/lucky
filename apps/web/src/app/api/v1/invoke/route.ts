@@ -139,7 +139,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/v1/invoke",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("MCP Invoke API Error:", error)
     return NextResponse.json(formatInternalError(requestId ?? null, error), {

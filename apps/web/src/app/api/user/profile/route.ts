@@ -40,7 +40,6 @@ export async function GET() {
     }
     logException(error, {
       location: "/api/user/profile/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Profile GET error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
@@ -107,7 +106,6 @@ export async function PUT(req: Request) {
     }
     logException(error, {
       location: "/api/user/profile/PUT",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("Profile PUT error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

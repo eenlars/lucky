@@ -37,7 +37,6 @@ export async function GET(_req: NextRequest, { params }: { params: { datasetId: 
     }
     logException(e, {
       location: "/api/ingestions/[datasetId]",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }

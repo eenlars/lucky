@@ -216,7 +216,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logException(error, {
       location: "/api/ingestions/upload",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }

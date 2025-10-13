@@ -99,7 +99,6 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/lockbox/secrets/POST",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Encryption/insert error" }, { status: 500 })
   }
@@ -172,7 +171,6 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     logException(e, {
       location: "/api/lockbox/secrets/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     return NextResponse.json({ error: e?.message ?? "Decryption failed" }, { status: 500 })
   }

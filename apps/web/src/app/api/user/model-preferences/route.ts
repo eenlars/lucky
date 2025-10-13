@@ -83,7 +83,6 @@ export async function GET(_req: NextRequest) {
   } catch (e: unknown) {
     logException(e, {
       location: "/api/user/model-preferences/GET",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("[GET /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to fetch preferences"
@@ -204,7 +203,6 @@ export async function PUT(req: NextRequest) {
   } catch (e: unknown) {
     logException(e, {
       location: "/api/user/model-preferences/PUT",
-      env: process.env.NODE_ENV === "production" ? "production" : "development",
     })
     console.error("[PUT /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to update preferences"
