@@ -9,12 +9,14 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup --silent",
+    "prebuild": "bun run scripts/validate-catalog.ts",
     "dev": "tsup --watch",
     "clean": "rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest",
     "fetch-pricing": "bun run scripts/fetch-pricing.ts",
     "validate-configs": "bunx tsx scripts/validate-yaml-configs.ts",
+    "validate-catalog": "bun run scripts/validate-catalog.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

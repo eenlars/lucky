@@ -39,7 +39,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 10,
     pricingTier: "high",
-    active: true,
+    active: false,
     disabled: true,
   },
 
@@ -167,7 +167,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    active: true,
+    active: false,
     disabled: true,
   },
 
@@ -189,7 +189,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    active: true,
+    active: false,
     disabled: true,
   },
 
