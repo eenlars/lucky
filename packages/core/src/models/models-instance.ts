@@ -11,8 +11,18 @@ import { buildTierConfigFromDefaults } from "./tier-config-builder"
 let _modelsInstance: Models | null = null
 
 /**
+ * Provider availability configuration
+ * Providers marked as disabled will not be initialized even if API keys are present
+ */
+const PROVIDER_AVAILABILITY: Record<string, boolean> = {
+  openai: true,
+  openrouter: false, // Disabled
+  groq: false, // Disabled
+}
+
+/**
  * Build provider configuration from core config and environment.
- * Configures ALL providers that have API keys available.
+ * Only configures ENABLED providers that have API keys available.
  * In test environments (when API keys are missing), provides mock API keys
  * to allow unit tests to run without real credentials.
  *
@@ -25,50 +35,54 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
   const providers: Record<string, ProviderConfig> = {}
   const missingKeys: string[] = []
 
-  // Configure all available providers (not just the current one)
-  // This allows code to use any model from any provider (e.g., openai/gpt-4, openrouter/...)
-  // Note: Lucky supports openai, openrouter, and groq as primary providers
-  // Anthropic models are accessed via OpenRouter
+  // Configure all ENABLED providers (respects PROVIDER_AVAILABILITY flags)
+  // This allows code to use any model from any enabled provider (e.g., openai/gpt-4)
 
   // OpenAI
-  const openaiKey = (await getApiKey("OPENAI_API_KEY")) || (isTest ? "test-key" : undefined)
-  if (openaiKey) {
-    providers.openai = {
-      id: "openai",
-      apiKey: openaiKey,
-      enabled: true,
+  if (PROVIDER_AVAILABILITY.openai) {
+    const openaiKey = (await getApiKey("OPENAI_API_KEY")) || (isTest ? "test-key" : undefined)
+    if (openaiKey) {
+      providers.openai = {
+        id: "openai",
+        apiKey: openaiKey,
+        enabled: true,
+      }
+      console.log("✓ OpenAI provider configured")
+    } else {
+      missingKeys.push("OPENAI_API_KEY")
     }
-    console.log("✓ OpenAI provider configured")
-  } else {
-    missingKeys.push("OPENAI_API_KEY")
   }
 
-  // OpenRouter
-  const openrouterKey = (await getApiKey("OPENROUTER_API_KEY")) || (isTest ? "test-key" : undefined)
-  if (openrouterKey) {
-    providers.openrouter = {
-      id: "openrouter",
-      apiKey: openrouterKey,
-      baseUrl: "https://openrouter.ai/api/v1",
-      enabled: true,
+  // OpenRouter (currently disabled)
+  if (PROVIDER_AVAILABILITY.openrouter) {
+    const openrouterKey = (await getApiKey("OPENROUTER_API_KEY")) || (isTest ? "test-key" : undefined)
+    if (openrouterKey) {
+      providers.openrouter = {
+        id: "openrouter",
+        apiKey: openrouterKey,
+        baseUrl: "https://openrouter.ai/api/v1",
+        enabled: true,
+      }
+      console.log("✓ OpenRouter provider configured")
+    } else {
+      missingKeys.push("OPENROUTER_API_KEY")
     }
-    console.log("✓ OpenRouter provider configured")
-  } else {
-    missingKeys.push("OPENROUTER_API_KEY")
   }
 
-  // Groq
-  const groqKey = (await getApiKey("GROQ_API_KEY")) || (isTest ? "test-key" : undefined)
-  if (groqKey) {
-    providers.groq = {
-      id: "groq",
-      apiKey: groqKey,
-      baseUrl: "https://api.groq.com/openai/v1",
-      enabled: true,
+  // Groq (currently disabled)
+  if (PROVIDER_AVAILABILITY.groq) {
+    const groqKey = (await getApiKey("GROQ_API_KEY")) || (isTest ? "test-key" : undefined)
+    if (groqKey) {
+      providers.groq = {
+        id: "groq",
+        apiKey: groqKey,
+        baseUrl: "https://api.groq.com/openai/v1",
+        enabled: true,
+      }
+      console.log("✓ Groq provider configured")
+    } else {
+      missingKeys.push("GROQ_API_KEY")
     }
-    console.log("✓ Groq provider configured")
-  } else {
-    missingKeys.push("GROQ_API_KEY")
   }
 
   console.log(`[buildProviderConfig] Configured providers: [${Object.keys(providers).join(", ")}]`)

@@ -11,41 +11,58 @@ import type { ModelsConfig, ProviderConfig } from "./types"
 let modelsInstance: Models | null = null
 
 /**
+ * Provider availability configuration
+ * Providers marked as disabled will not be initialized even if API keys are present
+ */
+const PROVIDER_AVAILABILITY: Record<string, boolean> = {
+  openai: true,
+  openrouter: false, // Disabled
+  groq: false, // Disabled
+}
+
+/**
  * Build provider configuration from environment variables
+ * Only configures ENABLED providers (respects PROVIDER_AVAILABILITY flags)
  */
 function buildProviderConfig(): Record<string, ProviderConfig> {
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
   const providers: Record<string, ProviderConfig> = {}
 
   // OpenAI
-  const openaiKey = process.env.OPENAI_API_KEY || (isTest ? "test-key" : undefined)
-  if (openaiKey) {
-    providers.openai = {
-      id: "openai",
-      apiKey: openaiKey,
-      enabled: true,
+  if (PROVIDER_AVAILABILITY.openai) {
+    const openaiKey = process.env.OPENAI_API_KEY || (isTest ? "test-key" : undefined)
+    if (openaiKey) {
+      providers.openai = {
+        id: "openai",
+        apiKey: openaiKey,
+        enabled: true,
+      }
     }
   }
 
-  // OpenRouter
-  const openrouterKey = process.env.OPENROUTER_API_KEY || (isTest ? "test-key" : undefined)
-  if (openrouterKey) {
-    providers.openrouter = {
-      id: "openrouter",
-      apiKey: openrouterKey,
-      baseUrl: "https://openrouter.ai/api/v1",
-      enabled: true,
+  // OpenRouter (currently disabled)
+  if (PROVIDER_AVAILABILITY.openrouter) {
+    const openrouterKey = process.env.OPENROUTER_API_KEY || (isTest ? "test-key" : undefined)
+    if (openrouterKey) {
+      providers.openrouter = {
+        id: "openrouter",
+        apiKey: openrouterKey,
+        baseUrl: "https://openrouter.ai/api/v1",
+        enabled: true,
+      }
     }
   }
 
-  // Groq
-  const groqKey = process.env.GROQ_API_KEY || (isTest ? "test-key" : undefined)
-  if (groqKey) {
-    providers.groq = {
-      id: "groq",
-      apiKey: groqKey,
-      baseUrl: "https://api.groq.com/openai/v1",
-      enabled: true,
+  // Groq (currently disabled)
+  if (PROVIDER_AVAILABILITY.groq) {
+    const groqKey = process.env.GROQ_API_KEY || (isTest ? "test-key" : undefined)
+    if (groqKey) {
+      providers.groq = {
+        id: "groq",
+        apiKey: groqKey,
+        baseUrl: "https://api.groq.com/openai/v1",
+        enabled: true,
+      }
     }
   }
 

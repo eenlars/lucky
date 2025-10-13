@@ -54,7 +54,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
 
   console.log(`[getApiKey] ${name} not in pre-fetched keys, fetching from secrets`)
   // Fallback to on-demand fetch (lazy loading for single-provider workflows)
-  const secretValue = await ctx.secrets.get(name)
+  const secretValue = await ctx.secrets.get(name, "environment-variables")
 
   // If user doesn't have this key in their secrets
   if (!secretValue) {
