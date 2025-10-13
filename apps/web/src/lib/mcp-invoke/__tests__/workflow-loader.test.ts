@@ -51,6 +51,10 @@ describe("loadWorkflowConfig", () => {
         type: "object",
         properties: { input: { type: "string" } },
       })
+      expect(result.outputSchema).toMatchObject({
+        type: "object",
+        properties: { output: { type: "string" } },
+      })
     })
 
     it("returns error when version not found", async () => {

@@ -449,7 +449,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ inv
 
 ### Key Implementation Notes
 
-1. **HTTP Status:** Always returns `202 Accepted` (idempotent design)
+1. **HTTP Status:** Returns `401 Unauthorized` for authentication failures, otherwise returns `202 Accepted` (idempotent design)
 2. **Response Field:** Uses `status` (not `state`) for consistency
 3. **Distributed Support:** Checks both Redis and in-memory `activeWorkflows`
 4. **Pub/Sub:** Uses Redis pub/sub for cross-server cancellation
@@ -459,7 +459,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ inv
 
 ```typescript
 {
-  status: "cancelling" | "already_completed" | "already_cancelled" | "not_found"
+  status: "cancelling" | "already_cancelled" | "not_found"
   invocationId: string
   cancelRequestedAt?: number  // Unix timestamp in milliseconds
   message: string

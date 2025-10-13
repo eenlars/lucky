@@ -10,6 +10,7 @@ export interface WorkflowLoadResult {
   success: boolean
   config?: WorkflowConfig
   inputSchema?: JsonSchemaDefinition
+  outputSchema?: JsonSchemaDefinition
   error?: {
     code: number
     message: string
@@ -131,6 +132,7 @@ async function loadWorkflowByVersionId(versionId: string): Promise<WorkflowLoadR
     success: true,
     config,
     inputSchema: config.inputSchema,
+    outputSchema: config.outputSchema,
   }
 }
 
@@ -188,5 +190,6 @@ async function loadWorkflowByWorkflowId(workflowId: string): Promise<WorkflowLoa
     success: true,
     config,
     inputSchema: config.inputSchema,
+    outputSchema: config.outputSchema,
   }
 }
