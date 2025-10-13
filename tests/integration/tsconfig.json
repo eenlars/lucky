@@ -30,7 +30,9 @@
       "@lucky/shared": ["../../packages/shared/src"],
       "@lucky/shared/*": ["../../packages/shared/src/*"],
       "@lucky/tools": ["../../packages/tools/src"],
-      "@lucky/tools/*": ["../../packages/tools/src/*"]
+      "@lucky/tools/*": ["../../packages/tools/src/*"],
+      "@/*": ["../../apps/web/src/*"],
+      "@tests/*": ["../*"]
     },
     "allowSyntheticDefaultImports": true
   },

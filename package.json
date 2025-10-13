@@ -43,6 +43,7 @@
     "test": "bun --env-file .env --env-file .env.local turbo run test",
     "test:unit": "bun --env-file .env --env-file .env.local turbo run test:unit",
     "test:integration": "bun --env-file .env --env-file .env.local turbo run test:integration",
+    "test:integration:http": "bun --env-file .env --env-file .env.local vitest run --config vitest.integration.config.ts tests/integration/",
     "test:smoke": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.js",
     "test:gate": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.js",
     "lint": "biome lint .",
@@ -54,6 +55,14 @@
     "install:ci": "bun install --ignore-scripts"
   },
   "dependencies": {
-    "ioredis": "^5.8.1"
+    "ioredis": "^5.8.1",
+    "ai": "^5.0.68",
+    "@ai-sdk/react": "^2.0.0",
+    "@ai-sdk/openai": "^2.0.52",
+    "@ai-sdk/anthropic": "^2.0.27",
+    "@ai-sdk/groq": "^2.0.24",
+    "@ai-sdk/openai-compatible": "^1.0.22",
+    "@openrouter/ai-sdk-provider": "^1.2.0",
+    "secure-json-parse": "^2.7.0"
   }
 }
