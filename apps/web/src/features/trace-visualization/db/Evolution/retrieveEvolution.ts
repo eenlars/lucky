@@ -7,7 +7,7 @@ export interface WorkflowInvocationSubset {
   wf_version_id: string
   start_time: string
   end_time: string | null
-  status: "running" | "completed" | "failed" | "rolled_back" | "queued"
+  status: "queued" | "running" | "completed" | "failed" | "rolled_back"
   usd_cost: number
   run_id: string | null
   generation_id: string | null

@@ -352,6 +352,7 @@ export async function queueRun({
 
     // Emit node started event
     const nodeStartTime = Date.now()
+    const nodeStartTimeISO = new Date().toISOString()
     await safeEmit(
       onProgress,
       {
@@ -363,6 +364,29 @@ export async function queueRun({
       },
       "node_started",
     )
+
+    // Create NodeInvocation record with status='running' for real-time tracking
+    // This enables SSE clients to poll for workflow progress via updated_at
+    let currentNodeInvocationId: string | undefined
+    if (persistence) {
+      try {
+        const result = await persistence.nodes.createNodeInvocationStart({
+          nodeId: targetNode.nodeId,
+          workflowInvocationId,
+          workflowVersionId: _workflowVersionId,
+          startTime: nodeStartTimeISO,
+          model: targetNode.toConfig().modelName,
+          attemptNo: 1, // First attempt (retries not yet implemented)
+        })
+        currentNodeInvocationId = result.nodeInvocationId
+      } catch (persistenceError) {
+        // Log but don't fail workflow if persistence fails
+        lgg.error(
+          "[queueRun] Failed to create node invocation start:",
+          persistenceError instanceof Error ? persistenceError.message : String(persistenceError),
+        )
+      }
+    }
 
     const {
       nodeInvocationFinalOutput,
@@ -378,11 +402,12 @@ export async function queueRun({
     } = await targetNode.invoke({
       ...toolContext,
       workflowMessageIncoming: currentMessage,
-      startTime: new Date().toISOString(),
+      startTime: nodeStartTimeISO,
       nodeConfig: targetNode.toConfig(),
       nodeMemory: targetNode.getMemory(),
-      workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
-      persistence: workflow.getPersistence(), // Pass persistence from workflow
+      workflowConfig: workflow.getConfig(),
+      persistence: workflow.getPersistence(),
+      nodeInvocationId: currentNodeInvocationId, // Pass invocation ID for lifecycle tracking
     })
 
     // Emit node completed event

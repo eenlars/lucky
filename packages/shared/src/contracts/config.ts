@@ -73,15 +73,15 @@ export const PROVIDER_AVAILABILITY = {
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
 
 export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("gpt-4.1-nano"),
-  nano: z.string().default("gpt-4.1-nano"),
-  low: z.string().default("gpt-4.1-mini"),
-  medium: z.string().default("gpt-4.1-mini"),
-  high: z.string().default("gpt-4.1-mini"),
-  default: z.string().default("gpt-4.1-mini"),
-  fitness: z.string().default("gpt-4.1-mini"),
-  reasoning: z.string().default("gpt-4.1-mini"),
-  fallback: z.string().default("gpt-4.1-mini"),
+  summary: z.string().default("gpt-4o-mini"),
+  nano: z.string().default("gpt-4o-mini"),
+  low: z.string().default("gpt-4o-mini"),
+  medium: z.string().default("gpt-4o"),
+  high: z.string().default("gpt-4o"),
+  default: z.string().default("gpt-4o-mini"),
+  fitness: z.string().default("gpt-4o-mini"),
+  reasoning: z.string().default("gpt-4o"),
+  fallback: z.string().default("gpt-4o-mini"),
 })
 
 export const ModelsConfigSchema = z.object({
