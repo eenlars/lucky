@@ -64,7 +64,7 @@
       "warnings": [],
       "request": {
         "body": {
-          "model": "openai/gpt-4.1-nano",
+          "model": "gpt-4.1-nano",
           "messages": [
             {
               "role": "system",
@@ -136,7 +136,7 @@
       "response": {
         "id": "gen-1758637322-HZPIfNYPofalu3aJ0ggr",
         "timestamp": "2025-09-23T14:22:01.112Z",
-        "modelId": "openai/gpt-4.1-nano",
+        "modelId": "gpt-4.1-nano",
         "headers": {
           "access-control-allow-origin": "*",
           "cf-ray": "983ab11ffe9037c0-AMS",
@@ -251,7 +251,7 @@
       "warnings": [],
       "request": {
         "body": {
-          "model": "openai/gpt-4.1-nano",
+          "model": "gpt-4.1-nano",
           "messages": [
             {
               "role": "system",
@@ -368,7 +368,7 @@
       "response": {
         "id": "gen-1758637323-3zi1OZccdsEnBZYGODJu",
         "timestamp": "2025-09-23T14:22:02.463Z",
-        "modelId": "openai/gpt-4.1-nano",
+        "modelId": "gpt-4.1-nano",
         "headers": {
           "access-control-allow-origin": "*",
           "cf-ray": "983ab127985237c0-AMS",

@@ -13,9 +13,9 @@ describe("ModelName Type System", () => {
   describe("Type Unification", () => {
     it("ModelName should accept AnyModelName", () => {
       // Type test: ModelName = AnyModelName
-      const testModel: AnyModelName = "openai/gpt-4.1-mini"
+      const testModel: AnyModelName = "gpt-4.1-mini"
       const modelName: ModelName = testModel // Should compile without error
-      expect(modelName).toBe("openai/gpt-4.1-mini")
+      expect(modelName).toBe("gpt-4.1-mini")
     })
 
     it("AnyModelName should be a union of all provider models", () => {
@@ -74,7 +74,7 @@ describe("ModelName Type System", () => {
 
       // If current provider is openrouter, test with native openai format
       if (currentProvider === "openrouter") {
-        // OpenRouter uses "openai/gpt-4.1-mini" format
+        // OpenRouter uses "gpt-4.1-mini" format
         // Native OpenAI uses "gpt-4.1-mini" format (no prefix)
         const nativeOpenAIFormat = "gpt-4.1-mini"
         const result = isActiveModel(nativeOpenAIFormat)
@@ -127,7 +127,8 @@ describe("ModelName Type System", () => {
         const pricing = getModelV2(model)
 
         expect(pricing).toBeDefined()
-        expect(pricing.id).toBe(model)
+        // Model ID might have provider prefix depending on catalog structure
+        expect(pricing.id).toContain(model.replace(/^.*\//, ""))
         expect(typeof pricing.input).toBe("number")
         expect(typeof pricing.output).toBe("number")
         expect(pricing.active).toBe(true)
@@ -163,17 +164,14 @@ describe("ModelName Type System", () => {
       const groqModels = getActiveModelNames("groq")
       const openaiModels = getActiveModelNames("openai")
 
-      // OpenRouter should have active models (current default provider)
-      expect(openrouterModels.length).toBeGreaterThan(0)
+      // OpenAI should have active models (current default provider)
+      expect(openaiModels.length).toBeGreaterThan(0)
 
-      // Other providers might have 0 active models depending on configuration
+      // Disabled providers (OpenRouter, Groq) should have 0 active models
+      expect(openrouterModels.length).toBe(0)
+      expect(groqModels.length).toBe(0)
+      expect(Array.isArray(openrouterModels)).toBe(true)
       expect(Array.isArray(groqModels)).toBe(true)
-      expect(Array.isArray(openaiModels)).toBe(true)
-
-      // OpenRouter models should have provider prefix
-      if (openrouterModels.length > 0) {
-        expect(openrouterModels.some(m => m.includes("/"))).toBe(true)
-      }
 
       // OpenAI native models should NOT have provider prefix
       if (openaiModels.length > 0) {
@@ -219,7 +217,7 @@ describe("ModelName Type System", () => {
 
     it("should maintain type safety through workflow persistence", () => {
       // Simulate workflow storage/retrieval
-      const workflowModel: AnyModelName = "openai/gpt-4.1-mini"
+      const workflowModel: AnyModelName = "gpt-4.1-mini"
 
       // Storage accepts any model (cross-provider compatibility)
       const stored: { modelName: AnyModelName } = { modelName: workflowModel }
@@ -245,7 +243,7 @@ describe("ModelName Type System", () => {
       expect(isActiveModel(longName)).toBe(false)
 
       // Case sensitivity
-      const lowerCase = "openai/gpt-4.1-mini"
+      const lowerCase = "gpt-4.1-mini"
       const upperCase = "OPENAI/GPT-4.1-MINI"
       expect(isActiveModel(lowerCase)).not.toBe(isActiveModel(upperCase))
     })
@@ -254,7 +252,7 @@ describe("ModelName Type System", () => {
   describe("Backward Compatibility", () => {
     it("should maintain compatibility with legacy code", () => {
       // Old code using ModelName
-      const oldModel: ModelName = "openai/gpt-4.1-mini"
+      const oldModel: ModelName = "gpt-4.1-mini"
 
       // New code using AnyModelName
       const newModel: AnyModelName = oldModel

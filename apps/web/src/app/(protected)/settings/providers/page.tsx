@@ -36,15 +36,17 @@ export default function ProvidersPage() {
       const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
       const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
 
-      const providerData: ProviderCardData[] = (Object.keys(PROVIDER_CONFIGS) as LuckyProvider[]).map(provider => {
-        const config = PROVIDER_CONFIGS[provider]
-        const hasApiKey = keyNames.has(config.apiKeyName)
+      const providerData: ProviderCardData[] = (Object.keys(PROVIDER_CONFIGS) as LuckyProvider[])
+        .filter(provider => !PROVIDER_CONFIGS[provider].disabled)
+        .map(provider => {
+          const config = PROVIDER_CONFIGS[provider]
+          const hasApiKey = keyNames.has(config.apiKeyName)
 
-        return {
-          provider,
-          hasApiKey,
-        }
-      })
+          return {
+            provider,
+            hasApiKey,
+          }
+        })
 
       setProviders(providerData)
     } catch (error) {
@@ -98,13 +100,9 @@ export default function ProvidersPage() {
         {providers.map(providerData => {
           const config = PROVIDER_CONFIGS[providerData.provider]
           const Icon = config.icon
-          const isDisabled = config.disabled
 
           return (
-            <Card
-              key={providerData.provider}
-              className={`transition-shadow ${isDisabled ? "opacity-60" : "hover:shadow-md"}`}
-            >
+            <Card key={providerData.provider} className="transition-shadow hover:shadow-md">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   {config.logo ? (
@@ -125,18 +123,12 @@ export default function ProvidersPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                {isDisabled ? (
-                  <Button variant="outline" size="sm" className="w-full" disabled>
-                    Currently Unavailable
-                  </Button>
-                ) : (
-                  <Button variant="outline" size="sm" className="w-full group" asChild>
-                    <Link href={`/settings/providers/${config.slug}`}>
-                      {providerData.hasApiKey ? "Manage" : "Configure"}
-                      <ArrowRight className="size-4 ml-auto group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" className="w-full group" asChild>
+                  <Link href={`/settings/providers/${config.slug}`}>
+                    {providerData.hasApiKey ? "Manage" : "Configure"}
+                    <ArrowRight className="size-4 ml-auto group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           )
