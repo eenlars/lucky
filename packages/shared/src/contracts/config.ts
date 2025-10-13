@@ -64,7 +64,7 @@ export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).defa
 
 export const ModelDefaultsSchema = z.object({
   summary: z.string().default("gpt-4.1-nano"),
-  nano: z.string().default("gpt-4.1-mini"),
+  nano: z.string().default("gpt-4.1-nano"),
   low: z.string().default("gpt-4.1-mini"),
   medium: z.string().default("gpt-4.1-mini"),
   high: z.string().default("gpt-4.1-mini"),

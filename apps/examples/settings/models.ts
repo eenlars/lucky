@@ -28,7 +28,7 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   },
   openai: {
     summary: "gpt-4.1-nano",
-    nano: "gpt-4.1-mini",
+    nano: "gpt-4.1-nano",
     low: "gpt-4.1-mini",
     medium: "gpt-4.1-mini",
     high: "gpt-4.1-mini",
