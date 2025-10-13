@@ -26,7 +26,8 @@ import {
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { MCPServersConfig } from "./mcp-servers"
-import { type Connector, mockConnectors } from "./mock-data"
+import type { Connector, ConnectorTool, Tag } from "./mock-data"
+import { mockConnectors } from "./mock-data"
 
 export default function ConnectorsPage() {
   const connectorsEnabled = useFeatureFlag("CONNECTORS")
