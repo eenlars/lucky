@@ -2,8 +2,8 @@
 
 import { ChevronDown, Trash2 } from "lucide-react"
 import { useState } from "react"
-import { formatSessionLabel } from "./sessionManager"
-import type { ExecutionSession } from "./types"
+import { formatSessionLabel } from "../lib/sessionManager"
+import type { ExecutionSession } from "../types"
 
 interface SessionSelectorProps {
   sessions: ExecutionSession[]

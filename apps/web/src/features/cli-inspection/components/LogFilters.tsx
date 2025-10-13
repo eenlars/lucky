@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown, X } from "lucide-react"
 import { useState } from "react"
-import type { LogType } from "./types"
+import type { LogType } from "../types"
 
 interface LogFiltersProps {
   selectedNodes: string[]

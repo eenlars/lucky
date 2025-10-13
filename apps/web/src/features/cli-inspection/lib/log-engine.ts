@@ -1,5 +1,5 @@
 import type { WorkflowProgressEvent } from "@lucky/shared"
-import type { LogEntry, LogType } from "./types"
+import type { LogEntry, LogType } from "../types"
 
 /**
  * Pure functions for log processing (framework-agnostic, easily testable)

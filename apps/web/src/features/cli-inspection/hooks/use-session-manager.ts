@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { clearAllSessions, loadSessions, saveSession } from "./sessionManager"
-import type { ExecutionSession, LogEntry } from "./types"
+import { clearAllSessions, loadSessions, saveSession } from "../lib/sessionManager"
+import type { ExecutionSession, LogEntry } from "../types"
 
 export interface SessionManagerState {
   sessions: ExecutionSession[]

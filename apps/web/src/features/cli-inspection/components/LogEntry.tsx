@@ -2,7 +2,7 @@
 
 import { AlertCircle, AlertTriangle, CheckCircle, ChevronDown, Circle, Code, Copy } from "lucide-react"
 import { useState } from "react"
-import type { LogEntry as LogEntryType } from "./types"
+import type { LogEntry as LogEntryType } from "../types"
 
 const LOG_TYPE_CONFIG = {
   INFO: {

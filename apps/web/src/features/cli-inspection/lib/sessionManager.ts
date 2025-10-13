@@ -1,4 +1,4 @@
-import type { ExecutionSession, LogEntry } from "./types"
+import type { ExecutionSession, LogEntry } from "../types"
 
 const STORAGE_KEY_PREFIX = "workflow-execution-logs-"
 const MAX_SESSIONS = 10

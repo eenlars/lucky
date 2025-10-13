@@ -3,14 +3,14 @@
 import { useExecutionStore } from "@/features/react-flow-visualization/store/execution-store"
 import { ArrowDown, PlayCircle } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useAutoScroll } from "../hooks/use-auto-scroll"
+import { useLogEngine } from "../hooks/use-log-engine"
+import { useSessionManager } from "../hooks/use-session-manager"
+import type { LogEntry as LogEntryType, LogType } from "../types"
 import { LogEntry } from "./LogEntry"
 import { LogFilters } from "./LogFilters"
 import { LogSearch } from "./LogSearch"
 import { SessionSelector } from "./SessionSelector"
-import type { LogEntry as LogEntryType, LogType } from "./types"
-import { useAutoScroll } from "./use-auto-scroll"
-import { useLogEngine } from "./use-log-engine"
-import { useSessionManager } from "./use-session-manager"
 
 interface ExecutionLogsPanelProps {
   isOpen: boolean

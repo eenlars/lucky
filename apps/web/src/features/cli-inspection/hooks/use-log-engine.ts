@@ -7,8 +7,8 @@ import {
   findActiveNodeId,
   getAvailableNodes,
   searchLogs,
-} from "./log-engine"
-import type { LogEntry } from "./types"
+} from "../lib/log-engine"
+import type { LogEntry } from "../types"
 
 export interface LogEngineConfig {
   filters: FilterConfig
