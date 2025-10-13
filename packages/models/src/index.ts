@@ -30,6 +30,16 @@ export {
 } from "./pricing/catalog"
 export type { ProviderInfo } from "./pricing/catalog"
 
+// Export model lookup utilities (migration helpers)
+export {
+  findModel,
+  getModel,
+  normalizeModelId,
+  isModelActive,
+  getActiveModelsByProvider,
+  getActiveModelIds,
+} from "./pricing/model-lookup"
+
 // Export Registry
 export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"
 export type { ModelQuery, RegistryStats } from "./registry/model-registry"

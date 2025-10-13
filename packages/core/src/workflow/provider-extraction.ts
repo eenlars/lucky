@@ -19,14 +19,7 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
     if (!modelId) continue
 
     // Look up model in catalog to find which provider API it uses
-    // Handle both prefixed ("openai/gpt-4") and unprefixed ("gpt-4") model names
-    let catalogEntry = MODEL_CATALOG.find(entry => entry.id === modelId)
-
-    // If not found and model doesn't have a prefix, try adding openai prefix
-    // (OpenAI is the default provider and models may be stored unprefixed in configs)
-    if (!catalogEntry && !modelId.includes("/")) {
-      catalogEntry = MODEL_CATALOG.find(entry => entry.id === `openai/${modelId}`)
-    }
+    const catalogEntry = MODEL_CATALOG.find(entry => entry.id === modelId)
 
     if (!catalogEntry) {
       console.warn(`[extractProviders] Model not found in catalog: ${modelId} (node: ${nodeConfig.nodeId})`)
