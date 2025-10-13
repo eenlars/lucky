@@ -40,6 +40,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 10,
     pricingTier: "high",
     active: true,
+    disabled: true,
   },
 
   {
@@ -167,6 +168,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 10,
     pricingTier: "high",
     active: true,
+    disabled: true,
   },
 
   {
@@ -188,6 +190,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 10,
     pricingTier: "high",
     active: true,
+    disabled: true,
   },
 
   {
