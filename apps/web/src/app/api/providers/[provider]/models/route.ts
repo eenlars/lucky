@@ -69,7 +69,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
           const catalogEntry = catalogMap.get(modelId)
           if (catalogEntry && !catalogEntry.disabled) {
             return {
-              id: catalogEntry.id,
+              id: catalogEntry.model, // Use model field (API format), not id field (catalog format)
               name: catalogEntry.model,
               contextLength: catalogEntry.contextLength,
               supportsTools: catalogEntry.supportsTools,
