@@ -18,18 +18,19 @@ export const getActiveModelNames = (customProvider?: LuckyProvider): string[] =>
 
 // Check if a model is active
 export function isActiveModel(model: string): boolean {
-  // Try catalog ID lookup first (e.g., "vendor:openai;model:gpt-5-nano")
+  // Try catalog ID format first (e.g., "vendor:openai;model:gpt-4.1-mini")
   let modelEntry = findModel(model)
 
-  // Fallback to API name lookup (e.g., "gpt-5-nano")
+  // If not found, try API model name format (e.g., "gpt-4.1-mini")
   if (!modelEntry) {
     modelEntry = findModelByName(model)
   }
 
+  if (!modelEntry) return false
+
   // Check both the catalog active flag AND the getCoreConfig().models.inactive array
-  // Use the catalog ID for inactive check (if found) or the original model string
-  const idToCheck = modelEntry?.id ?? model
-  return Boolean(modelEntry?.active === true && !getCoreConfig().models.inactive.includes(idToCheck))
+  // Note: inactive list uses catalog IDs
+  return modelEntry.active === true && !getCoreConfig().models.inactive.includes(modelEntry.id)
 }
 
 /**
@@ -42,20 +43,24 @@ export function getModelV2(model: string, _customProvider?: LuckyProvider): Mode
     throw new Error("getModelV2: No model provided")
   }
 
-  // Look up in MODEL_CATALOG (model must be prefixed)
-  const modelEntry = findModel(model)
+  // Try catalog ID format first, then API model name format
+  let modelEntry = findModel(model)
+  if (!modelEntry) {
+    modelEntry = findModelByName(model)
+  }
 
   if (!modelEntry) {
     const available = getActiveModelIds().slice(0, 20).join(", ")
     console.warn(`getModelV2: Model ${model} not found. Available models (first 20): ${available}`)
     throw new Error(
-      `getModelV2: Model ${model} not found. Model IDs must use format "vendor:X;model:Y" (e.g., "vendor:openai;model:gpt-4.1-mini")`,
+      `getModelV2: Model ${model} not found. Accepts both catalog IDs ("vendor:X;model:Y") and API model names (e.g., "gpt-4.1-mini")`,
     )
   }
 
   // Convert ModelEntry to ModelPricingV2 format for backwards compatibility
+  // Note: Use model (API name) for id field to maintain backward compatibility
   return {
-    id: modelEntry.id,
+    id: modelEntry.model,
     input: modelEntry.input,
     "cached-input": modelEntry.cachedInput,
     output: modelEntry.output,
