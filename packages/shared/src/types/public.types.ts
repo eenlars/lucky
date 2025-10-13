@@ -328,7 +328,9 @@ export type Database = {
       }
       NodeInvocation: {
         Row: {
+          attempt_no: number
           end_time: string | null
+          error: Json | null
           extras: Json | null
           files: string[] | null
           metadata: Json | null
@@ -340,12 +342,15 @@ export type Database = {
           start_time: string
           status: Database["public"]["Enums"]["InvocationStatus"]
           summary: string | null
+          updated_at: string
           usd_cost: number
           wf_invocation_id: string | null
           wf_version_id: string
         }
         Insert: {
+          attempt_no?: number
           end_time?: string | null
+          error?: Json | null
           extras?: Json | null
           files?: string[] | null
           metadata?: Json | null
@@ -357,12 +362,15 @@ export type Database = {
           start_time?: string
           status?: Database["public"]["Enums"]["InvocationStatus"]
           summary?: string | null
+          updated_at?: string
           usd_cost?: number
           wf_invocation_id?: string | null
           wf_version_id: string
         }
         Update: {
+          attempt_no?: number
           end_time?: string | null
+          error?: Json | null
           extras?: Json | null
           files?: string[] | null
           metadata?: Json | null
@@ -374,6 +382,7 @@ export type Database = {
           start_time?: string
           status?: Database["public"]["Enums"]["InvocationStatus"]
           summary?: string | null
+          updated_at?: string
           usd_cost?: number
           wf_invocation_id?: string | null
           wf_version_id?: string
@@ -746,7 +755,7 @@ export type Database = {
     Enums: {
       EvolutionRunStatus: "running" | "completed" | "failed" | "interrupted"
       FitnessMetric: "success_rate" | "usd_cost" | "custom"
-      InvocationStatus: "running" | "completed" | "failed" | "rolled_back"
+      InvocationStatus: "running" | "completed" | "failed" | "rolled_back" | "queued"
       MessageRole:
         | "delegation"
         | "result"
@@ -883,7 +892,7 @@ const _Constants = {
     Enums: {
       EvolutionRunStatus: ["running", "completed", "failed", "interrupted"],
       FitnessMetric: ["success_rate", "usd_cost", "custom"],
-      InvocationStatus: ["running", "completed", "failed", "rolled_back"],
+      InvocationStatus: ["running", "completed", "failed", "rolled_back", "queued"],
       MessageRole: [
         "delegation",
         "result",

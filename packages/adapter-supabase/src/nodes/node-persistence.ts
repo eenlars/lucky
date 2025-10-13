@@ -4,10 +4,89 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { InvalidInputError, NodeVersionMissingError, PersistenceError } from "../errors/domain-errors"
-import type { INodePersistence, NodeInvocationData, NodeVersionData } from "../persistence-interface"
+import type {
+  INodePersistence,
+  NodeInvocationData,
+  NodeInvocationEndData,
+  NodeInvocationStartData,
+  NodeVersionData,
+} from "../persistence-interface"
 
 export class SupabaseNodePersistence implements INodePersistence {
   constructor(private client: SupabaseClient) {}
+
+  /**
+   * Creates a NodeInvocation record at the start of node execution.
+   * Sets status='running' to enable real-time progress tracking.
+   *
+   * @param data - Node invocation start data (nodeId, model, timestamps, etc.)
+   * @returns The generated nodeInvocationId for later updates
+   */
+  async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
+    const insertable = {
+      node_id: data.nodeId,
+      wf_invocation_id: data.workflowInvocationId,
+      wf_version_id: data.workflowVersionId,
+      start_time: data.startTime,
+      model: data.model,
+      status: "running" as const,
+      attempt_no: data.attemptNo ?? 1,
+      output: null,
+      summary: "",
+      usd_cost: 0,
+      extras: {},
+      metadata: {},
+    }
+
+    const { data: result, error } = await this.client
+      .from("NodeInvocation")
+      .insert(insertable)
+      .select("node_invocation_id")
+      .single()
+
+    if (error) {
+      throw new PersistenceError(`Failed to create node invocation start: ${error.message}`, error)
+    }
+
+    return { nodeInvocationId: result.node_invocation_id }
+  }
+
+  /**
+   * Updates an existing NodeInvocation record at the end of node execution.
+   * Sets status='completed' or 'failed' and records final output, cost, and timing.
+   *
+   * @param data - Node invocation end data (status, output, summary, cost, etc.)
+   */
+  async updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void> {
+    const extras: Record<string, unknown> = {}
+    if (data.agentSteps) {
+      extras.agentSteps = data.agentSteps
+    }
+    if (data.updatedMemory) {
+      extras.updatedMemory = data.updatedMemory
+    }
+
+    const updateData = {
+      end_time: data.endTime,
+      status: data.status,
+      output: data.output,
+      summary: data.summary,
+      usd_cost: data.usdCost,
+      files: data.files,
+      error: data.error,
+      extras,
+      updated_at: new Date().toISOString(),
+    }
+
+    const { error } = await this.client
+      .from("NodeInvocation")
+      .update(updateData)
+      .eq("node_invocation_id", data.nodeInvocationId)
+
+    if (error) {
+      throw new PersistenceError(`Failed to update node invocation end: ${error.message}`, error)
+    }
+  }
 
   async saveNodeVersion(data: NodeVersionData): Promise<{ nodeVersionId: string }> {
     const { nodeId, workflowVersionId, config } = data

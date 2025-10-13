@@ -265,18 +265,39 @@ export async function queueRun({
 
     // Emit node_started event
     const nodeStartTime = Date.now()
-    await safeEmit(
-      onProgress,
-      {
-        type: "node_started",
-        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
-        nodeId: sanitizeEventText(targetNode.nodeId),
-        nodeName: sanitizeEventText(targetNode.nodeId),
-        timestamp: nodeStartTime,
-        workflowInvocationId,
-      },
-      "queueRun",
-    )
+    const nodeStartTimeISO = new Date().toISOString()
+    const nodeStartedEvent = {
+      type: "node_started" as const,
+      schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
+      nodeId: sanitizeEventText(targetNode.nodeId),
+      nodeName: sanitizeEventText(targetNode.nodeId),
+      timestamp: nodeStartTime,
+      workflowInvocationId,
+    }
+    await safeEmit(onProgress, nodeStartedEvent, "queueRun")
+
+    // Create NodeInvocation record with status='running' for real-time tracking
+    // This enables SSE clients to poll for workflow progress via updated_at
+    let currentNodeInvocationId: string | undefined
+    if (persistence) {
+      try {
+        const result = await persistence.nodes.createNodeInvocationStart({
+          nodeId: targetNode.nodeId,
+          workflowInvocationId,
+          workflowVersionId: _workflowVersionId,
+          startTime: nodeStartTimeISO,
+          model: targetNode.toConfig().modelName,
+          attemptNo: 1, // First attempt (retries not yet implemented)
+        })
+        currentNodeInvocationId = result.nodeInvocationId
+      } catch (persistenceError) {
+        // Log but don't fail workflow if persistence fails
+        lgg.error(
+          "[queueRun] Failed to create node invocation start:",
+          persistenceError instanceof Error ? persistenceError.message : String(persistenceError),
+        )
+      }
+    }
 
     const {
       nodeInvocationFinalOutput,
@@ -292,11 +313,12 @@ export async function queueRun({
     } = await targetNode.invoke({
       ...toolContext,
       workflowMessageIncoming: currentMessage,
-      startTime: new Date().toISOString(),
+      startTime: nodeStartTimeISO,
       nodeConfig: targetNode.toConfig(),
       nodeMemory: targetNode.getMemory(),
-      workflowConfig: workflow.getConfig(), // Added for hierarchical role inference
-      persistence: workflow.getPersistence(), // Pass persistence from workflow
+      workflowConfig: workflow.getConfig(),
+      persistence: workflow.getPersistence(),
+      nodeInvocationId: currentNodeInvocationId, // Pass invocation ID for lifecycle tracking
     })
 
     lastNodeOutput = nodeInvocationFinalOutput
@@ -315,35 +337,29 @@ export async function queueRun({
           ? sanitizeEventText(error.message.replace(/\/[^\s]+/g, "[path]")) // Remove file paths
           : "Node execution failed"
 
-      await safeEmit(
-        onProgress,
-        {
-          type: "node_failed",
-          schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
-          nodeId: sanitizeEventText(targetNode.nodeId),
-          nodeName: sanitizeEventText(targetNode.nodeId),
-          error: sanitizedError,
-          timestamp: nodeEndTime,
-          workflowInvocationId,
-        },
-        "queueRun",
-      )
+      const nodeFailedEvent = {
+        type: "node_failed" as const,
+        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
+        nodeId: sanitizeEventText(targetNode.nodeId),
+        nodeName: sanitizeEventText(targetNode.nodeId),
+        error: sanitizedError,
+        timestamp: nodeEndTime,
+        workflowInvocationId,
+      }
+      await safeEmit(onProgress, nodeFailedEvent, "queueRun")
     } else {
-      await safeEmit(
-        onProgress,
-        {
-          type: "node_completed",
-          schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
-          nodeId: sanitizeEventText(targetNode.nodeId),
-          nodeName: sanitizeEventText(targetNode.nodeId),
-          output: truncateOutput(nodeInvocationFinalOutput, 200),
-          durationMs: nodeEndTime - nodeStartTime,
-          costUsd: usdCost,
-          timestamp: nodeEndTime,
-          workflowInvocationId,
-        },
-        "queueRun",
-      )
+      const nodeCompletedEvent = {
+        type: "node_completed" as const,
+        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION as 1,
+        nodeId: sanitizeEventText(targetNode.nodeId),
+        nodeName: sanitizeEventText(targetNode.nodeId),
+        output: truncateOutput(nodeInvocationFinalOutput, 200),
+        durationMs: nodeEndTime - nodeStartTime,
+        costUsd: usdCost,
+        timestamp: nodeEndTime,
+        workflowInvocationId,
+      }
+      await safeEmit(onProgress, nodeCompletedEvent, "queueRun")
     }
 
     if (error) {

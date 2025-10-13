@@ -19,13 +19,32 @@ export interface NodeInvocationCallContext extends NodeInvocationCallContextBase
   nodeConfig: WorkflowNodeConfig
   nodeMemory: NodeMemory
 
-  // workflowConfig is used for hierarchical role inference
+  /**
+   * Workflow configuration for hierarchical role inference.
+   * Used to validate orchestrator-worker patterns in hierarchical mode.
+   */
   workflowConfig?: WorkflowConfig
 
-  // persistence for database operations
+  /**
+   * Persistence adapter for database operations.
+   * If provided, node execution is persisted to database.
+   */
   persistence?: IPersistence
 
-  //optional
+  /**
+   * NodeInvocation ID for lifecycle tracking (new pattern).
+   * When provided, indicates record already exists with status='running'.
+   * Node handlers should update this record to status='completed'/'failed' at end.
+   */
+  nodeInvocationId?: string
+
+  /**
+   * Skip database persistence for tests or dry-runs.
+   */
   skipDatabasePersistence?: boolean
+
+  /**
+   * Override tool execution strategy (v2 or v3).
+   */
   toolStrategyOverride?: "v2" | "v3"
 }

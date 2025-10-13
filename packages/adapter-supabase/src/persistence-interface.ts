@@ -107,9 +107,46 @@ export interface NodeInvocationData {
   updatedMemory?: Record<string, string>
 }
 
+/**
+ * Data required to create a NodeInvocation record at execution start.
+ * Used for real-time progress tracking (status='running').
+ */
+export interface NodeInvocationStartData {
+  nodeId: string
+  workflowInvocationId: string
+  workflowVersionId: string
+  startTime: string
+  model: string
+  attemptNo?: number // Defaults to 1 (first attempt)
+}
+
+/**
+ * Data required to update a NodeInvocation record at execution end.
+ * Sets final status ('completed' or 'failed') and records results.
+ */
+export interface NodeInvocationEndData {
+  nodeInvocationId: string
+  endTime: string
+  status: "completed" | "failed"
+  output: unknown
+  summary: string
+  usdCost: number
+  agentSteps?: unknown
+  files?: string[]
+  updatedMemory?: Record<string, string>
+  error?: unknown // Set when status='failed'
+}
+
 export interface INodePersistence {
   saveNodeVersion(data: NodeVersionData): Promise<{ nodeVersionId: string }>
+
+  // Lifecycle methods (new pattern)
+  createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }>
+  updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void>
+
+  // Legacy method (keep for backwards compat)
   saveNodeInvocation(data: NodeInvocationData): Promise<{ nodeInvocationId: string }>
+
   retrieveNodeSummaries(workflowInvocationId: string): Promise<Array<{ nodeId: string; summary: string }>>
   updateNodeMemory(nodeId: string, workflowVersionId: string, memory: Record<string, string>): Promise<void>
 }
