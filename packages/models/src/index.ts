@@ -33,6 +33,7 @@ export type { ProviderInfo } from "./pricing/catalog"
 // Export model lookup utilities
 export {
   findModel,
+  findModelByName,
   getModel,
   isModelActive,
   getActiveModelsByProvider,

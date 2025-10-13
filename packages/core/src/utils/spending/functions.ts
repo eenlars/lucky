@@ -41,7 +41,9 @@ export function getModelV2(model: string, _customProvider?: LuckyProvider): Mode
   if (!modelEntry) {
     const available = getActiveModelIds().slice(0, 20).join(", ")
     console.warn(`getModelV2: Model ${model} not found. Available models (first 20): ${available}`)
-    throw new Error(`getModelV2: Model ${model} not found. Model IDs must be prefixed (e.g., "openai/gpt-4.1-mini")`)
+    throw new Error(
+      `getModelV2: Model ${model} not found. Model IDs must use format "vendor:X;model:Y" (e.g., "vendor:openai;model:gpt-4.1-mini")`,
+    )
   }
 
   // Convert ModelEntry to ModelPricingV2 format for backwards compatibility
