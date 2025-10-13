@@ -4,7 +4,7 @@ import { useSidebar } from "@/contexts/SidebarContext"
 import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/nextjs"
-import { BarChart2, Code, Dna, Home, Menu, Network, Plug, Settings, Sparkles, X } from "lucide-react"
+import { Code, Dna, Home, Menu, Network, Plug, Settings, Sparkles, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -122,14 +122,25 @@ const navigationItems = allNavigationItems
     if (process.env.NODE_ENV !== "development" && item.enabled === false) {
       return false
     }
+    // In production, hide the home icon entirely
+    if (process.env.NODE_ENV === "production" && item.type === "home") {
+      return false
+    }
     return true
   })
   .map(item => ({
     ...item,
     // Also filter submenus in production
     submenus: item.submenus?.filter(submenu => {
+      // Hide explicitly disabled submenus
       if (process.env.NODE_ENV !== "development" && submenu.enabled === false) {
         return false
+      }
+      // Hide Developers and Payment entries in production
+      if (process.env.NODE_ENV === "production") {
+        if (submenu.type === "developer-tools" || submenu.type === "settings-payment") {
+          return false
+        }
       }
       return true
     }),

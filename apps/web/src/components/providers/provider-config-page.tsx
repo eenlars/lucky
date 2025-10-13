@@ -2,7 +2,6 @@
 
 import { ModelGrid } from "@/components/providers/model-selection/ModelGrid"
 import { ProviderConfigSkeleton } from "@/components/providers/provider-skeleton"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
@@ -11,18 +10,7 @@ import { logException } from "@/lib/error-logger"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
-import {
-  AlertCircle,
-  ArrowLeft,
-  CheckCircle2,
-  Copy,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Loader2,
-  RefreshCw,
-  Save,
-} from "lucide-react"
+import { AlertCircle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Eye, EyeOff, Loader2, RefreshCw } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"

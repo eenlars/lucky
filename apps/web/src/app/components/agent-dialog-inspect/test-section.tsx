@@ -74,7 +74,7 @@ export function TestSection({ node }: TestSectionProps) {
     } finally {
       setIsRunning(false)
     }
-  }, [testInput, node.id, isRunning])
+  }, [testInput, isRunning])
 
   const handleExampleClick = useCallback(
     (example: string) => {

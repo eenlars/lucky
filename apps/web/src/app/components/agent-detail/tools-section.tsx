@@ -34,6 +34,8 @@ export function ToolsSection({ node }: ToolsSectionProps) {
   // FIX: Single toggle function instead of duplication
   const toggleTool = useCallback(
     (toolName: string, type: "mcp" | "code") => {
+      // Disable all tool toggling when feature flag is off
+      if (!mcpToolsEnabled) return
       if (type === "mcp") {
         const current = node.data.mcpTools || []
         const newTools = current.includes(toolName as MCPToolName)
@@ -48,12 +50,12 @@ export function ToolsSection({ node }: ToolsSectionProps) {
         updateNode(node.id, { codeTools: newTools })
       }
     },
-    [node.data.mcpTools, node.data.codeTools, node.id, updateNode],
+    [mcpToolsEnabled, node.data.mcpTools, node.data.codeTools, node.id, updateNode],
   )
 
   // FIX: Only add listener when panel is open AND tools expanded
   useEffect(() => {
-    if (!isToolsExpanded) return
+    if (!isToolsExpanded || !mcpToolsEnabled) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!e.altKey) return
@@ -180,19 +182,33 @@ export function ToolsSection({ node }: ToolsSectionProps) {
           {/* Code Tools */}
           <div className="space-y-2">
             <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400">Code & Files</h4>
-            <div className="space-y-0.5">
-              {ACTIVE_CODE_TOOL_NAMES.map((tool, idx) => (
-                <ToolCheckbox
-                  key={tool}
-                  tool={tool}
-                  isSelected={codeTools.includes(tool)}
-                  onToggle={() => toggleTool(tool, "code")}
-                  description={ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
-                  shortcut={ACTIVE_MCP_TOOL_NAMES.length + idx + 1}
-                  variant="green"
-                />
-              ))}
-            </div>
+            {!mcpToolsEnabled ? (
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Lock className="size-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground mb-1">Tools disabled</p>
+                    <p className="text-xs text-muted-foreground">Tools are disabled until the feature is enabled.</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-0.5">
+                {ACTIVE_CODE_TOOL_NAMES.map((tool, idx) => (
+                  <ToolCheckbox
+                    key={tool}
+                    tool={tool}
+                    isSelected={codeTools.includes(tool)}
+                    onToggle={() => toggleTool(tool, "code")}
+                    description={ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[tool] || ""}
+                    shortcut={ACTIVE_MCP_TOOL_NAMES.length + idx + 1}
+                    variant="green"
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

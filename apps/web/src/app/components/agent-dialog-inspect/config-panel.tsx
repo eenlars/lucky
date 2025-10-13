@@ -3,12 +3,12 @@
 import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
+import { useFeatureFlag } from "@/lib/feature-flags"
 import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
 import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
-import type { ModelEntry } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -74,10 +74,10 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
 
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
+  const toolsEnabled = useFeatureFlag("MCP_TOOLS")
 
   // Zustand store for model preferences
-  const { preferences, isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } =
-    useModelPreferencesStore()
+  const { isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
 
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
@@ -158,7 +158,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
     // Otherwise show all catalog models
     return allModels
-  }, [selectedProvider, preferences, getEnabledModels])
+  }, [selectedProvider, getEnabledModels])
 
   // Sync state when node changes
   useEffect(() => {
@@ -194,6 +194,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
   const toggleTool = useCallback(
     (toolName: string, type: "mcp" | "code") => {
+      // Disable all tool toggling when feature flag is off
+      if (!toolsEnabled) return
       if (type === "mcp") {
         const current = node.data.mcpTools || []
         const newTools = current.includes(toolName as MCPToolName)
@@ -208,7 +210,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
         updateNode(node.id, { codeTools: newTools })
       }
     },
-    [node.data.mcpTools, node.data.codeTools, node.id, updateNode],
+    [toolsEnabled, node.data.mcpTools, node.data.codeTools, node.id, updateNode],
   )
 
   const totalTools = mcpTools.length + codeTools.length
@@ -263,8 +265,28 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
       {/* Tools Section - Collapsible */}
       <CollapsibleSection title={`Tools (${totalTools} selected)`} defaultOpen={false}>
+        {!toolsEnabled && (
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
+                  <path d="M12 17a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M17 8V7a5 5 0 10-10 0v1H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2v-9a2 2 0 00-2-2h-2zm-8-1a3 3 0 116 0v1H9V7z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground mb-1">Tools disabled</p>
+                <p className="text-xs text-muted-foreground">Tools are disabled until the feature is enabled.</p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* MCP Tools */}
-        {Object.entries(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).length > 0 && (
+        {toolsEnabled && Object.entries(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION).length > 0 && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">MCP Tools</p>
@@ -321,7 +343,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
         )}
 
         {/* Code Tools */}
-        {Object.entries(ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION).length > 0 && (
+        {toolsEnabled && Object.entries(ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION).length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
