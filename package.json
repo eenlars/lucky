@@ -54,6 +54,13 @@
     "install:ci": "bun install --ignore-scripts"
   },
   "dependencies": {
-    "ioredis": "^5.8.1"
+    "ioredis": "^5.8.1",
+    "ai": "^5.0.68",
+    "@ai-sdk/openai": "^2.0.52",
+    "@ai-sdk/anthropic": "^2.0.27",
+    "@ai-sdk/groq": "^2.0.24",
+    "@ai-sdk/openai-compatible": "^1.0.22",
+    "@openrouter/ai-sdk-provider": "^1.2.0",
+    "secure-json-parse": "^2.7.0"
   }
 }

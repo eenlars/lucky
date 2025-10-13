@@ -4,7 +4,14 @@
     "": {
       "name": "lucky-monorepo",
       "dependencies": {
+        "@ai-sdk/anthropic": "^2.0.27",
+        "@ai-sdk/groq": "^2.0.24",
+        "@ai-sdk/openai": "^2.0.52",
+        "@ai-sdk/openai-compatible": "^1.0.22",
+        "@openrouter/ai-sdk-provider": "^1.2.0",
+        "ai": "^5.0.68",
         "ioredis": "^5.8.1",
+        "secure-json-parse": "^2.7.0",
       },
       "devDependencies": {
         "@biomejs/biome": "1.9.4",
@@ -172,17 +179,13 @@
       "name": "@lucky/core",
       "version": "0.1.0",
       "dependencies": {
-        "@ai-sdk/groq": "^2.0.0",
-        "@ai-sdk/openai": "^2.0.0",
         "@huggingface/hub": "^2.4.0",
         "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
         "@lucky/tools": "workspace:*",
-        "@openrouter/ai-sdk-provider": "^1.2.0",
         "@supabase/supabase-js": "^2.50.5",
         "@t3-oss/env-nextjs": "^0.13.8",
         "@typescript/native-preview": "^7.0.0-dev.20251009.1",
-        "ai": "^5.0.58",
         "bottleneck": "^2.19.5",
         "chalk": "^5.4.1",
         "dotenv": "^17.2.1",
@@ -209,6 +212,12 @@
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^3.2.4",
       },
+      "peerDependencies": {
+        "@ai-sdk/groq": ">=2.0.0",
+        "@ai-sdk/openai": ">=2.0.0",
+        "@openrouter/ai-sdk-provider": ">=1.2.0",
+        "ai": ">=5.0.0",
+      },
     },
     "packages/experiments": {
       "name": "@lucky/experiments",
@@ -217,7 +226,6 @@
         "@lucky/core": "workspace:*",
         "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
-        "ai": "^5.0.58",
         "zod": "^3.25.73",
       },
       "devDependencies": {
@@ -226,6 +234,9 @@
         "vite": "^7.0.6",
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^3.2.4",
+      },
+      "peerDependencies": {
+        "ai": ">=5.0.0",
       },
     },
     "packages/mcp-server": {
@@ -249,13 +260,7 @@
       "name": "@lucky/models",
       "version": "0.1.0",
       "dependencies": {
-        "@ai-sdk/anthropic": "^2.0.27",
-        "@ai-sdk/groq": "^2.0.24",
-        "@ai-sdk/openai": "^2.0.52",
-        "@ai-sdk/openai-compatible": "^1.0.22",
         "@lucky/shared": "workspace:*",
-        "@openrouter/ai-sdk-provider": "^1.2.0",
-        "ai": "^5.0.68",
         "yaml": "^2.3.4",
         "zod": "^3.22.0",
       },
@@ -270,6 +275,11 @@
         "vitest": "^3.2.4",
       },
       "peerDependencies": {
+        "@ai-sdk/anthropic": ">=2.0.0",
+        "@ai-sdk/groq": ">=2.0.0",
+        "@ai-sdk/openai": ">=2.0.0",
+        "@ai-sdk/openai-compatible": ">=1.0.0",
+        "@openrouter/ai-sdk-provider": ">=1.2.0",
         "ai": ">=5.0.0",
       },
     },
@@ -303,7 +313,6 @@
       "dependencies": {
         "@lucky/models": "workspace:*",
         "@lucky/shared": "workspace:*",
-        "ai": "^5.0.58",
         "zod": "^3.25.73",
       },
       "devDependencies": {
@@ -314,6 +323,9 @@
         "tsup": "8.5.0",
         "typescript": "^5.8.3",
         "vitest": "^3.2.4",
+      },
+      "peerDependencies": {
+        "ai": ">=5.0.0",
       },
     },
   },
@@ -2816,6 +2828,8 @@
     "saxes": ["saxes@6.0.0", "", { "dependencies": { "xmlchars": "^2.2.0" } }, "sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA=="],
 
     "scheduler": ["scheduler@0.27.0", "", {}, "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q=="],
+
+    "secure-json-parse": ["secure-json-parse@2.7.0", "", {}, "sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw=="],
 
     "semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
