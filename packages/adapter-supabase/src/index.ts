@@ -22,6 +22,8 @@ export type {
   IPersistence,
   MessageData,
   NodeInvocationData,
+  NodeInvocationEndData,
+  NodeInvocationStartData,
   NodeVersionData,
   PopulationStats,
   RunData,

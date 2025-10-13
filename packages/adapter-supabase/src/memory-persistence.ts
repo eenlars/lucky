@@ -15,6 +15,8 @@ import type {
   IPersistence,
   MessageData,
   NodeInvocationData,
+  NodeInvocationEndData,
+  NodeInvocationStartData,
   NodeVersionData,
   PopulationStats,
   RunData,
@@ -127,11 +129,46 @@ class InMemoryNodePersistence implements INodePersistence {
     return { nodeVersionId }
   }
 
+  async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
+    const nodeInvocationId = genId("node_inv")
+    this.nodeInvocations.set(nodeInvocationId, {
+      node_invocation_id: nodeInvocationId,
+      ...data,
+      status: "running",
+      end_time: null,
+      output: null,
+      summary: "",
+      usd_cost: 0,
+      updated_at: new Date().toISOString(),
+    })
+    return { nodeInvocationId }
+  }
+
+  async updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void> {
+    const invocation = this.nodeInvocations.get(data.nodeInvocationId)
+    if (invocation) {
+      Object.assign(invocation, {
+        end_time: data.endTime,
+        status: data.status,
+        output: data.output,
+        summary: data.summary,
+        usd_cost: data.usdCost,
+        agent_steps: data.agentSteps,
+        files: data.files,
+        updated_memory: data.updatedMemory,
+        error: data.error,
+        updated_at: new Date().toISOString(),
+      })
+    }
+  }
+
   async saveNodeInvocation(data: NodeInvocationData): Promise<{ nodeInvocationId: string }> {
     const nodeInvocationId = genId("node_inv")
     this.nodeInvocations.set(nodeInvocationId, {
       node_invocation_id: nodeInvocationId,
       ...data,
+      status: "completed",
+      updated_at: new Date().toISOString(),
     })
     return { nodeInvocationId }
   }

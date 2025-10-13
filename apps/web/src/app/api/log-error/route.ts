@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       severity: dbSeverity,
     })
 
-    const supabase = await createClient()
+    const supabase = await createClient({ keyType: "service" })
 
     // Note: For atomic upsert with count increment, apply migration:
     // packages/shared/migrations/0001_app_upsert_error.sql

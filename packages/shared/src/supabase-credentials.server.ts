@@ -4,6 +4,14 @@
  * Use import from '@lucky/shared/supabase-credentials.server'
  */
 
+// Runtime guard: Fail immediately if imported in browser context
+if (typeof window !== "undefined") {
+  throw new Error(
+    "[SECURITY] supabase-credentials.server.ts cannot be imported in client-side code. " +
+      "This file contains server-only logic and would expose sensitive credentials.",
+  )
+}
+
 import { supabaseServer } from "./env-models"
 
 export type SupabaseKeyType = "anon" | "service"

@@ -88,6 +88,10 @@ export { isDelegationPayload, isSequentialPayload, extractTextFromPayload } from
 // Workflow types
 export type { WorkflowFile, OutputSchema } from "./types/workflow"
 
+// Workflow contracts
+export type { WorkflowConfig, WorkflowNodeConfig, HandoffType } from "./contracts/workflow"
+export { WorkflowConfigSchema, WorkflowNodeConfigSchema, HandoffTypeSchema } from "./contracts/workflow"
+
 // Provider contracts
 export type {
   ProviderKeyMapping,
