@@ -61,11 +61,11 @@ function WorkflowNode({
 
   const _IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
-  // show raw model id plus provider (e.g., openai/gpt-4.1-mini + openrouter)
+  // show raw model id (e.g., openai/gpt-4o-mini)
   const displayModelName = (() => {
     const full = data?.modelName || ""
     if (!full) return null
-    return `${full} + openrouter`
+    return full
   })()
 
   const _totalTools = (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
