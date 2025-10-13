@@ -1,6 +1,6 @@
 import { logException } from "@/lib/error-logger"
 import { getProviderInfo } from "@lucky/models"
-import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
+import { type ProviderAvailability, resolveProviderAvailability } from "@lucky/shared/contracts/config"
 import type { LucideIcon } from "lucide-react"
 import { Bot } from "lucide-react"
 
@@ -55,15 +55,22 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
 /**
  * Get provider configurations dynamically from MODEL_CATALOG
  * This merges static metadata with dynamic model counts from the catalog
- * and disabled state from PROVIDER_AVAILABILITY
+ * and disabled state from provider availability (defaults + runtime overrides)
+ *
+ * @param availabilityOverrides - Optional runtime provider availability overrides.
+ *                                 When provided, these are merged with defaults via resolveProviderAvailability().
+ *                                 When omitted, uses default availability (all providers enabled).
  */
-export function getProviderConfigs(): Record<string, ProviderConfig> {
+export function getProviderConfigs(
+  availabilityOverrides?: Partial<ProviderAvailability> | null,
+): Record<string, ProviderConfig> {
   const providerInfo = getProviderInfo()
+  const availability = resolveProviderAvailability(availabilityOverrides)
   const configs: Record<string, ProviderConfig> = {}
 
   for (const info of providerInfo) {
     const metadata = PROVIDER_METADATA[info.name]
-    const isDisabled = !PROVIDER_AVAILABILITY[info.name as keyof typeof PROVIDER_AVAILABILITY]
+    const isDisabled = !availability[info.name as keyof typeof availability]
 
     if (metadata) {
       configs[info.name] = {
@@ -93,8 +100,33 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
 }
 
 /**
- * Legacy export for backwards compatibility
- * @deprecated Use getProviderConfigs() instead for dynamic provider detection
+ * Get provider configurations with runtime availability from core config.
+ * Use this in server-side contexts (API routes, server components) where core config is available.
+ *
+ * @example
+ * ```ts
+ * // In an API route
+ * import { getProviderConfigsFromCore } from '@/lib/providers/provider-utils'
+ * const configs = getProviderConfigsFromCore()
+ * ```
+ */
+export function getProviderConfigsFromCore(): Record<string, ProviderConfig> {
+  try {
+    // Dynamically import to avoid issues in client-only contexts
+    const { getCoreConfig } = require("@lucky/core/core-config/coreConfig")
+    const coreConfig = getCoreConfig()
+    return getProviderConfigs(coreConfig.models.availability)
+  } catch {
+    // Fallback to defaults if core config is not available (e.g., client-side)
+    return getProviderConfigs()
+  }
+}
+
+/**
+ * Legacy export for backwards compatibility.
+ * Uses default availability (all providers enabled).
+ *
+ * @deprecated Use getProviderConfigs() with availability overrides or getProviderConfigsFromCore() instead
  */
 export const PROVIDER_CONFIGS = getProviderConfigs()
 
