@@ -5,6 +5,7 @@
  */
 
 import { ConfigLoader } from "./config/loader"
+import { findModelByName } from "./pricing/model-lookup"
 import { ProviderRegistry } from "./providers/registry"
 import type { AiSdkModel, ExecutionContext, ModelSpec, ModelsConfig, ProviderConfig } from "./types"
 import { modelsConfigSchema, providerConfigSchema } from "./types/schemas"
@@ -83,9 +84,13 @@ export class Models {
   /**
    * Resolve a model spec to a concrete ModelSpec
    * Supports:
-   * - "provider/model" -> direct model
+   * - "gpt-4o-mini" -> lookup in MODEL_CATALOG
+   * - "anthropic/claude-sonnet-4" -> lookup in MODEL_CATALOG (uses catalog's provider field!)
    * - "tier:name" -> use tier config
    * - "user:userId:experiment" -> use user config
+   *
+   * CRITICAL: Never parse model name strings to determine provider.
+   * Always use MODEL_CATALOG's provider field as source of truth.
    */
   private async resolveSpec(spec: string | ModelSpec, context?: ExecutionContext): Promise<ModelSpec> {
     // If already a ModelSpec, return it
@@ -105,7 +110,21 @@ export class Models {
       return this.resolveUserConfig(userId || context.userId, experiment)
     }
 
-    // Handle direct provider/model format
+    // Look up model in MODEL_CATALOG by API-format model name
+    // This is the CORRECT way to resolve model names:
+    // - "gpt-4o-mini" -> { provider: "openai", model: "gpt-4o-mini" }
+    // - "anthropic/claude-sonnet-4" -> { provider: "openrouter", model: "anthropic/claude-sonnet-4" }
+    // - "openai/gpt-oss-20b" -> { provider: "groq", model: "openai/gpt-oss-20b" }
+    const catalogEntry = findModelByName(spec)
+    if (catalogEntry) {
+      return {
+        provider: catalogEntry.provider,
+        model: catalogEntry.model,
+      }
+    }
+
+    // Fallback: If not in catalog and contains "/", try parsing
+    // This maintains backward compatibility for models not yet in catalog
     if (spec.includes("/")) {
       const [provider, model] = spec.split("/", 2)
       return { provider, model }
@@ -116,7 +135,7 @@ export class Models {
       return this.resolveTier(this.config.defaultTier)
     }
 
-    throw new Error(`Cannot resolve model spec: ${spec}`)
+    throw new Error(`Cannot resolve model spec: ${spec}. Not found in MODEL_CATALOG and no default tier configured.`)
   }
 
   private resolveTier(tierName: string): ModelSpec {

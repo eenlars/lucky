@@ -337,12 +337,20 @@ const providersV2Data = {
 }
 
 // Cast to lose all literal type information - prevents TypeScript memory issues
+/**
+ * @deprecated This data structure is deprecated. Use MODEL_CATALOG from @lucky/models instead.
+ * providersV2 uses unprefixed model keys (e.g., "gpt-4.1-mini") while MODEL_CATALOG uses
+ * prefixed IDs (e.g., "openai/gpt-4.1-mini"), causing validation/execution mismatches.
+ * Use findModel() or getModel() from @lucky/models for unified lookups.
+ * Will be removed in v2.0.
+ */
 export const providersV2 = providersV2Data as Record<LuckyProvider, Record<string, ModelPricingV2>>
 
 /**
  * Get all active models from a specific provider (pure function, no runtime deps)
  * @param provider - The provider to get active models from
  * @returns Array of active model names
+ * @deprecated Use getActiveModelsByProvider() from @lucky/models instead
  */
 export function getActiveModelNamesFromProvider(provider: LuckyProvider): string[] {
   const models = providersV2[provider]
@@ -354,6 +362,7 @@ export function getActiveModelNamesFromProvider(provider: LuckyProvider): string
 /**
  * Get all active models across all providers (pure function)
  * @returns Array of all active model names
+ * @deprecated Use getActiveModelIds() from @lucky/models instead
  */
 export function getAllActiveModelNames(): string[] {
   const providers = Object.keys(providersV2) as LuckyProvider[]
@@ -363,11 +372,13 @@ export function getAllActiveModelNames(): string[] {
 /**
  * Pure computed constant: All active model names from providersV2
  * Note: This is computed at module load time and doesn't consider runtime config
+ * @deprecated Use getActiveModelIds() from @lucky/models instead
  */
 export const ACTIVE_MODEL_NAMES_PURE = getAllActiveModelNames() as string[]
 
 /**
  * Get active models with their metadata info
+ * @deprecated Use MODEL_CATALOG from @lucky/models for model metadata
  */
 export function getActiveModelsWithInfo(): string {
   const results: string[] = []
@@ -382,4 +393,7 @@ export function getActiveModelsWithInfo(): string {
   return results.join(";")
 }
 
+/**
+ * @deprecated Use MODEL_CATALOG from @lucky/models for model metadata
+ */
 export const ACTIVE_MODEL_NAMES_WITH_INFO_PURE = getActiveModelsWithInfo()

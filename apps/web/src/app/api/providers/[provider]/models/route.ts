@@ -71,12 +71,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
             return {
               // ⚠️ CRITICAL: Use catalogEntry.model (NOT .id) as the ID!
               //
-              // WHY: catalog.id is ALWAYS prefixed ("openai/gpt-5-mini")
+              // WHY: catalog.id uses vendor:X;model:Y format ("vendor:openai;model:gpt-5-mini")
               //      catalog.model contains the provider-specific format:
               //      - OpenAI API expects "gpt-5-mini" (UNPREFIXED)
               //      - OpenRouter API expects "openai/gpt-5-mini" (PREFIXED)
               //
-              // WRONG: id: catalogEntry.id ❌ Would store "openai/gpt-5-mini" for OpenAI
+              // WRONG: id: catalogEntry.id ❌ Would store "vendor:openai;model:gpt-5-mini"
               // RIGHT: id: catalogEntry.model ✅ Stores "gpt-5-mini" for OpenAI
               //
               // This ID gets saved to user preferences and sent to provider APIs!
