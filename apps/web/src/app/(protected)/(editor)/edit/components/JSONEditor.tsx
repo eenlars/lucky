@@ -120,18 +120,25 @@ export default function JSONEditor({ workflowVersion, initialContent, onContentC
       const verificationResult = await verifyWorkflowWithAPI(workflow)
       setVerificationResult(verificationResult)
       if (!verificationResult.isValid) {
-        showToast.error.validation(`Validation failed: ${verificationResult.errors[0]}`)
+        const errorCount = verificationResult.errors?.length || 0
+        const firstError = verificationResult.errors?.[0] || "Validation failed"
+        const errorMsg =
+          errorCount > 1
+            ? `${errorCount} validation issues found. First: ${firstError}`
+            : `Validation failed: ${firstError}`
+        showToast.error.validation(errorMsg)
       }
     } catch (error) {
       const errorResult = createErrorResult(error)
       setVerificationResult(errorResult)
-      showToast.error.validation(errorResult.errors[0])
+      const errorMsg = errorResult.errors?.[0] || "Unknown verification error"
+      showToast.error.validation(errorMsg)
     } finally {
       setIsVerifying(false)
     }
   }, [workflowJSON])
 
-  const verifyWorkflowWithAPI = async (workflow: any) => {
+  const verifyWorkflowWithAPI = async (workflow: any): Promise<{ isValid: boolean; errors: string[] }> => {
     const response = await fetch("/api/workflow/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -142,7 +149,25 @@ export default function JSONEditor({ workflowVersion, initialContent, onContentC
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    return response.json()
+    const jsonRpcResponse = await response.json()
+
+    // Handle JSON-RPC error response
+    if (jsonRpcResponse.error) {
+      const data = jsonRpcResponse.error.data
+      return {
+        isValid: false,
+        errors: Array.isArray(data?.errors) ? data.errors : [jsonRpcResponse.error.message || "Verification failed"],
+      }
+    }
+
+    // Handle JSON-RPC success response
+    const output = jsonRpcResponse.result?.output || jsonRpcResponse
+
+    // Ensure the response has the expected shape
+    return {
+      isValid: output.isValid ?? true,
+      errors: Array.isArray(output.errors) ? output.errors : [],
+    }
   }
 
   const createErrorResult = (error: unknown) => ({
