@@ -72,25 +72,17 @@ export const ProviderAvailabilitySchema = z.object({
 
 export type ProviderAvailability = z.infer<typeof ProviderAvailabilitySchema>
 
-export const DEFAULT_PROVIDER_AVAILABILITY: ProviderAvailability = ProviderAvailabilitySchema.parse({})
-
-/**
- * Backwards-compatible export. Prefer resolveProviderAvailability() for overrides.
- */
-export const PROVIDER_AVAILABILITY = DEFAULT_PROVIDER_AVAILABILITY
-
-export function resolveProviderAvailability(overrides?: Partial<ProviderAvailability> | null): ProviderAvailability {
-  if (!overrides || Object.keys(overrides).length === 0) {
-    return DEFAULT_PROVIDER_AVAILABILITY
-  }
-
-  return ProviderAvailabilitySchema.parse({
-    ...DEFAULT_PROVIDER_AVAILABILITY,
-    ...overrides,
-  })
-}
-
-export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
+export const ModelDefaultsSchema = z.object({
+  summary: z.string().default("gpt-5-nano"),
+  nano: z.string().default("gpt-5-nano"),
+  low: z.string().default("gpt-5-mini"),
+  medium: z.string().default("gpt-5"),
+  high: z.string().default("gpt-5"),
+  default: z.string().default("gpt-5-nano"),
+  fitness: z.string().default("gpt-5-nano"),
+  reasoning: z.string().default("gpt-5"),
+  fallback: z.string().default("gpt-5-nano"),
+})
 
 export const ModelsConfigSchema = z.object({
   provider: ModelProviderSchema,

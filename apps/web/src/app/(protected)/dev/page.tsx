@@ -31,7 +31,7 @@ import {
   Zap,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 interface StoreInspector {
   id: string
@@ -90,73 +90,76 @@ export default function DevPage() {
     }
   }, [router])
 
-  // Define all stores to inspect
-  const stores: StoreInspector[] = [
-    {
-      id: "workflow",
-      name: "Workflow Store",
-      description: "Workflows & state",
-      icon: <Network className="size-4" />,
-      useStore: useWorkflowStore,
-      getSnapshot: () => useWorkflowStore.getState(),
-    },
-    {
-      id: "model-preferences",
-      name: "Model Preferences",
-      description: "Model settings",
-      icon: <Settings className="size-4" />,
-      useStore: useModelPreferencesStore,
-      getSnapshot: () => useModelPreferencesStore.getState(),
-    },
-    {
-      id: "run-config",
-      name: "Run Config",
-      description: "Execution config",
-      icon: <Play className="size-4" />,
-      useStore: useRunConfigStore,
-      getSnapshot: () => useRunConfigStore.getState(),
-    },
-    {
-      id: "profile",
-      name: "Profile Store",
-      description: "User data",
-      icon: <User className="size-4" />,
-      useStore: useProfileStore,
-      getSnapshot: () => useProfileStore.getState(),
-    },
-    {
-      id: "mcp-config",
-      name: "MCP Config",
-      description: "Tool config",
-      icon: <Plug className="size-4" />,
-      useStore: useMCPConfigStore,
-      getSnapshot: () => useMCPConfigStore.getState(),
-    },
-    {
-      id: "evolution-runs",
-      name: "Evolution Runs",
-      description: "Run history",
-      icon: <History className="size-4" />,
-      useStore: useEvolutionRunsStore,
-      getSnapshot: () => useEvolutionRunsStore.getState(),
-    },
-    {
-      id: "evolution-ui",
-      name: "Evolution UI",
-      description: "UI state",
-      icon: <TrendingUp className="size-4" />,
-      useStore: useEvolutionUIStore,
-      getSnapshot: () => useEvolutionUIStore.getState(),
-    },
-    {
-      id: "connectors-ui",
-      name: "Connectors UI",
-      description: "UI state",
-      icon: <Layout className="size-4" />,
-      useStore: useConnectorsUIStore,
-      getSnapshot: () => useConnectorsUIStore.getState(),
-    },
-  ]
+  // Define all stores to inspect (memoized to avoid changing deps every render)
+  const stores: StoreInspector[] = useMemo(
+    () => [
+      {
+        id: "workflow",
+        name: "Workflow Store",
+        description: "Workflows & state",
+        icon: <Network className="size-4" />,
+        useStore: useWorkflowStore,
+        getSnapshot: () => useWorkflowStore.getState(),
+      },
+      {
+        id: "model-preferences",
+        name: "Model Preferences",
+        description: "Model settings",
+        icon: <Settings className="size-4" />,
+        useStore: useModelPreferencesStore,
+        getSnapshot: () => useModelPreferencesStore.getState(),
+      },
+      {
+        id: "run-config",
+        name: "Run Config",
+        description: "Execution config",
+        icon: <Play className="size-4" />,
+        useStore: useRunConfigStore,
+        getSnapshot: () => useRunConfigStore.getState(),
+      },
+      {
+        id: "profile",
+        name: "Profile Store",
+        description: "User data",
+        icon: <User className="size-4" />,
+        useStore: useProfileStore,
+        getSnapshot: () => useProfileStore.getState(),
+      },
+      {
+        id: "mcp-config",
+        name: "MCP Config",
+        description: "Tool config",
+        icon: <Plug className="size-4" />,
+        useStore: useMCPConfigStore,
+        getSnapshot: () => useMCPConfigStore.getState(),
+      },
+      {
+        id: "evolution-runs",
+        name: "Evolution Runs",
+        description: "Run history",
+        icon: <History className="size-4" />,
+        useStore: useEvolutionRunsStore,
+        getSnapshot: () => useEvolutionRunsStore.getState(),
+      },
+      {
+        id: "evolution-ui",
+        name: "Evolution UI",
+        description: "UI state",
+        icon: <TrendingUp className="size-4" />,
+        useStore: useEvolutionUIStore,
+        getSnapshot: () => useEvolutionUIStore.getState(),
+      },
+      {
+        id: "connectors-ui",
+        name: "Connectors UI",
+        description: "UI state",
+        icon: <Layout className="size-4" />,
+        useStore: useConnectorsUIStore,
+        getSnapshot: () => useConnectorsUIStore.getState(),
+      },
+    ],
+    [],
+  )
 
   // Set initial store
   useEffect(() => {

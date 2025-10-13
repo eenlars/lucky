@@ -69,10 +69,9 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
     set({ isCancelling: true })
 
     try {
-      const response = await fetch("/api/workflow/cancel", {
+      const response = await fetch(`/api/workflow/cancel/${invocationId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invocationId }),
       })
 
       // API always returns 202, check status in body

@@ -153,6 +153,35 @@ export {
   WORKFLOW_PROGRESS_SCHEMA_VERSION,
 } from "./contracts/workflow-progress"
 
+// MCP Connectors contracts
+export type {
+  Publisher,
+  Tag,
+  Tool,
+  Server,
+  ServerVersion,
+  Connector,
+  CreateServer,
+  CreateTool,
+  CreateTag,
+  CreatePublisher,
+} from "./contracts/mcp"
+export {
+  publisherSchema,
+  tagSchema,
+  toolSchema,
+  serverSchema,
+  serverVersionSchema,
+  connectorSchema,
+  createServerSchema,
+  createToolSchema,
+  createTagSchema,
+  createPublisherSchema,
+  validateConnector,
+  validateConnectorSafe,
+  validateMockConnectors,
+} from "./contracts/mcp"
+
 // Extended app database types for custom functions
 export type {
   UpsertErrorParams,

@@ -3,10 +3,22 @@
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
 import { ChatInterface } from "@/features/chat-interface/ChatInterface"
 import { Sparkles } from "lucide-react"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function HomePage() {
+  const router = useRouter()
   const [hasStartedChat, setHasStartedChat] = useState(false)
+  // In production, redirect home to the editor
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") {
+      router.replace("/edit")
+    }
+  }, [router])
+
+  if (process.env.NODE_ENV === "production") {
+    return null
+  }
 
   const handleSendMessage = (message: string) => {
     // Mark that chat has started (hide demo button)

@@ -38,5 +38,10 @@ export function createStandaloneClient(useServiceRole = false) {
     throw new Error(`Missing ${requiredVar} environment variable.`)
   }
 
-  return createClient<Database>(url, key)
+  return createClient<Database>(url, key, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  })
 }

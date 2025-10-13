@@ -11,8 +11,10 @@
     "@lucky/core": "workspace:*",
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
-    "ai": "^5.0.58",
     "zod": "^3.25.73"
+  },
+  "peerDependencies": {
+    "ai": ">=5.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.2.0",

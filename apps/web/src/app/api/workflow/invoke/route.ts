@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const startedAt = new Date().toISOString()
 
   // Initialize unsubscribe as no-op, will be replaced with real function if subscription succeeds
-  const unsubscribe: () => Promise<void> = async () => {}
+  let unsubscribe: () => Promise<void> = async () => {}
 
   try {
     const body = await req.json()
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     // Subscribe to Redis pub/sub for distributed cancellation
     // When cancel signal arrives from another server, trigger local abort controller
-    const unsubscribe = await subscribeToCancellation(requestId, () => {
+    unsubscribe = await subscribeToCancellation(requestId, () => {
       console.log(`[workflow/invoke] Received Redis cancel signal for ${requestId}`)
       const entry = activeWorkflows.get(requestId)
       if (entry) {
@@ -136,6 +136,19 @@ export async function POST(req: NextRequest) {
     console.log("[workflow/invoke] Principal auth_method:", principal.auth_method)
     console.log("[workflow/invoke] Principal clerk_id:", principal.clerk_id)
 
+    // SECURITY: UI users (session auth) should NEVER use filename parameter
+    // Only local development (api_key auth) should load from filesystem
+    if (principal.auth_method === "session" && input.filename) {
+      console.error("[workflow/invoke] SECURITY: UI user attempted to load workflow from file path:", input.filename)
+      return NextResponse.json(
+        formatErrorResponse(requestId, {
+          code: ErrorCodes.INVALID_REQUEST,
+          message: "Loading workflows from file paths is not allowed. Please use workflow IDs from your dashboard.",
+        }),
+        { status: 403 },
+      )
+    }
+
     const secrets = createSecretResolver(principal.clerk_id)
 
     // Extract workflow config to determine required providers
@@ -144,6 +157,7 @@ export async function POST(req: NextRequest) {
       if (input.dslConfig) {
         workflowConfig = input.dslConfig
       } else if (input.filename) {
+        // Only reachable for api_key auth (local development)
         const fileContent = await readFile(input.filename, "utf-8")
         workflowConfig = JSON.parse(fileContent)
       } else if (input.workflowVersionId) {

@@ -49,7 +49,9 @@ export const useMCPConfigStore = create<MCPConfigStore>()(
           }
         }),
 
-      updateConfig: (config: MCPServers) => set({ config }),
+      updateConfig: (config: MCPServers) => {
+        set({ config })
+      },
 
       reset: () => set({ config: initialState }),
     }),

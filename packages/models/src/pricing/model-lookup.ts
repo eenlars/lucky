@@ -45,7 +45,11 @@ export function findModel(catalogId: CatalogId | string): ModelEntry | undefined
  * ```
  */
 export function findModelByName(modelName: string): ModelEntry | undefined {
-  return MODEL_CATALOG.find(m => m.model === modelName)
+  // Perform a case-insensitive match to be forgiving with user input.
+  // Catalog values are normalized (lowercase with provider prefixes when applicable),
+  // but callers may provide uppercase or mixed-case variants.
+  const needle = modelName.toLowerCase()
+  return MODEL_CATALOG.find(m => m.model.toLowerCase() === needle)
 }
 
 /**

@@ -1,61 +1,30 @@
-export interface Publisher {
-  pub_id: string
-  slug: string
-  display_name: string
-  verified: boolean
-  website_url?: string
-  contact_email?: string
-}
+import type { Connector, Publisher, Tag, Tool } from "@lucky/shared"
+import { validateMockConnectors } from "@lucky/shared"
 
-export interface Tag {
-  tag_id: string
-  slug: string
-  name: string
-}
+// Re-export types for compatibility
+export type { Connector, Publisher, Tag }
 
-export interface ConnectorTool {
-  tool_id: string
-  name: string
-  description: string
-  input_schema_json: object
-  status: "pending" | "approved" | "rejected"
-}
-
-export interface Connector {
-  conn_id: string
-  pub_id: string
-  slug: string
-  display_name: string
-  short_description: string
-  long_description?: string
-  homepage_url?: string
-  repo_url?: string
-  logo_url?: string
-  visibility: "public" | "private"
-  tags: Tag[]
-  tools: ConnectorTool[]
-  publisher: Publisher
-  status?: "installed" | "available"
-  health?: "healthy" | "warning" | "error"
-  enabled?: boolean
+// Map Tool type to ConnectorTool for compatibility
+export type ConnectorTool = Tool & {
+  status?: "pending" | "approved" | "rejected"
 }
 
 export const mockPublishers: Publisher[] = [
   {
     pub_id: "pub_001",
-    slug: "anthropic",
-    display_name: "Anthropic",
+    slug: "slack",
+    display_name: "Slack",
     verified: true,
-    website_url: "https://anthropic.com",
-    contact_email: "support@anthropic.com",
+    website_url: "https://slack.com",
+    contact_email: "support@slack.com",
   },
   {
     pub_id: "pub_002",
-    slug: "openai",
-    display_name: "OpenAI",
+    slug: "github",
+    display_name: "GitHub",
     verified: true,
-    website_url: "https://openai.com",
-    contact_email: "support@openai.com",
+    website_url: "https://github.com",
+    contact_email: "support@github.com",
   },
   {
     pub_id: "pub_003",
@@ -69,6 +38,27 @@ export const mockPublishers: Publisher[] = [
     slug: "community",
     display_name: "Community",
     verified: false,
+  },
+  {
+    pub_id: "pub_005",
+    slug: "stripe",
+    display_name: "Stripe",
+    verified: true,
+    website_url: "https://stripe.com",
+  },
+  {
+    pub_id: "pub_006",
+    slug: "tavily",
+    display_name: "Tavily",
+    verified: true,
+    website_url: "https://tavily.com",
+  },
+  {
+    pub_id: "pub_007",
+    slug: "firecrawl",
+    display_name: "Firecrawl",
+    verified: true,
+    website_url: "https://firecrawl.dev",
   },
 ]
 
@@ -95,7 +85,7 @@ export const mockConnectors: Connector[] = [
     logo_url: "/logos/github-image.png",
     visibility: "public",
     tags: [mockTags[4], mockTags[3]],
-    publisher: mockPublishers[1],
+    publisher: mockPublishers[1], // GitHub publisher
     tools: [
       {
         tool_id: "tool_001",
@@ -192,7 +182,7 @@ export const mockConnectors: Connector[] = [
   },
   {
     conn_id: "conn_003",
-    pub_id: "pub_002",
+    pub_id: "pub_004",
     slug: "postgres",
     display_name: "PostgreSQL",
     short_description: "Execute queries and manage PostgreSQL databases",
@@ -202,7 +192,7 @@ export const mockConnectors: Connector[] = [
     logo_url: "https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg",
     visibility: "public",
     tags: [mockTags[1]],
-    publisher: mockPublishers[1],
+    publisher: mockPublishers[3], // Community
     tools: [
       {
         tool_id: "tool_006",
@@ -234,27 +224,28 @@ export const mockConnectors: Connector[] = [
   },
   {
     conn_id: "conn_004",
-    pub_id: "pub_003",
-    slug: "google-search",
-    display_name: "Google Search",
-    short_description: "Search the web using Google's search API",
+    pub_id: "pub_006",
+    slug: "tavily",
+    display_name: "Tavily",
+    short_description: "AI-powered search API for research and information gathering",
     long_description:
-      "Perform web searches using Google's Custom Search API. Get search results, images, and knowledge graph information programmatically.",
-    homepage_url: "https://developers.google.com/custom-search",
-    logo_url: "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg",
+      "Tavily provides an AI-optimized search API designed for LLMs and research applications. Get comprehensive search results with context and relevance scoring.",
+    homepage_url: "https://tavily.com",
+    logo_url: "/logos/tavily.svg",
     visibility: "public",
     tags: [mockTags[0]],
-    publisher: mockPublishers[2],
+    publisher: mockPublishers[5], // Tavily
     tools: [
       {
         tool_id: "tool_008",
-        name: "web_search",
-        description: "Search the web",
+        name: "search",
+        description: "Search the web with AI-optimized results",
         input_schema_json: {
           type: "object",
           properties: {
             query: { type: "string" },
-            num_results: { type: "number", default: 10 },
+            search_depth: { type: "string", enum: ["basic", "advanced"], default: "basic" },
+            max_results: { type: "number", default: 5 },
           },
         },
         status: "approved",
@@ -275,7 +266,7 @@ export const mockConnectors: Connector[] = [
     logo_url: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",
     visibility: "public",
     tags: [mockTags[2], mockTags[3]],
-    publisher: mockPublishers[0],
+    publisher: mockPublishers[0], // Slack publisher
     tools: [
       {
         tool_id: "tool_009",
@@ -338,7 +329,7 @@ export const mockConnectors: Connector[] = [
   },
   {
     conn_id: "conn_007",
-    pub_id: "pub_002",
+    pub_id: "pub_005",
     slug: "stripe",
     display_name: "Stripe",
     short_description: "Process payments and manage subscriptions",
@@ -349,7 +340,7 @@ export const mockConnectors: Connector[] = [
       "https://images.ctfassets.net/fzn2n1nzq965/HTTOloNPhisV9P4hlMPNA/cacf1bb88b9fc492dfad34378d844280/Stripe_icon_-_square.svg",
     visibility: "public",
     tags: [mockTags[3]],
-    publisher: mockPublishers[1],
+    publisher: mockPublishers[4], // Stripe publisher
     tools: [
       {
         tool_id: "tool_012",
@@ -398,4 +389,60 @@ export const mockConnectors: Connector[] = [
     ],
     status: "available",
   },
+  {
+    conn_id: "conn_009",
+    pub_id: "pub_007",
+    slug: "firecrawl",
+    display_name: "Firecrawl",
+    short_description: "Web scraping and data extraction API",
+    long_description:
+      "Firecrawl turns any website into clean, LLM-ready data. Extract markdown, structured data, screenshots, and more from any webpage with a simple API.",
+    homepage_url: "https://firecrawl.dev",
+    logo_url: "/logos/firecrawl.svg",
+    visibility: "public",
+    tags: [mockTags[0], mockTags[3]], // Search and Productivity
+    publisher: mockPublishers[6], // Firecrawl publisher
+    tools: [
+      {
+        tool_id: "tool_014",
+        name: "scrape",
+        description: "Scrape a webpage and extract clean markdown",
+        input_schema_json: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            formats: { type: "array", items: { type: "string", enum: ["markdown", "html", "links"] } },
+            onlyMainContent: { type: "boolean", default: true },
+          },
+        },
+        status: "approved",
+      },
+      {
+        tool_id: "tool_015",
+        name: "crawl",
+        description: "Crawl an entire website",
+        input_schema_json: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            maxDepth: { type: "number", default: 2 },
+            limit: { type: "number", default: 10 },
+          },
+        },
+        status: "approved",
+      },
+    ],
+    status: "available",
+  },
 ]
+
+// Validate all mock data
+// This ensures our mock data matches the database schema
+try {
+  validateMockConnectors(mockConnectors)
+} catch (error) {
+  // In development, throw to catch schema mismatches early
+  if (process.env.NODE_ENV === "development") {
+    throw error
+  }
+}

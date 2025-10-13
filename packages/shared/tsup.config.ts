@@ -20,6 +20,7 @@ export default defineConfig([
       "contracts/tools": "src/contracts/tools.ts",
       "contracts/workflow": "src/contracts/workflow.ts",
       "contracts/fixtures": "src/contracts/fixtures.ts",
+      "contracts/mcp": "src/contracts/mcp.ts",
       "utils/validateJsonSchema": "src/utils/validateJsonSchema.ts",
     },
     format: ["esm"],

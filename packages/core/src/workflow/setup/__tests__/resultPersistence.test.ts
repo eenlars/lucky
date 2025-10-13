@@ -188,12 +188,13 @@ describe("resultPersistence", () => {
       // check that backup directory has files
       const backupFiles = await fs.readdir(actualBackupDir)
       const backupName = path.basename(testFileName, path.extname(testFileName))
-      const testBackups = backupFiles.filter(f => f.startsWith(`${backupName}_`))
+      const testBackups = backupFiles.filter(f => f.startsWith(`${backupName}_`)).sort() // filenames contain ISO timestamps; lexicographic sort orders by time
 
       expect(testBackups.length).toBeGreaterThan(0)
 
-      // verify backup content
-      const backupPath = path.join(actualBackupDir, testBackups[0])
+      // verify backup content (check the most recent backup for this test)
+      const latestBackup = testBackups[testBackups.length - 1]
+      const backupPath = path.join(actualBackupDir, latestBackup)
       const content = await fs.readFile(backupPath, "utf-8")
       const parsed = JSON.parse(content)
       expect(parsed).toEqual(testWorkflowConfig)

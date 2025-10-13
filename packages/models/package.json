@@ -48,13 +48,7 @@
     }
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.27",
-    "@ai-sdk/groq": "^2.0.24",
-    "@ai-sdk/openai": "^2.0.0",
-    "@ai-sdk/openai-compatible": "^1.0.22",
     "@lucky/shared": "workspace:*",
-    "@openrouter/ai-sdk-provider": "^1.2.0",
-    "ai": "^5.0.58",
     "yaml": "^2.3.4",
     "zod": "^3.22.0"
   },
@@ -69,6 +63,11 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "ai": ">=5.0.0"
+    "ai": ">=5.0.0",
+    "@ai-sdk/openai": ">=2.0.0",
+    "@ai-sdk/anthropic": ">=2.0.0",
+    "@ai-sdk/groq": ">=2.0.0",
+    "@ai-sdk/openai-compatible": ">=1.0.0",
+    "@openrouter/ai-sdk-provider": ">=1.2.0"
   }
 }

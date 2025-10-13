@@ -33,7 +33,7 @@ export async function isOpenRouterAvailable(): Promise<boolean> {
  * @deprecated Use getOpenRouterClient() instead
  */
 export const openrouter = new Proxy((() => {}) as unknown as ReturnType<typeof createOpenRouter>, {
-  get(_target, prop) {
+  get(_target, _prop) {
     throw new Error(
       "Sync openrouter client is deprecated. Use: await getOpenRouterClient() instead. " +
         "This ensures per-user API keys are properly resolved.",
