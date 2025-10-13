@@ -12,6 +12,19 @@ interface SessionData {
   [key: string]: unknown
 }
 
+interface JsonRpcError {
+  code: number
+  message: string
+  data?: unknown
+}
+
+interface JsonRpcResponse {
+  jsonrpc?: string
+  id?: string | number
+  result?: unknown
+  error?: JsonRpcError
+}
+
 function extractApiKey(headers: IncomingHttpHeaders): string | undefined {
   const headerAuth = headers.authorization
   const headerApiKey = (headers["x-lucky-api-key"] || headers["x-api-key"]) as string | string[] | undefined
@@ -269,9 +282,9 @@ Execute a workflow with provided input data.
       throw new Error(`Failed to invoke workflow: ${response.statusText}`)
     }
 
-    let rpcResponse: unknown
+    let rpcResponse: JsonRpcResponse
     try {
-      rpcResponse = await response.json()
+      rpcResponse = (await response.json()) as JsonRpcResponse
     } catch {
       throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
     }

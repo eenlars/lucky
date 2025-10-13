@@ -25,6 +25,61 @@ export interface WorkflowLoadResult {
 export type WorkflowIdMode = "workflow_version" | "workflow_parent"
 
 /**
+ * Default demo workflow for new users
+ * Simple single-node workflow that responds to any input
+ * Accessible via workflow ID: "wf_demo"
+ */
+const DEMO_WORKFLOW: WorkflowConfig = {
+  __schema_version: 1,
+  entryNodeId: "assistant",
+  nodes: [
+    {
+      nodeId: "assistant",
+      description: "A helpful AI assistant that responds to your questions",
+      modelName: "openai/gpt-4o-mini",
+      mcpTools: [],
+      codeTools: [],
+      systemPrompt:
+        "You are a helpful AI assistant. Answer the user's question clearly and concisely. If they're asking about this workflow system, explain that this is a demo workflow and they can create their own custom multi-agent workflows by visiting the workflow builder.",
+      handOffs: ["end"],
+      memory: {},
+    },
+  ],
+  inputSchema: {
+    type: "object",
+    properties: {
+      question: {
+        type: "string",
+        description: "Your question or prompt",
+      },
+    },
+    required: ["question"],
+  },
+  outputSchema: {
+    type: "object",
+    properties: {
+      response: {
+        type: "string",
+        description: "The assistant's response",
+      },
+    },
+  },
+}
+
+/**
+ * Get the demo workflow configuration
+ * @returns Demo workflow for new users
+ */
+export function getDemoWorkflow(): WorkflowLoadResult {
+  return {
+    success: true,
+    config: DEMO_WORKFLOW,
+    inputSchema: DEMO_WORKFLOW.inputSchema,
+    outputSchema: DEMO_WORKFLOW.outputSchema,
+  }
+}
+
+/**
  * Loads workflow configuration with support for both workflow IDs (wf_*) and version IDs (wf_ver_*)
  *
  * @param workflowId - Either a workflow ID (wf_*) or version ID (wf_ver_*)
@@ -46,8 +101,18 @@ export type WorkflowIdMode = "workflow_version" | "workflow_parent"
  * // Auto-detect ID type (not recommended - use mode parameter)
  * await loadWorkflowConfig("wf_research_paper")
  */
-export async function loadWorkflowConfig(workflowId: string, mode?: WorkflowIdMode): Promise<WorkflowLoadResult> {
+export async function loadWorkflowConfig(
+  workflowId: string,
+  mode?: WorkflowIdMode,
+  options?: { returnDemoOnNotFound?: boolean },
+): Promise<WorkflowLoadResult> {
   try {
+    // Special case: demo workflow
+    if (workflowId === "wf_demo" || workflowId === "demo") {
+      console.log("[workflow-loader] Returning demo workflow")
+      return getDemoWorkflow()
+    }
+
     const isVersionId = workflowId.startsWith("wf_ver_")
     const isWorkflowId = workflowId.startsWith("wf_") && !isVersionId
 
@@ -74,15 +139,30 @@ export async function loadWorkflowConfig(workflowId: string, mode?: WorkflowIdMo
 
     // Handle version ID - direct lookup
     if (isVersionId) {
-      return await loadWorkflowByVersionId(workflowId)
+      const result = await loadWorkflowByVersionId(workflowId)
+      if (!result.success && options?.returnDemoOnNotFound) {
+        console.log(`[workflow-loader] Workflow ${workflowId} not found, returning demo workflow`)
+        return getDemoWorkflow()
+      }
+      return result
     }
 
     // Handle workflow ID - resolve to latest version
     if (isWorkflowId) {
-      return await loadWorkflowByWorkflowId(workflowId)
+      const result = await loadWorkflowByWorkflowId(workflowId)
+      if (!result.success && options?.returnDemoOnNotFound) {
+        console.log(`[workflow-loader] Workflow ${workflowId} not found, returning demo workflow`)
+        return getDemoWorkflow()
+      }
+      return result
     }
 
-    // Neither format recognized
+    // Neither format recognized - return demo if requested
+    if (options?.returnDemoOnNotFound) {
+      console.log(`[workflow-loader] Invalid workflow ID ${workflowId}, returning demo workflow`)
+      return getDemoWorkflow()
+    }
+
     return {
       success: false,
       error: {

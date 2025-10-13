@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Load workflow configuration to get input schema
-    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id)
+    // For session auth users, return demo workflow if not found (better onboarding UX)
+    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, undefined, {
+      returnDemoOnNotFound: principal.auth_method === "session",
+    })
     if (!workflowLoadResult.success) {
       return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
     }
