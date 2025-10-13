@@ -81,7 +81,9 @@ export async function POST(req: NextRequest) {
     const now = Date.now()
 
     // Update Redis state (persistent, distributed)
+    // Set both state and desired to "cancelling" so status endpoint immediately returns "cancelling"
     await setWorkflowState(invocationId, {
+      state: "cancelling",
       desired: "cancelling",
       cancelRequestedAt: now,
     })
