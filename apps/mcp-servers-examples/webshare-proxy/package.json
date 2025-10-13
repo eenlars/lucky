@@ -1,6 +1,6 @@
 {
   "name": "mcp",
-  "module": "src/index.ts",
+  "module": "dist/index.js",
   "type": "module",
   "bin": {
     "mcp": "./dist/index.js"

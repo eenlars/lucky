@@ -76,6 +76,9 @@ const parseProxyString = (proxyString: string): ProxyResponse => {
 
 const getRandomWebshareProxy = async (): Promise<string> => {
   const proxyList = await fetchWebshareProxyList()
+  if (!proxyList || proxyList.length === 0) {
+    throw new Error("No proxies available from Webshare API")
+  }
   const proxy = proxyList[Math.floor(Math.random() * proxyList.length)]
   return proxyToString(proxy)
 }
