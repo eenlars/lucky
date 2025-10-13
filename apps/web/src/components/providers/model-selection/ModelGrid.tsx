@@ -48,21 +48,24 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
 
   // Bulk actions
   const handleEnableRecommended = () => {
-    const modelsToEnable = recommendedModelNames.filter(name => !enabledModels.has(name))
-    if (modelsToEnable.length > 0) {
-      onBulkToggleModels(modelsToEnable, true)
+    // Map model names to full IDs for models that are recommended but not enabled
+    const recommendedModelIds = models
+      .filter(m => recommendedModelNames.includes(m.name) && !enabledModels.has(m.id))
+      .map(m => m.id)
+    if (recommendedModelIds.length > 0) {
+      onBulkToggleModels(recommendedModelIds, true)
     }
   }
 
   const handleEnableAll = () => {
-    const modelsToEnable = filteredAndSortedModels.filter(m => !enabledModels.has(m.name)).map(m => m.name)
+    const modelsToEnable = filteredAndSortedModels.filter(m => !enabledModels.has(m.id)).map(m => m.id)
     if (modelsToEnable.length > 0) {
       onBulkToggleModels(modelsToEnable, true)
     }
   }
 
   const handleDisableAll = () => {
-    const modelsToDisable = filteredAndSortedModels.filter(m => enabledModels.has(m.name)).map(m => m.name)
+    const modelsToDisable = filteredAndSortedModels.filter(m => enabledModels.has(m.id)).map(m => m.id)
     if (modelsToDisable.length > 0) {
       onBulkToggleModels(modelsToDisable, false)
     }
@@ -138,8 +141,8 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
             <ModelCard
               key={model.id}
               model={model}
-              isEnabled={enabledModels.has(model.name)}
-              onToggle={() => onToggleModel(model.name)}
+              isEnabled={enabledModels.has(model.id)}
+              onToggle={() => onToggleModel(model.id)}
               isRecommended={isModelRecommended(model.name, models)}
             />
           ))}

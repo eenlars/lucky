@@ -1,6 +1,7 @@
 "use client"
 
-import { Input } from "@/react-flow-visualization/components/ui/input"
+import { Input } from "@/features/react-flow-visualization/components/ui/input"
+import type { ChangeEvent } from "react"
 import { useEffect, useState } from "react"
 import type { FilterPreset, ModelFiltersProps } from "./types"
 
@@ -30,7 +31,7 @@ export function ModelFilters({ searchQuery, onSearchChange, activePreset, onPres
       <Input
         placeholder="Search"
         value={searchInput}
-        onChange={e => setSearchInput(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)}
         className="flex-1 h-9 text-[13px] border-border/40"
       />
 

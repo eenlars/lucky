@@ -1,8 +1,8 @@
 "use client"
 
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import { Edit2, X } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { useStatusColor } from "./hooks/use-status-color"

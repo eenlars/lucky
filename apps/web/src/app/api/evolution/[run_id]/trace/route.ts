@@ -1,7 +1,7 @@
+import { traceWorkflowEvolution } from "@/features/evolution/lib/results/workflow-evolution-tracer"
 import { requireAuth } from "@/lib/api-auth"
 import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
 import { createClient } from "@/lib/supabase/server"
-import { traceWorkflowEvolution } from "@/results/workflow-evolution-tracer"
 import { NextResponse } from "next/server"
 
 export async function GET(_request: Request, { params }: { params: Promise<{ run_id: string }> }) {

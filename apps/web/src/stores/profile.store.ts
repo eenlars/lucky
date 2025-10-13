@@ -1,4 +1,4 @@
-import { type PersonalProfile, personalProfileSchema } from "@/schemas/profile.schema"
+import { type PersonalProfile, personalProfileSchema } from "@/features/profile/schemas/profile.schema"
 import { toast } from "sonner"
 import { create } from "zustand"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/react-flow-visualization/components/ui/button"
+import { Button } from "@/features/react-flow-visualization/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/react-flow-visualization/components/ui/dialog"
+} from "@/features/react-flow-visualization/components/ui/dialog"
 import type { Json } from "@lucky/shared/client"
 import { Copy, Expand, FileJson } from "lucide-react"
 import { useState } from "react"

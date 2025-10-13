@@ -101,8 +101,8 @@ export function sortModelsWithEnabledFirst(
   const sorted = sortModels(models, sortBy, allModels)
 
   return sorted.sort((a, b) => {
-    const aEnabled = enabledModels.has(a.name)
-    const bEnabled = enabledModels.has(b.name)
+    const aEnabled = enabledModels.has(a.id)
+    const bEnabled = enabledModels.has(b.id)
     if (aEnabled && !bEnabled) return -1
     if (!aEnabled && bEnabled) return 1
     return 0

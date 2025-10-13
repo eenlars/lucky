@@ -1,7 +1,7 @@
+import { basicWorkflow } from "@/features/trace-visualization/db/Workflow/basicWorkflow"
+import type { NodeInvocationExtended } from "@/features/trace-visualization/db/Workflow/nodeInvocations"
 import { queryKeys } from "@/lib/query-keys"
-import { basicWorkflow } from "@/trace-visualization/db/Workflow/basicWorkflow"
-import type { NodeInvocationExtended } from "@/trace-visualization/db/Workflow/nodeInvocations"
-import { fetchWithRetry } from "@/utils/fetch-with-retry"
+import { fetchWithRetry } from "@/lib/utils/fetch-with-retry"
 import type { Tables } from "@lucky/shared/client"
 import { useQuery } from "@tanstack/react-query"
 

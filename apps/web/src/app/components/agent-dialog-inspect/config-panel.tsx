@@ -1,9 +1,10 @@
 "use client"
 
+import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
+import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
-import type { AppNode } from "@/react-flow-visualization/components/nodes/nodes"
-import { useAppStore } from "@/react-flow-visualization/store/store"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
 import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
@@ -75,7 +76,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
   // Zustand store for model preferences
-  const { preferences, isLoading, loadPreferences, getEnabledModels } = useModelPreferencesStore()
+  const { preferences, isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } =
+    useModelPreferencesStore()
 
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
@@ -381,6 +383,17 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
       {/* Advanced Configuration - Collapsed by default */}
       <CollapsibleSection title="Advanced Configuration" defaultOpen={false}>
         <div className="space-y-4">
+          {/* Sync Status */}
+          <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Model preferences sync status</p>
+            <SyncStatusBadge
+              lastSynced={lastSynced}
+              isStale={isStale()}
+              isLoading={isLoading}
+              onRefresh={forceRefresh}
+            />
+          </div>
+
           {/* Model Provider Selection */}
           <div>
             <label htmlFor="model-provider" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -432,7 +445,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             {/* Link to manage models */}
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               <a
-                href={`/providers/${selectedProvider}`}
+                href={`/settings/providers/${selectedProvider}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -501,7 +514,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               <p className="text-xs text-yellow-700 dark:text-yellow-300">
                 Enable models in{" "}
                 <a
-                  href={`/providers/${selectedProvider}`}
+                  href={`/settings/providers/${selectedProvider}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-yellow-900 dark:hover:text-yellow-100"
