@@ -296,7 +296,7 @@ export class Workflow {
    * Executes the workflow for all IO without evaluation.
    * @returns array of run results for each IO
    */
-  async run(): Promise<RS<RunResult[]>> {
+  async run(onProgress?: import("@core/workflow/runner/types").WorkflowEventHandler): Promise<RS<RunResult[]>> {
     throwIf(this.evaluated, "Workflow has already been evaluated")
     throwIf(this.hasRun, "Workflow has already been run")
 
@@ -304,7 +304,7 @@ export class Workflow {
     await this.setup()
 
     lgg.log(`[Workflow.run] Setup complete, starting runAllIO for ${this.getWorkflowVersionId()}`)
-    const { data: runResults, error } = await runAllIO(this)
+    const { data: runResults, error } = await runAllIO(this, onProgress)
     this.hasRun = true
     if (error) {
       lgg.error(`[Workflow.run] runAllIO failed for ${this.getWorkflowVersionId()}: ${error}`)

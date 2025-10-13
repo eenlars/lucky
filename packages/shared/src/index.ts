@@ -143,6 +143,10 @@ export type {
   DatabaseWithAppFunctions,
 } from "./types/app-functions.types"
 
+// Workflow progress events
+export type { WorkflowProgressEvent } from "./contracts/workflow-progress"
+export { WorkflowProgressEventSchema, WORKFLOW_PROGRESS_SCHEMA_VERSION } from "./contracts/workflow-progress"
+
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe
 // Access them via:

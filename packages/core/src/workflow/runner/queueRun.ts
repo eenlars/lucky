@@ -8,8 +8,10 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { lgg } from "@core/utils/logging/Logger"
 import { updateWorkflowMemory } from "@core/utils/persistence/workflow/updateNodeMemory"
 import { getNodeRole } from "@core/utils/validation/workflow/verifyHierarchical"
+import { WORKFLOW_PROGRESS_SCHEMA_VERSION } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import chalk from "chalk"
+import { safeEmit, sanitizeEventText, truncateOutput } from "./event-utils"
 import type { QueueRunParams, QueueRunResult } from "./types"
 
 // Types are centralized in ./types to avoid circular imports and keep the API surface stable.
@@ -74,6 +76,7 @@ export async function queueRun({
   workflow,
   workflowInput,
   workflowInvocationId,
+  onProgress,
 }: QueueRunParams): Promise<QueueRunResult> {
   lgg.log(`[queueRun] Starting for workflow ${workflow.getWorkflowVersionId()}, invocation ${workflowInvocationId}`)
 
@@ -260,6 +263,21 @@ export async function queueRun({
 
     lgg.onlyIf(verbose, `[queueRun] Starting node invocation for ${targetNode.nodeId}`)
 
+    // Emit node_started event
+    const nodeStartTime = Date.now()
+    await safeEmit(
+      onProgress,
+      {
+        type: "node_started",
+        schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
+        nodeId: sanitizeEventText(targetNode.nodeId),
+        nodeName: sanitizeEventText(targetNode.nodeId),
+        timestamp: nodeStartTime,
+        workflowInvocationId,
+      },
+      "queueRun",
+    )
+
     const {
       nodeInvocationFinalOutput,
       usdCost,
@@ -287,6 +305,46 @@ export async function queueRun({
       verbose,
       `[queueRun] Node invocation completed for ${targetNode.nodeId}, nodeInvocationId: ${nodeInvocationId}`,
     )
+
+    // Emit node_completed or node_failed event
+    const nodeEndTime = Date.now()
+    if (error) {
+      // Sanitize error message to prevent information disclosure
+      const sanitizedError =
+        error instanceof Error
+          ? sanitizeEventText(error.message.replace(/\/[^\s]+/g, "[path]")) // Remove file paths
+          : "Node execution failed"
+
+      await safeEmit(
+        onProgress,
+        {
+          type: "node_failed",
+          schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
+          nodeId: sanitizeEventText(targetNode.nodeId),
+          nodeName: sanitizeEventText(targetNode.nodeId),
+          error: sanitizedError,
+          timestamp: nodeEndTime,
+          workflowInvocationId,
+        },
+        "queueRun",
+      )
+    } else {
+      await safeEmit(
+        onProgress,
+        {
+          type: "node_completed",
+          schemaVersion: WORKFLOW_PROGRESS_SCHEMA_VERSION,
+          nodeId: sanitizeEventText(targetNode.nodeId),
+          nodeName: sanitizeEventText(targetNode.nodeId),
+          output: truncateOutput(nodeInvocationFinalOutput, 200),
+          durationMs: nodeEndTime - nodeStartTime,
+          costUsd: usdCost,
+          timestamp: nodeEndTime,
+          workflowInvocationId,
+        },
+        "queueRun",
+      )
+    }
 
     if (error) {
       lgg.error(`[queueRun] Node invocation error for ${targetNode.nodeId}`, error)

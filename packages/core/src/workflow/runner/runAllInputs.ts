@@ -34,6 +34,7 @@ const verbose = false
  * Executes a workflow on all input/output test cases in parallel batches.
  *
  * @param workflow - Workflow instance to execute
+ * @param onProgress - Optional callback to receive progress events
  * @returns Result containing array of run results for each IO case
  *
  * @remarks
@@ -42,7 +43,10 @@ const verbose = false
  * - Handles failures gracefully by skipping failed IOs
  * - Returns only successful results in output array
  */
-export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
+export async function runAllIO(
+  workflow: Workflow,
+  onProgress?: import("./types").WorkflowEventHandler,
+): Promise<RS<RunResult[]>> {
   const workflowIo = workflow.getWorkflowIO()
   guard(workflowIo, "No workflow IO")
 
@@ -65,6 +69,7 @@ export async function runAllIO(workflow: Workflow): Promise<RS<RunResult[]>> {
           workflow,
           workflowInput: workflowIO.workflowInput,
           workflowInvocationId: invocationId,
+          onProgress,
         })
         lgg.onlyIf(verbose, `[runAllIO] queueRun completed for invocation ${invocationId}`)
         return { workflowInvocationId: invocationId, queueRunResult }
