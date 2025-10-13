@@ -18,10 +18,8 @@ export const getActiveModelNames = (customProvider?: LuckyProvider): string[] =>
 
 // Check if a model is active
 export function isActiveModel(model: string): boolean {
-  const provider: LuckyProvider = getCurrentProvider()
-
-  // Look up in MODEL_CATALOG (supports both prefixed and unprefixed)
-  const modelEntry = findModel(model, provider)
+  // Look up in MODEL_CATALOG (model must be prefixed)
+  const modelEntry = findModel(model)
 
   // Check both the catalog active flag AND the getCoreConfig().models.inactive array
   return Boolean(modelEntry?.active === true && !getCoreConfig().models.inactive.includes(model))
@@ -32,21 +30,18 @@ export function isActiveModel(model: string): boolean {
  * @deprecated Use getModel() from @lucky/models instead which returns the full ModelEntry.
  * This function converts ModelEntry to the legacy ModelPricingV2 format.
  */
-export function getModelV2(model: string, customProvider?: LuckyProvider): ModelPricingV2 {
-  // get current provider
-  const provider: LuckyProvider = customProvider ?? getCurrentProvider()
-
-  if (!provider || !model) {
-    throw new Error("getModelV2: No provider or model provided")
+export function getModelV2(model: string, _customProvider?: LuckyProvider): ModelPricingV2 {
+  if (!model) {
+    throw new Error("getModelV2: No model provided")
   }
 
-  // Look up in MODEL_CATALOG instead of providersV2
-  const modelEntry = findModel(model, provider)
+  // Look up in MODEL_CATALOG (model must be prefixed)
+  const modelEntry = findModel(model)
 
   if (!modelEntry) {
     const available = getActiveModelIds().slice(0, 20).join(", ")
     console.warn(`getModelV2: Model ${model} not found. Available models (first 20): ${available}`)
-    throw new Error(`getModelV2: Model ${model} not found. Available models: ${available}`)
+    throw new Error(`getModelV2: Model ${model} not found. Model IDs must be prefixed (e.g., "openai/gpt-4.1-mini")`)
   }
 
   // Convert ModelEntry to ModelPricingV2 format for backwards compatibility

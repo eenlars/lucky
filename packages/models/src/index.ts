@@ -30,11 +30,10 @@ export {
 } from "./pricing/catalog"
 export type { ProviderInfo } from "./pricing/catalog"
 
-// Export model lookup utilities (migration helpers)
+// Export model lookup utilities
 export {
   findModel,
   getModel,
-  normalizeModelId,
   isModelActive,
   getActiveModelsByProvider,
   getActiveModelIds,
