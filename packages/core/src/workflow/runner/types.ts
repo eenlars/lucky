@@ -4,6 +4,7 @@ import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowEventHandler } from "@lucky/shared"
 
 /**
  * Parameters for a basic in-memory queue-based workflow run.
@@ -15,6 +16,10 @@ export interface QueueRunParams {
   workflowInput: string
   /** Unique id for this run (used for tracing/persistence) */
   workflowInvocationId: string
+  /** Optional progress event handler */
+  onProgress?: WorkflowEventHandler
+  /** Optional abort signal for graceful cancellation */
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -81,6 +86,10 @@ export interface RunResult {
  */
 export type InvocationInput = {
   evalInput: EvaluationInput
+  /** Optional progress event handler */
+  onProgress?: WorkflowEventHandler
+  /** Optional abort signal for graceful cancellation */
+  abortSignal?: AbortSignal
 } & (
   | { workflowVersionId: string; filename?: never; dslConfig?: never }
   | { filename: string; workflowVersionId?: never; dslConfig?: never }

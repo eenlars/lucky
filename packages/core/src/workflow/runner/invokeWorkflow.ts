@@ -66,7 +66,7 @@ import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
  */
 export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeWorkflowResult[]>> {
   try {
-    const { evalInput } = input
+    const { evalInput, onProgress, abortSignal } = input
 
     if (isNir(evalInput)) {
       lgg.error("evalInput is null/undefined", evalInput)
@@ -130,7 +130,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     // Set workflow IO (handles multiple inputs via IngestionLayer)
     await workflow.prepareWorkflow(evalInput, getCoreConfig().workflow.prepareProblemMethod)
 
-    const { success, error, data: runResults } = await workflow.run()
+    const { success, error, data: runResults } = await workflow.run({ onProgress, abortSignal })
 
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)

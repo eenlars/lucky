@@ -22,7 +22,7 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import type { RS } from "@lucky/shared"
+import type { RS, WorkflowEventHandler } from "@lucky/shared"
 import { R, genShortId, isNir } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import { INACTIVE_TOOLS } from "@lucky/tools"
@@ -294,9 +294,15 @@ export class Workflow {
 
   /**
    * Executes the workflow for all IO without evaluation.
+   * @param options - Optional parameters for workflow execution
+   * @param options.onProgress - Optional progress event handler for receiving workflow events
+   * @param options.abortSignal - Optional abort signal for graceful cancellation
    * @returns array of run results for each IO
    */
-  async run(): Promise<RS<RunResult[]>> {
+  async run(options?: {
+    onProgress?: WorkflowEventHandler
+    abortSignal?: AbortSignal
+  }): Promise<RS<RunResult[]>> {
     throwIf(this.evaluated, "Workflow has already been evaluated")
     throwIf(this.hasRun, "Workflow has already been run")
 
@@ -304,7 +310,7 @@ export class Workflow {
     await this.setup()
 
     lgg.log(`[Workflow.run] Setup complete, starting runAllIO for ${this.getWorkflowVersionId()}`)
-    const { data: runResults, error } = await runAllIO(this)
+    const { data: runResults, error } = await runAllIO(this, options)
     this.hasRun = true
     if (error) {
       lgg.error(`[Workflow.run] runAllIO failed for ${this.getWorkflowVersionId()}: ${error}`)
