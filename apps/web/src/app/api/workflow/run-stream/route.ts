@@ -4,9 +4,9 @@ import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { WorkflowProgressEvent } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
-// Prevent execution timeout (max 5 minutes for workflow execution)
+// Prevent execution timeout (max 60 seconds for Vercel hobby plan)
 export const runtime = "nodejs"
-export const maxDuration = 300
+export const maxDuration = 60
 
 /**
  * POST /api/workflow/run-stream
@@ -23,7 +23,7 @@ export const maxDuration = 300
  * Response: text/event-stream with JSON events of type WorkflowProgressEvent
  *
  * Security: Requires authentication via requireAuth()
- * Performance: 5 minute maxDuration to allow long-running workflows
+ * Performance: 60 second maxDuration (Vercel hobby plan limit)
  */
 export async function POST(req: NextRequest) {
   // Require authentication
