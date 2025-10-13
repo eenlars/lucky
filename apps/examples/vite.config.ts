@@ -11,7 +11,14 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [tsconfigPaths()],
+    plugins: [
+      tsconfigPaths({
+        // Only use this package's tsconfig to avoid scanning .conductor snapshots
+        projects: [resolve(__dirname, "tsconfig.json")],
+        // Silence noisy parse errors from unrelated tsconfigs
+        ignoreConfigErrors: true,
+      }),
+    ],
     build: {
       lib: {
         entry: resolve(__dirname, "definitions/registry.ts"),
@@ -80,8 +87,10 @@ export default defineConfig(({ mode }) => {
             return true
           }
 
-          // Allow internal module imports (@core, @shared only - NOT @examples since that's this module)
-          if (id.startsWith("@core/") || id.startsWith("@shared/")) {
+          // Allow internal module imports (@core, @shared). Also externalize
+          // @examples/* to avoid circular resolution when @lucky/tools lazily
+          // imports from @examples during its own bundling graph.
+          if (id.startsWith("@core/") || id.startsWith("@shared/") || id.startsWith("@examples/")) {
             return true
           }
 
