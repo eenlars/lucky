@@ -63,10 +63,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
       const catalogModels = getModelsByProvider(provider)
       const catalogMap = new Map(catalogModels.map(m => [m.model, m]))
 
+      // Only return models that exist in catalog and are not disabled
       result = modelIds
         .map(modelId => {
           const catalogEntry = catalogMap.get(modelId)
-          if (catalogEntry) {
+          if (catalogEntry && !catalogEntry.disabled) {
             return {
               id: catalogEntry.id,
               name: catalogEntry.model,
@@ -82,21 +83,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
               intelligence: catalogEntry.intelligence,
             }
           }
-          // Fallback for models not in catalog
-          return {
-            id: `${provider}/${modelId}`,
-            name: modelId,
-            contextLength: 0,
-            supportsTools: false,
-            supportsVision: false,
-            supportsReasoning: false,
-            supportsAudio: false,
-            supportsVideo: false,
-            inputCostPer1M: 0,
-            outputCostPer1M: 0,
-            speed: "medium" as const,
-            intelligence: 5,
-          }
+          // Don't return models not in catalog or disabled models
+          return null
         })
         .filter(Boolean) as EnrichedModelInfo[]
     } else {
