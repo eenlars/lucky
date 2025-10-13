@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const startedAt = new Date().toISOString()
 
   // Initialize unsubscribe as no-op, will be replaced with real function if subscription succeeds
-  const unsubscribe: () => Promise<void> = async () => {}
+  let unsubscribe: () => Promise<void> = async () => {}
 
   try {
     const body = await req.json()
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     // Subscribe to Redis pub/sub for distributed cancellation
     // When cancel signal arrives from another server, trigger local abort controller
-    const unsubscribe = await subscribeToCancellation(requestId, () => {
+    unsubscribe = await subscribeToCancellation(requestId, () => {
       console.log(`[workflow/invoke] Received Redis cancel signal for ${requestId}`)
       const entry = activeWorkflows.get(requestId)
       if (entry) {
