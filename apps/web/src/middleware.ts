@@ -2,7 +2,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
 export default clerkMiddleware(
-  async (auth, req) => {
+  async (_auth, req) => {
     // Hide internal/test pages in production
     if (process.env.NODE_ENV === "production") {
       const pathname = req.nextUrl.pathname

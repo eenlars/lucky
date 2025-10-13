@@ -43,7 +43,7 @@ export const feedbackSubmissionSchema = z.object({
     try {
       const parsed = JSON.parse(str)
       return feedbackContextSchema.parse(parsed)
-    } catch (error) {
+    } catch (_error) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Invalid context JSON",

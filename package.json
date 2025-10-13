@@ -43,6 +43,7 @@
     "test": "bun --env-file .env --env-file .env.local turbo run test",
     "test:unit": "bun --env-file .env --env-file .env.local turbo run test:unit",
     "test:integration": "bun --env-file .env --env-file .env.local turbo run test:integration",
+    "test:integration:http": "bun --env-file .env --env-file .env.local vitest run --config vitest.integration.config.ts tests/integration/",
     "test:smoke": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.js",
     "test:gate": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.js",
     "lint": "biome lint .",

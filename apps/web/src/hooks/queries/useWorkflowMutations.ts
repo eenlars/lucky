@@ -101,7 +101,7 @@ export function useDeleteWorkflow(options?: { onError?: (error: Error) => void }
 
       return { previousWorkflows }
     },
-    onError: (err, workflowId, context) => {
+    onError: (err, _workflowId, context) => {
       // Rollback on error
       if (context?.previousWorkflows) {
         queryClient.setQueryData(queryKeys.workflows.lists(), context.previousWorkflows)

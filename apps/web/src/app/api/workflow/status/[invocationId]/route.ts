@@ -18,7 +18,7 @@ import { type NextRequest, NextResponse } from "next/server"
  *   cancelRequestedAt?: number
  * }
  */
-export async function GET(req: NextRequest, { params }: { params: { invocationId: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: { invocationId: string } }) {
   try {
     const authResult = await requireAuth()
     if (authResult instanceof NextResponse) return authResult
