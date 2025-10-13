@@ -14,8 +14,6 @@
     "deps:check": "bun scripts/check-deps.ts"
   },
   "dependencies": {
-    "@ai-sdk-tools/devtools": "^0.6.1",
-    "@ai-sdk-tools/store": "^0.1.2",
     "@ai-sdk/react": "^2.0.0",
     "@clerk/nextjs": "^6.32.0",
     "@codemirror/lang-json": "^6.0.2",

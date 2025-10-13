@@ -54,6 +54,8 @@
     "install:ci": "bun install --ignore-scripts"
   },
   "dependencies": {
+    "@ai-sdk-tools/artifacts": "^0.8.1",
+    "@ai-sdk-tools/store": "^0.8.2",
     "ioredis": "^5.8.1"
   }
 }
