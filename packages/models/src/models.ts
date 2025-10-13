@@ -4,23 +4,20 @@
  * Validates all configs with Zod at runtime
  */
 
-import { ConfigLoader } from "./config/loader"
 import { findModelByName } from "./pricing/model-lookup"
 import { ProviderRegistry } from "./providers/registry"
 import type { AiSdkModel, ExecutionContext, ModelSpec, ModelsConfig, ProviderConfig } from "./types"
 import { modelsConfigSchema, providerConfigSchema } from "./types/schemas"
 
 export class Models {
-  private config: ModelsConfig
-  private configLoader: ConfigLoader
-  private registry: ProviderRegistry
+  protected config: ModelsConfig
+  protected registry: ProviderRegistry
 
   constructor(config: ModelsConfig) {
     // Validate config with Zod at runtime
     const validatedConfig = modelsConfigSchema.parse(config)
 
     this.config = validatedConfig
-    this.configLoader = new ConfigLoader()
     this.registry = new ProviderRegistry(validatedConfig.providers)
   }
 
@@ -40,14 +37,6 @@ export class Models {
 
     // Get the model from the registry
     return this.registry.getModel(resolved)
-  }
-
-  /**
-   * Load user configuration from YAML
-   */
-  async loadUserConfig(userId: string, path: string): Promise<void> {
-    const config = await this.configLoader.load(path)
-    this.configLoader.setUserConfig(userId, config)
   }
 
   /**
@@ -154,31 +143,9 @@ export class Models {
     return firstModel
   }
 
-  private async resolveUserConfig(userId: string, experimentName?: string): Promise<ModelSpec> {
-    const config = this.configLoader.getUserConfig(userId)
-    if (!config) {
-      throw new Error(`No config found for user ${userId}`)
-    }
-
-    // Get experiment name
-    const experiment = experimentName || config.defaults?.experiment
-    if (!experiment) {
-      throw new Error("No experiment specified")
-    }
-
-    const experimentConfig = config.experiments?.[experiment]
-    if (!experimentConfig) {
-      throw new Error(`Experiment ${experiment} not found`)
-    }
-
-    // Get first provider from experiment
-    // TODO: Implement strategy-based selection
-    const providerStr = experimentConfig.providers[0]
-    if (!providerStr) {
-      throw new Error(`No providers in experiment ${experiment}`)
-    }
-
-    const [provider, model] = providerStr.split("/", 2)
-    return { provider, model }
+  protected async resolveUserConfig(_userId: string, _experimentName?: string): Promise<ModelSpec> {
+    throw new Error(
+      "User config loading is not supported. Use @lucky/models/server for server-side user config support.",
+    )
   }
 }

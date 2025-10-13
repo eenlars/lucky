@@ -7,7 +7,6 @@ import { Models } from "./models"
 import type { ModelsConfig } from "./types"
 
 export { defineConfig, defineConfigUnsafe } from "./config/define"
-export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
 
 // Export default tier configuration

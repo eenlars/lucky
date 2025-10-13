@@ -107,13 +107,13 @@ export function getProviderConfigs(
  * ```ts
  * // In an API route
  * import { getProviderConfigsFromCore } from '@/lib/providers/provider-utils'
- * const configs = getProviderConfigsFromCore()
+ * const configs = await getProviderConfigsFromCore()
  * ```
  */
-export function getProviderConfigsFromCore(): Record<string, ProviderConfig> {
+export async function getProviderConfigsFromCore(): Promise<Record<string, ProviderConfig>> {
   try {
     // Dynamically import to avoid issues in client-only contexts
-    const { getCoreConfig } = require("@lucky/core/core-config/coreConfig")
+    const { getCoreConfig } = await import("@lucky/core/core-config/coreConfig")
     const coreConfig = getCoreConfig()
     return getProviderConfigs(coreConfig.models.availability)
   } catch {
