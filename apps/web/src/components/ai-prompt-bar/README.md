@@ -88,21 +88,20 @@ The `/api/ai/simple` endpoint handles AI requests with a simple contract:
 
 1. Import the component and types:
 ```typescript
-import { PromptBar, type PromptBarContext } from "@/components/ai-prompt-bar/PromptBarSimple"
+import { PromptBar, type PromptBarContext } from "@/components/ai-prompt-bar/PromptBar"
 ```
 
 2. Create your context with appropriate handlers
-3. Add system prompts for your context type in `/api/ai/simple`
+3. Add system prompts for your context type in `/api/ai/artifact`
 
 ## Testing
 
-Run the included test scripts:
+Test the component by running the development server and navigating to the MCP servers page:
 ```bash
-# Test AI API functionality
-bun run test-ai-api.ts
+# Start the dev server
+bun run dev
 
-# Test JSONC comment handling
-bun run test-jsonc.ts
+# Navigate to /connectors and test the AI prompt bar
 ```
 
 ## Future Improvements

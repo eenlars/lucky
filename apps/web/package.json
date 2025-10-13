@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^2.0.0",
+    "@ai-sdk-tools/devtools": "^0.8.1",
+    "@ai-sdk-tools/store": "^0.8.2",
     "@clerk/nextjs": "^6.32.0",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lint": "^6.8.5",

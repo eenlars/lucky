@@ -108,8 +108,6 @@ export function PromptBar({ context }: PromptBarProps) {
   const handleEdit = useCallback(async () => {
     if (!prompt.trim() || isGenerating) return
 
-    console.log(`🔵 EDIT MODE: Modifying ${contextType} structure`)
-
     if (hideLogsTimeoutRef.current) {
       clearTimeout(hideLogsTimeoutRef.current)
       hideLogsTimeoutRef.current = null
@@ -122,8 +120,6 @@ export function PromptBar({ context }: PromptBarProps) {
 
     try {
       const currentState = await getCurrentState()
-      console.log("🔍 Current state:", currentState)
-      console.log("💬 User prompt:", prompt.trim())
       addLog(`Analyzing ${contextType}...`)
 
       // Create abort controller for this request
@@ -151,18 +147,15 @@ export function PromptBar({ context }: PromptBarProps) {
 
       // Simple JSON response - no streaming
       const result = await response.json()
-      console.log("📦 AI response:", result)
 
       if (!result.success || !result.data) {
         throw new Error(result.error || "Failed to update configuration")
       }
 
       const { config, explanation, changes } = result.data
-      console.log("🎯 Extracted config:", config)
 
       if (config) {
         addLog("Applying configuration changes...")
-        console.log("🔧 Calling applyChanges with:", config)
         await applyChanges(config)
 
         // Show what changed
@@ -207,8 +200,6 @@ export function PromptBar({ context }: PromptBarProps) {
 
   const handleRun = useCallback(async () => {
     if (!prompt.trim() || isGenerating || !executeOperation) return
-
-    console.log(`🟢 RUN MODE: Executing ${contextType} with input`)
 
     if (hideLogsTimeoutRef.current) {
       clearTimeout(hideLogsTimeoutRef.current)

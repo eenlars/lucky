@@ -440,9 +440,7 @@ export const mockConnectors: Connector[] = [
 // This ensures our mock data matches the database schema
 try {
   validateMockConnectors(mockConnectors)
-  console.log("✅ Mock connectors validated successfully")
 } catch (error) {
-  console.error("❌ Mock connector validation failed:", error)
   // In development, throw to catch schema mismatches early
   if (process.env.NODE_ENV === "development") {
     throw error

@@ -50,7 +50,6 @@ export const useMCPConfigStore = create<MCPConfigStore>()(
         }),
 
       updateConfig: (config: MCPServers) => {
-        console.log("🏪 Store updateConfig called with:", config)
         set({ config })
       },
 

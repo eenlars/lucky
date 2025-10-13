@@ -30,7 +30,7 @@ export const toolSchema = z.object({
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   annotations_json: z.any().nullable().optional(),
-  traits_json: z.any().default({}).optional(),
+  traits_json: z.any().default({}),
   // UI-specific field
   status: z.enum(["pending", "approved", "rejected"]).optional(),
 })

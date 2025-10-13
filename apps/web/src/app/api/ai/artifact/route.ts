@@ -26,12 +26,6 @@ export async function POST(req: Request) {
   try {
     const { contextType, prompt, currentState } = await req.json()
 
-    console.log("🔵 AI API received:", {
-      contextType,
-      prompt,
-      currentState,
-    })
-
     if (!contextType || !prompt) {
       return Response.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
@@ -108,8 +102,6 @@ ${JSON.stringify(currentState, null, 2)}
 Make appropriate changes based on the user's request.`
     }
 
-    console.log("🤖 Calling AI...")
-
     // Simple non-streaming call
     const result = await generateObject({
       model: openai("gpt-4o"),
@@ -119,8 +111,6 @@ Make appropriate changes based on the user's request.`
         { role: "user", content: prompt },
       ],
     })
-
-    console.log("✅ AI responded with:", result.object)
 
     // Return simple JSON response like the workflow endpoint
     return Response.json({

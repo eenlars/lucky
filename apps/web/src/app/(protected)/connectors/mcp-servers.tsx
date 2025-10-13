@@ -25,11 +25,9 @@ export function MCPServersConfig() {
     getCurrentState: async () => config,
     applyChanges: async changes => {
       try {
-        console.log("Applying MCP config changes:", changes)
         updateConfig(changes)
         toast.success("MCP configuration updated")
       } catch (error) {
-        console.error("Failed to apply changes:", error)
         toast.error("Failed to update configuration")
         throw error
       }
@@ -433,10 +431,80 @@ function JsonEditor() {
   }, [config, isDirty])
 
   const stripJsonComments = (jsonc: string): string => {
-    // Remove single-line comments (// ...)
-    let result = jsonc.replace(/\/\/.*$/gm, "")
-    // Remove multi-line comments (/* ... */)
-    result = result.replace(/\/\*[\s\S]*?\*\//g, "")
+    // Track whether we're inside a string
+    let result = ""
+    let inString = false
+    let escapeNext = false
+    let inSingleLineComment = false
+    let inMultiLineComment = false
+
+    for (let i = 0; i < jsonc.length; i++) {
+      const char = jsonc[i]
+      const nextChar = jsonc[i + 1]
+
+      // Handle escape sequences in strings
+      if (escapeNext) {
+        result += char
+        escapeNext = false
+        continue
+      }
+
+      // Check for escape character
+      if (inString && char === "\\") {
+        result += char
+        escapeNext = true
+        continue
+      }
+
+      // Toggle string state on unescaped quotes
+      if (char === '"' && !inSingleLineComment && !inMultiLineComment) {
+        inString = !inString
+        result += char
+        continue
+      }
+
+      // If we're in a string, don't process comments
+      if (inString) {
+        result += char
+        continue
+      }
+
+      // Handle single-line comments
+      if (char === "/" && nextChar === "/" && !inMultiLineComment) {
+        inSingleLineComment = true
+        i++ // Skip the second /
+        continue
+      }
+
+      // Handle multi-line comments
+      if (char === "/" && nextChar === "*" && !inSingleLineComment) {
+        inMultiLineComment = true
+        i++ // Skip the *
+        continue
+      }
+
+      // End multi-line comment
+      if (char === "*" && nextChar === "/" && inMultiLineComment) {
+        inMultiLineComment = false
+        i++ // Skip the /
+        continue
+      }
+
+      // End single-line comment at newline
+      if (inSingleLineComment && char === "\n") {
+        inSingleLineComment = false
+        result += char
+        continue
+      }
+
+      // Skip characters in comments
+      if (inSingleLineComment || inMultiLineComment) {
+        continue
+      }
+
+      result += char
+    }
+
     return result
   }
 
