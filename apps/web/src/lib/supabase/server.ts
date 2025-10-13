@@ -1,3 +1,12 @@
+// Runtime guard: Prevent client-side usage
+if (typeof window !== "undefined") {
+  throw new Error(
+    "[SECURITY] @/lib/supabase/server cannot be imported in client-side code. " +
+      "This file can create clients with service role keys that bypass RLS. " +
+      "Use @/lib/supabase/client for client-side Supabase access.",
+  )
+}
+
 import type { Database } from "@lucky/shared/client"
 import { type GetCredentialsOptions, getSupabaseCredentials } from "@lucky/shared/supabase-credentials.server"
 import { createServerClient } from "@supabase/ssr"
