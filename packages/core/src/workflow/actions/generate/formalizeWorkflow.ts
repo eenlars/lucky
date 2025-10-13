@@ -84,7 +84,12 @@ Create 1 workflow configuration for: ${prompt}
   })
 
   if (!response.success) {
-    return R.error(`Failed to generate workflow in formalizeWorkflow. error: ${response.error}`, response.usdCost || 0)
+    // Provide helpful context for model-related errors
+    const requestedModel = getDefaultModels().medium
+    return R.error(
+      `Failed to generate workflow in formalizeWorkflow (model: ${requestedModel}). Error: ${response.error}`,
+      response.usdCost || 0,
+    )
   }
 
   const workflowConfig = response.data
