@@ -13,6 +13,7 @@ import { useLayout } from "@/features/react-flow-visualization/hooks/use-layout"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { NodePalette } from "./NodePalette"
 import { WorkflowControls } from "./controls"
+import { ExecutionLogsPanel } from "./execution-logs/ExecutionLogsPanel"
 import { useDragAndDrop } from "./useDragAndDrop"
 
 const edgeTypes = {
@@ -32,6 +33,7 @@ export default function Workflow({
     workflowError,
     selectedNodeId: _selectedNodeId,
     nodeDetailsOpen: _nodeDetailsOpen,
+    logPanelOpen,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -41,6 +43,7 @@ export default function Workflow({
     loadWorkflowVersion,
     closeNodeDetails: _closeNodeDetails,
     updateNode: _updateNode,
+    setLogPanelOpen,
   } = useAppStore(
     useShallow(state => ({
       nodes: state.nodes,
@@ -50,6 +53,7 @@ export default function Workflow({
       workflowError: state.workflowError,
       selectedNodeId: state.selectedNodeId,
       nodeDetailsOpen: state.nodeDetailsOpen,
+      logPanelOpen: state.logPanelOpen,
       onNodesChange: state.onNodesChange,
       onEdgesChange: state.onEdgesChange,
       onConnect: state.onConnect,
@@ -59,6 +63,7 @@ export default function Workflow({
       loadWorkflowVersion: state.loadWorkflowVersion,
       closeNodeDetails: state.closeNodeDetails,
       updateNode: state.updateNode,
+      setLogPanelOpen: state.setLogPanelOpen,
     })),
   )
 
@@ -166,6 +171,9 @@ export default function Workflow({
 
       {/* Steve Jobs-inspired Inspector Panel */}
       <AgentDialogInspect />
+
+      {/* Execution Logs Panel */}
+      <ExecutionLogsPanel isOpen={logPanelOpen} onClose={() => setLogPanelOpen(false)} />
     </>
   )
 }
