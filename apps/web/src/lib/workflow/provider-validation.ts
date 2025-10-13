@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import {
   extractRequiredProviders,
   getProviderDisplayName,
@@ -27,6 +28,9 @@ export function getRequiredProviderKeys(config: WorkflowConfig, context: string)
     console.log(`[${context}] Required API keys:`, requiredKeys)
     return requiredKeys
   } catch (error) {
+    logException(error, {
+      location: "/lib/workflow/provider-validation",
+    })
     console.error(`[${context}] Failed to extract providers:`, error)
     return [...FALLBACK_PROVIDER_KEYS]
   }

@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
   extractTraceId,
@@ -161,6 +162,9 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     )
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/invoke",
+    })
     console.error("[/api/workflow/invoke] Unexpected error:", error)
     return NextResponse.json(formatInternalError(requestId, error), { status: 500 })
   }

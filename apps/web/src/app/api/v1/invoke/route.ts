@@ -1,4 +1,5 @@
 import { authenticateRequest } from "@/lib/auth/principal"
+import { logException } from "@/lib/error-logger"
 import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
   extractTraceId,
@@ -136,6 +137,9 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     )
   } catch (error) {
+    logException(error, {
+      location: "/api/v1/invoke",
+    })
     console.error("MCP Invoke API Error:", error)
     return NextResponse.json(formatInternalError(requestId ?? null, error), {
       status: 500,

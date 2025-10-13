@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
 import type { z } from "zod"
@@ -125,6 +126,9 @@ export async function executeRunMode(
       errorData: result.error.data,
     }
   } catch (error) {
+    logException(error, {
+      location: typeof window !== "undefined" ? window.location.pathname : "unknown",
+    })
     const errorMessage = error instanceof Error ? error.message : "Workflow execution failed"
     onProgress?.(`❌ Error: ${errorMessage}`)
     return {

@@ -23,6 +23,7 @@ import nodesConfig, {
 import { CITY_NAMES } from "@/features/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/features/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/features/react-flow-visualization/store/edge-validation"
+import { logException } from "@/lib/error-logger"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
@@ -404,6 +405,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             })
             console.log("Workflow config loading completed")
           } catch (error) {
+            logException(error, {
+              location: "/store/app-store",
+            })
             console.error("Error loading workflow config:", error)
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
@@ -436,6 +440,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               currentWorkflowId: workflowVersionId, // Set workflow ID for saving
             })
           } catch (error) {
+            logException(error, {
+              location: "/store/app-store",
+            })
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
               workflowLoading: false,
@@ -459,6 +466,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               workflowLoading: false,
             })
           } catch (error) {
+            logException(error, {
+              location: "/store/app-store",
+            })
             const errorMessage = error instanceof Error ? error.message : "Unknown error"
             set({
               workflowLoading: false,
@@ -546,6 +556,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             const workflowData = JSON.parse(get().workflowJSON)
             await get().loadWorkflowFromData(workflowData)
           } catch (error) {
+            logException(error, {
+              location: "/store/app-store",
+            })
             console.error("Error syncing JSON to graph:", error)
           }
         },
@@ -640,6 +653,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 timeBudgetSeconds: 3600,
               }),
             }).catch(error => {
+              logException(error, {
+                location: "/store/app-store",
+              })
               console.error("Failed to save node update:", error)
             })
           }

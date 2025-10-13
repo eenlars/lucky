@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { listDataSets } from "@/lib/db/dataset"
+import { logException } from "@/lib/error-logger"
 import { createClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -62,6 +63,9 @@ export async function GET(_req: NextRequest) {
       datasets: results.filter(Boolean),
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/ingestions/list",
+    })
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 })
   }
 }

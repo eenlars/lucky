@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
@@ -186,6 +187,9 @@ export const useRunConfigStore = create<RunConfigState>()(
             })
           }
         } catch (error) {
+          logException(error, {
+            location: "/store/run-config",
+          })
           console.error("Failed to load dataset:", error)
           // Reset state on error
           set({

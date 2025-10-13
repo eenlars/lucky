@@ -1,5 +1,6 @@
 "use client"
 
+import { logException } from "@/lib/error-logger"
 import { type WorkflowWithVersions, listWorkflows } from "@/lib/workflows"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
@@ -94,6 +95,9 @@ export const useWorkflowStore = create<WorkflowStore>()(
               cachedWorkflowsById: cacheMap,
             })
           } catch (err) {
+            logException(err, {
+              location: "/store/workflow",
+            })
             const errorMessage = err instanceof Error ? err.message : "Failed to load workflows"
             set({ error: errorMessage })
             console.error("Error loading workflows:", err)
@@ -196,6 +200,9 @@ export const useWorkflowStore = create<WorkflowStore>()(
             try {
               return localStorage.getItem(key)
             } catch (error) {
+              logException(error, {
+                location: "/store/workflow",
+              })
               console.error("Failed to read from localStorage:", error)
               return null
             }
@@ -204,6 +211,9 @@ export const useWorkflowStore = create<WorkflowStore>()(
             try {
               localStorage.setItem(key, value)
             } catch (error) {
+              logException(error, {
+                location: "/store/workflow",
+              })
               console.error("Failed to write to localStorage:", error)
               // Clear storage if quota exceeded
               if (error instanceof Error && error.name === "QuotaExceededError") {
@@ -219,6 +229,9 @@ export const useWorkflowStore = create<WorkflowStore>()(
             try {
               localStorage.removeItem(key)
             } catch (error) {
+              logException(error, {
+                location: "/store/workflow",
+              })
               console.error("Failed to remove from localStorage:", error)
             }
           },

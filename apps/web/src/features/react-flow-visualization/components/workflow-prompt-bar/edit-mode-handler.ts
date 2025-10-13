@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 
 /**
@@ -64,6 +65,9 @@ export async function executeEditMode(
       workflowConfig: result.data,
     }
   } catch (error) {
+    logException(error, {
+      location: typeof window !== "undefined" ? window.location.pathname : "unknown",
+    })
     const errorMessage = error instanceof Error ? error.message : "Failed to update workflow"
     onProgress?.(`❌ Error: ${errorMessage}`)
     return {

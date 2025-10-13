@@ -132,6 +132,17 @@ export {
   modelSelectionSchema,
 } from "./contracts/models"
 
+// Error contracts
+export type { SeverityLevel, ErrorReportInput } from "./contracts/error"
+export { SeverityLevelSchema, ErrorReportSchema } from "./contracts/error"
+
+// Extended app database types for custom functions
+export type {
+  UpsertErrorParams,
+  UpsertErrorResult,
+  DatabaseWithAppFunctions,
+} from "./types/app-functions.types"
+
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe
 // Access them via:

@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { generateApiKey, hashSecret } from "@/lib/api-key-utils"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -75,6 +76,9 @@ export async function POST(_req: NextRequest) {
       },
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/user/api-key/generate",
+    })
     return NextResponse.json({ error: e?.message ?? "Failed to generate API key" }, { status: 500 })
   }
 }

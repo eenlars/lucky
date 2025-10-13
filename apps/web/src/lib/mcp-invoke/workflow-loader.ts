@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { JsonSchemaDefinition, WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
@@ -60,6 +61,9 @@ export async function loadWorkflowConfig(workflowVersionId: string): Promise<Wor
       inputSchema: config.inputSchema,
     }
   } catch (error) {
+    logException(error, {
+      location: "/lib/mcp-invoke/workflow-loader",
+    })
     return {
       success: false,
       error: {

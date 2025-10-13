@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { type ErrorMessage, getErrorMessage } from "@/lib/error-messages"
 import { useCallback, useState } from "react"
 
@@ -33,6 +34,9 @@ export function useAsyncAction<T = any>(options?: UseAsyncActionOptions<T>) {
         options?.onSuccess?.(result)
         return result
       } catch (err) {
+        logException(err, {
+          location: "/hook/useAsyncAction",
+        })
         const errorMessage = getErrorMessage(err)
         setState({ isLoading: false, error: errorMessage, data: null })
         options?.onError?.(errorMessage)

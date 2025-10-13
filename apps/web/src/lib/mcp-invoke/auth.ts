@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { extractBearerToken, pickIdempotencyKey } from "@lucky/shared/contracts/invoke"
 import type { InvokeRequest } from "@lucky/shared/contracts/invoke"
 
@@ -28,6 +29,9 @@ export function validateAuth(
       idempotencyKey,
     }
   } catch (err) {
+    logException(err, {
+      location: "/lib/mcp-invoke/auth",
+    })
     return {
       success: false,
       error: {

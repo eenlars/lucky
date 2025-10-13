@@ -1,3 +1,4 @@
+import { logException } from "@/lib/error-logger"
 import { createStandaloneClient } from "@/lib/supabase/standalone"
 import type { Json } from "@lucky/shared/client"
 
@@ -164,6 +165,9 @@ export async function migrateFitnessToColumns() {
           console.log(`- Skipped row ${row.wf_invocation_id}: no values to migrate or already populated`)
         }
       } catch (error) {
+        logException(error, {
+          location: "/lib/migrations",
+        })
         console.error(`Error processing row ${row.wf_invocation_id}:`, error)
         errors++
       }
@@ -171,6 +175,9 @@ export async function migrateFitnessToColumns() {
 
     console.log(`Migration completed: ${migrated} rows migrated, ${errors} errors`)
   } catch (error) {
+    logException(error, {
+      location: "/lib/migrations",
+    })
     console.error("Migration failed:", error)
     throw error
   }

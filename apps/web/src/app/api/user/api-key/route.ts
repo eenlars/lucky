@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -52,6 +53,9 @@ export async function GET(_req: NextRequest) {
       },
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/user/api-key",
+    })
     return NextResponse.json({ error: e?.message ?? "Failed to fetch API key" }, { status: 500 })
   }
 }

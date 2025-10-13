@@ -1,5 +1,6 @@
 import { retrieveLatestWorkflowVersions } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -15,6 +16,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(workflows)
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/latest",
+    })
     console.error("Failed to retrieve latest workflows:", error)
     return NextResponse.json({ error: "Failed to retrieve workflows" }, { status: 500 })
   }

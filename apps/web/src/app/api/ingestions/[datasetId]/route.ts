@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { getDataSet, getDatasetRecords } from "@/lib/db/dataset"
+import { logException } from "@/lib/error-logger"
 import { type NextRequest, NextResponse } from "next/server"
 import { loadDatasetMeta } from "../_lib/meta"
 
@@ -34,6 +35,9 @@ export async function GET(_req: NextRequest, { params }: { params: { datasetId: 
     if (e?.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Dataset not found" }, { status: 404 })
     }
+    logException(e, {
+      location: "/api/ingestions/[datasetId]",
+    })
     return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }

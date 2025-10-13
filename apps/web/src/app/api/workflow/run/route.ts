@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import type { EvaluationText } from "@lucky/core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { type NextRequest, NextResponse } from "next/server"
@@ -51,6 +52,9 @@ export async function POST(req: NextRequest) {
     const result = await invokeResponse.json()
     return NextResponse.json(result)
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/run",
+    })
     return NextResponse.json(
       {
         success: false,

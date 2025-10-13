@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -271,6 +272,9 @@ export async function GET(request: NextRequest) {
       aggregates,
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/invocations/GET",
+    })
     console.error("Error fetching workflow invocations:", error)
     return NextResponse.json({ error: "Failed to fetch invocations" }, { status: 500 })
   }
@@ -299,6 +303,9 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true, deletedCount: ids.length })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/invocations/DELETE",
+    })
     console.error("Error deleting workflow invocations:", error)
     return NextResponse.json(
       {

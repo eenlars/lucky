@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { logException } from "@/lib/error-logger"
 import React from "react"
 
 interface ErrorBoundaryProps {
@@ -24,6 +25,15 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    logException(error, {
+      message: `React Error Boundary: ${error.message}`,
+      error: {
+        name: error.name,
+        message: error.message,
+        componentStack: errorInfo.componentStack,
+      },
+      severity: "error",
+    })
     console.error("Error caught by boundary:", error, errorInfo)
   }
 

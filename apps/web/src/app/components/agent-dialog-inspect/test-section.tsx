@@ -1,6 +1,7 @@
 "use client"
 
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { logException } from "@/lib/error-logger"
 import { cn } from "@/lib/utils"
 import { AlertCircle, CheckCircle, Play } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
@@ -66,6 +67,9 @@ export function TestSection({ node }: TestSectionProps) {
 
       setOutput(mockOutput)
     } catch (err) {
+      logException(err, {
+        location: window.location.pathname,
+      })
       setError(err instanceof Error ? err.message : "Failed to run test")
     } finally {
       setIsRunning(false)

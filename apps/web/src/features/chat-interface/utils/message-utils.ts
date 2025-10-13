@@ -4,6 +4,7 @@
  * Helper functions for message manipulation, formatting, and validation
  */
 
+import { logException } from "@/lib/error-logger"
 import type { Message, MessageRole } from "../types/types"
 
 // ============================================================================
@@ -207,11 +208,17 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       textArea.remove()
       return successful
     } catch (error) {
+      logException(error, {
+        location: "/chat-interface/utils/message-utils",
+      })
       console.error("Failed to copy:", error)
       textArea.remove()
       return false
     }
   } catch (error) {
+    logException(error, {
+      location: "/chat-interface/utils/message-utils",
+    })
     console.error("Failed to copy to clipboard:", error)
     return false
   }

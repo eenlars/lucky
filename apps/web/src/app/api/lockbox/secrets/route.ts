@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { decryptGCM, encryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -96,6 +97,9 @@ export async function POST(req: NextRequest) {
       createdAt: data.created_at,
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/lockbox/secrets/POST",
+    })
     return NextResponse.json({ error: e?.message ?? "Encryption/insert error" }, { status: 500 })
   }
 }
@@ -165,6 +169,9 @@ export async function GET(req: NextRequest) {
       value,
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/lockbox/secrets/GET",
+    })
     return NextResponse.json({ error: e?.message ?? "Decryption failed" }, { status: 500 })
   }
 }

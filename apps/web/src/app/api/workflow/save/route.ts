@@ -4,6 +4,7 @@ import {
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import type { Tables } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -104,6 +105,9 @@ export async function POST(request: NextRequest) {
       data: newWorkflowVersion,
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/save",
+    })
     console.error("Error saving workflow version:", error)
     return NextResponse.json(
       {

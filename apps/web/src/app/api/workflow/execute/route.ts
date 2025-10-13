@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { logException } from "@/lib/error-logger"
 import type { EvaluationText } from "@lucky/core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { genShortId } from "@lucky/shared/client"
@@ -51,6 +52,9 @@ export async function POST(req: NextRequest) {
       success: true,
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/execute",
+    })
     return NextResponse.json(
       {
         invocationId: "",
@@ -108,6 +112,9 @@ async function executeWorkflowAsync(
 
     asyncExecutions.set(invocationId, execution)
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/execute/async",
+    })
     const execution = asyncExecutions.get(invocationId)
     if (execution) {
       execution.status = "failed"
@@ -143,6 +150,9 @@ export async function GET(req: NextRequest) {
       execution,
     })
   } catch (error) {
+    logException(error, {
+      location: "/api/workflow/execute/GET",
+    })
     return NextResponse.json(
       {
         success: false,

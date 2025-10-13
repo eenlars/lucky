@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { encryptGCM } from "@/lib/crypto/lockbox"
+import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -41,6 +42,9 @@ export async function GET(_req: NextRequest) {
       })),
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/user/env-keys/GET",
+    })
     return NextResponse.json({ error: e?.message ?? "Failed to fetch environment keys" }, { status: 500 })
   }
 }
@@ -171,6 +175,9 @@ export async function POST(req: NextRequest) {
       createdAt: data.created_at,
     })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/user/env-keys/POST",
+    })
     return NextResponse.json({ error: e?.message ?? "Failed to save environment key" }, { status: 500 })
   }
 }
@@ -210,6 +217,9 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (e: any) {
+    logException(e, {
+      location: "/api/user/env-keys/DELETE",
+    })
     return NextResponse.json({ error: e?.message ?? "Failed to delete environment key" }, { status: 500 })
   }
 }
