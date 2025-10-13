@@ -6,7 +6,7 @@ export default defineConfig({
     "config/define": "src/config/define.ts",
     "pricing/catalog": "src/pricing/catalog.ts",
   },
-  format: ["esm"],
+  format: ["esm", "cjs"],
   platform: "node",
   dts: { resolve: true },
   sourcemap: true,
