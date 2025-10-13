@@ -1,8 +1,7 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
+import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
-import { openrouter } from "@openrouter/ai-sdk-provider"
 import { generateText, stepCountIs } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { clearMCPClientCache, setupMCPForNode } from "../mcp"
@@ -26,7 +25,7 @@ describe.skip("browser session persistence tests", () => {
     const tools1 = await setupMCPForNode(["browserUse"], "test-browser-sessions-1")
 
     const navResult = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -48,7 +47,7 @@ describe.skip("browser session persistence tests", () => {
     const tools2 = await setupMCPForNode(["browserUse"], "test-browser-sessions-2")
 
     const stateResult = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -89,7 +88,7 @@ describe.skip("browser session persistence tests", () => {
     const tools3 = await setupMCPForNode(["browserUse"], "test-browser-sessions-3")
 
     const extractResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -134,7 +133,7 @@ describe.skip("browser session persistence tests", () => {
     // Make multiple tool calls in a single generateText call to use the same session
     lgg.log("Making multiple tool calls in single session...")
     const result = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -152,7 +151,7 @@ describe.skip("browser session persistence tests", () => {
     lgg.log("Tool results:", JSON.stringify(result.toolResults, null, 2))
 
     // Process steps using processStepsV2
-    const processedSteps = processStepsV2(result.steps || [], getDefaultModels().default)
+    const processedSteps = processStepsV2(result.steps || [], "gpt-5-nano")
 
     // Check if we got content extraction
     const extractResults = processedSteps?.agentSteps.filter(
@@ -193,7 +192,7 @@ describe.skip("advanced browser tests", () => {
     // Navigate to nos.nl
     lgg.log("Step 1: Navigating to nos.nl...")
     await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -211,7 +210,7 @@ describe.skip("advanced browser tests", () => {
     // Extract the main headline
     lgg.log("Step 2: Extracting latest headline...")
     const headlineResult = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -258,7 +257,7 @@ describe.skip("advanced browser tests", () => {
     // Navigate to a simple page first
     lgg.log("Step 1: Navigate to simple page...")
     await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -275,7 +274,7 @@ describe.skip("advanced browser tests", () => {
 
     lgg.log("Step 2: Test browser_extract_content on simple page...")
     const extractResult = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -295,7 +294,7 @@ describe.skip("advanced browser tests", () => {
     // Also test with explicit parameters
     lgg.log("Step 3: Test with different query...")
     const extractResult2 = await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -329,7 +328,7 @@ async function cleanupBrowser(tools: any) {
   lgg.log("closing browser...")
   try {
     await generateText({
-      model: openrouter(getDefaultModels().default),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",

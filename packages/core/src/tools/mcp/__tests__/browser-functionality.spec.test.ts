@@ -1,8 +1,7 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
+import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"
-import { openrouter } from "@openrouter/ai-sdk-provider"
 import { generateText, stepCountIs } from "ai"
 import { describe, expect, it } from "vitest"
 import { setupMCPForNode } from "../mcp"
@@ -21,7 +20,7 @@ describe.skip("browser functionality tests", () => {
     // Navigate to nos.nl
     lgg.log("Navigating to nos.nl...")
     const navResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -45,7 +44,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("Testing browser_extract_content for headline extraction...")
 
     const extractTest1 = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -61,7 +60,7 @@ describe.skip("browser functionality tests", () => {
     })
 
     const extractTest2 = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -77,7 +76,7 @@ describe.skip("browser functionality tests", () => {
     })
 
     const extractTest3 = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -174,7 +173,7 @@ describe.skip("browser functionality tests", () => {
 
     // Navigate to nos.nl
     const _navResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -196,7 +195,7 @@ describe.skip("browser functionality tests", () => {
     // Get page state
     lgg.log("Getting page state...")
     const stateResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -214,7 +213,7 @@ describe.skip("browser functionality tests", () => {
     lgg.log("State result text:", stateResult.text)
 
     // Process steps using processStepsV2
-    const processedSteps = processStepsV2(stateResult.steps || [], getDefaultModels().default)
+    const processedSteps = processStepsV2(stateResult.steps || [], "gpt-5-nano")
 
     const stateResults = processedSteps?.agentSteps.filter(
       output => output.type === "tool" && output.name === "browser_get_state",
@@ -266,7 +265,7 @@ describe.skip("browser functionality tests", () => {
     // Try clicking around to see if content loads dynamically
     lgg.log("Checking for dynamic content...")
     const clickResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -282,7 +281,7 @@ describe.skip("browser functionality tests", () => {
 
     // Get state again after interaction
     const _finalStateResult = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -310,7 +309,7 @@ describe.skip("browser functionality tests", () => {
     const tools = await setupMCPForNode(["browserUse"], "test-browser-functionality-session")
 
     const result = await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",
@@ -359,7 +358,7 @@ async function cleanupBrowser(tools: any) {
   lgg.log("closing browser...")
   try {
     await generateText({
-      model: openrouter(getDefaultModels().medium),
+      model: openai("gpt-5-nano"),
       messages: [
         {
           role: "user",

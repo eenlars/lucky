@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { describe, expect, it } from "vitest"
@@ -34,7 +33,7 @@ describe("MCP Integration Tests", () => {
             content: "Search for recent news about artificial intelligence breakthroughs in 2024. Use tavily search.",
           },
         ],
-        model: getDefaultModels().nano,
+        model: "gpt-5-nano",
         opts: {
           tools,
           maxSteps: 5,
