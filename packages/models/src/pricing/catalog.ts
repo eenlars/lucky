@@ -832,7 +832,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
 
   {
-    id: "vendor:google;model:gemini-2.5-flash-lite",
+    id: "vendor:openrouter;model:gemini-2.5-flash-lite",
     provider: "openrouter",
     model: "google/gemini-2.5-flash-lite",
     input: 0.15,
@@ -853,7 +853,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:google;model:gemini-2.5-pro-preview",
+    id: "vendor:openrouter;model:gemini-2.5-pro-preview",
     provider: "openrouter",
     model: "google/gemini-2.5-pro-preview",
     input: 1.25,
@@ -874,7 +874,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:anthropic;model:claude-sonnet-4",
+    id: "vendor:openrouter;model:claude-sonnet-4",
     provider: "openrouter",
     model: "anthropic/claude-sonnet-4",
     input: 3,
@@ -895,7 +895,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:switchpoint;model:router",
+    id: "vendor:openrouter;model:router",
     provider: "openrouter",
     model: "switchpoint/router",
     input: 0.85,
@@ -916,7 +916,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4.1",
+    id: "vendor:openrouter;model:gpt-4.1",
     provider: "openrouter",
     model: "openai/gpt-4.1",
     input: 12,
@@ -937,7 +937,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4.1-mini",
+    id: "vendor:openrouter;model:gpt-4.1-mini",
     provider: "openrouter",
     model: "openai/gpt-4.1-mini",
     input: 0.4,
@@ -958,7 +958,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4.1-nano",
+    id: "vendor:openrouter;model:gpt-4.1-nano",
     provider: "openrouter",
     model: "openai/gpt-4.1-nano",
     input: 0.15,
@@ -979,7 +979,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-mini",
+    id: "vendor:openrouter;model:gpt-4o-mini",
     provider: "openrouter",
     model: "openai/gpt-4o-mini",
     input: 0.15,
@@ -1000,7 +1000,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-3.5-turbo",
+    id: "vendor:openrouter;model:gpt-3.5-turbo",
     provider: "openrouter",
     model: "openai/gpt-3.5-turbo",
     input: 0.5,
@@ -1021,7 +1021,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o",
+    id: "vendor:openrouter;model:gpt-4o",
     provider: "openrouter",
     model: "openai/gpt-4o",
     input: 2.5,
@@ -1042,7 +1042,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:anthropic;model:claude-3-5-haiku",
+    id: "vendor:openrouter;model:claude-3-5-haiku",
     provider: "openrouter",
     model: "anthropic/claude-3-5-haiku",
     input: 0.25,
@@ -1063,7 +1063,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:meta-llama;model:llama-3.1-8b-instruct",
+    id: "vendor:openrouter;model:llama-3.1-8b-instruct",
     provider: "openrouter",
     model: "meta-llama/llama-3.1-8b-instruct",
     input: 0.055,
@@ -1084,7 +1084,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:moonshotai;model:kimi-k2",
+    id: "vendor:openrouter;model:kimi-k2",
     provider: "openrouter",
     model: "moonshotai/kimi-k2",
     input: 0.5,
@@ -1105,7 +1105,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:moonshotai;model:kimi-k2-instruct",
+    id: "vendor:openrouter;model:kimi-k2-instruct",
     provider: "openrouter",
     model: "moonshotai/kimi-k2-instruct",
     input: 0.5,
@@ -1126,7 +1126,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:x-ai;model:grok-4",
+    id: "vendor:openrouter;model:grok-4",
     provider: "openrouter",
     model: "x-ai/grok-4",
     input: 2.0,
@@ -1147,7 +1147,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:mistralai;model:mistral-small-3.2-24b-instruct",
+    id: "vendor:openrouter;model:mistral-small-3.2-24b-instruct",
     provider: "openrouter",
     model: "mistralai/mistral-small-3.2-24b-instruct",
     input: 0.055,
@@ -1168,7 +1168,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-5",
+    id: "vendor:openrouter;model:gpt-5",
     provider: "openrouter",
     model: "openai/gpt-5",
     input: 1.25,
@@ -1193,7 +1193,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
 
   {
-    id: "vendor:openai;model:gpt-oss-20b",
+    id: "vendor:groq;model:gpt-oss-20b",
     provider: "groq",
     model: "openai/gpt-oss-20b",
     input: 0.5,
@@ -1214,7 +1214,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-oss-120b",
+    id: "vendor:groq;model:gpt-oss-120b",
     provider: "groq",
     model: "openai/gpt-oss-120b",
     input: 0.15,
