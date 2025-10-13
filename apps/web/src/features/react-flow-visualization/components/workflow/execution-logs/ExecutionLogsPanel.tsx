@@ -5,7 +5,11 @@ import type { WorkflowProgressEvent } from "@lucky/shared"
 import { ArrowDown, PlayCircle } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { LogEntry } from "./LogEntry"
-import type { LogEntry as LogEntryType } from "./types"
+import { LogFilters } from "./LogFilters"
+import { LogSearch } from "./LogSearch"
+import { SessionSelector } from "./SessionSelector"
+import { clearAllSessions, loadSessions, saveSession } from "./sessionManager"
+import type { ExecutionSession, LogEntry as LogEntryType, LogType } from "./types"
 
 interface ExecutionLogsPanelProps {
   isOpen: boolean
@@ -101,12 +105,33 @@ function convertEventToLog(event: WorkflowProgressEvent, index: number): LogEntr
 }
 
 export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps) {
-  const { events, isExecuting } = useExecutionStore()
+  const { events, isExecuting, currentInvocationId } = useExecutionStore()
   const [logs, setLogs] = useState<LogEntryType[]>([])
+  const [filteredLogs, setFilteredLogs] = useState<LogEntryType[]>([])
   const [autoScroll, setAutoScroll] = useState(true)
   const [newLogCount, setNewLogCount] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const prevScrollHeight = useRef(0)
+
+  // Phase 4: Filter state
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<LogType[]>([])
+
+  // Phase 4: Search state
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchMatches, setSearchMatches] = useState<number[]>([])
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0)
+
+  // Phase 5: Session state
+  const [sessions, setSessions] = useState<ExecutionSession[]>([])
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const workflowId = "default" // TODO: Get from context
+
+  // Load sessions on mount
+  useEffect(() => {
+    const loadedSessions = loadSessions(workflowId)
+    setSessions(loadedSessions)
+  }, [workflowId])
 
   // Convert events to logs
   useEffect(() => {
@@ -114,30 +139,92 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
       .map((event, index) => convertEventToLog(event, index))
       .filter(Boolean) as LogEntryType[]
     setLogs(convertedLogs)
-  }, [events])
+
+    // Update or create current session
+    if (currentInvocationId && convertedLogs.length > 0) {
+      const session: ExecutionSession = {
+        id: currentInvocationId,
+        startTime: convertedLogs[0].timestamp,
+        endTime: isExecuting ? undefined : new Date(),
+        status: isExecuting ? "running" : "success",
+        nodeCount: convertedLogs.filter(l => l.type === "SUCCESS" && l.nodeId !== "end").length,
+        totalCost: convertedLogs.reduce((sum, log) => sum + (log.cost || 0), 0),
+        logs: convertedLogs,
+      }
+
+      saveSession(workflowId, session)
+      setCurrentSessionId(currentInvocationId)
+      setSessions(loadSessions(workflowId))
+    }
+  }, [events, currentInvocationId, isExecuting, workflowId])
+
+  // Phase 4: Apply filters
+  useEffect(() => {
+    let filtered = logs
+
+    if (selectedNodes.length > 0) {
+      filtered = filtered.filter(log => selectedNodes.includes(log.nodeId))
+    }
+
+    if (selectedTypes.length > 0) {
+      filtered = filtered.filter(log => selectedTypes.includes(log.type))
+    }
+
+    setFilteredLogs(filtered)
+  }, [logs, selectedNodes, selectedTypes])
+
+  // Phase 4: Search and highlight
+  useEffect(() => {
+    if (!searchQuery) {
+      setSearchMatches([])
+      setCurrentMatchIndex(0)
+      return
+    }
+
+    const query = searchQuery.toLowerCase()
+    const matches: number[] = []
+
+    filteredLogs.forEach((log, index) => {
+      if (log.message.toLowerCase().includes(query)) {
+        matches.push(index)
+      }
+    })
+
+    setSearchMatches(matches)
+    setCurrentMatchIndex(0)
+  }, [searchQuery, filteredLogs])
+
+  // Auto-scroll to current search match
+  useEffect(() => {
+    if (searchMatches.length > 0 && scrollContainerRef.current) {
+      const matchIndex = searchMatches[currentMatchIndex]
+      const matchElement = scrollContainerRef.current.children[0]?.children[matchIndex] as HTMLElement
+      if (matchElement) {
+        matchElement.scrollIntoView({ behavior: "smooth", block: "center" })
+      }
+    }
+  }, [currentMatchIndex, searchMatches])
 
   // Auto-scroll logic
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    if (autoScroll) {
-      // Smooth scroll to bottom
+    if (autoScroll && !searchQuery) {
       container.scrollTo({
         top: container.scrollHeight,
         behavior: "smooth",
       })
       prevScrollHeight.current = container.scrollHeight
       setNewLogCount(0)
-    } else {
-      // Count new logs when not auto-scrolling
+    } else if (!autoScroll) {
       const heightDiff = container.scrollHeight - prevScrollHeight.current
       if (heightDiff > 0) {
         setNewLogCount(prev => prev + 1)
       }
       prevScrollHeight.current = container.scrollHeight
     }
-  }, [logs, autoScroll])
+  }, [filteredLogs, autoScroll, searchQuery])
 
   // Detect manual scroll
   const handleScroll = () => {
@@ -152,19 +239,23 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
     }
   }
 
-  // Handle Escape key to close panel
+  // Handle Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
-        onClose()
+        if (searchQuery) {
+          setSearchQuery("")
+        } else {
+          onClose()
+        }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, searchQuery])
 
-  // Find active node (node_started event without matching node_completed)
+  // Find active node
   const nodeStartedEvents = events.filter(e => e.type === "node_started")
   const nodeCompletedEvents = events.filter(e => e.type === "node_completed")
   const activeNode = nodeStartedEvents
@@ -172,6 +263,24 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
     .reverse()
     .find(startEvent => !nodeCompletedEvents.some(completeEvent => completeEvent.nodeId === startEvent.nodeId))
   const activeNodeId = activeNode?.nodeId
+
+  // Get available nodes for filter
+  const availableNodes = Array.from(new Set(logs.map(log => log.nodeId)))
+
+  // Session management handlers
+  const handleSessionSelect = (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId)
+    if (session) {
+      setLogs(session.logs)
+      setCurrentSessionId(sessionId)
+    }
+  }
+
+  const handleClearHistory = () => {
+    clearAllSessions(workflowId)
+    setSessions([])
+    setCurrentSessionId(null)
+  }
 
   if (!isOpen) return null
 
@@ -188,6 +297,42 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
       <div className="h-12 px-4 flex items-center gap-3 bg-gray-50 dark:bg-[oklch(0.13_0_0)] border-b border-gray-200 dark:border-white/10">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Execution Logs</h2>
         {isExecuting && <span className="text-xs text-gray-500 dark:text-gray-400">(Running...)</span>}
+
+        <div className="flex-1" />
+
+        {/* Phase 5: Session Selector */}
+        {sessions.length > 0 && (
+          <SessionSelector
+            sessions={sessions}
+            currentSessionId={currentSessionId}
+            onSessionSelect={handleSessionSelect}
+            onClearHistory={handleClearHistory}
+          />
+        )}
+
+        {/* Phase 4: Filters */}
+        <LogFilters
+          selectedNodes={selectedNodes}
+          selectedTypes={selectedTypes}
+          availableNodes={availableNodes}
+          onNodesChange={setSelectedNodes}
+          onTypesChange={setSelectedTypes}
+          onClearAll={() => {
+            setSelectedNodes([])
+            setSelectedTypes([])
+          }}
+        />
+
+        {/* Phase 4: Search */}
+        <LogSearch
+          query={searchQuery}
+          onQueryChange={setSearchQuery}
+          currentMatch={currentMatchIndex}
+          totalMatches={searchMatches.length}
+          onPrevMatch={() => setCurrentMatchIndex(prev => (prev > 0 ? prev - 1 : searchMatches.length - 1))}
+          onNextMatch={() => setCurrentMatchIndex(prev => (prev < searchMatches.length - 1 ? prev + 1 : 0))}
+          onClear={() => setSearchQuery("")}
+        />
       </div>
 
       {/* Logs Content */}
@@ -197,18 +342,37 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
         className="overflow-y-auto relative"
         style={{ height: "calc(100% - 48px)" }}
       >
-        {logs.length === 0 ? (
+        {filteredLogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <PlayCircle className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No execution logs yet</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Run your workflow to see what happens</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              {logs.length === 0 ? "No execution logs yet" : "No logs match filters"}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {logs.length === 0 ? "Run your workflow to see what happens" : "Try adjusting your filters"}
+            </p>
           </div>
         ) : (
           <>
             <div className="divide-y divide-gray-100 dark:divide-white/5">
-              {logs.map(log => (
-                <LogEntry key={log.id} log={log} />
-              ))}
+              {filteredLogs.map((log, index) => {
+                const isMatch = searchMatches.includes(index)
+                const isCurrentMatch = searchMatches[currentMatchIndex] === index
+                return (
+                  <div
+                    key={log.id}
+                    className={
+                      isMatch
+                        ? isCurrentMatch
+                          ? "bg-yellow-100 dark:bg-yellow-900/20"
+                          : "bg-yellow-50 dark:bg-yellow-900/10"
+                        : ""
+                    }
+                  >
+                    <LogEntry log={log} />
+                  </div>
+                )
+              })}
 
               {/* Typing Indicator */}
               {isExecuting && activeNodeId && (
@@ -246,7 +410,7 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
             </div>
 
             {/* Jump to Latest Button */}
-            {!autoScroll && (
+            {!autoScroll && !searchQuery && (
               <button
                 type="button"
                 onClick={() => setAutoScroll(true)}
