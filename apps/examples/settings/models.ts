@@ -41,7 +41,7 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
 
 // model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openrouter" as const satisfies LuckyProvider,
+  provider: "openai" as const satisfies LuckyProvider,
   inactive: [
     "moonshotai/kimi-k2",
     // "deepseek/deepseek-r1-0528:free", // timeouts
@@ -53,7 +53,7 @@ export const MODEL_CONFIG = {
     // "openai/gpt-4.1",
     // "openai/gpt-4.1-mini",
   ] as string[],
-  defaults: DEFAULT_MODELS.openrouter,
+  defaults: DEFAULT_MODELS.openai,
 } as const
 
 export const getDefaultModels = (): StandardModels => {
