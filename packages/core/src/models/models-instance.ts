@@ -6,19 +6,10 @@
 import { getApiKey } from "@core/context/executionContext"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import { type Models, type ModelsConfig, type ProviderConfig, createModels } from "@lucky/models"
+import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
 let _modelsInstance: Models | null = null
-
-/**
- * Provider availability configuration
- * Providers marked as disabled will not be initialized even if API keys are present
- */
-const PROVIDER_AVAILABILITY: Record<string, boolean> = {
-  openai: true,
-  openrouter: false, // Disabled
-  groq: false, // Disabled
-}
 
 /**
  * Build provider configuration from core config and environment.

@@ -60,6 +60,16 @@ export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 // MODELS CONFIGURATION
 // ============================================================================
 
+/**
+ * Provider availability configuration - single source of truth.
+ * Providers marked as disabled will not be initialized even if API keys are present.
+ */
+export const PROVIDER_AVAILABILITY = {
+  openai: true,
+  openrouter: false, // Disabled
+  groq: false, // Disabled
+} as const
+
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
 
 export const ModelDefaultsSchema = z.object({

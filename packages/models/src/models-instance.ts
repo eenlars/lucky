@@ -5,20 +5,11 @@
  * Configured with environment variables.
  */
 
+import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
 import { Models } from "./models"
 import type { ModelsConfig, ProviderConfig } from "./types"
 
 let modelsInstance: Models | null = null
-
-/**
- * Provider availability configuration
- * Providers marked as disabled will not be initialized even if API keys are present
- */
-const PROVIDER_AVAILABILITY: Record<string, boolean> = {
-  openai: true,
-  openrouter: false, // Disabled
-  groq: false, // Disabled
-}
 
 /**
  * Build provider configuration from environment variables
