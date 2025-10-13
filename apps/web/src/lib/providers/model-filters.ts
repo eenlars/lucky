@@ -1,7 +1,6 @@
 import type {
   FilterPreset,
   GroupBy,
-  ModelCapability,
   ModelFilters,
   ModelSpeed,
   SortBy,

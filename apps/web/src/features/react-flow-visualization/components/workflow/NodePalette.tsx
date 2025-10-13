@@ -24,6 +24,8 @@ interface NodeType {
     icon: string
     border: string
   }
+  // When true, card shows but cannot be dragged
+  disabled?: boolean
 }
 
 const baseNodes: NodeType[] = [
@@ -82,10 +84,18 @@ const connectorNode: NodeType = {
   },
 }
 
-const availableNodes: NodeType[] =
-  process.env.NODE_ENV === "development"
-    ? [...baseNodes.slice(0, 2), connectorNode, humanNode, baseNodes[2]]
-    : baseNodes
+// Always show Human & Connector in production, but disable dragging there
+const availableNodes: NodeType[] = (() => {
+  const extras: NodeType[] =
+    process.env.NODE_ENV === "production"
+      ? [
+          { ...connectorNode, disabled: true },
+          { ...humanNode, disabled: true },
+        ]
+      : [connectorNode, humanNode]
+
+  return [...baseNodes.slice(0, 2), ...extras, baseNodes[2]]
+})()
 
 interface StackCardProps {
   node: NodeType
@@ -102,6 +112,7 @@ function StackCard({ node, depth }: StackCardProps) {
   const opacity = 1 - depth * 0.2 // 20% fade per layer
 
   const handleDragStart = (e: React.DragEvent) => {
+    if (node.disabled) return
     e.dataTransfer.setData("application/reactflow", JSON.stringify({ id: node.id }))
     e.dataTransfer.effectAllowed = "move"
     setDraggedPaletteNodeType(node.id as any)
@@ -113,13 +124,18 @@ function StackCard({ node, depth }: StackCardProps) {
 
   return (
     <div
-      draggable={depth === 0}
+      draggable={depth === 0 && !node.disabled}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       className={cn(
         "absolute bg-white dark:bg-gray-900 border-2 rounded-xl transition-all duration-200",
         depth === 0
-          ? cn("cursor-grab active:cursor-grabbing shadow-lg hover:shadow-xl z-20", node.color.border)
+          ? cn(
+              node.disabled
+                ? "opacity-60 cursor-not-allowed z-20"
+                : "cursor-grab active:cursor-grabbing shadow-lg hover:shadow-xl z-20",
+              node.color.border,
+            )
           : "border-gray-200 dark:border-gray-800 pointer-events-none z-10",
       )}
       style={{

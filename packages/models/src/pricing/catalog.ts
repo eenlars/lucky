@@ -61,7 +61,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 9,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -211,7 +212,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -274,7 +276,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -295,7 +298,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -316,7 +320,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -337,7 +342,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -358,7 +364,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -379,7 +386,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // GPT-4.1 Series
@@ -422,7 +430,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -443,7 +452,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // GPT-4o Series
@@ -465,7 +475,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -486,7 +497,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -507,7 +519,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -528,7 +541,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -549,7 +563,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -570,7 +585,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -591,7 +607,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -612,7 +629,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -633,7 +651,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -654,7 +673,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // GPT-4 Series
@@ -676,7 +696,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -697,7 +718,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -718,7 +740,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -739,7 +762,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "slow",
     intelligence: 8,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -760,7 +784,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "slow",
     intelligence: 8,
     pricingTier: "high",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // GPT-3.5 Series
@@ -782,7 +807,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -803,7 +829,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -824,7 +851,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // ============================================================================

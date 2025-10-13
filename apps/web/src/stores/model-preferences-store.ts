@@ -4,7 +4,6 @@
  */
 
 import { logException } from "@/lib/error-logger"
-import { MODEL_CATALOG } from "@lucky/models"
 import type { ModelId, UserModelPreferences } from "@lucky/shared"
 import {
   getEnabledModelsForProvider,

@@ -12,6 +12,19 @@ interface SessionData {
   [key: string]: unknown
 }
 
+interface JsonRpcError {
+  code: number
+  message: string
+  data?: unknown
+}
+
+interface JsonRpcResponse {
+  jsonrpc?: string
+  id?: string | number
+  result?: unknown
+  error?: JsonRpcError
+}
+
 function extractApiKey(headers: IncomingHttpHeaders): string | undefined {
   const headerAuth = headers.authorization
   const headerApiKey = (headers["x-lucky-api-key"] || headers["x-api-key"]) as string | string[] | undefined
@@ -59,7 +72,9 @@ const server = new FastMCP<SessionData>({
 })
 
 function asText(data: unknown): string {
-  return JSON.stringify(data, null, 2)
+  // Ensure we always return a string, even if data is undefined
+  const safe = data === undefined ? null : data
+  return JSON.stringify(safe, null, 2)
 }
 
 /**
@@ -269,15 +284,15 @@ Execute a workflow with provided input data.
       throw new Error(`Failed to invoke workflow: ${response.statusText}`)
     }
 
-    let rpcResponse: unknown
+    let rpcResponse: JsonRpcResponse
     try {
-      rpcResponse = await response.json()
+      rpcResponse = (await response.json()) as JsonRpcResponse
     } catch {
       throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
     }
 
     // Check for JSON-RPC error
-    if (rpcResponse.error) {
+    if (rpcResponse?.error) {
       const errorMessages: Record<number, string> = {
         [-32001]: "Workflow not found or you don't have access to it",
         [-32002]: "Input validation failed - check the workflow's inputSchema",
@@ -285,11 +300,13 @@ Execute a workflow with provided input data.
         [-32004]: "Workflow execution timed out",
       }
 
-      const message = errorMessages[rpcResponse.error.code] || rpcResponse.error.message
+      const code = rpcResponse.error.code
+      const fallback = rpcResponse.error.message || "Unknown workflow error"
+      const message = errorMessages[code] || fallback
       throw new Error(`Workflow error: ${message}`)
     }
 
-    return asText(rpcResponse.result)
+    return asText(rpcResponse?.result)
   },
 })
 

@@ -9,7 +9,6 @@ import { ExecutionLogsPanel } from "@/features/cli-inspection/components/Executi
 import { WorkflowEdge } from "@/features/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { WorkflowPromptBar } from "@/features/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
-import { useLayout } from "@/features/react-flow-visualization/hooks/use-layout"
 // runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { NodePalette } from "./NodePalette"
