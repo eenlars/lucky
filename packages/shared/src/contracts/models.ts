@@ -48,11 +48,33 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
 
 /**
  * Complete model entry schema - single source of truth for model definitions
+ *
+ * ⚠️ CRITICAL FIELD USAGE:
+ *
+ * - `id`: ONLY for catalog lookup/search (always prefixed: "openai/gpt-4o")
+ *           ❌ DO NOT use this when calling provider APIs!
+ *
+ * - `model`: USE THIS for provider API calls and storage (provider-specific format)
+ *            ✅ OpenAI: unprefixed ("gpt-4o")
+ *            ✅ OpenRouter: prefixed ("anthropic/claude-sonnet-4")
+ *
+ * - `provider`: Determines which API endpoint to use and which API key is needed
+ *
+ * WRONG EXAMPLE: Sending catalog.id to OpenAI API ❌
+ *   const entry = MODEL_CATALOG.find(e => e.id === "openai/gpt-4o")
+ *   openai.chat(entry.id)  // ❌ Will fail! OpenAI doesn't accept "openai/gpt-4o"
+ *
+ * RIGHT EXAMPLE: Sending catalog.model to provider API ✅
+ *   const entry = MODEL_CATALOG.find(e => e.id === "openai/gpt-4o")
+ *   openai.chat(entry.model)  // ✅ Correct! Sends "gpt-4o"
  */
 export const modelEntrySchema = z.object({
   // Identity
+  /** Catalog lookup ID (always prefixed) - DO NOT use for API calls! */
   id: z.string().min(1),
+  /** Provider name (determines which API endpoint to use) */
   provider: z.string().min(1),
+  /** Model identifier in provider-specific format - USE THIS for API calls! */
   model: z.string().min(1),
 
   // Pricing (per 1M tokens in USD)

@@ -152,12 +152,29 @@ export async function handleSuccess(
 
   const totalUsdCost = response.cost + validationCost + handoffCost + (extraCost ?? 0)
 
-  // save to db
+  // Persist node execution results to database
+  // Uses lifecycle tracking if nodeInvocationId was provided (new pattern),
+  // otherwise falls back to legacy single-write pattern (backwards compatibility)
   let nodeInvocationId: string
   if (context.skipDatabasePersistence || !context.persistence) {
-    // Skip database save and use mock ID
-    nodeInvocationId = `mock-invocation-${nodeConfig.nodeId}-${Date.now()}`
+    // Tests or workflows without database: use mock ID
+    nodeInvocationId = context.nodeInvocationId ?? `mock-invocation-${nodeConfig.nodeId}-${Date.now()}`
+  } else if (context.nodeInvocationId) {
+    // Lifecycle tracking: update existing record (status: running → completed)
+    await context.persistence.nodes.updateNodeInvocationEnd({
+      nodeInvocationId: context.nodeInvocationId,
+      endTime: new Date().toISOString(),
+      status: "completed",
+      output: finalNodeInvocationOutput,
+      summary: response.summary ?? "",
+      usdCost: response.cost,
+      agentSteps: response.agentSteps,
+      files: filesUsed.length > 0 ? filesUsed : undefined,
+      updatedMemory: updatedMemory || undefined,
+    })
+    nodeInvocationId = context.nodeInvocationId
   } else {
+    // Legacy pattern: create record at completion only (backwards compatibility)
     const nodeInvocationData: NodeInvocationData = {
       nodeId: nodeConfig.nodeId,
       workflowInvocationId: context.workflowInvocationId,
@@ -212,11 +229,29 @@ export async function handleError({
     filesUsed.push(...context.workflowFiles.map(file => file.filePath))
   }
 
-  // Respect skipDatabasePersistence similarly to handleSuccess
+  // Persist node execution error to database
+  // Uses lifecycle tracking if nodeInvocationId was provided (new pattern),
+  // otherwise falls back to legacy single-write pattern (backwards compatibility)
   let nodeInvocationId: string
   if (context.skipDatabasePersistence || !context.persistence) {
-    nodeInvocationId = `mock-invocation-${context.nodeConfig.nodeId}-${Date.now()}`
+    // Tests or workflows without database: use mock ID
+    nodeInvocationId = context.nodeInvocationId ?? `mock-invocation-${context.nodeConfig.nodeId}-${Date.now()}`
+  } else if (context.nodeInvocationId) {
+    // Lifecycle tracking: update existing record (status: running → failed)
+    await context.persistence.nodes.updateNodeInvocationEnd({
+      nodeInvocationId: context.nodeInvocationId,
+      endTime: new Date().toISOString(),
+      status: "failed",
+      output: errorMessage,
+      summary,
+      usdCost: 0,
+      agentSteps,
+      files: filesUsed.length > 0 ? filesUsed : undefined,
+      error: { message: errorMessage },
+    })
+    nodeInvocationId = context.nodeInvocationId
   } else {
+    // Legacy pattern: create record at completion only (backwards compatibility)
     const nodeInvocationData: NodeInvocationData = {
       nodeId: context.nodeConfig.nodeId,
       workflowInvocationId: context.workflowInvocationId,

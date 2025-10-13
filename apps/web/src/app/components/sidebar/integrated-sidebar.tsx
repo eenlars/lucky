@@ -4,7 +4,7 @@ import { useSidebar } from "@/contexts/SidebarContext"
 import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/nextjs"
-import { BarChart2, Dna, Home, Menu, Network, Plug, Settings, Sparkles, X } from "lucide-react"
+import { BarChart2, Code, Dna, Home, Menu, Network, Plug, Settings, Sparkles, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -104,6 +104,14 @@ const allNavigationItems: NavItemData[] = [
       { type: "settings-providers", label: "Providers", href: "/settings/providers" },
       { type: "settings-payment", label: "Payment", href: "/payment" },
     ],
+  },
+  {
+    type: "developer",
+    href: "/dev",
+    label: "Developer",
+    icon: <Code className="w-4 h-4" />,
+    description: "Store inspector",
+    enabled: false,
   },
 ]
 

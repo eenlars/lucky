@@ -5,6 +5,8 @@ import { Brain, Plug, User } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { BaseNode } from "@/features/react-flow-visualization/components/base-node"
+import { type ConnectorConfig, ConnectorDialog } from "@/features/react-flow-visualization/components/connector-dialog"
+import { HumanDialog, type HumanGateConfig } from "@/features/react-flow-visualization/components/human-dialog"
 import { NodeHeaderDeleteAction } from "@/features/react-flow-visualization/components/node-header"
 import { NodeStatusIndicator } from "@/features/react-flow-visualization/components/node-status-indicator"
 import { NODE_SIZE, type WorkflowNodeData } from "@/features/react-flow-visualization/components/nodes/nodes"
@@ -32,6 +34,9 @@ function WorkflowNode({
   const draggedPaletteNodeType = useAppStore(state => state.draggedPaletteNodeType)
   const [_isToolSelectorOpen, _setIsToolSelectorOpen] = useState(false)
   const [isDropZoneActive, setIsDropZoneActive] = useState(false)
+  const [connectorDialogOpen, setConnectorDialogOpen] = useState(false)
+  const [editingConnectorId, setEditingConnectorId] = useState<string | null>(null)
+  const [humanDialogOpen, setHumanDialogOpen] = useState(false)
 
   const _onRunClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
@@ -61,11 +66,11 @@ function WorkflowNode({
 
   const _IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
-  // show raw model id plus provider (e.g., openai/gpt-4.1-mini + openrouter)
+  // show raw model id (e.g., openai/gpt-4o-mini)
   const displayModelName = (() => {
     const full = data?.modelName || ""
     if (!full) return null
-    return `${full} + openrouter`
+    return full
   })()
 
   const _totalTools = (data?.mcpTools?.length || 0) + (data?.codeTools?.length || 0)
@@ -139,6 +144,49 @@ function WorkflowNode({
     [id, updateNode, data?.connectors],
   )
 
+  const handleConnectorClick = useCallback((connectorId: string) => {
+    setEditingConnectorId(connectorId)
+    setConnectorDialogOpen(true)
+  }, [])
+
+  const handleConnectorSave = useCallback(
+    (updates: ConnectorConfig) => {
+      if (!editingConnectorId) return
+      // For now, just store the ID in the array
+      // In a real implementation, you'd store the full config somewhere
+      console.log("Connector saved:", updates)
+    },
+    [editingConnectorId],
+  )
+
+  const handleConnectorDelete = useCallback(() => {
+    if (!editingConnectorId) return
+    const existingConnectors = data?.connectors || []
+    updateNode(id, {
+      connectors: existingConnectors.filter(c => c !== editingConnectorId),
+    })
+    setConnectorDialogOpen(false)
+    setEditingConnectorId(null)
+  }, [editingConnectorId, data?.connectors, id, updateNode])
+
+  const handleHumanClick = useCallback(() => {
+    setHumanDialogOpen(true)
+  }, [])
+
+  const handleHumanSave = useCallback(
+    (updates: HumanGateConfig) => {
+      updateNode(id, {
+        approvalPrompt: updates.prompt,
+      })
+    },
+    [id, updateNode],
+  )
+
+  const handleHumanDelete = useCallback(() => {
+    updateNode(id, { requiresApproval: false })
+    setHumanDialogOpen(false)
+  }, [id, updateNode])
+
   return (
     <NodeStatusIndicator status={data?.status}>
       {/* Wrapper with overflow visible to show badges above */}
@@ -154,7 +202,7 @@ function WorkflowNode({
                 title={`Connector ${index + 1}`}
                 onClick={e => {
                   e.stopPropagation()
-                  openNodeDetails(id)
+                  handleConnectorClick(connector)
                 }}
               >
                 <Plug className="size-8 text-emerald-600 dark:text-emerald-400" />
@@ -171,7 +219,7 @@ function WorkflowNode({
             title="Human gate"
             onClick={e => {
               e.stopPropagation()
-              openNodeDetails(id)
+              handleHumanClick()
             }}
           >
             <User className="size-8 text-amber-600 dark:text-amber-400" />
@@ -288,33 +336,71 @@ function WorkflowNode({
           {!isStartOrEndNode && draggedPaletteNodeType === "human-node" && (
             <div
               className={cn(
-                "absolute right-4 -top-16 w-16 h-16 transition-all duration-200 rounded-lg pointer-events-auto",
-                isDropZoneActive &&
-                  "bg-amber-100/50 dark:bg-amber-900/30 border-2 border-dashed border-amber-500 dark:border-amber-400",
+                "absolute inset-0 transition-all duration-200 rounded-lg pointer-events-auto",
+                "bg-amber-100/20 dark:bg-amber-900/20 border-4 border-dashed border-amber-400 dark:border-amber-500",
+                "flex items-center justify-center",
+                isDropZoneActive && "bg-amber-100/40 dark:bg-amber-900/40 border-amber-500 dark:border-amber-400",
               )}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-            />
+            >
+              <div className="flex flex-col items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                <User className="size-8" />
+                <span className="text-sm">Drop human gate here</span>
+              </div>
+            </div>
           )}
 
           {!isStartOrEndNode && draggedPaletteNodeType === "connector-node" && (
             <div
               className={cn(
-                "absolute left-4 -top-16 w-16 h-16 transition-all duration-200 rounded-lg pointer-events-auto",
+                "absolute inset-0 transition-all duration-200 rounded-lg pointer-events-auto",
+                "bg-emerald-100/20 dark:bg-emerald-900/20 border-4 border-dashed border-emerald-400 dark:border-emerald-500",
+                "flex items-center justify-center",
                 isDropZoneActive &&
-                  "bg-emerald-100/50 dark:bg-emerald-900/30 border-2 border-dashed border-emerald-500 dark:border-emerald-400",
+                  "bg-emerald-100/40 dark:bg-emerald-900/40 border-emerald-500 dark:border-emerald-400",
               )}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-            />
+            >
+              <div className="flex flex-col items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
+                <Plug className="size-8" />
+                <span className="text-sm">Drop connector here</span>
+              </div>
+            </div>
           )}
 
           {/* ReactFlow connection handles */}
           {children}
         </BaseNode>
       </div>
+
+      {/* Connector Dialog */}
+      {editingConnectorId && (
+        <ConnectorDialog
+          open={connectorDialogOpen}
+          onOpenChange={setConnectorDialogOpen}
+          connector={{ id: editingConnectorId }}
+          onSave={handleConnectorSave}
+          onDelete={handleConnectorDelete}
+        />
+      )}
+
+      {/* Human Gate Dialog */}
+      {data?.requiresApproval && (
+        <HumanDialog
+          open={humanDialogOpen}
+          onOpenChange={setHumanDialogOpen}
+          config={{
+            id: `${id}-human-gate`,
+            prompt: data.approvalPrompt,
+          }}
+          onSave={handleHumanSave}
+          onDelete={handleHumanDelete}
+        />
+      )}
     </NodeStatusIndicator>
   )
 }

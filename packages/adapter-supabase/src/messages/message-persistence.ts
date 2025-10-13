@@ -2,6 +2,7 @@
  * Message persistence implementation for Supabase.
  */
 
+import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { PersistenceError } from "../errors/domain-errors"
 import type { IMessagePersistence, MessageData } from "../persistence-interface"
@@ -21,7 +22,7 @@ export class SupabaseMessagePersistence implements IMessagePersistence {
       payload: message.payload,
       createdAt: message.createdAt,
       wfInvocationId: message.workflowInvocationId,
-    })
+    }) as TablesInsert<"Message">
 
     const { error } = await this.client.from("Message").insert(mapped)
 
