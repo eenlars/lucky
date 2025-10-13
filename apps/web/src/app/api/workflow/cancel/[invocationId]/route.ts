@@ -1,22 +1,25 @@
-import { requireAuth } from "@/lib/api-auth"
+import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState, publishCancellation, setWorkflowState } from "@/lib/redis/workflow-state"
 import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { type NextRequest, NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 /**
- * POST /api/workflow/cancel
+ * POST /api/workflow/cancel/[invocationId]
  *
+ * RESTful endpoint for canceling a running workflow (Phase 1 MCP requirement).
  * Gracefully cancels a running workflow by triggering its AbortController.
  * The workflow will stop after the current node completes.
  *
  * This endpoint is idempotent - multiple cancel requests return consistent state.
  * Always returns 202 Accepted with the current state in the response body.
  *
- * Request body:
- * {
- *   invocationId: string
- * }
+ * Supports both API key (Bearer token) and Clerk session authentication.
+ *
+ * URL parameter:
+ *   invocationId: string (e.g., inv_abc123)
  *
  * Response: 202 Accepted
  * {
@@ -26,13 +29,22 @@ import { type NextRequest, NextResponse } from "next/server"
  *   message: string
  * }
  */
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ invocationId: string }> }) {
   try {
-    const authResult = await requireAuth()
-    if (authResult instanceof NextResponse) return authResult
+    // Unified authentication: API key or Clerk session
+    const principal = await authenticateRequest(req)
+    if (!principal) {
+      return NextResponse.json(
+        {
+          status: "not_found" as const,
+          invocationId: "unknown",
+          message: "Unauthorized",
+        },
+        { status: 401 },
+      )
+    }
 
-    const body = await req.json()
-    const { invocationId } = body
+    const { invocationId } = await params
 
     if (!invocationId || typeof invocationId !== "string") {
       return NextResponse.json(
@@ -98,7 +110,7 @@ export async function POST(req: NextRequest) {
       entry.controller.abort()
     }
 
-    console.log(`[/api/workflow/cancel] Cancellation requested for ${invocationId}`)
+    console.log(`[POST /api/workflow/cancel/${invocationId}] Cancellation requested`)
 
     return NextResponse.json(
       {
@@ -111,9 +123,9 @@ export async function POST(req: NextRequest) {
     )
   } catch (error) {
     logException(error, {
-      location: "/api/workflow/cancel",
+      location: "/api/workflow/cancel/[invocationId]",
     })
-    console.error("[/api/workflow/cancel] Error:", error)
+    console.error("[POST /api/workflow/cancel/[invocationId]] Error:", error)
 
     // Even errors return 202 with state in body for idempotency
     return NextResponse.json(
