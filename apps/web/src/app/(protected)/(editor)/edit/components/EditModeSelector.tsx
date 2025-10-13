@@ -32,11 +32,28 @@ async function loadFromDSLClientDisplay(dslConfig: any) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ workflow: dslConfig, mode: "dsl-display" }),
   })
-  const result = await response.json()
-  if (!result.isValid) {
-    throw new Error(result.errors?.[0] || "Invalid workflow configuration")
+  const jsonRpcResponse = await response.json()
+
+  // Handle JSON-RPC error response
+  if (jsonRpcResponse.error) {
+    const data = jsonRpcResponse.error.data
+    const errors = Array.isArray(data?.errors) ? data.errors : [jsonRpcResponse.error.message]
+    const errorMsg =
+      errors.length > 1
+        ? `${errors.length} validation issues: ${errors[0]}`
+        : errors[0] || "Invalid workflow configuration"
+    throw new Error(errorMsg)
   }
-  return result.config
+
+  // Handle JSON-RPC success response
+  const output = jsonRpcResponse.result?.output
+  if (!output?.isValid) {
+    const errors = Array.isArray(output?.errors) ? output.errors : ["Invalid workflow configuration"]
+    const errorMsg = errors.length > 1 ? `${errors.length} validation issues: ${errors[0]}` : errors[0]
+    throw new Error(errorMsg)
+  }
+
+  return output.config
 }
 
 type EditMode = "graph" | "json" | "eval"
