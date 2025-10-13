@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
         provider: "v8",
         reporter: ["text", "html"],
         reportsDirectory: "coverage-integration",
-        include: ["apps/web/src/**/*.{ts,js}"],
+        include: ["apps/web/src/**/*.{ts,tsx,js,jsx}"],
         exclude: ["node_modules/"],
         all: true,
       },

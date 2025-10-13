@@ -132,7 +132,7 @@ export TEST_API_URL=http://localhost:3000
 
 ### Vitest Config
 Integration tests use the root-level configuration:
-- `vite.integration.config.ts` - Integration test config
+- `vitest.integration.config.ts` - Integration test config
 
 ### TypeScript Config
 - `tests/integration/tsconfig.json` - TypeScript config for integration tests

@@ -249,7 +249,7 @@ describe("POST /api/v1/invoke - Real HTTP Integration Test", () => {
 
 ### Vitest Config
 - Unit tests: `vitest.config.ts` (per package)
-- Integration tests: `vite.integration.config.ts` (root level)
+- Integration tests: `vitest.integration.config.ts` (root level)
 
 ### Environment Variables
 Set test-specific environment variables in `.env.test` or pass them directly:
