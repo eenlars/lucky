@@ -11,6 +11,18 @@ export interface WorkflowLoadResult {
   config?: WorkflowConfig
   inputSchema?: JsonSchemaDefinition
   outputSchema?: JsonSchemaDefinition
+  /**
+   * The resolved workflow version ID when loaded from the database.
+   * Present when the source is a database workflow (version or latest of parent).
+   */
+  resolvedWorkflowVersionId?: string
+  /**
+   * Indicates where the workflow config was sourced from.
+   * - 'version': Loaded by explicit workflow version ID (wf_ver_*)
+   * - 'parent': Loaded by parent workflow ID (wf_*) and resolved to latest version
+   * - 'demo': Returned built-in demo config
+   */
+  source?: "version" | "parent" | "demo"
   error?: {
     code: number
     message: string
@@ -76,6 +88,7 @@ export function getDemoWorkflow(): WorkflowLoadResult {
     config: DEMO_WORKFLOW,
     inputSchema: DEMO_WORKFLOW.inputSchema,
     outputSchema: DEMO_WORKFLOW.outputSchema,
+    source: "demo",
   }
 }
 
@@ -213,6 +226,8 @@ async function loadWorkflowByVersionId(versionId: string): Promise<WorkflowLoadR
     config,
     inputSchema: config.inputSchema,
     outputSchema: config.outputSchema,
+    resolvedWorkflowVersionId: versionId,
+    source: "version",
   }
 }
 
@@ -271,5 +286,7 @@ async function loadWorkflowByWorkflowId(workflowId: string): Promise<WorkflowLoa
     config,
     inputSchema: config.inputSchema,
     outputSchema: config.outputSchema,
+    resolvedWorkflowVersionId: latestVersion.wf_version_id,
+    source: "parent",
   }
 }

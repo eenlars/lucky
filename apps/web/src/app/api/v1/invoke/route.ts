@@ -85,7 +85,19 @@ export async function POST(req: NextRequest) {
     }
 
     const transformed = transformResult.data!
-    const invocationInput = createInvocationInput(transformed)
+    const invocationInput = createInvocationInput(transformed) as any
+
+    // If we fell back to demo workflow, invoke using the DSL config directly
+    // Otherwise, ensure we use the resolved workflow version id (handles parent IDs)
+    let coreInvocationInput: any = invocationInput
+    if (workflowLoadResult.source === "demo" && config) {
+      coreInvocationInput = {
+        evalInput: invocationInput.evalInput,
+        dslConfig: config,
+      }
+    } else if (workflowLoadResult.resolvedWorkflowVersionId) {
+      coreInvocationInput.workflowVersionId = workflowLoadResult.resolvedWorkflowVersionId
+    }
 
     // Create secret resolver for this user
     const secrets = createSecretResolver(principal.clerk_id)
@@ -116,7 +128,7 @@ export async function POST(req: NextRequest) {
 
     // Execute workflow within execution context
     const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
-      return invokeWorkflow(invocationInput)
+      return invokeWorkflow(coreInvocationInput)
     })
 
     const finishedAt = new Date().toISOString()
@@ -129,10 +141,15 @@ export async function POST(req: NextRequest) {
     const traceId = extractTraceId(result)
 
     // Return JSON-RPC success response
+    const responseWorkflowId =
+      workflowLoadResult.source === "demo"
+        ? "wf_demo"
+        : workflowLoadResult.resolvedWorkflowVersionId || transformed.workflowVersionId
+
     return NextResponse.json(
       formatSuccessResponse(requestId, output, {
         requestId: transformed.workflowId,
-        workflowId: transformed.workflowVersionId,
+        workflowId: responseWorkflowId,
         startedAt,
         finishedAt,
         traceId,
