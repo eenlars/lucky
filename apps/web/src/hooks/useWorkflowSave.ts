@@ -29,19 +29,21 @@ export function useWorkflowSave({ workflowVersion, onSuccess }: UseWorkflowSaveO
       try {
         // Save workflow via API route
         const workflowId = workflowVersion?.workflow_id || `wf_id_${genShortId()}`
+        const payload = {
+          dsl: workflowData,
+          commitMessage,
+          workflowId,
+          parentId: workflowVersion?.wf_version_id,
+          iterationBudget: workflowVersion?.iteration_budget ?? 50,
+          timeBudgetSeconds: workflowVersion?.time_budget_seconds ?? 3600,
+        }
+        console.log("🔴 useWorkflowSave: Sending payload with dsl.ui:", payload.dsl?.ui)
         const response = await fetch("/api/workflow/save", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            dsl: workflowData,
-            commitMessage,
-            workflowId,
-            parentId: workflowVersion?.wf_version_id,
-            iterationBudget: workflowVersion?.iteration_budget ?? 50,
-            timeBudgetSeconds: workflowVersion?.time_budget_seconds ?? 3600,
-          }),
+          body: JSON.stringify(payload),
         })
 
         if (!response.ok) {

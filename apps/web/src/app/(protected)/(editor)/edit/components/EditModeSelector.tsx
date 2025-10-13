@@ -58,6 +58,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     nodes: _nodes,
     edges: _edges,
     workflowJSON,
+    currentWorkflowId,
+    _hasHydrated,
     loadWorkflowFromData,
     exportToJSON,
     updateWorkflowJSON,
@@ -68,6 +70,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       nodes: state.nodes,
       edges: state.edges,
       workflowJSON: state.workflowJSON,
+      currentWorkflowId: state.currentWorkflowId,
+      _hasHydrated: state._hasHydrated,
       loadWorkflowFromData: state.loadWorkflowFromData,
       exportToJSON: state.exportToJSON,
       updateWorkflowJSON: state.updateWorkflowJSON,
@@ -190,7 +194,10 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
         const jsonString = JSON.stringify(workflow, null, 2)
         updateWorkflowJSON(jsonString)
         loadWorkflowFromData(workflow).then(() => {
-          organizeLayout()
+          // Only organize if no saved layout exists
+          if (!workflow.ui?.layout?.nodes || workflow.ui.layout.nodes.length === 0) {
+            organizeLayout()
+          }
         })
         // Clear the demo workflow from sessionStorage after loading
         sessionStorage.removeItem("demo_workflow")
@@ -200,20 +207,67 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       return
     }
 
+    // Wait for Zustand to hydrate from localStorage before making decisions
+    if (!_hasHydrated) {
+      console.log("🟣 EditModeSelector: Waiting for Zustand hydration...")
+      return
+    }
+
     if (
       workflowVersion?.dsl &&
       typeof workflowVersion.dsl === "object" &&
       workflowVersion.dsl !== null &&
       !Array.isArray(workflowVersion.dsl)
     ) {
-      const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
-      updateWorkflowJSON(jsonString)
-      loadWorkflowFromData(workflowVersion.dsl as unknown as WorkflowConfig).then(() => {
-        // Auto-organize layout once data is loaded
-        organizeLayout()
-      })
+      // Check if we're in an active editing session (sessionStorage cleared on tab close)
+      const sessionKey = `editing-session-${workflowVersion.wf_version_id}`
+      const isActiveSession = typeof window !== "undefined" && sessionStorage.getItem(sessionKey) === "true"
+
+      // Also check if localStorage has matching data (now guaranteed to be hydrated)
+      const hasLocalData = currentWorkflowId === workflowVersion.wf_version_id && _nodes.length > 0
+
+      const shouldUseLocalStorage = isActiveSession && hasLocalData
+
+      if (shouldUseLocalStorage) {
+        console.log(
+          "🟣 EditModeSelector: Active editing session detected, using localStorage (hydrated with",
+          _nodes.length,
+          "nodes)",
+        )
+        // Just update the JSON view to match DB (in case it changed)
+        const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
+        updateWorkflowJSON(jsonString)
+      } else {
+        console.log("🟣 EditModeSelector: Loading workflow from DB (fresh session or different workflow)")
+        const jsonString = JSON.stringify(workflowVersion.dsl, null, 2)
+        updateWorkflowJSON(jsonString)
+        const dslConfig = workflowVersion.dsl as unknown as WorkflowConfig
+        console.log("🟣 EditModeSelector: Loading workflow with ui:", dslConfig.ui)
+        loadWorkflowFromData(dslConfig, workflowVersion.wf_version_id).then(() => {
+          // Mark this as an active editing session
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(sessionKey, "true")
+          }
+
+          // Only organize if no saved layout exists
+          if (!dslConfig.ui?.layout?.nodes || dslConfig.ui.layout.nodes.length === 0) {
+            console.log("🟣 EditModeSelector: No saved layout, calling organizeLayout()")
+            organizeLayout()
+          } else {
+            console.log("🟣 EditModeSelector: Saved layout found, skipping organizeLayout()")
+          }
+        })
+      }
     }
-  }, [workflowVersion, updateWorkflowJSON, loadWorkflowFromData, organizeLayout])
+  }, [
+    workflowVersion,
+    updateWorkflowJSON,
+    loadWorkflowFromData,
+    organizeLayout,
+    currentWorkflowId,
+    _nodes.length,
+    _hasHydrated,
+  ])
 
   const handleModeChange = async (newMode: EditMode) => {
     // Sync data when switching modes
@@ -238,6 +292,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       // Export current graph to JSON
       const jsonString = exportToJSON()
       const parsedWorkflow = JSON.parse(jsonString)
+      console.log("🟣 handleSave: Parsed workflow with ui:", parsedWorkflow.ui)
 
       // Use the shared save hook
       await save(parsedWorkflow, commitMessage)
@@ -245,7 +300,7 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       // Close modal on success
       setShowSaveModal(false)
       setCommitMessage("")
-    } catch (error) {
+    } catch (_error) {
       // Error handling is done in the hook
     }
   }, [commitMessage, exportToJSON, save])

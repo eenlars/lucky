@@ -1,7 +1,7 @@
 "use client"
 
-import { Background, ConnectionLineType, ReactFlow } from "@xyflow/react"
-import { useEffect } from "react"
+import { Background, ConnectionLineType, ReactFlow, useReactFlow } from "@xyflow/react"
+import { useEffect, useRef } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect/panel"
@@ -17,6 +17,24 @@ import { useDragAndDrop } from "./useDragAndDrop"
 
 const edgeTypes = {
   workflow: WorkflowEdge,
+}
+
+// Helper component to auto-center viewport when nodes load
+function AutoFitView({ nodeCount }: { nodeCount: number }) {
+  const { fitView } = useReactFlow()
+  const hasFitRef = useRef(false)
+
+  useEffect(() => {
+    if (nodeCount > 0 && !hasFitRef.current) {
+      console.log("📐 AutoFitView: Centering viewport on", nodeCount, "nodes")
+      setTimeout(() => {
+        fitView({ padding: 0.5, duration: 200, maxZoom: 1 })
+        hasFitRef.current = true
+      }, 100)
+    }
+  }, [nodeCount, fitView])
+
+  return null
 }
 
 export default function Workflow({
@@ -76,7 +94,6 @@ export default function Workflow({
   }, [nodes.length, workflowLoading, workflowError, workflowVersionId, loadWorkflowConfig, loadWorkflowVersion])
 
   const { onDragOver, onDrop } = useDragAndDrop()
-  const runLayout = useLayout(true)
   const _promptDialogOpen = false
   const _setPromptDialogOpen = (_: boolean) => {}
   const _executeWorkflowWithPrompt = async () => {}
@@ -129,7 +146,6 @@ export default function Workflow({
         connectionLineType={ConnectionLineType.Bezier}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        onInit={runLayout}
         onDragOver={onDragOver}
         onDrop={onDrop}
         onNodeDragStart={onNodeDragStart}
@@ -140,6 +156,7 @@ export default function Workflow({
         proOptions={proOptions}
       >
         <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
+        <AutoFitView nodeCount={nodes.length} />
         <NodePalette />
 
         {/* Empty state - guide users to drag from palette */}
