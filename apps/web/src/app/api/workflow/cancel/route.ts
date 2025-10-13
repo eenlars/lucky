@@ -1,24 +1,8 @@
 import { requireAuth } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState, publishCancellation, setWorkflowState } from "@/lib/redis/workflow-state"
+import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { type NextRequest, NextResponse } from "next/server"
-import { activeWorkflows } from "../invoke/route"
-
-/**
- * Canonical cancellation response states
- */
-type CancelResponseStatus =
-  | "cancelling" // Cancellation in progress
-  | "already_completed" // Workflow finished before cancel
-  | "already_cancelled" // Already cancelled
-  | "not_found" // Invalid invocationId
-
-interface CancelResponse {
-  status: CancelResponseStatus
-  invocationId: string
-  cancelRequestedAt?: number
-  message: string
-}
 
 /**
  * POST /api/workflow/cancel

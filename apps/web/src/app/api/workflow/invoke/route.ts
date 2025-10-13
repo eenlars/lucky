@@ -13,6 +13,7 @@ import {
 } from "@/lib/mcp-invoke/response"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import { deleteWorkflowState, setWorkflowState, subscribeToCancellation } from "@/lib/redis/workflow-state"
+import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import {
   FALLBACK_PROVIDER_KEYS,
   formatMissingProviders,
@@ -26,45 +27,6 @@ import { genShortId, isNir } from "@lucky/shared"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { type NextRequest, NextResponse } from "next/server"
-
-/**
- * Active workflow entry with state tracking and TTL
- */
-interface ActiveWorkflowEntry {
-  controller: AbortController
-  createdAt: number
-  state: "running" | "cancelling" | "cancelled"
-  cancelRequestedAt?: number
-}
-
-/**
- * In-memory store for active workflow abort controllers.
- * Maps request IDs to workflow entries for graceful cancellation.
- *
- * Note: In a multi-server production environment, this should be replaced
- * with a distributed store like Redis with pub/sub for real-time cancellation.
- */
-export const activeWorkflows = new Map<string, ActiveWorkflowEntry>()
-
-/**
- * TTL cleanup for stale workflow entries (prevents memory leaks)
- * Runs every 5 minutes, removes entries older than 2 hours
- */
-const TTL_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
-const MAX_ENTRY_AGE = 2 * 60 * 60 * 1000 // 2 hours
-
-const cleanupInterval = setInterval(() => {
-  const now = Date.now()
-  for (const [id, entry] of activeWorkflows.entries()) {
-    if (now - entry.createdAt > MAX_ENTRY_AGE) {
-      activeWorkflows.delete(id)
-      console.warn(`[runner] Reaped stale workflow entry: ${id}`)
-    }
-  }
-}, TTL_CHECK_INTERVAL)
-
-// Don't keep the process alive just for cleanup
-cleanupInterval.unref()
 
 export async function POST(req: NextRequest) {
   // Ensure core is initialized

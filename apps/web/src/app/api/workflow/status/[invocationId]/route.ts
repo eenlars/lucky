@@ -1,20 +1,8 @@
 import { requireAuth } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState } from "@/lib/redis/workflow-state"
+import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { type NextRequest, NextResponse } from "next/server"
-import { activeWorkflows } from "../../invoke/route"
-
-/**
- * Workflow execution state
- */
-type WorkflowState = "running" | "cancelling" | "cancelled" | "completed" | "failed" | "not_found"
-
-interface WorkflowStatusResponse {
-  state: WorkflowState
-  invocationId: string
-  createdAt?: number
-  cancelRequestedAt?: number
-}
 
 /**
  * GET /api/workflow/status/:invocationId
