@@ -291,12 +291,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
             <h1 className="text-3xl font-semibold text-foreground">{config.name} Configuration</h1>
             <p className="text-sm text-muted-foreground mt-1">{config.description}</p>
           </div>
-          {isConfigured && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 shrink-0">
-              <CheckCircle2 className="size-3 mr-1" />
-              Configured
-            </Badge>
-          )}
         </div>
       </div>
 
@@ -304,8 +298,18 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
         {/* API Key Configuration */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">API Key</CardTitle>
-            <CardDescription>Your {config.name} API key for accessing models</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">API Key</CardTitle>
+                <CardDescription>Your {config.name} API key for accessing models</CardDescription>
+              </div>
+              {isConfigured && (
+                <span className="text-xs text-green-600 flex items-center gap-1">
+                  <CheckCircle2 className="size-3" />
+                  Connected
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -392,12 +396,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
               </div>
 
               {testStatus === "success" && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="size-5 text-green-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-green-900">Connection Successful</p>
-                    <p className="text-xs text-green-700">Your API key is valid and working correctly.</p>
-                  </div>
+                <div className="p-3 rounded-lg bg-muted/50">
+                  <p className="text-xs text-muted-foreground">Connection successful</p>
                 </div>
               )}
 
@@ -427,14 +427,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>
-            {hasUnsavedKeyChanges && (
-              <p className="text-sm text-yellow-600 flex items-center gap-2">
-                <AlertCircle className="size-4" />
-                You have unsaved API key changes
-              </p>
-            )}
-          </div>
+          <div>{hasUnsavedKeyChanges && <p className="text-sm text-muted-foreground">Unsaved changes</p>}</div>
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="ghost"
@@ -456,10 +449,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                   Saving...
                 </>
               ) : (
-                <>
-                  <Save className="size-4 mr-2" />
-                  Save Configuration
-                </>
+                "Save"
               )}
             </Button>
           </div>
