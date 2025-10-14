@@ -1,7 +1,6 @@
 import { promises as fs } from "node:fs"
 import { join } from "node:path"
-import type { PartialLocationData } from "@lucky/tools/schemas/location.types"
-import { DataQuality } from "@lucky/tools/schemas/location.types"
+import { DataQuality, type PartialLocationData } from "@lucky/shared"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { LocationDataManager } from "../mainLocationDataManager"
 

@@ -22,6 +22,7 @@ const paramsSchema = z.object({
       "if you want to filter by hostname (e.g. albertheijn.nl, ...), you can put it here; only hostname.tld (two parts) note: this is very handy when looking for specific websites",
     ),
 })
+
 type Params = z.infer<typeof paramsSchema>
 
 const __filename = fileURLToPath(import.meta.url)

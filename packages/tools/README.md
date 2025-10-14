@@ -156,9 +156,51 @@ packages/tools/
 
 ```typescript
 import { registerToolGroups } from "@lucky/tools"
+import { TOOL_GROUPS } from "@examples/definitions/registry-grouped"
 
 // Register only CSV and todo tools
-await registerToolGroups("csv", "todo")
+await registerToolGroups(TOOL_GROUPS, ["csv", "todo"])
+```
+
+### Local MCP-style Bundles
+
+```typescript
+import { defineTool, LocalMCPRegistry, registerAllTools } from "@lucky/tools"
+import { z } from "zod"
+
+const echo = defineTool({
+  name: "echo",
+  description: "Echo text back to the caller",
+  params: z.object({ text: z.string() }),
+  async execute({ text }) {
+    return { success: true, data: text }
+  },
+})
+
+const localRegistry = new LocalMCPRegistry({
+  servers: [
+    {
+      id: "local-dev",
+      label: "Local Dev",
+      description: "Local tools running alongside the agent",
+      transport: {
+        type: "stdio",
+        command: "node",
+        args: ["./scripts/local-dev-mcp.mjs"],
+        env: { API_KEY: process.env.API_KEY ?? "demo" },
+      },
+      tools: [
+        {
+          name: "echo",
+          description: "Echo text back",
+          definition: echo,
+        },
+      ],
+    },
+  ],
+})
+
+await registerAllTools(localRegistry.codeToolGroups)
 ```
 
 ### Validation

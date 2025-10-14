@@ -38,6 +38,7 @@ export {
 export {
   CodeToolRegistry,
   codeToolRegistry,
+  createCodeToolRegistry,
   type FlexibleToolDefinition,
 } from "./registry/CodeToolRegistry"
 export { setupCodeToolsForNode } from "./registry/codeToolsSetup"
@@ -77,6 +78,17 @@ export {
   type MCPToolDefinition,
   type MCPToolGroup,
 } from "./registration/mcpToolsRegistration"
+export {
+  LocalMCPRegistry,
+  type LocalMCPRegistryConfig,
+  type LocalMCPRegistryOptions,
+  type LocalMCPRegistrySnapshot,
+  type LocalMCPServer,
+  type LocalMCPTool,
+  type LocalMCPTransport,
+  type LocalMCPTransportOAuth,
+  type LocalMCPTransportStdio,
+} from "./registration/localMCP"
 export { registerAllTools, registerToolGroups } from "./registration/startup"
 export {
   validateCodeToolRegistration,
@@ -85,17 +97,6 @@ export {
   printValidationResult,
   type ValidationResult,
 } from "./registration/validation"
-
-// Schemas - Shared type definitions
-export {
-  DataQuality,
-  locationDataSchema,
-  exampleLocationData,
-  type StandardizedLocation,
-  type LocationData,
-  type PartialLocationData,
-  type WorkflowLocationData,
-} from "./schemas/location.types"
 
 // Tool execution context from contracts
 export type {

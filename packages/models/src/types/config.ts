@@ -32,7 +32,7 @@ export interface ExperimentConfig {
   /** Execution strategy */
   strategy: ExecutionStrategy
 
-  /** Provider/model strings (e.g., "openai/gpt-4", "local/llama-3") */
+  /** Provider strings (e.g., "openai", "groq") */
   providers: string[]
 
   /** Optional timeout override */

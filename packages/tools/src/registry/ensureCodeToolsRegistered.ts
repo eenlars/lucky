@@ -1,7 +1,7 @@
 import { isNir } from "@lucky/shared"
 
 import { registerAllTools } from "../registration/startup"
-import { codeToolRegistry } from "./CodeToolRegistry"
+import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
 import type { CodeToolName } from "./types"
 
 let registrationPromise: Promise<void> | null = null
@@ -14,10 +14,13 @@ let registrationPromise: Promise<void> | null = null
  * tool groups. If registration fails we surface a descriptive error so
  * callers can address the misconfiguration instead of silently hanging.
  */
-export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Promise<void> {
+export async function ensureCodeToolsRegistered(
+  toolNames: CodeToolName[],
+  registry: CodeToolRegistry = codeToolRegistry,
+): Promise<void> {
   if (isNir(toolNames)) return
 
-  const { initialized, totalTools } = codeToolRegistry.getStats()
+  const { initialized, totalTools } = registry.getStats()
   if (initialized && totalTools > 0) return
 
   if (totalTools > 0) {
@@ -35,10 +38,14 @@ export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Prom
     try {
       const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
 
-      await registerAllTools(TOOL_GROUPS, {
-        validate: true,
-        throwOnError: true,
-      })
+      await registerAllTools(
+        TOOL_GROUPS,
+        {
+          validate: true,
+          throwOnError: true,
+        },
+        registry,
+      )
     } catch (error) {
       const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
       throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)

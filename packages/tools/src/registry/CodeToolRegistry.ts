@@ -138,5 +138,8 @@ export class CodeToolRegistry {
   }
 }
 
-// global registry instance
+// global registry instance (kept for backwards compatibility)
 export const codeToolRegistry = new CodeToolRegistry()
+
+// factory for creating isolated registries
+export const createCodeToolRegistry = () => new CodeToolRegistry()
