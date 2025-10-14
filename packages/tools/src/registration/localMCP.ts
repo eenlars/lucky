@@ -121,7 +121,10 @@ export class LocalMCPRegistry {
           throw new Error(`Tool ${tool.name} missing description`)
         }
 
-        if (typeof tool.definition !== "function" && (typeof tool.definition !== "object" || tool.definition === null)) {
+        if (
+          typeof tool.definition !== "function" &&
+          (typeof tool.definition !== "object" || tool.definition === null)
+        ) {
           throw new Error(`Tool ${tool.name} in server ${server.id} has an invalid definition`)
         }
       }
