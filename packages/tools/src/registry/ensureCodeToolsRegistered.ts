@@ -4,7 +4,7 @@ import { registerAllTools } from "../registration/startup"
 import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
 import type { CodeToolName } from "./types"
 
-let registrationPromise: Promise<void> | null = null
+const registrationPromises = new WeakMap<CodeToolRegistry, Promise<void>>()
 
 /**
  * Ensures that code tools are registered before a node initializes them.
@@ -29,12 +29,13 @@ export async function ensureCodeToolsRegistered(
     return
   }
 
-  if (registrationPromise) {
-    await registrationPromise
+  const existingPromise = registrationPromises.get(registry)
+  if (existingPromise) {
+    await existingPromise
     return
   }
 
-  registrationPromise = (async () => {
+  const promise = (async () => {
     try {
       const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
 
@@ -50,7 +51,10 @@ export async function ensureCodeToolsRegistered(
       const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
       throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)
     }
-  })()
+  })().finally(() => {
+    registrationPromises.delete(registry)
+  })
 
-  await registrationPromise
+  registrationPromises.set(registry, promise)
+  await promise
 }
