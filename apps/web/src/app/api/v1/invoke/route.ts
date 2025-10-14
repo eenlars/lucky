@@ -14,11 +14,11 @@ import { createInvocationInput, transformInvokeInput } from "@/lib/mcp-invoke/tr
 import { validateInvokeRequest } from "@/lib/mcp-invoke/validation"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import {
-  FALLBACK_PROVIDER_KEYS,
   formatMissingProviders,
   getRequiredProviderKeys,
   validateProviderKeys,
 } from "@/lib/workflow/provider-validation"
+import { WorkflowConfigurationError } from "@core/utils/errors/WorkflowErrors"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import { isNir } from "@lucky/shared/utils/common/isNir"
@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
 
     // Load workflow configuration to get input schema
     // For session auth users, return demo workflow if not found (better onboarding UX)
+    // TODO: think if we really want to auto-run demo workflow for session auth users
     const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, undefined, {
       returnDemoOnNotFound: principal.auth_method === "session",
     })
@@ -78,6 +79,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (isNir(config)) {
+      throw new WorkflowConfigurationError(`This workflow requires API keys that aren't configured.`, {
+        field: "providers",
+        expectedFormat: "array of provider names",
+      })
+    }
+
     // Transform MCP input to internal format
     const transformResult = transformInvokeInput(rpcRequest)
     if (!transformResult.success) {
@@ -85,7 +93,7 @@ export async function POST(req: NextRequest) {
     }
 
     const transformed = transformResult.data!
-    const invocationInput = createInvocationInput(transformed) as any
+    const invocationInput = createInvocationInput(transformed)
 
     // If we fell back to demo workflow, invoke using the DSL config directly
     // Otherwise, ensure we use the resolved workflow version id (handles parent IDs)
@@ -102,8 +110,8 @@ export async function POST(req: NextRequest) {
     // Create secret resolver for this user
     const secrets = createSecretResolver(principal.clerk_id)
 
-    // Extract providers required by this workflow for targeted validation
-    const requiredProviderKeys = config ? getRequiredProviderKeys(config, "v1/invoke") : [...FALLBACK_PROVIDER_KEYS]
+    // Extract required provider keys from workflow config
+    const requiredProviderKeys = getRequiredProviderKeys(config, "v1/invoke")
 
     // Pre-fetch required provider keys (only those actually needed by this workflow)
     const apiKeys = await secrets.getAll(requiredProviderKeys, "environment-variables")

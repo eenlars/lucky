@@ -25,7 +25,7 @@ export class ProviderRegistry {
    * Get an AI SDK model
    */
   async getModel(spec: ModelSpec): Promise<AiSdkModel> {
-    const cacheKey = `${spec.provider}/${spec.model}`
+    const cacheKey = `provider:${spec.provider};model:${spec.model}`
 
     // Check cache first
     const cached = this.modelCache.get(cacheKey)
@@ -53,7 +53,7 @@ export class ProviderRegistry {
 
     // Clear cache for this provider
     for (const key of this.modelCache.keys()) {
-      if (key.startsWith(`${providerId}/`)) {
+      if (key.startsWith(`provider:${providerId};`)) {
         this.modelCache.delete(key)
       }
     }

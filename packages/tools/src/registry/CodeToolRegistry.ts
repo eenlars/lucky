@@ -1,5 +1,6 @@
 import type { Tool } from "ai"
 import { type ToolExecutionContext, toAITool } from "../factory/toolFactory"
+import type { CodeToolGroup } from "../registration/codeToolsRegistration"
 import type { CodeToolName } from "./types"
 
 // more flexible type for tool registration
@@ -17,6 +18,7 @@ export type FlexibleToolDefinition = {
 export class CodeToolRegistry {
   private tools = new Map<CodeToolName, FlexibleToolDefinition>()
   private initialized = false
+  private defaultRegistration: Promise<void> | null = null
 
   /**
    * Register a tool definition created with defineTool()
@@ -28,6 +30,7 @@ export class CodeToolRegistry {
     }
 
     this.tools.set(tool.name as CodeToolName, tool)
+    this.initialized = false
 
     // Skip creating cached tools - they should always be created with proper context
     // Tools will be created on-demand in getToolRegistry/getToolsForNames methods
@@ -136,7 +139,50 @@ export class CodeToolRegistry {
       initialized: this.initialized,
     }
   }
+
+  /**
+   * Ensure default tools are registered exactly once.
+   * The loader must return a list of tools to register (or null/undefined to skip).
+   */
+  async ensureDefaultTools(
+    loader: () => Promise<CodeToolGroup[] | null | undefined>,
+    options?: { validate?: (groups: CodeToolGroup[]) => Promise<void> | void },
+  ): Promise<void> {
+    if (this.initialized || this.tools.size > 0) {
+      return
+    }
+
+    if (this.defaultRegistration) {
+      await this.defaultRegistration
+      return
+    }
+
+    this.defaultRegistration = (async () => {
+      const groups = await loader()
+      if (!groups || groups.length === 0) {
+        return
+      }
+
+      if (options?.validate) {
+        await options.validate(groups)
+      }
+
+      const definitions = groups.flatMap(group =>
+        group.tools.map(tool => tool.toolFunc as unknown as FlexibleToolDefinition),
+      )
+
+      this.registerMany(definitions)
+      await this.initialize()
+    })().finally(() => {
+      this.defaultRegistration = null
+    })
+
+    await this.defaultRegistration
+  }
 }
 
-// global registry instance
+// global registry instance (kept for backwards compatibility)
 export const codeToolRegistry = new CodeToolRegistry()
+
+// factory for creating isolated registries
+export const createCodeToolRegistry = () => new CodeToolRegistry()
