@@ -1,10 +1,8 @@
 import { isNir } from "@lucky/shared"
 
-import { registerAllTools } from "../registration/startup"
+import { printValidationResult, validateCodeToolRegistration } from "../registration/validation"
 import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
 import type { CodeToolName } from "./types"
-
-const registrationPromises = new WeakMap<CodeToolRegistry, Promise<void>>()
 
 /**
  * Ensures that code tools are registered before a node initializes them.
@@ -29,32 +27,25 @@ export async function ensureCodeToolsRegistered(
     return
   }
 
-  const existingPromise = registrationPromises.get(registry)
-  if (existingPromise) {
-    await existingPromise
-    return
-  }
+  await registry.ensureDefaultTools(
+    async () => {
+      try {
+        const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
+        return TOOL_GROUPS.groups
+      } catch (error) {
+        const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+        throw new Error(`Failed to load default code tools. Reason: ${reason}`)
+      }
+    },
+    {
+      validate: groups => {
+        const result = validateCodeToolRegistration(groups)
+        printValidationResult("Code", result)
 
-  const promise = (async () => {
-    try {
-      const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
-
-      await registerAllTools(
-        TOOL_GROUPS,
-        {
-          validate: true,
-          throwOnError: true,
-        },
-        registry,
-      )
-    } catch (error) {
-      const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
-      throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)
-    }
-  })().finally(() => {
-    registrationPromises.delete(registry)
-  })
-
-  registrationPromises.set(registry, promise)
-  await promise
+        if (!result.valid) {
+          throw new Error("Tool registration validation failed. See errors above.")
+        }
+      },
+    },
+  )
 }

@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
 
     // Load workflow configuration to get input schema
     // For session auth users, return demo workflow if not found (better onboarding UX)
+    // TODO: think if we really want to auto-run demo workflow for session auth users
     const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, undefined, {
       returnDemoOnNotFound: principal.auth_method === "session",
     })
