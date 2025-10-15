@@ -76,10 +76,3 @@ export function getModelsInstance(): Models {
 
   return modelsInstance
 }
-
-/**
- * Reset instance (for testing)
- */
-export function resetModelsInstance(): void {
-  modelsInstance = null
-}
