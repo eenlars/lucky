@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod"
-import type { CatalogId } from "./providers"
+import { catalogIdSchema, providerNameSchema } from "./providers"
 
 /**
  * Model speed tier schema
@@ -52,7 +52,7 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
  *
  * ⚠️ CRITICAL FIELD USAGE:
  *
- * - `id`: ONLY for catalog lookup/search (always prefixed: "openai/gpt-4o")
+ * - `id`: ONLY for catalog lookup/search (always prefixed: "provider#model", e.g., "openai#gpt-4o")
  *           ❌ DO NOT use this when calling provider APIs!
  *
  * - `model`: USE THIS for provider API calls and storage (provider-specific format)
@@ -62,24 +62,19 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
  * - `provider`: Determines which API endpoint to use and which API key is needed
  *
  * WRONG EXAMPLE: Sending catalog.id to OpenAI API ❌
- *   const entry = MODEL_CATALOG.find(e => e.id === "openai/gpt-4o")
- *   openai.chat(entry.id)  // ❌ Will fail! OpenAI doesn't accept "openai/gpt-4o"
+ *   const entry = MODEL_CATALOG.find(e => e.id === "openrouter#openai/gpt-4o")
+ *   openai.chat(entry.id)  // ❌ Will fail! OpenAI doesn't accept "openrouter#openai/gpt-4o"
  *
  * RIGHT EXAMPLE: Sending catalog.model to provider API ✅
- *   const entry = MODEL_CATALOG.find(e => e.id === "openai/gpt-4o")
+ *   const entry = MODEL_CATALOG.find(e => e.id === "openrouter#openai/gpt-4o")
  *   openai.chat(entry.model)  // ✅ Correct! Sends "gpt-4o"
  */
 export const modelEntrySchema = z.object({
   // Identity
-  /** Catalog lookup ID (vendor:X;model:Y format) - DO NOT use for API calls! */
-  id: z
-    .string()
-    .min(1)
-    .refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
-      message: "Catalog ID must follow format 'vendor:X;model:Y'",
-    }),
+  /** Catalog lookup ID ("<provider>#<model>" format) - DO NOT use for API calls! */
+  id: catalogIdSchema,
   /** Provider name (determines which API endpoint to use) */
-  provider: z.string().min(1),
+  provider: providerNameSchema,
   /** Model identifier in provider-specific format - USE THIS for API calls! */
   model: z.string().min(1),
 
@@ -120,9 +115,7 @@ export type ModelEntry = z.infer<typeof modelEntrySchema>
  * Subset of ModelEntry with fields most relevant for UI
  */
 export const enrichedModelInfoSchema = z.object({
-  id: z.string().refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
-    message: "Catalog ID must follow format 'vendor:X;model:Y'",
-  }),
+  id: catalogIdSchema,
   name: z.string(),
   contextLength: z.number().int().positive(),
   supportsTools: z.boolean(),
@@ -144,7 +137,7 @@ export type EnrichedModelInfo = z.infer<typeof enrichedModelInfoSchema>
  */
 export const modelSelectionSchema = z.object({
   modelId: z.string(),
-  provider: z.string(),
+  provider: providerNameSchema,
   model: z.string(),
   reason: z.string(),
   priceVersion: z.string(),

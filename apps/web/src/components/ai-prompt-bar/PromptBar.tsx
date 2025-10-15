@@ -221,7 +221,7 @@ export function PromptBar({ context }: PromptBarProps) {
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, contextType, executeOperation, addLog])
+  }, [prompt, isGenerating, executeOperation, addLog])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

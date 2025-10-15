@@ -3,16 +3,15 @@
 import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
+import { PROVIDER_CONFIGS, getEnabledProviderSlugs } from "@/lib/providers/provider-utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
-import type { LuckyProvider } from "@lucky/shared"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
 interface ProviderCardData {
-  provider: LuckyProvider
+  provider: string
   hasApiKey: boolean
 }
 
@@ -36,17 +35,17 @@ export default function ProvidersPage() {
       const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
       const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
 
-      const providerData: ProviderCardData[] = (Object.keys(PROVIDER_CONFIGS) as LuckyProvider[])
-        .filter(provider => !PROVIDER_CONFIGS[provider].disabled)
-        .map(provider => {
-          const config = PROVIDER_CONFIGS[provider]
-          const hasApiKey = keyNames.has(config.apiKeyName)
+      const providerSlugs = getEnabledProviderSlugs(PROVIDER_CONFIGS)
 
-          return {
-            provider,
-            hasApiKey,
-          }
-        })
+      const providerData: ProviderCardData[] = providerSlugs.map(provider => {
+        const config = PROVIDER_CONFIGS[provider]
+        const hasApiKey = keyNames.has(config.apiKeyName)
+
+        return {
+          provider,
+          hasApiKey,
+        }
+      })
 
       setProviders(providerData)
     } catch (error) {

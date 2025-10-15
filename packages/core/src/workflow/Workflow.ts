@@ -10,7 +10,7 @@ import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 // zodToJson no longer needed - outputSchema is JSON Schema, not Zod
 // import { zodToJson } from "@core/utils/validation/zodToJson"
@@ -627,7 +627,7 @@ export class Workflow {
   }: {
     prompt: string
     randomness: number
-    model?: ModelName
+    model?: string
   }): Promise<RS<WorkflowConfig>> {
     const workflowIdeaResponse = await generateWorkflowIdea({
       prompt,

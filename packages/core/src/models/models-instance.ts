@@ -52,7 +52,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
         id: "openrouter",
         apiKey: openrouterKey,
         baseUrl: "https://openrouter.ai/api/v1",
-        enabled: true,
+        enabled: false,
       }
       console.log("✓ OpenRouter provider configured")
     } else {
@@ -68,7 +68,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfig>> {
         id: "groq",
         apiKey: groqKey,
         baseUrl: "https://api.groq.com/openai/v1",
-        enabled: true,
+        enabled: false,
       }
       console.log("✓ Groq provider configured")
     } else {

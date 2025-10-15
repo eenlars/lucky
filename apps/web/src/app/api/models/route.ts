@@ -1,17 +1,25 @@
-import { getActiveModelNames, getModelV2 } from "@lucky/core/utils/spending/functions"
-import { getActiveModels, getModelsByProvider } from "@lucky/models"
-import type { LuckyProvider } from "@lucky/shared"
+import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
+import { findModelByName, getActiveModels, getModelsByProvider } from "@lucky/models"
 import { type NextRequest, NextResponse } from "next/server"
+import { providerNameSchema } from "packages/shared/dist/client"
 
 export const runtime = "nodejs"
 
+// POST /api/models
+// Fetches available models from the provider's API and enriches with catalog metadata
+// Body: { action: "getActiveModelNames" | "getModelV2" | "getModelsByProvider", model?: string, provider: string }
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, model, provider } = body
 
+    const validatedProvider = providerNameSchema.parse(provider)
+    if (!validatedProvider) {
+      return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
+    }
+
     if (action === "getActiveModelNames") {
-      const models = getActiveModelNames(provider as LuckyProvider)
+      const models = getActiveModelNames(validatedProvider)
       return NextResponse.json({ models })
     }
 
@@ -19,7 +27,10 @@ export async function POST(request: NextRequest) {
       if (!model) {
         return NextResponse.json({ error: "Model name is required" }, { status: 400 })
       }
-      const modelInfo = getModelV2(model, provider as LuckyProvider)
+      const modelInfo = findModelByName(model)
+      if (!modelInfo) {
+        return NextResponse.json({ error: "Model not found" }, { status: 404 })
+      }
       return NextResponse.json({ model: modelInfo })
     }
 

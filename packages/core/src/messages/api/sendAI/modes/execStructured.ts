@@ -20,7 +20,6 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import type { ModelName } from "@core/utils/spending/models.types"
 import pTimeout, { TimeoutError } from "p-timeout"
 import type { ZodTypeAny } from "zod"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
@@ -47,11 +46,15 @@ export async function execStructured<S extends ZodTypeAny>(
   req: StructuredRequest<S>,
 ): Promise<TResponse<import("zod").infer<S>>> {
   const { messages, model: modelIn, retries = 2, schema, opts = {} } = req
+  console.log("[execStructured] start", {
+    modelIn,
+    retries,
+  })
 
   // TODO: add request validation and preprocessing
   // TODO: implement schema complexity analysis for timeout adjustment
-  const requestedModel: ModelName = modelIn ?? getDefaultModels().default
-  const model: ModelName = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
+  const requestedModel: string = modelIn ?? getDefaultModels().default
+  const model: string = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
 
   try {
     const { genObject } = await import("@core/messages/api/genObject")
@@ -61,6 +64,7 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: implement progressive timeout strategy
     // TODO: add timeout prediction based on historical data
     try {
+      const callStart = Date.now()
       genResult = await pTimeout(
         genObject({
           messages,
@@ -73,10 +77,12 @@ export async function execStructured<S extends ZodTypeAny>(
           message: new Error(`Overall timeout (120 s) for ${model} – mode:structured`),
         },
       )
+      console.log("[execStructured] genObject completed", { durationMs: Date.now() - callStart })
     } catch (err) {
       // TODO: add timeout recovery strategies
       // TODO: implement partial result extraction from timeout errors
       if (err instanceof TimeoutError) {
+        console.error("[execStructured] timeout", { model })
         return {
           success: false,
           data: null,
@@ -93,6 +99,7 @@ export async function execStructured<S extends ZodTypeAny>(
     if (!success) {
       // TODO: add structured error categorization
       // TODO: implement error-specific retry strategies
+      console.warn("[execStructured] genObject returned error", { error })
       return {
         success: false,
         data: null,
@@ -119,6 +126,7 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: implement error recovery mechanisms
     // TODO: add error reporting and analytics
     const { message, debug } = normalizeError(err)
+    console.error("[execStructured] error", { message })
     return {
       success: false,
       data: null,

@@ -9,16 +9,9 @@ import { z } from "zod"
  * Provider name schema - validated against MODEL_CATALOG at runtime
  * This is a string type that gets validated dynamically
  */
-export const providerNameSchema = z.string().min(1, "Provider name is required")
+export const providerNameSchema = z.enum(["openai", "openrouter", "groq"])
 
-/**
- * API key schema with validation rules
- */
-export const apiKeySchema = z
-  .string()
-  .min(10, "API key must be at least 10 characters")
-  .max(512, "API key exceeds maximum length")
-
+export type LuckyProvider = z.infer<typeof providerNameSchema>
 /**
  * Provider API key mapping schema
  * Maps provider names to their required API key environment variable names
@@ -81,33 +74,37 @@ export type ProviderStatus = z.infer<typeof providerStatusSchema>
  * Examples: "gpt-4o-mini", "anthropic/claude-sonnet-4", "openai/gpt-oss-20b"
  * These are NOT catalog IDs - they're what gets sent to the provider APIs
  */
-export const modelIdSchema = z.string().min(3)
+export const modelIdSchema = z.string().min(1)
 
 export type ModelId = z.infer<typeof modelIdSchema>
 
 /**
- * Catalog ID type - enforces vendor:X;model:Y format for internal catalog lookups
- * This format distinguishes catalog lookup keys from API-format model names
- * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG
+ * Catalog ID type - enforces "<provider>#<model>" format for internal catalog lookups
+ * This keeps catalog identifiers distinct from API-format model names.
+ * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG.
  *
  * @example
  * ```ts
- * "vendor:openai;model:gpt-4.1-mini" // ✓ correct catalog ID
- * "vendor:anthropic;model:claude-sonnet-4" // ✓ correct (uses openrouter provider!)
- * "gpt-4.1-mini" // ✗ this is an API format name, not a catalog ID
+ * "openai#gpt-4.1-mini" // ✓ correct catalog ID
+ * "openrouter#anthropic/claude-sonnet-4" // ✓ correct (uses OpenRouter models)
+ * "gpt-4.1-mini" // ✗ missing provider prefix
  * "openai/gpt-4.1-mini" // ✗ old format
  * ```
  */
-export type CatalogId = `vendor:${string};model:${string}`
+export type CatalogId = `${string}#${string}`
+
+const allowedVendors = ["openai", "openrouter", "groq"] as const
+
+const catalogIdPattern = new RegExp(`^(${allowedVendors.join("|")})#[^#]+$`)
 
 /**
- * Catalog ID schema - validates catalog IDs match vendor:X;model:Y format
+ * Catalog ID schema - validates catalog IDs match the vendor/model format
  */
 export const catalogIdSchema = z
   .string()
   .min(3)
-  .refine((id): id is CatalogId => id.startsWith("vendor:") && id.includes(";model:"), {
-    message: "Catalog ID must follow format 'vendor:X;model:Y'",
+  .refine((id): id is CatalogId => catalogIdPattern.test(id), {
+    message: "Catalog ID must follow format '<provider>#<model>'",
   })
 
 /**
@@ -132,7 +129,6 @@ export type UserProviderSettings = z.infer<typeof userProviderSettingsSchema>
  */
 export const userModelPreferencesSchema = z.object({
   providers: z.array(userProviderSettingsSchema),
-  defaultProvider: providerNameSchema.optional(),
   lastSynced: z.string().datetime(),
 })
 

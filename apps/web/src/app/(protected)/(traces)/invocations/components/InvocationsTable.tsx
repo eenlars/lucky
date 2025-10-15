@@ -93,98 +93,56 @@ export function InvocationsTable({
           />
         </div>
         <div className="flex-1 min-w-0">Workflow & Goal</div>
-        <div
+        <button
+          type="button"
           onClick={() => onSort("start_time")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("start_time")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Started</span>
           <SortIcon field="start_time" sortField={sortField} sortOrder={sortOrder} />
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={() => onSort("status")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("status")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Status</span>
           <SortIcon field="status" sortField={sortField} sortOrder={sortOrder} />
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={() => onSort("accuracy")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("accuracy")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Accuracy</span>
           <SortIcon field="accuracy" sortField={sortField} sortOrder={sortOrder} />
           <HelpTooltip content={helpContent.accuracy} />
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={() => onSort("fitness")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("fitness")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Fitness</span>
           <SortIcon field="fitness" sortField={sortField} sortOrder={sortOrder} />
           <HelpTooltip content={helpContent.fitness} />
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={() => onSort("usd_cost")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("usd_cost")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Cost</span>
           <SortIcon field="usd_cost" sortField={sortField} sortOrder={sortOrder} />
-        </div>
-        <div
+        </button>
+        <button
+          type="button"
           onClick={() => onSort("duration")}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSort("duration")
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
         >
           <span>Duration</span>
           <SortIcon field="duration" sortField={sortField} sortOrder={sortOrder} />
-        </div>
+        </button>
       </div>
 
       {/* Invocation Rows */}

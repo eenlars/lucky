@@ -4,11 +4,11 @@ import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useFeatureFlag } from "@/lib/feature-flags"
-import { PROVIDER_CONFIGS } from "@/lib/providers/provider-utils"
+import { getEnabledProviderSlugs } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
-import type { AnyModelName } from "@lucky/core/utils/spending/models.types"
 import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
+import type { LuckyProvider } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -17,9 +17,6 @@ import {
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-
-// Get available providers dynamically from PROVIDER_CONFIGS, excluding disabled ones
-const PROVIDERS = Object.keys(PROVIDER_CONFIGS).filter(provider => !PROVIDER_CONFIGS[provider].disabled)
 
 interface ConfigPanelProps {
   node: AppNode
@@ -76,6 +73,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
   const toolsEnabled = useFeatureFlag("MCP_TOOLS")
 
+  const providers = useMemo(() => getEnabledProviderSlugs(), [])
+
   // Zustand store for model preferences
   const { isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
 
@@ -85,15 +84,15 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const codeTools = node.data.codeTools || []
 
   // Provider and model state
-  const [selectedProvider, setSelectedProvider] = useState<string>(() => {
+  const [selectedProvider, setSelectedProvider] = useState<LuckyProvider>(() => {
     // Look up model in catalog to get actual provider (don't parse model ID string!)
     if (node.data.modelName) {
       const catalogEntry = MODEL_CATALOG.find(entry => entry.id === node.data.modelName)
-      if (catalogEntry && PROVIDERS.includes(catalogEntry.provider)) {
+      if (catalogEntry && providers.includes(catalogEntry.provider)) {
         return catalogEntry.provider
       }
     }
-    return PROVIDERS[0] || "openai"
+    return (providers[0] as LuckyProvider) || "openai"
   })
 
   // Track the current provider to prevent race conditions when switching providers
@@ -424,10 +423,10 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <select
               id="model-provider"
               value={selectedProvider}
-              onChange={e => setSelectedProvider(e.target.value)}
+              onChange={e => setSelectedProvider(e.target.value as LuckyProvider)}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
-              {PROVIDERS.map(provider => (
+              {getEnabledProviderSlugs().map(provider => (
                 <option key={provider} value={provider}>
                   {provider.charAt(0).toUpperCase() + provider.slice(1)}
                 </option>
@@ -445,7 +444,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               value={node.data.modelName || ""}
               onChange={e =>
                 updateNode(node.id, {
-                  modelName: e.target.value as AnyModelName,
+                  modelName: e.target.value as string,
                 })
               }
               disabled={isLoading}

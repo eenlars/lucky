@@ -1,8 +1,8 @@
 /**
- * MCP Tool Registration File
+ * MCP Toolkit Registration File
  *
- * This file organizes all available MCP (Model Context Protocol) servers into logical groups.
- * Each group contains related MCP servers that work together to accomplish specific tasks.
+ * This file organizes all available MCP (Model Context Protocol) servers into logical toolkits.
+ * Each toolkit contains related MCP servers that work together to accomplish specific tasks.
  *
  * MCP servers are external processes that provide tools via the MCP protocol.
  * Configuration for server commands comes from mcp-secret.json
@@ -14,28 +14,28 @@ export type MCPServerConfig = {
   env?: Record<string, string>
 }
 
-export type MCPToolDefinition = {
+export type MCPToolkitToolDefinition = {
   toolName: string
   serverName: string // The key in mcp-secret.json
   description: string
 }
 
-export type MCPToolGroup = {
-  groupName: string
+export type MCPToolkit = {
+  toolkitName: string
   description: string
-  tools: MCPToolDefinition[]
+  tools: MCPToolkitToolDefinition[]
 }
 
 /**
- * MCP Tool registration structure with grouped tools
- * Same structure as code tools for easy maintenance
+ * MCP toolkit registration structure with toolkit-based organization
+ * Same structure as code toolkits for easy maintenance
  */
-export const mcpToolGroups: {
-  groups: MCPToolGroup[]
+export const mcpToolkits: {
+  toolkits: MCPToolkit[]
 } = {
-  groups: [
+  toolkits: [
     {
-      groupName: "web-search",
+      toolkitName: "web-search",
       description: "Web search and research tools for finding information across the internet",
       tools: [
         {
@@ -56,7 +56,7 @@ export const mcpToolGroups: {
       ],
     },
     {
-      groupName: "web-scraping",
+      toolkitName: "web-scraping",
       description: "Browser automation and web scraping tools for extracting data from websites",
       tools: [
         {
@@ -77,7 +77,7 @@ export const mcpToolGroups: {
       ],
     },
     {
-      groupName: "filesystem",
+      toolkitName: "filesystem",
       description: "File system operations for reading and writing files",
       tools: [
         {
@@ -88,7 +88,7 @@ export const mcpToolGroups: {
       ],
     },
     {
-      groupName: "proxy",
+      toolkitName: "proxy",
       description: "HTTP proxy tools for making web requests",
       tools: [
         {
@@ -102,26 +102,26 @@ export const mcpToolGroups: {
 }
 
 /**
- * Get all MCP tools flattened from all groups
+ * Get all MCP tools flattened from all toolkits
  */
-export function getAllMCPTools(): MCPToolDefinition[] {
-  return mcpToolGroups.groups.flatMap(group => group.tools)
+export function getAllMCPTools(): MCPToolkitToolDefinition[] {
+  return mcpToolkits.toolkits.flatMap(toolkit => toolkit.tools)
 }
 
 /**
- * Get MCP tools by group name
+ * Get MCP tools by toolkit name
  */
-export function getMCPToolsByGroup(groupName: string): MCPToolDefinition[] {
-  const group = mcpToolGroups.groups.find(g => g.groupName === groupName)
-  return group?.tools ?? []
+export function getMCPToolsByToolkit(toolkitName: string): MCPToolkitToolDefinition[] {
+  const toolkit = mcpToolkits.toolkits.find(t => t.toolkitName === toolkitName)
+  return toolkit?.tools ?? []
 }
 
 /**
  * Get a specific MCP tool by name
  */
-export function getMCPToolByName(toolName: string): MCPToolDefinition | null {
-  for (const group of mcpToolGroups.groups) {
-    const tool = group.tools.find(t => t.toolName === toolName)
+export function getMCPToolByName(toolName: string): MCPToolkitToolDefinition | null {
+  for (const toolkit of mcpToolkits.toolkits) {
+    const tool = toolkit.tools.find(t => t.toolName === toolName)
     if (tool) return tool
   }
   return null
@@ -132,8 +132,8 @@ export function getMCPToolByName(toolName: string): MCPToolDefinition | null {
  */
 export function getAllMCPServerNames(): string[] {
   const serverNames = new Set<string>()
-  for (const group of mcpToolGroups.groups) {
-    for (const tool of group.tools) {
+  for (const toolkit of mcpToolkits.toolkits) {
+    for (const tool of toolkit.tools) {
       serverNames.add(tool.serverName)
     }
   }

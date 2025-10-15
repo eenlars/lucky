@@ -26,7 +26,6 @@ import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import { isNir } from "@lucky/shared"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
@@ -58,8 +57,14 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
-  const modelName: ModelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
+  const modelName: string = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
+  console.log("[execText] start", {
+    wanted,
+    resolvedModel: modelName,
+    retries,
+    reasoning: Boolean(opts.reasoning),
+  })
   const model = await getLanguageModelWithReasoning(modelName, opts)
 
   try {
@@ -77,6 +82,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
     const overallTimeoutMs = isReasoning ? 240_000 : 120_000
     const stallTimeoutMs = isReasoning ? 120_000 : 60_000
+    console.log("[execText] timeouts configured", { overallTimeoutMs, stallTimeoutMs })
 
     const attempts = Math.max(1, (retries ?? 0) + 1)
     const attemptsDebug: Array<{
@@ -88,10 +94,16 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     }> = []
 
     const attemptOnce = async () => {
+      const attemptStart = Date.now()
+      console.log("[execText] attempt", attemptsDebug.length + 1)
       const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
         modelName: modelName,
         overallTimeoutMs,
         stallTimeoutMs,
+      })
+      console.log("[execText] attempt completed", {
+        attempt: attemptsDebug.length + 1,
+        durationMs: Date.now() - attemptStart,
       })
 
       const usd = calculateUsageCost(gen?.usage, modelName)
@@ -128,6 +140,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     const text = result?.text
     const hasText = !isNir(text?.trim?.())
     if (hasText) {
+      console.log("[execText] success", { usd })
       return {
         success: true,
         data: { text, reasoning: result?.reasoningText },
@@ -138,6 +151,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       }
     }
 
+    console.warn("[execText] empty response after retries", { attempts, usd })
     return {
       success: false,
       data: null,
@@ -151,7 +165,8 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting
     const { message, debug } = normalizeError(err)
-    lgg.error("execText error", message)
+    lgg.error("execText error", message, modelName, model, getCurrentProvider())
+    console.error("[execText] error", { message, model: modelName })
 
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking

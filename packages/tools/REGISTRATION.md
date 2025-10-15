@@ -4,15 +4,15 @@ This directory contains the unified tool registration system for both **Code Too
 
 ## Architecture
 
-Both code tools and MCP tools use **the same grouping structure** for easy maintenance:
+Both code tools and MCP tools use **the same toolkit structure** for easy maintenance:
 
 ```typescript
 {
-  groups: [
+  toolkits: [
     {
-      groupName: string
+      toolkitName: string
       description: string
-      tools: ToolDefinition[]
+      tools: ToolkitToolDefinition[]
     }
   ]
 }
@@ -27,7 +27,7 @@ Code tools are TypeScript functions that run in-process.
 ### Structure
 
 ```typescript
-type CodeToolDefinition = {
+type ToolkitToolDefinition = {
   toolName: string
   toolFunc: any // The actual tool function
   description: string
@@ -38,12 +38,13 @@ type CodeToolDefinition = {
 
 ```typescript
 import { registerAllTools } from "@examples/tools/registerAllTools"
+import { TOOL_TOOLKITS } from "@examples/definitions/registry-grouped"
 
 // At startup
-await registerAllTools() // Registers 24 tools across 10 groups
+await registerAllTools(TOOL_TOOLKITS) // Registers 24 tools across 10 toolkits
 ```
 
-### Groups (10 total)
+### Toolkits (10 total)
 
 - **csv** (4 tools): CSV file operations
 - **context** (4 tools): Workflow state management
@@ -65,7 +66,7 @@ MCP tools are external server processes that communicate via the Model Context P
 ### Structure
 
 ```typescript
-type MCPToolDefinition = {
+type MCPToolkitToolDefinition = {
   toolName: string
   serverName: string // Reference to mcp-secret.json
   description: string
@@ -88,7 +89,7 @@ MCP tools require a `mcp-secret.json` configuration file:
 }
 ```
 
-### Groups (4 total)
+### Toolkits (4 total)
 
 - **web-search** (3 tools): tavily, serpAPI, googleScholar
 - **web-scraping** (3 tools): firecrawl, browserUse, playwright
@@ -102,7 +103,8 @@ MCP tools require a `mcp-secret.json` configuration file:
 ```typescript
 // 1. Register all tools at startup
 import { registerAllTools } from "@examples/tools/registerAllTools"
-await registerAllTools()
+import { TOOL_TOOLKITS } from "@examples/definitions/registry-grouped"
+await registerAllTools(TOOL_TOOLKITS)
 
 // 2. Use tools in your workflow
 import { setupCodeToolsForNode } from "@lucky/tools"
@@ -135,7 +137,7 @@ bun run examples/tools/verify-registrations.ts
 
 ✅ **Same structure** for both code and MCP tools
 ✅ **Easy maintenance** - update one, understand both
-✅ **Grouped organization** - related tools stay together
+✅ **Toolkit organization** - related tools stay together
 ✅ **Type-safe** - TypeScript types for all definitions
 ✅ **Explicit registration** - no auto-discovery magic
 ✅ **Clear documentation** - each tool has a description

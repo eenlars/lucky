@@ -5,7 +5,6 @@
 
 import { lgg } from "@core/utils/logging/Logger"
 import { isActiveModel } from "@core/utils/spending/functions"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 
 /**
@@ -16,7 +15,7 @@ import { getCurrentProvider } from "@core/utils/spending/provider"
  * @returns The resolved model name
  * @throws Error if the model is not active for the current provider
  */
-export function validateAndResolveModel(model: ModelName | undefined, fallback: ModelName): ModelName {
+export function validateAndResolveModel(model: string | undefined, fallback: string): string {
   const resolved = model ?? fallback
   const provider = getCurrentProvider()
 
@@ -37,6 +36,6 @@ export function validateAndResolveModel(model: ModelName | undefined, fallback: 
  * Check if a model is valid without throwing.
  * Useful for validation before execution.
  */
-export function isValidModel(model: ModelName): boolean {
+export function isValidModel(model: string): boolean {
   return isActiveModel(model)
 }

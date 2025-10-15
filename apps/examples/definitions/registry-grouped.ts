@@ -1,14 +1,14 @@
 /**
- * Grouped Code Tool Registry
+ * Toolkit-based Code Tool Registry
  *
- * This file organizes all available code tools into logical groups.
- * Each group contains related tools that work together to accomplish specific tasks.
+ * This file organizes all available code tools into logical toolkits.
+ * Each toolkit contains related tools that work together to accomplish specific tasks.
  *
  * This structure matches MCP registration for consistency and provides
  * better organization for discovery and documentation.
  */
 
-import { type CodeToolGroups, createToolGroup } from "@lucky/tools"
+import { type ToolkitRegistry, createToolkit } from "@lucky/tools"
 
 // CSV Tools
 import { tool as csvWriter } from "./csv-handler/tool-create-csv"
@@ -55,11 +55,11 @@ import { tool as verifyLocation } from "./mapbox/tool"
 import { tool as memoryManager } from "./memory/tool"
 
 /**
- * Grouped tool registration structure
+ * Toolkit registration structure
  */
-export const TOOL_GROUPS: CodeToolGroups = {
-  groups: [
-    createToolGroup(
+export const TOOL_TOOLKITS: ToolkitRegistry = {
+  toolkits: [
+    createToolkit(
       "csv",
       "CSV file handling and manipulation tools for creating, reading, filtering, and analyzing CSV data",
       [
@@ -86,7 +86,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       ],
     ),
 
-    createToolGroup("context", "Context store management tools for persisting and retrieving workflow data", [
+    createToolkit("context", "Context store management tools for persisting and retrieving workflow data", [
       {
         toolName: "contextGet",
         toolFunc: contextGet,
@@ -109,7 +109,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("todo", "Task management tools for creating and tracking todo lists within workflow sessions", [
+    createToolkit("todo", "Task management tools for creating and tracking todo lists within workflow sessions", [
       {
         toolName: "todoRead",
         toolFunc: todoRead,
@@ -122,7 +122,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("location", "Location data handling tools for managing and querying geographical information", [
+    createToolkit("location", "Location data handling tools for managing and querying geographical information", [
       {
         toolName: "locationDataInfo",
         toolFunc: locationDataInfo,
@@ -135,7 +135,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("human", "Human-in-the-loop tools for requesting approval or assistance from human operators", [
+    createToolkit("human", "Human-in-the-loop tools for requesting approval or assistance from human operators", [
       {
         toolName: "humanApproval",
         toolFunc: humanApproval,
@@ -148,7 +148,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("web", "Web scraping and data collection tools for extracting information from websites", [
+    createToolkit("web", "Web scraping and data collection tools for extracting information from websites", [
       {
         toolName: "firecrawlAPI",
         toolFunc: firecrawlAPI,
@@ -171,7 +171,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("file", "File system operations for saving and managing files", [
+    createToolkit("file", "File system operations for saving and managing files", [
       {
         toolName: "saveFileLegacy",
         toolFunc: saveFileLegacy,
@@ -179,7 +179,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("development", "Development and debugging tools for testing and inspecting workflow execution", [
+    createToolkit("development", "Development and debugging tools for testing and inspecting workflow execution", [
       {
         toolName: "runInspector",
         toolFunc: runInspector,
@@ -197,7 +197,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("mapping", "Mapping and geolocation tools for verifying and geocoding locations", [
+    createToolkit("mapping", "Mapping and geolocation tools for verifying and geocoding locations", [
       {
         toolName: "verifyLocation",
         toolFunc: verifyLocation,
@@ -205,7 +205,7 @@ export const TOOL_GROUPS: CodeToolGroups = {
       },
     ]),
 
-    createToolGroup("memory", "Long-term memory management tools for storing and retrieving agent memories", [
+    createToolkit("memory", "Long-term memory management tools for storing and retrieving agent memories", [
       {
         toolName: "memoryManager",
         toolFunc: memoryManager,

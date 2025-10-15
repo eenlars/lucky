@@ -1,14 +1,14 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { getFinalOutputNodeInvocation } from "@core/messages/api/processResponse"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import multiOutputFixture from "../../__tests__/resources/multiOutput.json"
 import { responseToAgentSteps } from "../responseToAgentSteps"
 
 // TODO: Test file name says "combined" but only tests vercel integration
 // TODO: Missing tests for error cases and edge conditions
 describe("vercel.integration.test", () => {
-  const testModel: ModelName = getDefaultModels().nano
+  const testModel: string = getDefaultModels().nano
 
   it("should process multiOutput.json: aggregate tool steps and compute cost deterministically", async () => {
     const { agentSteps, usdCost } = responseToAgentSteps({

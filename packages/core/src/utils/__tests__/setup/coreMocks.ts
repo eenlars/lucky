@@ -5,7 +5,7 @@ import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEv
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
 import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
-import type { FlowPathsConfig, FlowRuntimeConfig } from "@core/types"
+import type { FlowRuntimeConfig } from "@core/types"
 import { Workflow } from "@core/workflow/Workflow"
 import type {
   EvaluationCSV,
@@ -658,11 +658,11 @@ export const mockFailedAIResponse = <T>(error: string): RS<T> => ({
 export {
   createMockConfigStandard as createMockRuntimeConfig,
   createMockConfigVerbose as createMockRuntimeConfigVerbose,
-  createMockPaths as createMockRuntimePaths,
   createMockModels as createMockRuntimeModels,
+  createMockPaths as createMockRuntimePaths,
 } from "./configMocks"
 
-import { createMockConfigStandard, createMockConfigVerbose, createMockModels, createMockPaths } from "./configMocks"
+import { createMockConfigStandard, createMockModels, createMockPaths } from "./configMocks"
 
 /**
  * @deprecated Use configMocks directly

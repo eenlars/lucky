@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
     "module": "esnext",
@@ -10,21 +11,9 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "baseUrl": ".",
     "outDir": "./dist",
     "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "paths": {
-      "@lucky/tools": ["./src/index.ts"],
-      "@lucky/tools/*": ["./src/*"],
-      "@lucky/shared/contracts": ["../shared/src/contracts"],
-      "@lucky/shared/contracts/*": ["../shared/src/contracts/*"],
-      "@lucky/shared": ["../shared/src/index.ts"],
-      "@lucky/shared/*": ["../shared/src/*"],
-      "@core/*": ["../core/src/*"],
-      "@core/core-config": ["../core/src/core-config/coreConfig.ts"],
-      "@examples/*": ["../../apps/examples/*"]
-    }
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]

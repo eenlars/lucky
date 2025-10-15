@@ -1,6 +1,6 @@
 "use client"
 
-import type { TokenUsage } from "@lucky/core/utils/spending/models.types"
+import type { TokenUsage } from "@lucky/shared"
 import "highlight.js/styles/github.css"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"

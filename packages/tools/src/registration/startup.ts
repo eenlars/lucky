@@ -6,21 +6,21 @@
  */
 
 import { codeToolRegistry } from "../registry/CodeToolRegistry"
-import type { CodeToolGroups } from "./codeToolsRegistration"
-import { printValidationResult, validateCodeToolRegistration } from "./validation"
+import type { ToolkitRegistry } from "./codeToolsRegistration"
+import { printValidationResult, validateToolkitRegistration } from "./validation"
 
 /**
- * Register all tools from the tool groups with validation
+ * Register all tools from the toolkits with validation
  */
 export async function registerAllTools(
-  toolGroups: CodeToolGroups,
+  toolkitRegistry: ToolkitRegistry,
   options?: { validate?: boolean; throwOnError?: boolean },
 ): Promise<void> {
   const { validate = true, throwOnError = true } = options ?? {}
 
   // Validate registration before registering
   if (validate) {
-    const result = validateCodeToolRegistration(toolGroups.groups)
+    const result = validateToolkitRegistration(toolkitRegistry.toolkits)
     printValidationResult("Code", result)
 
     if (!result.valid && throwOnError) {
@@ -28,8 +28,8 @@ export async function registerAllTools(
     }
   }
 
-  // Extract all tool functions from all groups
-  const allTools = toolGroups.groups.flatMap(group => group.tools.map(t => t.toolFunc))
+  // Extract all tool functions from all toolkits
+  const allTools = toolkitRegistry.toolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
   // Register them with the registry
   codeToolRegistry.registerMany(allTools)
@@ -37,18 +37,18 @@ export async function registerAllTools(
   // Mark registry as initialized
   await codeToolRegistry.initialize()
 
-  console.log(`✅ Registered ${allTools.length} tools across ${toolGroups.groups.length} groups`)
+  console.log(`✅ Registered ${allTools.length} tools across ${toolkitRegistry.toolkits.length} toolkits`)
 }
 
 /**
- * Register tools from specific groups only
+ * Register tools from specific toolkits only
  */
-export async function registerToolGroups(toolGroups: CodeToolGroups, ...groupNames: string[]): Promise<void> {
-  const selectedGroups = toolGroups.groups.filter(g => groupNames.includes(g.groupName))
-  const tools = selectedGroups.flatMap(group => group.tools.map(t => t.toolFunc))
+export async function registerToolkits(toolkitRegistry: ToolkitRegistry, ...toolkitNames: string[]): Promise<void> {
+  const selectedToolkits = toolkitRegistry.toolkits.filter(t => toolkitNames.includes(t.toolkitName))
+  const tools = selectedToolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
   codeToolRegistry.registerMany(tools)
   await codeToolRegistry.initialize()
 
-  console.log(`✅ Registered ${tools.length} tools from groups: ${groupNames.join(", ")}`)
+  console.log(`✅ Registered ${tools.length} tools from toolkits: ${toolkitNames.join(", ")}`)
 }

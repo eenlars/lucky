@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Brain, Plug, User } from "lucide-react"
+import { Brain, Plug, User, X } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { BaseNode } from "@/features/react-flow-visualization/components/base-node"
@@ -11,10 +11,7 @@ import { NodeHeaderDeleteAction } from "@/features/react-flow-visualization/comp
 import { NodeStatusIndicator } from "@/features/react-flow-visualization/components/node-status-indicator"
 import { NODE_SIZE, type WorkflowNodeData } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { iconMapping } from "@/features/react-flow-visualization/components/ui/icon-mapping"
-// runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-// Unused tool imports removed
-// Provider hardcoded for client-side display
 
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
@@ -133,8 +130,7 @@ function WorkflowNode({
             updateNode(id, { requiresApproval: true })
           } else if (parsed.id === "connector-node") {
             // Add connector to this agent
-            const existingConnectors = data?.connectors || []
-            updateNode(id, { connectors: [...existingConnectors, `connector-${Date.now()}`] })
+            updateNode(id, { connectors: [...(data?.connectors ?? []), `connector-${Date.now()}`] })
           }
         } catch {
           // Invalid JSON, ignore
@@ -159,15 +155,25 @@ function WorkflowNode({
     [editingConnectorId],
   )
 
+  const removeConnector = useCallback(
+    (connectorId: string) => {
+      if (!connectorId) return
+      updateNode(id, {
+        connectors: (data?.connectors ?? []).filter(c => c !== connectorId),
+      })
+
+      if (editingConnectorId === connectorId) {
+        setConnectorDialogOpen(false)
+        setEditingConnectorId(null)
+      }
+    },
+    [data?.connectors, editingConnectorId, id, updateNode],
+  )
+
   const handleConnectorDelete = useCallback(() => {
     if (!editingConnectorId) return
-    const existingConnectors = data?.connectors || []
-    updateNode(id, {
-      connectors: existingConnectors.filter(c => c !== editingConnectorId),
-    })
-    setConnectorDialogOpen(false)
-    setEditingConnectorId(null)
-  }, [editingConnectorId, data?.connectors, id, updateNode])
+    removeConnector(editingConnectorId)
+  }, [editingConnectorId, removeConnector])
 
   const handleHumanClick = useCallback(() => {
     setHumanDialogOpen(true)
@@ -189,41 +195,64 @@ function WorkflowNode({
 
   return (
     <NodeStatusIndicator status={data?.status}>
-      {/* Wrapper with overflow visible to show badges above */}
       <div className="relative" style={{ overflow: "visible" }}>
-        {/* Connector badges - positioned ABOVE the node, left side */}
         {!isStartOrEndNode && data?.connectors && data.connectors.length > 0 && (
           <div className="absolute left-4 -top-16 z-50 flex gap-2">
             {data.connectors.map((connector, index) => (
-              <button
-                key={connector}
-                type="button"
-                className="flex items-center justify-center w-14 h-14 rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-                title={`Connector ${index + 1}`}
-                onClick={e => {
-                  e.stopPropagation()
-                  handleConnectorClick(connector)
-                }}
-              >
-                <Plug className="size-8 text-emerald-600 dark:text-emerald-400" />
-              </button>
+              <div key={connector} className="relative group/connector">
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-14 h-14 rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                  title={`Connector ${index + 1}`}
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleConnectorClick(connector)
+                  }}
+                >
+                  <Plug className="size-8 text-emerald-600 dark:text-emerald-400" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Remove connector ${index + 1}`}
+                  className="absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-emerald-200 bg-white text-emerald-600 shadow-sm hover:bg-emerald-50 transition-colors opacity-0 group-hover/connector:opacity-100 transition-opacity pointer-events-none group-hover/connector:pointer-events-auto"
+                  onClick={e => {
+                    e.stopPropagation()
+                    removeConnector(connector)
+                  }}
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
             ))}
           </div>
         )}
 
         {/* Human-in-the-loop gate badge - positioned ABOVE the node, right side */}
         {!isStartOrEndNode && data?.requiresApproval && (
-          <button
-            type="button"
-            className="absolute right-4 -top-16 z-50 flex items-center justify-center w-14 h-14 rounded-lg border-2 border-amber-500 dark:border-amber-400 bg-amber-50 dark:bg-amber-950 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-            title="Human gate"
-            onClick={e => {
-              e.stopPropagation()
-              handleHumanClick()
-            }}
-          >
-            <User className="size-8 text-amber-600 dark:text-amber-400" />
-          </button>
+          <div className="absolute right-4 -top-16 z-50 flex items-center justify-center group/human">
+            <button
+              type="button"
+              className="flex items-center justify-center w-14 h-14 rounded-lg border-2 border-amber-500 dark:border-amber-400 bg-amber-50 dark:bg-amber-950 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+              title="Human gate"
+              onClick={e => {
+                e.stopPropagation()
+                handleHumanClick()
+              }}
+            >
+              <User className="size-8 text-amber-600 dark:text-amber-400" />
+            </button>
+            <button
+              type="button"
+              aria-label="Remove human gate"
+              className="absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-amber-200 bg-white text-amber-600 shadow-sm hover:bg-amber-50 transition-colors opacity-0 group-hover/human:opacity-100 transition-opacity pointer-events-none group-hover/human:pointer-events-auto"
+              onClick={e => {
+                e.stopPropagation()
+                handleHumanDelete()
+              }}
+            >
+              <X className="size-4" />
+            </button>
+          </div>
         )}
 
         <BaseNode

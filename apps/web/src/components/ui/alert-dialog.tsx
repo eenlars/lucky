@@ -73,6 +73,7 @@ export function AlertDialog({
               <h2 className="text-[17px] font-semibold tracking-tight text-foreground">{title}</h2>
             </div>
             <button
+              type="button"
               onClick={handleClose}
               className="size-7 rounded-full hover:bg-black/[0.06] dark:hover:bg-white/[0.06] flex items-center justify-center transition-colors duration-150"
             >
@@ -90,12 +91,14 @@ export function AlertDialog({
             {onConfirm ? (
               <>
                 <button
+                  type="button"
                   onClick={handleClose}
                   className="px-5 h-9 rounded-lg text-[15px] font-medium text-foreground/70 hover:bg-black/[0.06] dark:hover:bg-white/[0.06] transition-colors duration-150"
                 >
                   {cancelText}
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     onConfirm()
                     handleClose()
@@ -111,6 +114,7 @@ export function AlertDialog({
               </>
             ) : (
               <button
+                type="button"
                 onClick={handleClose}
                 className="px-5 h-9 rounded-lg text-[15px] font-medium text-foreground/70 hover:bg-black/[0.06] dark:hover:bg-white/[0.06] transition-colors duration-150"
               >

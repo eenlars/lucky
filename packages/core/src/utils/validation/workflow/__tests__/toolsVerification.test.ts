@@ -1,6 +1,5 @@
 import { getCoreConfig, getDefaultModels, initCoreConfig } from "@core/core-config/coreConfig"
 import type { CoreToolsConfig } from "@core/core-config/types"
-import type { AllowedModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
@@ -154,7 +153,7 @@ const modelNameMissingExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: undefined as unknown as AllowedModelName,
+      modelName: undefined as unknown as string,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -170,7 +169,7 @@ const invalidModelNameExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: "not-a-real-model" as unknown as AllowedModelName,
+      modelName: "not-a-real-model" as unknown as string,
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -640,7 +639,7 @@ describe("verifyModelsAreActive", () => {
           nodeId: "node1",
           description: "node with inactive model",
           systemPrompt: "test",
-          modelName: "inactive-model" as AllowedModelName,
+          modelName: "inactive-model" as string,
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

@@ -4,7 +4,7 @@
  */
 
 import { logException } from "@/lib/error-logger"
-import type { ModelId, UserModelPreferences } from "@lucky/shared"
+import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
 import {
   getEnabledModelsForProvider,
   isModelEnabled,
@@ -25,10 +25,10 @@ interface ModelPreferencesState {
 
   // Actions
   loadPreferences: () => Promise<void>
-  getEnabledModels: (provider: string) => ModelId[]
+  getEnabledModels: (provider: LuckyProvider) => ModelId[]
   isEnabled: (modelId: ModelId) => boolean
-  toggleModel: (provider: string, modelId: ModelId) => Promise<void>
-  setProviderModels: (provider: string, modelIds: ModelId[]) => Promise<void>
+  toggleModel: (provider: LuckyProvider, modelId: ModelId) => Promise<void>
+  setProviderModels: (provider: LuckyProvider, modelIds: ModelId[]) => Promise<void>
   syncFromServer: () => Promise<void>
   clearError: () => void
 
@@ -81,7 +81,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Get enabled models for a provider (from local state)
-      getEnabledModels: (provider: string) => {
+      getEnabledModels: (provider: LuckyProvider) => {
         const { preferences } = get()
         return getEnabledModelsForProvider(preferences, provider)
       },
@@ -93,7 +93,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Toggle a single model on/off with optimistic update
-      toggleModel: async (provider: string, modelId: ModelId) => {
+      toggleModel: async (provider: LuckyProvider, modelId: ModelId) => {
         const { preferences } = get()
 
         if (!preferences) {
@@ -142,7 +142,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Set all enabled models for a provider with optimistic update
-      setProviderModels: async (provider: string, modelIds: ModelId[]) => {
+      setProviderModels: async (provider: LuckyProvider, modelIds: ModelId[]) => {
         const { preferences } = get()
 
         if (!preferences) {

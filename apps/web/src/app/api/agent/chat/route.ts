@@ -153,13 +153,15 @@ export async function POST(request: NextRequest) {
 
     // Determine which model to use
     // Default to OpenRouter's Claude if no model specified
-    const modelSpec = modelName || "openrouter/anthropic/claude-3.5-sonnet"
+    if (!modelName) {
+      throw new Error("Model name is required")
+    }
 
     // Select and get AI SDK compatible model
     let modelSelection: Awaited<ReturnType<typeof models.resolve>>
     let model: Awaited<ReturnType<typeof models.getModel>>
     try {
-      modelSelection = await models.resolve(modelSpec)
+      modelSelection = await models.resolve(modelName)
       model = await models.getModel(modelSelection)
     } catch (error) {
       console.error("[Agent Chat] Failed to load model:", error)
@@ -173,7 +175,7 @@ export async function POST(request: NextRequest) {
                 ? error.message
                 : String(error)
               : undefined,
-          modelSpec: process.env.NODE_ENV === "development" ? modelSpec : undefined,
+          modelName: process.env.NODE_ENV === "development" ? modelName : undefined,
         },
         { status: 500 },
       )

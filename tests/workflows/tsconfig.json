@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -12,14 +13,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@core/*": ["../../packages/core/src/*"],
-      "@core/workflow/*": ["../../packages/core/src/workflow/*"],
-      "@core/utils/*": ["../../packages/core/src/utils/*"],
-      "@lucky/shared": ["../../packages/shared/src"],
-      "@lucky/shared/*": ["../../packages/shared/src/*"]
-    },
     "allowSyntheticDefaultImports": true
   },
   "include": ["**/*.ts"]

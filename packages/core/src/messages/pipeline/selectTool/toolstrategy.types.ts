@@ -1,5 +1,4 @@
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import type { ModelName } from "@core/utils/spending/models.types"
 import type { ToolSet } from "ai"
 
 /**
@@ -11,7 +10,7 @@ export interface SelectToolStrategyOptions<T extends ToolSet> {
   agentSteps: AgentStep[]
   roundsLeft: number
   systemMessage: string
-  model: ModelName
+  model: string
 }
 
 /**

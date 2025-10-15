@@ -2,6 +2,7 @@
 
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
+import { Provider as ChatStoreProvider } from "@ai-sdk-tools/store"
 import { useEffect, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 import { ConfigPanel } from "./config-panel"
@@ -18,7 +19,7 @@ export function AgentDialogInspect() {
     })),
   )
 
-  const panelRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDialogElement>(null)
   const [dividerPosition, setDividerPosition] = useState(60) // percentage
   const isDragging = useRef(false)
 
@@ -87,19 +88,24 @@ export function AgentDialogInspect() {
         )}
       >
         {/* Dialog - clean rectangular design */}
-        <div
+        <dialog
           ref={panelRef}
           className={cn(
             "bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col pointer-events-auto",
             // Smaller, more focused size
             "w-[85vw] h-[80vh] max-w-[1400px] max-h-[800px]",
             // Smooth animation
-            "transition-all duration-200",
+            "transition-all duration-200 p-0",
             isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0",
           )}
-          role="dialog"
-          aria-modal="true"
+          open
+          aria-modal={isOpen ? "true" : undefined}
+          aria-hidden={!isOpen}
           aria-label="Agent inspector"
+          onCancel={event => {
+            event.preventDefault()
+            onClose()
+          }}
           onContextMenu={e => {
             // Prevent context menu from appearing when right-clicking inside the dialog
             e.preventDefault()
@@ -116,7 +122,9 @@ export function AgentDialogInspect() {
               className="flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-700"
               style={{ width: `${dividerPosition}%` }}
             >
-              <TestPanel node={selectedNode} />
+              <ChatStoreProvider key={selectedNode.id}>
+                <TestPanel node={selectedNode} />
+              </ChatStoreProvider>
             </div>
 
             {/* Resizable Divider */}
@@ -144,7 +152,7 @@ export function AgentDialogInspect() {
               <ConfigPanel node={selectedNode} />
             </div>
           </div>
-        </div>
+        </dialog>
       </div>
     </>
   )

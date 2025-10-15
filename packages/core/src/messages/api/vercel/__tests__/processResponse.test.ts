@@ -1,5 +1,5 @@
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import { describe, expect, it, vi } from "vitest"
 import toolResponseMultipleSteps from "../../__tests__/resources/toolResponseMultipleSteps.json"
 import toolResponseNoToolUsed from "../../__tests__/resources/toolResponseNoToolUsed.json"
@@ -23,7 +23,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processResponseVercel({
       response: toolResponseMultipleSteps as any,
-      modelUsed: "claude-3-haiku-20240307" as unknown as ModelName,
+      modelUsed: "anthropic/claude-3-haiku-20240307",
       nodeId: "test",
       summary: "test",
     })
@@ -55,7 +55,7 @@ describe("processModelResponse", () => {
     // Act
     const result = processResponseVercel({
       response: toolResponseNoToolUsed as any,
-      modelUsed: "claude-3-haiku-20240307" as unknown as ModelName,
+      modelUsed: "claude-3-haiku-20240307",
       nodeId: "test",
       summary: "test",
     })

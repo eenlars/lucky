@@ -1,5 +1,5 @@
 import { getModelsByProvider } from "@lucky/models"
-import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
+import { type EnrichedModelInfo, type LuckyProvider, providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -23,9 +23,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   const apiKey = body.apiKey
   const includeMetadata = body.includeMetadata ?? true
 
-  // Validate provider
-  const validProviders: LuckyProvider[] = ["openai", "openrouter", "groq"]
-  if (!validProviders.includes(provider as LuckyProvider)) {
+  const validatedProvider = providerNameSchema.parse(provider)
+
+  if (!validatedProvider) {
+    return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
+  }
+
+  if (!Object.values(providerNameSchema.enum).includes(provider as LuckyProvider)) {
     return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
   }
 
@@ -69,18 +73,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
           const catalogEntry = catalogMap.get(modelId)
           if (catalogEntry && !catalogEntry.disabled) {
             return {
-              // ⚠️ CRITICAL: Use catalogEntry.model (NOT .id) as the ID!
-              //
-              // WHY: catalog.id uses vendor:X;model:Y format ("vendor:openai;model:gpt-5-mini")
-              //      catalog.model contains the provider-specific format:
-              //      - OpenAI API expects "gpt-5-mini" (UNPREFIXED)
-              //      - OpenRouter API expects "openai/gpt-5-mini" (PREFIXED)
-              //
-              // WRONG: id: catalogEntry.id ❌ Would store "vendor:openai;model:gpt-5-mini"
-              // RIGHT: id: catalogEntry.model ✅ Stores "gpt-5-mini" for OpenAI
-              //
-              // This ID gets saved to user preferences and sent to provider APIs!
-              id: catalogEntry.model,
+              id: catalogEntry.id,
               name: catalogEntry.model,
               contextLength: catalogEntry.contextLength,
               supportsTools: catalogEntry.supportsTools,

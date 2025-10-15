@@ -4,7 +4,6 @@
  * Supports tier-based model selection and provider-aware reasoning.
  */
 
-import type { ModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import type { LanguageModel } from "ai"
 import { getModelsInstance } from "./models-instance"
@@ -30,7 +29,7 @@ import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
  * const model = await getLanguageModel('openai/gpt-4')
  * ```
  */
-export async function getLanguageModel(modelName: ModelName): Promise<LanguageModel> {
+export async function getLanguageModel(modelName: string): Promise<LanguageModel> {
   const currentProvider = getCurrentProvider()
   const resolved = resolveTierOrModel(modelName)
 
@@ -73,7 +72,7 @@ export async function getLanguageModel(modelName: ModelName): Promise<LanguageMo
  * ```
  */
 export async function getLanguageModelWithReasoning(
-  modelName: ModelName,
+  modelName: string,
   opts?: { reasoning?: boolean },
 ): Promise<LanguageModel> {
   const provider = getCurrentProvider()

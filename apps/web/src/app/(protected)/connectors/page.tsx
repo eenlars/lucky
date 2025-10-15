@@ -29,6 +29,8 @@ import { MCPServersConfig } from "./mcp-servers"
 import type { Connector, ConnectorTool, Tag } from "./mock-data"
 import { mockConnectors } from "./mock-data"
 
+type ConnectorTab = "marketplace" | "my-connectors" | "mcp-servers"
+
 export default function ConnectorsPage() {
   const connectorsEnabled = useFeatureFlag("CONNECTORS")
   const activeTab = useConnectorsUIStore(state => state.activeTab)
@@ -56,7 +58,7 @@ export default function ConnectorsPage() {
     c =>
       c.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.short_description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.tags.some(t => t.name.toLowerCase().includes(searchQuery.toLowerCase())),
+      c.tags.some((tag: Tag) => tag.name.toLowerCase().includes(searchQuery.toLowerCase())),
   )
 
   const filteredInstalled = installedConnectors.filter(
@@ -99,7 +101,7 @@ export default function ConnectorsPage() {
             <div className="flex-1 flex flex-col">
               <Tabs
                 value={activeTab}
-                onValueChange={tab => setActiveTab(tab as "marketplace" | "my-connectors" | "mcp-servers")}
+                onValueChange={(value: string) => setActiveTab(value as ConnectorTab)}
                 className="flex-1 flex flex-col"
               >
                 <div className="border-b border-border px-8">
@@ -435,7 +437,7 @@ function ConnectorCard({
         <p className="text-sm text-muted-foreground mt-4 line-clamp-2">{connector.short_description}</p>
 
         <div className="flex items-center gap-2 mt-4 flex-wrap">
-          {connector.tags.slice(0, 2).map(tag => (
+          {connector.tags.slice(0, 2).map((tag: Tag) => (
             <Badge key={tag.tag_id} variant="secondary" className="text-xs">
               {tag.name}
             </Badge>
@@ -738,7 +740,7 @@ function ConnectorDetailModal({
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-2">Tags</h3>
                   <div className="flex items-center gap-2 flex-wrap">
-                    {connector.tags.map(tag => (
+                    {connector.tags.map((tag: Tag) => (
                       <Badge key={tag.tag_id} variant="secondary">
                         {tag.name}
                       </Badge>
@@ -785,7 +787,7 @@ function ConnectorDetailModal({
 
           {activeSection === "tools" && (
             <div className="space-y-3">
-              {connector.tools.map(tool => (
+              {connector.tools.map((tool: ConnectorTool) => (
                 <Card key={tool.tool_id} className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">

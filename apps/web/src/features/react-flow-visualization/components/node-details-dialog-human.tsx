@@ -1,7 +1,6 @@
 "use client"
 
 import type { WorkflowNodeData } from "@/features/react-flow-visualization/components/nodes/nodes"
-// Button no longer used for model chooser
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,6 @@ import {
   DialogTitle,
 } from "@/features/react-flow-visualization/components/ui/dialog"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
-// Removed custom Popover-based chooser; using simple Select instead
 import {
   Select,
   SelectContent,
@@ -22,7 +20,7 @@ import { Textarea } from "@/features/react-flow-visualization/components/ui/text
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
-import type { AllowedModelName, ModelPricingV2 } from "@lucky/core/utils/spending/models.types"
+import type { ModelPricing } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
@@ -197,7 +195,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   //   }))
   // }
 
-  const [selectedModelPricing, setSelectedModelPricing] = useState<ModelPricingV2 | null>(null)
+  const [selectedModelPricing, setSelectedModelPricing] = useState<ModelPricing | null>(null)
   const [activeModels, setActiveModels] = useState<string[]>([])
 
   // Fetch active models on mount
@@ -222,10 +220,6 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
   // Provider is hardcoded to "openai" in client (see client-utils.ts)
   // MUST match BROWSER_DEFAULT_PROVIDER in client-utils.ts
   const providerId = "openai"
-
-  // Keep helpers in case we reintroduce richer display; unused for simple dropdown
-  const _parseInfo = (_info?: ModelPricingV2["info"]) => undefined
-  const _pricingToCredits = (_pricing?: "low" | "medium" | "high" | null) => undefined
 
   const formatDollars = (value?: number | null) => {
     if (value === null || value === undefined) return "-"
@@ -338,7 +332,7 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                 onValueChange={value =>
                   setData(prev => ({
                     ...prev,
-                    modelName: value as AllowedModelName,
+                    modelName: value as string,
                   }))
                 }
               >

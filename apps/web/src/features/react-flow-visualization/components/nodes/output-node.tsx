@@ -1,7 +1,7 @@
 "use client"
 
 import { useReactFlow } from "@xyflow/react"
-import { CheckCheck, Trash } from "lucide-react"
+import { CheckCheck, X } from "lucide-react"
 import { useCallback } from "react"
 import nodesConfig, { COMPACT_NODE_SIZE, type WorkflowNodeProps } from "./nodes"
 import { AppHandle } from "./workflow-node/app-handle"
@@ -40,10 +40,10 @@ export function OutputNode({ id, data: _data }: WorkflowNodeProps) {
       <button
         type="button"
         onClick={handleDelete}
-        className="absolute top-1 right-1 p-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto hover:bg-purple-100 dark:hover:bg-purple-900 rounded"
-        aria-label="Delete node"
+        className="absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-purple-200 bg-white text-purple-600 shadow-sm hover:bg-purple-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+        aria-label="Delete end node"
       >
-        <Trash className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+        <X className="size-4" />
       </button>
 
       {/* Connection handle(s) remain functional */}

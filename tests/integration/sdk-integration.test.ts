@@ -109,7 +109,7 @@ describe("Anthropic SDK Integration", () => {
           modelName: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
-            model: "sonnet-3.5-old",
+            model: "opus-3",
             maxTokens: 8192,
             temperature: 0.3,
             topP: 0.9,

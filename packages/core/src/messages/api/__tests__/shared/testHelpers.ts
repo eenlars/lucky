@@ -4,7 +4,7 @@ import { getDefaultModels } from "@core/core-config/coreConfig"
  * Consolidates duplicate test patterns and eliminates verbose boilerplate
  */
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import { JSONN } from "@lucky/shared"
 import type { GenerateTextResult, ToolSet } from "ai"
 
@@ -14,7 +14,7 @@ import type { GenerateTextResult, ToolSet } from "ai"
  */
 export const processAndValidateSteps = (
   result: GenerateTextResult<ToolSet, unknown>,
-  model?: ModelName,
+  model?: string,
   options?: {
     skipConsoleLog?: boolean
     minSteps?: number

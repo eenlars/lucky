@@ -6,13 +6,16 @@
  * Catches common issues that would cause runtime errors.
  *
  * Validations:
- * - Catalog ID format (vendor:X;model:Y)
+ * - Catalog ID format ("<provider>#<model>")
  * - Vendor prefix matches provider field
  * - Active models have all required fields
  * - No duplicate IDs
  * - Pricing values are valid
  * - Context lengths are positive
  */
+
+import { readFileSync, readdirSync } from "node:fs"
+import path from "node:path"
 
 import { modelEntrySchema } from "@lucky/shared"
 import { MODEL_CATALOG } from "../src/pricing/catalog"
@@ -22,11 +25,17 @@ interface ValidationError {
   field: string
   message: string
   severity: "error" | "warning"
+  location?: string
 }
 
 class CatalogValidator {
   private errors: ValidationError[] = []
   private warnings: ValidationError[] = []
+  private readonly getLocation: (modelId: string) => string | undefined
+
+  constructor(locationResolver: (modelId: string) => string | undefined) {
+    this.getLocation = locationResolver
+  }
 
   validate(): boolean {
     console.log("🔍 Validating MODEL_CATALOG...")
@@ -63,20 +72,18 @@ class CatalogValidator {
       }
       seenIds.add(model.id)
 
-      // Check catalog ID format: vendor:X;model:Y
-      if (!model.id.startsWith("vendor:") || !model.id.includes(";model:")) {
-        this.addError(modelId, "id", 'ID must follow format "vendor:X;model:Y"')
-      }
-
-      // Extract vendor from ID and check it matches provider
-      const vendorMatch = model.id.match(/^vendor:([^;]+);/)
-      if (vendorMatch) {
-        const vendor = vendorMatch[1]
-        if (vendor !== model.provider) {
+      // Check catalog ID format: <provider>#<model>
+      if (!model.id.includes("#")) {
+        this.addError(modelId, "id", 'ID must follow format "<provider>#<model>"')
+      } else {
+        const [prefix] = model.id.split("#", 1)
+        if (!prefix) {
+          this.addError(modelId, "id", 'ID must follow format "<provider>#<model>"')
+        } else if (prefix !== model.provider) {
           this.addError(
             modelId,
-            "vendor/provider",
-            `Vendor prefix "${vendor}" does not match provider "${model.provider}"`,
+            "provider",
+            `Catalog ID prefix "${prefix}" does not match provider "${model.provider}"`,
           )
         }
       }
@@ -126,11 +133,11 @@ class CatalogValidator {
   }
 
   private addError(modelId: string, field: string, message: string): void {
-    this.errors.push({ modelId, field, message, severity: "error" })
+    this.errors.push({ modelId, field, message, severity: "error", location: this.getLocation(modelId) })
   }
 
   private addWarning(modelId: string, field: string, message: string): void {
-    this.warnings.push({ modelId, field, message, severity: "warning" })
+    this.warnings.push({ modelId, field, message, severity: "warning", location: this.getLocation(modelId) })
   }
 
   private printResults(): boolean {
@@ -141,7 +148,8 @@ class CatalogValidator {
       console.error("\n❌ Validation failed with errors:\n")
       for (const error of this.errors) {
         console.error(`  ${error.modelId} [${error.field}]`)
-        console.error(`    ${error.message}\n`)
+        const locationSuffix = error.location ? ` (${error.location})` : ""
+        console.error(`    ${error.message}${locationSuffix}\n`)
       }
     }
 
@@ -150,7 +158,8 @@ class CatalogValidator {
       console.warn("\n⚠️  Warnings:\n")
       for (const warning of this.warnings) {
         console.warn(`  ${warning.modelId} [${warning.field}]`)
-        console.warn(`    ${warning.message}\n`)
+        const locationSuffix = warning.location ? ` (${warning.location})` : ""
+        console.warn(`    ${warning.message}${locationSuffix}\n`)
       }
     }
 
@@ -170,8 +179,43 @@ class CatalogValidator {
 }
 
 // Run validation
-const validator = new CatalogValidator()
+const repoRoot = path.resolve(import.meta.dir, "../../..")
+const catalogDir = path.resolve(import.meta.dir, "../src/pricing")
+
+const modelLocationMap = collectModelLocations(catalogDir, repoRoot)
+
+const getModelLocation = (modelId: string): string | undefined => modelLocationMap.get(modelId)
+
+const validator = new CatalogValidator(getModelLocation)
 const success = validator.validate()
 
 // Exit with appropriate code
 process.exit(success ? 0 : 1)
+
+function collectModelLocations(directory: string, root: string, map = new Map<string, string>()): Map<string, string> {
+  const entries = readdirSync(directory, { withFileTypes: true })
+
+  for (const entry of entries) {
+    const entryPath = path.join(directory, entry.name)
+
+    if (entry.isDirectory()) {
+      collectModelLocations(entryPath, root, map)
+      continue
+    }
+
+    if (!entry.isFile() || !entry.name.endsWith(".ts")) continue
+
+    const relativePath = path.relative(root, entryPath).split(path.sep).join("/")
+    const fileContents = readFileSync(entryPath, "utf8")
+    const lines = fileContents.split(/\r?\n/)
+
+    for (let index = 0; index < lines.length; index++) {
+      const match = lines[index].match(/\bid\s*:\s*["'`]([^"'`]+)["'`]/)
+      if (match && !map.has(match[1])) {
+        map.set(match[1], `${relativePath}:${index + 1}`)
+      }
+    }
+  }
+
+  return map
+}

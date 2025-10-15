@@ -23,19 +23,23 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "ts": "./src/index.ts"
     },
     "./config": {
       "types": "./dist/config/define.d.ts",
-      "import": "./dist/config/define.js"
+      "import": "./dist/config/define.js",
+      "ts": "./src/config/define.ts"
     },
     "./middleware": {
       "types": "./dist/middleware/index.d.ts",
-      "import": "./dist/middleware/index.js"
+      "import": "./dist/middleware/index.js",
+      "ts": "./src/middleware/index.ts"
     },
     "./pricing/catalog": {
       "types": "./dist/pricing/catalog.d.ts",
-      "import": "./dist/pricing/catalog.js"
+      "import": "./dist/pricing/catalog.js",
+      "ts": "./src/pricing/catalog.ts"
     }
   },
   "dependencies": {

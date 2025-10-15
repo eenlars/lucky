@@ -1,8 +1,7 @@
-import { getCoreConfig } from "@core/core-config/coreConfig"
+import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { zodToJson } from "@core/utils/validation/zodToJson"
 import { JSONN, Tools } from "@lucky/shared"
 import { type CodeToolResult, defineTool } from "@lucky/tools"
@@ -31,7 +30,7 @@ const expectedOutputHandler = defineTool({
     }
 
     // select model
-    const selectedModel = getCoreConfig().models.defaults.fitness as ModelName
+    const selectedModel = getDefaultModels().fitness
 
     const systemPrompt =
       strictness === "strict"

@@ -1,5 +1,5 @@
 import { calculateCostV2 } from "@core/messages/api/vercel/pricing/calculatePricing"
-import type { TokenUsage } from "@lucky/core/utils/spending/models.types"
+import type { TokenUsage } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"

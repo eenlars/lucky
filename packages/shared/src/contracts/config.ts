@@ -87,7 +87,17 @@ export const ModelDefaultsSchema = z.object({
 export const ModelsConfigSchema = z.object({
   provider: ModelProviderSchema,
   inactive: z.array(z.string()).default(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
-  defaults: ModelDefaultsSchema.default({}),
+  defaults: ModelDefaultsSchema.default({
+    summary: "gpt-5-nano",
+    nano: "gpt-5-nano",
+    low: "gpt-5-mini",
+    medium: "gpt-5-mini",
+    high: "gpt-5",
+    default: "gpt-5-nano",
+    fitness: "gpt-5-mini",
+    reasoning: "gpt-5",
+    fallback: "gpt-5-mini",
+  }),
 })
 
 export type ModelProvider = z.infer<typeof ModelProviderSchema>

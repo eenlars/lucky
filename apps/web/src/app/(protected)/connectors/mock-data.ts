@@ -1,8 +1,9 @@
-import type { Connector, Publisher, Tag, Tool } from "@lucky/shared"
-import { validateMockConnectors } from "@lucky/shared"
+import type { Publisher, Tag, Tool, Toolkit } from "@lucky/shared"
+import { validateMockToolkits } from "@lucky/shared"
 
 // Re-export types for compatibility
-export type { Connector, Publisher, Tag }
+export type Connector = Toolkit
+export type { Publisher, Tag }
 
 // Map Tool type to ConnectorTool for compatibility
 export type ConnectorTool = Tool & {
@@ -439,7 +440,7 @@ export const mockConnectors: Connector[] = [
 // Validate all mock data
 // This ensures our mock data matches the database schema
 try {
-  validateMockConnectors(mockConnectors)
+  validateMockToolkits(mockConnectors)
 } catch (error) {
   // In development, throw to catch schema mismatches early
   if (process.env.NODE_ENV === "development") {

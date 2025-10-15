@@ -1,6 +1,6 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import type { LocationData } from "@lucky/shared"
 import { describe, expect, it } from "vitest"
 import responseMultiple from "../../__tests__/resources/toolResponseMultipleSteps.json"
@@ -14,7 +14,7 @@ interface _LocationDataManagerArgs {
   workflowInvocationId: string
 }
 
-const testModel: ModelName = getDefaultModels().default
+const testModel: string = getDefaultModels().default
 
 // TODO: Test file is loading external JSON fixtures but not verifying their structure
 // TODO: No validation that test fixtures match current API response format

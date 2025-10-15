@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/api-auth"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
+import { getUserModels } from "@/lib/models/server-utils"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
@@ -11,6 +12,7 @@ export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
+  const clerkId = authResult
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -26,7 +28,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing prompt parameter" }, { status: 400 })
     }
 
-    const result: RS<WorkflowConfig> = await formalizeWorkflow(prompt, options)
+    // Fetch user's available models from database
+    const availableModels = await getUserModels(clerkId)
+
+    // Merge user's available models into options
+    const optionsWithModels: GenerationOptions & AfterGenerationOptions = {
+      ...options,
+      modelSelectionStrategy: {
+        strategy: "user-models",
+        models: availableModels,
+      },
+    }
+
+    const result: RS<WorkflowConfig> = await formalizeWorkflow(prompt, optionsWithModels)
 
     return NextResponse.json(result)
   } catch (error) {

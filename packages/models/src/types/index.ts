@@ -3,6 +3,8 @@
  * Designed to work seamlessly with Vercel AI SDK
  */
 
+import type { OpenAIChatLanguageModel } from "@ai-sdk/openai/internal"
+import type { LanguageModelV2 } from "@openrouter/ai-sdk-provider"
 import type { LanguageModel } from "ai"
 
 // ============================================================================
@@ -18,6 +20,9 @@ export interface ProviderConfig {
 
   /** API key (if required) */
   apiKey?: string
+
+  /** Model factory (if required) */
+  modelFactory?: ModelFactory
 
   /** Maximum concurrent requests to this provider */
   maxConcurrent?: number
@@ -185,9 +190,9 @@ export interface ModelResult<T = unknown> {
 
 /**
  * Type for AI SDK compatible models
- * In AI SDK v5+, LanguageModel is a union of LanguageModelV1 | LanguageModelV2
+ * In AI SDK v5+, LanguageModel isLanguageModelV2
  */
-export type AiSdkModel = LanguageModel
+export type AiSdkModel = LanguageModelV2
 
 /**
  * Model factory function that returns an AI SDK compatible model

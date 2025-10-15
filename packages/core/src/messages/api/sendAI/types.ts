@@ -16,7 +16,6 @@
 // TODO: add performance metrics types
 // TODO: implement request/response serialization types
 
-import type { ModelName } from "@core/utils/spending/models.types"
 import type { GenerateTextResult, LanguageModel, ModelMessage, StepResult, ToolChoice, ToolSet } from "ai"
 import type { Schema, ZodTypeAny } from "zod"
 
@@ -90,7 +89,7 @@ export type PreparedStepsFunction<T extends ToolSet = ToolSet, M extends Languag
 interface RequestBase {
   messages: ModelMessage[]
   debug?: boolean
-  model?: ModelName
+  model?: string
   retries?: number
   opts?: {
     saveOutputs?: boolean

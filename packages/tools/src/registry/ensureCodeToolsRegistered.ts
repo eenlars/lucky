@@ -7,11 +7,11 @@ import type { CodeToolName } from "./types"
 let registrationPromise: Promise<void> | null = null
 
 /**
- * Ensures that code tools are registered before a node initializes them.
+ * Ensures that code toolkits are registered before a node initializes them.
  *
  * When the registry is empty (common in standalone workflows that skip
  * explicit startup wiring), we attempt to lazily register the example
- * tool groups. If registration fails we surface a descriptive error so
+ * toolkits. If registration fails we surface a descriptive error so
  * callers can address the misconfiguration instead of silently hanging.
  */
 export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Promise<void> {
@@ -33,9 +33,9 @@ export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Prom
 
   registrationPromise = (async () => {
     try {
-      const { TOOL_GROUPS } = await import("@examples/definitions/registry-grouped")
+      const { TOOL_TOOLKITS } = await import("@examples/definitions/registry-grouped")
 
-      await registerAllTools(TOOL_GROUPS, {
+      await registerAllTools(TOOL_TOOLKITS, {
         validate: true,
         throwOnError: true,
       })

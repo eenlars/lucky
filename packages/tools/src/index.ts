@@ -59,28 +59,28 @@ export { getMCPTools, type MCPToolInfo } from "./mcp/getMCPTools"
 // Registration - Tool registration and startup
 export {
   createToolDefinition,
-  createToolGroup,
+  createToolkit,
   getAllTools,
-  getToolsByGroup,
+  getToolsByToolkit,
   getToolByName,
-  type CodeToolDefinition,
-  type CodeToolGroup,
-  type CodeToolGroups,
+  type ToolkitToolDefinition,
+  type ToolkitDefinition,
+  type ToolkitRegistry,
 } from "./registration/codeToolsRegistration"
 export {
-  mcpToolGroups,
+  mcpToolkits,
   getAllMCPTools,
-  getMCPToolsByGroup,
+  getMCPToolsByToolkit,
   getMCPToolByName,
   getAllMCPServerNames,
   type MCPServerConfig,
-  type MCPToolDefinition,
-  type MCPToolGroup,
+  type MCPToolkitToolDefinition,
+  type MCPToolkit,
 } from "./registration/mcpToolsRegistration"
-export { registerAllTools, registerToolGroups } from "./registration/startup"
+export { registerAllTools, registerToolkits } from "./registration/startup"
 export {
-  validateCodeToolRegistration,
-  validateMCPToolRegistration,
+  validateToolkitRegistration,
+  validateMCPToolkitRegistration,
   validateAllRegistrations,
   printValidationResult,
   type ValidationResult,

@@ -70,8 +70,8 @@ export const serverVersionSchema = z.object({
   created_at: z.string().datetime().optional(),
 })
 
-// Combined connector schema for UI (includes relations)
-export const connectorSchema = z.object({
+// Combined toolkit schema for UI (includes relations)
+export const toolkitSchema = z.object({
   conn_id: z.string(), // Can be server_id
   pub_id: z.string(),
   slug: z.string(),
@@ -117,7 +117,7 @@ export type Tag = z.infer<typeof tagSchema>
 export type Tool = z.infer<typeof toolSchema>
 export type Server = z.infer<typeof serverSchema>
 export type ServerVersion = z.infer<typeof serverVersionSchema>
-export type Connector = z.infer<typeof connectorSchema>
+export type Toolkit = z.infer<typeof toolkitSchema>
 
 export type CreateServer = z.infer<typeof createServerSchema>
 export type CreateTool = z.infer<typeof createToolSchema>
@@ -125,15 +125,15 @@ export type CreateTag = z.infer<typeof createTagSchema>
 export type CreatePublisher = z.infer<typeof createPublisherSchema>
 
 // Validation helpers
-export const validateConnector = (data: unknown): Connector => {
-  return connectorSchema.parse(data)
+export const validateToolkit = (data: unknown): Toolkit => {
+  return toolkitSchema.parse(data)
 }
 
-export const validateConnectorSafe = (data: unknown) => {
-  return connectorSchema.safeParse(data)
+export const validateToolkitSafe = (data: unknown) => {
+  return toolkitSchema.safeParse(data)
 }
 
 // Mock data validation
-export const validateMockConnectors = (connectors: unknown[]) => {
-  return connectors.map(conn => validateConnector(conn))
+export const validateMockToolkits = (toolkits: unknown[]) => {
+  return toolkits.map(toolkit => validateToolkit(toolkit))
 }

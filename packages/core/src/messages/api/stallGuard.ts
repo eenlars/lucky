@@ -81,6 +81,7 @@ export async function runWithStallGuard<R>(
         `.replace(/\s+\n/g, " "),
       )
       ctrl.abort() // stop the request itself
+      console.warn("[stallGuard] stall timeout reached, aborting", { modelName, stallTimeoutMs })
       rejectBecauseOfStall(err) // make the race() reject with *our* error
     }, stallTimeoutMs)
   }

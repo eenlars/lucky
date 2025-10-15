@@ -1,5 +1,4 @@
-import { providersV2 } from "@core/utils/spending/modelInfo"
-import type { ModelName } from "@core/utils/spending/models.types"
+import { getActiveModelsByProvider } from "@lucky/models"
 import type { LuckyProvider, StandardModels } from "@lucky/shared"
 
 /* ---------- DEFAULT MODELS ---------- */
@@ -65,58 +64,8 @@ export const getDefaultModels = (): StandardModels => {
  * Returns the cheapest active model id for the current provider, preferring
  * the lowest input-token price. Falls back to the configured summary model.
  */
-export const getCheapestActiveModelId = (): ModelName => {
+export const getCheapestActiveModelId = (): string => {
   const provider = MODEL_CONFIG.provider
-  const models = providersV2[provider]
-  const inactive = MODEL_CONFIG.inactive
-
-  let cheapestId = DEFAULT_MODELS[provider].summary as ModelName
-  let lowestInput = Number.POSITIVE_INFINITY
-
-  for (const [modelId, pricing] of Object.entries(models)) {
-    if (!pricing?.active) continue
-    if (inactive.includes(modelId)) continue
-    const inputPrice = typeof pricing.input === "number" ? pricing.input : Number.POSITIVE_INFINITY
-    if (inputPrice < lowestInput) {
-      lowestInput = inputPrice
-      cheapestId = modelId as ModelName
-    }
-  }
-
-  return cheapestId
-}
-
-/**
- * Helper to get model from catalog accounting for provider-specific key formats.
- * OpenAI provider uses unprefixed keys (e.g., "gpt-4o"), others use prefixed (e.g., "openai/gpt-4o").
- */
-function getModel(modelId: string) {
-  const provider = MODEL_CONFIG.provider
-  const catalog = providersV2[provider]
-
-  // For openai provider, strip the provider prefix if present
-  if (provider === "openai" && modelId.includes("/")) {
-    const unprefixed = modelId.split("/")[1]
-    return catalog[unprefixed]
-  }
-
-  // For other providers (openrouter, groq), use the full prefixed id
-  return catalog[modelId]
-}
-
-export const experimentalModels = {
-  gpt35turbo: getModel("openai/gpt-3.5-turbo"),
-  gpt41: getModel("openai/gpt-4.1"),
-  gpt41mini: getModel("openai/gpt-4.1-mini"),
-  gpt41nano: getModel("openai/gpt-4.1-nano"),
-  gpt4o: getModel("openai/gpt-4o"),
-  gpt4oMini: getModel("openai/gpt-4o-mini"),
-  mistral: getModel("mistralai/mistral-small-3.2-24b-instruct"),
-  gemini25pro: getModel("google/gemini-2.5-pro-preview"),
-  geminiLite: getModel("google/gemini-2.5-flash-lite"),
-  claude35haiku: getModel("anthropic/claude-3-5-haiku"),
-  claudesonnet4: getModel("anthropic/claude-sonnet-4"),
-  moonshotKimiK2Instruct: getModel("moonshotai/kimi-k2-instruct"),
-  llama318bInstruct: getModel("meta-llama/llama-3.1-8b-instruct"),
-  gpt5: getModel("openai/gpt-5"),
+  const models = getActiveModelsByProvider(provider)
+  return models.sort((a, b) => a.input - b.input)[0]?.model ?? DEFAULT_MODELS[provider].summary
 }

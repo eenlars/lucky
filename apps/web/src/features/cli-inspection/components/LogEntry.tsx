@@ -154,7 +154,7 @@ export function LogEntry({ log }: { log: LogEntryType }) {
             {/* Input */}
             {log.input && (
               <div>
-                <label className="text-[11px] font-semibold uppercase text-gray-500 dark:text-gray-400">Input</label>
+                <p className="text-[11px] font-semibold uppercase text-gray-500 dark:text-gray-400">Input</p>
                 <div className="mt-1 p-3 bg-gray-50 dark:bg-[oklch(0.13_0_0)] border border-gray-200 dark:border-white/10 rounded-md text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[300px] overflow-y-auto">
                   {log.input}
                 </div>
@@ -164,7 +164,7 @@ export function LogEntry({ log }: { log: LogEntryType }) {
             {/* Output */}
             {log.output && (
               <div>
-                <label className="text-[11px] font-semibold uppercase text-gray-500 dark:text-gray-400">Output</label>
+                <p className="text-[11px] font-semibold uppercase text-gray-500 dark:text-gray-400">Output</p>
                 <div className="mt-1 p-3 bg-gray-50 dark:bg-[oklch(0.13_0_0)] border border-gray-200 dark:border-white/10 rounded-md text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[300px] overflow-y-auto">
                   {log.output}
                 </div>
@@ -191,7 +191,7 @@ export function LogEntry({ log }: { log: LogEntryType }) {
             {/* Stack Trace (errors) */}
             {log.stackTrace && (
               <div>
-                <label className="text-[11px] font-semibold uppercase text-red-500">Stack Trace</label>
+                <p className="text-[11px] font-semibold uppercase text-red-500">Stack Trace</p>
                 <div className="mt-1 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-500/20 rounded-md text-xs font-mono text-red-600 dark:text-red-400 whitespace-pre-wrap break-words max-h-[200px] overflow-y-auto">
                   {log.stackTrace}
                 </div>

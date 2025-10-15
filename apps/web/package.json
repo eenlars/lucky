@@ -23,7 +23,6 @@
     "@codemirror/view": "^6.38.2",
     "@lucky/core": "workspace:*",
     "@lucky/examples": "workspace:*",
-    "@lucky/experiments": "workspace:*",
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "@lucky/tools": "workspace:*",

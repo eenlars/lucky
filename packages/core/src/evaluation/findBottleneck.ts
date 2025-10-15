@@ -4,7 +4,7 @@ import { WorkflowAnalysisPrompts } from "@core/prompts/analyzeWorkflow.p"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import type { Workflow } from "@core/workflow/Workflow"
 import { z } from "zod"
 
@@ -49,7 +49,7 @@ const baseSchema = {
 export interface WorkflowAnalysisParams {
   transcript: string
   fitness: FitnessOfWorkflow
-  model: ModelName
+  model: string
   previousMemory?: Record<string, string>
 }
 
@@ -62,14 +62,14 @@ export async function analyzeWorkflowBottlenecks(
   workflow: Workflow,
   params: WorkflowAnalysisParams,
 ): Promise<WorkflowAnalysisResult> {
-  const { transcript, fitness, model, previousMemory = {} } = params
+  const { transcript, fitness, model: modelName, previousMemory = {} } = params
 
   lgg.log("🔍 Analyzing workflow bottlenecks...")
   lgg.log()
 
   const { data, success, error, usdCost } = await sendAI({
     messages: WorkflowAnalysisPrompts.analyzeWorkflow(transcript, workflow, fitness, previousMemory),
-    model,
+    model: modelName,
     mode: "structured",
     schema: z.object({
       ...baseSchema,

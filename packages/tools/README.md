@@ -9,7 +9,7 @@ A complete, production-ready framework for creating, managing, and executing too
 ✅ **Unified API** - Same structure for code tools and MCP tools
 ✅ **Type-Safe** - Full TypeScript support with strict types
 ✅ **Validated** - Automatic validation of tool registrations
-✅ **Grouped** - Logical grouping of related tools
+✅ **Toolkit-Based** - Logical toolkits of related functionality
 ✅ **Explicit Registration** - No magic auto-discovery, full control
 ✅ **Production Ready** - Battle-tested in production workflows
 
@@ -25,9 +25,10 @@ bun add @lucky/tools
 
 ```typescript
 import { registerAllTools } from "@lucky/tools"
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
 
-// Register all 24 code tools across 10 groups
-await registerAllTools()
+// Register all 24 code tools across 10 toolkits
+await registerAllTools(TOOL_TOOLKITS)
 ```
 
 ### 2. Use Tools in Your Workflow
@@ -152,24 +153,26 @@ packages/tools/
 
 ## 🎓 Usage Guide
 
-### Registering Specific Tool Groups
+### Registering Specific Toolkits
 
 ```typescript
-import { registerToolGroups } from "@lucky/tools"
+import { registerToolkits } from "@lucky/tools"
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
 
 // Register only CSV and todo tools
-await registerToolGroups("csv", "todo")
+await registerToolkits(TOOL_TOOLKITS, "csv", "todo")
 ```
 
 ### Validation
 
 ```typescript
-import { validateAllRegistrations, toolGroups, mcpToolGroups } from "@lucky/tools"
+import { validateAllRegistrations, mcpToolkits } from "@lucky/tools"
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
 
 // Validate both code and MCP registrations
 const valid = validateAllRegistrations(
-  toolGroups.groups,
-  mcpToolGroups.groups,
+  TOOL_TOOLKITS.toolkits,
+  mcpToolkits.toolkits,
   true, // throw on error
 )
 ```
@@ -235,7 +238,7 @@ const mcpTools = await mcpManager.setupMCPForNode(["tavily"], "workflow-123")
 All tool registrations are automatically validated for:
 
 - ✅ Unique tool names (no duplicates)
-- ✅ Unique group names
+- ✅ Unique toolkit names
 - ✅ Non-empty descriptions
 - ✅ Valid tool functions with `execute` method
 - ✅ Matching tool names between registration and definition
@@ -266,8 +269,8 @@ import type {
   CodeToolName, // Union of all code tool names
   MCPToolName, // Union of all MCP tool names
   ToolExecutionContext, // Execution context for tools
-  CodeToolDefinition, // Tool definition structure
-  CodeToolGroup, // Tool group structure
+  ToolkitToolDefinition, // Toolkit tool definition structure
+  ToolkitDefinition, // Toolkit structure
   ValidationResult, // Validation result type
 } from "@lucky/tools"
 ```
@@ -286,7 +289,9 @@ await codeToolAutoDiscovery.setupCodeTools()
 ```typescript
 // Explicit registration (current)
 import { registerAllTools } from "@lucky/tools"
-await registerAllTools()
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
+
+await registerAllTools(TOOL_TOOLKITS)
 ```
 
 ## 🎯 Design Principles
@@ -308,7 +313,7 @@ await registerAllTools()
 When adding new tools:
 
 1. Create tool in `src/definitions/[category]/`
-2. Add to appropriate group in `src/registration/codeToolsRegistration.ts`
+2. Add to appropriate toolkit in `src/registration/codeToolsRegistration.ts`
 3. Run `bun run build:tools`
 4. Run `bun run packages/tools/src/registration/verify.ts`
 5. Ensure tests pass
