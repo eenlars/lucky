@@ -47,7 +47,7 @@ vi.mock("@examples/settings/constants", () => ({
     coordinationType: "sequential",
   },
   MODELS: {
-    default: "google/gemini-2.5-flash-lite",
+    default: "openrouter#google/gemini-2.5-flash-lite",
   },
   PATHS: {
     root: "/test",

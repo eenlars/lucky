@@ -14,7 +14,7 @@ export default defineConfig({
     // Quick experiments with fast, cheap models
     quick: {
       strategy: "race",
-      providers: ["openrouter/google/gemini-2.5-flash-lite", "groq/llama-3.3-70b-versatile"],
+      providers: ["openrouter#google/gemini-2.5-flash-lite", "groq/llama-3.3-70b-versatile"],
       timeout: 10000,
       maxCost: 0.005,
     },
@@ -22,7 +22,7 @@ export default defineConfig({
     // Standard experiments with balanced models
     standard: {
       strategy: "first",
-      providers: ["openrouter/openai/gpt-4.1-mini"],
+      providers: ["openrouter#openai/gpt-4.1-mini"],
       timeout: 30000,
       maxCost: 0.1,
     },
@@ -30,7 +30,7 @@ export default defineConfig({
     // High-stakes experiments with best models
     important: {
       strategy: "consensus",
-      providers: ["openrouter/openai/gpt-4.1", "anthropic/claude-sonnet-4", "openrouter/google/gemini-2.5-pro-preview"],
+      providers: ["openrouter#openai/gpt-4.1", "anthropic/claude-sonnet-4", "openrouter#google/gemini-2.5-pro-preview"],
       timeout: 90000,
       maxCost: 2.0,
     },

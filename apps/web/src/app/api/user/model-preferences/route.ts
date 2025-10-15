@@ -8,7 +8,7 @@ import { logException } from "@/lib/error-logger"
 import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { getAllProviders } from "@lucky/models"
-import type { ModelId, UserModelPreferences } from "@lucky/shared"
+import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
 import { userModelPreferencesSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -50,17 +50,13 @@ export async function GET(_req: NextRequest) {
 
     // Build provider settings - use model IDs as-is from database
     const providers = validData.map(row => {
-      // IMPORTANT: Do NOT normalize model IDs!
-      // OpenAI expects "gpt-5-nano", OpenRouter expects "openai/gpt-5-nano"
-      // The database stores whatever format the provider's API expects
-      // The MODEL_CATALOG's `model` field shows the correct format for each provider
       const enabledModels = (row.enabled_models as string[]) || []
 
       // Convert timestamp to ISO format
       const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
 
       return {
-        provider: row.provider,
+        provider: row.provider as LuckyProvider,
         enabledModels,
         isEnabled: row.is_enabled,
         metadata: {

@@ -3,12 +3,18 @@
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
-import type { AllowedModelName } from "@lucky/core/utils/spending/models.types"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedUpdate } from "./hooks/use-debounced-update"
 
 interface CoreConfigSectionProps {
   node: AppNode
+}
+
+// Helper function to strip provider prefix from model name for display
+function getDisplayModelName(modelName: string): string {
+  // Strip "provider#" prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
+  const hashIndex = modelName.indexOf("#")
+  return hashIndex !== -1 ? modelName.substring(hashIndex + 1) : modelName
 }
 
 export function CoreConfigSection({ node }: CoreConfigSectionProps) {
@@ -56,7 +62,7 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
           value={node.data.modelName || ""}
           onChange={e =>
             updateNode(node.id, {
-              modelName: e.target.value as AllowedModelName,
+              modelName: e.target.value as string,
             })
           }
           className="w-full h-9 px-3 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
@@ -64,7 +70,7 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
           <option value="">Select model...</option>
           {activeModels.map(model => (
             <option key={model} value={model}>
-              {model}
+              {getDisplayModelName(model)}
             </option>
           ))}
         </select>

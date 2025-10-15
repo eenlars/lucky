@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
@@ -10,16 +11,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": ["vitest/globals"],
-    "baseUrl": ".",
-    "paths": {
-      "@core/*": ["../../packages/core/src/*"],
-      "@examples/*": ["../../apps/examples/*"],
-      "@lucky/shared": ["../../packages/shared/src"],
-      "@lucky/shared/*": ["../../packages/shared/src/*"],
-      "@lucky/tools": ["../../packages/tools/src"],
-      "@lucky/tools/*": ["../../packages/tools/src/*"]
-    }
+    "types": ["vitest/globals"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

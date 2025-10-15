@@ -1,15 +1,8 @@
 "use client"
 
-import {
-  type Position,
-  type XYPosition,
-  useConnection,
-  useInternalNode,
-  useNodeConnections,
-  useNodeId,
-} from "@xyflow/react"
+import { Position, type XYPosition, useConnection, useInternalNode, useNodeConnections, useNodeId } from "@xyflow/react"
 import clsx from "clsx"
-import { useCallback, useEffect } from "react"
+import { type CSSProperties, useCallback, useEffect } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 import type { AppStore } from "@/features/react-flow-visualization/store/app-store"
@@ -132,13 +125,36 @@ export function AppHandle({
       connectionSites.delete(connectionId)
     }
   }, [nodePosition, connectionSites, connectionId, id, nodeId, type, x, y, displayAddButton])
+
+  const handleStyle: CSSProperties = (() => {
+    if (handlePosition === Position.Left || handlePosition === Position.Right) {
+      return {
+        top: y,
+        left: x,
+        transform: handlePosition === Position.Left ? "translate(-50%, -50%)" : "translate(50%, -50%)",
+      }
+    }
+
+    if (handlePosition === Position.Top || handlePosition === Position.Bottom) {
+      return {
+        left: x,
+        top: y,
+        transform: handlePosition === Position.Top ? "translate(-50%, -50%)" : "translate(-50%, 50%)",
+      }
+    }
+
+    return {
+      transform: `translate(${x}px, ${y}px)`,
+    }
+  })()
+
   return (
     <ButtonHandle
       type={type}
       position={handlePosition}
       id={id}
-      className={clsx("left-[-6px] top-[-6px]", className)}
-      style={{ transform: `translate(${x}px, ${y}px)` }}
+      className={clsx(className)}
+      style={handleStyle}
       showButton={displayAddButton}
     >
       <Button

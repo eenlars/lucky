@@ -3,7 +3,6 @@ import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { lgg } from "@core/utils/logging/Logger"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { R, type RS } from "@lucky/shared"
 import { ALL_ACTIVE_TOOL_NAMES } from "@lucky/tools"
 import { z } from "zod"
@@ -15,7 +14,7 @@ export interface GenerateWorkflowIdeaRequest {
   prompt: string
   /** 1-10; 1 = deterministic, 10 = highly diverse */
   randomness: number
-  model?: ModelName
+  model?: string
 }
 
 /**

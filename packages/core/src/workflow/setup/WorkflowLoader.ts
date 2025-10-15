@@ -138,7 +138,7 @@ export class WorkflowConfigHandler {
         {
           nodeId: "main",
           description: "Main workflow node",
-          modelName: "openai/gpt-4.1-mini",
+          modelName: "openrouter#openai/gpt-4.1-mini",
           mcpTools: [],
           codeTools: [],
           systemPrompt: "You are a helpful assistant. Complete the task as requested.",

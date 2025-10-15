@@ -59,7 +59,7 @@ export default defineConfig({
         // Unit tests: *.test.ts but NOT *.spec.test.ts
         extends: true,
         test: {
-          name: { label: "unit", color: "cyan" },
+          name: "unit",
           include: ["src/**/*.test.ts", "!src/**/*.spec.test.ts"],
           setupFiles: ["./src/__tests__/test-setup.ts"],
         },
@@ -68,7 +68,7 @@ export default defineConfig({
         // Integration tests: *.spec.test.ts
         extends: true,
         test: {
-          name: { label: "integration", color: "magenta" },
+          name: "integration",
           include: ["src/**/*.spec.test.ts"],
           setupFiles: ["./src/__tests__/integration-setup.ts"],
           testTimeout: 120000,

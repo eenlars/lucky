@@ -6,7 +6,7 @@ import { repairAIRequest } from "@core/messages/api/repairAIRequest"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import { zodToJson } from "@core/utils/validation/zodToJson"
 import { JSONN, R, type RS, isNir } from "@lucky/shared"
 
@@ -25,13 +25,17 @@ export const genObject = async <T extends z.ZodSchema>({
 }: {
   messages: ModelMessage[]
   schema: T
-  model?: ModelName
+  model?: string
   opts?: {
     retries?: number
     repair?: boolean
   }
 }): Promise<RS<{ value: z.infer<T>; summary: string }>> => {
   let usdCost = 0
+  console.log("[genObject] start", {
+    model,
+    retries: opts?.retries ?? 2,
+  })
   // extend the schema with one more field: "reasoning"
   // const extendedSchema = addReasoning(schema)
 
@@ -67,6 +71,7 @@ output:
   })
 
   if (!result.success) {
+    console.warn("[genObject] sendAI failed", { error: result.error })
     return R.error(`genObject failed: ${result.error}`, usdCost)
   }
 
@@ -74,12 +79,14 @@ output:
 
   const extractedJson = JSONN.extract(result.data.text)
   if (!extractedJson) {
+    console.warn("[genObject] no JSON in response")
     return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, usdCost)
   }
 
   // Validate the extracted JSON against the schema
   const { success, data, error } = schema.safeParse(extractedJson)
   if (!success) {
+    console.warn("[genObject] validation failed", { error: error.message })
     if (opts?.repair) {
       if (isLoggingEnabled("API")) {
         lgg.warn(
@@ -99,6 +106,7 @@ output:
     return R.error(`JSON validation failed: ${error.message}`, usdCost)
   }
 
+  console.log("[genObject] success")
   return R.success(
     {
       value: data,

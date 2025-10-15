@@ -1,7 +1,6 @@
 import { processResponseVercel } from "@core/messages/api/processResponse"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { truncater } from "@core/utils/common/llmify"
-import type { ModelName } from "@core/utils/spending/models.types"
 import type { GenerateTextResult, ToolSet } from "ai"
 import { isErrorProcessed, isTextProcessed, isToolProcessed } from "../vercel/processResponse.types"
 
@@ -18,7 +17,7 @@ export function responseToAgentSteps({
   originatedFrom,
 }: {
   response: GenerateTextResult<ToolSet, unknown>
-  modelUsed: ModelName
+  modelUsed: string
   nodeId: string
   summary?: string
   originatedFrom?: string // to find the origin of the caller, in case an error happens.

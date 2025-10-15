@@ -387,7 +387,7 @@ describe("InvocationPipeline Real Integration", () => {
         toolStrategyOverride: "v3" as const,
         nodeConfig: {
           nodeId,
-          modelName: modelName as any,
+          modelName: modelName as string,
           systemPrompt: systemPrompt,
           mcpTools: [],
           codeTools: ["todoWrite", "todoRead"],
@@ -436,7 +436,7 @@ describe("InvocationPipeline Real Integration", () => {
 
       // Verify response quality
       const verification = await sendAI({
-        model: modelName as any,
+        model: modelName,
         mode: "text",
         messages: [
           {

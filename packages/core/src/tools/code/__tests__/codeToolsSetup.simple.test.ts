@@ -1,4 +1,4 @@
-import { TOOL_GROUPS } from "@lucky/examples/definitions/registry-grouped"
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
 import type { CodeToolName, ToolExecutionContext } from "@lucky/tools"
 import { codeToolRegistry, registerAllTools, setupCodeToolsForNode } from "@lucky/tools"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -10,7 +10,7 @@ describe("codeToolsSetup bug demonstration", () => {
   beforeEach(async () => {
     // Reset and register all tools
     await codeToolRegistry.destroy()
-    await registerAllTools(TOOL_GROUPS)
+    await registerAllTools(TOOL_TOOLKITS)
   })
 
   it("shows tools are missing without context", async () => {

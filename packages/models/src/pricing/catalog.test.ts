@@ -130,9 +130,9 @@ describe("catalog provider utilities", () => {
       }
     })
 
-    it("checks that model IDs contain '/' separator", () => {
+    it("checks that model IDs contain '#' separator", () => {
       for (const model of MODEL_CATALOG) {
-        expect(model.id).toContain("/")
+        expect(model.id).toContain("#")
       }
     })
 
@@ -174,9 +174,9 @@ describe("catalog provider utilities", () => {
       expect(providers).toContain("groq")
     })
 
-    it("has consistent ID format (provider/model)", () => {
+    it("has consistent ID format (provider#model)", () => {
       for (const model of MODEL_CATALOG) {
-        expect(model.id).toMatch(/^[a-z0-9-]+\/[a-z0-9-./]+$/i)
+        expect(model.id).toMatch(/^[a-z0-9-]+#[a-z0-9-./]+$/i)
       }
     })
   })

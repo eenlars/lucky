@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { getFacade } from "@lucky/models"
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
@@ -114,6 +115,7 @@ export async function POST(request: NextRequest) {
     // Require authentication
     const authResult = await requireAuth()
     if (authResult instanceof NextResponse) return authResult
+    const clerkId = authResult
 
     // Parse request body with error handling
     let body: unknown
@@ -148,18 +150,43 @@ export async function POST(request: NextRequest) {
     // Log request for debugging
     console.log(`[Agent Chat] Starting stream for node=${nodeId}, model=${modelName || "default"}`)
 
-    // Get models facade (uses env vars for provider config)
+    // Validate that modelName is provided
+    if (!modelName) {
+      return NextResponse.json({ error: "Model name is required", field: "modelName" }, { status: 400 })
+    }
+
+    // Get models facade
     const models = getFacade()
 
-    // Determine which model to use
-    // Default to OpenRouter's Claude if no model specified
-    const modelSpec = modelName || "openrouter/anthropic/claude-3.5-sonnet"
+    // Fetch user's enabled models to use as allowlist
+    const supabase = await createRLSClient()
+    const { data: providerSettings } = await supabase
+      .schema("app")
+      .from("provider_settings")
+      .select("provider, enabled_models, is_enabled")
+      .eq("clerk_id", clerkId)
+      .eq("is_enabled", true)
 
-    // Select and get AI SDK compatible model
+    // Build allowlist from user's enabled models
+    const allowlist: string[] = []
+    if (providerSettings) {
+      for (const row of providerSettings) {
+        const enabledModels = (row.enabled_models as string[]) || []
+        allowlist.push(...enabledModels)
+      }
+    }
+
+    console.log("[Agent Chat] User allowlist:", allowlist)
+
+    // Select and get AI SDK compatible model with allowlist constraint
     let modelSelection: Awaited<ReturnType<typeof models.resolve>>
     let model: Awaited<ReturnType<typeof models.getModel>>
     try {
-      modelSelection = await models.resolve(modelSpec)
+      // Pass allowlist to constrain model selection to user's enabled models
+      modelSelection = await models.resolve(modelName, {
+        allowlist: allowlist.length > 0 ? allowlist : undefined,
+        userId: clerkId,
+      })
       model = await models.getModel(modelSelection)
     } catch (error) {
       console.error("[Agent Chat] Failed to load model:", error)
@@ -173,7 +200,7 @@ export async function POST(request: NextRequest) {
                 ? error.message
                 : String(error)
               : undefined,
-          modelSpec: process.env.NODE_ENV === "development" ? modelSpec : undefined,
+          modelName: process.env.NODE_ENV === "development" ? modelName : undefined,
         },
         { status: 500 },
       )

@@ -2,18 +2,16 @@
  * Model Catalog - Single source of truth for model definitions and pricing
  *
  * This catalog defines all available models across all providers with their
- * pricing, capabilities, and metadata. It replaces the legacy providersV2
+ * pricing, capabilities, and metadata.
  * from @lucky/shared.
  *
  * @module pricing/catalog
  */
 
-import type { ModelEntry } from "@lucky/shared"
+import { type ModelEntry, providerNameSchema } from "@lucky/shared"
 
 /**
  * Model catalog - comprehensive list of all available models
- *
- * Migrated from @lucky/shared providersV2 with enhanced capabilities metadata
  */
 export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
@@ -21,30 +19,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
 
   // GPT-5 Series
-  {
-    id: "vendor:openai;model:gpt-5-pro",
-    provider: "openai",
-    model: "gpt-5-pro",
-    input: 15,
-    output: 120,
-    cachedInput: null,
-    contextLength: 400000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: true,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 10,
-    pricingTier: "high",
-    active: false,
-    disabled: true,
-  },
 
   {
-    id: "vendor:openai;model:gpt-5-codex",
+    id: "openai#gpt-5-codex",
     provider: "openai",
     model: "gpt-5-codex",
     input: 1.25,
@@ -66,7 +43,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-5",
+    id: "openai#gpt-5",
     provider: "openai",
     model: "gpt-5",
     input: 1.25,
@@ -87,7 +64,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-5-chat",
+    id: "openai#gpt-5-chat",
     provider: "openai",
     model: "gpt-5-chat",
     input: 1.25,
@@ -108,7 +85,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-5-mini",
+    id: "openai#gpt-5-mini",
     provider: "openai",
     model: "gpt-5-mini",
     input: 0.25,
@@ -129,7 +106,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-5-nano",
+    id: "openai#gpt-5-nano",
     provider: "openai",
     model: "gpt-5-nano",
     input: 0.05,
@@ -151,7 +128,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
   // o-series (Reasoning Models)
   {
-    id: "vendor:openai;model:o1-pro",
+    id: "openai#o1-pro",
     provider: "openai",
     model: "o1-pro",
     input: 150,
@@ -173,7 +150,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o3-pro",
+    id: "openai#o3-pro",
     provider: "openai",
     model: "o3-pro",
     input: 20,
@@ -195,7 +172,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o1",
+    id: "openai#o1",
     provider: "openai",
     model: "o1",
     input: 15,
@@ -217,7 +194,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o3",
+    id: "openai#o3",
     provider: "openai",
     model: "o3",
     input: 2,
@@ -234,11 +211,12 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 9,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openai;model:o4-mini-high",
+    id: "openai#o4-mini-high",
     provider: "openai",
     model: "o4-mini-high",
     input: 1.1,
@@ -259,7 +237,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o4-mini",
+    id: "openai#o4-mini",
     provider: "openai",
     model: "o4-mini",
     input: 1.1,
@@ -281,7 +259,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o3-mini-high",
+    id: "openai#o3-mini-high",
     provider: "openai",
     model: "o3-mini-high",
     input: 1.1,
@@ -303,7 +281,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o3-mini",
+    id: "openai#o3-mini",
     provider: "openai",
     model: "o3-mini",
     input: 1.1,
@@ -325,7 +303,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o1-mini",
+    id: "openai#o1-mini",
     provider: "openai",
     model: "o1-mini",
     input: 1.1,
@@ -347,7 +325,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:o1-mini-2024-09-12",
+    id: "openai#o1-mini-2024-09-12",
     provider: "openai",
     model: "o1-mini-2024-09-12",
     input: 1.1,
@@ -369,7 +347,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:codex-mini",
+    id: "openai#codex-mini",
     provider: "openai",
     model: "codex-mini",
     input: 1.5,
@@ -392,7 +370,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
   // GPT-4.1 Series
   {
-    id: "vendor:openai;model:gpt-4.1",
+    id: "openai#gpt-4.1",
     provider: "openai",
     model: "gpt-4.1",
     input: 2,
@@ -409,11 +387,12 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openai;model:gpt-4.1-mini",
+    id: "openai#gpt-4.1-mini",
     provider: "openai",
     model: "gpt-4.1-mini",
     input: 0.4,
@@ -435,7 +414,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4.1-nano",
+    id: "openai#gpt-4.1-nano",
     provider: "openai",
     model: "gpt-4.1-nano",
     input: 0.1,
@@ -458,7 +437,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
   // GPT-4o Series
   {
-    id: "vendor:openai;model:gpt-4o-audio-preview",
+    id: "openai#gpt-4o-audio-preview",
     provider: "openai",
     model: "gpt-4o-audio-preview",
     input: 2.5,
@@ -480,7 +459,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o",
+    id: "openai#gpt-4o",
     provider: "openai",
     model: "gpt-4o",
     input: 2.5,
@@ -502,7 +481,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-2024-11-20",
+    id: "openai#gpt-4o-2024-11-20",
     provider: "openai",
     model: "gpt-4o-2024-11-20",
     input: 2.5,
@@ -524,7 +503,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-2024-08-06",
+    id: "openai#gpt-4o-2024-08-06",
     provider: "openai",
     model: "gpt-4o-2024-08-06",
     input: 2.5,
@@ -546,7 +525,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-2024-05-13",
+    id: "openai#gpt-4o-2024-05-13",
     provider: "openai",
     model: "gpt-4o-2024-05-13",
     input: 5,
@@ -568,7 +547,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:chatgpt-4o-latest",
+    id: "openai#chatgpt-4o-latest",
     provider: "openai",
     model: "chatgpt-4o-latest",
     input: 5,
@@ -590,7 +569,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-mini",
+    id: "openai#gpt-4o-mini",
     provider: "openai",
     model: "gpt-4o-mini",
     input: 0.15,
@@ -612,7 +591,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-mini-2024-07-18",
+    id: "openai#gpt-4o-mini-2024-07-18",
     provider: "openai",
     model: "gpt-4o-mini-2024-07-18",
     input: 0.15,
@@ -634,7 +613,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-mini-search-preview",
+    id: "openai#gpt-4o-mini-search-preview",
     provider: "openai",
     model: "gpt-4o-mini-search-preview",
     input: 0.15,
@@ -656,7 +635,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4o-search-preview",
+    id: "openai#gpt-4o-search-preview",
     provider: "openai",
     model: "gpt-4o-search-preview",
     input: 2.5,
@@ -679,7 +658,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
   // GPT-4 Series
   {
-    id: "vendor:openai;model:gpt-4-turbo",
+    id: "openai#gpt-4-turbo",
     provider: "openai",
     model: "gpt-4-turbo",
     input: 10,
@@ -701,7 +680,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4-turbo-preview",
+    id: "openai#gpt-4-turbo-preview",
     provider: "openai",
     model: "gpt-4-turbo-preview",
     input: 10,
@@ -723,7 +702,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4-1106-preview",
+    id: "openai#gpt-4-1106-preview",
     provider: "openai",
     model: "gpt-4-1106-preview",
     input: 10,
@@ -745,7 +724,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4",
+    id: "openai#gpt-4",
     provider: "openai",
     model: "gpt-4",
     input: 30,
@@ -767,7 +746,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-4-0314",
+    id: "openai#gpt-4-0314",
     provider: "openai",
     model: "gpt-4-0314",
     input: 30,
@@ -790,7 +769,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
   // GPT-3.5 Series
   {
-    id: "vendor:openai;model:gpt-3.5-turbo",
+    id: "openai#gpt-3.5-turbo",
     provider: "openai",
     model: "gpt-3.5-turbo",
     input: 0.5,
@@ -812,7 +791,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-3.5-turbo-16k",
+    id: "openai#gpt-3.5-turbo-16k",
     provider: "openai",
     model: "gpt-3.5-turbo-16k",
     input: 3,
@@ -834,7 +813,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openai;model:gpt-3.5-turbo-instruct",
+    id: "openai#gpt-3.5-turbo-instruct",
     provider: "openai",
     model: "gpt-3.5-turbo-instruct",
     input: 1.5,
@@ -860,9 +839,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
 
   {
-    id: "vendor:openrouter;model:gemini-2.5-flash-lite",
+    id: "openrouter#google/gemini-2.5-flash-lite",
     provider: "openrouter",
-    model: "google/gemini-2.5-flash-lite",
+    model: "openrouter#google/gemini-2.5-flash-lite",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.06,
@@ -881,7 +860,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openrouter;model:gemini-2.5-pro-preview",
+    id: "openrouter#google/gemini-2.5-pro-preview",
     provider: "openrouter",
     model: "google/gemini-2.5-pro-preview",
     input: 1.25,
@@ -902,7 +881,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openrouter;model:claude-sonnet-4",
+    id: "openrouter#anthropic/claude-sonnet-4",
     provider: "openrouter",
     model: "anthropic/claude-sonnet-4",
     input: 3,
@@ -923,7 +902,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openrouter;model:router",
+    id: "openrouter#switchpoint/router",
     provider: "openrouter",
     model: "switchpoint/router",
     input: 0.85,
@@ -944,9 +923,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openrouter;model:gpt-4.1",
+    id: "openrouter#openai/gpt-4.1",
     provider: "openrouter",
-    model: "openai/gpt-4.1",
+    model: "openrouter#openai/gpt-4.1",
     input: 12,
     output: 48,
     cachedInput: 4,
@@ -965,9 +944,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 
   {
-    id: "vendor:openrouter;model:gpt-4.1-mini",
+    id: "openrouter#openai/gpt-4.1-mini",
     provider: "openrouter",
-    model: "openai/gpt-4.1-mini",
+    model: "openrouter#openai/gpt-4.1-mini",
     input: 0.4,
     output: 1.6,
     cachedInput: 0.1,
@@ -982,13 +961,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:gpt-4.1-nano",
+    id: "openrouter#openai/gpt-4.1-nano",
     provider: "openrouter",
-    model: "openai/gpt-4.1-nano",
+    model: "openrouter#openai/gpt-4.1-nano",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.06,
@@ -1003,13 +983,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:gpt-4o-mini",
+    id: "openrouter#openai/gpt-4o-mini",
     provider: "openrouter",
-    model: "openai/gpt-4o-mini",
+    model: "openrouter#openai/gpt-4o-mini",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.075,
@@ -1024,13 +1005,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:gpt-3.5-turbo",
+    id: "openrouter#openai/gpt-3.5-turbo",
     provider: "openrouter",
-    model: "openai/gpt-3.5-turbo",
+    model: "openrouter#openai/gpt-3.5-turbo",
     input: 0.5,
     output: 0.4,
     cachedInput: 0.025,
@@ -1045,13 +1027,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:gpt-4o",
+    id: "openrouter#openai/gpt-4o",
     provider: "openrouter",
-    model: "openai/gpt-4o",
+    model: "openrouter#openai/gpt-4o",
     input: 2.5,
     output: 10,
     cachedInput: 1.25,
@@ -1066,11 +1049,12 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:claude-3-5-haiku",
+    id: "openrouter#anthropic/claude-3-5-haiku",
     provider: "openrouter",
     model: "anthropic/claude-3-5-haiku",
     input: 0.25,
@@ -1087,11 +1071,12 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:llama-3.1-8b-instruct",
+    id: "openrouter#meta-llama/llama-3.1-8b-instruct",
     provider: "openrouter",
     model: "meta-llama/llama-3.1-8b-instruct",
     input: 0.055,
@@ -1108,11 +1093,12 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:kimi-k2",
+    id: "openrouter#moonshotai/kimi-k2",
     provider: "openrouter",
     model: "moonshotai/kimi-k2",
     input: 0.5,
@@ -1130,10 +1116,11 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 6,
     pricingTier: "medium",
     active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:kimi-k2-instruct",
+    id: "openrouter#moonshotai/kimi-k2-instruct",
     provider: "openrouter",
     model: "moonshotai/kimi-k2-instruct",
     input: 0.5,
@@ -1151,10 +1138,11 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 6,
     pricingTier: "medium",
     active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:grok-4",
+    id: "openrouter#x-ai/grok-4",
     provider: "openrouter",
     model: "x-ai/grok-4",
     input: 2.0,
@@ -1172,10 +1160,11 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 7,
     pricingTier: "high",
     active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:mistral-small-3.2-24b-instruct",
+    id: "openrouter#mistralai/mistral-small-3.2-24b-instruct",
     provider: "openrouter",
     model: "mistralai/mistral-small-3.2-24b-instruct",
     input: 0.055,
@@ -1192,13 +1181,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:openrouter;model:gpt-5",
+    id: "openrouter#openai/gpt-5",
     provider: "openrouter",
-    model: "openai/gpt-5",
+    model: "openrouter#openai/gpt-5",
     input: 1.25,
     output: 10,
     cachedInput: 0.4,
@@ -1213,7 +1203,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 9,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // ============================================================================
@@ -1221,9 +1212,9 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
 
   {
-    id: "vendor:groq;model:gpt-oss-20b",
+    id: "groq#openai/gpt-oss-20b",
     provider: "groq",
-    model: "openai/gpt-oss-20b",
+    model: "openrouter#openai/gpt-oss-20b",
     input: 0.5,
     output: 0.8,
     cachedInput: 0.1,
@@ -1238,13 +1229,14 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
-    id: "vendor:groq;model:gpt-oss-120b",
+    id: "groq#openai/gpt-oss-120b",
     provider: "groq",
-    model: "openai/gpt-oss-120b",
+    model: "openrouter#openai/gpt-oss-120b",
     input: 0.15,
     output: 0.75,
     cachedInput: 0.015,
@@ -1259,7 +1251,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 9,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 ]
 
@@ -1274,14 +1267,11 @@ export function getActiveModels(): ModelEntry[] {
  * Helper: Get models by provider
  */
 export function getModelsByProvider(provider: string): ModelEntry[] {
-  return MODEL_CATALOG.filter(m => m.provider === provider)
-}
-
-/**
- * Helper: Find model by ID
- */
-export function findModelById(id: string): ModelEntry | undefined {
-  return MODEL_CATALOG.find(m => m.id === id)
+  const validatedProvider = providerNameSchema.parse(provider)
+  if (!validatedProvider) {
+    throw new Error("Invalid provider")
+  }
+  return MODEL_CATALOG.filter(m => m.provider === validatedProvider)
 }
 
 /**
@@ -1290,7 +1280,6 @@ export function findModelById(id: string): ModelEntry | undefined {
  */
 export function getAllProviders(): string[] {
   if (MODEL_CATALOG.length === 0) {
-    console.warn("[getAllProviders] MODEL_CATALOG is empty")
     throw new Error("MODEL_CATALOG contains no models")
   }
 
@@ -1401,9 +1390,9 @@ export function validateCatalogIntegrity(): { valid: boolean; errors: string[] }
       errors.push(`Model ${model.id} has non-lowercase provider: ${model.provider}`)
     }
 
-    // Check ID format follows vendor:X;model:Y pattern
-    if (!model.id.startsWith("vendor:") || !model.id.includes(";model:")) {
-      errors.push(`Model ${model.id} has invalid ID format (must be "vendor:X;model:Y")`)
+    // Check ID format follows provider#model pattern
+    if (!model.id.includes("#")) {
+      errors.push(`Model ${model.id} has invalid ID format (must be "<provider>#<model>")`)
     }
 
     // Check pricing values are valid

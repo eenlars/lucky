@@ -6,7 +6,7 @@
 
 import path from "node:path"
 import { DEFAULT_RUNTIME_CONFIG } from "@lucky/shared/contracts/config"
-import type { CoreConfig, CoreModelsConfig } from "./types"
+import type { CoreConfig } from "./types"
 
 /**
  * Creates default core configuration with safe server defaults.
@@ -54,7 +54,7 @@ export function createDefaultCoreConfig(): CoreConfig {
     },
 
     // All runtime config from contracts
-    models: DEFAULT_RUNTIME_CONFIG.models as CoreModelsConfig,
+    models: DEFAULT_RUNTIME_CONFIG.models,
     tools: DEFAULT_RUNTIME_CONFIG.tools,
     logging: DEFAULT_RUNTIME_CONFIG.logging,
     workflow: DEFAULT_RUNTIME_CONFIG.workflow,

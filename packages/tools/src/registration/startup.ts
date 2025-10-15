@@ -6,14 +6,14 @@
  */
 
 import { type CodeToolRegistry, codeToolRegistry } from "../registry/CodeToolRegistry"
-import type { CodeToolGroups } from "./codeToolsRegistration"
-import { printValidationResult, validateCodeToolRegistration } from "./validation"
+import type { ToolkitRegistry } from "./codeToolsRegistration"
+import { printValidationResult, validateToolkitRegistration } from "./validation"
 
 /**
- * Register all tools from the tool groups with validation
+ * Register all tools from the toolkits with validation
  */
 export async function registerAllTools(
-  toolGroups: CodeToolGroups,
+  toolkitRegistry: ToolkitRegistry,
   options?: { validate?: boolean; throwOnError?: boolean },
   registry: CodeToolRegistry = codeToolRegistry,
 ): Promise<void> {
@@ -21,7 +21,7 @@ export async function registerAllTools(
 
   // Validate registration before registering
   if (validate) {
-    const result = validateCodeToolRegistration(toolGroups.groups)
+    const result = validateToolkitRegistration(toolkitRegistry.toolkits)
     printValidationResult("Code", result)
 
     if (!result.valid && throwOnError) {
@@ -29,8 +29,8 @@ export async function registerAllTools(
     }
   }
 
-  // Extract all tool functions from all groups
-  const allTools = toolGroups.groups.flatMap(group => group.tools.map(t => t.toolFunc))
+  // Extract all tool functions from all toolkits
+  const allTools = toolkitRegistry.toolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
   // Register them with the registry
   registry.registerMany(allTools)
@@ -38,35 +38,35 @@ export async function registerAllTools(
   // Mark registry as initialized
   await registry.initialize()
 
-  console.log(`✅ Registered ${allTools.length} tools across ${toolGroups.groups.length} groups`)
+  console.log(`✅ Registered ${allTools.length} tools across ${toolkitRegistry.toolkits.length} toolkits`)
 }
 
 /**
- * Register tools from specific groups only
+ * Register tools from specific toolkits only
  */
-export async function registerToolGroups(
-  toolGroups: CodeToolGroups,
-  groupNames: readonly string[],
+export async function registerToolkits(
+  toolkitRegistry: ToolkitRegistry,
+  toolkitNames: readonly string[],
   options?: { registry?: CodeToolRegistry; validate?: boolean; throwOnError?: boolean },
 ): Promise<void> {
   const registry = options?.registry ?? codeToolRegistry
   const { validate = true, throwOnError = true } = options ?? {}
 
-  const uniqueGroupNames = [...new Set(groupNames)]
-  if (uniqueGroupNames.length !== groupNames.length) {
-    console.warn("registerToolGroups: duplicate group names detected; using first occurrence only")
+  const uniqueToolkitNames = [...new Set(toolkitNames)]
+  if (uniqueToolkitNames.length !== toolkitNames.length) {
+    console.warn("registerToolkits: duplicate toolkit names detected; using first occurrence only")
   }
 
-  const missing = uniqueGroupNames.filter(name => !toolGroups.groups.some(g => g.groupName === name))
+  const missing = uniqueToolkitNames.filter(name => !toolkitRegistry.toolkits.some(t => t.toolkitName === name))
   if (missing.length > 0) {
-    throw new Error(`No matching tool groups found for: ${missing.join(", ")}`)
+    throw new Error(`No matching toolkits found for: ${missing.join(", ")}`)
   }
 
-  const selectedGroups = uniqueGroupNames.map(name => toolGroups.groups.find(g => g.groupName === name)!)
-  const tools = selectedGroups.flatMap(group => group.tools.map(t => t.toolFunc))
+  const selectedToolkits = uniqueToolkitNames.map(name => toolkitRegistry.toolkits.find(t => t.toolkitName === name)!)
+  const tools = selectedToolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
   if (validate) {
-    const result = validateCodeToolRegistration(selectedGroups)
+    const result = validateToolkitRegistration(selectedToolkits)
     printValidationResult("Code", result)
 
     if (!result.valid && throwOnError) {
@@ -77,5 +77,5 @@ export async function registerToolGroups(
   registry.registerMany(tools)
   await registry.initialize()
 
-  console.log(`✅ Registered ${tools.length} tools from groups: ${groupNames.join(", ")}`)
+  console.log(`✅ Registered ${tools.length} tools from toolkits: ${toolkitNames.join(", ")}`)
 }

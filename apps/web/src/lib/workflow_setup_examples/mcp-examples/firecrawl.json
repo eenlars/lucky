@@ -4,7 +4,7 @@
     {
       "nodeId": "firecrawl",
       "description": "Firecrawl Node – uses the firecrawl to find the business in the area. you only use extract.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": ["firecrawl"],
       "codeTools": [],
       "handOffs": ["end"]

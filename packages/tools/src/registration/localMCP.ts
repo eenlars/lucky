@@ -1,4 +1,4 @@
-import { type CodeToolDefinition, type CodeToolGroups, createToolGroup } from "./codeToolsRegistration"
+import { type ToolkitRegistry, type ToolkitToolDefinition, createToolkit } from "./codeToolsRegistration"
 
 type TransportCommon = {
   type: string
@@ -23,7 +23,7 @@ export type LocalMCPTransport = LocalMCPTransportStdio | LocalMCPTransportOAuth
 export type LocalMCPTool = {
   name: string
   description: string
-  definition: CodeToolDefinition["toolFunc"]
+  definition: ToolkitToolDefinition["toolFunc"]
   env?: Record<string, string>
 }
 
@@ -37,7 +37,7 @@ export type LocalMCPServer = {
 }
 
 type Snapshot = {
-  codeToolGroups: CodeToolGroups
+  codeToolGroups: ToolkitRegistry
   servers: Record<string, LocalMCPServer>
   toolToServer: Record<string, string>
 }
@@ -139,10 +139,10 @@ export class LocalMCPRegistry {
     const servers: Record<string, LocalMCPServer> = {}
     const toolToServer: Record<string, string> = {}
 
-    const groups = this.config.servers.map(server => {
+    const toolkits = this.config.servers.map(server => {
       servers[server.id] = server
 
-      const toolDefinitions = server.tools.map<CodeToolDefinition>(tool => {
+      const toolDefinitions = server.tools.map<ToolkitToolDefinition>(tool => {
         toolToServer[tool.name] = server.id
         return {
           toolName: tool.name,
@@ -151,11 +151,11 @@ export class LocalMCPRegistry {
         }
       })
 
-      return createToolGroup(server.id, `${server.label}: ${server.description}`, toolDefinitions)
+      return createToolkit(server.id, `${server.label}: ${server.description}`, toolDefinitions)
     })
 
     this.snapshot = {
-      codeToolGroups: { groups },
+      codeToolGroups: { toolkits },
       servers,
       toolToServer,
     }
@@ -163,7 +163,7 @@ export class LocalMCPRegistry {
     return this.snapshot
   }
 
-  get codeToolGroups(): CodeToolGroups {
+  get codeToolGroups(): ToolkitRegistry {
     return this.ensureSnapshot().codeToolGroups
   }
 

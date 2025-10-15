@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -139,8 +140,8 @@ export function PromptBar({ context }: PromptBarProps) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: response.statusText }))
-        throw new Error(errorData.error || `API request failed: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       addLog("Processing AI response...")
@@ -221,7 +222,7 @@ export function PromptBar({ context }: PromptBarProps) {
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, contextType, executeOperation, addLog])
+  }, [prompt, isGenerating, executeOperation, addLog])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

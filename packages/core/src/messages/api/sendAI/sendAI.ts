@@ -32,7 +32,6 @@ import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
-import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -161,7 +160,14 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
 
   try {
     const start = Date.now()
-    const result = await _sendAIInternal(req)
+    const result = await (async () => {
+      // Global guard to prevent indefinite hangs across any mode
+      const { default: pTimeout } = await import("p-timeout")
+      return await pTimeout(_sendAIInternal(req), {
+        milliseconds: 150_000,
+        message: new Error("Global sendAI timeout (150 s)"),
+      })
+    })()
     const end = Date.now()
     const duration = end - start
 
@@ -204,7 +210,7 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
 // TODO: add model name validation against known models
 // TODO: implement model name alias resolution
 // TODO: add deprecation warnings for old model names
-export const normalizeModelName = (modelName: ModelName): string => {
+export const normalizeModelName = (modelName: string): string => {
   // ensure consistent string format and trim any whitespace
   return String(modelName).trim()
 }

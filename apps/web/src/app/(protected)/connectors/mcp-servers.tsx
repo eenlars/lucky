@@ -11,8 +11,7 @@ import { toast } from "sonner"
 
 export function MCPServersConfig() {
   const config = useMCPConfigStore(state => state.config)
-  const addServer = useMCPConfigStore(state => state.addServer)
-  const deleteServer = useMCPConfigStore(state => state.deleteServer)
+  const _addServer = useMCPConfigStore(state => state.addServer)
 
   const [showJsonMode, setShowJsonMode] = useState(false)
 
@@ -55,8 +54,8 @@ export function MCPServersConfig() {
         </div>
 
         {/* Add Server Form */}
-        {/* TODO: Bring back Add Server Form later */}
-        {/* <AddServerForm onAdd={addServer} existingNames={serverNames} /> */}
+        {/* TODO: Bring back Add Server Form later (components/AddServerForm.tsx) */}
+        {/* <AddServerForm onAdd={_addServer} existingNames={serverNames} /> */}
 
         {/* Server List */}
         {serverNames.length > 0 && (
@@ -66,12 +65,7 @@ export function MCPServersConfig() {
             </h3>
             <div className="space-y-2">
               {serverNames.map(name => (
-                <ServerRow
-                  key={name}
-                  name={name}
-                  config={config.mcpServers[name]}
-                  onDelete={() => deleteServer(name)}
-                />
+                <ServerRow key={name} name={name} config={config.mcpServers[name]} />
               ))}
             </div>
           </div>
@@ -97,265 +91,12 @@ export function MCPServersConfig() {
   )
 }
 
-function AddServerForm({
-  onAdd,
-  existingNames,
-}: {
-  onAdd: (name: string, config: MCPServerConfig) => void
-  existingNames: string[]
-}) {
-  const [serverType, setServerType] = useState<"remote" | "local">("remote")
-  const [name, setName] = useState("")
-  const [url, setUrl] = useState("")
-  const [authType, setAuthType] = useState<"none" | "apikey">("none")
-  const [apiKey, setApiKey] = useState("")
-  const [command, setCommand] = useState("")
-  const [args, setArgs] = useState("")
-  const [envVars, setEnvVars] = useState("")
-  const [error, setError] = useState("")
-
-  const handleSubmit = () => {
-    setError("")
-
-    if (!name.trim()) {
-      setError("Name is required")
-      return
-    }
-
-    if (existingNames.includes(name.trim())) {
-      setError("A server with this name already exists")
-      return
-    }
-
-    if (serverType === "remote") {
-      if (!url.trim()) {
-        setError("URL is required")
-        return
-      }
-      // For remote, create a local proxy command that connects to the URL
-      const serverConfig: MCPServerConfig = {
-        command: "npx",
-        args: ["-y", "@modelcontextprotocol/mcp-proxy", url.trim()],
-        env:
-          authType === "apikey" && apiKey.trim()
-            ? {
-                MCP_API_KEY: apiKey.trim(),
-              }
-            : undefined,
-      }
-      onAdd(name.trim(), serverConfig)
-    } else {
-      if (!command.trim()) {
-        setError("Command is required")
-        return
-      }
-
-      const parsedArgs = args
-        .split("\n")
-        .map(a => a.trim())
-        .filter(Boolean)
-
-      const parsedEnv: Record<string, string> = {}
-      if (envVars.trim()) {
-        envVars.split("\n").forEach(line => {
-          const [key, ...valueParts] = line.split("=")
-          if (key && valueParts.length > 0) {
-            parsedEnv[key.trim()] = valueParts.join("=").trim()
-          }
-        })
-      }
-
-      const serverConfig: MCPServerConfig = {
-        command: command.trim(),
-        args: parsedArgs,
-        ...(Object.keys(parsedEnv).length > 0 && { env: parsedEnv }),
-      }
-
-      onAdd(name.trim(), serverConfig)
-    }
-
-    // Reset form
-    setName("")
-    setUrl("")
-    setApiKey("")
-    setCommand("")
-    setArgs("")
-    setEnvVars("")
-    setAuthType("none")
-  }
-
-  return (
-    <Card className="p-6">
-      <div className="space-y-6">
-        {/* Server Type Toggle */}
-        {/* TODO: Bring back Remote/Local toggle later */}
-        {/* <div className="flex gap-2 p-1 bg-muted rounded-lg w-fit">
-          <button
-            type="button"
-            onClick={() => setServerType("remote")}
-            className={cn(
-              "px-4 py-2 text-sm font-medium rounded-md transition-all",
-              serverType === "remote"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Remote
-          </button>
-          <button
-            type="button"
-            onClick={() => setServerType("local")}
-            className={cn(
-              "px-4 py-2 text-sm font-medium rounded-md transition-all",
-              serverType === "local"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Local
-          </button>
-        </div> */}
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
-            <AlertCircle className="size-4 flex-shrink-0" />
-            {error}
-          </div>
-        )}
-
-        {/* Name */}
-        <div className="space-y-2">
-          <label htmlFor="mcp-name" className="block text-sm font-medium text-foreground">
-            Name
-          </label>
-          <input
-            id="mcp-name"
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="e.g., Tavily Search, Firecrawl, Playwright"
-            className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
-        </div>
-
-        {serverType === "remote" ? (
-          <>
-            {/* Server URL */}
-            <div className="space-y-2">
-              <label htmlFor="mcp-server-url" className="block text-sm font-medium text-foreground">
-                Server URL
-              </label>
-              <input
-                id="mcp-server-url"
-                type="url"
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-                placeholder="https://example.com/mcp"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-              />
-            </div>
-
-            {/* Authentication */}
-            <div className="space-y-2">
-              <label htmlFor="mcp-auth-type" className="block text-sm font-medium text-foreground">
-                Authentication
-              </label>
-              <select
-                id="mcp-auth-type"
-                value={authType}
-                onChange={e => setAuthType(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              >
-                <option value="none">None</option>
-                <option value="apikey">API Key</option>
-              </select>
-            </div>
-
-            {/* API Key Input */}
-            {authType === "apikey" && (
-              <div className="space-y-2">
-                <label htmlFor="mcp-api-key" className="block text-sm font-medium text-foreground">
-                  API Key
-                </label>
-                <input
-                  id="mcp-api-key"
-                  type="password"
-                  value={apiKey}
-                  onChange={e => setApiKey(e.target.value)}
-                  placeholder="Enter your API key"
-                  autoComplete="off"
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-                />
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {/* Command */}
-            <div className="space-y-2">
-              <label htmlFor="mcp-command" className="block text-sm font-medium text-foreground">
-                Command
-              </label>
-              <input
-                id="mcp-command"
-                type="text"
-                value={command}
-                onChange={e => setCommand(e.target.value)}
-                placeholder="e.g., npx, python3, node"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-              />
-            </div>
-
-            {/* Options */}
-            <div className="space-y-2">
-              <label htmlFor="mcp-options" className="block text-sm font-medium text-foreground">
-                Options
-              </label>
-              <textarea
-                id="mcp-options"
-                value={args}
-                onChange={e => setArgs(e.target.value)}
-                placeholder={"-y\n@modelcontextprotocol/server-tavily"}
-                rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono resize-none"
-              />
-            </div>
-
-            {/* Environment variables */}
-            <div className="space-y-2">
-              <label htmlFor="mcp-env-vars" className="block text-sm font-medium text-foreground">
-                Environment variables
-              </label>
-              <textarea
-                id="mcp-env-vars"
-                value={envVars}
-                onChange={e => setEnvVars(e.target.value)}
-                placeholder={"TAVILY_API_KEY=${TAVILY_API_KEY}\nAPI_ENDPOINT=https://api.example.com"}
-                rows={2}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono resize-none"
-              />
-            </div>
-          </>
-        )}
-
-        {/* Add Button */}
-        <Button onClick={handleSubmit} className="w-full" size="lg">
-          Add Server
-        </Button>
-      </div>
-    </Card>
-  )
-}
-
 function ServerRow({
   name,
   config,
-  onDelete,
 }: {
   name: string
   config: MCPServerConfig
-  onDelete: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
 

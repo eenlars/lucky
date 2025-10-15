@@ -18,6 +18,7 @@ interface SuggestionCardProps {
 export function SuggestionCard({ suggestion, onClick, index = 0 }: SuggestionCardProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
         "group text-left p-3 sm:p-4",

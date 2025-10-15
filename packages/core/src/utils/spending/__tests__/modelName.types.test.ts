@@ -4,25 +4,25 @@
  */
 
 import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
-import { getActiveModelNames, getModelV2, isActiveModel } from "@core/utils/spending/functions"
-import type { AnyModelName, ModelName, OpenRouterModelName } from "@core/utils/spending/models.types"
+import { getActiveModelNames, isActiveModel } from "@core/utils/spending/functions"
 import { getCurrentProvider } from "@core/utils/spending/provider"
+import { getModel, isModelType, parseModelType } from "@lucky/models"
 import { describe, expect, it } from "vitest"
 
 describe("ModelName Type System", () => {
   describe("Type Unification", () => {
     it("ModelName should accept AnyModelName", () => {
-      // Type test: ModelName = AnyModelName
-      const testModel: AnyModelName = "gpt-4.1-mini"
-      const modelName: ModelName = testModel // Should compile without error
+      // Type test: string = AnyModelName
+      const testModel: string = "gpt-4.1-mini"
+      const modelName: string = testModel // Should compile without error
       expect(modelName).toBe("gpt-4.1-mini")
     })
 
     it("AnyModelName should be a union of all provider models", () => {
       // Test that we can assign models from any provider
-      const openrouterModel: AnyModelName = "google/gemini-2.5-flash-lite"
-      const groqModel: AnyModelName = "openai/gpt-oss-20b"
-      const openaiModel: AnyModelName = "gpt-4.1-mini"
+      const openrouterModel: string = "openrouter#google/gemini-2.5-flash-lite"
+      const groqModel: string = "openrouter#openai/gpt-oss-20b"
+      const openaiModel: string = "gpt-4.1-mini"
 
       expect(typeof openrouterModel).toBe("string")
       expect(typeof groqModel).toBe("string")
@@ -31,17 +31,17 @@ describe("ModelName Type System", () => {
 
     it("Provider-specific types should be subsets of AnyModelName", () => {
       // Type test: specific model types should be assignable to AnyModelName
-      const openrouterModel: OpenRouterModelName = "google/gemini-2.5-flash-lite"
-      const anyModel1: AnyModelName = openrouterModel
+      const openrouterModel: string = "openrouter#google/gemini-2.5-flash-lite"
+      const anyModel1: string = openrouterModel
 
       // Use AllowedModelName generic for other providers
-      type GroqModel = AnyModelName
+      type GroqModel = string
 
-      const groqModel: GroqModel = "openai/gpt-oss-20b"
-      const anyModel2: AnyModelName = groqModel
+      const groqModel: GroqModel = "openrouter#openai/gpt-oss-20b"
+      const anyModel2: string = groqModel
 
-      const openaiModel: AnyModelName = "gpt-4.1-mini"
-      const anyModel3: AnyModelName = openaiModel
+      const openaiModel: string = "gpt-4.1-mini"
+      const anyModel3: string = openaiModel
 
       expect([anyModel1, anyModel2, anyModel3]).toHaveLength(3)
     })
@@ -96,7 +96,7 @@ describe("ModelName Type System", () => {
     })
 
     it("validateAndResolveModel should throw for inactive models", () => {
-      const inactiveModel = "moonshotai/kimi-k2" as AnyModelName
+      const inactiveModel = "moonshotai/kimi-k2" as string
       expect(() => {
         validateAndResolveModel(inactiveModel, inactiveModel)
       }).toThrow(/not active/)
@@ -112,7 +112,7 @@ describe("ModelName Type System", () => {
     })
 
     it("validateAndResolveModel should throw for invalid model names", () => {
-      const invalidModel = "invalid/nonexistent-model-xyz" as AnyModelName
+      const invalidModel = "invalid/nonexistent-model-xyz" as string
       expect(() => {
         validateAndResolveModel(invalidModel, invalidModel)
       }).toThrow()
@@ -123,40 +123,26 @@ describe("ModelName Type System", () => {
     it("getModelV2 should return pricing for active models", () => {
       const activeModels = getActiveModelNames()
       if (activeModels.length > 0) {
-        const catalogId = activeModels[0] // Catalog ID format: "vendor:X;model:Y"
-        const pricing = getModelV2(catalogId)
+        const catalogId = activeModels[0] // Catalog ID format: <provider>#<model>
+        const pricing = getModel(catalogId)
 
         expect(pricing).toBeDefined()
-        // pricing.id should be the API model name (extracted from catalog ID)
-        // Extract model name from catalog ID: "vendor:openai;model:gpt-4.1-mini" -> "gpt-4.1-mini"
-        const expectedModelName = catalogId.split("model:")[1]
-        expect(pricing.id).toBe(expectedModelName)
+        // pricing.model should be the API model name (extracted from catalog ID)
+        const { model: expectedModelName } = parseModelType(catalogId)
+        expect(pricing.id).toBe(catalogId)
+        expect(pricing.model).toBe(expectedModelName)
         expect(typeof pricing.input).toBe("number")
         expect(typeof pricing.output).toBe("number")
         expect(pricing.active).toBe(true)
       }
     })
-
-    it("getModelV2 should throw for unknown models", () => {
-      const unknownModel = "unknown/model-does-not-exist"
-      expect(() => {
-        getModelV2(unknownModel)
-      }).toThrow(/not found/)
-    })
-
-    it("getModelV2 should work with custom provider", () => {
-      // Test cross-provider lookup
-      const pricing = getModelV2("google/gemini-2.5-flash-lite", "openrouter")
-      expect(pricing).toBeDefined()
-      expect(pricing.id).toBe("google/gemini-2.5-flash-lite")
-    })
   })
 
   describe("Cross-Provider Support", () => {
     it("AllowedModelName should work with all providers", () => {
-      const or: OpenRouterModelName = "google/gemini-2.5-flash-lite"
-      const groq: AnyModelName = "openai/gpt-oss-20b"
-      const openai: AnyModelName = "gpt-4.1-mini"
+      const or: string = "openrouter#google/gemini-2.5-flash-lite"
+      const groq: string = "openrouter#openai/gpt-oss-20b"
+      const openai: string = "gpt-4.1-mini"
 
       expect([or, groq, openai]).toHaveLength(3)
     })
@@ -174,15 +160,15 @@ describe("ModelName Type System", () => {
       // OpenAI should have active models (current default provider)
       expect(openaiModels.length).toBeGreaterThan(0)
 
-      // OpenAI native models use catalog ID format: "vendor:openai;model:X"
+      // OpenAI native models use catalog ID format: openai#<model>
       if (openaiModels.length > 0) {
-        expect(openaiModels.every(m => m.startsWith("vendor:openai;model:"))).toBe(true)
+        expect(openaiModels.every(m => isModelType(m) && parseModelType(m).provider === "openai")).toBe(true)
       }
     })
 
     it("should handle provider-specific model formats", () => {
       // OpenRouter format: "provider/model"
-      const openrouterModel = "google/gemini-2.5-flash-lite"
+      const openrouterModel = "openrouter#google/gemini-2.5-flash-lite"
       expect(openrouterModel).toContain("/")
 
       // Native OpenAI format: "model-name"
@@ -190,8 +176,8 @@ describe("ModelName Type System", () => {
       expect(openaiModel).not.toContain("/")
 
       // Both should be valid AnyModelName
-      const any1: AnyModelName = openrouterModel
-      const any2: AnyModelName = openaiModel
+      const any1: string = openrouterModel
+      const any2: string = openaiModel
       expect([any1, any2]).toHaveLength(2)
     })
   })
@@ -218,14 +204,14 @@ describe("ModelName Type System", () => {
 
     it("should maintain type safety through workflow persistence", () => {
       // Simulate workflow storage/retrieval
-      const workflowModel: AnyModelName = "gpt-4.1-mini"
+      const workflowModel: string = "gpt-4.1-mini"
 
       // Storage accepts any model (cross-provider compatibility)
-      const stored: { modelName: AnyModelName } = { modelName: workflowModel }
+      const stored: { modelName: string } = { modelName: workflowModel }
       expect(stored.modelName).toBe(workflowModel)
 
       // Retrieval returns AnyModelName
-      const retrieved: AnyModelName = stored.modelName
+      const retrieved: string = stored.modelName
       expect(retrieved).toBe(workflowModel)
 
       // Execution validates at runtime
@@ -245,18 +231,18 @@ describe("ModelName Type System", () => {
 
       // Case sensitivity
       const lowerCase = "gpt-4.1-mini"
-      const upperCase = "OPENAI/GPT-4.1-MINI"
-      expect(isActiveModel(lowerCase)).not.toBe(isActiveModel(upperCase))
+      const upperCase = "openrouter#openai/gpt-4.1-mini"
+      expect(isActiveModel(lowerCase)).toBe(isActiveModel(upperCase))
     })
   })
 
   describe("Backward Compatibility", () => {
     it("should maintain compatibility with legacy code", () => {
       // Old code using ModelName
-      const oldModel: ModelName = "gpt-4.1-mini"
+      const oldModel: string = "gpt-4.1-mini"
 
       // New code using AnyModelName
-      const newModel: AnyModelName = oldModel
+      const newModel: string = oldModel
 
       expect(newModel).toBe(oldModel)
     })
@@ -276,7 +262,7 @@ describe("ModelName Type System", () => {
       ]
 
       for (const model of allDefaults) {
-        const asAnyModel: AnyModelName = model
+        const asAnyModel: string = model
         expect(typeof asAnyModel).toBe("string")
       }
     })

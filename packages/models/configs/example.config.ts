@@ -13,14 +13,14 @@ export default defineConfig({
     // Fast mode: race multiple fast models
     fast: {
       strategy: "race",
-      providers: ["openai/gpt-4o-mini", "anthropic/claude-3-haiku", "local/llama-3"],
+      providers: ["openrouter"],
       timeout: 30000,
     },
 
     // Quality mode: use best models
     quality: {
       strategy: "first",
-      providers: ["anthropic/claude-3.5-sonnet", "openai/gpt-4o"],
+      providers: ["openrouter"],
       timeout: 60000,
       maxCost: 0.1,
     },
@@ -28,14 +28,14 @@ export default defineConfig({
     // Local first: prefer local models, fallback to cloud
     local_first: {
       strategy: "fallback",
-      providers: ["local/llama-3.3", "local/mistral-nemo", "openrouter/google/gemini-2.0-flash"],
+      providers: ["openrouter"],
       timeout: 45000,
     },
 
     // Consensus mode: run multiple models and compare
     consensus: {
       strategy: "consensus",
-      providers: ["anthropic/claude-3.5-sonnet", "openai/gpt-4o", "openrouter/google/gemini-2.0-flash"],
+      providers: ["openrouter"],
       timeout: 90000,
     },
   },

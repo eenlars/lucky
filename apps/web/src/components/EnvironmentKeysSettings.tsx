@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -176,7 +177,8 @@ export default function EnvironmentKeysSettings() {
             body: JSON.stringify({ name: key.name, value: key.value }),
           })
           if (!response.ok) {
-            throw new Error(`Failed to save ${key.name}`)
+            const errorDetails = await extractFetchError(response)
+            throw new Error(`Failed to save ${key.name}: ${errorDetails}`)
           }
         }),
       )
@@ -186,8 +188,9 @@ export default function EnvironmentKeysSettings() {
       logException(error, {
         location: window.location.pathname,
       })
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       console.error("Failed to save environment keys:", error)
-      toast.error("Failed to save environment keys")
+      toast.error(`Failed to save environment keys: ${errorMessage}`)
     } finally {
       setIsLoading(false)
     }

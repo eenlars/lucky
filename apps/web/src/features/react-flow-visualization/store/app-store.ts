@@ -24,6 +24,7 @@ import { CITY_NAMES } from "@/features/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/features/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/features/react-flow-visualization/store/edge-validation"
 import { logException } from "@/lib/error-logger"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
@@ -405,7 +406,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               }
             }
 
-            const setup = toFrontendWorkflowConfig(workflowConfig)
+            // Get user preferences for model validation
+            const userPreferences = useModelPreferencesStore.getState().preferences
+            const setup = toFrontendWorkflowConfig(workflowConfig, userPreferences)
             console.log("Initial setup config:", setup)
 
             // Check if workflow has saved layout positions
@@ -471,7 +474,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
             }
 
             const workflowConfig = await response.json()
-            const setup = toFrontendWorkflowConfig(workflowConfig)
+            // Get user preferences for model validation
+            const userPreferences = useModelPreferencesStore.getState().preferences
+            const setup = toFrontendWorkflowConfig(workflowConfig, userPreferences)
 
             // Check if workflow has saved layout positions
             if (workflowConfig.ui?.layout?.nodes && workflowConfig.ui.layout.nodes.length > 0) {
@@ -526,7 +531,9 @@ export const createAppStore = (initialState: AppState = defaultState) => {
 
           try {
             console.log("🟢 loadWorkflowFromData: Received workflowData with ui:", workflowData.ui)
-            const setup = toFrontendWorkflowConfig(workflowData)
+            // Get user preferences for model validation
+            const userPreferences = useModelPreferencesStore.getState().preferences
+            const setup = toFrontendWorkflowConfig(workflowData, userPreferences)
 
             // Check if workflow has saved layout positions
             if (workflowData.ui?.layout?.nodes && workflowData.ui.layout.nodes.length > 0) {

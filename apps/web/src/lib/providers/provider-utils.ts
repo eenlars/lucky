@@ -89,6 +89,15 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
 }
 
 /**
+ * Helper: return provider slugs for configurations that are not disabled
+ */
+export function getEnabledProviderSlugs(configs: Record<string, ProviderConfig> = getProviderConfigs()): string[] {
+  return Object.entries(configs)
+    .filter(([, config]) => !config.disabled)
+    .map(([slug]) => slug)
+}
+
+/**
  * Legacy export for backwards compatibility
  * @deprecated Use getProviderConfigs() instead for dynamic provider detection
  */

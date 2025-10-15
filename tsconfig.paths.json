@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/web/src/*"],
+      "@tests/*": ["tests/*"],
+      "@lucky/core/*": ["packages/core/src/*"],
+      "@lucky/shared": ["packages/shared/src/index.ts"],
+      "@lucky/shared/*": ["packages/shared/src/*"],
+      "@lucky/models": ["packages/models/src/index.ts"],
+      "@lucky/models/*": ["packages/models/src/*"],
+      "@lucky/tools": ["packages/tools/src/index.ts"],
+      "@lucky/tools/*": ["packages/tools/src/*"],
+      "@lucky/adapter-supabase": ["packages/adapter-supabase/src/index.ts"],
+      "@lucky/adapter-supabase/*": ["packages/adapter-supabase/src/*"],
+      "@lucky/mcp-server": ["packages/mcp-server/src/index.ts"],
+      "@lucky/mcp-server/*": ["packages/mcp-server/src/*"],
+      "@examples/*": ["apps/examples/*"],
+      "@lucky/examples": ["apps/examples"],
+      "@lucky/examples/*": ["apps/examples/*"],
+      "@core/*": ["packages/core/src/*"],
+      "@core/core-config": ["packages/core/src/core-config/coreConfig.ts"],
+      "@repo/*": ["packages/*/src/index.ts"]
+    }
+  }
+}

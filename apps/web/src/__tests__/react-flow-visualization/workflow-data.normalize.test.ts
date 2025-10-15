@@ -11,7 +11,7 @@ vi.mock("@/react-flow-visualization/components/nodes", () => ({
   }),
 }))
 vi.mock("@lucky/examples/settings/constants.client", () => ({
-  MODELS: { default: "openai/gpt-4o-mini" },
+  MODELS: { default: "openrouter#openai/gpt-4o-mini" },
 }))
 
 describe("workflow-data normalization", () => {

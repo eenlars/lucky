@@ -1,4 +1,4 @@
-import type { Database } from "@lucky/shared/client"
+import type { Database, TablesInsert } from "@lucky/shared/client"
 import { createClient } from "@supabase/supabase-js"
 import { nanoid } from "nanoid"
 import { envi } from "../../apps/web/src/env.mjs"
@@ -7,6 +7,7 @@ import { envi } from "../../apps/web/src/env.mjs"
  * Uses the service role key properly to access Supabase
  */
 import { generateApiKey, hashSecret } from "../../apps/web/src/lib/api-key-utils"
+import { createStandaloneClient } from "../../apps/web/src/lib/supabase/standalone"
 
 export interface TestUser {
   clerkId: string
@@ -16,41 +17,11 @@ export interface TestUser {
 }
 
 /**
- * Creates a service role Supabase client that bypasses RLS
- * This requires SUPABASE_SERVICE_ROLE_KEY to be set in environment
- */
-function createServiceRoleClient() {
-  const url = envi.SUPABASE_URL ?? envi.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = envi.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!url || !serviceKey) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. These are required for integration tests.")
-  }
-
-  // Create client with service role - this should bypass all RLS
-  return createClient<Database>(url, serviceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-    db: {
-      schema: "lockbox", // Specify schema if needed
-    },
-    global: {
-      headers: {
-        "x-supabase-service-role": "true", // Signal we're using service role
-      },
-    },
-  })
-}
-
-/**
  * Creates a test user with API key using service role access
  * If lockbox schema is restricted, this provides alternative approach
  */
 export async function createTestUserWithServiceRole(): Promise<TestUser> {
-  const supabase = createServiceRoleClient()
+  const supabase = createStandaloneClient(true)
   const clerkId = `test_user_${nanoid(10)}`
 
   // Generate API key components
@@ -61,6 +32,7 @@ export async function createTestUserWithServiceRole(): Promise<TestUser> {
   try {
     // Try to insert into lockbox.secret_keys with service role
     const { data, error } = await supabase
+      .schema("lockbox")
       .from("secret_keys") // Table in lockbox schema
       .insert([
         {
@@ -93,8 +65,9 @@ export async function createTestUserWithServiceRole(): Promise<TestUser> {
     // Cleanup function
     const cleanup = async () => {
       try {
-        const cleanupClient = createServiceRoleClient()
+        const cleanupClient = createStandaloneClient(true)
         await cleanupClient
+          .schema("lockbox")
           .from("secret_keys")
           .delete()
           .eq("secret_id", data?.secret_id || secretId)
@@ -174,23 +147,18 @@ export async function createTestWorkflowSimple(
       throw workflowError
     }
 
+    const dsl: TablesInsert<"WorkflowVersion"> = {
+      wf_version_id: versionId,
+      workflow_id: workflowId,
+      dsl: config,
+      commit_message: "Integration Test Workflow",
+      operation: "init",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
     // Insert workflow version
-    const { error: versionError } = await supabase
-      .from("WorkflowVersion")
-      .insert([
-        {
-          wf_version_id: versionId,
-          wf_id: workflowId,
-          config,
-          version: 1,
-          created_by: clerkId,
-          updated_by: clerkId,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ])
-      .select("wf_version_id")
-      .single()
+    const { error: versionError } = await supabase.from("WorkflowVersion").insert(dsl).select("wf_version_id").single()
 
     if (versionError) {
       // Cleanup workflow if version fails

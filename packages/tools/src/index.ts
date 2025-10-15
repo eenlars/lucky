@@ -6,35 +6,21 @@
  */
 
 // Factory - Tool creation and execution
-export { defineTool, toAITool, commonSchemas } from "./factory/toolFactory"
-export { validateAndCorrectWithSchema } from "./factory/validation"
-export {
-  R,
-  type RS,
-  type InvocationContext,
-  type OutputSchema,
-} from "./factory/types"
 export type {
+  CodeToolFailure,
   CodeToolResult,
   CodeToolSuccess,
-  CodeToolFailure,
 } from "@lucky/shared"
+export { commonSchemas, defineTool, toAITool } from "./factory/toolFactory"
+export {
+  R,
+  type InvocationContext,
+  type OutputSchema,
+  type RS,
+} from "./factory/types"
+export { validateAndCorrectWithSchema } from "./factory/validation"
 
 // Registry - Tool types, filtering, and management
-export {
-  type MCPToolName,
-  type CodeToolName,
-  type AllToolNames,
-  getActiveTools,
-  ACTIVE_MCP_TOOL_NAMES,
-  ACTIVE_CODE_TOOL_NAMES,
-  ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
-  ALL_ACTIVE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
-  ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
-  ACTIVE_TOOLS_WITH_DESCRIPTION,
-  INACTIVE_TOOLS,
-} from "./registry/types"
 export {
   CodeToolRegistry,
   codeToolRegistry,
@@ -43,41 +29,45 @@ export {
 } from "./registry/CodeToolRegistry"
 export { setupCodeToolsForNode } from "./registry/codeToolsSetup"
 export { getAllCodeToolNames } from "./registry/getAllCodeToolNames"
+export {
+  ACTIVE_CODE_TOOL_NAMES,
+  ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
+  ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
+  ACTIVE_MCP_TOOL_NAMES,
+  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
+  ACTIVE_TOOLS_WITH_DESCRIPTION,
+  ALL_ACTIVE_TOOL_NAMES,
+  getActiveTools,
+  INACTIVE_TOOLS,
+  type AllToolNames,
+  type CodeToolName,
+  type MCPToolName,
+} from "./registry/types"
 
 // Config - Tool metadata and settings
 export {
-  TOOLS,
   DEFAULT_INACTIVE_TOOLS,
-  type MCPToolName as ConfigMCPToolName,
-  type CodeToolName as ConfigCodeToolName,
+  TOOLS,
   type AllToolNames as ConfigAllToolNames,
+  type CodeToolName as ConfigCodeToolName,
+  type MCPToolName as ConfigMCPToolName,
 } from "@lucky/shared/contracts/tools"
 
 // MCP - Model Context Protocol client
-export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
 export { getMCPTools, type MCPToolInfo } from "./mcp/getMCPTools"
+export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
 
 // Registration - Tool registration and startup
 export {
   createToolDefinition,
-  createToolGroup,
+  createToolkit,
   getAllTools,
-  getToolsByGroup,
   getToolByName,
-  type CodeToolDefinition,
-  type CodeToolGroup,
-  type CodeToolGroups,
+  getToolsByToolkit,
+  type ToolkitDefinition,
+  type ToolkitRegistry,
+  type ToolkitToolDefinition,
 } from "./registration/codeToolsRegistration"
-export {
-  mcpToolGroups,
-  getAllMCPTools,
-  getMCPToolsByGroup,
-  getMCPToolByName,
-  getAllMCPServerNames,
-  type MCPServerConfig,
-  type MCPToolDefinition,
-  type MCPToolGroup,
-} from "./registration/mcpToolsRegistration"
 export {
   LocalMCPRegistry,
   type LocalMCPRegistryConfig,
@@ -89,22 +79,32 @@ export {
   type LocalMCPTransportOAuth,
   type LocalMCPTransportStdio,
 } from "./registration/localMCP"
-export { registerAllTools, registerToolGroups } from "./registration/startup"
 export {
-  validateCodeToolRegistration,
-  validateMCPToolRegistration,
-  validateAllRegistrations,
+  getAllMCPServerNames,
+  getAllMCPTools,
+  getMCPToolByName,
+  getMCPToolsByToolkit,
+  mcpToolkits,
+  type MCPServerConfig,
+  type MCPToolkit,
+  type MCPToolkitToolDefinition,
+} from "./registration/mcpToolsRegistration"
+export { registerAllTools, registerToolkits } from "./registration/startup"
+export {
   printValidationResult,
+  validateAllRegistrations,
+  validateMCPToolkitRegistration,
+  validateToolkitRegistration,
   type ValidationResult,
 } from "./registration/validation"
 
 // Tool execution context from contracts
 export type {
+  ITool,
   ToolExecutionContext,
   ToolRegistry,
-  ITool,
   WorkflowFile,
 } from "@lucky/shared/contracts/tools"
 
 // Utils - Schema detection and helpers
-export { isZodSchema, isVercelAIStructure } from "./utils/schemaDetection"
+export { isVercelAIStructure, isZodSchema } from "./utils/schemaDetection"

@@ -5,7 +5,7 @@
  */
 
 import { ConfigLoader } from "./config/loader"
-import { findModelByName } from "./pricing/model-lookup"
+import { findModel } from "./pricing/model-lookup"
 import { ProviderRegistry } from "./providers/registry"
 import type { AiSdkModel, ExecutionContext, ModelSpec, ModelsConfig, ProviderConfig } from "./types"
 import { modelsConfigSchema, providerConfigSchema } from "./types/schemas"
@@ -114,8 +114,8 @@ export class Models {
     // This is the CORRECT way to resolve model names:
     // - "gpt-4o-mini" -> { provider: "openai", model: "gpt-4o-mini" }
     // - "anthropic/claude-sonnet-4" -> { provider: "openrouter", model: "anthropic/claude-sonnet-4" }
-    // - "openai/gpt-oss-20b" -> { provider: "groq", model: "openai/gpt-oss-20b" }
-    const catalogEntry = findModelByName(spec)
+    // - "openrouter#openai/gpt-oss-20b" -> { provider: "groq", model: "openrouter#openai/gpt-oss-20b" }
+    const catalogEntry = findModel(spec)
     if (catalogEntry) {
       return {
         provider: catalogEntry.provider,

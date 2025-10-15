@@ -46,7 +46,7 @@ async function example1DirectModel() {
   console.log("\n=== Example 1: Direct Model Selection ===")
 
   // Use a specific provider and model
-  const model = await models.model("openai/gpt-4o-mini")
+  const model = await models.model("openrouter#openai/gpt-4o-mini")
 
   const result = await generateText({
     model,
@@ -87,7 +87,7 @@ async function _example3LocalFirst() {
 async function _example4Streaming() {
   console.log("\n=== Example 4: Streaming ===")
 
-  const model = await models.model("openai/gpt-4o-mini")
+  const model = await models.model("openrouter#openai/gpt-4o-mini")
 
   const result = streamText({
     model,

@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "strict": true,
     "skipLibCheck": true,
-    "incremental": true,
+    "incremental": false,
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src"],

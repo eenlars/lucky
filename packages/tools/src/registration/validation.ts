@@ -4,8 +4,8 @@
  * Ensures that tool registrations are valid and match their definitions
  */
 
-import type { CodeToolDefinition, CodeToolGroup } from "./codeToolsRegistration"
-import type { MCPToolDefinition, MCPToolGroup } from "./mcpToolsRegistration"
+import type { ToolkitDefinition } from "./codeToolsRegistration"
+import type { MCPToolkit } from "./mcpToolsRegistration"
 
 /**
  * Validation result
@@ -17,33 +17,33 @@ export type ValidationResult = {
 }
 
 /**
- * Validate code tool registration
+ * Validate code toolkit registration
  */
-export function validateCodeToolRegistration(groups: CodeToolGroup[]): ValidationResult {
+export function validateToolkitRegistration(toolkits: ToolkitDefinition[]): ValidationResult {
   const errors: string[] = []
   const warnings: string[] = []
   const seenNames = new Set<string>()
-  const seenGroupNames = new Set<string>()
+  const seenToolkitNames = new Set<string>()
 
-  for (const group of groups) {
-    // Check group name is unique
-    if (seenGroupNames.has(group.groupName)) {
-      errors.push(`Duplicate group name: ${group.groupName}`)
+  for (const toolkit of toolkits) {
+    // Check toolkit name is unique
+    if (seenToolkitNames.has(toolkit.toolkitName)) {
+      errors.push(`Duplicate toolkit name: ${toolkit.toolkitName}`)
     }
-    seenGroupNames.add(group.groupName)
+    seenToolkitNames.add(toolkit.toolkitName)
 
-    // Check group has description
-    if (!group.description || group.description.trim().length === 0) {
-      errors.push(`Group ${group.groupName} is missing a description`)
-    }
-
-    // Check group has tools
-    if (!group.tools || group.tools.length === 0) {
-      warnings.push(`Group ${group.groupName} has no tools`)
+    // Check toolkit has description
+    if (!toolkit.description || toolkit.description.trim().length === 0) {
+      errors.push(`Toolkit ${toolkit.toolkitName} is missing a description`)
     }
 
-    for (const tool of group.tools) {
-      // Check tool name is unique across all groups
+    // Check toolkit has tools
+    if (!toolkit.tools || toolkit.tools.length === 0) {
+      warnings.push(`Toolkit ${toolkit.toolkitName} has no tools`)
+    }
+
+    for (const tool of toolkit.tools) {
+      // Check tool name is unique across all toolkits
       if (seenNames.has(tool.toolName)) {
         errors.push(`Duplicate tool name: ${tool.toolName}`)
       }
@@ -92,34 +92,34 @@ export function validateCodeToolRegistration(groups: CodeToolGroup[]): Validatio
 }
 
 /**
- * Validate MCP tool registration
+ * Validate MCP toolkit registration
  */
-export function validateMCPToolRegistration(groups: MCPToolGroup[]): ValidationResult {
+export function validateMCPToolkitRegistration(toolkits: MCPToolkit[]): ValidationResult {
   const errors: string[] = []
   const warnings: string[] = []
   const seenNames = new Set<string>()
-  const seenGroupNames = new Set<string>()
+  const seenToolkitNames = new Set<string>()
   const seenServerNames = new Set<string>()
 
-  for (const group of groups) {
-    // Check group name is unique
-    if (seenGroupNames.has(group.groupName)) {
-      errors.push(`Duplicate group name: ${group.groupName}`)
+  for (const toolkit of toolkits) {
+    // Check toolkit name is unique
+    if (seenToolkitNames.has(toolkit.toolkitName)) {
+      errors.push(`Duplicate toolkit name: ${toolkit.toolkitName}`)
     }
-    seenGroupNames.add(group.groupName)
+    seenToolkitNames.add(toolkit.toolkitName)
 
-    // Check group has description
-    if (!group.description || group.description.trim().length === 0) {
-      errors.push(`Group ${group.groupName} is missing a description`)
-    }
-
-    // Check group has tools
-    if (!group.tools || group.tools.length === 0) {
-      warnings.push(`Group ${group.groupName} has no tools`)
+    // Check toolkit has description
+    if (!toolkit.description || toolkit.description.trim().length === 0) {
+      errors.push(`Toolkit ${toolkit.toolkitName} is missing a description`)
     }
 
-    for (const tool of group.tools) {
-      // Check tool name is unique across all groups
+    // Check toolkit has tools
+    if (!toolkit.tools || toolkit.tools.length === 0) {
+      warnings.push(`Toolkit ${toolkit.toolkitName} has no tools`)
+    }
+
+    for (const tool of toolkit.tools) {
+      // Check tool name is unique across all toolkits
       if (seenNames.has(tool.toolName)) {
         errors.push(`Duplicate tool name: ${tool.toolName}`)
       }
@@ -168,12 +168,12 @@ export function printValidationResult(type: "Code" | "MCP", result: ValidationRe
  * Validate all registrations and throw if invalid
  */
 export function validateAllRegistrations(
-  codeGroups: CodeToolGroup[],
-  mcpGroups: MCPToolGroup[],
+  codeToolkits: ToolkitDefinition[],
+  mcpToolkits: MCPToolkit[],
   throwOnError = true,
 ): boolean {
-  const codeResult = validateCodeToolRegistration(codeGroups)
-  const mcpResult = validateMCPToolRegistration(mcpGroups)
+  const codeResult = validateToolkitRegistration(codeToolkits)
+  const mcpResult = validateMCPToolkitRegistration(mcpToolkits)
 
   printValidationResult("Code", codeResult)
   printValidationResult("MCP", mcpResult)

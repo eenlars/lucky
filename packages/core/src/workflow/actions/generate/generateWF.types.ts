@@ -1,7 +1,20 @@
-import type { ModelName } from "@core/utils/spending/models.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { ModelEntry } from "@lucky/shared"
 
+export type ModelSelectionStrategy =
+  | {
+      strategy: "user-models"
+      models: ModelEntry[]
+    }
+  | {
+      strategy: "tier"
+    }
 export interface GenerationOptions {
+  /**
+   * tier-based uses tiers to select models.
+   * user-models-based uses the user's available models.
+   */
+  modelSelectionStrategy?: ModelSelectionStrategy
   /**
    * If provided, the workflow will be based on this workflow.
    */
@@ -9,8 +22,7 @@ export interface GenerationOptions {
   workflowConfig?: WorkflowConfig
   workflowGoal?: string
   extraInfo?: string
-
-  modelOverride?: ModelName
+  modelOverride?: string
 }
 
 /**

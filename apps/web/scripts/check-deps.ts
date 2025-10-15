@@ -50,7 +50,6 @@ function runDepcheck(dir: string): DepcheckResult {
     const ignorePatterns = [
       "@lucky/core/*",
       "@lucky/examples/*",
-      "@lucky/experiments/*",
       "@lucky/*",
       "vite",
       "date-fns",

@@ -2,7 +2,7 @@ import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import type { ModelMessage, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "../input.types"
 
@@ -13,7 +13,7 @@ export interface MultiStepLoopContext {
   ctx: NodeInvocationCallContext
   tools: ToolSet
   agentSteps: AgentStep[]
-  model: ModelName
+  model: string
   maxRounds: number
   verbose: boolean
   addCost: (cost: number) => void

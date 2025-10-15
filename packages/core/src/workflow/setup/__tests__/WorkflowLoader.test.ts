@@ -100,9 +100,9 @@ vi.mock("@examples/settings/constants", () => {
       inactive: [],
       provider: MODELS_T.provider,
       defaults: {
-        summary: "google/gemini-2.5-flash-lite",
-        nano: "google/gemini-2.5-flash-lite",
-        low: "google/gemini-2.5-flash-lite",
+        summary: "openrouter#google/gemini-2.5-flash-lite",
+        nano: "openrouter#google/gemini-2.5-flash-lite",
+        low: "openrouter#google/gemini-2.5-flash-lite",
         medium: "gpt-4.1-mini",
         high: "gpt-4.1",
         default: "gpt-4.1-nano",
@@ -200,9 +200,9 @@ vi.mock("@core/clients/supabase/client", () => ({
 }))
 
 import { getCoreConfig } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
 import { describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler, loadSingleWorkflow } from "../WorkflowLoader"
+const config = getCoreConfig()
 
 describe("WorkflowConfigHandler", () => {
   it("should load single workflow successfully", async () => {

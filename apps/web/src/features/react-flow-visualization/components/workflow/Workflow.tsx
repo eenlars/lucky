@@ -11,6 +11,7 @@ import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/
 import { WorkflowPromptBar } from "@/features/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
 // runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { NodePalette } from "./NodePalette"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
@@ -83,6 +84,17 @@ export default function Workflow({
       setLogPanelOpen: state.setLogPanelOpen,
     })),
   )
+
+  // Load model preferences early (before workflows load)
+  const { loadPreferences, preferences } = useModelPreferencesStore()
+
+  useEffect(() => {
+    // Load preferences on mount if not already loaded
+    if (!preferences) {
+      console.log("[Workflow] Loading model preferences before workflow...")
+      loadPreferences()
+    }
+  }, [preferences, loadPreferences])
 
   useEffect(() => {
     if (nodes.length === 0 && !workflowLoading && !workflowError) {

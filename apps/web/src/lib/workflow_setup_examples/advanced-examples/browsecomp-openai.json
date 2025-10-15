@@ -25,7 +25,7 @@
     {
       "nodeId": "exhaustive-search-orchestrator",
       "description": "Orchestrates parallel exhaustive searches across all possible paths",
-      "modelName": "openai/gpt-4-turbo-preview",
+      "modelName": "openrouter#openai/gpt-4-turbo-preview",
       "mcpTools": ["brave-search", "serper", "tavily", "google-search", "bing-search", "yandex-search", "baidu-search"],
       "codeTools": [
         "parallel-search-executor",
@@ -47,7 +47,7 @@
     {
       "nodeId": "deep-web-excavator",
       "description": "Aggressively scrapes and extracts data from any accessible source",
-      "modelName": "openai/gpt-4-turbo-preview",
+      "modelName": "openrouter#openai/gpt-4-turbo-preview",
       "mcpTools": ["firecrawl", "apify", "brightdata"],
       "codeTools": [
         "aggressive-scraper",

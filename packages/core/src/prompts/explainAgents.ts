@@ -1,5 +1,6 @@
 import { llmify } from "@core/utils/common/llmify"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { findModel, tryNormalizeModelType } from "@lucky/models"
 
 export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames = false): string {
   return llmify(`
@@ -22,14 +23,17 @@ export function explainAgents(nodes: WorkflowNodeConfig[], easyModelNames = fals
 }
 
 export const mapModelNameToEasyName = (modelName: string): "low" | "medium" | "high" => {
-  if (modelName === "openai/gpt-4.1-nano") return "low"
-  if (modelName === "openai/gpt-4.1-mini") return "medium"
-  if (modelName === "openai/gpt-4.1") return "high"
-  if (modelName === "anthropic/claude-sonnet-4") return "high"
-  if (modelName === "anthropic/claude-3-5-haiku") return "medium"
-  if (modelName === "google/gemini-2.5-flash-lite") return "high"
-  if (modelName === "x-ai/grok-4") return "high"
-  if (modelName === "moonshotai/kimi-k2") return "low"
+  const normalized = tryNormalizeModelType(modelName) ?? modelName
+  const catalogEntry = findModel(normalized)
 
-  return "medium"
+  switch (catalogEntry?.pricingTier) {
+    case "low":
+      return "low"
+    case "high":
+      return "high"
+    case "medium":
+      return "medium"
+    default:
+      return "medium"
+  }
 }

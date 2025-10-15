@@ -18,7 +18,6 @@
 // TODO: create per-operation fallback strategies (tools vs text vs structured)
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
-import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * Tracks timeout timestamps for each model.
@@ -27,7 +26,7 @@ import type { ModelName } from "@core/utils/spending/models.types"
  */
 // TODO: implement persistent storage for fallback state across restarts
 // TODO: add timeout categorization (network vs model vs rate limit)
-const modelTimeouts = new Map<ModelName, number[]>()
+const modelTimeouts = new Map<string, number[]>()
 
 /**
  * Time window for tracking model timeouts (30 seconds).
@@ -49,7 +48,7 @@ const TIMEOUT_WINDOW_MS = 30_000 // 30 s rolling window
 // TODO: add timeout severity weighting
 // TODO: implement timeout trend analysis
 // TODO: add model performance comparison metrics
-export function getModelTimeoutCount(model: ModelName): number {
+export function getModelTimeoutCount(model: string): number {
   const now = Date.now()
   return (modelTimeouts.get(model) || []).filter(t => now - t <= TIMEOUT_WINDOW_MS).length
 }
@@ -66,8 +65,8 @@ export function getModelTimeoutCount(model: ModelName): number {
 // TODO: make threshold configurable per model
 // TODO: add contextual fallback (different thresholds for different operations)
 // TODO: implement weighted scoring instead of simple count
-export function shouldUseModelFallback(model: ModelName): boolean {
-  return getModelTimeoutCount(model) >= 10 && model !== getDefaultModels().fallback
+export function shouldUseModelFallback(model: string): boolean {
+  return getModelTimeoutCount(model) >= 10 && model !== getFallbackModel(model)
 }
 
 /**
@@ -82,7 +81,7 @@ export function shouldUseModelFallback(model: ModelName): boolean {
 // TODO: implement intelligent fallback selection based on capabilities
 // TODO: add fallback model rotation to distribute load
 // TODO: consider cost and performance trade-offs in fallback selection
-export function getFallbackModel(_model: ModelName): ModelName {
+export function getFallbackModel(_model: string): string {
   return getDefaultModels().fallback
 }
 
@@ -98,7 +97,7 @@ export function getFallbackModel(_model: ModelName): ModelName {
 // TODO: add timeout context information (error type, duration, etc.)
 // TODO: implement timeout event aggregation and batching
 // TODO: add timeout event persistence for analysis
-export function trackTimeoutForModel(model: ModelName): void {
+export function trackTimeoutForModel(model: string): void {
   const now = Date.now()
   const existing = modelTimeouts.get(model) ?? []
 

@@ -7,7 +7,7 @@ import type { Payload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { genShortId } from "@lucky/shared"
 import type {
@@ -114,7 +114,7 @@ export class WorkFlowNode
     return this.config.description
   }
 
-  public getModelName(): ModelName {
+  public getModelName(): string {
     return this.config.modelName
   }
 

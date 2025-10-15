@@ -2,6 +2,7 @@
 
 import { logException } from "@/lib/error-logger"
 import { showToast } from "@/lib/toast-utils"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { Database } from "@lucky/shared/client"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
@@ -178,7 +179,8 @@ export const useEvolutionRunsStore = create<EvolutionRunsState>()(
 
           const response = await fetch(`/api/evolution-runs?${params}`)
           if (!response.ok) {
-            throw new Error(`Failed to fetch evolution runs: ${response.statusText}`)
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
           }
 
           const data: EvolutionRunWithStats[] = await response.json()

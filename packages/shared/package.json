@@ -13,7 +13,7 @@
     "clean": "rimraf dist",
     "generate": "bun scripts/generate-db-types.ts",
     "postgenerate": "biome format --write src/types/public.types.ts src/types/iam.types.ts src/types/lockbox.types.ts src/types/app.types.ts src/types/mcp.types.ts",
-    "prebuild": "bun run generate",
+    "prebuild": "bun run clean && bun run generate",
     "tree": "tree -L 5 -I 'node_modules' -I 'dist' -I 'lib'",
     "tsc": "tsc --noEmit"
   },
@@ -24,51 +24,73 @@
         "import": "./dist/index.js"
       },
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "ts": "./src/index.ts"
     },
     "./contracts/agent": {
       "types": "./dist/contracts/agent.d.ts",
-      "import": "./dist/contracts/agent.js"
+      "import": "./dist/contracts/agent.js",
+      "ts": "./src/contracts/agent.ts"
     },
     "./contracts/config": {
       "types": "./dist/contracts/config.d.ts",
-      "import": "./dist/contracts/config.js"
+      "import": "./dist/contracts/config.js",
+      "ts": "./src/contracts/config.ts"
     },
     "./contracts/evolution": {
       "types": "./dist/contracts/evolution.d.ts",
-      "import": "./dist/contracts/evolution.js"
+      "import": "./dist/contracts/evolution.js",
+      "ts": "./src/contracts/evolution.ts"
     },
     "./contracts/ingestion": {
       "types": "./dist/contracts/ingestion.d.ts",
-      "import": "./dist/contracts/ingestion.js"
+      "import": "./dist/contracts/ingestion.js",
+      "ts": "./src/contracts/ingestion.ts"
     },
     "./contracts/invoke": {
       "types": "./dist/contracts/invoke.d.ts",
-      "import": "./dist/contracts/invoke.js"
+      "import": "./dist/contracts/invoke.js",
+      "ts": "./src/contracts/invoke.ts"
+    },
+    "./contracts/models": {
+      "types": "./dist/contracts/models.d.ts",
+      "import": "./dist/contracts/models.js",
+      "ts": "./src/contracts/models.ts"
     },
     "./contracts/messages": {
       "types": "./dist/contracts/messages.d.ts",
-      "import": "./dist/contracts/messages.js"
+      "import": "./dist/contracts/messages.js",
+      "ts": "./src/contracts/messages.ts"
+    },
+    "./contracts/providers": {
+      "types": "./dist/contracts/providers.d.ts",
+      "import": "./dist/contracts/providers.js",
+      "ts": "./src/contracts/providers.ts"
     },
     "./contracts/runtime": {
       "types": "./dist/contracts/runtime.d.ts",
-      "import": "./dist/contracts/runtime.js"
+      "import": "./dist/contracts/runtime.js",
+      "ts": "./src/contracts/runtime.ts"
     },
     "./contracts/tools": {
       "types": "./dist/contracts/tools.d.ts",
-      "import": "./dist/contracts/tools.js"
+      "import": "./dist/contracts/tools.js",
+      "ts": "./src/contracts/tools.ts"
     },
     "./contracts/workflow": {
       "types": "./dist/contracts/workflow.d.ts",
-      "import": "./dist/contracts/workflow.js"
+      "import": "./dist/contracts/workflow.js",
+      "ts": "./src/contracts/workflow.ts"
     },
     "./contracts/fixtures": {
       "types": "./dist/contracts/fixtures.d.ts",
-      "import": "./dist/contracts/fixtures.js"
+      "import": "./dist/contracts/fixtures.js",
+      "ts": "./src/contracts/fixtures.ts"
     },
     "./contracts/feedback": {
       "types": "./dist/contracts/feedback.d.ts",
-      "import": "./dist/contracts/feedback.js"
+      "import": "./dist/contracts/feedback.js",
+      "ts": "./src/contracts/feedback.ts"
     },
     "./client": {
       "browser": {
@@ -76,56 +98,66 @@
         "import": "./dist/client.js"
       },
       "types": "./dist/client.d.ts",
-      "import": "./dist/client.js"
+      "import": "./dist/client.js",
+      "ts": "./src/client.ts"
     },
     "./env": {
       "types": "./dist/env.d.ts",
-      "import": "./dist/env.js"
+      "import": "./dist/env.js",
+      "ts": "./src/env.ts"
     },
     "./env-models": {
       "types": "./dist/env-models.d.ts",
-      "import": "./dist/env-models.js"
+      "import": "./dist/env-models.js",
+      "ts": "./src/env-models.ts"
     },
     "./supabase-credentials.server": {
       "types": "./dist/supabase-credentials.server.d.ts",
       "node": {
         "import": "./dist/supabase-credentials.server.js"
-      }
+      },
+      "ts": "./src/supabase-credentials.server.ts"
     },
     "./supabase-credentials.client": {
       "types": "./dist/supabase-credentials.client.d.ts",
       "browser": {
         "import": "./dist/supabase-credentials.client.js"
       },
-      "import": "./dist/supabase-credentials.client.js"
+      "import": "./dist/supabase-credentials.client.js",
+      "ts": "./src/supabase-credentials.client.ts"
     },
     "./fs": {
       "types": "./dist/fs/paths.d.ts",
       "node": {
         "import": "./dist/fs/paths.js"
-      }
+      },
+      "ts": "./src/fs/paths.ts"
     },
     "./csv": {
       "types": "./dist/csv/index.d.ts",
       "node": {
         "import": "./dist/csv/index.js"
-      }
+      },
+      "ts": "./src/csv/index.ts"
     },
     "./utils/fs/fileSaver": {
       "types": "./dist/utils/fs/fileSaver.d.ts",
       "node": {
         "import": "./dist/utils/fs/fileSaver.js"
-      }
+      },
+      "ts": "./src/utils/fs/fileSaver.ts"
     },
     "./utils/observability/obs": {
       "types": "./dist/utils/observability/obs.d.ts",
       "node": {
         "import": "./dist/utils/observability/obs.js"
-      }
+      },
+      "ts": "./src/utils/observability/obs.ts"
     },
     "./utils/validateJsonSchema": {
       "types": "./dist/utils/validateJsonSchema.d.ts",
-      "import": "./dist/utils/validateJsonSchema.js"
+      "import": "./dist/utils/validateJsonSchema.js",
+      "ts": "./src/utils/validateJsonSchema.ts"
     }
   },
   "dependencies": {

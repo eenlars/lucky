@@ -1,6 +1,5 @@
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { asArray, isNir } from "@lucky/shared"
 import { Tools } from "@lucky/shared"
 import type { StepResult, ToolCallPart, ToolSet } from "ai"
@@ -70,7 +69,7 @@ const convertV5Step = (step: any) => {
 
 export const processStepsV2 = <T extends ToolSet>(
   steps: StepResult<T>[],
-  modelUsed: ModelName,
+  modelUsed: string,
 ): { usdCost: number; agentSteps: AgentSteps } | undefined => {
   if (isNir(steps) || !Array.isArray(steps)) return { usdCost: 0, agentSteps: [] }
 

@@ -13,7 +13,7 @@
  *   experiments: {
  *     fast: {
  *       strategy: "race",
- *       providers: ["openai/gpt-4o-mini", "anthropic/claude-3-5-haiku"]
+ *       providers: ["openrouter#openai/gpt-4o-mini", "anthropic/claude-3-5-haiku"]
  *     }
  *   },
  *   defaults: {
@@ -23,7 +23,7 @@
  * ```
  */
 
-import type { UserConfig } from "../types/config"
+import type { UserConfig } from "../types/schemas"
 import { userConfigSchema } from "../types/schemas"
 
 /**

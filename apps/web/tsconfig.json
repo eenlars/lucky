@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -19,32 +20,6 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/features/chat-interface/*": ["./src/features/chat-interface/*"],
-      "@/features/react-flow-visualization/*": ["./src/features/react-flow-visualization/*"],
-      "@/features/trace-visualization/*": ["./src/features/trace-visualization/*"],
-      "@/features/evolution/*": ["./src/features/evolution/*"],
-      "@/features/profile/*": ["./src/features/profile/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/app/*": ["./src/app/*"],
-      "@core/*": ["../../packages/core/src/*"],
-      "@core/core-config": ["../../packages/core/src/core-config/coreConfig.ts"],
-      "@examples/*": ["../examples/*"],
-      "@lucky/core": ["../../packages/core/src"],
-      "@lucky/core/*": ["../../packages/core/src/*"],
-      "@lucky/examples": ["../examples"],
-      "@lucky/examples/*": ["../examples/*"],
-      "@lucky/experiments": ["../../packages/experiments/src"],
-      "@lucky/experiments/*": ["../../packages/experiments/src/*"],
-      "@lucky/models": ["../../packages/models/src"],
-      "@lucky/models/*": ["../../packages/models/src/*"],
-      "@lucky/shared": ["../../packages/shared/src"],
-      "@lucky/shared/*": ["../../packages/shared/src/*"],
-      "@lucky/tools": ["../../packages/tools/src"],
-      "@lucky/tools/*": ["../../packages/tools/src/*"]
-    },
     "allowSyntheticDefaultImports": true
   },
   "include": [

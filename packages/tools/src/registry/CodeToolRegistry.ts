@@ -1,6 +1,6 @@
 import type { Tool } from "ai"
 import { type ToolExecutionContext, toAITool } from "../factory/toolFactory"
-import type { CodeToolGroup } from "../registration/codeToolsRegistration"
+import type { ToolkitDefinition } from "../registration/codeToolsRegistration"
 import type { CodeToolName } from "./types"
 
 // more flexible type for tool registration
@@ -145,8 +145,8 @@ export class CodeToolRegistry {
    * The loader must return a list of tools to register (or null/undefined to skip).
    */
   async ensureDefaultTools(
-    loader: () => Promise<CodeToolGroup[] | null | undefined>,
-    options?: { validate?: (groups: CodeToolGroup[]) => Promise<void> | void },
+    loader: () => Promise<ToolkitDefinition[] | null | undefined>,
+    options?: { validate?: (groups: ToolkitDefinition[]) => Promise<void> | void },
   ): Promise<void> {
     if (this.initialized || this.tools.size > 0) {
       return
@@ -167,7 +167,7 @@ export class CodeToolRegistry {
         await options.validate(groups)
       }
 
-      const definitions = groups.flatMap(group =>
+      const definitions = groups.flatMap((group: ToolkitDefinition) =>
         group.tools.map(tool => tool.toolFunc as unknown as FlexibleToolDefinition),
       )
 

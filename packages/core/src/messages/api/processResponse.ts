@@ -8,7 +8,7 @@ import { type InvocationSummary, formatSummary } from "@core/messages/summaries/
 import { truncater } from "@core/utils/common/llmify"
 import { ResponseFormatError } from "@core/utils/errors/api-errors"
 import { lgg } from "@core/utils/logging/Logger"
-import type { ModelName } from "@core/utils/spending/models.types"
+
 import { isNir } from "@lucky/shared"
 import type { GenerateTextResult, ToolSet } from "ai"
 
@@ -32,7 +32,7 @@ export function processResponseVercel({
   originatedFrom,
 }: {
   response: GenerateTextResult<ToolSet, unknown>
-  modelUsed: ModelName
+  modelUsed: string
   nodeId: string
   summary?: string
   originatedFrom?: string

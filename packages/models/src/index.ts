@@ -11,54 +11,63 @@ export { ConfigLoader } from "./config/loader"
 export { ProviderRegistry } from "./providers/registry"
 
 // Export Facade (primary public API)
-export { ModelsFacade, getFacade, resetFacade } from "./facade"
+export { getFacade, ModelsFacade, resetFacade } from "./facade"
 export type { SelectionOptions } from "./facade"
 
 // Export Pricing
-export { PricingService, getPricingService, resetPricingService } from "./pricing/pricing-service"
-export type { PricingSnapshot, PricingOverride } from "./pricing/pricing-service"
 export {
-  MODEL_CATALOG,
   getActiveModels,
-  getModelsByProvider,
-  findModelById,
-  getCatalogStats,
-  getAllProviders,
   getActiveProviders,
+  getAllProviders,
+  getCatalogStats,
+  getModelsByProvider,
   getProviderInfo,
+  MODEL_CATALOG,
   validateCatalogIntegrity,
 } from "./pricing/catalog"
 export type { ProviderInfo } from "./pricing/catalog"
+export { getPricingService, PricingService, resetPricingService } from "./pricing/pricing-service"
+export type { PricingOverride, PricingSnapshot } from "./pricing/pricing-service"
 
 // Export model lookup utilities
 export {
   findModel,
   findModelByName,
+  getActiveModelIds,
+  getActiveModelsByProvider,
   getModel,
   isModelActive,
-  getActiveModelsByProvider,
-  getActiveModelIds,
 } from "./pricing/model-lookup"
 
+export {
+  assertModelType,
+  formatModelType,
+  isModelType,
+  normalizeModelType,
+  parseModelType,
+  tryNormalizeModelType,
+} from "./types/modelType"
+export type { ModelType, ParsedModelType } from "./types/modelType"
+
 // Export Registry
-export { ModelRegistry, getRegistry, resetRegistry } from "./registry/model-registry"
+export { getRegistry, ModelRegistry, resetRegistry } from "./registry/model-registry"
 export type { ModelQuery, RegistryStats } from "./registry/model-registry"
 
 // Export Selector
-export { PolicySelector, getSelector, resetSelector } from "./selector/policy-selector"
+export { getSelector, PolicySelector, resetSelector } from "./selector/policy-selector"
 export type { SelectionReason } from "./selector/policy-selector"
 
 // Export Observability
-export { ModelLogger, getLogger, resetLogger, withPerformanceLogging } from "./observability/logger"
+export { getLogger, ModelLogger, resetLogger, withPerformanceLogging } from "./observability/logger"
 export type {
-  LogLevel,
-  LogEntry,
-  SelectionLog,
   CostLog,
   ErrorLog,
   FallbackLog,
-  PerformanceLog,
+  LogEntry,
   LoggerConfig,
+  LogLevel,
+  PerformanceLog,
+  SelectionLog,
 } from "./observability/logger"
 
 // Export types
@@ -79,8 +88,6 @@ export type {
 export type {
   ExperimentConfig,
   ResolvedConfig,
-  // Config types
-  UserConfig,
 } from "./types/config"
 
 // Export Zod schemas and validation

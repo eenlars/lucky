@@ -9,7 +9,6 @@ import type { WorkflowEventHandler, WorkflowProgressEvent } from "@lucky/shared"
  * @returns Sanitized text safe for event emission and HTML contexts
  */
 export function sanitizeEventText(text: string): string {
-  // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally removing control characters for security
   return (
     text
       // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally removing control characters for security

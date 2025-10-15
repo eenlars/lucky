@@ -6,7 +6,8 @@
  * Always look up models in MODEL_CATALOG to get the actual API provider.
  */
 
-import type { ModelId, UserModelPreferences } from "../contracts/providers"
+import type { LuckyProvider, ModelId, UserModelPreferences } from "../contracts/providers"
+import { providerNameSchema } from "../contracts/providers"
 
 /**
  * Normalize a model name to a full model ID
@@ -14,8 +15,8 @@ import type { ModelId, UserModelPreferences } from "../contracts/providers"
  * Otherwise, prepend the provider
  *
  * @param provider - The provider name (e.g., "openai")
- * @param modelName - The model name (e.g., "gpt-4o" or "openai/gpt-4o")
- * @returns Full model ID (e.g., "openai/gpt-4o")
+ * @param modelName - The model name (e.g., "gpt-4o" or "openrouter#openai/gpt-4o")
+ * @returns Full model ID (e.g., "openrouter#openai/gpt-4o")
  */
 export function normalizeModelId(provider: string, modelName: string): ModelId {
   if (modelName.includes("/")) return modelName as ModelId
@@ -29,10 +30,14 @@ export function normalizeModelId(provider: string, modelName: string): ModelId {
  * @param provider - Provider name to filter by
  * @returns Array of enabled model IDs for that provider
  */
-export function getEnabledModelsForProvider(preferences: UserModelPreferences | null, provider: string): ModelId[] {
+export function getEnabledModelsForProvider(
+  preferences: UserModelPreferences | null,
+  provider: LuckyProvider,
+): ModelId[] {
+  const validatedProvider = providerNameSchema.parse(provider)
   if (!preferences) return []
 
-  const providerSettings = preferences.providers.find(p => p.provider === provider)
+  const providerSettings = preferences.providers.find(p => p.provider === validatedProvider)
   return providerSettings?.enabledModels || []
 }
 
@@ -72,10 +77,11 @@ export function getAllEnabledModels(preferences: UserModelPreferences | null): S
  */
 export function setEnabledModelsForProvider(
   preferences: UserModelPreferences,
-  provider: string,
+  provider: LuckyProvider,
   enabledModels: ModelId[],
 ): UserModelPreferences {
-  const existingProviderIndex = preferences.providers.findIndex(p => p.provider === provider)
+  const validatedProvider = providerNameSchema.parse(provider)
+  const existingProviderIndex = preferences.providers.findIndex(p => p.provider === validatedProvider)
 
   if (existingProviderIndex >= 0) {
     // Update existing provider
@@ -102,7 +108,7 @@ export function setEnabledModelsForProvider(
     providers: [
       ...preferences.providers,
       {
-        provider,
+        provider: validatedProvider,
         enabledModels,
         isEnabled: true,
         metadata: {
@@ -125,13 +131,14 @@ export function setEnabledModelsForProvider(
  */
 export function toggleModel(
   preferences: UserModelPreferences,
-  provider: string,
+  provider: LuckyProvider,
   modelId: ModelId,
 ): UserModelPreferences {
-  const enabledModels = getEnabledModelsForProvider(preferences, provider)
+  const validatedProvider = providerNameSchema.parse(provider)
+  const enabledModels = getEnabledModelsForProvider(preferences, validatedProvider)
   const isEnabled = enabledModels.includes(modelId)
 
   const newEnabledModels = isEnabled ? enabledModels.filter(id => id !== modelId) : [...enabledModels, modelId]
 
-  return setEnabledModelsForProvider(preferences, provider, newEnabledModels)
+  return setEnabledModelsForProvider(preferences, validatedProvider, newEnabledModels)
 }

@@ -28,19 +28,19 @@ const models = createModels({
     fast: {
       strategy: "race",
       models: [
-        { provider: "openrouter", model: "google/gemini-2.5-flash-lite" },
+        { provider: "openrouter", model: "openrouter#google/gemini-2.5-flash-lite" },
         { provider: "openai", model: "gpt-4o-mini" },
       ],
     },
     // Medium tier - balanced quality/speed
     medium: {
       strategy: "first",
-      models: [{ provider: "openrouter", model: "openai/gpt-4.1-mini" }],
+      models: [{ provider: "openrouter", model: "openrouter#openai/gpt-4.1-mini" }],
     },
     // High tier - best quality
     high: {
       strategy: "first",
-      models: [{ provider: "openrouter", model: "openai/gpt-4.1" }],
+      models: [{ provider: "openrouter", model: "openrouter#openai/gpt-4.1" }],
     },
   },
   defaultTier: "medium",
@@ -63,7 +63,7 @@ async function main() {
   // Example 2: Using provider/model format
   // If this model is configured as a tier, it auto-resolves
   console.log("2️⃣ Using direct model name:")
-  const model2 = await models.model("openrouter/openai/gpt-4.1-mini")
+  const model2 = await models.model("openrouter#openai/gpt-4.1-mini")
   const result2 = await generateText({
     model: model2,
     prompt: "Say hello in 3 words",
@@ -106,7 +106,7 @@ async function main() {
 function demonstrateTierResolution() {
   console.log("📋 Tier Configuration:")
   console.log("   tier:fast    → race between gemini-flash and gpt-4o-mini")
-  console.log("   tier:medium  → openrouter/openai/gpt-4.1-mini")
+  console.log("   tier:medium  → openrouter/openrouter#openai/gpt-4.1-mini")
   console.log("   tier:high    → openrouter/openai/gpt-4.1")
   console.log()
   console.log("💡 Key Benefits:")

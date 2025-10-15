@@ -14,11 +14,7 @@ export default defineConfig({
     // Primary production endpoint - fast and reliable
     production: {
       strategy: "fallback",
-      providers: [
-        "openrouter/openai/gpt-4.1-mini",
-        "openrouter/anthropic/claude-3-5-haiku",
-        "openrouter/google/gemini-2.5-flash-lite",
-      ],
+      providers: ["openrouter"],
       timeout: 30000,
       maxCost: 0.15,
     },
@@ -26,7 +22,7 @@ export default defineConfig({
     // High-priority requests - best quality
     priority: {
       strategy: "fallback",
-      providers: ["openrouter/openai/gpt-4.1", "anthropic/claude-sonnet-4", "openrouter/openai/gpt-4.1-mini"],
+      providers: ["openrouter"],
       timeout: 60000,
       maxCost: 1.0,
     },
@@ -34,7 +30,7 @@ export default defineConfig({
     // Batch processing - optimize for cost
     batch: {
       strategy: "first",
-      providers: ["openrouter/google/gemini-2.5-flash-lite", "openrouter/deepseek/deepseek-chat"],
+      providers: ["openrouter"],
       timeout: 45000,
       maxCost: 0.01,
     },
@@ -42,13 +38,7 @@ export default defineConfig({
     // Emergency fallback - maximum reliability
     emergency: {
       strategy: "fallback",
-      providers: [
-        "openrouter/openai/gpt-4.1-mini",
-        "openrouter/anthropic/claude-3-5-haiku",
-        "openrouter/google/gemini-2.5-flash-lite",
-        "groq/llama-3.3-70b-versatile",
-        "openrouter/deepseek/deepseek-chat",
-      ],
+      providers: ["openrouter"],
       timeout: 90000,
       maxCost: 0.2,
     },

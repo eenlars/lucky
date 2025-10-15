@@ -8,7 +8,6 @@
 
 import path from "node:path"
 import { getCoreConfig } from "@core/core-config/coreConfig"
-import type { AnyModelName } from "@core/utils/spending/models.types"
 import type { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from "@lucky/shared/contracts/config"
 import type { EvolutionSettings } from "@lucky/shared/contracts/evolution"
 import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
@@ -149,15 +148,15 @@ export { TOOLS }
  * All properties are readonly to prevent accidental mutation of shared config
  */
 export type TypedModelDefaults = {
-  readonly summary: AnyModelName
-  readonly nano: AnyModelName
-  readonly low: AnyModelName
-  readonly medium: AnyModelName
-  readonly high: AnyModelName
-  readonly default: AnyModelName
-  readonly fitness: AnyModelName
-  readonly reasoning: AnyModelName
-  readonly fallback: AnyModelName
+  readonly summary: string
+  readonly nano: string
+  readonly low: string
+  readonly medium: string
+  readonly high: string
+  readonly default: string
+  readonly fitness: string
+  readonly reasoning: string
+  readonly fallback: string
 }
 
 /**
@@ -249,37 +248,6 @@ function createLegacyFlowConfig(coreConfig: CoreConfig): LegacyRuntimeConfig {
 }
 
 export type { LegacyRuntimeConfig }
-
-/**
- * Create core paths (server-only, uses process.cwd())
- */
-function createCorePaths() {
-  const cwd = process.cwd()
-  const coreDataRoot = path.join(cwd, ".core-data")
-  const loggingDir = path.join(coreDataRoot, "logs")
-  const memoryRoot = path.join(coreDataRoot, "memory")
-
-  // Find examples directory
-  const examplesRoot = path.resolve(cwd, "../examples")
-  const codeToolsPath = path.join(examplesRoot, "code_tools")
-
-  return {
-    root: coreDataRoot,
-    app: path.join(coreDataRoot, "app"),
-    runtime: examplesRoot,
-    codeTools: codeToolsPath,
-    setupFile: path.join(coreDataRoot, "setup", "setupfile.json"),
-    improver: path.join(coreDataRoot, "setup", "improve.json"),
-    node: {
-      logging: loggingDir,
-      memory: {
-        root: memoryRoot,
-        workfiles: path.join(memoryRoot, "workfiles"),
-      },
-      error: path.join(loggingDir, "error"),
-    },
-  }
-}
 
 // ============================================================================
 // PLACEHOLDER TOOLS (for test compatibility)

@@ -12,9 +12,9 @@ Model IDs follow a naming convention like `"provider/model-name"`, but this is *
 
 ```typescript
 // Examples of model IDs:
-"openai/gpt-4.1-nano"           // Uses OpenAI API ✓
+"openrouter#openai/gpt-4.1-nano"           // Uses OpenAI API ✓
 "anthropic/claude-sonnet-4"     // Uses OpenRouter API! ✓
-"openai/gpt-oss-20b"            // Uses Groq API! ✓
+"openrouter#openai/gpt-oss-20b"            // Uses Groq API! ✓
 ```
 
 ### 2. The Model Catalog Is the Source of Truth
@@ -49,9 +49,9 @@ Example from the catalog:
 
 Some models are only available through aggregator services like OpenRouter:
 
-- **Direct Access**: `"openai/gpt-4.1-nano"` → provider: `"openai"` → OpenAI API
+- **Direct Access**: `"openrouter#openai/gpt-4.1-nano"` → provider: `"openai"` → OpenAI API
 - **Via OpenRouter**: `"anthropic/claude-sonnet-4"` → provider: `"openrouter"` → OpenRouter API
-- **Via Groq**: `"openai/gpt-oss-20b"` → provider: `"groq"` → Groq API
+- **Via Groq**: `"openrouter#openai/gpt-oss-20b"` → provider: `"groq"` → Groq API
 
 The model ID keeps the original vendor name for clarity, but the `provider` field tells you which API to actually call.
 
@@ -94,9 +94,9 @@ const PROVIDER_TO_KEY = {
 When a workflow uses these models:
 ```typescript
 nodes: [
-  { modelName: "openai/gpt-4.1-nano" },        // Requires OPENAI_API_KEY
+  { modelName: "openrouter#openai/gpt-4.1-nano" },        // Requires OPENAI_API_KEY
   { modelName: "anthropic/claude-sonnet-4" },  // Requires OPENROUTER_API_KEY
-  { modelName: "openai/gpt-oss-20b" },         // Requires GROQ_API_KEY
+  { modelName: "openrouter#openai/gpt-oss-20b" },         // Requires GROQ_API_KEY
 ]
 ```
 
@@ -118,7 +118,7 @@ if (modelId.startsWith("anthropic/")) {
 ### ❌ Pitfall 2: Parsing with string split
 ```typescript
 const [provider, model] = modelId.split("/", 2)
-// What if modelId is "openrouter/anthropic/claude-3-5-sonnet"?
+// What if modelId is "openrouter#anthropic/claude-3-5-sonnet"?
 // You get provider="openrouter", model="anthropic"
 // But that's not the right split!
 ```

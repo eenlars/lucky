@@ -1,6 +1,5 @@
-import { getModelV2 } from "@core/utils/spending/functions"
-import type { ModelName, TokenUsage } from "@core/utils/spending/models.types"
-import { guard } from "@core/workflow/schema/errorMessages"
+import { findModel } from "@lucky/models"
+import type { TokenUsage } from "@lucky/shared"
 
 /**
  * Minimal usage stats available from Vercel SDK responses.
@@ -28,7 +27,7 @@ export function calculateCost(model: string, usage: TokenUsage): number {
  * @returns The cost breakdown
  */
 export function calculateCostV2(model: string, usage: TokenUsage): number {
-  const modelPricing = getModelV2(model)
+  const modelPricing = findModel(model)
   if (!modelPricing) {
     console.warn(`No pricing found for model: ${model}`)
     return 0
@@ -41,8 +40,8 @@ export function calculateCostV2(model: string, usage: TokenUsage): number {
   cost += (nonCachedInput / 1_000_000) * modelPricing.input
 
   // Calculate cached input token cost if applicable
-  if (usage.cachedInputTokens && modelPricing["cached-input"]) {
-    cost += (usage.cachedInputTokens / 1_000_000) * modelPricing["cached-input"]
+  if (usage.cachedInputTokens && modelPricing.cachedInput) {
+    cost += (usage.cachedInputTokens / 1_000_000) * modelPricing.cachedInput
   }
 
   // Calculate output token cost
@@ -51,9 +50,12 @@ export function calculateCostV2(model: string, usage: TokenUsage): number {
   return cost
 }
 
-export function getPricingLevelV2(model: ModelName): PricingLevel {
-  const modelConfig = getModelV2(model)
-  guard(modelConfig, `getPricingLevelV2: No model config for ${model}`)
+export function getPricingLevelV2(model: string): PricingLevel {
+  const modelConfig = findModel(model)
+  if (!modelConfig) {
+    console.warn(`No pricing found for model: ${model}`)
+    return "medium"
+  }
 
   const inputPrice = modelConfig.input
 

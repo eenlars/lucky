@@ -15,7 +15,7 @@ vi.mock("ai", () => ({
   zodSchema: vi.fn((schema: any) => schema),
 }))
 
-vi.mock("@core/clients/openrouter/openrouterClient", () => ({
+vi.mock("@core/clients/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 

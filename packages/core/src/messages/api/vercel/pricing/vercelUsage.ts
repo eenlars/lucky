@@ -1,12 +1,11 @@
-import { getModelV2 } from "@core/utils/spending/functions"
-import type { ModelName } from "@core/utils/spending/models.types"
+import { findModel } from "@lucky/models"
 import { isNir } from "@lucky/shared"
 import type { VercelUsage } from "./calculatePricing"
 
 /**
  * Calculate the USD cost of a completion given token usage and per-million-token pricing.
  */
-export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: ModelName): number {
+export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: string): number {
   if (usage === null || usage === undefined || isNir(modelName)) {
     console.error(`Invalid usage or model name: ${JSON.stringify(usage)} ${JSON.stringify(modelName)}`)
     return 0
@@ -15,11 +14,18 @@ export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: Model
 
   let modelPricing: any
   try {
-    modelPricing = getModelV2(modelName)
+    modelPricing = findModel(modelName)
   } catch (_err) {
     console.error(`Model pricing not found for: ${modelName}`)
     return 0
   }
+
+  // Check if modelPricing is undefined before destructuring
+  if (!modelPricing) {
+    console.error(`Model pricing not found for: ${modelName}`)
+    return 0
+  }
+
   const { input: pricePerMInput, output: pricePerMOutput } = modelPricing
 
   // validate

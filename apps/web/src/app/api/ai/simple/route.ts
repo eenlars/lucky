@@ -3,7 +3,7 @@ import { streamText } from "ai"
 
 export async function POST(req: Request) {
   try {
-    const { contextType, prompt, currentState, operation } = await req.json()
+    const { contextType, prompt, currentState, operation: _operation } = await req.json()
 
     if (!contextType || !prompt) {
       return Response.json({ success: false, error: "Missing required fields" }, { status: 400 })
@@ -62,7 +62,7 @@ Respond with a JSON object containing:
 - explanation: a brief explanation of what was changed`
     }
 
-    const result = await streamText({
+    const result = streamText({
       model: openai("gpt-4o"),
       messages: [
         { role: "system", content: systemPrompt },

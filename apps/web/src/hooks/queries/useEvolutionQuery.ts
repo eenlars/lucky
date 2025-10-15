@@ -1,3 +1,4 @@
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { Database } from "@lucky/shared/client"
 import { useQuery } from "@tanstack/react-query"
 
@@ -31,7 +32,8 @@ export function useEvolutionRun(runId: string) {
 
       const response = await fetch(`/api/evolution/${runId}`)
       if (!response.ok) {
-        throw new Error(`Failed to fetch evolution run: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       return response.json() as Promise<Tables<"EvolutionRun">>
@@ -45,7 +47,8 @@ export function useGenerationsData(runId: string, enabled = true) {
     queryFn: async () => {
       const response = await fetch(`/api/evolution/${runId}/generations`)
       if (!response.ok) {
-        throw new Error(`Failed to fetch generations: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       return response.json() as Promise<GenerationWithData[]>
@@ -67,7 +70,8 @@ export function useWorkflowVersion(versionId: string | null) {
 
       const response = await fetch(`/api/workflow/version/${versionId}`)
       if (!response.ok) {
-        throw new Error(`Failed to fetch workflow version: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       return response.json() as Promise<Tables<"WorkflowVersion">>

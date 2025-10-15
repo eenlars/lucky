@@ -21,7 +21,7 @@ interface TransformedPricing {
   created?: number
 }
 
-async function fetchModels(): Promise<OpenRouterModel[]> {
+async function fetchModelsOpenRouter(): Promise<OpenRouterModel[]> {
   const response = await fetch("https://openrouter.ai/api/v1/models")
   const data = await response.json()
   return data.data
@@ -32,14 +32,14 @@ async function fetchModels(): Promise<OpenRouterModel[]> {
  * to per-million-token, produces a summary per model, and returns that
  * summary both as an object and as a sorted array by total cost.
  */
-async function transformModels(roundDecimals = 6) {
+async function transformModelsOpenRouter(roundDecimals = 6) {
   function round(val: number, decimals: number): number {
     return Number(val.toFixed(decimals))
   }
 
   const pricingSummary: Record<string, Omit<TransformedPricing, "id">> = {}
 
-  const models = await fetchModels()
+  const models = await fetchModelsOpenRouter()
 
   const transformed = models
     // keep only models with structured_outputs
@@ -74,6 +74,7 @@ async function transformModels(roundDecimals = 6) {
       return {
         ...model,
         pricing: scaled,
+        id: `openrouter#${model.id}`,
       }
     })
 
@@ -119,7 +120,7 @@ async function transformModels(roundDecimals = 6) {
   }
 }
 
-const { sortedPricingSummary, transformed } = await transformModels()
+const { sortedPricingSummary, transformed } = await transformModelsOpenRouter()
 
 const scriptDir = new URL(".", import.meta.url).pathname
 const dataDir = `${scriptDir}pricing-data/`

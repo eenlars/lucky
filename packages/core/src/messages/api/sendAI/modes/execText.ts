@@ -26,7 +26,6 @@ import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-import type { ModelName } from "@core/utils/spending/models.types"
 import { getCurrentProvider } from "@core/utils/spending/provider"
 import { isNir } from "@lucky/shared"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
@@ -58,7 +57,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
-  const modelName: ModelName = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
+  const modelName: string = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
   const model = await getLanguageModelWithReasoning(modelName, opts)
 
@@ -151,7 +150,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting
     const { message, debug } = normalizeError(err)
-    lgg.error("execText error", message)
+    lgg.error("execText error", message, modelName, model, getCurrentProvider())
 
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking

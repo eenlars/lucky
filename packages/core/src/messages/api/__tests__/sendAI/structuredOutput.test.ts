@@ -1,4 +1,3 @@
-import type { ModelName } from "@core/utils/spending/models.types"
 import type { RS } from "@lucky/shared"
 import { R } from "@lucky/shared"
 import type { ModelMessage } from "ai"
@@ -11,7 +10,7 @@ import { z } from "zod"
 type GenObjectMockFn = (args: {
   messages: ModelMessage[]
   schema: z.ZodSchema
-  model?: ModelName
+  model?: string
   opts?: { retries?: number; repair?: boolean }
 }) => Promise<RS<{ value: unknown; summary: string }>>
 
@@ -43,7 +42,7 @@ vi.mock("ai", () => ({
   },
 }))
 
-vi.mock("@core/clients/openrouter/openrouterClient", () => ({
+vi.mock("@core/clients/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 

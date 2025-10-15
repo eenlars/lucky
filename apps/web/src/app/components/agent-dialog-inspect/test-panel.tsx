@@ -27,7 +27,7 @@ export function TestPanel({ node }: TestPanelProps) {
       api: "/api/agent/chat",
       body: {
         nodeId: node.id,
-        modelName: node.data.modelName ?? "openrouter/anthropic/claude-3.5-sonnet",
+        modelName: node.data.modelName ?? "openrouter#anthropic/claude-3.5-sonnet",
         systemPrompt: node.data.systemPrompt,
       },
     }),
@@ -266,7 +266,7 @@ export function TestPanel({ node }: TestPanelProps) {
 
       {/* AI Devtools - Development only */}
       {process.env.NODE_ENV === "development" && (
-        <AIDevtools modelId={node.data.modelName ?? "openrouter/anthropic/claude-3.5-sonnet"} />
+        <AIDevtools modelId={node.data.modelName ?? "openrouter#anthropic/claude-3.5-sonnet"} />
       )}
     </div>
   )

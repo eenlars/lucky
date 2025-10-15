@@ -1,4 +1,6 @@
+import { validateAndResolveModel } from "@/lib/models/model-fallback"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { UserModelPreferences } from "@lucky/shared"
 import { type AppEdge, createEdge } from "../components/edges/edges"
 import { type AppNode, type WorkflowNodeData, createNodeByType } from "../components/nodes/nodes"
 
@@ -6,7 +8,10 @@ import { type AppNode, type WorkflowNodeData, createNodeByType } from "../compon
  * transform the nodes from the setup config to the nodes for the visualizer.
  * IMPORTANT: the start node and the end node are created here, and they are not part of the workflowConfig.nodes array.
  */
-export const initialSetupConfig = (workflowConfig: WorkflowConfig): { edges: AppEdge[]; nodes: AppNode[] } => {
+export const initialSetupConfig = (
+  workflowConfig: WorkflowConfig,
+  userPreferences?: UserModelPreferences | null,
+): { edges: AppEdge[]; nodes: AppNode[] } => {
   const edges: AppEdge[] = []
   const nodes: AppNode[] = []
 
@@ -25,11 +30,24 @@ export const initialSetupConfig = (workflowConfig: WorkflowConfig): { edges: App
   nodes.push(endNode)
 
   for (const node of workflowConfig.nodes || []) {
+    // Validate and resolve model against user preferences
+    let resolvedModelName = node.modelName
+    if (userPreferences) {
+      const { modelId, wasFallback } = validateAndResolveModel(node.modelName, userPreferences)
+      resolvedModelName = modelId
+
+      if (wasFallback) {
+        console.warn(
+          `[workflow-data] Node "${node.nodeId}": Model "${node.modelName}" not in user preferences. Using fallback: "${modelId}"`,
+        )
+      }
+    }
+
     const nodeData: WorkflowNodeData = {
       nodeId: node.nodeId,
       description: node.description,
       systemPrompt: node.systemPrompt,
-      modelName: node.modelName,
+      modelName: resolvedModelName,
       mcpTools: node.mcpTools || [],
       codeTools: node.codeTools || [],
       handOffs: node.handOffs || [],
@@ -82,6 +100,9 @@ export const initialSetupConfig = (workflowConfig: WorkflowConfig): { edges: App
  * Convert a Core WorkflowConfig into frontend React Flow graph primitives.
  * Frontend naming: use this as the canonical transformer.
  */
-export const toFrontendWorkflowConfig = (workflowConfig: WorkflowConfig): { edges: AppEdge[]; nodes: AppNode[] } => {
-  return initialSetupConfig(workflowConfig)
+export const toFrontendWorkflowConfig = (
+  workflowConfig: WorkflowConfig,
+  userPreferences?: UserModelPreferences | null,
+): { edges: AppEdge[]; nodes: AppNode[] } => {
+  return initialSetupConfig(workflowConfig, userPreferences)
 }

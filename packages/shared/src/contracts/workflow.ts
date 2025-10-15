@@ -12,22 +12,23 @@ export const HandoffTypeSchema = z.enum(["conditional", "sequential", "parallel"
  * modelName accepts any model from any provider - validation happens at runtime
  */
 export const WorkflowNodeConfigSchema = z.object({
+  __schema_version: z.number().optional(),
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
-  modelName: z.string(), // AnyModelName - string for now to avoid circular deps
-  mcpTools: z.array(z.string()), // MCPToolName[] - string[] for now
-  codeTools: z.array(z.string()), // CodeToolName[] - string[] for now
+  modelName: z.string(),
+  mcpTools: z.array(z.string()),
+  codeTools: z.array(z.string()),
   handOffs: z.array(z.string()),
   memory: z.record(z.string(), z.string()).nullable().optional(),
   waitingFor: z.array(z.string()).optional(),
-  waitFor: z.array(z.string()).optional(), // Alternative name for waitingFor, both are supported
+  waitFor: z.array(z.string()).optional(),
   handOffType: HandoffTypeSchema.optional(),
-  useClaudeSDK: z.boolean().optional(), // Enable Claude Code SDK for this node
-  sdkConfig: z.any().optional(), // ClaudeSDKConfig - any for now to avoid circular deps
-  requiresApproval: z.boolean().optional(), // Human-in-the-loop gate for this node
-  approvalPrompt: z.string().optional(), // Prompt shown to human reviewer
-  connectors: z.array(z.string()).optional(), // External connectors attached to this node
+  useClaudeSDK: z.boolean().optional(),
+  sdkConfig: z.any().optional(),
+  requiresApproval: z.boolean().optional(),
+  approvalPrompt: z.string().optional(),
+  connectors: z.array(z.string()).optional(),
 })
 
 /**
@@ -73,7 +74,7 @@ export const WorkflowConfigSchema = z.object({
   toolsInformation: z.any().optional(),
   inputSchema: JsonSchemaZ.optional(),
   outputSchema: JsonSchemaZ.optional(),
-  ui: WorkflowUISchema.optional(), // UI-specific metadata
+  ui: WorkflowUISchema.optional(),
 })
 
 export type WorkflowNodeConfig = z.infer<typeof WorkflowNodeConfigSchema>

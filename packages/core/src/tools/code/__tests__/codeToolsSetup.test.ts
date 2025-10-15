@@ -1,4 +1,4 @@
-import { TOOL_GROUPS } from "@lucky/examples/definitions/registry-grouped"
+import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
 import type { CodeToolName, ToolExecutionContext } from "@lucky/tools"
 import { codeToolRegistry, registerAllTools, setupCodeToolsForNode } from "@lucky/tools"
 import { beforeAll, describe, expect, it } from "vitest"
@@ -7,7 +7,7 @@ describe("setupCodeToolsForNode", () => {
   beforeAll(async () => {
     // Ensure registry is populated by registering all tools
     await codeToolRegistry.destroy()
-    await registerAllTools(TOOL_GROUPS)
+    await registerAllTools(TOOL_TOOLKITS)
   })
   it("should set up the searchGoogleMaps code tool without errors", async () => {
     // Test with a specific tool name defined in codeToolsSetup.ts

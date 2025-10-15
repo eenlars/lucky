@@ -5,7 +5,6 @@
  */
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
-import type { ModelName } from "@core/utils/spending/models.types"
 
 /**
  * All available tier names in the system.
@@ -26,10 +25,10 @@ export function isTierName(name: string): name is TierName {
  *
  * Examples:
  * - "nano" -> "tier:nano"
- * - "openai/gpt-4" -> "openai/gpt-4"
+ * - "openrouter#openai/gpt-4" -> "openrouter#openai/gpt-4"
  * - "tier:high" -> "tier:high" (already in correct format)
  */
-export function resolveTierOrModel(input: ModelName | string): string {
+export function resolveTierOrModel(input: string | string): string {
   const inputStr = String(input)
 
   // Already in tier: format
@@ -50,7 +49,7 @@ export function resolveTierOrModel(input: ModelName | string): string {
  * Get the actual model name for a tier.
  * Useful for logging and debugging.
  */
-export function getTierModel(tierName: TierName): ModelName {
+export function getTierModel(tierName: TierName): string {
   const models = getDefaultModels()
   return models[tierName]
 }
@@ -59,7 +58,7 @@ export function getTierModel(tierName: TierName): ModelName {
  * Resolve a tier name back to the actual model being used.
  * Returns undefined if not a tier name.
  */
-export function resolveTierToModel(input: string): ModelName | undefined {
+export function resolveTierToModel(input: string): string | undefined {
   // Handle tier: prefix
   const tierName = input.startsWith("tier:") ? input.slice(5) : input
 

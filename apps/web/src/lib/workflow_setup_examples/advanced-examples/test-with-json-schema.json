@@ -4,7 +4,7 @@
     {
       "nodeId": "find",
       "description": "can find locations and verify them",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["searchGoogleMaps"],
       "handOffs": ["save-locations"],
@@ -14,7 +14,7 @@
     {
       "nodeId": "save-locations",
       "description": "can save locations",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataManager"],
       "handOffs": ["verify"],
@@ -24,7 +24,7 @@
     {
       "nodeId": "verify",
       "description": "can verify locations",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataInfo", "verifyLocation"],
       "handOffs": ["remove-invalid"],
@@ -34,7 +34,7 @@
     {
       "nodeId": "remove-invalid",
       "description": "can remove invalid locations",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataManager"],
       "handOffs": ["return-result"],
@@ -44,7 +44,7 @@
     {
       "nodeId": "return-result",
       "description": "can return a summary of the location data",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataInfo"],
       "handOffs": ["end"],

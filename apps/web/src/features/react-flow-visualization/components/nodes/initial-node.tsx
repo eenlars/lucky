@@ -1,12 +1,13 @@
 "use client"
 
-import { NodeHeaderDeleteAction } from "@/features/react-flow-visualization/components/node-header"
-import { Rocket } from "lucide-react"
-import { useState } from "react"
+import { useReactFlow } from "@xyflow/react"
+import { Rocket, X } from "lucide-react"
+import { useCallback, useState } from "react"
 import nodesConfig, { COMPACT_NODE_SIZE, type WorkflowNodeProps } from "./nodes"
 import { AppHandle } from "./workflow-node/app-handle"
 
 export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
+  const { setNodes } = useReactFlow()
   const [isExpanded, setIsExpanded] = useState(false)
 
   const handleClick = () => {
@@ -28,6 +29,14 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
   const expandedWidth = 400
   const expandedHeight = 100
   const widthDiff = expandedWidth - COMPACT_NODE_SIZE.width
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      setNodes(prevNodes => prevNodes.filter(node => node.id !== id))
+    },
+    [id, setNodes],
+  )
 
   return (
     <>
@@ -114,9 +123,14 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
 
         {/* Delete button on hover - hide when expanded */}
         {!isExpanded && (
-          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto">
-            <NodeHeaderDeleteAction />
-          </div>
+          <button
+            type="button"
+            aria-label="Delete start node"
+            className="nodrag absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-green-200 bg-white text-green-600 shadow-sm hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+            onClick={handleDelete}
+          >
+            <X className="size-4" />
+          </button>
         )}
 
         {/* Connection handle(s) remain functional - counter-transform to keep on right edge */}

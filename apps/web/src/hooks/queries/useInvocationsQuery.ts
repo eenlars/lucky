@@ -1,4 +1,5 @@
 import { queryKeys } from "@/lib/query-keys"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { Database } from "@lucky/shared/client"
 import { useQuery } from "@tanstack/react-query"
 
@@ -84,7 +85,8 @@ export function useInvocationsQuery({
 
       const response = await fetch(`/api/workflow/invocations?${params}`)
       if (!response.ok) {
-        throw new Error(`Failed to fetch invocations: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       const result = await response.json()
@@ -114,7 +116,8 @@ export function useInvocationQuery(invocationId: string | undefined) {
       if (!invocationId) throw new Error("Invocation ID is required")
       const response = await fetch(`/api/workflow/invocations/${invocationId}`)
       if (!response.ok) {
-        throw new Error("Failed to fetch invocation")
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
       return response.json()
     },

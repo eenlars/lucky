@@ -1,6 +1,7 @@
 "use client"
 
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useEffect, useMemo, useState } from "react"
 import { type EvolutionRun, RunSelect } from "./RunSelect"
 
@@ -22,7 +23,10 @@ export function GPEvolutionSelector({
       setLoadingRuns(true)
       try {
         const response = await fetch("/api/evolution-runs")
-        if (!response.ok) throw new Error("Failed to fetch evolution runs")
+        if (!response.ok) {
+          const errorDetails = await extractFetchError(response)
+          throw new Error(errorDetails)
+        }
         const allRuns: EvolutionRun[] = await response.json()
         if (!cancelled) {
           setRuns(allRuns)

@@ -2,7 +2,7 @@
  * Model Lookup Utilities
  *
  * Provides simple lookups in MODEL_CATALOG.
- * All catalog IDs use structured format: "vendor:X;model:Y"
+ * All catalog IDs use structured format: <provider>#<model>
  * This format makes it IMPOSSIBLE to confuse with API identifiers.
  *
  * IMPORTANT: Never parse catalog ID strings to determine provider.
@@ -11,24 +11,6 @@
 
 import type { CatalogId, ModelEntry } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
-
-/**
- * Find a model in the catalog by its exact catalog ID.
- *
- * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
- * @returns ModelEntry if found, undefined otherwise
- *
- * @example
- * ```ts
- * findModel("vendor:openai;model:gpt-4.1-mini") // ✓ correct
- * findModel("vendor:anthropic;model:claude-sonnet-4") // ✓ correct (uses openrouter provider!)
- * findModel("gpt-4.1-mini") // ✗ wrong - will not be found
- * findModel("openai/gpt-4.1-mini") // ✗ wrong - old format
- * ```
- */
-export function findModel(catalogId: CatalogId | string): ModelEntry | undefined {
-  return MODEL_CATALOG.find(m => m.id === catalogId)
-}
 
 /**
  * Find a model in the catalog by its model field (API format).
@@ -41,21 +23,27 @@ export function findModel(catalogId: CatalogId | string): ModelEntry | undefined
  * ```ts
  * findModelByName("gpt-4o-mini") // ✓ finds OpenAI model
  * findModelByName("anthropic/claude-sonnet-4") // ✓ finds OpenRouter model
- * findModelByName("openai/gpt-oss-20b") // ✓ finds Groq model
+ * findModelByName("openrouter#openai/gpt-oss-20b") // ✓ finds Groq model
  * ```
  */
-export function findModelByName(modelName: string): ModelEntry | undefined {
+export function findModel(modelName: string): ModelEntry | undefined {
   // Perform a case-insensitive match to be forgiving with user input.
   // Catalog values are normalized (lowercase with provider prefixes when applicable),
   // but callers may provide uppercase or mixed-case variants.
   const needle = modelName.toLowerCase()
-  return MODEL_CATALOG.find(m => m.model.toLowerCase() === needle)
+  return MODEL_CATALOG.find(m => m.model.toLowerCase() === needle || m.id.toLowerCase() === needle)
 }
+
+/**
+ * Backwards-compatible alias for findModel
+ * Maintains API used across core/app codepaths that still reference findModelByName.
+ */
+export const findModelByName = findModel
 
 /**
  * Get a model from the catalog by catalog ID. Throws if not found.
  *
- * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
+ * @param catalogId - Catalog identifier (format: "<provider>#<model>")
  * @throws Error if model not found
  * @returns ModelEntry
  */
@@ -69,7 +57,7 @@ export function getModel(catalogId: CatalogId | string): ModelEntry {
       .join(", ")
 
     throw new Error(
-      `Model "${catalogId}" not found in catalog. Catalog IDs must use format "vendor:X;model:Y" (e.g., "vendor:openai;model:gpt-4.1-mini"). Available models (first 10): ${availableModels}...`,
+      `Model "${catalogId}" not found in catalog. Catalog IDs must use format "<provider>#<model>" (e.g., "openai#gpt-4.1-mini"). Available models (first 10): ${availableModels}...`,
     )
   }
 
@@ -79,7 +67,7 @@ export function getModel(catalogId: CatalogId | string): ModelEntry {
 /**
  * Check if a model is active in the catalog.
  *
- * @param catalogId - Catalog identifier (format: "vendor:X;model:Y")
+ * @param catalogId - Catalog identifier (format: "<provider>#<model>")
  * @returns true if model exists and is active, false otherwise
  */
 export function isModelActive(catalogId: CatalogId | string): boolean {
@@ -101,7 +89,7 @@ export function getActiveModelsByProvider(provider: string): ModelEntry[] {
 }
 
 /**
- * Get all active catalog IDs (structured format: "vendor:X;model:Y").
+ * Get all active catalog IDs (structured format: "<provider>#<model>").
  *
  * @returns Array of active catalog IDs
  */

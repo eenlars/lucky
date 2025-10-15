@@ -76,7 +76,7 @@ export const ModelDefaultsSchema = z.object({
   summary: z.string().default("gpt-5-nano"),
   nano: z.string().default("gpt-5-nano"),
   low: z.string().default("gpt-5-mini"),
-  medium: z.string().default("gpt-5"),
+  medium: z.string().default("gpt-5-mini"),
   high: z.string().default("gpt-5"),
   default: z.string().default("gpt-5-nano"),
   fitness: z.string().default("gpt-5-nano"),

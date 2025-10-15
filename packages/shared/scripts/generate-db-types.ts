@@ -1,11 +1,13 @@
 #!/usr/bin/env bun
-import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 
 const env = process.env
 const isCI = env.CI === "1" || env.CI === "true"
 const isVercel = env.VERCEL === "1" || env.VERCEL === "true"
 const skipGeneration = env.SKIP_DB_TYPES_GENERATION === "1" || env.SKIP_DB_TYPES_GENERATION === "true"
+const recoverableErrorPattern =
+  /AccessDenied|EACCES|ConnectionRefused|ENOTFOUND|ENETUNREACH|ECONNREFUSED|ECONNRESET|fetch failed|Cannot find package|ERR_MODULE_NOT_FOUND/i
 
 // Define all schemas to generate - each schema gets its own file
 const schemas = [
@@ -17,15 +19,25 @@ const schemas = [
 ]
 
 const projectId = "qnvprftdorualkdyogka"
+const supabaseCliPath =
+  env.SUPABASE_CLI_PATH ||
+  (() => {
+    try {
+      return typeof Bun !== "undefined" && typeof Bun.which === "function" ? (Bun.which("supabase") ?? null) : null
+    } catch {
+      return null
+    }
+  })()
 
 async function generateSchemaTypes(schemaName: string, outputFilename: string, tempDir: string) {
   const outPath = resolve(import.meta.dir, `../src/types/${outputFilename}`)
 
   console.log(`Generating ${schemaName} schema types…`)
 
-  const args = ["x", "supabase@latest", "gen", "types", "typescript", "--project-id", projectId, "--schema", schemaName]
-
-  const proc = Bun.spawn(["bun", ...args], {
+  const baseArgs = ["gen", "types", "typescript", "--project-id", projectId, "--schema", schemaName]
+  const command = supabaseCliPath ?? "bun"
+  const args = supabaseCliPath ? baseArgs : ["x", "supabase@latest", ...baseArgs]
+  const proc = Bun.spawn([command, ...args], {
     stdout: "pipe",
     stderr: "pipe",
     env: {
@@ -45,8 +57,10 @@ async function generateSchemaTypes(schemaName: string, outputFilename: string, t
 
   if (exitCode !== 0) {
     const combinedOutput = `${stdout}\n${stderr}`
-    if (/AccessDenied|EACCES/i.test(combinedOutput)) {
-      console.warn(`${schemaName} schema: Supabase CLI could not access temp directory. Skipping.`)
+    if (recoverableErrorPattern.test(combinedOutput)) {
+      console.warn(
+        `${schemaName} schema: Supabase CLI unavailable (likely due to permissions, network, or missing dependency). Using committed types.`,
+      )
       return false
     }
     console.error(stderr.trim() || stdout.trim())
@@ -75,24 +89,68 @@ async function main() {
     return
   }
 
-  console.log("Generating Supabase types for all schemas…")
-
   const tempDir = resolve(import.meta.dir, "../.tmp/supabase")
   if (!existsSync(tempDir)) {
     mkdirSync(tempDir, { recursive: true })
   }
 
+  // Run only if tmp is empty OR last run was > 2 hours ago
+  const cooldownMs = 2 * 60 * 60 * 1000
+  const stampFile = resolve(tempDir, ".last-run")
+  const isTmpEmpty = (() => {
+    try {
+      const entries = readdirSync(tempDir)
+      return entries.length === 0
+    } catch {
+      return true
+    }
+  })()
+
+  let withinCooldown = false
+  if (existsSync(stampFile)) {
+    try {
+      const mtime = statSync(stampFile).mtimeMs
+      withinCooldown = Date.now() - mtime < cooldownMs
+    } catch {
+      withinCooldown = false
+    }
+  }
+
+  if (!isTmpEmpty && withinCooldown) {
+    const minsLeft = Math.ceil((cooldownMs - (Date.now() - statSync(stampFile).mtimeMs)) / 60000)
+    console.log(`Skipping DB type generation (cooldown). Try again in ~${minsLeft}m or clear .tmp.`)
+    return
+  }
+
+  console.log("Generating Supabase types for all schemas…")
+  if (supabaseCliPath) {
+    console.log(`Using Supabase CLI binary at ${supabaseCliPath}`)
+  } else {
+    console.log("Using bunx to execute Supabase CLI (no global binary detected)")
+  }
+
   // Generate all schema types
+  let allSucceeded = true
   for (const schema of schemas) {
-    await generateSchemaTypes(schema.name, schema.filename, tempDir)
+    const ok = await generateSchemaTypes(schema.name, schema.filename, tempDir)
+    allSucceeded = allSucceeded && ok
+  }
+
+  // Stamp only if all schemas succeeded
+  if (allSucceeded) {
+    try {
+      writeFileSync(stampFile, new Date().toISOString(), "utf-8")
+    } catch {}
   }
 
   console.log("\n✓ All schema types generated successfully")
 }
 
 main().catch(err => {
-  if (err instanceof Error && /AccessDenied|EACCES/.test(err.message)) {
-    console.warn("Supabase type generation failed due to temp directory permissions. Using committed types instead.")
+  if (err instanceof Error && recoverableErrorPattern.test(err.message)) {
+    console.warn(
+      "Supabase type generation failed due to CLI permissions, network issues, or missing dependencies. Using committed types instead.",
+    )
     console.warn("Set SKIP_DB_TYPES_GENERATION=1 to disable generation explicitly if needed.")
     return
   }
