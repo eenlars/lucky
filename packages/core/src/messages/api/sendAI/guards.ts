@@ -18,9 +18,7 @@
 // TODO: create guard rule templates for different environments
 
 import { getCoreConfig } from "@core/core-config/coreConfig"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
-
-const spending = SpendingTracker.getInstance()
+import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 
 /**
  * Tracks request timestamps for rate limiting.
@@ -73,6 +71,7 @@ export function rateLimit(): string | null {
 // TODO: add cost prediction based on request complexity
 export function spendingGuard(): string | null {
   if (!getCoreConfig().limits.enableSpendingLimits) return null
+  const spending = getSpendingTracker()
   if (spending.canMakeRequest()) return null
 
   const { currentSpend, spendingLimit } = spending.getStatus()

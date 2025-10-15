@@ -176,8 +176,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log("[Agent Chat] User allowlist:", allowlist)
-
     // Select and get AI SDK compatible model with allowlist constraint
     let modelSelection: Awaited<ReturnType<typeof models.resolve>>
     let model: Awaited<ReturnType<typeof models.getModel>>

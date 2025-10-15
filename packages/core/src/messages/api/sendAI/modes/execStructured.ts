@@ -19,13 +19,11 @@
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 import pTimeout, { TimeoutError } from "p-timeout"
 import type { ZodTypeAny } from "zod"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
 import type { StructuredRequest, TResponse } from "../types"
-
-const spending = SpendingTracker.getInstance()
 
 /**
  * Executes AI requests requiring structured output conforming to schemas.
@@ -111,7 +109,7 @@ export async function execStructured<S extends ZodTypeAny>(
 
     // TODO: add cost validation and alerting
     // TODO: implement structured output quality scoring
-    spending.addCost(usdCost ?? 0)
+    getSpendingTracker().addCost(usdCost ?? 0)
     return {
       success: true,
       data: data.value,

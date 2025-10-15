@@ -76,7 +76,7 @@ async function main() {
   const onlyRun = getCliArg("run")
   const isDryRun = hasFlag("dry") || hasFlag("dry-run")
 
-  console.log(`Backfilling evolution_type ${isDryRun ? "(dry run)" : ""}`)
+  console.error(`Backfilling evolution_type ${isDryRun ? "(dry run)" : ""}`)
 
   const query = supabase
     .from("EvolutionRun")
@@ -97,7 +97,7 @@ async function main() {
 
   const runs = (data ?? []).filter(r => (onlyRun ? r.run_id === onlyRun : true))
   if (runs.length === 0) {
-    console.log("No runs found")
+    console.error("No runs found")
     return
   }
 
@@ -108,22 +108,22 @@ async function main() {
     const inferred = inferEvolutionType(run)
     if (inferred === "unknown") {
       skippedUnknown++
-      console.log(`- ${run.run_id}: unknown (skipped)`)
+      console.error(`- ${run.run_id}: unknown (skipped)`)
       continue
     }
     if (isDryRun) {
-      console.log(`- ${run.run_id}: would set evolution_type=${inferred}`)
+      console.error(`- ${run.run_id}: would set evolution_type=${inferred}`)
     } else {
       await updateEvolutionType(run.run_id, inferred)
-      console.log(`- ${run.run_id}: set evolution_type=${inferred}`)
+      console.error(`- ${run.run_id}: set evolution_type=${inferred}`)
       updated++
     }
   }
 
-  console.log("")
-  console.log(`Processed: ${runs.length}`)
+  console.error("")
+  console.error(`Processed: ${runs.length}`)
   if (!isDryRun) console.log(`Updated: ${updated}`)
-  if (skippedUnknown > 0) console.log(`Skipped (unknown): ${skippedUnknown}`)
+  if (skippedUnknown > 0) console.error(`Skipped (unknown): ${skippedUnknown}`)
 }
 
 main().catch(err => {
