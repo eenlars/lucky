@@ -91,7 +91,7 @@ export function AgentDialogInspect() {
         <dialog
           ref={panelRef}
           className={cn(
-            "bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col pointer-events-auto",
+            "relative bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col pointer-events-auto",
             // Smaller, more focused size
             "w-[85vw] h-[80vh] max-w-[1400px] max-h-[800px]",
             // Smooth animation
