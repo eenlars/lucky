@@ -1,5 +1,5 @@
 import { getModelsByProvider } from "@lucky/models"
-import { type EnrichedModelInfo, type LuckyProvider, providerNameSchema } from "@lucky/shared"
+import { type EnrichedModelInfo, providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -23,22 +23,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   const apiKey = body.apiKey
   const includeMetadata = body.includeMetadata ?? true
 
-  const validatedProvider = providerNameSchema.parse(provider)
+  const validationResult = providerNameSchema.safeParse(provider)
 
-  if (!validatedProvider) {
+  if (!validationResult.success) {
     return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
   }
 
-  if (!Object.values(providerNameSchema.enum).includes(provider as LuckyProvider)) {
-    return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
-  }
+  const validatedProvider = validationResult.data
 
   if (!apiKey) {
     return NextResponse.json({ error: "API key is required" }, { status: 400 })
   }
 
   // Check cache
-  const cacheKey = `${provider}:${apiKey.substring(0, 10)}:${includeMetadata}`
+  const cacheKey = `${validatedProvider}:${apiKey.substring(0, 10)}:${includeMetadata}`
   const cached = modelCache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
     return NextResponse.json({ models: cached.models })
@@ -47,7 +45,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   try {
     let modelIds: string[]
 
-    switch (provider) {
+    switch (validatedProvider) {
       case "openai":
         modelIds = await fetchOpenAIModels(apiKey)
         break
@@ -64,7 +62,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
     // Enrich with metadata from MODEL_CATALOG if requested
     let result: string[] | EnrichedModelInfo[]
     if (includeMetadata) {
-      const catalogModels = getModelsByProvider(provider)
+      const catalogModels = getModelsByProvider(validatedProvider)
       const catalogMap = new Map(catalogModels.map(m => [m.model, m]))
 
       // Only return models that exist in catalog and are not disabled

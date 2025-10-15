@@ -25,7 +25,6 @@
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
-import { getCurrentProvider } from "@core/utils/spending/provider"
 
 import { rateLimit, spendingGuard } from "@core/messages/api/sendAI/guards"
 import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
@@ -33,7 +32,6 @@ import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
-import { JSONN } from "@lucky/shared"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -86,7 +84,6 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
   // Validate model is active for current provider - throws if inactive
   try {
     req.model = validateAndResolveModel(req.model, getDefaultModels().default)
-    console.log("[sendAI internal] model resolved", { model: req.model, provider: getCurrentProvider() })
   } catch (error) {
     return {
       success: false,
@@ -159,7 +156,6 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
       }
     }
   }
-  console.log("calling sendAI", JSONN.show(req))
   // extract (avoid logging absolute paths)
 
   try {
@@ -174,7 +170,6 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
     })()
     const end = Date.now()
     const duration = end - start
-    console.log("[sendAI] completed", { durationMs: duration, success: result?.success, usdCost: result?.usdCost ?? 0 })
 
     // TODO: implement proper performance metrics collection
     // TODO: add performance alerting for slow requests

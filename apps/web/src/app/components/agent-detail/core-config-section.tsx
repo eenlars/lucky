@@ -47,10 +47,26 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
       return
     }
 
+    // Guard against stale responses
+    let isStale = false
+
     // Fetch if not cached
     fetchModelV2(node.data.modelName)
-      .then(model => setSelectedModel(model))
-      .catch(() => setSelectedModel(null))
+      .then(model => {
+        if (!isStale) {
+          setSelectedModel(model)
+        }
+      })
+      .catch(() => {
+        if (!isStale) {
+          setSelectedModel(null)
+        }
+      })
+
+    // Cleanup function to mark response as stale when model changes
+    return () => {
+      isStale = true
+    }
   }, [node.data.modelName])
 
   const activeModels = useMemo(() => getActiveModelNames().map(m => String(m)), [])
