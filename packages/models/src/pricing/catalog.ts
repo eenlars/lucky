@@ -1116,6 +1116,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 6,
     pricingTier: "medium",
     active: false,
+    disabled: true,
   },
 
   {
@@ -1137,6 +1138,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 6,
     pricingTier: "medium",
     active: false,
+    disabled: true,
   },
 
   {
@@ -1158,6 +1160,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     intelligence: 7,
     pricingTier: "high",
     active: false,
+    disabled: true,
   },
 
   {
@@ -1178,7 +1181,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -1199,7 +1203,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 9,
     pricingTier: "medium",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   // ============================================================================
@@ -1224,7 +1229,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 
   {
@@ -1245,7 +1251,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "fast",
     intelligence: 9,
     pricingTier: "low",
-    active: true,
+    active: false,
+    disabled: true,
   },
 ]
 

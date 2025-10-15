@@ -13,6 +13,7 @@ import AppContextMenu from "@/features/react-flow-visualization/components/app-c
 import SidebarLayout from "@/features/react-flow-visualization/components/layouts/sidebar-layout/SidebarLayout"
 import Workflow from "@/features/react-flow-visualization/components/workflow/Workflow"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 
 import EditorHeader from "./EditorHeader"
 import JSONEditor from "./JSONEditor"
@@ -71,6 +72,9 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
   const { save, isLoading, error: saveError } = useWorkflowSave({ workflowVersion })
 
+  // Load model preferences early
+  const { loadPreferences, preferences } = useModelPreferencesStore()
+
   const {
     nodes: _nodes,
     edges: _edges,
@@ -96,6 +100,14 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       organizeLayout: state.organizeLayout,
     })),
   )
+
+  // Load preferences on mount if not already loaded
+  useEffect(() => {
+    if (!preferences) {
+      console.log("[EditModeSelector] Loading model preferences before workflow...")
+      loadPreferences()
+    }
+  }, [preferences, loadPreferences])
 
   // Eval mode state (shared store)
   const {
