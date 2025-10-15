@@ -15,8 +15,8 @@ import { providerNameSchema } from "../contracts/providers"
  * Otherwise, prepend the provider
  *
  * @param provider - The provider name (e.g., "openai")
- * @param modelName - The model name (e.g., "gpt-4o" or "openai/gpt-4o")
- * @returns Full model ID (e.g., "openai/gpt-4o")
+ * @param modelName - The model name (e.g., "gpt-4o" or "openrouter#openai/gpt-4o")
+ * @returns Full model ID (e.g., "openrouter#openai/gpt-4o")
  */
 export function normalizeModelId(provider: string, modelName: string): ModelId {
   if (modelName.includes("/")) return modelName as ModelId

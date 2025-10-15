@@ -69,6 +69,13 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
   )
 }
 
+// Helper function to strip provider prefix from model name for display
+function getDisplayModelName(modelName: string): string {
+  // Strip "provider#" prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
+  const hashIndex = modelName.indexOf("#")
+  return hashIndex !== -1 ? modelName.substring(hashIndex + 1) : modelName
+}
+
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
   const toolsEnabled = useFeatureFlag("MCP_TOOLS")
@@ -125,17 +132,23 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
 
     // If user has enabled specific models, show those (even if not in catalog)
     if (enabledModelIds.length > 0) {
-      // IMPORTANT: enabledModelIds contains provider-specific model names (e.g., "gpt-5-nano")
-      // We must match by m.model, not m.id (which is "openai/gpt-5-nano")
-      const result = enabledModelIds.map(modelName => {
+      // IMPORTANT: enabledModelIds may contain either:
+      // - provider-specific model names (e.g., "gpt-5-nano")
+      // - OR full catalog IDs (e.g., "openai#gpt-5-nano")
+      // We need to strip provider prefix for catalog lookup, but use full catalog ID for value
+      const result = enabledModelIds.map(modelId => {
+        // Strip provider prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
+        const modelName = modelId.includes("#") ? modelId.split("#")[1] : modelId
+
         const catalogEntry = catalogMap.get(modelName)
         if (catalogEntry) {
           return catalogEntry
         }
         // Model not in catalog - create a minimal entry so it can still be selected
         // This handles new provider models not yet added to our static catalog
+        // Use # format for consistency with catalog IDs
         return {
-          id: `${providerToFetch}/${modelName}`,
+          id: `${providerToFetch}#${modelName}`,
           model: modelName,
           provider: providerToFetch,
           active: true,
@@ -426,7 +439,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               onChange={e => setSelectedProvider(e.target.value as LuckyProvider)}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
-              {getEnabledProviderSlugs().map(provider => (
+              {providers.map(provider => (
                 <option key={provider} value={provider}>
                   {provider.charAt(0).toUpperCase() + provider.slice(1)}
                 </option>
@@ -457,7 +470,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
               ) : (
                 availableModels.map(model => (
                   <option key={model.id} value={model.id}>
-                    {model.model}
+                    {getDisplayModelName(model.model)}
                   </option>
                 ))
               )}

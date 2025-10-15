@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/features/react-flow-visualization/components/ui/dialog"
 import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { FeedbackContext } from "@lucky/shared/contracts/feedback"
 import { Paperclip } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
@@ -58,7 +59,8 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
       })
 
       if (!response.ok) {
-        throw new Error("Failed to submit feedback")
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       // Reset form and close dialog
@@ -68,8 +70,9 @@ export function GeneralFeedbackDialog({ open, onOpenChange }: GeneralFeedbackDia
       // Show success toast
       toast.success("Feedback submitted successfully!")
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       console.error("Failed to submit feedback:", error)
-      toast.error("Failed to submit feedback. Please try again.")
+      toast.error(`Failed to submit feedback: ${errorMessage}`)
     }
   }, [feedbackText, onOpenChange])
 

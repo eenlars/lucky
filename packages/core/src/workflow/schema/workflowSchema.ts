@@ -7,6 +7,7 @@ import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 
 import { ACTIVE_MODEL_NAMES } from "@core/utils/spending/pricing"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import { findModel } from "@lucky/models"
 import { withDescriptions } from "@lucky/shared"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 
@@ -36,11 +37,24 @@ export const WorkflowConfigSchema = z.object({
 })
 
 // Display-only schema that allows any model name for legacy workflows
+// Validates and falls back to default model if unavailable
 export const WorkflowNodeConfigSchemaDisplay = z.object({
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
-  modelName: z.string(), // Allow any string for display
+  modelName: z.string().transform(modelName => {
+    // Try to find the model in the catalog (by catalog ID or API name)
+    const catalogEntry = findModel(modelName)
+
+    if (catalogEntry) {
+      // Model exists, use its catalog ID
+      return catalogEntry.id
+    }
+
+    // Model not found - fallback to default
+    console.warn(`Model "${modelName}" not found in catalog, falling back to openai#gpt-5-nano`)
+    return "openai#gpt-5-nano"
+  }),
   mcpTools: z.array(z.string()), // Allow any string for legacy tools
   codeTools: z.array(z.string()), // Allow any string for legacy tools
   handOffs: z.array(z.string()),

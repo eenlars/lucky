@@ -83,14 +83,14 @@ export function createMockPaths() {
  */
 export function createMockModels() {
   return {
-    default: "google/gemini-2.5-flash-lite",
-    summary: "google/gemini-2.5-flash-lite",
-    nano: "google/gemini-2.5-flash-lite",
-    low: "google/gemini-2.5-flash-lite",
-    medium: "openai/gpt-4.1-mini",
-    high: "openai/gpt-4.1",
-    fitness: "openai/gpt-4.1-mini",
-    reasoning: "openai/gpt-4.1-mini",
+    default: "openrouter#google/gemini-2.5-flash-lite",
+    summary: "openrouter#google/gemini-2.5-flash-lite",
+    nano: "openrouter#google/gemini-2.5-flash-lite",
+    low: "openrouter#google/gemini-2.5-flash-lite",
+    medium: "openrouter#openai/gpt-4.1-mini",
+    high: "openrouter#openai/gpt-4.1",
+    fitness: "openrouter#openai/gpt-4.1-mini",
+    reasoning: "openrouter#openai/gpt-4.1-mini",
     fallback: "switchpoint/router",
   }
 }

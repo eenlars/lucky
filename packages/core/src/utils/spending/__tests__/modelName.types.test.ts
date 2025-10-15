@@ -20,8 +20,8 @@ describe("ModelName Type System", () => {
 
     it("AnyModelName should be a union of all provider models", () => {
       // Test that we can assign models from any provider
-      const openrouterModel: string = "google/gemini-2.5-flash-lite"
-      const groqModel: string = "openai/gpt-oss-20b"
+      const openrouterModel: string = "openrouter#google/gemini-2.5-flash-lite"
+      const groqModel: string = "openrouter#openai/gpt-oss-20b"
       const openaiModel: string = "gpt-4.1-mini"
 
       expect(typeof openrouterModel).toBe("string")
@@ -31,13 +31,13 @@ describe("ModelName Type System", () => {
 
     it("Provider-specific types should be subsets of AnyModelName", () => {
       // Type test: specific model types should be assignable to AnyModelName
-      const openrouterModel: string = "google/gemini-2.5-flash-lite"
+      const openrouterModel: string = "openrouter#google/gemini-2.5-flash-lite"
       const anyModel1: string = openrouterModel
 
       // Use AllowedModelName generic for other providers
       type GroqModel = string
 
-      const groqModel: GroqModel = "openai/gpt-oss-20b"
+      const groqModel: GroqModel = "openrouter#openai/gpt-oss-20b"
       const anyModel2: string = groqModel
 
       const openaiModel: string = "gpt-4.1-mini"
@@ -140,8 +140,8 @@ describe("ModelName Type System", () => {
 
   describe("Cross-Provider Support", () => {
     it("AllowedModelName should work with all providers", () => {
-      const or: string = "google/gemini-2.5-flash-lite"
-      const groq: string = "openai/gpt-oss-20b"
+      const or: string = "openrouter#google/gemini-2.5-flash-lite"
+      const groq: string = "openrouter#openai/gpt-oss-20b"
       const openai: string = "gpt-4.1-mini"
 
       expect([or, groq, openai]).toHaveLength(3)
@@ -168,7 +168,7 @@ describe("ModelName Type System", () => {
 
     it("should handle provider-specific model formats", () => {
       // OpenRouter format: "provider/model"
-      const openrouterModel = "google/gemini-2.5-flash-lite"
+      const openrouterModel = "openrouter#google/gemini-2.5-flash-lite"
       expect(openrouterModel).toContain("/")
 
       // Native OpenAI format: "model-name"
@@ -231,7 +231,7 @@ describe("ModelName Type System", () => {
 
       // Case sensitivity
       const lowerCase = "gpt-4.1-mini"
-      const upperCase = "OPENAI/GPT-4.1-MINI"
+      const upperCase = "openrouter#openai/gpt-4.1-mini"
       expect(isActiveModel(lowerCase)).toBe(isActiveModel(upperCase))
     })
   })

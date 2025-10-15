@@ -46,6 +46,10 @@ export function AddServerForm({ onAdd, existingNames }: AddServerFormProps) {
         setError("URL is required")
         return
       }
+      if (authType === "apikey" && !apiKey.trim()) {
+        setError("API Key is required when API Key authentication is selected")
+        return
+      }
       // For remote, create a local proxy command that connects to the URL
       const serverConfig: MCPServerConfig = {
         command: "npx",

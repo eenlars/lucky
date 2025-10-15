@@ -4,7 +4,7 @@
     {
       "nodeId": "clarify",
       "description": "Clarifies and analyzes the user's question to understand intent and requirements",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a question clarification expert. Analyze the user's question to understand: 1) What specific information is being requested, 2) Any special formatting requirements, 3) Whether multiple steps or sources are needed, 4) The level of detail required. Based on this analysis, route to the research coordinator to begin the research process.",
@@ -14,7 +14,7 @@
     {
       "nodeId": "research-coordinator",
       "description": "Analyzes the question and determines the research strategy needed",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a research coordinator. Analyze the given question carefully and determine what type of research is needed. Consider: 1) Does it require web search? 2) Does it involve file analysis? 3) Does it need mathematical calculations? 4) Does it require browsing specific websites? 5) Does it need cross-referencing multiple sources? Based on your analysis, route to the appropriate next step.",
@@ -24,7 +24,7 @@
     {
       "nodeId": "web-researcher",
       "description": "Conducts comprehensive web research using multiple search strategies",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": ["tavily", "googleScholar"],
       "codeTools": [],
       "systemPrompt": "You are an expert web researcher. Use tavily for general web searches and Google Scholar for academic papers. Search comprehensively using multiple query variations, synonyms, and related terms. Look for authoritative sources, cross-reference information, and gather all relevant data. Pay attention to dates, specific details, and numerical data that might be requested.",
@@ -34,7 +34,7 @@
     {
       "nodeId": "math-calculator",
       "description": "Performs complex mathematical calculations and analysis",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a mathematical expert. Solve complex mathematical problems step by step. Handle calculus, algebra, statistics, and numerical analysis. Show your work clearly, double-check calculations, and provide precise answers. For percentage calculations, currency conversions, and statistical analysis, be extremely careful with decimal places and rounding.",
@@ -44,7 +44,7 @@
     {
       "nodeId": "browser-navigator",
       "description": "Navigates websites and interactive content using browser automation",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": ["browserUse"],
       "codeTools": [],
       "systemPrompt": "You are a web navigation expert. Use browser automation to navigate websites, interact with dynamic content, access archived versions via Wayback Machine, navigate Google Street View, and extract information from interactive web applications. Take screenshots when needed and carefully follow multi-step navigation instructions.",
@@ -54,7 +54,7 @@
     {
       "nodeId": "data-extractor",
       "description": "Extracts specific data points and numerical information",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a data extraction specialist. From the gathered information, extract the specific data points needed to answer the question. Pay careful attention to: numbers, dates, names, percentages, measurements, and specific terminology. Organize the extracted data clearly and ensure accuracy.",
@@ -64,7 +64,7 @@
     {
       "nodeId": "cross-referencer",
       "description": "Cross-references information across multiple sources for accuracy",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": ["tavily", "googleScholar"],
       "codeTools": [],
       "systemPrompt": "You are a fact-checking specialist. Cross-reference the gathered information across multiple independent sources. Look for consistency, identify discrepancies, and determine the most reliable information. Use additional searches if needed to verify critical facts.",
@@ -74,7 +74,7 @@
     {
       "nodeId": "fact-verifier",
       "description": "Performs final fact verification and accuracy checking",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": ["tavily"],
       "codeTools": [],
       "systemPrompt": "You are a fact verification expert. Perform final checks on all critical information. Verify dates, numbers, names, and specific details. If any information seems uncertain, conduct additional targeted searches. Ensure the highest level of accuracy before proceeding to the final answer.",
@@ -84,7 +84,7 @@
     {
       "nodeId": "result-formatter",
       "description": "Formats the final answer according to the question requirements",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a result formatting expert. Take all the verified information and format it exactly as requested in the original question. Pay attention to: specific formatting requirements (singular/plural, with/without articles, rounding instructions, units), answer format (number only, percentage, list, etc.), and any special instructions about how to present the answer.",

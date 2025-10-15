@@ -4,7 +4,7 @@
     {
       "nodeId": "planning-node",
       "description": "High-level coordinator that decides which step runs next and passes interim results along.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": [],
       "handOffs": ["homepage-fetcher"]

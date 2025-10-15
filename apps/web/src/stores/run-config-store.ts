@@ -1,6 +1,7 @@
 "use client"
 
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
@@ -136,7 +137,8 @@ export const useRunConfigStore = create<RunConfigState>()(
         try {
           const response = await fetch(`/api/ingestions/${datasetId}`)
           if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
           }
           const data = await response.json()
 

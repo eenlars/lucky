@@ -4,7 +4,7 @@
     {
       "nodeId": "workflow-node-starter",
       "description": "Initial workflow node template",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "Initial workflow node template",

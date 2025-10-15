@@ -23,7 +23,7 @@ import { MODEL_CATALOG } from "./catalog"
  * ```ts
  * findModelByName("gpt-4o-mini") // ✓ finds OpenAI model
  * findModelByName("anthropic/claude-sonnet-4") // ✓ finds OpenRouter model
- * findModelByName("openai/gpt-oss-20b") // ✓ finds Groq model
+ * findModelByName("openrouter#openai/gpt-oss-20b") // ✓ finds Groq model
  * ```
  */
 export function findModel(modelName: string): ModelEntry | undefined {

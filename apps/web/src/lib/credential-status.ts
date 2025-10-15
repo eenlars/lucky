@@ -1,6 +1,7 @@
 "use client"
 
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type {
   CredentialStatus as CoreCredentialStatus,
   FeatureStatus as CoreFeatureStatus,
@@ -33,7 +34,8 @@ export function useSystemHealth() {
         const response = await fetch("/api/health/credentials")
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch health status: ${response.statusText}`)
+          const errorDetails = await extractFetchError(response)
+          throw new Error(errorDetails)
         }
 
         const data = await response.json()
@@ -71,7 +73,8 @@ export function useCredentialStatus() {
         const response = await fetch("/api/health/credentials/all")
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch credentials: ${response.statusText}`)
+          const errorDetails = await extractFetchError(response)
+          throw new Error(errorDetails)
         }
 
         const data = await response.json()
@@ -109,7 +112,8 @@ export function useFeatureStatus() {
         const response = await fetch("/api/health/features")
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch features: ${response.statusText}`)
+          const errorDetails = await extractFetchError(response)
+          throw new Error(errorDetails)
         }
 
         const data = await response.json()

@@ -10,6 +10,13 @@ interface CoreConfigSectionProps {
   node: AppNode
 }
 
+// Helper function to strip provider prefix from model name for display
+function getDisplayModelName(modelName: string): string {
+  // Strip "provider#" prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
+  const hashIndex = modelName.indexOf("#")
+  return hashIndex !== -1 ? modelName.substring(hashIndex + 1) : modelName
+}
+
 export function CoreConfigSection({ node }: CoreConfigSectionProps) {
   const updateNode = useAppStore(state => state.updateNode)
 
@@ -63,7 +70,7 @@ export function CoreConfigSection({ node }: CoreConfigSectionProps) {
           <option value="">Select model...</option>
           {activeModels.map(model => (
             <option key={model} value={model}>
-              {model}
+              {getDisplayModelName(model)}
             </option>
           ))}
         </select>

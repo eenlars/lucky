@@ -8,6 +8,7 @@ import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
 import { logException } from "@/lib/error-logger"
 import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
 import { AlertCircle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Eye, EyeOff, Loader2, RefreshCw } from "lucide-react"
@@ -55,7 +56,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   // Available models from provider API (not user preferences)
   const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
 
-  // Get enabled models from Zustand store (full model IDs like "openai/gpt-4o")
+  // Get enabled models from Zustand store (full model IDs like "openrouter#openai/gpt-4o")
   const enabledModelIds = getEnabledModels(provider)
   const enabledModels = new Set(enabledModelIds)
 
@@ -112,7 +113,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to load models")
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       const data: { models: EnrichedModelInfo[] } = await response.json()
@@ -121,8 +123,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       logException(error, {
         location: window.location.pathname,
       })
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       console.error("Failed to load models:", error)
-      toast.error("Failed to load available models")
+      toast.error(`Failed to load models: ${errorMessage}`)
     } finally {
       setIsLoadingModels(false)
     }
@@ -203,7 +206,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       })
 
       if (!keyResponse.ok) {
-        throw new Error("Failed to save API key")
+        const errorDetails = await extractFetchError(keyResponse)
+        throw new Error(errorDetails)
       }
 
       setIsConfigured(true)
@@ -213,8 +217,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
       logException(error, {
         location: window.location.pathname,
       })
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       console.error("Failed to save configuration:", error)
-      toast.error("Failed to save configuration")
+      toast.error(`Failed to save configuration: ${errorMessage}`)
     } finally {
       setIsSaving(false)
     }
@@ -222,7 +227,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   /**
    * Toggle a single model on/off. Auto-saves via Zustand store with optimistic updates.
-   * @param modelId Full model ID (e.g., "openai/gpt-4o")
+   * @param modelId Full model ID (e.g., "openrouter#openai/gpt-4o")
    */
   const handleToggleModel = (modelId: string) => {
     toggleModelInStore(provider, modelId)
@@ -230,7 +235,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   /**
    * Bulk toggle models. Auto-saves via Zustand store.
-   * @param modelIds Array of full model IDs (e.g., ["openai/gpt-4o", "openai/gpt-4o-mini"])
+   * @param modelIds Array of full model IDs (e.g., ["openrouter#openai/gpt-4o", "openrouter#openai/gpt-4o-mini"])
    * @param enable true to enable models, false to disable them
    */
   const handleBulkToggleModels = (modelIds: string[], enable: boolean) => {

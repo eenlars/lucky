@@ -4,6 +4,7 @@
  */
 
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
 import {
   getEnabledModelsForProvider,
@@ -29,6 +30,8 @@ interface ModelPreferencesState {
   isEnabled: (modelId: ModelId) => boolean
   toggleModel: (provider: LuckyProvider, modelId: ModelId) => Promise<void>
   setProviderModels: (provider: LuckyProvider, modelIds: ModelId[]) => Promise<void>
+  removeModel: (provider: LuckyProvider, modelId: ModelId) => Promise<void>
+  removeProvider: (provider: LuckyProvider) => Promise<void>
   syncFromServer: () => Promise<void>
   clearError: () => void
 
@@ -36,6 +39,16 @@ interface ModelPreferencesState {
   isStale: () => boolean
   getLastSyncedRelative: () => string | null
   forceRefresh: () => Promise<void>
+}
+
+/**
+ * Helper function to filter out deleted providers from preferences
+ */
+function filterDeletedProviders(preferences: UserModelPreferences): UserModelPreferences {
+  return {
+    ...preferences,
+    providers: preferences.providers.filter(p => !p.deleted),
+  }
 }
 
 export const useModelPreferencesStore = create<ModelPreferencesState>()(
@@ -56,13 +69,14 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           const response = await fetch("/api/user/model-preferences")
 
           if (!response.ok) {
-            throw new Error("Failed to load model preferences")
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
           }
 
           const data = await response.json()
 
           set({
-            preferences: data,
+            preferences: filterDeletedProviders(data),
             lastSynced: new Date(data.lastSynced),
             isLoading: false,
           })
@@ -117,12 +131,13 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           })
 
           if (!response.ok) {
-            throw new Error("Failed to save preferences")
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
           }
 
           const data = await response.json()
           set({
-            preferences: data,
+            preferences: filterDeletedProviders(data),
             lastSynced: new Date(data.lastSynced),
             isSaving: false,
           })
@@ -166,12 +181,13 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
           })
 
           if (!response.ok) {
-            throw new Error("Failed to save preferences")
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
           }
 
           const data = await response.json()
           set({
-            preferences: data,
+            preferences: filterDeletedProviders(data),
             lastSynced: new Date(data.lastSynced),
             isSaving: false,
           })
@@ -188,6 +204,144 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             isSaving: false,
           })
           toast.error(`Failed to save: ${errorMessage}`)
+        }
+      },
+
+      // Remove a single model from a provider with optimistic update
+      removeModel: async (provider: LuckyProvider, modelId: ModelId) => {
+        const { preferences } = get()
+
+        if (!preferences) {
+          toast.error("Preferences not loaded")
+          return
+        }
+
+        // Check if provider exists
+        const providerSettings = preferences.providers.find(p => p.provider === provider)
+        if (!providerSettings) {
+          toast.error(`Provider "${provider}" not found`)
+          return
+        }
+
+        // Check if model exists in the provider
+        if (!providerSettings.enabledModels.includes(modelId)) {
+          toast.error(`Model "${modelId}" not found in provider "${provider}"`)
+          return
+        }
+
+        // Optimistic update
+        const previousPreferences = preferences
+        const updatedPreferences = {
+          ...preferences,
+          providers: preferences.providers.map(p =>
+            p.provider === provider
+              ? {
+                  ...p,
+                  enabledModels: p.enabledModels.filter(m => m !== modelId),
+                  removedModels: [...(p.removedModels || []), modelId],
+                }
+              : p,
+          ),
+        }
+        set({ preferences: updatedPreferences, isSaving: true, error: null })
+
+        try {
+          const response = await fetch("/api/user/model-preferences", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedPreferences),
+          })
+
+          if (!response.ok) {
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
+          }
+
+          const data = await response.json()
+          set({
+            preferences: filterDeletedProviders(data),
+            lastSynced: new Date(data.lastSynced),
+            isSaving: false,
+          })
+          toast.success("Model removed")
+        } catch (error) {
+          logException(error, {
+            location: "/store/model-preferences",
+          })
+          // Rollback on error
+          const errorMessage = error instanceof Error ? error.message : "Unknown error"
+          set({
+            preferences: previousPreferences,
+            error: errorMessage,
+            isSaving: false,
+          })
+          toast.error(`Failed to remove model: ${errorMessage}`)
+        }
+      },
+
+      // Remove an entire provider with optimistic update
+      removeProvider: async (provider: LuckyProvider) => {
+        const { preferences } = get()
+
+        if (!preferences) {
+          toast.error("Preferences not loaded")
+          return
+        }
+
+        // Check if provider exists
+        const providerExists = preferences.providers.some(p => p.provider === provider)
+        if (!providerExists) {
+          toast.error(`Provider "${provider}" not found`)
+          return
+        }
+
+        // Optimistic update
+        const previousPreferences = preferences
+        const updatedPreferences = {
+          ...preferences,
+          providers: preferences.providers.map(p =>
+            p.provider === provider
+              ? {
+                  ...p,
+                  deleted: true,
+                  enabledModels: [],
+                }
+              : p,
+          ),
+        }
+        set({ preferences: updatedPreferences, isSaving: true, error: null })
+
+        try {
+          const response = await fetch("/api/user/model-preferences", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedPreferences),
+          })
+
+          if (!response.ok) {
+            const errorDetails = await extractFetchError(response)
+            throw new Error(errorDetails)
+          }
+
+          const data = await response.json()
+          set({
+            preferences: filterDeletedProviders(data),
+            lastSynced: new Date(data.lastSynced),
+            isSaving: false,
+          })
+          toast.success("Provider removed")
+        } catch (error) {
+          logException(error, {
+            location: "/store/model-preferences",
+          })
+          // Rollback on error
+          const errorMessage = error instanceof Error ? error.message : "Unknown error"
+          set({
+            preferences: previousPreferences,
+            error: errorMessage,
+            isSaving: false,
+          })
+          toast.error(`Failed to remove provider: ${errorMessage}`)
         }
       },
 
@@ -242,6 +396,10 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         // Convert serialized date strings back to Date objects after hydration
         if (state?.lastSynced && typeof state.lastSynced === "string") {
           state.lastSynced = new Date(state.lastSynced)
+        }
+        // Filter out any deleted providers from persisted storage
+        if (state?.preferences) {
+          state.preferences = filterDeletedProviders(state.preferences)
         }
       },
     },

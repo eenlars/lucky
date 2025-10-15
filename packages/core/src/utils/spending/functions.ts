@@ -9,8 +9,7 @@ export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T)
   const provider = customProvider ?? getCurrentProvider()
   if (isNir(provider)) return []
 
-  // Use MODEL_CATALOG instead of providersV2
-  return getActiveModelsByProvider(provider as T)
+  return getActiveModelsByProvider(provider)
     .filter(model => !getCoreConfig().models.inactive.includes(model.id))
     .map(model => model.id)
 }

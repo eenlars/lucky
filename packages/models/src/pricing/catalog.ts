@@ -841,7 +841,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#google/gemini-2.5-flash-lite",
     provider: "openrouter",
-    model: "google/gemini-2.5-flash-lite",
+    model: "openrouter#google/gemini-2.5-flash-lite",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.06,
@@ -925,7 +925,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-4.1",
     provider: "openrouter",
-    model: "openai/gpt-4.1",
+    model: "openrouter#openai/gpt-4.1",
     input: 12,
     output: 48,
     cachedInput: 4,
@@ -946,7 +946,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-4.1-mini",
     provider: "openrouter",
-    model: "openai/gpt-4.1-mini",
+    model: "openrouter#openai/gpt-4.1-mini",
     input: 0.4,
     output: 1.6,
     cachedInput: 0.1,
@@ -968,7 +968,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-4.1-nano",
     provider: "openrouter",
-    model: "openai/gpt-4.1-nano",
+    model: "openrouter#openai/gpt-4.1-nano",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.06,
@@ -990,7 +990,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-4o-mini",
     provider: "openrouter",
-    model: "openai/gpt-4o-mini",
+    model: "openrouter#openai/gpt-4o-mini",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.075,
@@ -1012,7 +1012,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-3.5-turbo",
     provider: "openrouter",
-    model: "openai/gpt-3.5-turbo",
+    model: "openrouter#openai/gpt-3.5-turbo",
     input: 0.5,
     output: 0.4,
     cachedInput: 0.025,
@@ -1034,7 +1034,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-4o",
     provider: "openrouter",
-    model: "openai/gpt-4o",
+    model: "openrouter#openai/gpt-4o",
     input: 2.5,
     output: 10,
     cachedInput: 1.25,
@@ -1184,7 +1184,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "openrouter#openai/gpt-5",
     provider: "openrouter",
-    model: "openai/gpt-5",
+    model: "openrouter#openai/gpt-5",
     input: 1.25,
     output: 10,
     cachedInput: 0.4,
@@ -1209,7 +1209,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "groq#openai/gpt-oss-20b",
     provider: "groq",
-    model: "openai/gpt-oss-20b",
+    model: "openrouter#openai/gpt-oss-20b",
     input: 0.5,
     output: 0.8,
     cachedInput: 0.1,
@@ -1230,7 +1230,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
   {
     id: "groq#openai/gpt-oss-120b",
     provider: "groq",
-    model: "openai/gpt-oss-120b",
+    model: "openrouter#openai/gpt-oss-120b",
     input: 0.15,
     output: 0.75,
     cachedInput: 0.015,

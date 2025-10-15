@@ -1,4 +1,5 @@
 import { queryKeys } from "@/lib/query-keys"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useQuery } from "@tanstack/react-query"
 
 /**
@@ -12,7 +13,8 @@ export function useWorkflowVersionQuery(versionId: string | undefined) {
       if (!versionId) throw new Error("Version ID is required")
       const response = await fetch(`/api/workflow/version/${versionId}`)
       if (!response.ok) {
-        throw new Error("Failed to fetch workflow version")
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
       return response.json()
     },

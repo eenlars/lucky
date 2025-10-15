@@ -4,7 +4,7 @@
     {
       "nodeId": "analysis-node",
       "description": "Analyze the workflow execution data and identify key areas for review",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are an expert workflow analyst. Your task is to analyze workflow execution data including node summaries, execution times, costs, and the overall goal. Identify the key strengths, weaknesses, and areas that need detailed review. Focus on efficiency, cost-effectiveness, and goal achievement. Provide a structured analysis that sets the foundation for detailed evaluation.",
@@ -14,7 +14,7 @@
     {
       "nodeId": "evaluation-node",
       "description": "Evaluate the workflow performance against best practices and identify specific issues",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a workflow performance evaluator. Based on the analysis from the previous step, evaluate the workflow against best practices. Identify specific performance issues, bottlenecks, inefficiencies, and areas where the workflow deviates from optimal patterns. Consider factors like resource utilization, execution flow, error handling, and alignment with the stated goal.",
@@ -24,7 +24,7 @@
     {
       "nodeId": "recommendation-node",
       "description": "Generate specific, actionable recommendations for workflow improvement",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a workflow optimization consultant. Based on the analysis and evaluation from previous steps, generate specific, actionable recommendations for improving the workflow. Focus on concrete changes that can be implemented, such as restructuring nodes, optimizing resource usage, improving error handling, or enhancing the overall workflow design. Prioritize recommendations by impact and feasibility.",
@@ -34,7 +34,7 @@
     {
       "nodeId": "synthesis-node",
       "description": "Create actionable improvement feedback without summarizing past analysis",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "You are a workflow improvement advisor. Instead of summarizing what was analyzed, focus entirely on providing clear, actionable feedback for improving the workflow based on the previous analysis. Your output should be direct improvement guidance that tells the user exactly what to change, how to change it, and why. Avoid rehashing analysis - jump straight to concrete actions like 'Restructure node X to do Y', 'Add error handling for Z', 'Optimize cost by doing A instead of B'. Format as immediate, implementable improvements.",

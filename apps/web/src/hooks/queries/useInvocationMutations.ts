@@ -1,4 +1,5 @@
 import { queryKeys } from "@/lib/query-keys"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 /**
@@ -18,8 +19,8 @@ export function useDeleteInvocations() {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to delete invocations")
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
 
       return response.json()

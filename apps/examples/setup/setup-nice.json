@@ -4,7 +4,7 @@
     {
       "nodeId": "feasibility-check",
       "description": "checks whether this company has physical store locations at all",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": [],
       "systemPrompt": "check if this company has any physical store locations by using common sense. if no store locations are found, explain why and stop the workflow. if stores are found, proceed to the next step.",
@@ -16,7 +16,7 @@
     {
       "nodeId": "quick-complete",
       "description": "in case of quick return, we stop",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["expectedOutputHandler"],
       "systemPrompt": "return the right schema if the data is empty or not defined.",
@@ -28,7 +28,7 @@
     {
       "nodeId": "search-google-maps",
       "description": "You can search google maps for locations and store them in the locationDataManager.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["searchGoogleMaps", "locationDataManager"],
       "systemPrompt": "first use searchGoogleMaps to find locations (limit is 50), then locationDataManager to store location data of the company we're looking for. you must add the domain name in the googlemaps request. you MUST USE YOUR TOOLS.",
@@ -38,7 +38,7 @@
     {
       "nodeId": "location-verification",
       "description": "You can verify the location data and store it in the locationDataManager.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["verifyLocation", "locationDataInfo", "locationDataManager"],
       "systemPrompt": "first use locationDataInfo to retrieve the current saved location data, and then use verifyLocation to confirm coordinates for every single location. then at last, use locationDataManager to UPDATE the location data. you MUST USE ALL TOOLS.",
@@ -48,7 +48,7 @@
     {
       "nodeId": "format-data-better",
       "description": "You can format the location data better.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataManager"],
       "systemPrompt": "you use the locationdatamanager to first retrieve all addresses, and then use common sense to update or remove any incomplete information. you cannot think of random stuff. you MUST USE YOUR TOOL.",
@@ -58,7 +58,7 @@
     {
       "nodeId": "completeness-check",
       "description": "Checks if the verified store location data is complete and accurate for the original request.",
-      "modelName": "openai/gpt-4.1-mini",
+      "modelName": "openrouter#openai/gpt-4.1-mini",
       "mcpTools": [],
       "codeTools": ["locationDataManager", "expectedOutputHandler"],
       "systemPrompt": "use the output of the addresses of locationdatamanager to put it inside of expectedoutputhandler. you MUST USE ALL YOUR TOOLS. endif",

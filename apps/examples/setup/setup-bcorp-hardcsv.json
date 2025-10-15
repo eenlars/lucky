@@ -4,7 +4,7 @@
     {
       "nodeId": "data-processor",
       "description": "Process B-corp CSV data and identify companies needing store location research",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": ["csvReader"],
       "systemPrompt": "Read the CSV data containing B-corporations. Focus on companies that operate in the Netherlands or have headquarters there. Extract company names and relevant information for store location research. Only process companies that could potentially have physical B2C stores.",
@@ -24,7 +24,7 @@
     {
       "nodeId": "location-verifier",
       "description": "Verify and format store location data",
-      "modelName": "google/gemini-2.5-flash-lite",
+      "modelName": "openrouter#google/gemini-2.5-flash-lite",
       "mcpTools": [],
       "codeTools": ["verifyLocation", "csvWriter"],
       "systemPrompt": "Verify each found store location and format the results properly. Ensure addresses are complete and accurate. Create structured output with company name, store locations, and addresses.",

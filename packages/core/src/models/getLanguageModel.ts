@@ -5,6 +5,7 @@
  */
 
 import { getCurrentProvider } from "@core/utils/spending/provider"
+import { getOpenRouterClient } from "@lucky/core/clients/openrouter/openrouterClient"
 import type { LanguageModel } from "ai"
 import { getModelsInstance } from "./models-instance"
 import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
@@ -15,7 +16,7 @@ import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
  *
  * Special handling for OpenRouter:
  * - When current provider is OpenRouter, all models route through OpenRouter
- * - Model names like "openai/gpt-4" are passed as-is to OpenRouter
+ * - Model names like "openrouter#openai/gpt-4" are passed as-is to OpenRouter
  *
  * @param modelName - Model name or tier name
  * @returns Promise resolving to AI SDK LanguageModel
@@ -97,7 +98,6 @@ export async function getLanguageModelWithReasoning(
   // Provider-specific reasoning configuration
   if (provider === "openrouter") {
     // Use async client factory for per-user API keys
-    const { getOpenRouterClient } = await import("@core/clients/openrouter/openrouterClient")
     const openrouterClient = await getOpenRouterClient()
 
     const isAnthropic = modelStr.startsWith("anthropic/")

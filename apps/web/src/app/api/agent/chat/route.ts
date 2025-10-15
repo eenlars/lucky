@@ -152,9 +152,9 @@ export async function POST(request: NextRequest) {
     const models = getFacade()
 
     // Determine which model to use
-    // Default to OpenRouter's Claude if no model specified
+    // Validate that modelName is provided
     if (!modelName) {
-      throw new Error("Model name is required")
+      return NextResponse.json({ error: "Model name is required", field: "modelName" }, { status: 400 })
     }
 
     // Select and get AI SDK compatible model

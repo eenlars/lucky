@@ -3,37 +3,19 @@
  * Minimal but expressive configuration format
  */
 
+import type { LuckyProvider } from "@lucky/shared"
 import type { ExecutionStrategy } from "./index"
 
 // ============================================================================
 // User Configuration (YAML Schema)
 // ============================================================================
 
-export interface UserConfig {
-  /** Configuration name */
-  name: string
-
-  /** Named experiments */
-  experiments?: Record<string, ExperimentConfig>
-
-  /** Default experiment to use */
-  defaults?: {
-    experiment?: string
-    maxConcurrent?: number
-    timeout?: number
-    costLimit?: number
-  }
-
-  /** Performance tracking settings */
-  performanceTracking?: boolean
-}
-
 export interface ExperimentConfig {
   /** Execution strategy */
   strategy: ExecutionStrategy
 
   /** Provider strings (e.g., "openai", "groq") */
-  providers: string[]
+  providers: LuckyProvider[]
 
   /** Optional timeout override */
   timeout?: number

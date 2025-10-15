@@ -42,7 +42,7 @@ vi.mock("ai", () => ({
   },
 }))
 
-vi.mock("@core/clients/openrouter/openrouterClient", () => ({
+vi.mock("@core/clients/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 

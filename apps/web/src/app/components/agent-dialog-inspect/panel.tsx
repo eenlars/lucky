@@ -106,11 +106,11 @@ export function AgentDialogInspect() {
             event.preventDefault()
             onClose()
           }}
-          onContextMenu={e => {
-            // Prevent context menu from appearing when right-clicking inside the dialog
-            e.preventDefault()
-            e.stopPropagation()
-          }}
+          // onContextMenu={e => {
+          //   // Prevent context menu from appearing when right-clicking inside the dialog
+          //   e.preventDefault()
+          //   e.stopPropagation()
+          // }}
         >
           {/* Header */}
           <AgentDetailHeader node={selectedNode} onClose={onClose} />

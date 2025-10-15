@@ -1,8 +1,8 @@
 [
   {
-    "id": "openai/gpt-oss-120b",
-    "canonical_slug": "openai/gpt-oss-120b",
-    "hugging_face_id": "openai/gpt-oss-120b",
+    "id": "openrouter#openai/gpt-oss-120b",
+    "canonical_slug": "openrouter#openai/gpt-oss-120b",
+    "hugging_face_id": "openrouter#openai/gpt-oss-120b",
     "name": "OpenAI: gpt-oss-120b",
     "created": 1754414231,
     "description": "gpt-oss-120b is an open-weight, 117B-parameter Mixture-of-Experts (MoE) language model from OpenAI designed for high-reasoning, agentic, and general-purpose production use cases. It activates 5.1B parameters per forward pass and is optimized to run on a single H100 GPU with native MXFP4 quantization. The model supports configurable reasoning depth, full chain-of-thought access, and native tool use, including function calling, browsing, and structured output generation.",
@@ -52,9 +52,9 @@
     ]
   },
   {
-    "id": "openai/gpt-oss-20b:free",
-    "canonical_slug": "openai/gpt-oss-20b",
-    "hugging_face_id": "openai/gpt-oss-20b",
+    "id": "openrouter#openai/gpt-oss-20b:free",
+    "canonical_slug": "openrouter#openai/gpt-oss-20b",
+    "hugging_face_id": "openrouter#openai/gpt-oss-20b",
     "name": "OpenAI: gpt-oss-20b (free)",
     "created": 1754414229,
     "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
@@ -92,9 +92,9 @@
     ]
   },
   {
-    "id": "openai/gpt-oss-20b",
-    "canonical_slug": "openai/gpt-oss-20b",
-    "hugging_face_id": "openai/gpt-oss-20b",
+    "id": "openrouter#openai/gpt-oss-20b",
+    "canonical_slug": "openrouter#openai/gpt-oss-20b",
+    "hugging_face_id": "openrouter#openai/gpt-oss-20b",
     "name": "OpenAI: gpt-oss-20b",
     "created": 1754414229,
     "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
@@ -186,8 +186,8 @@
     ]
   },
   {
-    "id": "openrouter/horizon-beta",
-    "canonical_slug": "openrouter/horizon-beta",
+    "id": "openrouter#horizon-beta",
+    "canonical_slug": "openrouter#horizon-beta",
     "hugging_face_id": "",
     "name": "Horizon Beta",
     "created": 1754089419,
@@ -618,8 +618,8 @@
     ]
   },
   {
-    "id": "google/gemini-2.5-flash-lite",
-    "canonical_slug": "google/gemini-2.5-flash-lite",
+    "id": "openrouter#google/gemini-2.5-flash-lite",
+    "canonical_slug": "openrouter#google/gemini-2.5-flash-lite",
     "hugging_face_id": "",
     "name": "Google: Gemini 2.5 Flash Lite",
     "created": 1753200276,
@@ -1607,8 +1607,8 @@
     ]
   },
   {
-    "id": "google/gemini-2.5-flash-lite-preview-06-17",
-    "canonical_slug": "google/gemini-2.5-flash-lite-preview-06-17",
+    "id": "openrouter#google/gemini-2.5-flash-lite-preview-06-17",
+    "canonical_slug": "openrouter#google/gemini-2.5-flash-lite-preview-06-17",
     "hugging_face_id": "",
     "name": "Google: Gemini 2.5 Flash Lite Preview 06-17",
     "created": 1750173831,
@@ -4269,8 +4269,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4.1",
-    "canonical_slug": "openai/gpt-4.1-2025-04-14",
+    "id": "openrouter#openai/gpt-4.1",
+    "canonical_slug": "openrouter#openai/gpt-4.1-2025-04-14",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4.1",
     "created": 1744651385,
@@ -4318,8 +4318,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4.1-mini",
-    "canonical_slug": "openai/gpt-4.1-mini-2025-04-14",
+    "id": "openrouter#openai/gpt-4.1-mini",
+    "canonical_slug": "openrouter#openai/gpt-4.1-mini-2025-04-14",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4.1 Mini",
     "created": 1744651381,
@@ -4367,8 +4367,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4.1-nano",
-    "canonical_slug": "openai/gpt-4.1-nano-2025-04-14",
+    "id": "openrouter#openai/gpt-4.1-nano",
+    "canonical_slug": "openrouter#openai/gpt-4.1-nano-2025-04-14",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4.1 Nano",
     "created": 1744651369,
@@ -5830,8 +5830,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-mini-search-preview",
-    "canonical_slug": "openai/gpt-4o-mini-search-preview-2025-03-11",
+    "id": "openrouter#openai/gpt-4o-mini-search-preview",
+    "canonical_slug": "openrouter#openai/gpt-4o-mini-search-preview-2025-03-11",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4o-mini Search Preview",
     "created": 1741818122,
@@ -5862,8 +5862,8 @@
     "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "web_search_options"]
   },
   {
-    "id": "openai/gpt-4o-search-preview",
-    "canonical_slug": "openai/gpt-4o-search-preview-2025-03-11",
+    "id": "openrouter#openai/gpt-4o-search-preview",
+    "canonical_slug": "openrouter#openai/gpt-4o-search-preview-2025-03-11",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4o Search Preview",
     "created": 1741817949,
@@ -8759,8 +8759,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-2024-11-20",
-    "canonical_slug": "openai/gpt-4o-2024-11-20",
+    "id": "openrouter#openai/gpt-4o-2024-11-20",
+    "canonical_slug": "openrouter#openai/gpt-4o-2024-11-20",
     "hugging_face_id": "",
     "name": "OpenAI: GPT-4o (2024-11-20)",
     "created": 1732127594,
@@ -10792,8 +10792,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-2024-08-06",
-    "canonical_slug": "openai/gpt-4o-2024-08-06",
+    "id": "openrouter#openai/gpt-4o-2024-08-06",
+    "canonical_slug": "openrouter#openai/gpt-4o-2024-08-06",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o (2024-08-06)",
     "created": 1722902400,
@@ -11175,8 +11175,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-mini-2024-07-18",
-    "canonical_slug": "openai/gpt-4o-mini-2024-07-18",
+    "id": "openrouter#openai/gpt-4o-mini-2024-07-18",
+    "canonical_slug": "openrouter#openai/gpt-4o-mini-2024-07-18",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o-mini (2024-07-18)",
     "created": 1721260800,
@@ -11224,8 +11224,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-mini",
-    "canonical_slug": "openai/gpt-4o-mini",
+    "id": "openrouter#openai/gpt-4o-mini",
+    "canonical_slug": "openrouter#openai/gpt-4o-mini",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o-mini",
     "created": 1721260800,
@@ -11996,8 +11996,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o-2024-05-13",
-    "canonical_slug": "openai/gpt-4o-2024-05-13",
+    "id": "openrouter#openai/gpt-4o-2024-05-13",
+    "canonical_slug": "openrouter#openai/gpt-4o-2024-05-13",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o (2024-05-13)",
     "created": 1715558400,
@@ -12044,8 +12044,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o",
-    "canonical_slug": "openai/gpt-4o",
+    "id": "openrouter#openai/gpt-4o",
+    "canonical_slug": "openrouter#openai/gpt-4o",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o",
     "created": 1715558400,
@@ -12093,8 +12093,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4o:extended",
-    "canonical_slug": "openai/gpt-4o",
+    "id": "openrouter#openai/gpt-4o:extended",
+    "canonical_slug": "openrouter#openai/gpt-4o",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4o (extended)",
     "created": 1715558400,
@@ -12420,8 +12420,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4-turbo",
-    "canonical_slug": "openai/gpt-4-turbo",
+    "id": "openrouter#openai/gpt-4-turbo",
+    "canonical_slug": "openrouter#openai/gpt-4-turbo",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4 Turbo",
     "created": 1712620800,
@@ -12910,8 +12910,8 @@
     ]
   },
   {
-    "id": "openai/gpt-3.5-turbo-0613",
-    "canonical_slug": "openai/gpt-3.5-turbo-0613",
+    "id": "openrouter#openai/gpt-3.5-turbo-0613",
+    "canonical_slug": "openrouter#openai/gpt-3.5-turbo-0613",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-3.5 Turbo (older v0613)",
     "created": 1706140800,
@@ -12957,8 +12957,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4-turbo-preview",
-    "canonical_slug": "openai/gpt-4-turbo-preview",
+    "id": "openrouter#openai/gpt-4-turbo-preview",
+    "canonical_slug": "openrouter#openai/gpt-4-turbo-preview",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4 Turbo Preview",
     "created": 1706140800,
@@ -13362,8 +13362,8 @@
     ]
   },
   {
-    "id": "openrouter/auto",
-    "canonical_slug": "openrouter/auto",
+    "id": "openrouter#auto",
+    "canonical_slug": "openrouter#auto",
     "hugging_face_id": null,
     "name": "Auto Router",
     "created": 1699401600,
@@ -13389,8 +13389,8 @@
     "supported_parameters": []
   },
   {
-    "id": "openai/gpt-4-1106-preview",
-    "canonical_slug": "openai/gpt-4-1106-preview",
+    "id": "openrouter#openai/gpt-4-1106-preview",
+    "canonical_slug": "openrouter#openai/gpt-4-1106-preview",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4 Turbo (older v1106)",
     "created": 1699228800,
@@ -13482,8 +13482,8 @@
     ]
   },
   {
-    "id": "openai/gpt-3.5-turbo-instruct",
-    "canonical_slug": "openai/gpt-3.5-turbo-instruct",
+    "id": "openrouter#openai/gpt-3.5-turbo-instruct",
+    "canonical_slug": "openrouter#openai/gpt-3.5-turbo-instruct",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-3.5 Turbo Instruct",
     "created": 1695859200,
@@ -13570,8 +13570,8 @@
     ]
   },
   {
-    "id": "openai/gpt-3.5-turbo-16k",
-    "canonical_slug": "openai/gpt-3.5-turbo-16k",
+    "id": "openrouter#openai/gpt-3.5-turbo-16k",
+    "canonical_slug": "openrouter#openai/gpt-3.5-turbo-16k",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-3.5 Turbo 16k",
     "created": 1693180800,
@@ -13756,8 +13756,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4",
-    "canonical_slug": "openai/gpt-4",
+    "id": "openrouter#openai/gpt-4",
+    "canonical_slug": "openrouter#openai/gpt-4",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4",
     "created": 1685232000,
@@ -13803,8 +13803,8 @@
     ]
   },
   {
-    "id": "openai/gpt-3.5-turbo",
-    "canonical_slug": "openai/gpt-3.5-turbo",
+    "id": "openrouter#openai/gpt-3.5-turbo",
+    "canonical_slug": "openrouter#openai/gpt-3.5-turbo",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-3.5 Turbo",
     "created": 1685232000,
@@ -13850,8 +13850,8 @@
     ]
   },
   {
-    "id": "openai/gpt-4-0314",
-    "canonical_slug": "openai/gpt-4-0314",
+    "id": "openrouter#openai/gpt-4-0314",
+    "canonical_slug": "openrouter#openai/gpt-4-0314",
     "hugging_face_id": null,
     "name": "OpenAI: GPT-4 (older v0314)",
     "created": 1685232000,

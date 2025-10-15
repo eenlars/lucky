@@ -222,7 +222,7 @@ export class ModelsFacade {
    *
    * @example
    * ```ts
-   * const cost = facade.costOf("openai/gpt-4o-mini", 1000, 500)
+   * const cost = facade.costOf("openrouter#openai/gpt-4o-mini", 1000, 500)
    * console.log(`Cost: $${cost}`)
    * ```
    */
@@ -293,8 +293,8 @@ export class ModelsFacade {
    * @example
    * ```ts
    * const selection = await facade.withFallback(
-   *   "openai/gpt-4o",
-   *   ["openai/gpt-4o-mini", "openai/gpt-3.5-turbo"]
+   *   "openrouter#openai/gpt-4o",
+   *   ["openrouter#openai/gpt-4o-mini", "openrouter#openai/gpt-3.5-turbo"]
    * )
    * ```
    */

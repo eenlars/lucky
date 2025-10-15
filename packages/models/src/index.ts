@@ -88,8 +88,6 @@ export type {
 export type {
   ExperimentConfig,
   ResolvedConfig,
-  // Config types
-  UserConfig,
 } from "./types/config"
 
 // Export Zod schemas and validation

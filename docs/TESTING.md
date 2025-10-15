@@ -201,7 +201,7 @@ bun turbo run test --filter=@lucky/core
 bun turbo run test:unit --filter=@lucky/core
 
 # Build only shared, then test dependents
-bun turbo run build --filter=@lucky/shared && bun turbo run test --filter=...dependents
+bun turbo run build --filter=@lucky/shared && bun turbo run test --filter=@lucky/shared...
 ```
 
 ## Writing Tests

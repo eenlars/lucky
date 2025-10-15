@@ -43,10 +43,10 @@ export const TEST_CONSTANTS = {
 
   // Common test models
   MODELS: {
-    DEFAULT: "google/gemini-2.5-flash-lite",
-    HIGH: "openai/gpt-4.1",
-    MEDIUM: "openai/gpt-4.1-mini",
-    LOW: "google/gemini-2.5-flash-lite",
+    DEFAULT: "openrouter#google/gemini-2.5-flash-lite",
+    HIGH: "openrouter#openai/gpt-4.1",
+    MEDIUM: "openrouter#openai/gpt-4.1-mini",
+    LOW: "openrouter#google/gemini-2.5-flash-lite",
   },
 
   // common database responses
@@ -92,7 +92,7 @@ export const TEST_CONSTANTS = {
         nodeId: "node1",
         description: "test node",
         systemPrompt: "test system prompt",
-        modelName: "openai/gpt-4.1-mini",
+        modelName: "openrouter#openai/gpt-4.1-mini",
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -122,7 +122,7 @@ export const TEST_CONSTANTS = {
   // common runtime config mock
   RUNTIME_CONFIG: {
     models: {
-      inactive: new Set(["openai/gpt-4.1"]),
+      inactive: new Set(["openrouter#openai/gpt-4.1"]),
     },
     coordinationType: "sequential",
     newNodeProbability: 0.7,

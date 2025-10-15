@@ -48,7 +48,7 @@ const DEMO_WORKFLOW: WorkflowConfig = {
     {
       nodeId: "assistant",
       description: "A helpful AI assistant that responds to your questions",
-      modelName: "openai/gpt-4o-mini",
+      modelName: "openrouter#openai/gpt-4o-mini",
       mcpTools: [],
       codeTools: [],
       systemPrompt:

@@ -4,7 +4,6 @@
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@tests/*": ["tests/*"],
-      "@lucky/core": ["packages/core/src/index.ts"],
       "@lucky/core/*": ["packages/core/src/*"],
       "@lucky/shared": ["packages/shared/src/index.ts"],
       "@lucky/shared/*": ["packages/shared/src/*"],

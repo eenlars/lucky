@@ -71,7 +71,7 @@ export type ProviderStatus = z.infer<typeof providerStatusSchema>
 
 /**
  * Model ID schema - for user model preferences (stores API-format model names)
- * Examples: "gpt-4o-mini", "anthropic/claude-sonnet-4", "openai/gpt-oss-20b"
+ * Examples: "gpt-4o-mini", "anthropic/claude-sonnet-4", "openrouter#openai/gpt-oss-20b"
  * These are NOT catalog IDs - they're what gets sent to the provider APIs
  */
 export const modelIdSchema = z.string().min(1)
@@ -88,7 +88,7 @@ export type ModelId = z.infer<typeof modelIdSchema>
  * "openai#gpt-4.1-mini" // ✓ correct catalog ID
  * "openrouter#anthropic/claude-sonnet-4" // ✓ correct (uses OpenRouter models)
  * "gpt-4.1-mini" // ✗ missing provider prefix
- * "openai/gpt-4.1-mini" // ✗ old format
+ * "openrouter#openai/gpt-4.1-mini" // ✗ old format
  * ```
  */
 export type CatalogId = `${string}#${string}`
@@ -120,6 +120,9 @@ export const userProviderSettingsSchema = z.object({
       lastUpdated: z.string().datetime(),
     })
     .optional(),
+  // Deletion tracking
+  deleted: z.boolean().optional(), // When true, indicates provider should be removed
+  removedModels: z.array(modelIdSchema).optional(), // Models explicitly removed from preferences
 })
 
 export type UserProviderSettings = z.infer<typeof userProviderSettingsSchema>

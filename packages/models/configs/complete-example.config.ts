@@ -30,7 +30,7 @@ export default defineConfig({
     // Fast inference - race multiple fast models
     fast: {
       strategy: "race",
-      providers: ["openrouter/google/gemini-2.5-flash-lite", "openai/gpt-4o-mini", "groq/llama-3.3-70b-versatile"],
+      providers: ["openrouter", "openrouter", "groq"],
       timeout: 10000, // 10 seconds
       maxCost: 0.01, // Max $0.01 per request
     },
@@ -38,7 +38,7 @@ export default defineConfig({
     // Local-first - prefer local models, fallback to cloud
     local_first: {
       strategy: "fallback",
-      providers: ["local/llama-3.3-70b-instruct", "local/mistral-nemo-12b", "openrouter/google/gemini-2.5-flash-lite"],
+      providers: ["openrouter"],
       timeout: 30000,
       maxCost: 0.05,
     },
@@ -46,7 +46,7 @@ export default defineConfig({
     // High quality - use best models
     high_quality: {
       strategy: "first",
-      providers: ["openrouter/openai/gpt-4.1", "anthropic/claude-sonnet-4"],
+      providers: ["openrouter"],
       timeout: 60000,
       maxCost: 1.0,
     },
@@ -54,7 +54,7 @@ export default defineConfig({
     // Cost optimized - cheapest models only
     cheap: {
       strategy: "first",
-      providers: ["openrouter/google/gemini-2.5-flash-lite", "openrouter/deepseek/deepseek-chat"],
+      providers: ["openrouter"],
       timeout: 15000,
       maxCost: 0.001, // Max $0.001 per request
     },
@@ -62,7 +62,7 @@ export default defineConfig({
     // Reasoning - models with extended thinking
     reasoning: {
       strategy: "first",
-      providers: ["openrouter/openai/gpt-4.1-mini", "openrouter/google/gemini-2.5-pro-thinking"],
+      providers: ["openrouter"],
       timeout: 120000, // 2 minutes for thinking
       maxCost: 2.0,
     },
@@ -70,11 +70,7 @@ export default defineConfig({
     // Multi-provider consensus - compare outputs
     consensus: {
       strategy: "consensus",
-      providers: [
-        "openrouter/openai/gpt-4.1-mini",
-        "anthropic/claude-3-5-haiku",
-        "openrouter/google/gemini-2.5-flash-lite",
-      ],
+      providers: ["openrouter"],
       timeout: 45000,
       maxCost: 0.5,
     },
@@ -82,7 +78,7 @@ export default defineConfig({
     // Balanced - good mix of speed, quality, cost
     balanced: {
       strategy: "first",
-      providers: ["openrouter/openai/gpt-4.1-mini"],
+      providers: ["openrouter"],
       timeout: 30000,
       maxCost: 0.1,
     },
@@ -90,11 +86,7 @@ export default defineConfig({
     // Research - experimentation with multiple options
     research: {
       strategy: "race",
-      providers: [
-        "openrouter/anthropic/claude-sonnet-4",
-        "openrouter/openai/gpt-4.1",
-        "openrouter/google/gemini-2.5-pro-preview",
-      ],
+      providers: ["openrouter"],
       timeout: 60000,
       maxCost: 1.5,
     },
@@ -102,13 +94,7 @@ export default defineConfig({
     // Fallback chain - comprehensive backup strategy
     robust: {
       strategy: "fallback",
-      providers: [
-        "openrouter/openai/gpt-4.1-mini",
-        "openrouter/anthropic/claude-3-5-haiku",
-        "openrouter/google/gemini-2.5-flash-lite",
-        "openrouter/deepseek/deepseek-chat",
-        "groq/llama-3.3-70b-versatile",
-      ],
+      providers: ["openrouter"],
       timeout: 60000,
       maxCost: 0.2,
     },
@@ -116,7 +102,7 @@ export default defineConfig({
     // Local development - all local models
     local_dev: {
       strategy: "race",
-      providers: ["local/llama-3.3-70b-instruct", "local/mistral-nemo-12b", "local/qwen-2.5-coder-32b"],
+      providers: ["openrouter"],
       timeout: 45000,
     },
   },

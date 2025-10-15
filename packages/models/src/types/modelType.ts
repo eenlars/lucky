@@ -24,11 +24,13 @@ export const isModelType = (value: unknown): value is ModelType =>
 /**
  * Attempt to normalize a model identifier (either catalog ID or API name) into the canonical
  * "<provider>#<model>" format. Returns undefined if the model cannot be resolved.
+ *
+ * Note: Even canonical catalog IDs are validated against the catalog to ensure they exist.
  */
 export const tryNormalizeModelType = (modelType: string | null | undefined): ModelType | undefined => {
   if (!modelType) return undefined
-  if (isModelType(modelType)) return modelType
 
+  // Always validate against catalog, even for canonical IDs
   const entry = findModel(modelType)
   if (!entry) return undefined
 

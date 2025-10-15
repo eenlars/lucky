@@ -7,8 +7,7 @@
 import { readFile } from "node:fs/promises"
 import { pathToFileURL } from "node:url"
 import { parse as parseYaml } from "yaml"
-import type { UserConfig } from "../types/config"
-import { userConfigSchema } from "../types/schemas"
+import { type UserConfig, userConfigSchema } from "../types/schemas"
 
 export class ConfigLoader {
   private userConfigs = new Map<string, UserConfig>()

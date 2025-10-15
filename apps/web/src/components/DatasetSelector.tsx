@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { logException } from "@/lib/error-logger"
+import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useEffect, useState } from "react"
 
 interface Dataset {
@@ -41,7 +42,8 @@ export default function DatasetSelector({ onSelect, selectedDatasetId, disabled 
     try {
       const response = await fetch("/api/ingestions/list")
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        const errorDetails = await extractFetchError(response)
+        throw new Error(errorDetails)
       }
       const data = await response.json()
       if (data.success) {

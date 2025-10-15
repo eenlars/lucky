@@ -74,7 +74,7 @@ export class PricingService {
    *
    * Applies overrides if present, otherwise returns catalog pricing.
    *
-   * @param modelId - Full model ID (e.g., "openai/gpt-4o-mini")
+   * @param modelId - Full model ID (e.g., "openrouter#openai/gpt-4o-mini")
    * @returns Model entry with current pricing, or null if not found
    */
   getPrice(modelId: string): ModelEntry | null {

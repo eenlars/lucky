@@ -101,6 +101,8 @@ export const userConfigSchema = z.object({
   performanceTracking: z.boolean().optional().default(false),
 })
 
+export type UserConfig = z.infer<typeof userConfigSchema>
+
 // ============================================================================
 // Execution Context Schema
 // ============================================================================

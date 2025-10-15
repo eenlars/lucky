@@ -25,7 +25,7 @@ export function isTierName(name: string): name is TierName {
  *
  * Examples:
  * - "nano" -> "tier:nano"
- * - "openai/gpt-4" -> "openai/gpt-4"
+ * - "openrouter#openai/gpt-4" -> "openrouter#openai/gpt-4"
  * - "tier:high" -> "tier:high" (already in correct format)
  */
 export function resolveTierOrModel(input: string | string): string {

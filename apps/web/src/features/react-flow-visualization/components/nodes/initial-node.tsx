@@ -126,7 +126,7 @@ export function InitialNode({ id, data: _data }: WorkflowNodeProps) {
           <button
             type="button"
             aria-label="Delete start node"
-            className="absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-green-200 bg-white text-green-600 shadow-sm hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+            className="nodrag absolute -top-2 -right-2 flex items-center justify-center h-6 w-6 rounded-full border border-green-200 bg-white text-green-600 shadow-sm hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
             onClick={handleDelete}
           >
             <X className="size-4" />
